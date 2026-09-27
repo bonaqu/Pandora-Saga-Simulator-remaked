@@ -9,6 +9,13 @@ LEGACY_HTML = '''<!DOCTYPE html><html><head><title>Pandora Saga Simulator</title
 <script>Flag = new Array(\n   0 // [ 0]\n  ,1 // [ 1]\n);</script>
 <div id="body">legacy</div></body></html>'''
 
+SIMULATOR_BROWSER_COMPAT_FIXTURE = '''
+function SkillBar() {
+  tmp += 'url(./image/interface/bar_green.png)';
+  tmp += 'url(./image/interface/bar_blue.png)';
+}
+'''
+
 
 class BuildPagesTests(unittest.TestCase):
     def make_root(self, base: pathlib.Path, with_modern: bool = True) -> pathlib.Path:
@@ -19,6 +26,7 @@ class BuildPagesTests(unittest.TestCase):
         for dirname in ("css", "js", "image"):
             (root / dirname).mkdir()
             (root / dirname / "fixture.txt").write_text(dirname, encoding="utf-8")
+        (root / "js" / "simulator.js").write_text(SIMULATOR_BROWSER_COMPAT_FIXTURE, encoding="utf-8")
         if with_modern:
             (root / "modern").mkdir()
             (root / "modern" / "modern.css").write_text("/* modern */", encoding="utf-8")
@@ -26,7 +34,7 @@ class BuildPagesTests(unittest.TestCase):
             (root / "modern" / "app-shell.js").write_text("// shell", encoding="utf-8")
         return root
 
-    def test_builds_modern_and_byte_identical_self_contained_legacy(self):
+    def test_builds_modern_and_self_contained_legacy(self):
         with tempfile.TemporaryDirectory() as td:
             root = self.make_root(pathlib.Path(td))
             source_bytes = (root / "index.html").read_bytes()
@@ -40,6 +48,20 @@ class BuildPagesTests(unittest.TestCase):
                 "legacy/readme.txt",
             ):
                 self.assertTrue((output / relative).is_file(), relative)
+
+    def test_deployed_runtime_replaces_missing_legacy_skill_bar_images(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            original = (root / "js" / "simulator.js").read_text(encoding="utf-8")
+            output = root / "_site"
+            build_pages(root, output)
+            self.assertIn("bar_green.png", original)
+            self.assertIn("bar_blue.png", original)
+            for relative in ("js/simulator.js", "legacy/js/simulator.js"):
+                deployed = (output / relative).read_text(encoding="utf-8")
+                self.assertNotIn("bar_green.png", deployed)
+                self.assertNotIn("bar_blue.png", deployed)
+                self.assertIn("linear-gradient", deployed)
 
     def test_modern_injects_assets_once_and_defaults_to_english(self):
         with tempfile.TemporaryDirectory() as td:
