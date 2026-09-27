@@ -4,6 +4,8 @@
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
   var hooks = document.getElementById('remaked-shell-hooks');
   var defaultLabels = ['JOB', 'SKILL', 'ATTACK', 'DEFENSE', 'BUFF', 'LOG', 'FILE'];
+  var HERO_ART_URL = 'https://images.mmorpg.com/reviews/206/images/ps-nation.jpg';
+  var HERO_ART_SOURCE = 'https://www.mmorpg.com/reviews/our-official-pandora-saga-review-2000055105';
 
   function makeLink(label, href) {
     var link = document.createElement('a');
@@ -59,50 +61,7 @@
     });
   }
 
-  function createBrand() {
-    var brand = document.createElement('div');
-    brand.className = 'remaked-brand';
-
-    var mark = document.createElement('span');
-    mark.className = 'remaked-brand-mark';
-    mark.textContent = 'PS';
-    mark.setAttribute('aria-hidden', 'true');
-
-    var copy = document.createElement('div');
-    copy.className = 'remaked-brand-copy';
-
-    var title = document.createElement('strong');
-    title.textContent = 'Pandora Saga Simulator';
-
-    var subtitle = document.createElement('span');
-    subtitle.textContent = 'Remaked';
-
-    copy.appendChild(title);
-    copy.appendChild(subtitle);
-    brand.appendChild(mark);
-    brand.appendChild(copy);
-    return brand;
-  }
-
-  function createHeader() {
-    var header = document.createElement('header');
-    header.className = 'remaked-header';
-    header.dataset.remakedHeader = '';
-
-    var top = document.createElement('div');
-    top.className = 'remaked-header-top';
-    top.appendChild(createBrand());
-
-    var utilities = document.createElement('div');
-    utilities.className = 'remaked-utilities';
-
-    var projectUrl = hooks && hooks.dataset.projectUrl ? hooks.dataset.projectUrl : '#';
-    var updatesUrl = hooks && hooks.dataset.updatesUrl ? hooks.dataset.updatesUrl : '#';
-    var legacyUrl = hooks && hooks.dataset.legacyUrl ? hooks.dataset.legacyUrl : './legacy/';
-    utilities.appendChild(makeLink('Project', projectUrl));
-    utilities.appendChild(makeLink('Updates', updatesUrl));
-    utilities.appendChild(makeLink('Legacy Mode', legacyUrl));
-
+  function createLanguageControl(header) {
     var language = document.createElement('div');
     language.className = 'remaked-segment';
     language.setAttribute('aria-label', 'Language');
@@ -118,17 +77,106 @@
       });
       language.appendChild(button);
     });
-    utilities.appendChild(language);
+    return language;
+  }
+
+  function createHero() {
+    var version = window.PandoraRemakedVersion || { legacyEngine: '2.00', ui: '2026.09.1' };
+    var hero = document.createElement('section');
+    hero.className = 'remaked-hero';
+    hero.dataset.remakedHero = '';
+    hero.setAttribute('aria-labelledby', 'remaked-hero-title');
+
+    var copy = document.createElement('div');
+    copy.className = 'remaked-hero-copy';
+
+    var eyebrow = document.createElement('span');
+    eyebrow.className = 'remaked-hero-eyebrow';
+    eyebrow.textContent = 'Pandora Saga · Character Builder';
+
+    var title = document.createElement('h1');
+    title.id = 'remaked-hero-title';
+    title.textContent = 'Pandora Saga Simulator';
+
+    var meta = document.createElement('div');
+    meta.className = 'remaked-hero-meta';
+
+    var badge = document.createElement('span');
+    badge.className = 'remaked-hero-badge';
+    badge.textContent = 'Remaked';
+
+    var versionText = document.createElement('span');
+    versionText.textContent = 'Legacy ' + version.legacyEngine + ' · UI ' + version.ui;
+
+    meta.appendChild(badge);
+    meta.appendChild(versionText);
+
+    var subtitle = document.createElement('p');
+    subtitle.textContent = 'The preserved legacy calculator, wrapped in a cleaner modern interface.';
+
+    var source = document.createElement('a');
+    source.className = 'remaked-hero-source';
+    source.href = HERO_ART_SOURCE;
+    source.target = '_blank';
+    source.rel = 'noopener noreferrer';
+    source.textContent = 'Pandora Saga in-game screenshot';
+
+    copy.appendChild(eyebrow);
+    copy.appendChild(title);
+    copy.appendChild(meta);
+    copy.appendChild(subtitle);
+    copy.appendChild(source);
+
+    var art = document.createElement('div');
+    art.className = 'remaked-hero-art';
+    art.setAttribute('aria-hidden', 'true');
+
+    var image = document.createElement('img');
+    image.dataset.remakedHeroArt = '';
+    image.src = HERO_ART_URL;
+    image.alt = '';
+    image.loading = 'eager';
+    image.decoding = 'async';
+    image.referrerPolicy = 'no-referrer';
+    art.appendChild(image);
+
+    hero.appendChild(copy);
+    hero.appendChild(art);
+    return hero;
+  }
+
+  function createHeader() {
+    var header = document.createElement('header');
+    header.className = 'remaked-header';
+    header.dataset.remakedHeader = '';
+
+    var top = document.createElement('div');
+    top.className = 'remaked-header-top';
+
+    var primary = document.createElement('div');
+    primary.className = 'remaked-utilities remaked-utilities-primary';
+    var projectUrl = hooks && hooks.dataset.projectUrl ? hooks.dataset.projectUrl : '#';
+    var updatesUrl = hooks && hooks.dataset.updatesUrl ? hooks.dataset.updatesUrl : '#';
+    var legacyUrl = hooks && hooks.dataset.legacyUrl ? hooks.dataset.legacyUrl : './legacy/';
+    primary.appendChild(makeLink('Project', projectUrl));
+    primary.appendChild(makeLink('Updates', updatesUrl));
+    primary.appendChild(makeLink('Legacy Mode', legacyUrl));
+    top.appendChild(primary);
+
+    var controls = document.createElement('div');
+    controls.className = 'remaked-utilities remaked-utilities-controls';
+    controls.appendChild(createLanguageControl(header));
 
     var version = window.PandoraRemakedVersion || { legacyEngine: '2.00', ui: '2026.09.1' };
     var versionNode = document.createElement('span');
     versionNode.className = 'remaked-version';
     versionNode.dataset.remakedVersion = '';
     versionNode.textContent = 'Legacy ' + version.legacyEngine + ' · Remaked ' + version.ui;
-    utilities.appendChild(versionNode);
+    controls.appendChild(versionNode);
+    top.appendChild(controls);
 
-    top.appendChild(utilities);
     header.appendChild(top);
+    header.appendChild(createHero());
 
     var navRow = document.createElement('div');
     navRow.className = 'remaked-nav-row';
