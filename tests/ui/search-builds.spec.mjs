@@ -45,11 +45,10 @@ async function findEquipmentCompatibilityChange(page) {
 
   const job = page.locator('#SelJob');
   const jobCount = await job.locator('option').count();
-  const originalJob = await job.inputValue();
+  const originalJobIndex = await job.evaluate((node) => node.selectedIndex);
   for (let index = 0; index < jobCount; index += 1) {
-    const value = (await job.locator('option').nth(index).getAttribute('value')) ?? String(index);
-    if (value === originalJob) continue;
-    await job.selectOption(value);
+    if (index === originalJobIndex) continue;
+    await job.selectOption({ index });
     const changed = await page.evaluate((before) => {
       for (const entry of before) {
         const now = window.PandoraRemaked.adapter.listEquipmentOptions(entry.slotIndex).map((option) => option.value);
@@ -63,11 +62,10 @@ async function findEquipmentCompatibilityChange(page) {
   await page.evaluate((payload) => window.PandoraRemaked.adapter.load(payload), baseline.payload);
   const race = page.locator('#SelRace');
   const raceCount = await race.locator('option').count();
-  const originalRace = await race.inputValue();
+  const originalRaceIndex = await race.evaluate((node) => node.selectedIndex);
   for (let index = 0; index < raceCount; index += 1) {
-    const value = (await race.locator('option').nth(index).getAttribute('value')) ?? String(index);
-    if (value === originalRace) continue;
-    await race.selectOption(value);
+    if (index === originalRaceIndex) continue;
+    await race.selectOption({ index });
     const changed = await page.evaluate((before) => {
       for (const entry of before) {
         const now = window.PandoraRemaked.adapter.listEquipmentOptions(entry.slotIndex).map((option) => option.value);
