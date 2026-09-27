@@ -41,6 +41,13 @@ test('Modern header includes the approved Hybrid C hero treatment', async ({ pag
   const heroArt = hero.locator('img[data-remaked-hero-art]');
   await expect(heroArt).toHaveAttribute('src', './modern/pandora-hero.webp');
   await expect.poll(() => heroArt.evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
+  const imageMetrics = await heroArt.evaluate((img) => ({
+    width: img.naturalWidth,
+    height: img.naturalHeight
+  }));
+  expect(imageMetrics.width).toBeGreaterThanOrEqual(1200);
+  expect(imageMetrics.height).toBeGreaterThanOrEqual(300);
+  expect(imageMetrics.width / imageMetrics.height).toBeGreaterThanOrEqual(2.5);
   const metrics = await hero.evaluate((element) => ({ height: element.getBoundingClientRect().height }));
   expect(metrics.height).toBeGreaterThanOrEqual(160);
   expect(metrics.height).toBeLessThanOrEqual(210);
