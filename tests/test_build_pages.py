@@ -1,3 +1,4 @@
+import base64
 import pathlib
 import tempfile
 import unittest
@@ -16,6 +17,8 @@ function SkillBar() {
 }
 '''
 
+HERO_WEBP_FIXTURE = b"RIFF\x04\x00\x00\x00WEBP"
+
 
 class BuildPagesTests(unittest.TestCase):
     def make_root(self, base: pathlib.Path, with_modern: bool = True) -> pathlib.Path:
@@ -28,11 +31,24 @@ class BuildPagesTests(unittest.TestCase):
             (root / dirname / "fixture.txt").write_text(dirname, encoding="utf-8")
         (root / "js" / "simulator.js").write_text(SIMULATOR_BROWSER_COMPAT_FIXTURE, encoding="utf-8")
         if with_modern:
-            (root / "modern").mkdir()
-            (root / "modern" / "modern.css").write_text("/* modern */", encoding="utf-8")
-            (root / "modern" / "version.js").write_text("// version", encoding="utf-8")
-            (root / "modern" / "app-shell.js").write_text("// shell", encoding="utf-8")
-            (root / "modern" / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
+            modern = root / "modern"
+            modern.mkdir()
+            (modern / "modern.css").write_text("/* modern */", encoding="utf-8")
+            (modern / "search.css").write_text("/* search */", encoding="utf-8")
+            (modern / "builds.css").write_text("/* builds */", encoding="utf-8")
+            (modern / "version.js").write_text("// version", encoding="utf-8")
+            (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
+            (modern / "build-store.js").write_text("// build store", encoding="utf-8")
+            (modern / "search.js").write_text("// search", encoding="utf-8")
+            (modern / "app-shell.js").write_text("// shell", encoding="utf-8")
+            (modern / "builds.js").write_text("// builds", encoding="utf-8")
+            (modern / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
+            parts = modern / "pandora-hero.parts"
+            parts.mkdir()
+            encoded = base64.b64encode(HERO_WEBP_FIXTURE).decode("ascii")
+            midpoint = len(encoded) // 2
+            (parts / "00.b64").write_text(encoded[:midpoint], encoding="ascii")
+            (parts / "01.b64").write_text(encoded[midpoint:], encoding="ascii")
         return root
 
     def test_builds_modern_and_self_contained_legacy(self):
@@ -49,6 +65,15 @@ class BuildPagesTests(unittest.TestCase):
                 "legacy/readme.txt",
             ):
                 self.assertTrue((output / relative).is_file(), relative)
+
+    def test_reconstructs_self_contained_hero_asset_from_source_parts(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            output = root / "_site"
+            build_pages(root, output)
+            hero = output / "modern" / "pandora-hero.webp"
+            self.assertEqual(hero.read_bytes(), HERO_WEBP_FIXTURE)
+            self.assertFalse((output / "modern" / "pandora-hero.parts").exists())
 
     def test_deployed_runtime_replaces_missing_legacy_skill_bar_images(self):
         with tempfile.TemporaryDirectory() as td:
@@ -70,11 +95,24 @@ class BuildPagesTests(unittest.TestCase):
             output = root / "_site"
             build_pages(root, output)
             html = (output / "index.html").read_text(encoding="utf-8")
-            self.assertEqual(html.count("modern/modern.css"), 1)
-            self.assertEqual(html.count("modern/favicon.svg"), 1)
-            self.assertEqual(html.count("modern/version.js"), 1)
-            self.assertEqual(html.count("modern/app-shell.js"), 1)
-            self.assertLess(html.index("modern/version.js"), html.index("modern/app-shell.js"))
+            for relative in (
+                "modern/modern.css",
+                "modern/search.css",
+                "modern/builds.css",
+                "modern/favicon.svg",
+                "modern/version.js",
+                "modern/adapter.js",
+                "modern/build-store.js",
+                "modern/search.js",
+                "modern/app-shell.js",
+                "modern/builds.js",
+            ):
+                self.assertEqual(html.count(relative), 1, relative)
+            self.assertLess(html.index("modern/version.js"), html.index("modern/adapter.js"))
+            self.assertLess(html.index("modern/adapter.js"), html.index("modern/build-store.js"))
+            self.assertLess(html.index("modern/build-store.js"), html.index("modern/search.js"))
+            self.assertLess(html.index("modern/search.js"), html.index("modern/app-shell.js"))
+            self.assertLess(html.index("modern/app-shell.js"), html.index("modern/builds.js"))
             self.assertIn("   1 // [ 0]", html)
             self.assertIn(
                 'data-project-url="https://github.com/bonaqu/Pandora-Saga-Simulator-remaked"',
@@ -87,6 +125,12 @@ class BuildPagesTests(unittest.TestCase):
             self.assertIn('data-legacy-url="./legacy/"', html)
             legacy = (output / "legacy" / "index.html").read_text(encoding="utf-8")
             self.assertIn("   0 // [ 0]", legacy)
+            self.assertNotIn("modern/adapter.js", legacy)
+            self.assertNotIn("modern/build-store.js", legacy)
+            self.assertNotIn("modern/search.js", legacy)
+            self.assertNotIn("modern/builds.js", legacy)
+            self.assertNotIn("modern/search.css", legacy)
+            self.assertNotIn("modern/builds.css", legacy)
 
     def test_copies_shared_runtime_and_modern_assets(self):
         with tempfile.TemporaryDirectory() as td:
@@ -99,9 +143,16 @@ class BuildPagesTests(unittest.TestCase):
                 "image/fixture.txt",
                 "readme.txt",
                 "modern/modern.css",
+                "modern/search.css",
+                "modern/builds.css",
                 "modern/favicon.svg",
                 "modern/version.js",
+                "modern/adapter.js",
+                "modern/build-store.js",
+                "modern/search.js",
                 "modern/app-shell.js",
+                "modern/builds.js",
+                "modern/pandora-hero.webp",
                 ".nojekyll",
             ):
                 self.assertTrue((output / relative).exists(), relative)
@@ -110,6 +161,50 @@ class BuildPagesTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root = self.make_root(pathlib.Path(td), with_modern=False)
             with self.assertRaisesRegex(FileNotFoundError, "modern/modern.css"):
+                build_pages(root, root / "_site")
+
+    def test_missing_adapter_fails_clearly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            (root / "modern" / "adapter.js").unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "modern/adapter.js"):
+                build_pages(root, root / "_site")
+
+    def test_missing_build_store_fails_clearly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            (root / "modern" / "build-store.js").unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "modern/build-store.js"):
+                build_pages(root, root / "_site")
+
+    def test_missing_search_assets_fail_clearly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            (root / "modern" / "search.js").unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "modern/search.js"):
+                build_pages(root, root / "_site")
+
+    def test_missing_build_manager_assets_fail_clearly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            (root / "modern" / "builds.js").unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "modern/builds.js"):
+                build_pages(root, root / "_site")
+
+    def test_missing_hero_parts_fails_clearly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            for part in (root / "modern" / "pandora-hero.parts").iterdir():
+                part.unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "pandora-hero.parts"):
+                build_pages(root, root / "_site")
+
+    def test_missing_hero_chunk_in_sequence_fails_before_publish(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            parts = root / "modern" / "pandora-hero.parts"
+            (parts / "01.b64").rename(parts / "02.b64")
+            with self.assertRaisesRegex(ValueError, "contiguous from 00.b64"):
                 build_pages(root, root / "_site")
 
     def test_refuses_to_delete_output_outside_repository(self):

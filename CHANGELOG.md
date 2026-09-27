@@ -2,6 +2,26 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.2 — Search and local builds
+
+### Added
+- **Equipment Search** over the item options already considered compatible by the legacy simulator, with name and level filters.
+- **Soul Search** for the Soul sockets and options currently exposed by the legacy simulator.
+- Automatic local autosave with compatible-session recovery after refresh.
+- **Build Manager** for saving, loading, renaming, duplicating and deleting multiple named builds.
+- Import and export of the exact legacy serialized build code, without requiring a backend or account.
+- Desktop and 390px mobile visual QA captures for the main Modern shell, Equipment Search and Build Manager.
+
+### Reliability
+- Added browser contracts for the legacy adapter, search behavior, local storage, autosave recovery, named-build CRUD and import/export.
+- Feature and production CI now run the complete shipped Phase-2 browser suite before visual QA or Pages deployment.
+- Legacy calculation files remain protected by preservation fingerprints and are not modified by these Modern features.
+
+### Local data
+- Autosave and named builds stay in this browser's `localStorage` in this phase.
+- Remaked storage uses separate keys and does not replace or delete the legacy simulator's `localStorage.file` value.
+- There are no cloud accounts, server-side build storage or cross-device sync in this release.
+
 ## 2026.09.1 — Modern foundation
 
 ### Added
@@ -20,8 +40,6 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Historical attribution for the recovered Pandora Saga Simulator remains documented in `NOTICE.md`.
 
 ### Next
-- Equipment and Soul search.
-- Autosave and named build slots.
 - Compare Builds.
 - Russian localization workflow with user-verified in-game terminology.
 - Mobile polish and PWA/offline support.

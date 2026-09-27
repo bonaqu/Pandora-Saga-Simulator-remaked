@@ -34,7 +34,8 @@
 
 ### Phase 0–1 — Preservation baseline + Modern Mode foundation
 
-**Plan:** `docs/superpowers/plans/2026-09-27-modern-foundation.md`
+**Plan:** `docs/superpowers/plans/2026-09-27-modern-foundation.md`  
+**Status:** Shipped to `bonaqu_projects` in `5f0d00c739f6c0ae779093d0234b87d46fa3228e`; production Pages build/deploy and Wiki sync passed.
 
 Deliverable:
 - deterministic Pages builder;
@@ -49,7 +50,8 @@ Deliverable:
 
 ### Phase 2 — Equipment/Soul discovery + build storage
 
-Plan file to be written immediately before implementation after Phase 1 passes review.
+**Plan:** `docs/superpowers/plans/2026-09-27-search-builds.md`  
+**Status:** Written on `feature/search-builds`; awaiting plan approval before implementation.
 
 Deliverable:
 - adapter-backed equipment and Soul search;

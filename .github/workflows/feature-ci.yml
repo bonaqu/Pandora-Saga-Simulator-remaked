@@ -3,7 +3,7 @@ name: Feature CI
 on:
   push:
     branches:
-      - feature/modern-foundation
+      - 'feature/**'
   pull_request:
     branches:
       - bonaqu_projects
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: modern-foundation-${{ github.ref }}
+  group: feature-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -55,6 +55,10 @@ jobs:
           node --check js/skill.js
           node --check js/ini.js
           node --check modern/version.js
+          node --check modern/adapter.js
+          node --check modern/build-store.js
+          node --check modern/search.js
+          node --check modern/builds.js
           node --check modern/app-shell.js
 
       - name: Install browser test dependencies
@@ -72,8 +76,8 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run Modern Mode browser smoke tests
-        run: npm run test:ui:foundation
+      - name: Run shipped browser contract tests
+        run: npm run test:ui:ci
 
       - name: Capture desktop and mobile visual QA
         run: npm run test:ui:visual
@@ -81,7 +85,7 @@ jobs:
       - name: Upload visual QA screenshots
         uses: actions/upload-artifact@v4
         with:
-          name: modern-foundation-visual-qa
+          name: feature-visual-qa
           path: test-results/**/modern-*.png
           if-no-files-found: error
           retention-days: 1

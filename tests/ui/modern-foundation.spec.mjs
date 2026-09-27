@@ -31,6 +31,21 @@ test('Modern shell exposes meaningful navigation and defaults to English', async
   await expect(header.getByRole('button', { name: 'FILE', exact: true })).toBeVisible();
 });
 
+test('Modern header includes the approved Hybrid C hero treatment', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openModern(page);
+  const hero = page.locator('[data-remaked-hero]');
+  await expect(hero).toBeVisible();
+  await expect(hero.getByRole('heading', { name: 'Pandora Saga Simulator', exact: true })).toBeVisible();
+  await expect(hero.getByText('Remaked', { exact: true })).toBeVisible();
+  const heroArt = hero.locator('img[data-remaked-hero-art]');
+  await expect(heroArt).toHaveAttribute('src', './modern/pandora-hero.webp');
+  await expect.poll(() => heroArt.evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
+  const metrics = await hero.evaluate((element) => ({ height: element.getBoundingClientRect().height }));
+  expect(metrics.height).toBeGreaterThanOrEqual(160);
+  expect(metrics.height).toBeLessThanOrEqual(210);
+});
+
 test('Modern language controls drive the legacy language state', async ({ page }) => {
   await openModern(page);
   const header = page.locator('[data-remaked-header]');
@@ -86,7 +101,7 @@ for (const viewport of [
   });
 }
 
-test('mobile viewport has no body-level horizontal overflow and nav remains reachable', async ({ page }) => {
+test('mobile viewport has compact hero, no body-level horizontal overflow and reachable nav', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openModern(page);
   const sizes = await page.evaluate(() => ({
@@ -95,6 +110,10 @@ test('mobile viewport has no body-level horizontal overflow and nav remains reac
   }));
   expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.clientWidth + 1);
   await expect(page.locator('[data-remaked-nav]')).toBeVisible();
+  const heroBox = await page.locator('[data-remaked-hero]').boundingBox();
+  expect(heroBox).not.toBeNull();
+  expect(heroBox.height).toBeGreaterThanOrEqual(105);
+  expect(heroBox.height).toBeLessThanOrEqual(145);
 });
 
 test('primary Modern nav controls do not overlap each other', async ({ page }) => {

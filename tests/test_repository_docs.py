@@ -20,12 +20,15 @@ class RepositoryDocsTests(unittest.TestCase):
 
     def test_russian_readme_is_player_facing_and_links_english(self):
         readme = self.read("README.ru.md")
+        lowered = readme.lower()
         self.assertIn("README.md", readme)
         self.assertIn("https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/", readme)
         self.assertIn("Старая версия", readme)
         self.assertIn("Сообщить", readme)
+        self.assertIn("текущем браузере", lowered)
         self.assertNotIn("Cloudflare", readme)
-        self.assertNotIn("локальн", readme.lower())
+        self.assertNotIn("## 🛠️ локальный запуск", lowered)
+        self.assertNotIn("структура репозитория", lowered)
 
     def test_license_restricts_new_material_without_claiming_legacy(self):
         license_text = self.read("LICENSE")

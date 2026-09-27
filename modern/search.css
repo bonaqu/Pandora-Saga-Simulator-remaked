@@ -1,0 +1,337 @@
+.remaked-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--rm-border);
+  border-radius: 10px;
+  background: rgba(251, 253, 247, 0.94);
+  box-shadow: 0 5px 16px rgba(54, 75, 38, 0.07);
+}
+
+.remaked-tools-label {
+  margin-right: auto;
+  color: #65715a;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.remaked-tool-button,
+.remaked-search-close,
+.remaked-search-reset,
+.remaked-search-result {
+  box-sizing: border-box;
+  border: 1px solid var(--rm-border);
+  font-family: var(--rm-font);
+  cursor: pointer;
+}
+
+.remaked-tool-button {
+  min-height: 34px;
+  padding: 7px 12px;
+  border-color: #a9c28a;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #f9fcf5 0%, #edf5e4 100%);
+  color: #496438;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.remaked-tool-button:hover,
+.remaked-tool-button:focus-visible {
+  border-color: #6f9d47;
+  background: #e4f1d6;
+  color: #35591e;
+  outline: 2px solid rgba(102, 155, 54, .24);
+  outline-offset: 1px;
+}
+
+.remaked-search-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  padding: 18px;
+  background: rgba(31, 40, 25, .42);
+  backdrop-filter: blur(5px);
+}
+
+.remaked-search-panel {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: min(720px, 100%);
+  max-height: min(760px, calc(100vh - 36px));
+  overflow: hidden;
+  border: 1px solid #a9bd8e;
+  border-radius: 14px;
+  background: #f9fbf5;
+  color: var(--rm-text);
+  box-shadow: 0 24px 70px rgba(34, 49, 25, .32);
+  font-family: var(--rm-font);
+}
+
+.remaked-search-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid #d4dfc5;
+  background: linear-gradient(180deg, #f2f7e9, #e9f1dd);
+}
+
+.remaked-search-heading {
+  min-width: 0;
+}
+
+.remaked-search-eyebrow {
+  display: block;
+  margin-bottom: 2px;
+  color: #738361;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.remaked-search-heading h2 {
+  margin: 0;
+  color: #34452a;
+  font-size: 19px;
+  line-height: 1.15;
+}
+
+.remaked-search-close {
+  min-height: 34px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #fbfdf8;
+  color: #526349;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.remaked-search-close:hover,
+.remaked-search-close:focus-visible,
+.remaked-search-reset:hover,
+.remaked-search-reset:focus-visible {
+  border-color: #84a461;
+  background: #eaf3df;
+  outline: none;
+}
+
+.remaked-search-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  padding: 14px;
+}
+
+.remaked-search-controls {
+  display: grid;
+  grid-template-columns: minmax(145px, .8fr) minmax(210px, 1.4fr) auto auto;
+  align-items: end;
+  gap: 9px;
+}
+
+.remaked-search-controls-soul {
+  grid-template-columns: minmax(180px, .9fr) minmax(220px, 1.5fr);
+}
+
+.remaked-search-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.remaked-search-label {
+  color: #69755f;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .03em;
+}
+
+.remaked-search-input,
+.remaked-search-select {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid #b7c8a1;
+  border-radius: 8px;
+  background: #fff;
+  color: #35432e;
+  font: 11px/1.2 var(--rm-font);
+}
+
+.remaked-search-input {
+  padding: 8px 10px;
+}
+
+.remaked-search-select {
+  padding: 7px 28px 7px 9px;
+}
+
+.remaked-search-input:focus,
+.remaked-search-select:focus {
+  border-color: #6f9d47;
+  outline: 2px solid rgba(102, 155, 54, .22);
+  outline-offset: 1px;
+}
+
+.remaked-search-levels {
+  display: grid;
+  grid-template-columns: 72px 72px;
+  gap: 5px;
+}
+
+.remaked-search-reset {
+  min-height: 38px;
+  padding: 7px 9px;
+  border-radius: 8px;
+  background: #f4f8ef;
+  color: #57694a;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.remaked-search-summary {
+  min-height: 15px;
+  margin: 11px 2px 6px;
+  color: #7a846f;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.remaked-search-results {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  min-height: 84px;
+  max-height: min(520px, 58vh);
+  overflow-y: auto;
+  padding: 2px 3px 3px 2px;
+  scrollbar-width: thin;
+  scrollbar-color: #a8bd8c transparent;
+}
+
+.remaked-search-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 43px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fff;
+  color: #384b2c;
+  text-align: left;
+}
+
+.remaked-search-result:hover,
+.remaked-search-result:focus-visible {
+  border-color: #79a04f;
+  background: #edf6e3;
+  outline: none;
+}
+
+.remaked-search-result-name {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 720;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remaked-search-result-detail {
+  flex: 0 0 auto;
+  color: #7b876f;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.remaked-search-empty {
+  display: grid;
+  grid-column: 1 / -1;
+  min-height: 110px;
+  place-items: center;
+  padding: 20px;
+  border: 1px dashed #c5d3b3;
+  border-radius: 10px;
+  background: #f3f7ed;
+  color: #77836b;
+  font-size: 11px;
+  font-weight: 650;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .remaked-tools {
+    overflow-x: auto;
+    padding: 7px;
+  }
+
+  .remaked-tools-label {
+    display: none;
+  }
+
+  .remaked-tool-button {
+    flex: 1 0 auto;
+    min-height: 38px;
+  }
+
+  .remaked-search-backdrop {
+    padding: 8px;
+  }
+
+  .remaked-search-panel {
+    max-height: calc(100vh - 16px);
+    border-radius: 11px;
+  }
+
+  .remaked-search-header {
+    padding: 11px 12px;
+  }
+
+  .remaked-search-body {
+    padding: 10px;
+  }
+
+  .remaked-search-controls,
+  .remaked-search-controls-soul {
+    grid-template-columns: 1fr;
+  }
+
+  .remaked-search-levels {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .remaked-search-reset {
+    width: 100%;
+  }
+
+  .remaked-search-results {
+    grid-template-columns: 1fr;
+    max-height: 55vh;
+  }
+
+  .remaked-search-result {
+    min-height: 46px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .remaked-search-backdrop {
+    backdrop-filter: none;
+  }
+}
