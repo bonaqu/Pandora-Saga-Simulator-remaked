@@ -128,8 +128,40 @@
     return help;
   }
 
+  function decorateWithin(root) {
+    if (!root) return;
+    if (root.matches && root.matches('[data-remaked-compare-label]')) {
+      decorate(root, root.getAttribute('data-remaked-compare-label'));
+    }
+    if (!root.querySelectorAll) return;
+    var labels = root.querySelectorAll('[data-remaked-compare-label]');
+    for (var index = 0; index < labels.length; index += 1) {
+      decorate(labels[index], labels[index].getAttribute('data-remaked-compare-label'));
+    }
+  }
+
+  function startObserver() {
+    decorateWithin(document);
+    if (!document.body || typeof window.MutationObserver !== 'function') return;
+    var observer = new window.MutationObserver(function (records) {
+      for (var recordIndex = 0; recordIndex < records.length; recordIndex += 1) {
+        var nodes = records[recordIndex].addedNodes;
+        for (var nodeIndex = 0; nodeIndex < nodes.length; nodeIndex += 1) {
+          if (nodes[nodeIndex].nodeType === 1) decorateWithin(nodes[nodeIndex]);
+        }
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
   namespace.tooltips = {
     get: get,
     decorate: decorate
   };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startObserver, { once: true });
+  } else {
+    startObserver();
+  }
 })();
