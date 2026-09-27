@@ -89,14 +89,23 @@ jobs:
         run: npm run test:ui:build-store
 
       - name: Run autosave and Build Manager contract tests
-        run: npm run test:ui:build-manager
+        shell: bash
+        run: |
+          mkdir -p diagnostics
+          set +e
+          npx playwright test tests/ui/build-manager.spec.mjs --workers=1 --reporter=json > diagnostics/build-manager-results.json
+          status=$?
+          set -e
+          exit "$status"
 
       - name: Upload Build Manager diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: build-manager-diagnostics
-          path: test-results/build-manager-diagnostic.json
+          path: |
+            diagnostics/build-manager-results.json
+            test-results/build-manager-diagnostic.json
           if-no-files-found: warn
           retention-days: 1
 
