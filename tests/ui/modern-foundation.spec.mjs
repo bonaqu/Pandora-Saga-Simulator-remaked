@@ -32,7 +32,8 @@ test('Modern tab navigation drives the existing legacy tab handlers', async ({ p
   await openModern(page);
   await page.locator('[data-remaked-header]').getByRole('button', { name: 'JOB', exact: true }).click();
   await expect.poll(() => page.evaluate(() => window.Flag[2])).toBe(1);
-  await expect(page.locator('#Tab_0_1')).toBeVisible();
+  await expect.poll(() => page.locator('#Tab_0_1').evaluate((element) => element.style.display)).toBe('inline');
+  await expect(page.locator('#Tab_0_1 .sub_win').first()).toBeVisible();
 });
 
 test('Modern shell initialization does not mutate the serialized legacy build', async ({ page }) => {
