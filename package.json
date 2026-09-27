@@ -1,0 +1,11 @@
+{
+  "name": "pandora-saga-simulator-remaked",
+  "private": true,
+  "scripts": {
+    "test:ui": "playwright test",
+    "test:ui:foundation": "playwright test tests/ui/modern-foundation.spec.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.55.0"
+  }
+}
