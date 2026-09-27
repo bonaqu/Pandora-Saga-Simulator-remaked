@@ -15,6 +15,7 @@ REQUIRED_MODERN = (
     "modern/modern.css",
     "modern/favicon.svg",
     "modern/version.js",
+    "modern/adapter.js",
     "modern/app-shell.js",
 )
 RUNTIME_DIRS = ("css", "js", "image")
@@ -33,6 +34,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
   data-updates-url="{UPDATES_URL}"
   data-legacy-url="./legacy/"></div>
 <script src="./modern/version.js"></script>
+<script src="./modern/adapter.js"></script>
 <script src="./modern/app-shell.js"></script>
 <!-- /REMAKED:BODY -->'''
 
