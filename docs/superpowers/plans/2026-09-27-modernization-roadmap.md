@@ -1,0 +1,134 @@
+# Pandora Saga Simulator Remaked — Implementation Roadmap
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement each phase plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Deliver the approved modernization spec as a sequence of independently testable releases without changing legacy calculator semantics.
+
+**Architecture:** Keep the recovered simulator as the calculation source of truth and preservation baseline. Build Modern Mode around it through deterministic page generation, a narrow adapter, modern CSS/JS modules, and progressively extracted read-only indexes. Each major subsystem gets its own implementation plan and test gate.
+
+**Tech Stack:** Static HTML/CSS/JavaScript, existing legacy JavaScript engine, Python 3 standard library for build/validation scripts, GitHub Actions, GitHub Pages, browser smoke tests, Web App Manifest + Service Worker.
+
+**Spec:** `docs/superpowers/specs/2026-09-27-pandora-saga-modernization-design.md`
+
+## Global Constraints
+
+- `/` is Modern Mode; `/legacy/` is the preserved historical simulator.
+- English is the default language; JP/TW remain supported; RU is added only with user-verified game terminology.
+- Legacy formulas/data remain the calculation source of truth until explicitly changed under regression coverage.
+- GitHub Pages remains the only required hosting for the current roadmap.
+- Cloud save/backend work is excluded until the local/offline roadmap is complete.
+- New Remaked code/assets use restrictive project terms; recovered legacy material retains accurate historical attribution/permissions.
+- Player-facing README content stays focused on ordinary users; developer infrastructure belongs in Wiki/docs.
+
+## Review Focus
+
+1. **State compatibility:** a build serialized before modernization must still load and calculate the same values after modernization.
+2. **Wide/mobile layout:** 1080p, 1440p, ultrawide, and narrow phone widths must not recreate the old floating-header/clipping bug.
+3. **Storage failure/corruption:** localStorage unavailable, full, or containing malformed records must not make the calculator unusable.
+4. **Language fallback:** missing RU translations must fall back to English without corrupting legacy EN/JP/TW data selection.
+5. **Offline/update behavior:** a stale service-worker cache must not trap users on an unusable version or discard an in-progress build.
+
+---
+
+## Phase Plans
+
+### Phase 0–1 — Preservation baseline + Modern Mode foundation
+
+**Plan:** `docs/superpowers/plans/2026-09-27-modern-foundation.md`
+
+Deliverable:
+- deterministic Pages builder;
+- `/legacy/` preservation route;
+- `/` Modern Mode Concept C shell;
+- corrected responsive header/layout;
+- meaningful Project / Updates / Legacy navigation;
+- EN default in Modern Mode;
+- player-facing `README.md` + `README.ru.md`;
+- initial restrictive-license boundary and updated NOTICE;
+- foundation smoke tests.
+
+### Phase 2 — Equipment/Soul discovery + build storage
+
+Plan file to be written immediately before implementation after Phase 1 passes review.
+
+Deliverable:
+- adapter-backed equipment and Soul search;
+- trustworthy filters only;
+- autosave;
+- named builds;
+- rename / duplicate / delete / recovery;
+- versioned namespaced localStorage records;
+- corrupted-storage tests.
+
+### Phase 3 — Compare Builds + safe diagnostics
+
+Deliverable:
+- Build A vs Build B selection;
+- summary/delta table generated through the legacy calculation path;
+- initial stat-definition/source tooltips;
+- verified numeric decomposition only where evidence/tests support it;
+- Modern-vs-Legacy differential fixtures.
+
+### Phase 4 — Mobile polish + PWA/offline
+
+Deliverable:
+- phone/tablet interaction polish;
+- sticky compact summary;
+- collapsible advanced sections;
+- manifest/icons;
+- service worker;
+- offline boot;
+- non-blocking update notification.
+
+### Phase 5 — Russian localization framework
+
+Deliverable:
+- Modern UI string catalog;
+- translation extraction tooling;
+- human-editable RU worksheet/data files;
+- RU shell translation;
+- EN fallback;
+- exported complete list of game terms for user correction;
+- final full RU game terminology integrated only after user verification.
+
+### Phase 6 — Structured data projections
+
+Deliverable:
+- reproducible exporters for equipment/Soul/skill read-only JSON indexes;
+- legacy IDs preserved;
+- version metadata;
+- build-time consistency checks;
+- legacy JS remains calculation source of truth.
+
+### Phase 7 — Brand, changelog, media, final QA
+
+Deliverable:
+- polished favicon/PWA/OG/repository cover assets;
+- visuals based on verified Pandora Saga references and clearly marked unofficial;
+- user-facing changelog/version panel;
+- real UI screenshots/GIFs in README;
+- accessibility/keyboard pass;
+- cross-browser smoke pass;
+- final documentation cleanup and release tag.
+
+### Later project — Cloud save
+
+Not part of this roadmap's implementation plans. Requires a new design/spec after Phases 0–7 are stable.
+
+---
+
+## Release Gates
+
+Each phase may proceed only when:
+
+- its targeted automated tests are green;
+- GitHub Pages build/deploy is green;
+- no regression is found in the phase's preserved legacy checks;
+- user-visible changes have a rendered smoke check at the target viewport(s);
+- documentation/changelog reflects shipped user-visible behavior.
+
+## Work-history policy
+
+- Detailed internal execution history lives in this roadmap, phase plans, spec files, commit history, and Actions logs.
+- Public Issues are reserved for useful player-facing bugs/features rather than hidden internal planning, because closed public Issues/PRs remain visible.
+- Completed plan checkboxes and commits provide the durable work log without cluttering the public issue tracker.
