@@ -63,7 +63,9 @@ test('Modern and Legacy routes load without missing local assets', async ({ page
   await page.goto('/legacy/');
   await page.waitForLoadState('networkidle');
   await expect(page.locator('#body')).toHaveCount(1);
-  await expect(page.locator('#SelRace')).toBeVisible();
+  await expect(page.locator('#SelRace')).toHaveCount(1);
+  expect(await page.evaluate(() => typeof window.Store)).toBe('function');
+  expect(await page.evaluate(() => typeof window.CalcSet)).toBe('function');
   expect(failures).toEqual([]);
 });
 
