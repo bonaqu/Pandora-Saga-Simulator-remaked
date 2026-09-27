@@ -1,0 +1,53 @@
+name: Feature CI
+
+on:
+  push:
+    branches:
+      - feature/modern-foundation
+  pull_request:
+    branches:
+      - bonaqu_projects
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Generate preservation baseline when bootstrapping
+        shell: bash
+        run: |
+          if [[ ! -f preservation/legacy-files.sha256 ]]; then
+            python3 scripts/legacy_fingerprint.py --write preservation/legacy-files.sha256
+          fi
+
+      - name: Run Python tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Validate restored simulator
+        run: python3 scripts/validate_site.py
+
+      - name: Syntax-check core JavaScript
+        shell: bash
+        run: |
+          node --check js/calc.js
+          node --check js/equip.js
+          node --check js/item.js
+          node --check js/skill.js
+          node --check js/ini.js
+
+      - name: Print generated preservation manifest for bootstrap
+        shell: bash
+        run: |
+          echo '---LEGACY-MANIFEST-BEGIN---'
+          cat preservation/legacy-files.sha256
+          echo '---LEGACY-MANIFEST-END---'
