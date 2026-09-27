@@ -69,10 +69,26 @@ def _modernize_html(source: str) -> str:
     return source
 
 
+def _patch_runtime_browser_compatibility(destination: pathlib.Path) -> None:
+    simulator = destination / "js" / "simulator.js"
+    if not simulator.is_file():
+        return
+    source = simulator.read_text(encoding="utf-8-sig")
+    patched = source.replace(
+        "url(./image/interface/bar_green.png)",
+        "linear-gradient(to right,#27471b,#70b642)",
+    ).replace(
+        "url(./image/interface/bar_blue.png)",
+        "#4c73c9",
+    )
+    simulator.write_text(patched, encoding="utf-8")
+
+
 def _copy_runtime(root: pathlib.Path, destination: pathlib.Path) -> None:
     for dirname in RUNTIME_DIRS:
         shutil.copytree(root / dirname, destination / dirname)
     shutil.copy2(root / "readme.txt", destination / "readme.txt")
+    _patch_runtime_browser_compatibility(destination)
 
 
 def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
