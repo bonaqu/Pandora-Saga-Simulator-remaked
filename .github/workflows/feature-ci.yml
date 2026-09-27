@@ -60,6 +60,7 @@ jobs:
           node --check modern/search.js
           node --check modern/builds.js
           node --check modern/app-shell.js
+          node --check modern/compare.js
 
       - name: Install browser test dependencies
         id: npm
