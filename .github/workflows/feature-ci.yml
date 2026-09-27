@@ -60,6 +60,8 @@ jobs:
           node --check modern/search.js
           node --check modern/builds.js
           node --check modern/app-shell.js
+          node --check modern/tooltips.js
+          node --check modern/compare.js
 
       - name: Install browser test dependencies
         id: npm
@@ -77,7 +79,19 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run shipped browser contract tests
-        run: npm run test:ui:ci
+        shell: bash
+        run: |
+          mkdir -p .ci-artifacts
+          npm run test:ui:ci -- --reporter=json > .ci-artifacts/browser-report.json
+
+      - name: Upload browser contract report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: feature-browser-report
+          path: .ci-artifacts/browser-report.json
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Capture desktop and mobile visual QA
         run: npm run test:ui:visual

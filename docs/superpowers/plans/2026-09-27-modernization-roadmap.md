@@ -51,7 +51,7 @@ Deliverable:
 ### Phase 2 — Equipment/Soul discovery + build storage
 
 **Plan:** `docs/superpowers/plans/2026-09-27-search-builds.md`  
-**Status:** Written on `feature/search-builds`; awaiting plan approval before implementation.
+**Status:** Shipped to `bonaqu_projects` in `541077f4c2cb606391fcaedd4e29828bc16a905e` as Remaked UI `2026.09.2`.
 
 Deliverable:
 - adapter-backed equipment and Soul search;
@@ -64,12 +64,16 @@ Deliverable:
 
 ### Phase 3 — Compare Builds + safe diagnostics
 
+**Plan:** `docs/superpowers/plans/2026-09-27-compare-diagnostics.md`  
+**Status:** Release-ready on `feature/compare-diagnostics` as Remaked UI `2026.09.3`; final preservation diff, PR and production deployment gate remain before marking the phase shipped.
+
 Deliverable:
 - Build A vs Build B selection;
 - summary/delta table generated through the legacy calculation path;
-- initial stat-definition/source tooltips;
-- verified numeric decomposition only where evidence/tests support it;
-- Modern-vs-Legacy differential fixtures.
+- initial stat-definition/source tooltips with exact Legacy output-node provenance;
+- no unverified numeric decomposition claims;
+- Modern-vs-Legacy differential fixtures;
+- desktop and 390px Compare visual QA.
 
 ### Phase 4 — Mobile polish + PWA/offline
 

@@ -2,6 +2,22 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.3 — Compare Builds and safe diagnostics
+
+### Added
+- **Compare Builds** for selecting two named builds and viewing their legacy-calculated stats side by side.
+- Neutral `Build B − Build A` deltas with explicit higher/lower/unchanged direction only; the UI does not claim that a larger or smaller number is inherently better.
+- Accessible stat help controls in the comparison table with conservative definitions and the exact Legacy 2.00 output node used as their source.
+- Desktop and 390px mobile visual QA captures for Compare Builds.
+
+### Reliability
+- Build comparison evaluates both serialized builds through the preserved legacy calculation path and restores the active character afterwards.
+- Comparison is covered against the Legacy route with representative serialized-build differential fixtures.
+- Comparing builds does not replace the legacy `localStorage.file`, named-build storage or autosave data.
+- Empty, unavailable and non-numeric legacy outputs do not produce invented numeric deltas.
+- Stat help deliberately avoids unverified formula decomposition; equipment, attribute and buff contributions are not claimed unless they are explicitly verified later.
+- Feature and production CI gate the complete Phase-3 browser suite before release.
+
 ## 2026.09.2 — Search and local builds
 
 ### Added
@@ -40,6 +56,5 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Historical attribution for the recovered Pandora Saga Simulator remains documented in `NOTICE.md`.
 
 ### Next
-- Compare Builds.
 - Russian localization workflow with user-verified in-game terminology.
 - Mobile polish and PWA/offline support.

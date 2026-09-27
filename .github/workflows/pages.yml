@@ -112,6 +112,8 @@ jobs:
           node --check modern/search.js
           node --check modern/builds.js
           node --check modern/app-shell.js
+          node --check modern/tooltips.js
+          node --check modern/compare.js
 
       - name: Build Modern and Legacy Pages routes
         run: python3 scripts/build_pages.py --output _site

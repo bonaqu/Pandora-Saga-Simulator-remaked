@@ -3,6 +3,35 @@
 
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
 
+  var SUMMARY_FIELDS = [
+    { key: 'lp', label: 'LP / HP', sourceId: 'Status_6', unit: '' },
+    { key: 'mp', label: 'MP', sourceId: 'Status_7', unit: '' },
+    { key: 'physicalAttack', label: 'Physical ATK', sourceId: 'Status_18', unit: '' },
+    { key: 'magicAttack', label: 'Magic ATK', sourceId: 'Status_42', unit: '%' },
+    { key: 'defense', label: 'DEF', sourceId: 'Status_49', unit: '' },
+    { key: 'physicalDamageResist', label: 'Physical damage resist', sourceId: 'Status_52_2', unit: '%' },
+    { key: 'magicDamageResist', label: 'Magic damage resist', sourceId: 'Status_60', unit: '%' },
+    { key: 'accuracy', label: 'Accuracy', sourceId: 'Status_62', unit: '' },
+    { key: 'dodge', label: 'Dodge', sourceId: 'Status_65', unit: '' },
+    { key: 'crit', label: 'Critical rate', sourceId: 'Status_69', unit: '%' },
+    { key: 'critResist', label: 'Critical resistance', sourceId: 'Status_70', unit: '%' },
+    { key: 'critDamage', label: 'Critical damage', sourceId: 'Status_71', unit: '%' },
+    { key: 'critDamageResist', label: 'Critical damage resistance', sourceId: 'Status_72', unit: '%' },
+    { key: 'attackSpeed', label: 'Attack speed', sourceId: 'Status_73', unit: '%' },
+    { key: 'moveSpeed', label: 'Movement speed', sourceId: 'Status_74', unit: '%' },
+    { key: 'castSpeed', label: 'Cast speed', sourceId: 'Status_77', unit: '%' },
+    { key: 'castTime', label: 'Cast time', sourceId: 'Status_78', unit: '%' },
+    { key: 'cooldown', label: 'Cooldown', sourceId: 'Status_79', unit: '%' },
+    { key: 'fireResist', label: 'Fire resistance', sourceId: 'Status_138', unit: '%' },
+    { key: 'iceResist', label: 'Ice resistance', sourceId: 'Status_139', unit: '%' },
+    { key: 'lightningResist', label: 'Lightning resistance', sourceId: 'Status_140', unit: '%' },
+    { key: 'poisonResist', label: 'Poison resistance', sourceId: 'Status_141', unit: '%' },
+    { key: 'charmResist', label: 'Charm resistance', sourceId: 'Status_142', unit: '%' },
+    { key: 'lightResist', label: 'Light resistance', sourceId: 'Status_143', unit: '%' },
+    { key: 'darkResist', label: 'Dark resistance', sourceId: 'Status_144', unit: '%' },
+    { key: 'magicResist', label: 'Magic resistance', sourceId: 'Status_145', unit: '%' }
+  ];
+
   function byId(id) {
     return document.getElementById(id);
   }
@@ -35,6 +64,43 @@
 
   function equipmentLabel(slotIndex) {
     return textOf(byId('TextEquip_' + slotIndex)) || ('Slot ' + slotIndex);
+  }
+
+  function parseCalculatedValue(raw) {
+    var display = String(raw == null ? '' : raw).trim();
+    if (!display || display === '---') {
+      return { display: display || '---', value: null };
+    }
+    var numeric = Number(display.replace(/,/g, ''));
+    return {
+      display: display,
+      value: Number.isFinite(numeric) ? numeric : null
+    };
+  }
+
+  function readCalculatedSummary() {
+    return SUMMARY_FIELDS.map(function (field) {
+      var parsed = parseCalculatedValue(textOf(byId(field.sourceId)));
+      return {
+        key: field.key,
+        label: field.label,
+        value: parsed.value,
+        display: parsed.display,
+        unit: field.unit,
+        sourceId: field.sourceId
+      };
+    });
+  }
+
+  function readCharacterMetadata() {
+    var levelText = textOf(byId('StatusLev'));
+    var level = Number(levelText);
+    return {
+      race: textOf(byId('StatusRace')),
+      raceSkill: textOf(byId('StatusRSkill')),
+      job: textOf(byId('StatusJob')),
+      level: Number.isFinite(level) ? level : null
+    };
   }
 
   function refreshLoadedState() {
@@ -111,6 +177,26 @@
       if (typeof window.Expand !== 'function') throw new Error('Legacy Expand() is unavailable');
       window.Expand(payload);
       refreshLoadedState();
+    },
+
+    readCalculatedSummary: readCalculatedSummary,
+
+    readCharacterMetadata: readCharacterMetadata,
+
+    evaluateBuild: function (payload) {
+      if (typeof payload !== 'string' || !payload.trim()) {
+        throw new TypeError('Build payload must be a non-empty string');
+      }
+      var original = adapter.serialize();
+      try {
+        adapter.load(payload);
+        return {
+          metadata: readCharacterMetadata(),
+          summary: readCalculatedSummary()
+        };
+      } finally {
+        adapter.load(original);
+      }
     },
 
     listEquipmentTargets: function () {
