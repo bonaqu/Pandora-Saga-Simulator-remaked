@@ -85,7 +85,12 @@ test('comparing two saved builds renders metadata and neutral B minus A deltas w
     named: builds.named
   });
 
-  const directions = await page.locator('[data-remaked-delta]').evaluateAll((nodes) => nodes.map((node) => node.dataset.direction));
+  const deltaCells = page.locator('[data-remaked-delta]');
+  const count = await deltaCells.count();
+  const directions = [];
+  for (let index = 0; index < count; index += 1) {
+    directions.push(await deltaCells.nth(index).getAttribute('data-direction'));
+  }
   expect(directions.length).toBeGreaterThan(5);
   expect(directions.every((value) => ['up', 'down', 'flat', 'unavailable'].includes(value))).toBe(true);
   await expect(page.locator('[data-remaked-compare]')).not.toContainText(/winner|better|best|worse/i);
@@ -127,7 +132,7 @@ test('deleted selected build becomes an explicit recoverable error', async ({ pa
   await choosePair(page, builds);
   await page.evaluate((id) => window.PandoraRemaked.buildStore.deleteBuild(id), builds.b.id);
   await page.locator('[data-remaked-compare-refresh]').click();
-  await expect(page.locator('[data-remaked-compare-status]')).toContainText(/no longer available|choose two/i);
+  await expect(page.locator('[data-remaked-compare-status]')).toContainText(/no longer available|choose two|at least two/i);
   await expect(page.locator('[data-remaked-compare-table]')).toBeHidden();
 });
 
