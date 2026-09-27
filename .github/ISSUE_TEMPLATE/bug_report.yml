@@ -1,0 +1,67 @@
+name: Simulator bug
+about: Report a reproducible problem in the restored calculator
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping preserve the simulator. Please provide the shortest reproducible case you can.
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Firefox 143 / Chrome 152 / etc.
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: Simulator language
+      options:
+        - English
+        - Japanese
+        - Traditional Chinese
+        - Other / not sure
+    validations:
+      required: true
+  - type: textarea
+    id: build
+    attributes:
+      label: Character/build values
+      description: Class, level, stats, important equipment/skills/options.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Set ...
+        3. Click ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshot / console output
+      description: Drag screenshots here or paste relevant browser-console errors.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I reproduced this on the GitHub Pages version linked from the README.
+          required: true
