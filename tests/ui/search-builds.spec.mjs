@@ -25,6 +25,15 @@ async function resultValues(page) {
   return values;
 }
 
+async function switchLegacySelectIndex(page, id, index) {
+  await page.evaluate(({ selectId, selectedIndex }) => {
+    const select = document.getElementById(selectId);
+    if (!select) throw new Error(`Missing legacy select #${selectId}`);
+    select.selectedIndex = selectedIndex;
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+  }, { selectId: id, selectedIndex: index });
+}
+
 async function openEquipment(page, slotIndex = null) {
   if (slotIndex == null) {
     await page.getByRole('button', { name: 'Equipment Search', exact: true }).click();
@@ -48,7 +57,7 @@ async function findEquipmentCompatibilityChange(page) {
   const originalJobIndex = await job.evaluate((node) => node.selectedIndex);
   for (let index = 0; index < jobCount; index += 1) {
     if (index === originalJobIndex) continue;
-    await job.selectOption({ index });
+    await switchLegacySelectIndex(page, 'SelJob', index);
     const changed = await page.evaluate((before) => {
       for (const entry of before) {
         const now = window.PandoraRemaked.adapter.listEquipmentOptions(entry.slotIndex).map((option) => option.value);
@@ -65,7 +74,7 @@ async function findEquipmentCompatibilityChange(page) {
   const originalRaceIndex = await race.evaluate((node) => node.selectedIndex);
   for (let index = 0; index < raceCount; index += 1) {
     if (index === originalRaceIndex) continue;
-    await race.selectOption({ index });
+    await switchLegacySelectIndex(page, 'SelRace', index);
     const changed = await page.evaluate((before) => {
       for (const entry of before) {
         const now = window.PandoraRemaked.adapter.listEquipmentOptions(entry.slotIndex).map((option) => option.value);
