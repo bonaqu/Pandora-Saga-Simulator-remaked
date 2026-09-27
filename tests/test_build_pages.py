@@ -140,6 +140,14 @@ class BuildPagesTests(unittest.TestCase):
             with self.assertRaisesRegex(FileNotFoundError, "pandora-hero.parts"):
                 build_pages(root, root / "_site")
 
+    def test_missing_hero_chunk_in_sequence_fails_before_publish(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            parts = root / "modern" / "pandora-hero.parts"
+            (parts / "01.b64").rename(parts / "02.b64")
+            with self.assertRaisesRegex(ValueError, "contiguous from 00.b64"):
+                build_pages(root, root / "_site")
+
     def test_refuses_to_delete_output_outside_repository(self):
         with tempfile.TemporaryDirectory() as td, tempfile.TemporaryDirectory() as out_td:
             root = self.make_root(pathlib.Path(td))
