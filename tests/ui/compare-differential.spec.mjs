@@ -67,9 +67,45 @@ async function legacyProjection(page, payload, fields) {
   await page.goto('/legacy/?lang=en');
   await expect(page.locator('#body')).toHaveCount(1);
   await page.evaluate((build) => {
-    document.getElementById('InCode').value = build;
-    window.File('CodeLoad');
+    window.Expand(build);
+    window.ListCreate('Set');
+    window.ListCreate('Equip');
+    window.ListCreate('SoulSelect');
+    window.ListCreate('SoulCheck');
+
+    document.getElementById('SelRace').selectedIndex = window.Status.Job[0];
+    window.RJChange('RSkill');
+    document.getElementById('SelRSkill').selectedIndex = window.Status.Job[1];
+    document.getElementById('SelJob').selectedIndex = window.Status.Job[2];
+    document.getElementById('StatusRace').innerHTML = window.Name.Race[window.Status.Job[0]][window.Flag[0]];
+    document.getElementById('StatusRSkill').innerHTML = window.Name.Race.Skill[window.Status.Job[0]][window.Status.Job[1]][window.Flag[0]];
+    document.getElementById('StatusJob').innerHTML = window.Name.Job[window.Status.Job[2]][window.Flag[0] + 2];
+    document.getElementById('StatusLev').innerHTML = window.Status.Lev[0];
+    document.getElementById('StatusStP_0').innerHTML = window.Status.StP[0];
+    document.getElementById('StatusStP_1').innerHTML = window.Status.StP[1];
+    document.getElementById('StatusSkP_0').innerHTML = window.Status.SkP[0];
+    document.getElementById('StatusSkP_1').innerHTML = window.Status.SkP[1];
+    document.getElementById('StatusUnP_0').innerHTML = window.Status.UnP[0];
+    document.getElementById('StatusUnP_1').innerHTML = window.Status.UnP[1];
+
+    for (let index = 0; index < window.Name.Skill.length; index += 1) {
+      document.getElementById('Skill_' + index + '_1').innerHTML = window.Status.Skill[index][0];
+      document.getElementById('Skill_' + index + '_2').innerHTML = window.Status.Skill[index][2];
+      if (index !== 0 && index !== 6 && index !== 12 && index !== 17 && index !== 22) {
+        const next = document.getElementById('Skill_' + index + '_3');
+        next.innerHTML = (window.Status.Skill[index][2] + window.Status.Skill[index][3] === window.MaxSk)
+          ? '-'
+          : window.SPt[window.Status.Skill[index][2] + window.Status.Skill[index][3] + 1][1];
+        window.CalcSet('Skill', index, 0, 'Potential');
+        window.CalcSet('Skill', index, 0, 'Adeptness');
+      }
+    }
+
+    window.SkillBar('ALL');
+    window.CalcSet('ALL');
+    window.Log();
   }, payload);
+
   return page.evaluate((definitions) => ({
     metadata: {
       race: (document.getElementById('StatusRace')?.textContent || '').trim(),
