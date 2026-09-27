@@ -55,7 +55,8 @@ jobs:
           node --check js/skill.js
           node --check js/ini.js
           node --check modern/version.js
-          if [[ -f modern/adapter.js ]]; then node --check modern/adapter.js; fi
+          node --check modern/adapter.js
+          if [[ -f modern/search.js ]]; then node --check modern/search.js; fi
           node --check modern/app-shell.js
 
       - name: Install browser test dependencies
@@ -78,6 +79,9 @@ jobs:
 
       - name: Run Modern adapter contract tests
         run: npm run test:ui:adapter
+
+      - name: Run Equipment and Soul search contract tests
+        run: npm run test:ui:search-builds
 
       - name: Capture desktop and mobile visual QA
         run: npm run test:ui:visual
