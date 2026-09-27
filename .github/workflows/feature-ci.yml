@@ -58,7 +58,16 @@ jobs:
           node --check modern/app-shell.js
 
       - name: Install browser test dependencies
-        run: npm install --no-audit --no-fund
+        id: npm
+        shell: bash
+        run: |
+          if [[ -f package-lock.json ]]; then
+            npm ci --no-audit --no-fund
+            echo 'lock_created=false' >> "$GITHUB_OUTPUT"
+          else
+            npm install --no-audit --no-fund
+            echo 'lock_created=true' >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
@@ -66,12 +75,15 @@ jobs:
       - name: Run Modern Mode browser smoke tests
         run: npm run test:ui:foundation
 
-      - name: Commit preservation baseline once
-        if: github.event_name == 'push' && steps.baseline.outputs.created == 'true'
+      - name: Commit generated bootstrap metadata once
+        if: github.event_name == 'push' && (steps.baseline.outputs.created == 'true' || steps.npm.outputs.lock_created == 'true')
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add preservation/legacy-files.sha256
-          git commit -m "test: freeze legacy simulator baseline"
+          git add preservation/legacy-files.sha256 package-lock.json
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore: lock modernization test metadata"
           git push origin HEAD:${GITHUB_REF_NAME}
