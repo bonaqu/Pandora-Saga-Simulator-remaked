@@ -13,9 +13,11 @@ UPDATES_URL = "https://github.com/bonaqu/Pandora-Saga-Simulator-remaked/blob/bon
 
 REQUIRED_MODERN = (
     "modern/modern.css",
+    "modern/search.css",
     "modern/favicon.svg",
     "modern/version.js",
     "modern/adapter.js",
+    "modern/search.js",
     "modern/app-shell.js",
 )
 RUNTIME_DIRS = ("css", "js", "image")
@@ -26,6 +28,7 @@ HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="./modern/favicon.svg" />
 <link rel="stylesheet" href="./modern/modern.css" />
+<link rel="stylesheet" href="./modern/search.css" />
 <!-- /REMAKED:HEAD -->'''
 
 BODY_INJECTION = f'''<!-- REMAKED:BODY -->
@@ -35,6 +38,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
   data-legacy-url="./legacy/"></div>
 <script src="./modern/version.js"></script>
 <script src="./modern/adapter.js"></script>
+<script src="./modern/search.js"></script>
 <script src="./modern/app-shell.js"></script>
 <!-- /REMAKED:BODY -->'''
 
