@@ -1,3 +1,4 @@
+import base64
 import pathlib
 import tempfile
 import unittest
@@ -16,6 +17,8 @@ function SkillBar() {
 }
 '''
 
+HERO_WEBP_FIXTURE = b"RIFF\x04\x00\x00\x00WEBP"
+
 
 class BuildPagesTests(unittest.TestCase):
     def make_root(self, base: pathlib.Path, with_modern: bool = True) -> pathlib.Path:
@@ -28,11 +31,18 @@ class BuildPagesTests(unittest.TestCase):
             (root / dirname / "fixture.txt").write_text(dirname, encoding="utf-8")
         (root / "js" / "simulator.js").write_text(SIMULATOR_BROWSER_COMPAT_FIXTURE, encoding="utf-8")
         if with_modern:
-            (root / "modern").mkdir()
-            (root / "modern" / "modern.css").write_text("/* modern */", encoding="utf-8")
-            (root / "modern" / "version.js").write_text("// version", encoding="utf-8")
-            (root / "modern" / "app-shell.js").write_text("// shell", encoding="utf-8")
-            (root / "modern" / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
+            modern = root / "modern"
+            modern.mkdir()
+            (modern / "modern.css").write_text("/* modern */", encoding="utf-8")
+            (modern / "version.js").write_text("// version", encoding="utf-8")
+            (modern / "app-shell.js").write_text("// shell", encoding="utf-8")
+            (modern / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
+            parts = modern / "pandora-hero.parts"
+            parts.mkdir()
+            encoded = base64.b64encode(HERO_WEBP_FIXTURE).decode("ascii")
+            midpoint = len(encoded) // 2
+            (parts / "00.b64").write_text(encoded[:midpoint], encoding="ascii")
+            (parts / "01.b64").write_text(encoded[midpoint:], encoding="ascii")
         return root
 
     def test_builds_modern_and_self_contained_legacy(self):
@@ -49,6 +59,15 @@ class BuildPagesTests(unittest.TestCase):
                 "legacy/readme.txt",
             ):
                 self.assertTrue((output / relative).is_file(), relative)
+
+    def test_reconstructs_self_contained_hero_asset_from_source_parts(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            output = root / "_site"
+            build_pages(root, output)
+            hero = output / "modern" / "pandora-hero.webp"
+            self.assertEqual(hero.read_bytes(), HERO_WEBP_FIXTURE)
+            self.assertFalse((output / "modern" / "pandora-hero.parts").exists())
 
     def test_deployed_runtime_replaces_missing_legacy_skill_bar_images(self):
         with tempfile.TemporaryDirectory() as td:
@@ -102,6 +121,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/favicon.svg",
                 "modern/version.js",
                 "modern/app-shell.js",
+                "modern/pandora-hero.webp",
                 ".nojekyll",
             ):
                 self.assertTrue((output / relative).exists(), relative)
@@ -110,6 +130,14 @@ class BuildPagesTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root = self.make_root(pathlib.Path(td), with_modern=False)
             with self.assertRaisesRegex(FileNotFoundError, "modern/modern.css"):
+                build_pages(root, root / "_site")
+
+    def test_missing_hero_parts_fails_clearly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            for part in (root / "modern" / "pandora-hero.parts").iterdir():
+                part.unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "pandora-hero.parts"):
                 build_pages(root, root / "_site")
 
     def test_refuses_to_delete_output_outside_repository(self):
