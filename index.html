@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html><head>
+<title>Pandora Saga Simulator</title>
+<meta charset="UTF-8" />
+<link rel="stylesheet" type="text/css" href="./css/_css.css" id="CSS" />
+</head><body onkeypress="KeyDown(event);">
+<!-- ローディング画面 -->
+<script type="text/javascript">
+// <![CDATA[
+var i,j,tmp;
+var Agent = navigator.userAgent;
+// document.write(Agent);
+tmp = '<div id="Loading" style="z-index:9;position:absolute;top:0px;left:0px;width:100%;line-height:768px;color:#fff;background:rgba(0,0,0,0.5);text-align:center;cursor:wait;">';
+if (Agent.search(/Safari/i) != -1)
+  tmp += '"Safari" is not supported';
+else
+  tmp += 'now loading...';
+document.write(tmp + '</div>')
+// ]]>
+</script>
+<script type="text/javascript" src="./js/prototype.js"></script>
+<script type="text/javascript" src="./js/base64.js"></script>
+<script type="text/javascript" src="./js/rawinflate.js"></script>
+<script type="text/javascript" src="./js/rawdeflate.js"></script>
+<script type="text/javascript" src="./js/common.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+// Y=SQRT(X*1000) //X=1,2,3・・・ 小数点以下切り上げ
+// x~2 * 2 / 1000
+
+Ver = '2.00';
+Flag = new Array(
+   0 // [ 0]
+  ,1 // [ 1] CSSの初期設定        0:heavy   1:midium  2:light
+  ,0 // [ 2] タブ                 0:非表示  1:職業    2:...
+  ,0 // [ 3] 技能表示使用
+  ,0 // [ 4] ログ使用
+  ,0 // [ 5] 技能効果値使用
+  ,0 // [ 6] POT効果値表示使用
+  ,0 // [ 7] 騎乗
+  ,0 // [ 8] 効果値の初期表示位置 0:技能    1:POT
+  ,0 // [ 9] 技能表示形式         0:標準    1:コンパクト
+);
+CSSFile = new Array(
+  './css/_css.css'  // 重いの
+ ,'./css/__css.css' // 普通の
+ ,'./css/___css.css' // 軽いの
+);
+var DropDownName = 'LearnSkill_';
+// -------------------------------------------------------------------------------------
+tmp = location.search;
+tmp = tmp.substr(1);
+tmp = tmp.split('&');
+
+for (i=0;i<tmp.length;i++) {
+  tmp[i] = tmp[i].split("=");
+  if (tmp[i][0] == 'lang')
+    if (tmp[i][1] == 'en' || tmp[i][1] == 1)
+      Flag[0] = 1;
+    else if (tmp[i][1] == 'jp' || tmp[i][1] == 0)
+      Flag[0] = 0;
+    else if (tmp[i][1] == 'tw' || tmp[i][1] == 2)
+      Flag[0] = 2;
+  if (tmp[i][0] == 'css')
+    if (tmp[i][1] == 'vl' || tmp[i][1] == 'verylight' || tmp[i][1] == 2) {
+      Flag[1] = 2;
+    } else if (tmp[i][1] == 'l' || tmp[i][1] == 'light' || tmp[i][1] == 1) {
+      Flag[1] = 1;
+    } else if (tmp[i][1] == 'd' || tmp[i][1] == 'default' || tmp[i][1] == 0) {
+      Flag[1] = 0;
+    }
+}
+
+$('CSS').href = CSSFile[Flag[1]];
+
+Flag['Buff'] = new Array();
+for (i=0;i<26;i++)
+  Flag['Buff'][i] = 0;
+Flag['Clan'] = new Array();
+for (i=0;i<9;i++)
+  Flag['Clan'][i] = 0;
+Flag['Honor'] = 0;
+
+Learn = new Array();
+for (i=0;i<4;i++)
+  Learn[i] = new Array();
+SPOpt = new Array();
+for (i=0;i<=3;i++)
+  SPOpt[i] = new Array();
+EquipOpt = new Array();
+// ]]>
+</script>
+<script type="text/javascript" src="./js/option.js"></script>
+<script type="text/javascript" src="./js/bonus.js"></script>
+<script type="text/javascript" src="./js/skill.js"></script>
+<script type="text/javascript" src="./js/item.js"></script>
+<script type="text/javascript" src="./js/ini.js"></script>
+<script type="text/javascript" src="./js/status_point.js"></script>
+<script type="text/javascript" src="./js/textset.js"></script>
+<div id="body">
+  <ul>
+    <li style="width:100%;">
+      <ul> <!-- 一番上のボタン部 -->
+        <li style="width:801px;">
+          <ul>
+            <li class="btn1" style="margin:0px 5px 0px 10px;padding:1px 6px 0px 7px;width:120px;line-height:14px;"><a href="./readme.txt"><div>readme</div></a></li>
+            <li class="btn1" style="margin-right:5px;padding:1px 6px 0px 7px;width:120px;line-height:14px;"><a href="http://awayfromkuma.blog87.fc2.com/"><div>blog</div></a></li>
+            <li class="btn1" style="padding:1px 6px 0px 7px;width:120px;line-height:14px;"><a href="./old/"><div id="TextMenu">旧シミュレータ</div></a></li>
+          </ul>
+        </li>
+        <li style="padding:0px 1px;width:76px;line-height:16px;text-align:right;">last update</li>
+        <li id="UPData" style="padding:0px 1px;width:111px;line-height:16px;text-align:center;">2011 05/19 12:00</li>
+      </ul>
+      <ul> <!-- タブ -->
+        <li style="margin-top:3px;width:500px;height:25px;">
+          <ul>
+            <li id="Tab_0_0" onclick="Flag[2]=(Flag[2]==1)?0:1;$('Tab_0_0').className=(Flag[2]==1)?'tab_on':'tab_off';$('Tab_1_0').className=(Flag[2]==2)?'tab_on':'tab_off';$('Tab_2_0').className=(Flag[2]==3)?'tab_on':'tab_off';$('Tab_3_0').className=(Flag[2]==4)?'tab_on':'tab_off';$('Tab_4_0').className=(Flag[2]==5)?'tab_on':'tab_off';$('Tab_5_0').className=(Flag[2]==6)?'tab_on':'tab_off';$('Tab_6_0').className=(Flag[2]==7)?'tab_on':'tab_off';$('Tab_0_1').style.display=(Flag[2]==1)?'inline':'none';$('Tab_1_1').style.display=(Flag[2]==2)?'inline':'none';$('Tab_2_1').style.display=(Flag[2]==3)?'inline':'none';$('Tab_3_1').style.display=(Flag[2]==4)?'inline':'none';$('Tab_4_1').style.display=(Flag[2]==5)?'inline':'none';$('Tab_5_1').style.display=(Flag[2]==6)?'inline':'none';$('Tab_6_1').style.display=(Flag[2]==7)?'inline':'none';" class="tab_off" style="position:absolute;bottom:-1px;left:10px;width:63px;text-align:center;"><div id="TextTab_0">職業</div><span class="col_bg" style="z-index:2;position:absolute;bottom:-1px;left:0px;width:100%;height:3px;"></span></li>
+            <li id="Tab_1_0" onclick="Flag[2]=(Flag[2]==2)?0:2;$('Tab_0_0').className=(Flag[2]==1)?'tab_on':'tab_off';$('Tab_1_0').className=(Flag[2]==2)?'tab_on':'tab_off';$('Tab_2_0').className=(Flag[2]==3)?'tab_on':'tab_off';$('Tab_3_0').className=(Flag[2]==4)?'tab_on':'tab_off';$('Tab_4_0').className=(Flag[2]==5)?'tab_on':'tab_off';$('Tab_5_0').className=(Flag[2]==6)?'tab_on':'tab_off';$('Tab_6_0').className=(Flag[2]==7)?'tab_on':'tab_off';$('Tab_0_1').style.display=(Flag[2]==1)?'inline':'none';$('Tab_1_1').style.display=(Flag[2]==2)?'inline':'none';$('Tab_2_1').style.display=(Flag[2]==3)?'inline':'none';$('Tab_3_1').style.display=(Flag[2]==4)?'inline':'none';$('Tab_4_1').style.display=(Flag[2]==5)?'inline':'none';$('Tab_5_1').style.display=(Flag[2]==6)?'inline':'none';$('Tab_6_1').style.display=(Flag[2]==7)?'inline':'none';" class="tab_off" style="position:absolute;bottom:-1px;left:78px;width:63px;text-align:center;"><div id="TextTab_1">技能</div><span class="col_bg" style="z-index:2;position:absolute;bottom:-1px;left:0px;width:100%;height:3px;"></span></li>
+            <li id="Tab_2_0" onclick="Flag[2]=(Flag[2]==3)?0:3;$('Tab_0_0').className=(Flag[2]==1)?'tab_on':'tab_off';$('Tab_1_0').className=(Flag[2]==2)?'tab_on':'tab_off';$('Tab_2_0').className=(Flag[2]==3)?'tab_on':'tab_off';$('Tab_3_0').className=(Flag[2]==4)?'tab_on':'tab_off';$('Tab_4_0').className=(Flag[2]==5)?'tab_on':'tab_off';$('Tab_5_0').className=(Flag[2]==6)?'tab_on':'tab_off';$('Tab_6_0').className=(Flag[2]==7)?'tab_on':'tab_off';$('Tab_0_1').style.display=(Flag[2]==1)?'inline':'none';$('Tab_1_1').style.display=(Flag[2]==2)?'inline':'none';$('Tab_2_1').style.display=(Flag[2]==3)?'inline':'none';$('Tab_3_1').style.display=(Flag[2]==4)?'inline':'none';$('Tab_4_1').style.display=(Flag[2]==5)?'inline':'none';$('Tab_5_1').style.display=(Flag[2]==6)?'inline':'none';$('Tab_6_1').style.display=(Flag[2]==7)?'inline':'none';CalcSet('ALL',1);" class="tab_off" style="position:absolute;bottom:-1px;left:146px;width:63px;text-align:center;"><div id="TextTab_2">攻撃系</div><span class="col_bg" style="z-index:2;position:absolute;bottom:-1px;left:0px;width:100%;height:3px;"></span></li>
+            <li id="Tab_3_0" onclick="Flag[2]=(Flag[2]==4)?0:4;$('Tab_0_0').className=(Flag[2]==1)?'tab_on':'tab_off';$('Tab_1_0').className=(Flag[2]==2)?'tab_on':'tab_off';$('Tab_2_0').className=(Flag[2]==3)?'tab_on':'tab_off';$('Tab_3_0').className=(Flag[2]==4)?'tab_on':'tab_off';$('Tab_4_0').className=(Flag[2]==5)?'tab_on':'tab_off';$('Tab_5_0').className=(Flag[2]==6)?'tab_on':'tab_off';$('Tab_6_0').className=(Flag[2]==7)?'tab_on':'tab_off';$('Tab_0_1').style.display=(Flag[2]==1)?'inline':'none';$('Tab_1_1').style.display=(Flag[2]==2)?'inline':'none';$('Tab_2_1').style.display=(Flag[2]==3)?'inline':'none';$('Tab_3_1').style.display=(Flag[2]==4)?'inline':'none';$('Tab_4_1').style.display=(Flag[2]==5)?'inline':'none';$('Tab_5_1').style.display=(Flag[2]==6)?'inline':'none';$('Tab_6_1').style.display=(Flag[2]==7)?'inline':'none';CalcSet('ALL',1);" class="tab_off" style="position:absolute;bottom:-1px;left:214px;width:63px;text-align:center;"><div id="TextTab_3">防御系</div><span class="col_bg" style="z-index:2;position:absolute;bottom:-1px;left:0px;width:100%;height:3px;"></span></li>
+            <li id="Tab_4_0" onclick="Flag[2]=(Flag[2]==5)?0:5;$('Tab_0_0').className=(Flag[2]==1)?'tab_on':'tab_off';$('Tab_1_0').className=(Flag[2]==2)?'tab_on':'tab_off';$('Tab_2_0').className=(Flag[2]==3)?'tab_on':'tab_off';$('Tab_3_0').className=(Flag[2]==4)?'tab_on':'tab_off';$('Tab_4_0').className=(Flag[2]==5)?'tab_on':'tab_off';$('Tab_5_0').className=(Flag[2]==6)?'tab_on':'tab_off';$('Tab_6_0').className=(Flag[2]==7)?'tab_on':'tab_off';$('Tab_0_1').style.display=(Flag[2]==1)?'inline':'none';$('Tab_1_1').style.display=(Flag[2]==2)?'inline':'none';$('Tab_2_1').style.display=(Flag[2]==3)?'inline':'none';$('Tab_3_1').style.display=(Flag[2]==4)?'inline':'none';$('Tab_4_1').style.display=(Flag[2]==5)?'inline':'none';$('Tab_5_1').style.display=(Flag[2]==6)?'inline':'none';$('Tab_6_1').style.display=(Flag[2]==7)?'inline':'none';" class="tab_off" style="position:absolute;bottom:-1px;left:282px;width:63px;text-align:center;"><div id="TextTab_4">バフ</div><span class="col_bg" style="z-index:2;position:absolute;bottom:-1px;left:0px;width:100%;height:3px;"></span></li>
+            <li id="Tab_5_0" onclick="Flag[2]=(Flag[2]==6)?0:6;$('Tab_0_0').className=(Flag[2]==1)?'tab_on':'tab_off';$('Tab_1_0').className=(Flag[2]==2)?'tab_on':'tab_off';$('Tab_2_0').className=(Flag[2]==3)?'tab_on':'tab_off';$('Tab_3_0').className=(Flag[2]==4)?'tab_on':'tab_off';$('Tab_4_0').className=(Flag[2]==5)?'tab_on':'tab_off';$('Tab_5_0').className=(Flag[2]==6)?'tab_on':'tab_off';$('Tab_6_0').className=(Flag[2]==7)?'tab_on':'tab_off';$('Tab_0_1').style.display=(Flag[2]==1)?'inline':'none';$('Tab_1_1').style.display=(Flag[2]==2)?'inline':'none';$('Tab_2_1').style.display=(Flag[2]==3)?'inline':'none';$('Tab_3_1').style.display=(Flag[2]==4)?'inline':'none';$('Tab_4_1').style.display=(Flag[2]==5)?'inline':'none';$('Tab_5_1').style.display=(Flag[2]==6)?'inline':'none';$('Tab_6_1').style.display=(Flag[2]==7)?'inline':'none';" class="tab_off" style="position:absolute;bottom:-1px;left:350px;width:63px;text-align:center;"><div id="TextTab_5">ログ</div><span class="col_bg" style="z-index:2;position:absolute;bottom:-1px;left:0px;width:100%;height:3px;"></span></li>
+            <li id="Tab_6_0" onclick="Flag[2]=(Flag[2]==7)?0:7;$('Tab_0_0').className=(Flag[2]==1)?'tab_on':'tab_off';$('Tab_1_0').className=(Flag[2]==2)?'tab_on':'tab_off';$('Tab_2_0').className=(Flag[2]==3)?'tab_on':'tab_off';$('Tab_3_0').className=(Flag[2]==4)?'tab_on':'tab_off';$('Tab_4_0').className=(Flag[2]==5)?'tab_on':'tab_off';$('Tab_5_0').className=(Flag[2]==6)?'tab_on':'tab_off';$('Tab_6_0').className=(Flag[2]==7)?'tab_on':'tab_off';$('Tab_0_1').style.display=(Flag[2]==1)?'inline':'none';$('Tab_1_1').style.display=(Flag[2]==2)?'inline':'none';$('Tab_2_1').style.display=(Flag[2]==3)?'inline':'none';$('Tab_3_1').style.display=(Flag[2]==4)?'inline':'none';$('Tab_4_1').style.display=(Flag[2]==5)?'inline':'none';$('Tab_5_1').style.display=(Flag[2]==6)?'inline':'none';$('Tab_6_1').style.display=(Flag[2]==7)?'inline':'none';" class="tab_off" style="position:absolute;bottom:-1px;left:418px;width:63px;text-align:center;"><div id="TextTab_6">ファイル</div><span class="col_bg" style="z-index:2;position:absolute;bottom:-1px;left:0px;width:100%;height:3px;"></span></li>
+          </ul>
+        </li>
+        <li style="margin-top:3px;width:30px;line-height:16px;text-align:right;">CSS</li>
+        <li id="CSS_0" onclick="Flag[1]=0;$('CSS').href=CSSFile[Flag[1]];$('CSS_0').className=(Flag[1]==0)?'btn1_on':'btn1_off';$('CSS_1').className=(Flag[1]==1)?'btn1_on':'btn1_off';$('CSS_2').className=(Flag[1]==2)?'btn1_on':'btn1_off';" class="btn1_off" style="margin:3px 5px 0px 7px;padding:1px 6px 0px 7px;width:70px;line-height:14px;text-align:center;"><div>heavy</div></li>
+        <li id="CSS_1" onclick="Flag[1]=1;$('CSS').href=CSSFile[Flag[1]];$('CSS_0').className=(Flag[1]==0)?'btn1_on':'btn1_off';$('CSS_1').className=(Flag[1]==1)?'btn1_on':'btn1_off';$('CSS_2').className=(Flag[1]==2)?'btn1_on':'btn1_off';" class="btn1_off" style="margin:3px 5px 0px 0px;padding:1px 6px 0px 7px;width:70px;line-height:14px;text-align:center;"><div>medium</div></li>
+        <li id="CSS_2" onclick="Flag[1]=2;$('CSS').href=CSSFile[Flag[1]];$('CSS_0').className=(Flag[1]==0)?'btn1_on':'btn1_off';$('CSS_1').className=(Flag[1]==1)?'btn1_on':'btn1_off';$('CSS_2').className=(Flag[1]==2)?'btn1_on':'btn1_off';" class="btn1_off" style="margin:3px 0px 0px 0px;padding:1px 6px 0px 7px;width:70px;line-height:14px;text-align:center;"><div>light</div></li>
+        <li style="margin-top:3px;padding:0px 1px;width:76px;line-height:16px;text-align:right;">language</li>
+        <li id="Lang_0" onclick="Flag[0]=0;$('Lang_0').className=(Flag[0]==0)?'btn1_on':'btn1_off';$('Lang_1').className=(Flag[0]==1)?'btn1_on':'btn1_off';$('Lang_2').className=(Flag[0]==2)?'btn1_on':'btn1_off';TextSet();Log();return false;" class="btn1_off" style="margin:3px 5px 0px 4px;padding:0px 1px;width:30px;line-height:16px;text-align:center;"><div title="日本語">JP</div></li>
+        <li id="Lang_1" onclick="Flag[0]=1;$('Lang_0').className=(Flag[0]==0)?'btn1_on':'btn1_off';$('Lang_1').className=(Flag[0]==1)?'btn1_on':'btn1_off';$('Lang_2').className=(Flag[0]==2)?'btn1_on':'btn1_off';TextSet();Log();return false;" class="btn1_off" style="margin:3px 5px 0px 0px;padding:0px 1px;width:30px;line-height:16px;text-align:center;"><div title="English">EN</div></li>
+        <li id="Lang_2" onclick="Flag[0]=2;$('Lang_0').className=(Flag[0]==0)?'btn1_on':'btn1_off';$('Lang_1').className=(Flag[0]==1)?'btn1_on':'btn1_off';$('Lang_2').className=(Flag[0]==2)?'btn1_on':'btn1_off';TextSet();Log();return false;" class="btn1_off" style="margin-top:3px;padding:0px 1px;width:30px;line-height:16px;text-align:center;"><div title="繁体">TW</div></li>
+      </ul>
+      <ul> <!-- メイン部 -->
+        <li class="col_bg main" style="padding:3px;width:984px;">
+          <ul>
+            <!-- ここからタブ -->
+            <li style="position:absolute;">
+              <ul>
+                <!-- 職業 -->
+                <li id="Tab_0_1" style="display:none;">
+                  <ul>
+                    <li class="sub_win" style="position:absolute;top:-5px;left:6px;width:292px;">
+                      <ul>
+                        <li class="col_bg2" style="padding:2px;">
+                          <ul>
+                            <li style="margin-right:2px;width:142px;">
+                              <ul><li class="head col_txt" style="width:100%;">種族</li></ul>
+                              <ul><li id="InRace" style="margin-bottom:10px;width:100%;height:46px;"></li></ul>
+                              <ul><li class="head col_txt" style="width:100%;">種族技能</li></ul>
+                              <ul><li id="InRSkill" style="width:100%;height:45px;"></li></ul>
+                            </li>
+                            <li class="head col_txt" style="width:144px;">職業</li>
+                          </ul>
+                          <ul><li id="InJob" style="width:144px;height:118px;"></li></ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <!-- 技能 -->
+                <li id="Tab_1_1" style="display:none;">
+                  <ul>
+                    <li class="sub_win" style="position:absolute;top:-5px;left:-3px;width:403px;">
+                      <ul><li id="LearnView" class="col_bg2" style="padding:2px 2px 5px 2px;width:399px;"></li></ul>
+                    </li>
+                  </ul>
+                </li>
+                <!-- 攻撃系 -->
+                <li id="Tab_2_1" style="display:none;">
+                  <ul>
+                    <li class="sub_win" style="position:absolute;top:127px;left:401px;width:572px;">
+                      <ul><li id="ATKView" class="col_bg2" style="padding:2px;"></li></ul>
+                    </li>
+                  </ul>
+                </li>
+                <!-- 防御系 -->
+                <li id="Tab_3_1" style="display:none;">
+                  <ul>
+                    <li class="sub_win" style="position:absolute;top:127px;left:401px;width:385px;">
+                      <ul><li id="RESView" class="col_bg2" style="padding:2px;"></li></ul>
+                    </li>
+                  </ul>
+                </li>
+                <!-- バフ -->
+                <li id="Tab_4_1" style="display:inline;">
+                  <ul>
+                    <li class="sub_win" style="position:absolute;top:-5px;left:6px;width:744px;">
+                      <ul><li id="BUFFView" class="col_bg" style="padding:2px;width:740px;"></li></ul>
+                    </li>
+                  </ul>
+                </li>
+                <!-- ログ -->
+                <li id="Tab_5_1" style="display:none;">
+                  <ul>
+                    <li class="sub_win" style="position:absolute;top:16px;left:665px;width:316px;">
+                      <ul>
+                        <li class="col_bg" style="padding:2px;width:312px;">
+                          <ul><li class="head" style="width:100%;">Log</li></ul>
+                          <ul><li style="width:100%;"><textarea id="InLog" style="width:312px;height:475px;border-width:0px;"></textarea></li></ul>
+                          <ul><li class="btn2" onclick="Reset('Log');" style="margin:3px 0px 3px 240px;padding:0px 2px;width:49px;height:15px;text-align:center;cursor:pointer;"><div>Delete</div></li></ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <!-- ファイル -->
+                <li id="Tab_6_1" style="display:none;">
+                  <ul>
+                    <li class="sub_win" style="position:absolute;top:-5px;left:6px;width:845px;">
+                      <ul>
+                        <li id="FileView" class="col_bg" style="padding:3px;width:839px;">
+                          <ul>
+                            <li style="margin-top:2px;width:187px;" class="">
+                              <ul onmouseover="File('View',0);"><li class="head2" style="margin-right:3px;width:55px;height:14px;cursor:default;">File:01</li><li class="btn2" onclick="File('Save',0);" style="margin-right:3px;width:40px;height:16px;"><div>Save</div></li><li class="btn2" onclick="File('Load',0);" style="margin-right:3px;width:40px;height:16px;"><div>Load</div></li><li class="btn2" onclick="File('Del',0);" style="width:40px;height:16px;"><div>Del</div></li></ul>
+                              <ul onmouseover="File('View',1);"><li class="head2" style="margin:3px 3px 0px 0px;width:55px;height:14px;cursor:default;">File:02</li><li class="btn2" onclick="File('Save',1);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Save</div></li><li class="btn2" onclick="File('Load',1);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Load</div></li><li class="btn2" onclick="File('Del',1);" style="margin:3px 0px 0px 0px;width:40px;height:16px;"><div>Del</div></li></ul>
+                              <ul onmouseover="File('View',2);"><li class="head2" style="margin:3px 3px 0px 0px;width:55px;height:14px;cursor:default;">File:03</li><li class="btn2" onclick="File('Save',2);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Save</div></li><li class="btn2" onclick="File('Load',2);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Load</div></li><li class="btn2" onclick="File('Del',2);" style="margin:3px 0px 0px 0px;width:40px;height:16px;"><div>Del</div></li></ul>
+                              <ul onmouseover="File('View',3);"><li class="head2" style="margin:3px 3px 0px 0px;width:55px;height:14px;cursor:default;">File:04</li><li class="btn2" onclick="File('Save',3);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Save</div></li><li class="btn2" onclick="File('Load',3);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Load</div></li><li class="btn2" onclick="File('Del',3);" style="margin:3px 0px 0px 0px;width:40px;height:16px;"><div>Del</div></li></ul>
+                              <ul onmouseover="File('View',4);"><li class="head2" style="margin:3px 3px 0px 0px;width:55px;height:14px;cursor:default;">File:05</li><li class="btn2" onclick="File('Save',4);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Save</div></li><li class="btn2" onclick="File('Load',4);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Load</div></li><li class="btn2" onclick="File('Del',4);" style="margin:3px 0px 0px 0px;width:40px;height:16px;"><div>Del</div></li></ul>
+                              <ul onmouseover="File('View',5);"><li class="head2" style="margin:3px 3px 0px 0px;width:55px;height:14px;cursor:default;">File:06</li><li class="btn2" onclick="File('Save',5);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Save</div></li><li class="btn2" onclick="File('Load',5);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Load</div></li><li class="btn2" onclick="File('Del',5);" style="margin:3px 0px 0px 0px;width:40px;height:16px;"><div>Del</div></li></ul>
+                              <ul onmouseover="File('View',6);"><li class="head2" style="margin:3px 3px 0px 0px;width:55px;height:14px;cursor:default;">File:07</li><li class="btn2" onclick="File('Save',6);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Save</div></li><li class="btn2" onclick="File('Load',6);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Load</div></li><li class="btn2" onclick="File('Del',6);" style="margin:3px 0px 0px 0px;width:40px;height:16px;"><div>Del</div></li></ul>
+                              <ul onmouseover="File('View',7);"><li class="head2" style="margin:3px 3px 0px 0px;width:55px;height:14px;cursor:default;">File:08</li><li class="btn2" onclick="File('Save',7);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Save</div></li><li class="btn2" onclick="File('Load',7);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Load</div></li><li class="btn2" onclick="File('Del',7);" style="margin:3px 0px 0px 0px;width:40px;height:16px;"><div>Del</div></li></ul>
+                              <ul onmouseover="File('View',8);"><li class="head2" style="margin:3px 3px 0px 0px;width:55px;height:14px;cursor:default;">File:09</li><li class="btn2" onclick="File('Save',8);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Save</div></li><li class="btn2" onclick="File('Load',8);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Load</div></li><li class="btn2" onclick="File('Del',8);" style="margin:3px 0px 0px 0px;width:40px;height:16px;"><div>Del</div></li></ul>
+                              <ul onmouseover="File('View',9);"><li class="head2" style="margin:3px 3px 0px 0px;width:55px;height:14px;cursor:default;">File:10</li><li class="btn2" onclick="File('Save',9);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Save</div></li><li class="btn2" onclick="File('Load',9);" style="margin:3px 3px 0px 0px;width:40px;height:16px;"><div>Load</div></li><li class="btn2" onclick="File('Del',9);" style="margin:3px 0px 0px 0px;width:40px;height:16px;"><div>Del</div></li></ul>
+                            </li>
+                            <li class="line1" style="width:1px;height:192px;"></li>
+                            <li class="line2" style="width:1px;height:192px;"></li>
+                            <li style="width:650px;">
+                              <ul>
+                                <li id="FileNo" class="head" style="margin-bottom:3px;width:100%;">File NO. 0</li>
+                              </ul>
+                              <ul>
+                                <li id="TextFile_0" class="input_lt" style="margin-left:3px;width:30px;text-align:center;">種族</li>
+                                <li id="FileRace" class="input_gt" style="margin-right:3px;width:67px;">&nbsp;</li>
+                                <li id="TextFile_1" class="input_lt" style="width:30px;text-align:center;">技能</li>
+                                <li id="FileRSkill" class="input_gt" style="margin-right:3px;width:175px;">&nbsp;</li>
+                                <li id="TextFile_2" class="input_lt" style="width:30px;text-align:center;">職業</li>
+                                <li id="FileJob" class="input_gt" style="margin-right:3px;width:101px;">&nbsp;</li>
+                                <li style="width:181px;height:18px;"></li>
+                              </ul>
+                              <ul>
+                                <li class="input_lt" style="margin:2px 0px 0px 3px;width:30px;height:15px;text-align:center;">Lv</li>
+                                <li class="input_gt" style="margin:2px 50px 0px 0px;width:20px;height:15px;">
+                                  <ul>
+                                    <li id="FileStatusLev" style="width:19px;text-align:right;">&nbsp;</li>
+                                  </ul>
+                                </li>
+                                <li class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">StPT</li>
+                                <li class="input_gt" style="margin:2px 23px 0px 0px;width:47px;height:15px;">
+                                  <ul>
+                                    <li id="FileStatusStP_0" style="width:19px;text-align:right;">&nbsp;</li>
+                                    <li style="width:7px;text-align:right;">/</li>
+                                    <li id="FileStatusStP_1" style="width:20px;text-align:right;">&nbsp;</li>
+                                  </ul>
+                                </li>
+                                <li class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">SkPT</li>
+                                <li class="input_gt" style="margin:2px 23px 0px 0px;width:47px;height:15px;">
+                                  <ul>
+                                    <li id="FileStatusSkP_0" style="width:19px;text-align:right;">&nbsp;</li>
+                                    <li style="width:7px;text-align:right;">/</li>
+                                    <li id="FileStatusSkP_1" style="width:20px;text-align:right;">&nbsp;</li>
+                                  </ul>
+                                </li>
+                                <li class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">??PT</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul>
+                                    <li id="FileStatusUnP_0" style="width:19px;text-align:right;">&nbsp;</li>
+                                    <li style="width:7px;text-align:right;">/</li>
+                                    <li id="FileStatusUnP_1" style="width:20px;text-align:right;">&nbsp;</li>
+                                  </ul>
+                                </li>
+                                <li style="margin-top:2px;width:235px;height:19px;"></li>
+                              </ul>
+                              <ul>
+                                <li id="TextFile_3" class="input_lt input_lt2_1" style="margin:2px 0px 0px 3px;width:30px;height:15px;text-align:center;">体力</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:67px;">
+                                  <ul><li id="FileStatusSTA_0" style="width:20px;height:15px;text-align:right;">&nbsp;</li><li style="width:5px;height:15px;">(</li><li id="FileStatusSTA_1" style="width:14px;height:15px;text-align:right;">&nbsp;</li><li id="FileStatusSTA_2" style="padding-left:1px;width:6px;height:15px;">&nbsp;</li><li id="FileStatusSTA_3" style="width:14px;height:15px;text-align:right;">&nbsp;</li><li style="width:7px;height:15px;">)</li></ul>
+                                </li>
+                                <li id="TextFile_4" class="input_lt input_lt2_1" style="margin-top:2px;width:30px;height:15px;text-align:center;">筋力</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:67px;">
+                                  <ul><li id="FileStatusSTR_0" style="width:20px;height:15px;text-align:right;">&nbsp;</li><li style="width:5px;height:15px;">(</li><li id="FileStatusSTR_1" style="width:14px;height:15px;text-align:right;">&nbsp;</li><li id="FileStatusSTR_2" style="padding-left:1px;width:6px;height:15px;">&nbsp;</li><li id="FileStatusSTR_3" style="width:14px;height:15px;text-align:right;">&nbsp;</li><li style="width:7px;height:15px;">)</li></ul>
+                                </li>
+                                <li id="TextFile_5" class="input_lt input_lt2_1" style="margin-top:2px;width:30px;height:15px;text-align:center;">敏捷</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:67px;">
+                                  <ul><li id="FileStatusAGI_0" style="width:20px;height:15px;text-align:right;">&nbsp;</li><li style="width:5px;height:15px;">(</li><li id="FileStatusAGI_1" style="width:14px;height:15px;text-align:right;">&nbsp;</li><li id="FileStatusAGI_2" style="padding-left:1px;width:6px;height:15px;">&nbsp;</li><li id="FileStatusAGI_3" style="width:14px;height:15px;text-align:right;">&nbsp;</li><li style="width:7px;height:15px;">)</li></ul>
+                                </li>
+                                <li id="TextFile_6" class="input_lt input_lt2_1" style="margin-top:2px;width:30px;height:15px;text-align:center;">器用</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:67px;">
+                                  <ul><li id="FileStatusDEX_0" style="width:20px;height:15px;text-align:right;">&nbsp;</li><li style="width:5px;height:15px;">(</li><li id="FileStatusDEX_1" style="width:14px;height:15px;text-align:right;">&nbsp;</li><li id="FileStatusDEX_2" style="padding-left:1px;width:6px;height:15px;">&nbsp;</li><li id="FileStatusDEX_3" style="width:14px;height:15px;text-align:right;">&nbsp;</li><li style="width:7px;height:15px;">)</li></ul>
+                                </li>
+                                <li id="TextFile_7" class="input_lt input_lt2_1" style="margin-top:2px;width:30px;height:15px;text-align:center;">霊感</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:67px;">
+                                  <ul><li id="FileStatusSPR_0" style="width:20px;height:15px;text-align:right;">&nbsp;</li><li style="width:5px;height:15px;">(</li><li id="FileStatusSPR_1" style="width:14px;height:15px;text-align:right;">&nbsp;</li><li id="FileStatusSPR_2" style="padding-left:1px;width:6px;height:15px;">&nbsp;</li><li id="FileStatusSPR_3" style="width:14px;height:15px;text-align:right;">&nbsp;</li><li style="width:7px;height:15px;">)</li></ul>
+                                </li>
+                                <li id="TextFile_8" class="input_lt input_lt2_1" style="margin-top:2px;width:30px;height:15px;text-align:center;">知性</li>
+                                <li class="input_gt" style="margin-top:2px;width:67px;">
+                                  <ul><li id="FileStatusINT_0" style="width:20px;height:15px;text-align:right;">&nbsp;</li><li style="width:5px;height:15px;">(</li><li id="FileStatusINT_1" style="width:14px;height:15px;text-align:right;">&nbsp;</li><li id="FileStatusINT_2" style="padding-left:1px;width:6px;height:15px;">&nbsp;</li><li id="FileStatusINT_3" style="width:14px;height:15px;text-align:right;">&nbsp;</li><li style="width:7px;height:15px;">)</li></ul>
+                                </li>
+                              </ul>
+                              <ul><li class="line1" style="margin-top:3px;width:100%;height:1px;"></li></ul>
+                              <ul><li class="line2" style="width:100%;height:1px;"></li></ul>
+                              <ul>
+                                <li id="TextFile_9" class="input_lt" style="margin:2px 0px 0px 3px;width:30px;height:15px;text-align:center;">近接</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_0_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_0_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_10" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">斬る</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_1_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_1_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_11" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">突く</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_2_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_2_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_12" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">払う</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_3_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_3_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_13" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">打撃</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_4_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_4_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_14" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">防御</li>
+                                <li class="input_gt" style="margin-top:2px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_5_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_5_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li style="margin-top:2px;width:122px;height:19px;"></li>
+                              </ul>
+                              <ul>
+                                <li id="TextFile_15" class="input_lt" style="margin:2px 0px 0px 3px;width:30px;height:15px;text-align:center;">技巧</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_6_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_6_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_16" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">射撃</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_7_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_7_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_17" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">調合</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_8_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_8_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_18" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">暗殺</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_9_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_9_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_19" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">仕掛</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_10_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_10_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_20" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">回避</li>
+                                <li class="input_gt" style="margin-top:2px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_11_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_11_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li style="margin-top:2px;width:122px;height:19px;"></li>
+                              </ul>
+                              <ul>
+                                <li id="TextFile_21" class="input_lt" style="margin:2px 0px 0px 3px;width:30px;height:15px;text-align:center;">祈祷</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_12_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_12_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_22" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">慈愛</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_13_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_13_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_23" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">祝福</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_14_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_14_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_24" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">祓魔</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_15_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_15_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_25" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">聖歌</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_16_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_16_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li style="margin-top:2px;width:85px;height:19px;"></li>
+                                <li style="margin-top:2px;width:122px;height:19px;"></li>
+                              </ul>
+                              <ul>
+                                <li id="TextFile_26" class="input_lt" style="margin:2px 0px 0px 3px;width:30px;height:15px;text-align:center;">魔術</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_17_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_17_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_27" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">元素</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_18_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_18_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_28" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">具現</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_19_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_19_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_29" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">暗黒</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_20_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_20_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_30" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">惑乱</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_21_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_21_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li style="margin-top:2px;width:85px;height:19px;"></li>
+                                <li style="margin-top:2px;width:122px;height:19px;"></li>
+                              </ul>
+                              <ul>
+                                <li id="TextFile_31" class="input_lt" style="margin:2px 0px 0px 3px;width:30px;height:15px;text-align:center;">特殊</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_22_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_22_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_32" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">種族</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_23_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_23_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li id="TextFile_33" class="input_lt" style="margin-top:2px;width:30px;height:15px;text-align:center;">騎乗</li>
+                                <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                                  <ul><li id="FileSkill_24_0" style="width:19px;text-align:right;">&nbsp;</li><li style="width:7px;text-align:right;">/</li><li id="FileSkill_24_1" style="width:20px;text-align:right;">&nbsp;</li></ul>
+                                </li>
+                                <li style="margin:2px 3px 0px 0px;width:85px;height:19px;"></li>
+                                <li style="margin:2px 3px 0px 0px;width:85px;height:19px;"></li>
+                                <li style="margin-top:2px;width:85px;height:19px;"></li>
+                                <li style="margin-top:2px;width:122px;height:19px;"></li>
+                              </ul>
+                            </li>
+                          </ul>
+                          <ul><li class="line1" style="width:100%;height:1px;"></li></ul>
+                          <ul><li class="line2" style="width:100%;height:1px;"></li></ul>
+                          <ul>
+                            <li style="width:100%;">
+                              <ul><li id="TextFile_34" class="input_lt" style="margin-top:3px;width:51px;height:15px;text-align:right;">右手</li><li id="FileEquip_0" class="input_gt" style="margin-top:3px;width:780px;height:15px;"></li></ul>
+                              <ul><li id="TextFile_35" class="input_lt" style="margin-top:3px;width:51px;height:15px;text-align:right;">左手</li><li id="FileEquip_1" class="input_gt" style="margin-top:3px;width:780px;height:15px;"></li></ul>
+                              <ul><li id="TextFile_36" class="input_lt" style="margin-top:3px;width:51px;height:15px;text-align:right;">頭</li><li id="FileEquip_2" class="input_gt" style="margin-top:3px;width:780px;height:15px;"></li></ul>
+                              <ul><li id="TextFile_37" class="input_lt" style="margin-top:3px;width:51px;height:15px;text-align:right;">上半身</li><li id="FileEquip_3" class="input_gt" style="margin-top:3px;width:780px;height:15px;"></li></ul>
+                              <ul><li id="TextFile_38" class="input_lt" style="margin-top:3px;width:51px;height:15px;text-align:right;">手</li><li id="FileEquip_4" class="input_gt" style="margin-top:3px;width:780px;height:15px;"></li></ul>
+                              <ul><li id="TextFile_39" class="input_lt" style="margin-top:3px;width:51px;height:15px;text-align:right;">下半身</li><li id="FileEquip_5" class="input_gt" style="margin-top:3px;width:780px;height:15px;"></li></ul>
+                              <ul><li id="TextFile_40" class="input_lt" style="margin-top:3px;width:51px;height:15px;text-align:right;">靴</li><li id="FileEquip_6" class="input_gt" style="margin-top:3px;width:780px;height:15px;"></li></ul>
+                              <ul><li id="TextFile_41" class="input_lt" style="margin-top:3px;width:51px;height:15px;text-align:right;">背</li><li id="FileEquip_7" class="input_gt" style="margin-top:3px;width:780px;height:15px;"></li></ul>
+                              <ul><li id="TextFile_42" class="input_lt" style="margin-top:3px;width:51px;height:15px;text-align:right;">耳飾り1</li><li id="FileEquip_8" class="input_gt" style="margin-top:3px;width:780px;height:15px;"></li></ul>
+                              <ul><li id="TextFile_43" class="input_lt" style="margin-top:3px;width:51px;height:15px;text-align:right;">耳飾り2</li><li id="FileEquip_9" class="input_gt" style="margin-top:3px;width:780px;height:15px;"></li></ul>
+                              <ul><li id="TextFile_44" class="input_lt" style="margin-top:3px;width:51px;height:15px;text-align:right;">首飾り</li><li id="FileEquip_10" class="input_gt" style="margin-top:3px;width:780px;height:15px;"></li></ul>
+                              <ul><li id="TextFile_45" class="input_lt" style="margin-top:3px;width:51px;height:15px;text-align:right;">ベルト</li><li id="FileEquip_11" class="input_gt" style="margin-top:3px;width:780px;height:15px;"></li></ul>
+                              <ul><li id="TextFile_46" class="input_lt" style="margin-top:3px;width:51px;height:15px;text-align:right;">指輪1</li><li id="FileEquip_12" class="input_gt" style="margin-top:3px;width:780px;height:15px;"></li></ul>
+                              <ul><li id="TextFile_47" class="input_lt" style="margin-top:3px;width:51px;height:15px;text-align:right;">指輪2</li><li id="FileEquip_13" class="input_gt" style="margin-top:3px;width:780px;height:15px;"></li></ul>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <!-- タブここまで -->
+          </ul>
+          <ul><li id="Title" class="title" style="padding-top:2px;width:100%;line-height:16px;text-align:center;">ぱんどらしみゅ x.xx</li></ul>
+          <ul>
+            <!-- 1列目 -->
+            <li style="padding-top:3px;width:402px;">
+              <ul>
+                <li id="Text_0" class="input_lt" style="width:29px;text-align:center;">種族</li>
+                <li id="StatusRace" class="input_gt" style="margin-right:2px;width:65px;">人間</li>
+                <li id="Text_1" class="input_lt" style="width:29px;text-align:center;">技能</li>
+                <li id="StatusRSkill" class="input_gt" style="margin-right:2px;width:119px;">闘争心</li>
+                <li id="Text_2" class="input_lt" style="width:29px;text-align:center;">職業</li>
+                <li id="StatusJob" class="input_gt" style="width:101px;">ウォーリア</li>
+              </ul>
+              <ul><li class="line1" style="margin-top:2px;width:100%;height:1px;"></li></ul>
+              <ul><li class="line2" style="width:100%;height:1px;"></li></ul>
+              <ul>
+                <li style="width:106px;">
+                  <ul>
+                    <li class="input_lt" style="margin-top:2px;width:35px;height:15px;text-align:center;">Level</li>
+                    <li class="input_gt" style="margin:2px 4px 0px 0px;width:20px;height:15px;">
+                      <ul>
+                        <li id="StatusLev" style="width:19px;text-align:right;">1</li>
+                      </ul>
+                    </li>
+                    <li style="position:relative;width:37px;height:22px;">
+                      <ul>
+                        <li style="position:absolute;top:0px;left:0px;"><input type="image" src="./image/interface/up1.png" alt="+1" title="+1" onclick="StatusMove('Lev',1);CalcSet('Lev');" style="margin-right:2px;" /><input type="image" src="./image/interface/up2.png" alt="+10" title="+10" onclick="StatusMove('Lev',10);CalcSet('Lev');" style="margin-right:2px;" /><input type="image" src="./image/interface/up3.png" alt="max" title="max" onclick="StatusMove('Lev',99);CalcSet('Lev');" /></li>
+                      </ul>
+                      <ul>
+                        <li style="position:absolute;top:10px;left:0px;"><input type="image" src="./image/interface/down1.png" alt="-1" title="-1" onclick="StatusMove('Lev',-1);CalcSet('Lev');" style="margin-right:2px;" /><input type="image" src="./image/interface/down2.png" alt="-10" title="-10" onclick="StatusMove('Lev',-10);CalcSet('Lev');" style="margin-right:2px;" /><input type="image" src="./image/interface/down3.png" alt="min" title="min" onclick="StatusMove('Lev',-99);CalcSet('Lev');" /></li>
+                      </ul>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li class="input_lt" style="margin-top:2px;width:35px;height:15px;text-align:center;">Status</li>
+                    <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                      <ul>
+                        <li id="StatusStP_0" style="width:19px;text-align:right;">0</li>
+                        <li style="width:7px;text-align:right;">/</li>
+                        <li id="StatusStP_1" style="width:20px;text-align:right;">0</li>
+                      </ul>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li class="input_lt" style="margin-top:2px;width:35px;height:15px;text-align:center;">Skill</li>
+                    <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                      <ul>
+                        <li id="StatusSkP_0" style="width:19px;text-align:right;">0</li>
+                        <li style="width:7px;text-align:right;">/</li>
+                        <li id="StatusSkP_1" style="width:20px;text-align:right;">0</li>
+                      </ul>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li class="input_lt" style="margin-top:2px;width:35px;height:15px;text-align:center;">???</li>
+                    <li class="input_gt" style="margin:2px 3px 0px 0px;width:47px;height:15px;">
+                      <ul>
+                        <li id="StatusUnP_0" style="width:19px;text-align:right;">0</li>
+                        <li style="width:7px;text-align:right;">/</li>
+                        <li id="StatusUnP_1" style="width:20px;text-align:right;">0</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li class="line1" style="width:1px;height:87px;"></li>
+                <li class="line2" style="width:1px;height:87px;"></li>
+                <li style="padding:2px 0px 0px 2px;width:290px;">
+                  <ul>
+                    <li id="SwitchUse_0" onclick="Flag[3]=(Flag[3])?0:1;$('SwitchUse_0').className=(Flag[3])?'btn2_on':'btn2_off';for (i=0;i<Name['Skill'].length;i++){SkillList('Potential',i);SkillList('Adeptness',i);}SkillList('Create');SkillList('Color');" class="btn2_off" style="margin:0px 4px 4px 0px;width:143px;"><div id="Text_3">技能を使用</div></li>
+                    <li id="SwitchUse_1" onclick="Flag[4]=(Flag[4])?0:1;$('SwitchUse_1').className=(Flag[4])?'btn2_on':'btn2_off';" class="btn2_off" style="margin:0px 0px 4px 0px;width:143px;"><div id="Text_4">ログを使用</div></li>
+                  </ul>
+                  <ul>
+                    <li id="SwitchUse_2" onclick="Flag[5]=(Flag[5])?0:1;$('SwitchUse_2').className=(Flag[5])?'btn2_on':'btn2_off';CalcSet('ViewSkill');" class="btn2_off" style="margin:0px 4px 10px 0px;width:143px;"><div id="Text_5">技能効果値を使用</div></li>
+                    <li id="SwitchUse_3" onclick="Flag[6]=(Flag[6])?0:1;$('SwitchUse_3').className=(Flag[6])?'btn2_on':'btn2_off';CalcSet('ViewPOT');" class="btn2_off" style="margin:0px 0px 10px 0px;width:143px;"><div id="Text_6">POT効果値を使用</div></li>
+                  </ul>
+                  <ul>
+                    <li class="btn2" onclick="Reset('Status');" style="margin:0px 4px 4px 0px;width:143px;"><div id="Text_7">ステータス初期化</div></li>
+                    <li class="btn2" onclick="Reset('Skill');" style="margin:0px 0px 4px 0px;width:143px;"><div id="Text_8">技能初期化</div></li>
+                  </ul>
+                  <ul>
+                    <li class="btn2" onclick="Reset('Status');Reset('Skill');StatusMove('Lev',-55);" style="margin:0px 0px 0px 0px;width:290px;"><div id="Text_9">全て初期化</div></li>
+                  </ul>
+                </li>
+              </ul>
+              <ul><li class="line1" style="width:100%;height:1px;"></li></ul>
+              <ul><li class="line2" style="width:100%;height:1px;"></li></ul>
+              <ul>
+                <li style="width:106px;">
+                  <ul><li id="Status" style="width:106px;"></li></ul>
+                  <ul>
+                    <li>
+                      <table style="width:103px;height:117px;border-width:0px;border-spacing:0px;">
+                        <tr><td id="SwitchUse_4" onclick="Flag[7]=(!Flag[7])?1:0;$('SwitchUse_4').className=(Flag[7])?'btn2_on':'btn2_off';CalcSet('Horse');" class="btn2_off" style="width:100%;"><div id="Text_16">騎乗</div></td></tr>
+                        <tr><td>
+                          <ul>
+                            <li id="Text_19" class="input_lt" style="margin:2px 0px 1px 0px;width:49px;height:14px;text-align:center;"></li>
+                            <li class="input_gt" style="margin:2px 1px 1px 0px;width:43px;height:14px;"><ul><li id="Status_81" style="width:34px;height:14px;text-align:right;">10</li></ul>%</li>
+                          </ul>
+                        </td></tr>
+                      </table>
+                    </li>
+                  </ul>
+                </li>
+                <li class="line1" style="width:1px;height:387px;"></li>
+                <li class="line2" style="width:1px;height:387px;"></li>
+                <li id="StatusView" style="padding:0px 0px 0px 2px;width:291px;"></li>
+              </ul>
+            </li>
+            <li class="line1" style="margin-top:3px;width:1px;height:498px;"></li>
+            <li class="line2" style="margin-top:3px;width:1px;height:498px;"></li>
+            <!-- 2列目 -->
+            <li id="SkillSet" style="padding:1px 2px 0px 2px;width:358px;"></li>
+            <li class="line1" style="margin-top:3px;width:1px;height:498px;"></li>
+            <li class="line2" style="margin-top:3px;width:1px;height:498px;"></li>
+            <!-- 3列目 -->
+            <li style="width:216px;">
+              <ul>
+                <li class="Inside" style="margin:2px 2px 1px 2px;padding-top:5px;width:211px;height:18px;">
+                  <ul>
+                    <li id="EfTab_0" class="tab_off" style="margin:0px 5px 0px 21px;width:90px;text-align:center;" onmouseover="Flag[8]=0;this.className='tab_on';$('EfTab_1').className='tab_off';$('SkillView').style.display='inline';$('POTView').style.display='none';"><div id="Text_17">技能効果値</div><span class="col_bg" style="z-index:2;position:absolute;bottom:-3px;left:0px;width:100%;height:4px;"></span></li>
+                    <li id="EfTab_1" class="tab_off" style="width:90px;text-align:center;" onmouseover="Flag[8]=1;this.className='tab_on';$('EfTab_0').className='tab_off';$('SkillView').style.display='none';$('POTView').style.display='inline';"><div id="Text_18">POT効果値</div><span class="col_bg" style="z-index:2;position:absolute;bottom:-3px;left:0px;width:100%;height:4px;"></span></li>
+                  </ul>
+                </li>
+              </ul>
+              <ul>
+                <li id="SkillView"></li>
+                <li id="POTView"></li>
+              </ul>
+              <ul><li class="line1" style="margin-top:2px;width:100%;height:1px;"></li></ul>
+              <ul><li class="line2" style="margin-bottom:1px;width:100%;height:1px;"></li></ul>
+              <ul>
+                <li style="width:214px;">
+                  <table id="Msg" style="position:absolute;left:1px;width:214px;">
+                    <tr><td id="Msg2" class="col_txt_bg" style="height:67px;">&nbsp;</td></tr>
+                    <tr><td id="Msg1" style="padding-top:2px;height:17px;">&nbsp;</td></tr>
+                  </table>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <ul><li class="line1" style="width:100%;height:1px;"></li></ul>
+          <ul><li class="line2" style="margin-bottom:2px;width:100%;height:1px;"></li></ul>
+          <ul>
+            <li class="input_lt" style="padding:2px 1px 0px 1px;width:30px;height:15px;text-align:right;">Code</li>
+            <li style="width:941px;height:19px;"><input type="text" value="" onclick="this.select(0,this.value.length);" id="InCode" class="input_gt" style="width:947px;height:15px;" /></li>
+          </ul>
+          <ul>
+            <li style="width:984px;height:18px;">
+              <ul style="position:absolute;right:10px;height:15px;">
+                <li class="input_lt input_lt2_2" onclick="$('InCode').value=Base64.toBase64(RawDeflate.deflate(Base64.utob(Store())));" style="margin-right:2px;padding-right:2px;width:39px;height:15px;text-align:center;cursor:pointer;"><div>Create</div></li>
+                <li class="input_lt input_lt2_2" onclick="File('CodeLoad');" style="margin-right:2px;padding-right:2px;width:39px;height:15px;text-align:center;cursor:pointer;"><div>Load</div></li>
+                <li class="input_lt input_lt2_2" onclick="$('InCode').value='';" style="padding-right:2px;width:39px;height:15px;text-align:center;cursor:pointer;"><div>Delete</div></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <ul> <!-- 装備部 -->
+        <li class="col_bg main" style="margin-top:15px;padding:3px;width:984px;">
+          <ul><li id="TextEquip_0" class="title" style="padding-top:2px;width:100%;line-height:16px;text-align:center;">そうび</li></ul>
+          <ul>
+            <li id="SelGem" style="margin:3px 0px 0px 325px;width:81px;height:16px;"><select onchange="$('SelEquip_0_2').selectedIndex=this.selectedIndex;$('SelEquip_1_2').selectedIndex=this.selectedIndex;$('SelEquip_2_2').selectedIndex=this.selectedIndex;$('SelEquip_3_2').selectedIndex=this.selectedIndex;$('SelEquip_4_2').selectedIndex=this.selectedIndex;$('SelEquip_5_2').selectedIndex=this.selectedIndex;$('SelEquip_6_2').selectedIndex=this.selectedIndex;CalcSet('ALL');" style="width:81px;height:16px;"><option selected="selected">炎</option></select></li>
+            <li style="margin:3px 0px 0px 4px;width:45px;height:16px;"><select onchange="$('SelEquip_0_3').selectedIndex=this.selectedIndex;Status['Equip'][0][3]=this.selectedIndex;$('SelEquip_1_3').selectedIndex=this.selectedIndex;Status['Equip'][1][3]=this.selectedIndex;$('SelEquip_2_3').selectedIndex=this.selectedIndex;Status['Equip'][2][3]=this.selectedIndex;$('SelEquip_3_3').selectedIndex=this.selectedIndex;Status['Equip'][3][3]=this.selectedIndex;$('SelEquip_4_3').selectedIndex=this.selectedIndex;Status['Equip'][4][3]=this.selectedIndex;$('SelEquip_5_3').selectedIndex=this.selectedIndex;Status['Equip'][5][3]=this.selectedIndex;$('SelEquip_6_3').selectedIndex=this.selectedIndex;Status['Equip'][6][3]=this.selectedIndex;CalcSet('ALL');" style="width:45px;height:16px;"><option selected="selected">　0</option><option>+ 1</option><option>+ 2</option><option>+ 3</option><option>+ 4</option><option>+ 5</option><option>+ 6</option><option>+ 7</option><option>+ 8</option><option>+ 9</option><option>+10</option></select></li>
+            <li class="btn2" onclick="Reset('Equip');" style="margin:3px 0px 0px 15px;width:120px;height:19px;"><div id="Text_26">装備初期化</div></li>
+            <li style="margin-top:3px;width:394px;height:19px;"></li>
+          </ul>
+          <ul>
+            <li id="TextEquip_1" class="input_lt" style="margin-top:3px;width:40px;line-height:18px;text-align:right;">右手</li>
+            <li class="input_gt" style="margin-top:3px;padding-left:3px;width:935px;height:18px;">
+              <ul>
+                <li id="Equip_0_0" style="margin-right:4px;width:225px;height:16px;"><select id="SelEquip_0_0" style="width:225px;height:16px;"><option value="0" selected="selected">+----- 片手剣</option></select></li>
+                <li id="Equip_0_1" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_0_1" style="width:45px;height:16px;"><option value="0" selected="selected">物</option></select></li>
+                <li id="Equip_0_2" style="margin-right:4px;width:81px;height:16px;"><select id="SelEquip_0_2" style="width:81px;height:16px;"><option value="0" selected="selected">炎</option></select></li>
+                <li id="Equip_0_3" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_0_3" style="width:45px;height:16px;"><option value="0" selected="selected">+ 0</option></select></li>
+                <li id="Equip_0_4" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_0_4" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_0_5" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_0_5" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_0_6" style="margin-right:0px;width:171px;height:16px;"><select id="SelEquip_0_6" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+              </ul>
+            </li>
+          </ul>
+          <ul>
+            <li id="TextEquip_2" class="input_lt" style="margin-top:2px;width:40px;line-height:18px;text-align:right;">左手</li>
+            <li class="input_gt" style="margin-top:2px;padding-left:3px;width:935px;height:18px;">
+              <ul>
+                <li id="Equip_1_0" style="margin-right:4px;width:225px;height:16px;"><select id="SelEquip_1_0" style="width:225px;height:16px;"><option value="0" selected="selected">+----- 盾</option></select></li>
+                <li id="Equip_1_1" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_1_1" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">物</option></select></li>
+                <li id="Equip_1_2" style="margin-right:4px;width:81px;height:16px;"><select id="SelEquip_1_2" style="width:81px;height:16px;"><option value="0" selected="selected">炎</option></select></li>
+                <li id="Equip_1_3" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_1_3" style="width:45px;height:16px;"><option value="0" selected="selected">+ 0</option></select></li>
+                <li id="Equip_1_4" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_1_4" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_1_5" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_1_5" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_1_6" style="margin-right:0px;width:171px;height:16px;"><select id="SelEquip_1_6" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+              </ul>
+            </li>
+          </ul>
+          <ul>
+            <li id="TextEquip_3" class="input_lt" style="margin-top:2px;width:40px;line-height:18px;text-align:right;">頭</li>
+            <li class="input_gt" style="margin-top:2px;padding-left:3px;width:935px;height:18px;">
+              <ul>
+                <li id="Equip_2_0" style="margin-right:4px;width:225px;height:16px;"><select id="SelEquip_2_0" style="width:225px;height:16px;"><option value="0" selected="selected">+----- ヘルメット</option></select></li>
+                <li id="Equip_2_1" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_2_1" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">物</option></select></li>
+                <li id="Equip_2_2" style="margin-right:4px;width:81px;height:16px;"><select id="SelEquip_2_2" style="width:81px;height:16px;"><option value="0" selected="selected">炎</option></select></li>
+                <li id="Equip_2_3" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_2_3" style="width:45px;height:16px;"><option value="0" selected="selected">+ 0</option></select></li>
+                <li id="Equip_2_4" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_2_4" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_2_5" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_2_5" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_2_6" style="margin-right:0px;width:171px;height:16px;"><select id="SelEquip_2_6" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+              </ul>
+            </li>
+          </ul>
+          <ul>
+            <li id="TextEquip_4" class="input_lt" style="margin-top:2px;width:40px;line-height:18px;text-align:right;">上半身</li>
+            <li class="input_gt" style="margin-top:2px;padding-left:3px;width:935px;height:18px;">
+              <ul>
+                <li id="Equip_3_0" style="margin-right:4px;width:225px;height:16px;"><select id="SelEquip_3_0" style="width:225px;height:16px;"><option value="0" selected="selected">+----- トーソ</option></select></li>
+                <li id="Equip_3_1" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_3_1" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">物</option></select></li>
+                <li id="Equip_3_2" style="margin-right:4px;width:81px;height:16px;"><select id="SelEquip_3_2" style="width:81px;height:16px;"><option value="0" selected="selected">炎</option></select></li>
+                <li id="Equip_3_3" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_3_3" style="width:45px;height:16px;"><option value="0" selected="selected">+ 0</option></select></li>
+                <li id="Equip_3_4" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_3_4" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_3_5" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_3_5" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_3_6" style="margin-right:0px;width:171px;height:16px;"><select id="SelEquip_3_6" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+              </ul>
+            </li>
+          </ul>
+          <ul>
+            <li id="TextEquip_5" class="input_lt" style="margin-top:2px;width:40px;line-height:18px;text-align:right;">手</li>
+            <li class="input_gt" style="margin-top:2px;padding-left:3px;width:935px;height:18px;">
+              <ul>
+                <li id="Equip_4_0" style="margin-right:4px;width:225px;height:16px;"><select id="SelEquip_4_0" style="width:225px;height:16px;"><option value="0" selected="selected">+----- グローブ</option></select></li>
+                <li id="Equip_4_1" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_4_1" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">物</option></select></li>
+                <li id="Equip_4_2" style="margin-right:4px;width:81px;height:16px;"><select id="SelEquip_4_2" style="width:81px;height:16px;"><option value="0" selected="selected">炎</option></select></li>
+                <li id="Equip_4_3" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_4_3" style="width:45px;height:16px;"><option value="0" selected="selected">+ 0</option></select></li>
+                <li id="Equip_4_4" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_4_4" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_4_5" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_4_5" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_4_6" style="margin-right:0px;width:171px;height:16px;"><select id="SelEquip_4_6" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+              </ul>
+            </li>
+          </ul>
+          <ul>
+            <li id="TextEquip_6" class="input_lt" style="margin-top:2px;width:40px;line-height:18px;text-align:right;">下半身</li>
+            <li class="input_gt" style="margin-top:2px;padding-left:3px;width:935px;height:18px;">
+              <ul>
+                <li id="Equip_5_0" style="margin-right:4px;width:225px;height:16px;"><select id="SelEquip_5_0" style="width:225px;height:16px;"><option value="0" selected="selected">+----- クィス</option></select></li>
+                <li id="Equip_5_1" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_5_1" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">物</option></select></li>
+                <li id="Equip_5_2" style="margin-right:4px;width:81px;height:16px;"><select id="SelEquip_5_2" style="width:81px;height:16px;"><option value="0" selected="selected">炎</option></select></li>
+                <li id="Equip_5_3" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_5_3" style="width:45px;height:16px;"><option value="0" selected="selected">+ 0</option></select></li>
+                <li id="Equip_5_4" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_5_4" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_5_5" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_5_5" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_5_6" style="margin-right:0px;width:171px;height:16px;"><select id="SelEquip_5_6" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+              </ul>
+            </li>
+          </ul>
+          <ul>
+            <li id="TextEquip_7" class="input_lt" style="margin-top:2px;width:40px;line-height:18px;text-align:right;">靴</li>
+            <li class="input_gt" style="margin-top:2px;padding-left:3px;width:935px;height:18px;">
+              <ul>
+                <li id="Equip_6_0" style="margin-right:4px;width:225px;height:16px;"><select id="SelEquip_6_0" style="width:225px;height:16px;"><option value="0" selected="selected">+----- ブーツ</option></select></li>
+                <li id="Equip_6_1" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_6_1" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">物</option></select></li>
+                <li id="Equip_6_2" style="margin-right:4px;width:81px;height:16px;"><select id="SelEquip_6_2" style="width:81px;height:16px;"><option value="0" selected="selected">炎</option></select></li>
+                <li id="Equip_6_3" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_6_3" style="width:45px;height:16px;"><option value="0" selected="selected">+ 0</option></select></li>
+                <li id="Equip_6_4" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_6_4" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_6_5" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_6_5" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_6_6" style="margin-right:0px;width:171px;height:16px;"><select id="SelEquip_6_6" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+              </ul>
+            </li>
+          </ul>
+          <ul>
+            <li id="TextEquip_8" class="input_lt" style="margin-top:2px;width:40px;line-height:18px;text-align:right;">背</li>
+            <li class="input_gt" style="margin-top:2px;padding-left:3px;width:935px;height:18px;">
+              <ul>
+                <li id="Equip_7_0" style="margin-right:4px;width:225px;height:16px;"><select id="SelEquip_7_0" style="width:225px;height:16px;"><option value="0" selected="selected">+----- マント</option></select></li>
+                <li id="Equip_7_1" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_7_1" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">物</option></select></li>
+                <li id="Equip_7_2" style="margin-right:4px;width:81px;height:16px;"><select id="SelEquip_7_2" style="display:none;width:81px;height:16px;"><option value="0" selected="selected">炎</option></select></li>
+                <li id="Equip_7_3" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_7_3" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">+ 0</option></select></li>
+                <li id="Equip_7_4" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_7_4" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_7_5" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_7_5" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_7_6" style="margin-right:0px;width:171px;height:16px;"><select id="SelEquip_7_6" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+              </ul>
+            </li>
+          </ul>
+          <ul>
+            <li id="TextEquip_9" class="input_lt" style="margin-top:2px;width:40px;line-height:18px;text-align:right;">耳飾り</li>
+            <li class="input_gt" style="margin-top:2px;padding-left:3px;width:935px;height:18px;">
+              <ul>
+                <li id="Equip_8_0" style="margin-right:4px;width:225px;height:16px;"><select id="SelEquip_8_0" style="width:225px;height:16px;"><option value="0" selected="selected">+----- イヤリング</option></select></li>
+                <li id="Equip_8_1" style="display:none;margin-right:4px;width:45px;height:16px;"><select id="SelEquip_8_1" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">物</option></select></li>
+                <li id="Equip_8_2" style="display:none;margin-right:4px;width:81px;height:16px;"><select id="SelEquip_8_2" style="display:none;width:81px;height:16px;"><option value="0" selected="selected">炎</option></select></li>
+                <li id="Equip_8_3" style="display:none;margin-right:4px;width:45px;height:16px;"><select id="SelEquip_8_3" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">+ 0</option></select></li>
+                <li id="Equip_8_4" style="display:none;margin-right:4px;width:171px;height:16px;"><select id="SelEquip_8_4" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_8_5" style="display:none;margin-right:4px;width:171px;height:16px;"><select id="SelEquip_8_5" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_8_6" style="display:none;margin-right:0px;width:171px;height:16px;"><select id="SelEquip_8_6" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_9_0" style="margin-right:4px;width:225px;height:16px;"><select id="SelEquip_9_0" style="width:225px;height:16px;"><option value="0" selected="selected">+----- イヤリング</option></select></li>
+                <li id="Equip_9_1" style="display:none;margin-right:4px;width:45px;height:16px;"><select id="SelEquip_9_1" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">物</option></select></li>
+                <li id="Equip_9_2" style="display:none;margin-right:4px;width:81px;height:16px;"><select id="SelEquip_9_2" style="display:none;width:81px;height:16px;"><option value="0" selected="selected">炎</option></select></li>
+                <li id="Equip_9_3" style="display:none;margin-right:4px;width:45px;height:16px;"><select id="SelEquip_9_3" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">+ 0</option></select></li>
+                <li id="Equip_9_4" style="display:none;margin-right:4px;width:171px;height:16px;"><select id="SelEquip_9_4" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_9_5" style="display:none;margin-right:4px;width:171px;height:16px;"><select id="SelEquip_9_5" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_9_6" style="display:none;margin-right:0px;width:171px;height:16px;"><select id="SelEquip_9_6" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+              </ul>
+            </li>
+          </ul>
+          <ul>
+            <li id="TextEquip_10" class="input_lt" style="margin-top:2px;width:40px;line-height:18px;text-align:right;">首飾り</li>
+            <li class="input_gt" style="margin-top:2px;padding-left:3px;width:935px;height:18px;">
+              <ul>
+                <li id="Equip_10_0" style="margin-right:4px;width:225px;height:16px;"><select id="SelEquip_10_0" style="width:225px;height:16px;"><option value="0" selected="selected">+----- アミュレット</option></select></li>
+                <li id="Equip_10_1" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_10_1" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">物</option></select></li>
+                <li id="Equip_10_2" style="margin-right:4px;width:81px;height:16px;"><select id="SelEquip_10_2" style="display:none;width:81px;height:16px;"><option value="0" selected="selected">炎</option></select></li>
+                <li id="Equip_10_3" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_10_3" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">+ 0</option></select></li>
+                <li id="Equip_10_4" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_10_4" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_10_5" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_10_5" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_10_6" style="margin-right:0px;width:171px;height:16px;"><select id="SelEquip_10_6" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+              </ul>
+            </li>
+          </ul>
+          <ul>
+            <li id="TextEquip_11" class="input_lt" style="margin-top:2px;width:40px;line-height:18px;text-align:right;">ベルト</li>
+            <li class="input_gt" style="margin-top:2px;padding-left:3px;width:935px;height:18px;">
+              <ul>
+                <li id="Equip_11_0" style="margin-right:4px;width:225px;height:16px;"><select id="SelEquip_11_0" style="width:225px;height:16px;"><option value="0" selected="selected">+----- ベルト</option></select></li>
+                <li id="Equip_11_1" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_11_1" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">物</option></select></li>
+                <li id="Equip_11_2" style="margin-right:4px;width:81px;height:16px;"><select id="SelEquip_11_2" style="display:none;width:81px;height:16px;"><option value="0" selected="selected">炎</option></select></li>
+                <li id="Equip_11_3" style="margin-right:4px;width:45px;height:16px;"><select id="SelEquip_11_3" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">+ 0</option></select></li>
+                <li id="Equip_11_4" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_11_4" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_11_5" style="margin-right:4px;width:171px;height:16px;"><select id="SelEquip_11_5" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_11_6" style="margin-right:0px;width:171px;height:16px;"><select id="SelEquip_11_6" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+              </ul>
+            </li>
+          </ul>
+          <ul>
+            <li id="TextEquip_12" class="input_lt" style="margin-top:2px;width:40px;line-height:18px;text-align:right;">指輪</li>
+            <li class="input_gt" style="margin-top:2px;padding-left:3px;width:935px;height:18px;">
+              <ul>
+                <li id="Equip_12_0" style="margin-right:4px;width:225px;height:16px;"><select id="SelEquip_12_0" style="width:225px;height:16px;"><option value="0" selected="selected">+----- リング</option></select></li>
+                <li id="Equip_12_1" style="display:none;margin-right:4px;width:45px;height:16px;"><select id="SelEquip_12_1" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">物</option></select></li>
+                <li id="Equip_12_2" style="display:none;margin-right:4px;width:81px;height:16px;"><select id="SelEquip_12_2" style="display:none;width:81px;height:16px;"><option value="0" selected="selected">炎</option></select></li>
+                <li id="Equip_12_3" style="display:none;margin-right:4px;width:45px;height:16px;"><select id="SelEquip_12_3" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">+ 0</option></select></li>
+                <li id="Equip_12_4" style="display:none;margin-right:4px;width:171px;height:16px;"><select id="SelEquip_12_4" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_12_5" style="display:none;margin-right:4px;width:171px;height:16px;"><select id="SelEquip_12_5" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_12_6" style="display:none;margin-right:0px;width:171px;height:16px;"><select id="SelEquip_12_6" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_13_0" style="margin-right:4px;width:225px;height:16px;"><select id="SelEquip_13_0" style="width:225px;height:16px;"><option value="0" selected="selected">+----- リング</option></select></li>
+                <li id="Equip_13_1" style="display:none;margin-right:4px;width:45px;height:16px;"><select id="SelEquip_13_1" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">物</option></select></li>
+                <li id="Equip_13_2" style="display:none;margin-right:4px;width:81px;height:16px;"><select id="SelEquip_13_2" style="display:none;width:81px;height:16px;"><option value="0" selected="selected">炎</option></select></li>
+                <li id="Equip_13_3" style="display:none;margin-right:4px;width:45px;height:16px;"><select id="SelEquip_13_3" style="display:none;width:45px;height:16px;"><option value="0" selected="selected">+ 0</option></select></li>
+                <li id="Equip_13_4" style="display:none;margin-right:4px;width:171px;height:16px;"><select id="SelEquip_13_4" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_13_5" style="display:none;margin-right:4px;width:171px;height:16px;"><select id="SelEquip_13_5" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+                <li id="Equip_13_6" style="display:none;margin-right:0px;width:171px;height:16px;"><select id="SelEquip_13_6" style="display:none;width:171px;height:16px;"><option value="0" selected="selected">+----- 魂</option></select></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+<div id="test" style="position:absolute;top:0px;left:300px;"></div>
+<div id="test2" style="position:absolute;bottom:0px;left:200px;background:#fff;"></div>
+<div id="test3" style="position:absolute;bottom:0px;left:400px;background:#fff;"></div>
+<script type="text/javascript">
+// <![CDATA[
+ts = $('test');
+ts2 = $('test2');
+ts3 = $('test3');
+// ts.style.display='none';
+
+tmp[0] = document.lastModified;
+if (Agent.search(/Opera/i) != -1) {
+  tmp[1] = tmp[0].split(' ');
+  tmp[2] = tmp[1][4].split(':');
+  if      (tmp[1][2] == 'Jan') tmp[1][2] = 1;
+  else if (tmp[1][2] == 'Feb') tmp[1][2] = 2;
+  else if (tmp[1][2] == 'Mar') tmp[1][2] = 3;
+  else if (tmp[1][2] == 'Apr') tmp[1][2] = 4;
+  else if (tmp[1][2] == 'May') tmp[1][2] = 5;
+  else if (tmp[1][2] == 'Jun') tmp[1][2] = 6;
+  else if (tmp[1][2] == 'Jul') tmp[1][2] = 7;
+  else if (tmp[1][2] == 'Aug') tmp[1][2] = 8;
+  else if (tmp[1][2] == 'Sep') tmp[1][2] = 9;
+  else if (tmp[1][2] == 'Oct') tmp[1][2] = 10;
+  else if (tmp[1][2] == 'Nov') tmp[1][2] = 11;
+  else if (tmp[1][2] == 'Dec') tmp[1][2] = 12;
+  tmp[2][0] = Number(tmp[2][0]);
+  tmp = tmp[1][3] + '&nbsp;' + zeroPadding(2,0,tmp[1][2]) + '/' + zeroPadding(2,0,tmp[1][1]) + '&nbsp;' + zeroPadding(2,0,tmp[2][0]) + ':' + zeroPadding(2,0,tmp[2][1]);
+} else {
+  tmp[1] = tmp[0].split(' ');
+  tmp[2] = tmp[1][0].split('/');
+  tmp[3] = tmp[1][1].split(':');
+  tmp[2][2] = Number(tmp[2][2]);
+  tmp[2][2] += (tmp[2][2] < 2000) ? 1900: 0;
+  tmp = tmp[2][2] + '&nbsp;' + tmp[2][0] + '/' + tmp[2][1] + '&nbsp;' + tmp[3][0] + ':' + tmp[3][1];
+}
+$('UPData').innerHTML = tmp;
+
+$('Lang_0').className = (Flag[0] == 0) ? 'btn1_on': 'btn1_off';
+$('Lang_1').className = (Flag[0] == 1) ? 'btn1_on': 'btn1_off';
+$('Lang_2').className = (Flag[0] == 2) ? 'btn1_on': 'btn1_off';
+$('CSS_0').className  = (Flag[1] == 0) ? 'btn1_on': 'btn1_off';
+$('CSS_1').className  = (Flag[1] == 1) ? 'btn1_on': 'btn1_off';
+$('CSS_2').className  = (Flag[1] == 2) ? 'btn1_on': 'btn1_off';
+$('Tab_0_0').className = (Flag[2] == 1) ? 'tab_on': 'tab_off';
+$('Tab_1_0').className = (Flag[2] == 2) ? 'tab_on': 'tab_off';
+$('Tab_2_0').className = (Flag[2] == 3) ? 'tab_on': 'tab_off';
+$('Tab_3_0').className = (Flag[2] == 4) ? 'tab_on': 'tab_off';
+$('Tab_4_0').className = (Flag[2] == 5) ? 'tab_on': 'tab_off';
+$('Tab_5_0').className = (Flag[2] == 6) ? 'tab_on': 'tab_off';
+$('Tab_6_0').className = (Flag[2] == 7) ? 'tab_on': 'tab_off';
+$('Tab_0_1').style.display = (Flag[2] == 1) ? 'inline': 'none';
+$('Tab_1_1').style.display = (Flag[2] == 2) ? 'inline': 'none';
+$('Tab_2_1').style.display = (Flag[2] == 3) ? 'inline': 'none';
+$('Tab_3_1').style.display = (Flag[2] == 4) ? 'inline': 'none';
+$('Tab_4_1').style.display = (Flag[2] == 5) ? 'inline': 'none';
+$('Tab_5_1').style.display = (Flag[2] == 6) ? 'inline': 'none';
+$('Tab_6_1').style.display = (Flag[2] == 7) ? 'inline': 'none';
+$('SwitchUse_0').className  = (Flag[3] == 1) ? 'btn2_on': 'btn2_off';
+$('SwitchUse_1').className  = (Flag[4] == 1) ? 'btn2_on': 'btn2_off';
+$('SwitchUse_2').className  = (Flag[5] == 1) ? 'btn2_on': 'btn2_off';
+$('SwitchUse_3').className  = (Flag[6] == 1) ? 'btn2_on': 'btn2_off';
+$('SwitchUse_4').className  = (Flag[7] == 1) ? 'btn2_on': 'btn2_off';
+$('EfTab_0').className = (Flag[8] != 1) ? 'tab_on': 'tab_off';
+$('EfTab_1').className = (Flag[8] == 1) ? 'tab_on': 'tab_off';
+
+Status['Job'] = new Array(0,0,0);
+Status['Lev'] = new Array(0,0);
+Status['StP'] = new Array(0,0);
+Status['SkP'] = new Array(0,0);
+Status['UnP'] = new Array(0,0);
+Status['LP'] = 0;
+Status['MP'] = 0;
+Status['POT'] = 100;
+Status['LSk'] = 100;
+for (i=0;i<6;i++)
+  Status[Name['Option'][i][2]] = new Array(Status['Set']['Base'][Status['Job'][0]][i + 1] + Status['Set']['Job'][Name['Job'][Status['Job'][2]][0]][i + 1],0,0);
+Status['Equip'] = new Array();
+for (i=0;i<=13;i++)
+  Status['Equip'][i] = new Array(0,0,0,0,0,0,0);
+Status['Skill'] = new Array();
+Status['Skill']['D'] = new Array();
+Status['Skill']['P'] = new Array();
+// ]]>
+</script>
+<script type="text/javascript" src="./js/create.js"></script>
+<script type="text/javascript" src="./js/equip.js"></script>
+<script type="text/javascript" src="./js/calc.js"></script>
+<script type="text/javascript" src="./js/file.js"></script>
+<script type="text/javascript" src="./js/simulator.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+$('SkillView').style.display = (!Flag[8]) ? 'inline': 'none';
+$('POTView').style.display = (Flag[8]) ? 'inline': 'none';
+Message();
+StatusMove('Lev',1);
+SkillBar('ALL');
+TextSet();
+$('Loading').style.display = 'none';
+$('Loading').style.visibility = 'hidden';
+// ]]>
+</script>
+<!-- FC2 hosting footer removed by preservation bootstrap. -->
+<!-- FC2, inc.-->
+<img src="//media.fc2.com/counter_img.php?id=50" style="display:none" alt="inserted by FC2 system" width="0" height="0">
+<!-- FC2, inc.--></body></html>
