@@ -37,12 +37,14 @@ class BuildPagesTests(unittest.TestCase):
             (modern / "search.css").write_text("/* search */", encoding="utf-8")
             (modern / "builds.css").write_text("/* builds */", encoding="utf-8")
             (modern / "compare.css").write_text("/* compare */", encoding="utf-8")
+            (modern / "tooltips.css").write_text("/* tooltips */", encoding="utf-8")
             (modern / "version.js").write_text("// version", encoding="utf-8")
             (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
             (modern / "build-store.js").write_text("// build store", encoding="utf-8")
             (modern / "search.js").write_text("// search", encoding="utf-8")
             (modern / "app-shell.js").write_text("// shell", encoding="utf-8")
             (modern / "builds.js").write_text("// builds", encoding="utf-8")
+            (modern / "tooltips.js").write_text("// tooltips", encoding="utf-8")
             (modern / "compare.js").write_text("// compare", encoding="utf-8")
             (modern / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
             parts = modern / "pandora-hero.parts"
@@ -102,6 +104,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/search.css",
                 "modern/builds.css",
                 "modern/compare.css",
+                "modern/tooltips.css",
                 "modern/favicon.svg",
                 "modern/version.js",
                 "modern/adapter.js",
@@ -109,6 +112,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/search.js",
                 "modern/app-shell.js",
                 "modern/builds.js",
+                "modern/tooltips.js",
                 "modern/compare.js",
             ):
                 self.assertEqual(html.count(relative), 1, relative)
@@ -117,7 +121,8 @@ class BuildPagesTests(unittest.TestCase):
             self.assertLess(html.index("modern/build-store.js"), html.index("modern/search.js"))
             self.assertLess(html.index("modern/search.js"), html.index("modern/app-shell.js"))
             self.assertLess(html.index("modern/app-shell.js"), html.index("modern/builds.js"))
-            self.assertLess(html.index("modern/builds.js"), html.index("modern/compare.js"))
+            self.assertLess(html.index("modern/builds.js"), html.index("modern/tooltips.js"))
+            self.assertLess(html.index("modern/tooltips.js"), html.index("modern/compare.js"))
             self.assertIn("   1 // [ 0]", html)
             self.assertIn(
                 'data-project-url="https://github.com/bonaqu/Pandora-Saga-Simulator-remaked"',
@@ -135,10 +140,12 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/build-store.js",
                 "modern/search.js",
                 "modern/builds.js",
+                "modern/tooltips.js",
                 "modern/compare.js",
                 "modern/search.css",
                 "modern/builds.css",
                 "modern/compare.css",
+                "modern/tooltips.css",
             ):
                 self.assertNotIn(relative, legacy)
 
@@ -156,6 +163,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/search.css",
                 "modern/builds.css",
                 "modern/compare.css",
+                "modern/tooltips.css",
                 "modern/favicon.svg",
                 "modern/version.js",
                 "modern/adapter.js",
@@ -163,6 +171,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/search.js",
                 "modern/app-shell.js",
                 "modern/builds.js",
+                "modern/tooltips.js",
                 "modern/compare.js",
                 "modern/pandora-hero.webp",
                 ".nojekyll",
@@ -208,6 +217,13 @@ class BuildPagesTests(unittest.TestCase):
             root = self.make_root(pathlib.Path(td))
             (root / "modern" / "compare.js").unlink()
             with self.assertRaisesRegex(FileNotFoundError, "modern/compare.js"):
+                build_pages(root, root / "_site")
+
+    def test_missing_tooltip_assets_fail_clearly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            (root / "modern" / "tooltips.js").unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "modern/tooltips.js"):
                 build_pages(root, root / "_site")
 
     def test_missing_hero_parts_fails_clearly(self):
