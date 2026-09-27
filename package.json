@@ -5,6 +5,7 @@
     "test:ui": "playwright test",
     "test:ui:foundation": "playwright test tests/ui/modern-foundation.spec.mjs",
     "test:ui:adapter": "playwright test tests/ui/adapter.spec.mjs",
+    "test:ui:search-builds": "playwright test tests/ui/search-builds.spec.mjs",
     "test:ui:visual": "playwright test tests/ui/visual-capture.spec.mjs"
   },
   "devDependencies": {
