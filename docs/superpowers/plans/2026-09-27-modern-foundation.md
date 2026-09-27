@@ -4,7 +4,7 @@
 
 **Goal:** Ship a preserved `/legacy/` simulator and a responsive Concept-C Modern Mode at `/`, with a player-facing bilingual repository presentation and strong preservation/deployment checks.
 
-**Architecture:** Keep the recovered root simulator files as the immutable legacy source set and generate both deployment surfaces from them. A deterministic Python Pages builder writes a near-museum Legacy copy to `_site/legacy/` and a Modern copy to `_site/` by injecting only Modern CSS/JS/meta hooks; the existing legacy IDs, globals, inline handlers, formulas, data files, `Store()`, and `Expand()` remain the calculation/state implementation. Modern JS/CSS progressively enhance the legacy DOM rather than replacing the calculator engine.
+**Architecture:** Keep the recovered root simulator files as the immutable legacy source set and generate both deployment surfaces from them. A deterministic Python Pages builder writes a self-contained near-museum Legacy snapshot to `_site/legacy/` and a Modern copy to `_site/` by injecting only Modern CSS/JS/meta hooks; the existing legacy IDs, globals, inline handlers, formulas, data files, `Store()`, and `Expand()` remain the calculation/state implementation. Modern JS/CSS progressively enhance the legacy DOM rather than replacing the calculator engine.
 
 **Tech Stack:** Existing static HTML/CSS/JavaScript + Prototype-era legacy scripts, plain modern JavaScript/CSS, Python 3 standard library (`unittest`, `hashlib`, `pathlib`, `shutil`, `re`), Node.js syntax checks, GitHub Actions, GitHub Pages. Browser QA uses Playwright as a development/CI smoke-test dependency only, not an application runtime dependency.
 
@@ -103,11 +103,12 @@ git commit -m "test: freeze legacy simulator baseline"
 - [ ] **Step 1: Write failing builder tests**
 
 Create `tests/test_build_pages.py` with temporary fixture directories asserting:
-- Legacy output receives an unmodified copy of the source HTML bytes apart from path-safe deployment handling explicitly required by the builder;
+- `_site/legacy/index.html` is byte-for-byte identical to the validated root legacy `index.html`;
+- Legacy receives its own `legacy/css/`, `legacy/js/`, `legacy/image/`, and `legacy/readme.txt`, so no legacy path rewriting is required;
 - Modern output contains `modern/modern.css` and `modern/app-shell.js` references exactly once;
 - Modern output defaults to English without changing Legacy default language;
-- Modern output contains links/hooks for Project, Updates, and `/legacy/`;
-- shared `css/`, `js/`, `image/`, and `readme.txt` are copied into deployment output;
+- Modern output contains hooks for Project, Updates, and Legacy navigation;
+- root Modern deployment receives `css/`, `js/`, `image/`, and `readme.txt` runtime copies;
 - builder raises a clear exception when `modern/modern.css` or `modern/app-shell.js` is missing.
 
 - [ ] **Step 2: Run builder tests and verify failure**
@@ -119,10 +120,11 @@ Expected: FAIL importing `scripts.build_pages`.
 
 Rules:
 - delete/recreate output safely only when output is inside repository working tree;
-- copy shared legacy runtime assets once at output root;
-- copy the preserved entry/readme/runtime set under `output/legacy/` with relative paths adjusted only as needed so `/legacy/` loads from shared or copied runtime assets deterministically;
+- create a **self-contained Legacy snapshot** under `output/legacy/` by copying the validated `index.html`, `readme.txt`, `css/`, `js/`, and `image/` without rewriting Legacy HTML;
+- separately copy the same runtime asset directories to output root for Modern Mode;
 - generate Modern HTML from the preserved source by deterministic string/DOM-safe insertion, not by hand-maintaining a second full calculator HTML file;
 - set Modern default language to EN while preserving explicit `?lang=en`, `?lang=jp`, and `?lang=tw` behavior;
+- copy Modern assets to `output/modern/`;
 - add `.nojekyll` to output.
 
 - [ ] **Step 4: Run builder tests**
@@ -143,7 +145,7 @@ Keep source import, static validation, JS syntax checks, Pages configure/upload/
 - [ ] **Step 6: Build locally in CI-compatible mode and inspect route structure**
 
 Run: `python scripts/build_pages.py --output _site`
-Expected required files: `_site/index.html`, `_site/legacy/index.html`, `_site/modern/modern.css`, `_site/modern/app-shell.js`, `_site/js/calc.js`, `_site/image/`.
+Expected required files: `_site/index.html`, `_site/legacy/index.html`, `_site/legacy/js/calc.js`, `_site/legacy/image/`, `_site/modern/modern.css`, `_site/modern/app-shell.js`, `_site/js/calc.js`, `_site/image/`.
 
 - [ ] **Step 7: Commit**
 
@@ -160,6 +162,8 @@ git commit -m "build: generate modern and legacy Pages routes"
 - Create: `modern/modern.css`
 - Create: `modern/app-shell.js`
 - Create: `modern/version.js`
+- Create: `modern/assets/brand-mark.svg`
+- Create: `modern/assets/favicon.svg`
 - Create: `package.json`
 - Create: `tests/ui/modern-foundation.spec.mjs`
 - Modify: `scripts/build_pages.py`
@@ -181,6 +185,7 @@ Create `tests/ui/modern-foundation.spec.mjs` asserting on generated `_site/`:
 - Legacy link resolves to `/legacy/` relative to Pages base path;
 - default Modern labels render in English;
 - the old dead FC2 blog link is absent from Modern primary navigation;
+- Modern page references the new project favicon/brand mark;
 - at 1920×1080 and 2560×1440, header/nav right edge is not outside the main shell right edge;
 - at 390×844, `document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1`;
 - primary controls have no overlap according to their bounding rectangles;
@@ -218,7 +223,11 @@ Expected: FAIL because Modern shell/assets do not exist yet.
 - create a mobile breakpoint that prevents body-level horizontal overflow and keeps navigation touch-reachable;
 - preserve legacy element IDs and interactive hit areas.
 
-- [ ] **Step 5: Add visible version metadata**
+- [ ] **Step 5: Add the initial project brand mark and favicon**
+
+Use original project artwork only for visual reference, not by copying official game art into a new asset in this task. Create a simple Remaked-specific typographic/monogram SVG treatment consistent with Concept C. Decorative Pandora Saga character/location banner work is deferred to the dedicated brand/media phase where original screenshots/artwork are researched first.
+
+- [ ] **Step 6: Add visible version metadata**
 
 `modern/version.js` exposes:
 - legacy engine label `2.00`;
@@ -226,17 +235,17 @@ Expected: FAIL because Modern shell/assets do not exist yet.
 
 The shell renders both in a small non-intrusive version area.
 
-- [ ] **Step 6: Run browser smoke tests**
+- [ ] **Step 7: Run browser smoke tests**
 
 Run: `npm run test:ui:foundation`
 Expected: PASS at desktop and mobile viewports with zero failed assertions.
 
-- [ ] **Step 7: Run legacy/static checks again**
+- [ ] **Step 8: Run legacy/static checks again**
 
 Run: `python -m unittest discover -s tests -v && python scripts/validate_site.py && node --check modern/app-shell.js && node --check modern/version.js`
 Expected: PASS; no preservation manifest mismatch.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 9: Commit**
 
 ```bash
 git add modern package.json package-lock.json tests/ui scripts/build_pages.py
