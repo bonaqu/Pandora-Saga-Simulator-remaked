@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import pathlib
 import re
 import shutil
@@ -16,6 +17,8 @@ REQUIRED_MODERN = (
     "modern/app-shell.js",
 )
 RUNTIME_DIRS = ("css", "js", "image")
+HERO_SOURCE = "modern/pandora-hero.webp.b64"
+HERO_TARGET = "modern/pandora-hero.webp"
 
 HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -97,6 +100,23 @@ def _copy_runtime(root: pathlib.Path, destination: pathlib.Path) -> None:
     _patch_runtime_browser_compatibility(destination)
 
 
+def _materialize_modern_assets(root: pathlib.Path, output: pathlib.Path) -> None:
+    modern_output = output / "modern"
+    shutil.copytree(root / "modern", modern_output)
+    source = root / HERO_SOURCE
+    if source.is_file():
+        try:
+            payload = base64.b64decode(source.read_text(encoding="ascii").strip(), validate=True)
+        except (ValueError, UnicodeError) as exc:
+            raise ValueError("invalid Modern hero base64 source") from exc
+        if len(payload) < 12 or payload[:4] != b"RIFF" or payload[8:12] != b"WEBP":
+            raise ValueError("Modern hero source did not decode to a WebP image")
+        (output / HERO_TARGET).write_bytes(payload)
+        copied_source = output / HERO_SOURCE
+        if copied_source.exists():
+            copied_source.unlink()
+
+
 def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     root, output = _ensure_inside(root, output)
     _require_inputs(root)
@@ -105,7 +125,7 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     output.mkdir(parents=True)
 
     _copy_runtime(root, output)
-    shutil.copytree(root / "modern", output / "modern")
+    _materialize_modern_assets(root, output)
 
     source_bytes = (root / "index.html").read_bytes()
     source_text = source_bytes.decode("utf-8-sig")
