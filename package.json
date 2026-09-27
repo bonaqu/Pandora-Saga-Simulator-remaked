@@ -6,6 +6,6 @@
     "test:ui:foundation": "playwright test tests/ui/modern-foundation.spec.mjs"
   },
   "devDependencies": {
-    "@playwright/test": "1.55.0"
+    "@playwright/test": "1.63.0"
   }
 }
