@@ -5,10 +5,11 @@
     "test:ui": "playwright test",
     "test:ui:foundation": "playwright test tests/ui/modern-foundation.spec.mjs",
     "test:ui:adapter": "playwright test tests/ui/adapter.spec.mjs",
+    "test:ui:summary": "playwright test tests/ui/summary-adapter.spec.mjs",
     "test:ui:search-builds": "playwright test tests/ui/search-builds.spec.mjs",
     "test:ui:build-store": "playwright test tests/ui/build-store.spec.mjs",
     "test:ui:build-manager": "playwright test tests/ui/build-manager.spec.mjs",
-    "test:ui:ci": "playwright test tests/ui/modern-foundation.spec.mjs tests/ui/adapter.spec.mjs tests/ui/search-builds.spec.mjs tests/ui/build-store.spec.mjs tests/ui/build-manager.spec.mjs",
+    "test:ui:ci": "playwright test tests/ui/modern-foundation.spec.mjs tests/ui/adapter.spec.mjs tests/ui/summary-adapter.spec.mjs tests/ui/search-builds.spec.mjs tests/ui/build-store.spec.mjs tests/ui/build-manager.spec.mjs",
     "test:ui:visual": "playwright test tests/ui/visual-capture.spec.mjs"
   },
   "devDependencies": {
