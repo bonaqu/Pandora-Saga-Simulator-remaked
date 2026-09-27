@@ -1,4 +1,4 @@
-name: Deploy restored simulator
+name: Deploy Pandora Saga Simulator
 
 on:
   push:
@@ -30,6 +30,11 @@ jobs:
         with:
           ref: bonaqu_projects
           fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
 
       - name: Import recovered simulator once
         shell: bash
@@ -63,7 +68,6 @@ jobs:
           cp -a "$recovered/image" ./image
           cp "$recovered/Pandora Saga Simulator.htm" ./index.html
 
-          # Preserve calculator logic/data; remove only dead FC2 hosting footer/runtime glue.
           python3 scripts/strip_fc2_injection.py index.html
 
           cat > SOURCE.lock <<EOF
@@ -87,10 +91,13 @@ jobs:
             git push origin HEAD:bonaqu_projects
           fi
 
-      - name: Validate restored static site
+      - name: Run Python tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Validate preservation snapshot
         run: python3 scripts/validate_site.py
 
-      - name: Syntax-check core legacy JavaScript
+      - name: Syntax-check legacy and Modern JavaScript
         shell: bash
         run: |
           set -euo pipefail
@@ -99,32 +106,23 @@ jobs:
           node --check js/item.js
           node --check js/skill.js
           node --check js/ini.js
+          node --check modern/version.js
+          node --check modern/app-shell.js
 
-      - name: Prepare GitHub Pages artifact
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf _site
-          mkdir _site
-          cp index.html readme.txt .nojekyll _site/
-          cp -a css js image _site/
-
-          # Deployment-only compatibility preference: open in English by default.
-          # Explicit ?lang=jp / ?lang=tw / ?lang=en query parameters still override it.
-          python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path("_site/index.html")
-          html = path.read_text(encoding="utf-8-sig")
-          old = "Flag = new Array(\n   0 // [ 0]"
-          new = "Flag = new Array(\n   1 // [ 0]"
-          if old not in html:
-              raise SystemExit("Could not find the preserved default-language marker")
-          path.write_text(html.replace(old, new, 1), encoding="utf-8-sig")
-          PY
+      - name: Build Modern and Legacy Pages routes
+        run: python3 scripts/build_pages.py --output _site
 
       - name: Verify Pages defaults to English
         run: python3 scripts/check_default_language.py _site/index.html
+
+      - name: Install browser test dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run rendered Modern and Legacy smoke tests
+        run: npm run test:ui:foundation
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
@@ -173,7 +171,6 @@ jobs:
             exit 0
           fi
 
-          # Remove the one-off bootstrap page if it exists.
           rm -f "$wiki_dir/test.md" "$wiki_dir/Test.md"
 
           cp docs/wiki/Home.md "$wiki_dir/Home.md"
