@@ -63,6 +63,8 @@ jobs:
           node --check modern/tooltips.js
           node --check modern/compare.js
           node --check modern/mobile.js
+          node --check modern/pwa.js
+          node --check modern/service-worker.js
 
       - name: Install browser test dependencies
         id: npm

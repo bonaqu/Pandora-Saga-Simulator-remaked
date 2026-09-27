@@ -40,6 +40,7 @@ class BuildPagesTests(unittest.TestCase):
             (modern / "compare.css").write_text("/* compare */", encoding="utf-8")
             (modern / "tooltips.css").write_text("/* tooltips */", encoding="utf-8")
             (modern / "mobile.css").write_text("/* mobile */", encoding="utf-8")
+            (modern / "pwa.css").write_text("/* pwa */", encoding="utf-8")
             (modern / "version.js").write_text(
                 "window.PandoraRemakedVersion = { ui: '2026.09.4' };",
                 encoding="utf-8",
@@ -52,6 +53,7 @@ class BuildPagesTests(unittest.TestCase):
             (modern / "tooltips.js").write_text("// tooltips", encoding="utf-8")
             (modern / "compare.js").write_text("// compare", encoding="utf-8")
             (modern / "mobile.js").write_text("// mobile", encoding="utf-8")
+            (modern / "pwa.js").write_text("// pwa", encoding="utf-8")
             (modern / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
             (modern / "manifest.webmanifest").write_text(
                 json.dumps({"name": "fixture"}),
@@ -125,6 +127,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/compare.css",
                 "modern/tooltips.css",
                 "modern/mobile.css",
+                "modern/pwa.css",
                 "modern/favicon.svg",
                 "modern/manifest.webmanifest",
                 "modern/version.js",
@@ -136,6 +139,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/tooltips.js",
                 "modern/compare.js",
                 "modern/mobile.js",
+                "modern/pwa.js",
             ):
                 self.assertEqual(html.count(relative), 1, relative)
             self.assertLess(html.index("modern/version.js"), html.index("modern/adapter.js"))
@@ -146,7 +150,9 @@ class BuildPagesTests(unittest.TestCase):
             self.assertLess(html.index("modern/builds.js"), html.index("modern/tooltips.js"))
             self.assertLess(html.index("modern/tooltips.js"), html.index("modern/compare.js"))
             self.assertLess(html.index("modern/compare.js"), html.index("modern/mobile.js"))
+            self.assertLess(html.index("modern/mobile.js"), html.index("modern/pwa.js"))
             self.assertLess(html.index("modern/tooltips.css"), html.index("modern/mobile.css"))
+            self.assertLess(html.index("modern/mobile.css"), html.index("modern/pwa.css"))
             self.assertIn("   1 // [ 0]", html)
             self.assertIn(
                 'data-project-url="https://github.com/bonaqu/Pandora-Saga-Simulator-remaked"',
@@ -167,11 +173,13 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/tooltips.js",
                 "modern/compare.js",
                 "modern/mobile.js",
+                "modern/pwa.js",
                 "modern/search.css",
                 "modern/builds.css",
                 "modern/compare.css",
                 "modern/tooltips.css",
                 "modern/mobile.css",
+                "modern/pwa.css",
                 "modern/manifest.webmanifest",
             ):
                 self.assertNotIn(relative, legacy)
@@ -192,6 +200,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/compare.css",
                 "modern/tooltips.css",
                 "modern/mobile.css",
+                "modern/pwa.css",
                 "modern/favicon.svg",
                 "modern/manifest.webmanifest",
                 "modern/icon-192.svg",
@@ -205,6 +214,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/tooltips.js",
                 "modern/compare.js",
                 "modern/mobile.js",
+                "modern/pwa.js",
                 "modern/pandora-hero.webp",
                 "service-worker.js",
                 ".nojekyll",
@@ -272,6 +282,13 @@ class BuildPagesTests(unittest.TestCase):
             root = self.make_root(pathlib.Path(td))
             (root / "modern" / "manifest.webmanifest").unlink()
             with self.assertRaisesRegex(FileNotFoundError, "modern/manifest.webmanifest"):
+                build_pages(root, root / "_site")
+
+    def test_missing_pwa_runtime_fails_clearly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            (root / "modern" / "pwa.js").unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "modern/pwa.js"):
                 build_pages(root, root / "_site")
 
     def test_missing_hero_parts_fails_clearly(self):
