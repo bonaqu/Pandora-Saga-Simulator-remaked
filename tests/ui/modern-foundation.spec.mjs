@@ -7,9 +7,21 @@ async function openModern(page) {
   await expect(page.locator('[data-remaked-header]')).toBeVisible();
 }
 
+function collectLocalFailures(page) {
+  const failures = [];
+  page.on('response', (response) => {
+    const url = new URL(response.url());
+    if (url.hostname === '127.0.0.1' && response.status() >= 400) {
+      failures.push(`${response.status()} ${url.pathname}`);
+    }
+  });
+  return failures;
+}
+
 test('Modern shell exposes meaningful navigation and defaults to English', async ({ page }) => {
   await openModern(page);
   const header = page.locator('[data-remaked-header]');
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href', './modern/favicon.svg');
   await expect(header.getByRole('link', { name: 'Project', exact: true })).toHaveAttribute('href', repoUrl);
   await expect(header.getByRole('link', { name: 'Updates', exact: true })).toHaveAttribute('href', /CHANGELOG\.md$/);
   await expect(header.getByRole('link', { name: 'Legacy Mode', exact: true })).toHaveAttribute('href', './legacy/');
@@ -42,6 +54,16 @@ test('Modern shell initialization does not mutate the serialized legacy build', 
   await page.evaluate(() => window.PandoraRemaked.initModernShell());
   const after = await page.evaluate(() => window.Store());
   expect(after).toBe(before);
+});
+
+test('Modern and Legacy routes load without missing local assets', async ({ page }) => {
+  const failures = collectLocalFailures(page);
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+  await page.goto('/legacy/');
+  await page.waitForLoadState('networkidle');
+  await expect(page.locator('#body')).toBeVisible();
+  expect(failures).toEqual([]);
 });
 
 for (const viewport of [
