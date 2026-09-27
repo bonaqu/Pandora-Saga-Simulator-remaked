@@ -75,6 +75,17 @@ jobs:
       - name: Run Modern Mode browser smoke tests
         run: npm run test:ui:foundation
 
+      - name: Capture desktop and mobile visual QA
+        run: npm run test:ui:visual
+
+      - name: Upload visual QA screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: modern-foundation-visual-qa
+          path: test-results/**/modern-*.png
+          if-no-files-found: error
+          retention-days: 1
+
       - name: Commit generated bootstrap metadata once
         if: github.event_name == 'push' && (steps.baseline.outputs.created == 'true' || steps.npm.outputs.lock_created == 'true')
         shell: bash
