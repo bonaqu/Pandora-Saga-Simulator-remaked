@@ -31,8 +31,12 @@ The main site opens in **Modern Mode**:
 - English interface by default;
 - Japanese and Traditional Chinese legacy data remain available;
 - responsive application shell for desktop, ultrawide, tablet and phone screens;
-- clearer navigation while keeping the original simulator calculations underneath;
-- active development toward equipment/Soul search, named builds, build comparison, Russian localization and offline installation.
+- **Equipment Search** with name and level filters over the current compatible legacy options;
+- **Soul Search** for currently available sockets and compatible legacy Soul options;
+- automatic local autosave with recovery after refresh;
+- **Build Manager** for named local builds: save, load, rename, duplicate and delete;
+- import/export using the simulator's existing serialized build code;
+- all Remaked autosaves and named builds stay local to the current browser in this release.
 
 **Open Modern Mode:**  
 https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/
@@ -57,8 +61,6 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 
 The modernization roadmap includes:
 
-- fast equipment and Soul search;
-- autosave and named build slots;
 - side-by-side build comparison;
 - better stat explanations and regression checks;
 - deeper mobile improvements;
@@ -76,7 +78,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** 2026.09.1
+- **Remaked UI:** 2026.09.2
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 

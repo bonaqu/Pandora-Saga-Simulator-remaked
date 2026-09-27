@@ -56,9 +56,9 @@ jobs:
           node --check js/ini.js
           node --check modern/version.js
           node --check modern/adapter.js
-          if [[ -f modern/build-store.js ]]; then node --check modern/build-store.js; fi
-          if [[ -f modern/search.js ]]; then node --check modern/search.js; fi
-          if [[ -f modern/builds.js ]]; then node --check modern/builds.js; fi
+          node --check modern/build-store.js
+          node --check modern/search.js
+          node --check modern/builds.js
           node --check modern/app-shell.js
 
       - name: Install browser test dependencies
@@ -76,38 +76,8 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run Modern Mode browser smoke tests
-        run: npm run test:ui:foundation
-
-      - name: Run Modern adapter contract tests
-        run: npm run test:ui:adapter
-
-      - name: Run Equipment and Soul search contract tests
-        run: npm run test:ui:search-builds
-
-      - name: Run local build-store contract tests
-        run: npm run test:ui:build-store
-
-      - name: Run autosave and Build Manager contract tests
-        shell: bash
-        run: |
-          mkdir -p diagnostics
-          set +e
-          npx playwright test tests/ui/build-manager.spec.mjs --workers=1 --reporter=json > diagnostics/build-manager-results.json
-          status=$?
-          set -e
-          exit "$status"
-
-      - name: Upload Build Manager diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-manager-diagnostics
-          path: |
-            diagnostics/build-manager-results.json
-            test-results/build-manager-diagnostic.json
-          if-no-files-found: warn
-          retention-days: 1
+      - name: Run shipped browser contract tests
+        run: npm run test:ui:ci
 
       - name: Capture desktop and mobile visual QA
         run: npm run test:ui:visual

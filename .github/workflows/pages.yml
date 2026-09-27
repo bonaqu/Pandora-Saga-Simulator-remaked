@@ -108,7 +108,9 @@ jobs:
           node --check js/ini.js
           node --check modern/version.js
           node --check modern/adapter.js
+          node --check modern/build-store.js
           node --check modern/search.js
+          node --check modern/builds.js
           node --check modern/app-shell.js
 
       - name: Build Modern and Legacy Pages routes
@@ -123,14 +125,11 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run rendered Modern and Legacy smoke tests
-        run: npm run test:ui:foundation
+      - name: Run shipped browser contract tests
+        run: npm run test:ui:ci
 
-      - name: Run Modern adapter contract tests
-        run: npm run test:ui:adapter
-
-      - name: Run Equipment and Soul search contract tests
-        run: npm run test:ui:search-builds
+      - name: Run visual QA capture
+        run: npm run test:ui:visual
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6

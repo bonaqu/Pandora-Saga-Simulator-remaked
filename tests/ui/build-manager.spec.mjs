@@ -92,13 +92,16 @@ test('reload restores the last compatible autosave and reports recovery', async 
 });
 
 test('malformed or incompatible autosave never mutates the default calculator state', async ({ page }) => {
-  await page.addInitScript(() => {
+  await openModern(page);
+  const defaultPayload = await page.evaluate(() => window.PandoraRemaked.adapter.serialize());
+
+  await page.evaluate(() => {
     localStorage.setItem('pandora-remaked.autosave.v1', '{bad json');
   });
-  await openModern(page);
-  const firstPayload = await page.evaluate(() => window.PandoraRemaked.adapter.serialize());
+  await page.reload();
+  await expect(page.locator('[data-remaked-shell]')).toBeVisible();
   await expect(page.locator('[data-remaked-autosave-status]')).toContainText(/warning|unavailable|ignored/i);
-  expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(firstPayload);
+  expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(defaultPayload);
 
   await page.evaluate(() => {
     localStorage.setItem('pandora-remaked.autosave.v1', JSON.stringify({
@@ -110,7 +113,9 @@ test('malformed or incompatible autosave never mutates the default calculator st
   });
   await page.reload();
   await expect(page.locator('[data-remaked-shell]')).toBeVisible();
-  expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(firstPayload);
+  await expect(page.locator('[data-remaked-autosave-status]')).toContainText(/warning|unavailable|ignored/i);
+  expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(defaultPayload);
+  expect(await page.evaluate(() => localStorage.getItem('file'))).toBe('legacy-sentinel');
 });
 
 test('Build Manager saves, loads, renames, duplicates and confirms deletion', async ({ page }) => {
