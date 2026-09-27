@@ -10,20 +10,18 @@ async function optionValues(page, selector) {
 }
 
 async function findSelectableEquipment(page, slotIndex = 0) {
-  const select = page.locator(`#SelEquip_${slotIndex}_0`);
   const values = await optionValues(page, `#SelEquip_${slotIndex}_0`);
   expect(values.length).toBeGreaterThan(1);
-  return { select, value: values[1] };
+  return { value: values[1] };
 }
 
 async function findSocketBearingTarget(page) {
-  const baseline = await page.evaluate(() => window.Store());
+  const original = await page.evaluate(() => window.Store());
   for (let slotIndex = 0; slotIndex <= 13; slotIndex += 1) {
     const selector = `#SelEquip_${slotIndex}_0`;
     const values = await optionValues(page, selector);
     for (const value of values.slice(1, 60)) {
       await page.locator(selector).selectOption(value);
-      await page.locator(selector).dispatchEvent('change');
       const target = await page.evaluate((slot) => {
         for (let socket = 4; socket <= 6; socket += 1) {
           const node = document.getElementById(`SelEquip_${slot}_${socket}`);
@@ -35,17 +33,21 @@ async function findSocketBearingTarget(page) {
         }
         return null;
       }, slotIndex);
-      if (target) return { baseline, target };
+      if (target) {
+        const socketBuild = await page.evaluate(() => window.Store());
+        return { original, socketBuild, target };
+      }
     }
+    await page.evaluate((payload) => {
+      window.Expand(payload);
+      window.ListCreate('Set');
+      window.ListCreate('Equip');
+      window.ListCreate('Soul');
+      window.ListCreate('SoulSelect');
+      window.ListCreate('SoulCheck');
+      window.CalcSet('ALL');
+    }, original);
   }
-  await page.evaluate((payload) => {
-    window.Expand(payload);
-    window.ListCreate('Set');
-    window.ListCreate('Equip');
-    window.ListCreate('SoulSelect');
-    window.ListCreate('SoulCheck');
-    window.CalcSet('ALL');
-  }, baseline);
   return null;
 }
 
@@ -61,18 +63,16 @@ test('adapter serialization is byte-identical to legacy Store()', async ({ page 
 
 test('adapter load round-trips build state without touching legacy localStorage.file', async ({ page }) => {
   await openModern(page);
-  const adapterExists = await page.evaluate(() => Boolean(window.PandoraRemaked?.adapter));
-  expect(adapterExists).toBe(true);
+  expect(await page.evaluate(() => Boolean(window.PandoraRemaked?.adapter))).toBe(true);
 
   const { value } = await findSelectableEquipment(page, 0);
   await page.evaluate(() => localStorage.setItem('file', 'legacy-sentinel-do-not-touch'));
-  await page.evaluate(({ selected }) => window.PandoraRemaked.adapter.selectEquipment(0, selected), { selected: value });
+  await page.evaluate((selected) => window.PandoraRemaked.adapter.selectEquipment(0, selected), value);
   const payloadA = await page.evaluate(() => window.PandoraRemaked.adapter.serialize());
 
   const otherValues = await optionValues(page, '#SelEquip_0_0');
   const alternate = otherValues.find((candidate) => candidate !== value) ?? otherValues[0];
   await page.locator('#SelEquip_0_0').selectOption(alternate);
-  await page.locator('#SelEquip_0_0').dispatchEvent('change');
 
   await page.evaluate((payload) => window.PandoraRemaked.adapter.load(payload), payloadA);
   expect(await page.evaluate(() => window.Store())).toBe(payloadA);
@@ -115,7 +115,6 @@ test('Equipment adapter selection is payload-identical to manual legacy selectio
 
   await page.evaluate((payload) => window.PandoraRemaked.adapter.load(payload), baseline);
   await page.locator('#SelEquip_0_0').selectOption(value);
-  await page.locator('#SelEquip_0_0').dispatchEvent('change');
   const manually = await page.evaluate(() => window.Store());
   expect(viaAdapter).toBe(manually);
 
@@ -129,7 +128,7 @@ test('Soul targets/options mirror usable legacy socket selects and select with p
   await openModern(page);
   const found = await findSocketBearingTarget(page);
   expect(found).not.toBeNull();
-  const { baseline, target } = found;
+  const { socketBuild, target } = found;
 
   const listedTargets = await page.evaluate(() => window.PandoraRemaked.adapter.listSoulTargets());
   expect(listedTargets.some((candidate) => candidate.selectId === target.selectId)).toBe(true);
@@ -143,23 +142,8 @@ test('Soul targets/options mirror usable legacy socket selects and select with p
   expect(await page.evaluate(({ candidate, value }) => window.PandoraRemaked.adapter.selectSoul(candidate, value), { candidate: target, value: soulValue })).toBe(true);
   const viaAdapter = await page.evaluate(() => window.Store());
 
-  await page.evaluate((payload) => window.PandoraRemaked.adapter.load(payload), baseline);
-  // Recreate the socket-bearing equipment from the payload captured immediately before Soul selection.
-  const socketBuild = await page.evaluate(() => window.Store());
-  // The baseline may predate socket equipment; restore the same equipment by replaying the target's current equipment value if needed.
-  if (!(await page.locator(`#${target.selectId}`).isVisible().catch(() => false))) {
-    await page.evaluate(() => window.ListCreate('SoulCheck'));
-  }
-  const soulSelect = page.locator(`#${target.selectId}`);
-  if (await soulSelect.isVisible().catch(() => false)) {
-    await soulSelect.selectOption(soulValue);
-    await soulSelect.dispatchEvent('change');
-    expect(viaAdapter).toBe(await page.evaluate(() => window.Store()));
-  } else {
-    // If restoring the pre-search baseline removes the socket, adapter.load itself is already covered above;
-    // parity is instead checked by restoring the state immediately before adapter selection.
-    await page.evaluate((payload) => window.PandoraRemaked.adapter.load(payload), socketBuild);
-    expect(await page.evaluate(() => window.PandoraRemaked.adapter.selectSoul(target, soulValue))).toBe(true);
-    expect(viaAdapter).toBe(await page.evaluate(() => window.Store()));
-  }
+  await page.evaluate((payload) => window.PandoraRemaked.adapter.load(payload), socketBuild);
+  await page.locator(`#${target.selectId}`).selectOption(soulValue);
+  const manually = await page.evaluate(() => window.Store());
+  expect(viaAdapter).toBe(manually);
 });
