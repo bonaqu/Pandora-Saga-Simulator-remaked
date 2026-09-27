@@ -17,6 +17,7 @@ REQUIRED_MODERN = (
     "modern/builds.css",
     "modern/compare.css",
     "modern/tooltips.css",
+    "modern/mobile.css",
     "modern/favicon.svg",
     "modern/version.js",
     "modern/adapter.js",
@@ -26,6 +27,7 @@ REQUIRED_MODERN = (
     "modern/builds.js",
     "modern/tooltips.js",
     "modern/compare.js",
+    "modern/mobile.js",
 )
 RUNTIME_DIRS = ("css", "js", "image")
 HERO_PARTS_DIR = pathlib.Path("modern/pandora-hero.parts")
@@ -39,6 +41,7 @@ HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <link rel="stylesheet" href="./modern/builds.css" />
 <link rel="stylesheet" href="./modern/compare.css" />
 <link rel="stylesheet" href="./modern/tooltips.css" />
+<link rel="stylesheet" href="./modern/mobile.css" />
 <!-- /REMAKED:HEAD -->'''
 
 BODY_INJECTION = f'''<!-- REMAKED:BODY -->
@@ -54,6 +57,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/builds.js"></script>
 <script src="./modern/tooltips.js"></script>
 <script src="./modern/compare.js"></script>
+<script src="./modern/mobile.js"></script>
 <!-- /REMAKED:BODY -->'''
 
 
