@@ -7,6 +7,11 @@ async function openModern(page) {
 
 async function chooseDifferentRace(page) {
   const race = page.locator('#SelRace');
+  if (!(await race.isVisible())) {
+    await page.locator('[data-remaked-tab="0"]').click();
+    await expect.poll(() => page.evaluate(() => window.Flag[2])).toBe(1);
+    await expect(race).toBeVisible();
+  }
   const current = await race.evaluate((select) => select.selectedIndex);
   const count = await race.locator('option').count();
   const next = count > 1 ? (current + 1) % count : current;
