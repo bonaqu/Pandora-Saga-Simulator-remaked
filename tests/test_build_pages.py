@@ -22,6 +22,7 @@ class BuildPagesTests(unittest.TestCase):
         if with_modern:
             (root / "modern").mkdir()
             (root / "modern" / "modern.css").write_text("/* modern */", encoding="utf-8")
+            (root / "modern" / "version.js").write_text("// version", encoding="utf-8")
             (root / "modern" / "app-shell.js").write_text("// shell", encoding="utf-8")
         return root
 
@@ -47,7 +48,9 @@ class BuildPagesTests(unittest.TestCase):
             build_pages(root, output)
             html = (output / "index.html").read_text(encoding="utf-8")
             self.assertEqual(html.count("modern/modern.css"), 1)
+            self.assertEqual(html.count("modern/version.js"), 1)
             self.assertEqual(html.count("modern/app-shell.js"), 1)
+            self.assertLess(html.index("modern/version.js"), html.index("modern/app-shell.js"))
             self.assertIn("   1 // [ 0]", html)
             self.assertIn(
                 'data-project-url="https://github.com/bonaqu/Pandora-Saga-Simulator-remaked"',
@@ -72,6 +75,7 @@ class BuildPagesTests(unittest.TestCase):
                 "image/fixture.txt",
                 "readme.txt",
                 "modern/modern.css",
+                "modern/version.js",
                 "modern/app-shell.js",
                 ".nojekyll",
             ):
