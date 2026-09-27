@@ -17,7 +17,7 @@ function SkillBar() {
 }
 '''
 
-HERO_WEBP_FIXTURE = b"RIFF1234WEBPtest-payload"
+HERO_WEBP_FIXTURE = b"RIFF\x04\x00\x00\x00WEBP"
 
 
 class BuildPagesTests(unittest.TestCase):
@@ -37,10 +37,12 @@ class BuildPagesTests(unittest.TestCase):
             (modern / "version.js").write_text("// version", encoding="utf-8")
             (modern / "app-shell.js").write_text("// shell", encoding="utf-8")
             (modern / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
-            (modern / "pandora-hero.webp.b64").write_text(
-                base64.b64encode(HERO_WEBP_FIXTURE).decode("ascii"),
-                encoding="ascii",
-            )
+            parts = modern / "pandora-hero.parts"
+            parts.mkdir()
+            encoded = base64.b64encode(HERO_WEBP_FIXTURE).decode("ascii")
+            midpoint = len(encoded) // 2
+            (parts / "00.b64").write_text(encoded[:midpoint], encoding="ascii")
+            (parts / "01.b64").write_text(encoded[midpoint:], encoding="ascii")
         return root
 
     def test_builds_modern_and_self_contained_legacy(self):
@@ -58,13 +60,14 @@ class BuildPagesTests(unittest.TestCase):
             ):
                 self.assertTrue((output / relative).is_file(), relative)
 
-    def test_materializes_hero_binary_and_hides_transport_source(self):
+    def test_reconstructs_self_contained_hero_asset_from_source_parts(self):
         with tempfile.TemporaryDirectory() as td:
             root = self.make_root(pathlib.Path(td))
             output = root / "_site"
             build_pages(root, output)
-            self.assertEqual((output / "modern" / "pandora-hero.webp").read_bytes(), HERO_WEBP_FIXTURE)
-            self.assertFalse((output / "modern" / "pandora-hero.webp.b64").exists())
+            hero = output / "modern" / "pandora-hero.webp"
+            self.assertEqual(hero.read_bytes(), HERO_WEBP_FIXTURE)
+            self.assertFalse((output / "modern" / "pandora-hero.parts").exists())
 
     def test_deployed_runtime_replaces_missing_legacy_skill_bar_images(self):
         with tempfile.TemporaryDirectory() as td:
@@ -127,6 +130,14 @@ class BuildPagesTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root = self.make_root(pathlib.Path(td), with_modern=False)
             with self.assertRaisesRegex(FileNotFoundError, "modern/modern.css"):
+                build_pages(root, root / "_site")
+
+    def test_missing_hero_parts_fails_clearly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            for part in (root / "modern" / "pandora-hero.parts").iterdir():
+                part.unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "pandora-hero.parts"):
                 build_pages(root, root / "_site")
 
     def test_refuses_to_delete_output_outside_repository(self):
