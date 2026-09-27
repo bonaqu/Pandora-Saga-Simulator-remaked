@@ -37,6 +37,7 @@ class BuildPagesTests(unittest.TestCase):
             (modern / "search.css").write_text("/* search */", encoding="utf-8")
             (modern / "version.js").write_text("// version", encoding="utf-8")
             (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
+            (modern / "build-store.js").write_text("// build store", encoding="utf-8")
             (modern / "search.js").write_text("// search", encoding="utf-8")
             (modern / "app-shell.js").write_text("// shell", encoding="utf-8")
             (modern / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
@@ -97,10 +98,12 @@ class BuildPagesTests(unittest.TestCase):
             self.assertEqual(html.count("modern/favicon.svg"), 1)
             self.assertEqual(html.count("modern/version.js"), 1)
             self.assertEqual(html.count("modern/adapter.js"), 1)
+            self.assertEqual(html.count("modern/build-store.js"), 1)
             self.assertEqual(html.count("modern/search.js"), 1)
             self.assertEqual(html.count("modern/app-shell.js"), 1)
             self.assertLess(html.index("modern/version.js"), html.index("modern/adapter.js"))
-            self.assertLess(html.index("modern/adapter.js"), html.index("modern/search.js"))
+            self.assertLess(html.index("modern/adapter.js"), html.index("modern/build-store.js"))
+            self.assertLess(html.index("modern/build-store.js"), html.index("modern/search.js"))
             self.assertLess(html.index("modern/search.js"), html.index("modern/app-shell.js"))
             self.assertIn("   1 // [ 0]", html)
             self.assertIn(
@@ -115,6 +118,7 @@ class BuildPagesTests(unittest.TestCase):
             legacy = (output / "legacy" / "index.html").read_text(encoding="utf-8")
             self.assertIn("   0 // [ 0]", legacy)
             self.assertNotIn("modern/adapter.js", legacy)
+            self.assertNotIn("modern/build-store.js", legacy)
             self.assertNotIn("modern/search.js", legacy)
             self.assertNotIn("modern/search.css", legacy)
 
@@ -133,6 +137,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/favicon.svg",
                 "modern/version.js",
                 "modern/adapter.js",
+                "modern/build-store.js",
                 "modern/search.js",
                 "modern/app-shell.js",
                 "modern/pandora-hero.webp",
@@ -151,6 +156,13 @@ class BuildPagesTests(unittest.TestCase):
             root = self.make_root(pathlib.Path(td))
             (root / "modern" / "adapter.js").unlink()
             with self.assertRaisesRegex(FileNotFoundError, "modern/adapter.js"):
+                build_pages(root, root / "_site")
+
+    def test_missing_build_store_fails_clearly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            (root / "modern" / "build-store.js").unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "modern/build-store.js"):
                 build_pages(root, root / "_site")
 
     def test_missing_search_assets_fail_clearly(self):
