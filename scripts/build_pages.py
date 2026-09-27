@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import binascii
 import pathlib
 import re
 import shutil
@@ -17,8 +18,8 @@ REQUIRED_MODERN = (
     "modern/app-shell.js",
 )
 RUNTIME_DIRS = ("css", "js", "image")
-HERO_SOURCE = "modern/pandora-hero.webp.b64"
-HERO_TARGET = "modern/pandora-hero.webp"
+HERO_PARTS_DIR = pathlib.Path("modern/pandora-hero.parts")
+HERO_TARGET = pathlib.Path("modern/pandora-hero.webp")
 
 HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -48,10 +49,21 @@ def _ensure_inside(root: pathlib.Path, output: pathlib.Path) -> tuple[pathlib.Pa
     return root, output
 
 
+def _hero_part_files(root: pathlib.Path) -> list[pathlib.Path]:
+    parts_dir = root / HERO_PARTS_DIR
+    if not parts_dir.is_dir():
+        raise FileNotFoundError(f"missing required Modern asset source: {HERO_PARTS_DIR}")
+    parts = sorted(path for path in parts_dir.iterdir() if path.is_file() and path.suffix == ".b64")
+    if not parts:
+        raise FileNotFoundError(f"missing required Modern asset source parts: {HERO_PARTS_DIR}")
+    return parts
+
+
 def _require_inputs(root: pathlib.Path) -> None:
     for relative in REQUIRED_MODERN:
         if not (root / relative).is_file():
             raise FileNotFoundError(f"missing required Modern asset: {relative}")
+    _hero_part_files(root)
     for relative in ("index.html", "readme.txt"):
         if not (root / relative).is_file():
             raise FileNotFoundError(f"missing required legacy file: {relative}")
@@ -103,18 +115,27 @@ def _copy_runtime(root: pathlib.Path, destination: pathlib.Path) -> None:
 def _materialize_modern_assets(root: pathlib.Path, output: pathlib.Path) -> None:
     modern_output = output / "modern"
     shutil.copytree(root / "modern", modern_output)
-    source = root / HERO_SOURCE
-    if source.is_file():
-        try:
-            payload = base64.b64decode(source.read_text(encoding="ascii").strip(), validate=True)
-        except (ValueError, UnicodeError) as exc:
-            raise ValueError("invalid Modern hero base64 source") from exc
-        if len(payload) < 12 or payload[:4] != b"RIFF" or payload[8:12] != b"WEBP":
-            raise ValueError("Modern hero source did not decode to a WebP image")
-        (output / HERO_TARGET).write_bytes(payload)
-        copied_source = output / HERO_SOURCE
-        if copied_source.exists():
-            copied_source.unlink()
+
+    encoded = "".join(
+        part.read_text(encoding="ascii").strip()
+        for part in _hero_part_files(root)
+    )
+    try:
+        payload = base64.b64decode(encoded, validate=True)
+    except (binascii.Error, ValueError, UnicodeError) as exc:
+        raise ValueError("invalid base64 data in modern/pandora-hero.parts") from exc
+
+    if len(payload) < 12 or payload[:4] != b"RIFF" or payload[8:12] != b"WEBP":
+        raise ValueError("reconstructed Modern hero is not a WebP RIFF payload")
+
+    (output / HERO_TARGET).write_bytes(payload)
+    copied_parts = output / HERO_PARTS_DIR
+    if copied_parts.exists():
+        shutil.rmtree(copied_parts)
+
+    old_single_source = output / "modern/pandora-hero.webp.b64"
+    if old_single_source.exists():
+        old_single_source.unlink()
 
 
 def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
