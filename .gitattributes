@@ -1,0 +1,4 @@
+/index.html -text
+/readme.txt -text
+/css/** -text
+/js/** -text
