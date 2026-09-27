@@ -135,39 +135,44 @@
     return Array.from(base).slice(0, room).join('') + suffix;
   }
 
+  function hasBuildName(builds, name) {
+    return builds.some(function (build) { return build.name === name; });
+  }
+
+  function hasBuildId(builds, id) {
+    return builds.some(function (build) { return build.id === id; });
+  }
+
   function firstFreeBuildName(builds) {
-    var names = new Set(builds.map(function (build) { return build.name; }));
     var index = 1;
-    while (names.has('Build ' + index)) index += 1;
+    while (hasBuildName(builds, 'Build ' + index)) index += 1;
     return 'Build ' + index;
   }
 
   function duplicateName(source, builds) {
-    var names = new Set(builds.map(function (build) { return build.name; }));
     var base = normalizeName(source) || 'Build';
     var suffix = ' copy';
     var candidate = truncateForSuffix(base, suffix);
-    if (!names.has(candidate)) return candidate;
+    if (!hasBuildName(builds, candidate)) return candidate;
     var index = 2;
     while (true) {
       suffix = ' copy ' + index;
       candidate = truncateForSuffix(base, suffix);
-      if (!names.has(candidate)) return candidate;
+      if (!hasBuildName(builds, candidate)) return candidate;
       index += 1;
     }
   }
 
   function createId(builds) {
-    var used = new Set(builds.map(function (build) { return build.id; }));
     if (window.crypto && typeof window.crypto.randomUUID === 'function') {
       var id;
       do {
         id = window.crypto.randomUUID();
-      } while (used.has(id));
+      } while (hasBuildId(builds, id));
       return id;
     }
     var index = 1;
-    while (used.has('local-' + index)) index += 1;
+    while (hasBuildId(builds, 'local-' + index)) index += 1;
     return 'local-' + index;
   }
 
