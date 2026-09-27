@@ -53,9 +53,18 @@ def _hero_part_files(root: pathlib.Path) -> list[pathlib.Path]:
     parts_dir = root / HERO_PARTS_DIR
     if not parts_dir.is_dir():
         raise FileNotFoundError(f"missing required Modern asset source: {HERO_PARTS_DIR}")
+
     parts = sorted(path for path in parts_dir.iterdir() if path.is_file() and path.suffix == ".b64")
     if not parts:
         raise FileNotFoundError(f"missing required Modern asset source parts: {HERO_PARTS_DIR}")
+
+    expected_names = [f"{index:02d}.b64" for index in range(len(parts))]
+    actual_names = [path.name for path in parts]
+    if actual_names != expected_names:
+        raise ValueError(
+            "Modern hero source chunks must be contiguous from 00.b64; "
+            f"expected {expected_names}, found {actual_names}"
+        )
     return parts
 
 
