@@ -4,8 +4,7 @@
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
   var hooks = document.getElementById('remaked-shell-hooks');
   var defaultLabels = ['JOB', 'SKILL', 'ATTACK', 'DEFENSE', 'BUFF', 'LOG', 'FILE'];
-  var HERO_ART_URL = 'https://images.mmorpg.com/reviews/206/images/ps-nation.jpg';
-  var HERO_ART_SOURCE = 'https://www.mmorpg.com/reviews/our-official-pandora-saga-review-2000055105';
+  var HERO_ART_URL = './modern/pandora-hero.webp';
 
   function makeLink(label, href) {
     var link = document.createElement('a');
@@ -53,11 +52,7 @@
       var tab = Number(button.dataset.remakedTab);
       button.setAttribute('aria-pressed', current === tab + 1 ? 'true' : 'false');
       var sourceLabel = document.getElementById('TextTab_' + tab);
-      if (sourceLabel && sourceLabel.textContent.trim()) {
-        button.textContent = sourceLabel.textContent.trim();
-      } else {
-        button.textContent = defaultLabels[tab];
-      }
+      button.textContent = sourceLabel && sourceLabel.textContent.trim() ? sourceLabel.textContent.trim() : defaultLabels[tab];
     });
   }
 
@@ -100,26 +95,20 @@
 
     var meta = document.createElement('div');
     meta.className = 'remaked-hero-meta';
-
     var badge = document.createElement('span');
     badge.className = 'remaked-hero-badge';
     badge.textContent = 'Remaked';
-
     var versionText = document.createElement('span');
     versionText.textContent = 'Legacy ' + version.legacyEngine + ' · UI ' + version.ui;
-
     meta.appendChild(badge);
     meta.appendChild(versionText);
 
     var subtitle = document.createElement('p');
     subtitle.textContent = 'The preserved legacy calculator, wrapped in a cleaner modern interface.';
 
-    var source = document.createElement('a');
+    var source = document.createElement('span');
     source.className = 'remaked-hero-source';
-    source.href = HERO_ART_SOURCE;
-    source.target = '_blank';
-    source.rel = 'noopener noreferrer';
-    source.textContent = 'Pandora Saga in-game screenshot';
+    source.textContent = 'Unofficial Pandora Saga fan artwork';
 
     copy.appendChild(eyebrow);
     copy.appendChild(title);
@@ -130,14 +119,12 @@
     var art = document.createElement('div');
     art.className = 'remaked-hero-art';
     art.setAttribute('aria-hidden', 'true');
-
     var image = document.createElement('img');
     image.dataset.remakedHeroArt = '';
     image.src = HERO_ART_URL;
     image.alt = '';
     image.loading = 'eager';
     image.decoding = 'async';
-    image.referrerPolicy = 'no-referrer';
     art.appendChild(image);
 
     hero.appendChild(copy);
@@ -152,7 +139,6 @@
 
     var top = document.createElement('div');
     top.className = 'remaked-header-top';
-
     var primary = document.createElement('div');
     primary.className = 'remaked-utilities remaked-utilities-primary';
     var projectUrl = hooks && hooks.dataset.projectUrl ? hooks.dataset.projectUrl : '#';
@@ -166,7 +152,6 @@
     var controls = document.createElement('div');
     controls.className = 'remaked-utilities remaked-utilities-controls';
     controls.appendChild(createLanguageControl(header));
-
     var version = window.PandoraRemakedVersion || { legacyEngine: '2.00', ui: '2026.09.1' };
     var versionNode = document.createElement('span');
     versionNode.className = 'remaked-version';
@@ -180,7 +165,6 @@
 
     var navRow = document.createElement('div');
     navRow.className = 'remaked-nav-row';
-
     var nav = document.createElement('nav');
     nav.className = 'remaked-nav';
     nav.dataset.remakedNav = '';
@@ -213,8 +197,8 @@
       density.appendChild(button);
     });
     navRow.appendChild(density);
-
     header.appendChild(navRow);
+
     syncLanguageButtons(header);
     syncDensityButtons(header);
     syncNavButtons(header);
@@ -227,9 +211,7 @@
     var innerList = element.closest('ul');
     if (!innerList || !innerList.parentElement || innerList.parentElement.tagName !== 'LI') return;
     var outerList = innerList.parentElement.parentElement;
-    if (outerList && outerList.tagName === 'UL') {
-      outerList.classList.add('remaked-legacy-toolbar');
-    }
+    if (outerList && outerList.tagName === 'UL') outerList.classList.add('remaked-legacy-toolbar');
   }
 
   function markLegacyToolbar() {
@@ -255,7 +237,6 @@
 
     var legacyBody = document.getElementById('body');
     if (!legacyBody || !legacyBody.parentNode) return null;
-
     document.body.classList.add('remaked-modern');
     document.body.dataset.remakedMode = 'modern';
     markLegacyToolbar();
@@ -263,11 +244,9 @@
     var shell = document.createElement('div');
     shell.className = 'remaked-shell';
     shell.dataset.remakedShell = '';
-
     var frame = document.createElement('main');
     frame.className = 'remaked-app-frame';
     frame.setAttribute('aria-label', 'Pandora Saga character simulator');
-
     legacyBody.parentNode.insertBefore(shell, legacyBody);
     shell.appendChild(createHeader());
     shell.appendChild(frame);
