@@ -52,7 +52,8 @@ test('summary follows intentional Legacy state changes without adding extra muta
 
 test('collapsible Legacy cards are keyboard-focusable and presentation-only', async ({ page }) => {
   await openMobile(page);
-  const toggle = page.locator('[data-remaked-collapse-toggle]').first();
+  await page.locator('[data-remaked-nav]').getByRole('button', { name: 'LOG', exact: true }).click();
+  const toggle = page.locator('[data-remaked-collapse-toggle]:visible').first();
   await expect(toggle).toBeVisible();
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
   const before = await page.evaluate(() => window.PandoraRemaked.adapter.serialize());
