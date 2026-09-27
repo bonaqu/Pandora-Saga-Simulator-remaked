@@ -9,7 +9,7 @@ on:
       - bonaqu_projects
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   test:
@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -24,10 +26,14 @@ jobs:
           python-version: '3.13'
 
       - name: Generate preservation baseline when bootstrapping
+        id: baseline
         shell: bash
         run: |
           if [[ ! -f preservation/legacy-files.sha256 ]]; then
             python3 scripts/legacy_fingerprint.py --write preservation/legacy-files.sha256
+            echo 'created=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'created=false' >> "$GITHUB_OUTPUT"
           fi
 
       - name: Run Python tests
@@ -45,9 +51,12 @@ jobs:
           node --check js/skill.js
           node --check js/ini.js
 
-      - name: Print generated preservation manifest for bootstrap
+      - name: Commit preservation baseline once
+        if: github.event_name == 'push' && steps.baseline.outputs.created == 'true'
         shell: bash
         run: |
-          echo '---LEGACY-MANIFEST-BEGIN---'
-          cat preservation/legacy-files.sha256
-          echo '---LEGACY-MANIFEST-END---'
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add preservation/legacy-files.sha256
+          git commit -m "test: freeze legacy simulator baseline"
+          git push origin HEAD:${GITHUB_REF_NAME}
