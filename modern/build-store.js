@@ -123,16 +123,36 @@
     };
   }
 
+  function codePoints(value) {
+    var text = String(value);
+    var points = [];
+    var index = 0;
+    while (index < text.length) {
+      var first = text.charCodeAt(index);
+      if (first >= 0xD800 && first <= 0xDBFF && index + 1 < text.length) {
+        var second = text.charCodeAt(index + 1);
+        if (second >= 0xDC00 && second <= 0xDFFF) {
+          points.push(text.slice(index, index + 2));
+          index += 2;
+          continue;
+        }
+      }
+      points.push(text.charAt(index));
+      index += 1;
+    }
+    return points;
+  }
+
   function normalizeName(value) {
     var source = value == null ? '' : String(value);
     var trimmed = source.trim();
-    return Array.from(trimmed).slice(0, MAX_NAME_CODEPOINTS).join('');
+    return codePoints(trimmed).slice(0, MAX_NAME_CODEPOINTS).join('');
   }
 
   function truncateForSuffix(base, suffix) {
-    var suffixPoints = Array.from(suffix);
+    var suffixPoints = codePoints(suffix);
     var room = Math.max(0, MAX_NAME_CODEPOINTS - suffixPoints.length);
-    return Array.from(base).slice(0, room).join('') + suffix;
+    return codePoints(base).slice(0, room).join('') + suffix;
   }
 
   function hasBuildName(builds, name) {
