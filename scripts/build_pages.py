@@ -9,11 +9,17 @@ import shutil
 PROJECT_URL = "https://github.com/bonaqu/Pandora-Saga-Simulator-remaked"
 UPDATES_URL = "https://github.com/bonaqu/Pandora-Saga-Simulator-remaked/blob/bonaqu_projects/CHANGELOG.md"
 
-REQUIRED_MODERN = ("modern/modern.css", "modern/version.js", "modern/app-shell.js")
+REQUIRED_MODERN = (
+    "modern/modern.css",
+    "modern/favicon.svg",
+    "modern/version.js",
+    "modern/app-shell.js",
+)
 RUNTIME_DIRS = ("css", "js", "image")
 
 HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="./modern/favicon.svg" />
 <link rel="stylesheet" href="./modern/modern.css" />
 <!-- /REMAKED:HEAD -->'''
 
