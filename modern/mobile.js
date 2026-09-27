@@ -97,39 +97,56 @@
     }, 40);
   }
 
-  function directHead(card) {
-    for (var index = 0; index < card.children.length; index += 1) {
-      var child = card.children[index];
-      if (child.classList && child.classList.contains('head')) return child;
+  function firstLegacyHead(card) {
+    return card.querySelector('.head');
+  }
+
+  function createMobileCardBar(card, legacyHead) {
+    var existing = null;
+    for (var childIndex = 0; childIndex < card.children.length; childIndex += 1) {
+      var child = card.children[childIndex];
+      if (child.classList && child.classList.contains('remaked-mobile-card-bar')) {
+        existing = child;
+        break;
+      }
     }
-    return null;
+    if (existing) return existing;
+
+    var bar = document.createElement('div');
+    bar.className = 'remaked-mobile-card-bar';
+    bar.dataset.remakedMobileCardBar = '';
+
+    var label = document.createElement('span');
+    label.className = 'remaked-mobile-card-label';
+    label.textContent = (legacyHead.textContent || '').trim() || 'Section';
+    bar.appendChild(label);
+
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'remaked-collapse-toggle';
+    toggle.dataset.remakedCollapseToggle = '';
+    toggle.setAttribute('aria-expanded', 'true');
+    toggle.setAttribute('aria-label', 'Collapse section');
+    toggle.textContent = '⌃';
+    toggle.addEventListener('click', function () {
+      var nextCollapsed = card.dataset.remakedCollapsed !== 'true';
+      card.dataset.remakedCollapsed = nextCollapsed ? 'true' : 'false';
+      toggle.setAttribute('aria-expanded', nextCollapsed ? 'false' : 'true');
+      toggle.setAttribute('aria-label', nextCollapsed ? 'Expand section' : 'Collapse section');
+      toggle.textContent = nextCollapsed ? '⌄' : '⌃';
+    });
+    bar.appendChild(toggle);
+    card.insertBefore(bar, card.firstChild);
+    return bar;
   }
 
   function decorateCollapsibles() {
     var cards = document.querySelectorAll('#body .sub_win');
     for (var index = 0; index < cards.length; index += 1) {
       var card = cards[index];
-      var head = directHead(card);
-      if (!head || head.querySelector('[data-remaked-collapse-toggle]')) continue;
-
-      var toggle = document.createElement('button');
-      toggle.type = 'button';
-      toggle.className = 'remaked-collapse-toggle';
-      toggle.dataset.remakedCollapseToggle = '';
-      toggle.setAttribute('aria-expanded', 'true');
-      toggle.setAttribute('aria-label', 'Collapse section');
-      toggle.textContent = '⌃';
-      toggle.addEventListener('click', (function (targetCard, targetToggle) {
-        return function () {
-          var collapsed = targetCard.dataset.remakedCollapsed === 'true';
-          var nextCollapsed = !collapsed;
-          targetCard.dataset.remakedCollapsed = nextCollapsed ? 'true' : 'false';
-          targetToggle.setAttribute('aria-expanded', nextCollapsed ? 'false' : 'true');
-          targetToggle.setAttribute('aria-label', nextCollapsed ? 'Expand section' : 'Collapse section');
-          targetToggle.textContent = nextCollapsed ? '⌄' : '⌃';
-        };
-      })(card, toggle));
-      head.appendChild(toggle);
+      var head = firstLegacyHead(card);
+      if (!head) continue;
+      createMobileCardBar(card, head);
     }
   }
 
