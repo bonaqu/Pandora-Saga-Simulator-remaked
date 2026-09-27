@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "test:ui": "playwright test",
-    "test:ui:foundation": "playwright test tests/ui/modern-foundation.spec.mjs"
+    "test:ui:foundation": "playwright test tests/ui/modern-foundation.spec.mjs",
+    "test:ui:visual": "playwright test tests/ui/visual-capture.spec.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0"
