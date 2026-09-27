@@ -35,6 +35,7 @@ class BuildPagesTests(unittest.TestCase):
             modern.mkdir()
             (modern / "modern.css").write_text("/* modern */", encoding="utf-8")
             (modern / "version.js").write_text("// version", encoding="utf-8")
+            (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
             (modern / "app-shell.js").write_text("// shell", encoding="utf-8")
             (modern / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
             parts = modern / "pandora-hero.parts"
@@ -92,8 +93,10 @@ class BuildPagesTests(unittest.TestCase):
             self.assertEqual(html.count("modern/modern.css"), 1)
             self.assertEqual(html.count("modern/favicon.svg"), 1)
             self.assertEqual(html.count("modern/version.js"), 1)
+            self.assertEqual(html.count("modern/adapter.js"), 1)
             self.assertEqual(html.count("modern/app-shell.js"), 1)
-            self.assertLess(html.index("modern/version.js"), html.index("modern/app-shell.js"))
+            self.assertLess(html.index("modern/version.js"), html.index("modern/adapter.js"))
+            self.assertLess(html.index("modern/adapter.js"), html.index("modern/app-shell.js"))
             self.assertIn("   1 // [ 0]", html)
             self.assertIn(
                 'data-project-url="https://github.com/bonaqu/Pandora-Saga-Simulator-remaked"',
@@ -106,6 +109,7 @@ class BuildPagesTests(unittest.TestCase):
             self.assertIn('data-legacy-url="./legacy/"', html)
             legacy = (output / "legacy" / "index.html").read_text(encoding="utf-8")
             self.assertIn("   0 // [ 0]", legacy)
+            self.assertNotIn("modern/adapter.js", legacy)
 
     def test_copies_shared_runtime_and_modern_assets(self):
         with tempfile.TemporaryDirectory() as td:
@@ -120,6 +124,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/modern.css",
                 "modern/favicon.svg",
                 "modern/version.js",
+                "modern/adapter.js",
                 "modern/app-shell.js",
                 "modern/pandora-hero.webp",
                 ".nojekyll",
@@ -130,6 +135,13 @@ class BuildPagesTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root = self.make_root(pathlib.Path(td), with_modern=False)
             with self.assertRaisesRegex(FileNotFoundError, "modern/modern.css"):
+                build_pages(root, root / "_site")
+
+    def test_missing_adapter_fails_clearly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            (root / "modern" / "adapter.js").unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "modern/adapter.js"):
                 build_pages(root, root / "_site")
 
     def test_missing_hero_parts_fails_clearly(self):
