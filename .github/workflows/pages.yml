@@ -108,6 +108,7 @@ jobs:
           node --check js/ini.js
           node --check modern/version.js
           node --check modern/adapter.js
+          node --check modern/search.js
           node --check modern/app-shell.js
 
       - name: Build Modern and Legacy Pages routes
@@ -127,6 +128,9 @@ jobs:
 
       - name: Run Modern adapter contract tests
         run: npm run test:ui:adapter
+
+      - name: Run Equipment and Soul search contract tests
+        run: npm run test:ui:search-builds
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
