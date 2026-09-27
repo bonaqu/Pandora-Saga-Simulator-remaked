@@ -17,6 +17,7 @@ REQUIRED_MODERN = (
     "modern/favicon.svg",
     "modern/version.js",
     "modern/adapter.js",
+    "modern/build-store.js",
     "modern/search.js",
     "modern/app-shell.js",
 )
@@ -38,6 +39,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
   data-legacy-url="./legacy/"></div>
 <script src="./modern/version.js"></script>
 <script src="./modern/adapter.js"></script>
+<script src="./modern/build-store.js"></script>
 <script src="./modern/search.js"></script>
 <script src="./modern/app-shell.js"></script>
 <!-- /REMAKED:BODY -->'''
