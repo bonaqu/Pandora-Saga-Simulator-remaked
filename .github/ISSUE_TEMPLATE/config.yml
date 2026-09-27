@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Live restored simulator
+    url: https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/
+    about: Check the current GitHub Pages build before filing a bug.
