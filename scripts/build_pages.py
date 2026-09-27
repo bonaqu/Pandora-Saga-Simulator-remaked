@@ -157,6 +157,13 @@ def _materialize_modern_assets(root: pathlib.Path, output: pathlib.Path) -> None
     if len(payload) < 12 or payload[:4] != b"RIFF" or payload[8:12] != b"WEBP":
         raise ValueError("reconstructed Modern hero is not a WebP RIFF payload")
 
+    declared_riff_size = int.from_bytes(payload[4:8], "little") + 8
+    if declared_riff_size != len(payload):
+        raise ValueError(
+            "reconstructed Modern hero RIFF size mismatch: "
+            f"declared {declared_riff_size} bytes, found {len(payload)}"
+        )
+
     (output / HERO_TARGET).write_bytes(payload)
     copied_parts = output / HERO_PARTS_DIR
     if copied_parts.exists():
