@@ -5,6 +5,15 @@ async function openModern(page) {
   await expect(page.locator('[data-remaked-shell]')).toBeVisible();
 }
 
+async function ensureJobTabOpen(page, controlSelector) {
+  const control = page.locator(controlSelector);
+  if (!(await control.isVisible())) {
+    await page.locator('[data-remaked-header]').getByRole('button', { name: 'JOB', exact: true }).click();
+  }
+  await expect(control).toBeVisible();
+  return control;
+}
+
 async function makeFixtures(page) {
   await openModern(page);
   const fixtures = [];
@@ -12,9 +21,7 @@ async function makeFixtures(page) {
   const original = await adapter();
   fixtures.push({ name: 'default', payload: original });
 
-  await page.locator('[data-remaked-header]').getByRole('button', { name: 'JOB', exact: true }).click();
-  const race = page.locator('#SelRace');
-  await expect(race).toBeVisible();
+  const race = await ensureJobTabOpen(page, '#SelRace');
   const currentRace = await race.evaluate((select) => select.selectedIndex);
   const raceCount = await race.locator('option').count();
   expect(raceCount).toBeGreaterThan(1);
@@ -38,9 +45,7 @@ async function makeFixtures(page) {
   fixtures.push({ name: 'changed-equipment', payload: equipmentPayload });
 
   await page.evaluate((payload) => window.PandoraRemaked.adapter.load(payload), original);
-  await page.locator('[data-remaked-header]').getByRole('button', { name: 'JOB', exact: true }).click();
-  const job = page.locator('#SelJob');
-  await expect(job).toBeVisible();
+  const job = await ensureJobTabOpen(page, '#SelJob');
   const jobCount = await job.locator('option').count();
   if (jobCount > 3) {
     await job.selectOption({ index: 3 });
