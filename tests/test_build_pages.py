@@ -32,6 +32,7 @@ class BuildPagesTests(unittest.TestCase):
             (root / "modern" / "modern.css").write_text("/* modern */", encoding="utf-8")
             (root / "modern" / "version.js").write_text("// version", encoding="utf-8")
             (root / "modern" / "app-shell.js").write_text("// shell", encoding="utf-8")
+            (root / "modern" / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
         return root
 
     def test_builds_modern_and_self_contained_legacy(self):
@@ -70,6 +71,7 @@ class BuildPagesTests(unittest.TestCase):
             build_pages(root, output)
             html = (output / "index.html").read_text(encoding="utf-8")
             self.assertEqual(html.count("modern/modern.css"), 1)
+            self.assertEqual(html.count("modern/favicon.svg"), 1)
             self.assertEqual(html.count("modern/version.js"), 1)
             self.assertEqual(html.count("modern/app-shell.js"), 1)
             self.assertLess(html.index("modern/version.js"), html.index("modern/app-shell.js"))
@@ -97,6 +99,7 @@ class BuildPagesTests(unittest.TestCase):
                 "image/fixture.txt",
                 "readme.txt",
                 "modern/modern.css",
+                "modern/favicon.svg",
                 "modern/version.js",
                 "modern/app-shell.js",
                 ".nojekyll",
