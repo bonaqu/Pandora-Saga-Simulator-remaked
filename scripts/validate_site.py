@@ -7,7 +7,10 @@ import pathlib
 import re
 import sys
 
-from scripts.legacy_fingerprint import verify_manifest
+try:
+    from scripts.legacy_fingerprint import verify_manifest
+except ModuleNotFoundError:  # direct execution: python scripts/validate_site.py
+    from legacy_fingerprint import verify_manifest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 INDEX = ROOT / "index.html"
