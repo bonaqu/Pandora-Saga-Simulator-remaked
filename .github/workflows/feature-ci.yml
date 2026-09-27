@@ -79,15 +79,15 @@ jobs:
       - name: Run shipped browser contract tests
         shell: bash
         run: |
-          mkdir -p test-results
-          npm run test:ui:ci -- --reporter=json > test-results/browser-report.json
+          mkdir -p .ci-artifacts
+          npm run test:ui:ci -- --reporter=json > .ci-artifacts/browser-report.json
 
       - name: Upload browser contract report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: feature-browser-report
-          path: test-results/browser-report.json
+          path: .ci-artifacts/browser-report.json
           if-no-files-found: error
           retention-days: 1
 
