@@ -10,6 +10,7 @@
 - Do not change legacy calculator formulas/data or source `index.html`, `js/**`, `css/**`, `image/**`.
 - Modern Mode remains English-first with JP/TW controls.
 - The banner currently uses the previously generated fan header prepared for this project; it must be described as unofficial artwork rather than an official screenshot.
+- The hero source is stored as ordered Base64 text chunks under `modern/pandora-hero.parts/` and reconstructed during the deterministic Pages build. Missing chunk numbers are a hard build failure, and the transport chunks are removed from the public `_site` after reconstruction.
 - The layout must remain usable at 1920×1080, 2560×1440, 1365×768, and 390×844.
 - No body-level horizontal overflow on mobile.
 - The dense legacy calculator may remain in its scrollable work area until the later mobile redesign phase.
