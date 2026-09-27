@@ -5,8 +5,22 @@ async function openModern(page) {
   await expect(page.locator('[data-remaked-header]')).toBeVisible();
 }
 
+async function optionRecords(page, selector) {
+  const options = page.locator(`${selector} option`);
+  const count = await options.count();
+  const records = [];
+  for (let index = 0; index < count; index += 1) {
+    const option = options.nth(index);
+    records.push({
+      value: (await option.getAttribute('value')) ?? '',
+      text: ((await option.textContent()) ?? '').trim()
+    });
+  }
+  return records;
+}
+
 async function optionValues(page, selector) {
-  return page.locator(selector).locator('option').evaluateAll((options) => options.map((option) => option.value));
+  return (await optionRecords(page, selector)).map((option) => option.value);
 }
 
 async function findSelectableEquipment(page, slotIndex = 0) {
@@ -87,9 +101,7 @@ test('Equipment targets/options mirror current legacy selects exactly', async ({
   expect(target.label.trim().length).toBeGreaterThan(0);
 
   const adapterOptions = await page.evaluate(() => window.PandoraRemaked.adapter.listEquipmentOptions(0));
-  const legacyOptions = await page.locator('#SelEquip_0_0 option').evaluateAll((options) =>
-    options.map((option) => ({ value: option.value, text: option.textContent.trim() }))
-  );
+  const legacyOptions = await optionRecords(page, '#SelEquip_0_0');
   expect(adapterOptions.map((option) => option.value)).toEqual(legacyOptions.map((option) => option.value));
   expect(adapterOptions.length).toBe(legacyOptions.length);
 
