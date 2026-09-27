@@ -14,12 +14,14 @@ UPDATES_URL = "https://github.com/bonaqu/Pandora-Saga-Simulator-remaked/blob/bon
 REQUIRED_MODERN = (
     "modern/modern.css",
     "modern/search.css",
+    "modern/builds.css",
     "modern/favicon.svg",
     "modern/version.js",
     "modern/adapter.js",
     "modern/build-store.js",
     "modern/search.js",
     "modern/app-shell.js",
+    "modern/builds.js",
 )
 RUNTIME_DIRS = ("css", "js", "image")
 HERO_PARTS_DIR = pathlib.Path("modern/pandora-hero.parts")
@@ -30,6 +32,7 @@ HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <link rel="icon" type="image/svg+xml" href="./modern/favicon.svg" />
 <link rel="stylesheet" href="./modern/modern.css" />
 <link rel="stylesheet" href="./modern/search.css" />
+<link rel="stylesheet" href="./modern/builds.css" />
 <!-- /REMAKED:HEAD -->'''
 
 BODY_INJECTION = f'''<!-- REMAKED:BODY -->
@@ -42,6 +45,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/build-store.js"></script>
 <script src="./modern/search.js"></script>
 <script src="./modern/app-shell.js"></script>
+<script src="./modern/builds.js"></script>
 <!-- /REMAKED:BODY -->'''
 
 
