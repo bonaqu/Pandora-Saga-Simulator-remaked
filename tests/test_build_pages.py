@@ -1,4 +1,5 @@
 import base64
+import json
 import pathlib
 import tempfile
 import unittest
@@ -39,7 +40,10 @@ class BuildPagesTests(unittest.TestCase):
             (modern / "compare.css").write_text("/* compare */", encoding="utf-8")
             (modern / "tooltips.css").write_text("/* tooltips */", encoding="utf-8")
             (modern / "mobile.css").write_text("/* mobile */", encoding="utf-8")
-            (modern / "version.js").write_text("// version", encoding="utf-8")
+            (modern / "version.js").write_text(
+                "window.PandoraRemakedVersion = { ui: '2026.09.4' };",
+                encoding="utf-8",
+            )
             (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
             (modern / "build-store.js").write_text("// build store", encoding="utf-8")
             (modern / "search.js").write_text("// search", encoding="utf-8")
@@ -49,6 +53,19 @@ class BuildPagesTests(unittest.TestCase):
             (modern / "compare.js").write_text("// compare", encoding="utf-8")
             (modern / "mobile.js").write_text("// mobile", encoding="utf-8")
             (modern / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
+            (modern / "manifest.webmanifest").write_text(
+                json.dumps({"name": "fixture"}),
+                encoding="utf-8",
+            )
+            for size in (192, 512):
+                (modern / f"icon-{size}.svg").write_text(
+                    f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}'/>",
+                    encoding="utf-8",
+                )
+            (modern / "service-worker.js").write_text(
+                "const CACHE_NAME = '__CACHE_VERSION__'; const PRECACHE_URLS = __PRECACHE_URLS__;",
+                encoding="utf-8",
+            )
             parts = modern / "pandora-hero.parts"
             parts.mkdir()
             encoded = base64.b64encode(HERO_WEBP_FIXTURE).decode("ascii")
@@ -109,6 +126,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/tooltips.css",
                 "modern/mobile.css",
                 "modern/favicon.svg",
+                "modern/manifest.webmanifest",
                 "modern/version.js",
                 "modern/adapter.js",
                 "modern/build-store.js",
@@ -154,6 +172,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/compare.css",
                 "modern/tooltips.css",
                 "modern/mobile.css",
+                "modern/manifest.webmanifest",
             ):
                 self.assertNotIn(relative, legacy)
 
@@ -174,6 +193,9 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/tooltips.css",
                 "modern/mobile.css",
                 "modern/favicon.svg",
+                "modern/manifest.webmanifest",
+                "modern/icon-192.svg",
+                "modern/icon-512.svg",
                 "modern/version.js",
                 "modern/adapter.js",
                 "modern/build-store.js",
@@ -184,9 +206,11 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/compare.js",
                 "modern/mobile.js",
                 "modern/pandora-hero.webp",
+                "service-worker.js",
                 ".nojekyll",
             ):
                 self.assertTrue((output / relative).exists(), relative)
+            self.assertFalse((output / "modern" / "service-worker.js").exists())
 
     def test_missing_modern_assets_fails_clearly(self):
         with tempfile.TemporaryDirectory() as td:
@@ -241,6 +265,13 @@ class BuildPagesTests(unittest.TestCase):
             root = self.make_root(pathlib.Path(td))
             (root / "modern" / "mobile.js").unlink()
             with self.assertRaisesRegex(FileNotFoundError, "modern/mobile.js"):
+                build_pages(root, root / "_site")
+
+    def test_missing_pwa_assets_fail_clearly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            (root / "modern" / "manifest.webmanifest").unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "modern/manifest.webmanifest"):
                 build_pages(root, root / "_site")
 
     def test_missing_hero_parts_fails_clearly(self):
