@@ -16,6 +16,7 @@ REQUIRED_MODERN = (
     "modern/search.css",
     "modern/builds.css",
     "modern/compare.css",
+    "modern/tooltips.css",
     "modern/favicon.svg",
     "modern/version.js",
     "modern/adapter.js",
@@ -23,6 +24,7 @@ REQUIRED_MODERN = (
     "modern/search.js",
     "modern/app-shell.js",
     "modern/builds.js",
+    "modern/tooltips.js",
     "modern/compare.js",
 )
 RUNTIME_DIRS = ("css", "js", "image")
@@ -36,6 +38,7 @@ HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <link rel="stylesheet" href="./modern/search.css" />
 <link rel="stylesheet" href="./modern/builds.css" />
 <link rel="stylesheet" href="./modern/compare.css" />
+<link rel="stylesheet" href="./modern/tooltips.css" />
 <!-- /REMAKED:HEAD -->'''
 
 BODY_INJECTION = f'''<!-- REMAKED:BODY -->
@@ -49,6 +52,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/search.js"></script>
 <script src="./modern/app-shell.js"></script>
 <script src="./modern/builds.js"></script>
+<script src="./modern/tooltips.js"></script>
 <script src="./modern/compare.js"></script>
 <!-- /REMAKED:BODY -->'''
 
