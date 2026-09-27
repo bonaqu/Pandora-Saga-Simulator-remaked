@@ -7,8 +7,14 @@ import pathlib
 import re
 import sys
 
+try:
+    from scripts.legacy_fingerprint import verify_manifest
+except ModuleNotFoundError:  # direct execution: python scripts/validate_site.py
+    from legacy_fingerprint import verify_manifest
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 INDEX = ROOT / "index.html"
+LEGACY_MANIFEST = ROOT / "preservation" / "legacy-files.sha256"
 
 CORE_FILES = [
     ROOT / "js" / "calc.js",
@@ -67,6 +73,10 @@ def main() -> int:
     if missing_core:
         fail("missing core files: " + ", ".join(missing_core))
 
+    manifest_errors = verify_manifest(ROOT, LEGACY_MANIFEST)
+    if manifest_errors:
+        fail("legacy preservation mismatch: " + "; ".join(manifest_errors))
+
     missing_refs: list[str] = []
     checked = 0
     for ref in sorted(local_refs(html)):
@@ -95,6 +105,7 @@ def main() -> int:
         fail("image directory contains no files")
 
     print("Static validation passed")
+    print("Legacy preservation manifest verified")
     print(f"HTML local references checked: {checked}")
     print(f"JavaScript files: {js_count}")
     print(f"CSS files: {css_count}")

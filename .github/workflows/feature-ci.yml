@@ -1,0 +1,100 @@
+name: Feature CI
+
+on:
+  push:
+    branches:
+      - feature/modern-foundation
+  pull_request:
+    branches:
+      - bonaqu_projects
+
+permissions:
+  contents: write
+
+concurrency:
+  group: modern-foundation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Generate preservation baseline when bootstrapping
+        id: baseline
+        shell: bash
+        run: |
+          if [[ ! -f preservation/legacy-files.sha256 ]]; then
+            python3 scripts/legacy_fingerprint.py --write preservation/legacy-files.sha256
+            echo 'created=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'created=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run Python tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Validate restored simulator
+        run: python3 scripts/validate_site.py
+
+      - name: Syntax-check core JavaScript
+        shell: bash
+        run: |
+          node --check js/calc.js
+          node --check js/equip.js
+          node --check js/item.js
+          node --check js/skill.js
+          node --check js/ini.js
+          node --check modern/version.js
+          node --check modern/app-shell.js
+
+      - name: Install browser test dependencies
+        id: npm
+        shell: bash
+        run: |
+          if [[ -f package-lock.json ]]; then
+            npm ci --no-audit --no-fund
+            echo 'lock_created=false' >> "$GITHUB_OUTPUT"
+          else
+            npm install --no-audit --no-fund
+            echo 'lock_created=true' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Modern Mode browser smoke tests
+        run: npm run test:ui:foundation
+
+      - name: Capture desktop and mobile visual QA
+        run: npm run test:ui:visual
+
+      - name: Upload visual QA screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: modern-foundation-visual-qa
+          path: test-results/**/modern-*.png
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Commit generated bootstrap metadata once
+        if: github.event_name == 'push' && (steps.baseline.outputs.created == 'true' || steps.npm.outputs.lock_created == 'true')
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add preservation/legacy-files.sha256 package-lock.json
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore: lock modernization test metadata"
+          git push origin HEAD:${GITHUB_REF_NAME}

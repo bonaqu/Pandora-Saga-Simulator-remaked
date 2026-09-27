@@ -1,0 +1,65 @@
+Pandora Saga Simulator Remaked — Project-Specific License
+Copyright (c) 2026 bonaqu. All rights reserved.
+
+1. Scope
+
+This license applies only to new, repository-specific material created for
+"Pandora Saga Simulator Remaked" (the "Remaked Material"), including new
+Modern Mode code, layouts, styles, project branding, documentation, build
+management features, comparison tools, localization framework, project-made
+media, and other original additions that are not part of the recovered legacy
+Pandora Saga Simulator or original Pandora Saga game assets.
+
+2. Permitted use
+
+You may access and use the publicly hosted Pandora Saga Simulator Remaked as
+provided for normal personal, non-commercial end-user use.
+
+3. No redistribution or modification rights
+
+Unless you have prior written permission from the repository owner, no license
+is granted to reproduce, redistribute, republish, mirror, sublicense, sell,
+rent, commercially exploit, or create and distribute modified or derivative
+versions of the Remaked Material. Public source visibility does not itself
+grant permission to reuse, redistribute, or modify the Remaked Material.
+
+You may not remove or obscure copyright, attribution, licensing, or project
+identity notices from the Remaked Material, and you may not present the Remaked
+Material or project branding as your own work.
+
+4. Commercial use
+
+Commercial use of the Remaked Material is prohibited without prior written
+permission from the repository owner. This includes selling copies or
+derivatives, monetizing a competing or repackaged version, incorporating the
+Remaked Material into a paid product or service, or otherwise using it for
+commercial advantage.
+
+5. Legacy and third-party material is not covered by these restrictions
+
+The recovered legacy Pandora Saga Simulator is not covered by the restrictive
+terms above. Its historical README credits the original author as
+"z_anthurium" and states: "Feel free to modify and redistribute." This project
+preserves that attribution and statement and does not claim exclusive ownership
+of the recovered legacy simulator.
+
+Original Pandora Saga names, trademarks, logos, characters, imagery, icons,
+game data, and other game-related material are also not covered by this license
+and remain subject to the rights of their respective owners.
+
+See NOTICE.md for provenance, attribution, and the boundary between recovered
+legacy/third-party material and new Remaked Material.
+
+6. No warranty
+
+THE REMAKED MATERIAL IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. TO THE MAXIMUM EXTENT
+PERMITTED BY LAW, THE AUTHORS OR COPYRIGHT HOLDERS SHALL NOT BE LIABLE FOR ANY
+CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM USE OF THE REMAKED MATERIAL.
+
+7. Additional permission
+
+For permission to redistribute, modify, reuse, or commercially use Remaked
+Material beyond the permissions above, contact the repository owner through
+https://github.com/bonaqu/Pandora-Saga-Simulator-remaked .
