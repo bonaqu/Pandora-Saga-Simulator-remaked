@@ -21,6 +21,9 @@ async function chooseDifferentRace(page) {
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
+    const testInitKey = 'pandora-remaked.build-manager-test-initialized';
+    if (sessionStorage.getItem(testInitKey) === '1') return;
+    sessionStorage.setItem(testInitKey, '1');
     localStorage.removeItem('pandora-remaked.autosave.v1');
     localStorage.removeItem('pandora-remaked.builds.v1');
     localStorage.setItem('file', 'legacy-sentinel');
@@ -135,9 +138,13 @@ test('Build Manager saves, loads, renames, duplicates and confirms deletion', as
   await expect(manager.locator('[data-remaked-build-row]').first()).toContainText('Horseman PvP v2');
 
   await manager.locator('[data-remaked-build-duplicate]').first().click();
-  await expect(manager.locator('[data-remaked-build-row]')).toHaveCount(2);
-  const ids = await manager.locator('[data-remaked-build-row]').evaluateAll((rows) => rows.map((row) => row.dataset.buildId));
-  expect(ids[0]).not.toBe(ids[1]);
+  const rows = manager.locator('[data-remaked-build-row]');
+  await expect(rows).toHaveCount(2);
+  const firstId = await rows.nth(0).getAttribute('data-build-id');
+  const secondId = await rows.nth(1).getAttribute('data-build-id');
+  expect(firstId).toBeTruthy();
+  expect(secondId).toBeTruthy();
+  expect(firstId).not.toBe(secondId);
 
   page.once('dialog', (dialog) => {
     expect(dialog.type()).toBe('confirm');
