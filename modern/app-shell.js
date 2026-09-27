@@ -173,10 +173,20 @@
     return header;
   }
 
-  function markLegacyToolbar(legacyBody) {
-    var toolbars = legacyBody.querySelectorAll(':scope > ul > li > ul');
-    if (toolbars[0]) toolbars[0].classList.add('remaked-legacy-toolbar');
-    if (toolbars[1]) toolbars[1].classList.add('remaked-legacy-toolbar');
+  function markToolbarContaining(id) {
+    var element = document.getElementById(id);
+    if (!element) return;
+    var innerList = element.closest('ul');
+    if (!innerList || !innerList.parentElement || innerList.parentElement.tagName !== 'LI') return;
+    var outerList = innerList.parentElement.parentElement;
+    if (outerList && outerList.tagName === 'UL') {
+      outerList.classList.add('remaked-legacy-toolbar');
+    }
+  }
+
+  function markLegacyToolbar() {
+    markToolbarContaining('TextMenu');
+    markToolbarContaining('Tab_0_0');
   }
 
   namespace.getLegacyBuildCode = function () {
@@ -200,7 +210,7 @@
 
     document.body.classList.add('remaked-modern');
     document.body.dataset.remakedMode = 'modern';
-    markLegacyToolbar(legacyBody);
+    markLegacyToolbar();
 
     var shell = document.createElement('div');
     shell.className = 'remaked-shell';
