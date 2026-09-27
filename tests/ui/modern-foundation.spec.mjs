@@ -10,27 +10,27 @@ async function openModern(page) {
 test('Modern shell exposes meaningful navigation and defaults to English', async ({ page }) => {
   await openModern(page);
   const header = page.locator('[data-remaked-header]');
-  await expect(header.getByRole('link', { name: 'Project' })).toHaveAttribute('href', repoUrl);
-  await expect(header.getByRole('link', { name: 'Updates' })).toHaveAttribute('href', /CHANGELOG\.md$/);
-  await expect(header.getByRole('link', { name: 'Legacy Mode' })).toHaveAttribute('href', './legacy/');
+  await expect(header.getByRole('link', { name: 'Project', exact: true })).toHaveAttribute('href', repoUrl);
+  await expect(header.getByRole('link', { name: 'Updates', exact: true })).toHaveAttribute('href', /CHANGELOG\.md$/);
+  await expect(header.getByRole('link', { name: 'Legacy Mode', exact: true })).toHaveAttribute('href', './legacy/');
   await expect(header.locator('a[href*="awayfromkuma"]')).toHaveCount(0);
-  await expect(header.getByRole('button', { name: 'EN' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(header.getByRole('button', { name: 'JOB' })).toBeVisible();
-  await expect(header.getByRole('button', { name: 'FILE' })).toBeVisible();
+  await expect(header.getByRole('button', { name: 'EN', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(header.getByRole('button', { name: 'JOB', exact: true })).toBeVisible();
+  await expect(header.getByRole('button', { name: 'FILE', exact: true })).toBeVisible();
 });
 
 test('Modern language controls drive the legacy language state', async ({ page }) => {
   await openModern(page);
   const header = page.locator('[data-remaked-header]');
-  await header.getByRole('button', { name: 'JP' }).click();
+  await header.getByRole('button', { name: 'JP', exact: true }).click();
   await expect.poll(() => page.evaluate(() => window.Flag[0])).toBe(0);
-  await header.getByRole('button', { name: 'EN' }).click();
+  await header.getByRole('button', { name: 'EN', exact: true }).click();
   await expect.poll(() => page.evaluate(() => window.Flag[0])).toBe(1);
 });
 
 test('Modern tab navigation drives the existing legacy tab handlers', async ({ page }) => {
   await openModern(page);
-  await page.locator('[data-remaked-header]').getByRole('button', { name: 'JOB' }).click();
+  await page.locator('[data-remaked-header]').getByRole('button', { name: 'JOB', exact: true }).click();
   await expect.poll(() => page.evaluate(() => window.Flag[2])).toBe(1);
   await expect(page.locator('#Tab_0_1')).toBeVisible();
 });
@@ -74,12 +74,19 @@ test('mobile viewport has no body-level horizontal overflow and nav remains reac
 test('primary Modern nav controls do not overlap each other', async ({ page }) => {
   await page.setViewportSize({ width: 1365, height: 768 });
   await openModern(page);
-  const boxes = await page.locator('[data-remaked-nav] button').evaluateAll((buttons) =>
-    buttons.map((button) => {
-      const r = button.getBoundingClientRect();
-      return { left: r.left, right: r.right, top: r.top, bottom: r.bottom };
-    })
-  );
+  const buttons = page.locator('[data-remaked-nav] button');
+  const count = await buttons.count();
+  const boxes = [];
+  for (let index = 0; index < count; index += 1) {
+    const box = await buttons.nth(index).boundingBox();
+    expect(box).not.toBeNull();
+    boxes.push({
+      left: box.x,
+      right: box.x + box.width,
+      top: box.y,
+      bottom: box.y + box.height
+    });
+  }
   for (let i = 0; i < boxes.length; i += 1) {
     for (let j = i + 1; j < boxes.length; j += 1) {
       const a = boxes[i];
