@@ -9,7 +9,7 @@ import shutil
 PROJECT_URL = "https://github.com/bonaqu/Pandora-Saga-Simulator-remaked"
 UPDATES_URL = "https://github.com/bonaqu/Pandora-Saga-Simulator-remaked/blob/bonaqu_projects/CHANGELOG.md"
 
-REQUIRED_MODERN = ("modern/modern.css", "modern/app-shell.js")
+REQUIRED_MODERN = ("modern/modern.css", "modern/version.js", "modern/app-shell.js")
 RUNTIME_DIRS = ("css", "js", "image")
 
 HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
@@ -22,6 +22,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
   data-project-url="{PROJECT_URL}"
   data-updates-url="{UPDATES_URL}"
   data-legacy-url="./legacy/"></div>
+<script src="./modern/version.js"></script>
 <script src="./modern/app-shell.js"></script>
 <!-- /REMAKED:BODY -->'''
 
