@@ -1,0 +1,181 @@
+name: Deploy restored simulator
+
+on:
+  push:
+    branches:
+      - bonaqu_projects
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  SOURCE_REPOSITORY: https://github.com/palver1/Pandora_saga_tools.git
+  SOURCE_COMMIT: 2a2417335f8dd8145c4558f663ca6a0746ca70c6
+  SOURCE_PATH: ps_simulator/PSS_original
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout preservation repository
+        uses: actions/checkout@v7
+        with:
+          ref: bonaqu_projects
+          fetch-depth: 0
+
+      - name: Import recovered simulator once
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -f .source-imported ]]; then
+            echo "Recovered simulator is already committed locally; skipping upstream import."
+            exit 0
+          fi
+
+          workdir="$(mktemp -d)"
+          source_dir="$workdir/source"
+
+          git init "$source_dir"
+          git -C "$source_dir" remote add origin "$SOURCE_REPOSITORY"
+          git -C "$source_dir" sparse-checkout init --cone
+          git -C "$source_dir" sparse-checkout set "$SOURCE_PATH"
+          git -C "$source_dir" fetch --depth 1 origin "$SOURCE_COMMIT"
+          git -C "$source_dir" checkout --detach FETCH_HEAD
+
+          recovered="$source_dir/$SOURCE_PATH"
+          test -f "$recovered/Pandora Saga Simulator.htm"
+          test -d "$recovered/js"
+          test -d "$recovered/css"
+          test -d "$recovered/image"
+
+          rm -rf css js image
+          cp -a "$recovered/css" ./css
+          cp -a "$recovered/js" ./js
+          cp -a "$recovered/image" ./image
+          cp "$recovered/Pandora Saga Simulator.htm" ./index.html
+
+          # Preserve calculator logic/data; remove only dead FC2 hosting footer/runtime glue.
+          python3 scripts/strip_fc2_injection.py index.html
+
+          cat > SOURCE.lock <<EOF
+          source_repository=$SOURCE_REPOSITORY
+          source_commit=$SOURCE_COMMIT
+          source_path=$SOURCE_PATH
+          original_url=http://pansaga3.web.fc2.com/simu/
+          imported_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          EOF
+
+          touch .source-imported
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .source-imported SOURCE.lock index.html css js image
+
+          if git diff --cached --quiet; then
+            echo "Nothing to commit after import."
+          else
+            git commit -m "preservation: import original Pandora Saga Simulator snapshot"
+            git push origin HEAD:bonaqu_projects
+          fi
+
+      - name: Validate restored static site
+        run: python3 scripts/validate_site.py
+
+      - name: Syntax-check core legacy JavaScript
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check js/calc.js
+          node --check js/equip.js
+          node --check js/item.js
+          node --check js/skill.js
+          node --check js/ini.js
+
+      - name: Prepare GitHub Pages artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _site
+          mkdir _site
+          cp index.html readme.txt .nojekyll _site/
+          cp -a css js image _site/
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+  wiki:
+    needs: deploy
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: Checkout documentation
+        uses: actions/checkout@v7
+        with:
+          ref: bonaqu_projects
+
+      - name: Best-effort sync documentation to GitHub Wiki
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set +e
+          wiki_dir="$(mktemp -d)/wiki"
+          wiki_url="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git"
+
+          git clone "$wiki_url" "$wiki_dir"
+          clone_status=$?
+          if [[ $clone_status -ne 0 ]]; then
+            echo "::notice::Wiki git repository is not initialized or the workflow token cannot write it. Canonical docs remain in /docs."
+            exit 0
+          fi
+
+          cp docs/wiki/Home.md "$wiki_dir/Home.md"
+          cp docs/FAQ.md "$wiki_dir/FAQ.md"
+          cp docs/ARCHITECTURE.md "$wiki_dir/Architecture.md"
+          cp docs/DEPLOYMENT.md "$wiki_dir/Deployment.md"
+          cp docs/HISTORY.md "$wiki_dir/History.md"
+
+          cd "$wiki_dir"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Home.md FAQ.md Architecture.md Deployment.md History.md
+
+          if git diff --cached --quiet; then
+            echo "Wiki already matches repository documentation."
+            exit 0
+          fi
+
+          git commit -m "docs: sync preservation wiki"
+          git push origin HEAD
+          push_status=$?
+          if [[ $push_status -ne 0 ]]; then
+            echo "::notice::Wiki sync could not push; simulator deployment is unaffected."
+          fi
+          exit 0
