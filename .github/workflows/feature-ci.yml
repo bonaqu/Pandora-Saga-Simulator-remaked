@@ -58,6 +58,7 @@ jobs:
           node --check modern/adapter.js
           if [[ -f modern/build-store.js ]]; then node --check modern/build-store.js; fi
           if [[ -f modern/search.js ]]; then node --check modern/search.js; fi
+          if [[ -f modern/builds.js ]]; then node --check modern/builds.js; fi
           node --check modern/app-shell.js
 
       - name: Install browser test dependencies
@@ -86,6 +87,9 @@ jobs:
 
       - name: Run local build-store contract tests
         run: npm run test:ui:build-store
+
+      - name: Run autosave and Build Manager contract tests
+        run: npm run test:ui:build-manager
 
       - name: Capture desktop and mobile visual QA
         run: npm run test:ui:visual
