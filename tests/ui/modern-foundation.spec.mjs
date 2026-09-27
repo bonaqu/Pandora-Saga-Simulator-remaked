@@ -38,13 +38,10 @@ test('Modern header includes the approved Hybrid C hero treatment', async ({ pag
   await expect(hero).toBeVisible();
   await expect(hero.getByRole('heading', { name: 'Pandora Saga Simulator', exact: true })).toBeVisible();
   await expect(hero.getByText('Remaked', { exact: true })).toBeVisible();
-  const metrics = await hero.evaluate((element) => ({
-    height: element.getBoundingClientRect().height,
-    backgroundImage: getComputedStyle(element).backgroundImage
-  }));
+  await expect(hero.locator('img[data-remaked-hero-art]')).toHaveAttribute('src', /ps-nation\.jpg$/);
+  const metrics = await hero.evaluate((element) => ({ height: element.getBoundingClientRect().height }));
   expect(metrics.height).toBeGreaterThanOrEqual(160);
   expect(metrics.height).toBeLessThanOrEqual(210);
-  expect(metrics.backgroundImage).toContain('pandora-hero.webp');
 });
 
 test('Modern language controls drive the legacy language state', async ({ page }) => {
