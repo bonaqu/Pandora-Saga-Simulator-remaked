@@ -205,6 +205,38 @@
     return header;
   }
 
+  function createDiscoveryTools() {
+    var tools = document.createElement('section');
+    tools.className = 'remaked-tools';
+    tools.dataset.remakedTools = '';
+    tools.setAttribute('aria-label', 'Build discovery tools');
+
+    var label = document.createElement('span');
+    label.className = 'remaked-tools-label';
+    label.textContent = 'Search current build data';
+    tools.appendChild(label);
+
+    var equipment = makeButton('Equipment Search', 'remaked-tool-button');
+    equipment.dataset.remakedEquipmentSearch = '';
+    equipment.addEventListener('click', function () {
+      if (namespace.search && typeof namespace.search.openEquipmentSearch === 'function') {
+        namespace.search.openEquipmentSearch(null, equipment);
+      }
+    });
+    tools.appendChild(equipment);
+
+    var souls = makeButton('Soul Search', 'remaked-tool-button');
+    souls.dataset.remakedSoulSearch = '';
+    souls.addEventListener('click', function () {
+      if (namespace.search && typeof namespace.search.openSoulSearch === 'function') {
+        namespace.search.openSoulSearch(null, souls);
+      }
+    });
+    tools.appendChild(souls);
+
+    return tools;
+  }
+
   function markToolbarContaining(id) {
     var element = document.getElementById(id);
     if (!element) return;
@@ -249,6 +281,7 @@
     frame.setAttribute('aria-label', 'Pandora Saga character simulator');
     legacyBody.parentNode.insertBefore(shell, legacyBody);
     shell.appendChild(createHeader());
+    shell.appendChild(createDiscoveryTools());
     shell.appendChild(frame);
     frame.appendChild(legacyBody);
     return shell;
