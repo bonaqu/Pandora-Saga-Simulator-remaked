@@ -55,6 +55,7 @@ jobs:
           node --check js/skill.js
           node --check js/ini.js
           node --check modern/version.js
+          node --check modern/i18n.js
           node --check modern/adapter.js
           node --check modern/build-store.js
           node --check modern/search.js

@@ -1,0 +1,23 @@
+{
+  "controls.interfaceLanguage": "Язык интерфейса",
+  "controls.gameDataLanguage": "Язык игровых данных",
+  "controls.displayDensity": "Плотность интерфейса",
+  "controls.density.heavy": "Плотно",
+  "controls.density.medium": "Средне",
+  "controls.density.light": "Свободно",
+  "header.project": "Проект",
+  "header.updates": "Обновления",
+  "header.legacyMode": "Старая версия",
+  "hero.eyebrow": "Pandora Saga · Конструктор персонажа",
+  "hero.title": "Pandora Saga Simulator",
+  "hero.badge": "Remaked",
+  "hero.version": "Legacy {legacyEngine} · UI {ui}",
+  "hero.subtitle": "Сохранённый старый калькулятор в более удобном современном интерфейсе.",
+  "shell.version": "Legacy {legacyEngine} · Remaked {ui}",
+  "shell.sections": "Разделы симулятора",
+  "shell.calculator": "Симулятор персонажа Pandora Saga",
+  "tools.region": "Инструменты для работы с билдом",
+  "tools.label": "Поиск по данным текущего билда",
+  "tools.equipmentSearch": "Поиск экипировки",
+  "tools.soulSearch": "Поиск Soul"
+}

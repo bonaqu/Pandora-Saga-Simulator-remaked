@@ -45,6 +45,7 @@ class BuildPagesTests(unittest.TestCase):
                 "window.PandoraRemakedVersion = { ui: '2026.09.4' };",
                 encoding="utf-8",
             )
+            (modern / "i18n.js").write_text("// i18n", encoding="utf-8")
             (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
             (modern / "build-store.js").write_text("// build store", encoding="utf-8")
             (modern / "search.js").write_text("// search", encoding="utf-8")
@@ -54,6 +55,14 @@ class BuildPagesTests(unittest.TestCase):
             (modern / "compare.js").write_text("// compare", encoding="utf-8")
             (modern / "mobile.js").write_text("// mobile", encoding="utf-8")
             (modern / "pwa.js").write_text("// pwa", encoding="utf-8")
+            localization = root / "localization"
+            localization.mkdir()
+            (localization / "ui.en.json").write_text(
+                json.dumps({"shell.title": "Title"}), encoding="utf-8"
+            )
+            (localization / "ui.ru.json").write_text(
+                json.dumps({}), encoding="utf-8"
+            )
             (modern / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
             (modern / "manifest.webmanifest").write_text(
                 json.dumps({"name": "fixture"}),
@@ -131,6 +140,8 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/favicon.svg",
                 "modern/manifest.webmanifest",
                 "modern/version.js",
+                "modern/locales.js",
+                "modern/i18n.js",
                 "modern/adapter.js",
                 "modern/build-store.js",
                 "modern/search.js",
@@ -142,7 +153,9 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/pwa.js",
             ):
                 self.assertEqual(html.count(relative), 1, relative)
-            self.assertLess(html.index("modern/version.js"), html.index("modern/adapter.js"))
+            self.assertLess(html.index("modern/version.js"), html.index("modern/locales.js"))
+            self.assertLess(html.index("modern/locales.js"), html.index("modern/i18n.js"))
+            self.assertLess(html.index("modern/i18n.js"), html.index("modern/adapter.js"))
             self.assertLess(html.index("modern/adapter.js"), html.index("modern/build-store.js"))
             self.assertLess(html.index("modern/build-store.js"), html.index("modern/search.js"))
             self.assertLess(html.index("modern/search.js"), html.index("modern/app-shell.js"))
@@ -166,6 +179,8 @@ class BuildPagesTests(unittest.TestCase):
             legacy = (output / "legacy" / "index.html").read_text(encoding="utf-8")
             self.assertIn("   0 // [ 0]", legacy)
             for relative in (
+                "modern/locales.js",
+                "modern/i18n.js",
                 "modern/adapter.js",
                 "modern/build-store.js",
                 "modern/search.js",
@@ -183,6 +198,21 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/manifest.webmanifest",
             ):
                 self.assertNotIn(relative, legacy)
+
+    def test_builds_validated_localization_catalogs_with_english_fallback_source(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            output = root / "_site"
+            build_pages(root, output)
+            locales = (output / "modern" / "locales.js").read_text(encoding="utf-8")
+            self.assertIn('"en": {"shell.title": "Title"}', locales)
+            self.assertIn('"ru": {}', locales)
+
+            (root / "localization" / "ui.ru.json").write_text(
+                json.dumps({"unknown": "value"}), encoding="utf-8"
+            )
+            with self.assertRaisesRegex(ValueError, "unknown keys"):
+                build_pages(root, output)
 
     def test_copies_shared_runtime_and_modern_assets(self):
         with tempfile.TemporaryDirectory() as td:
@@ -206,6 +236,8 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/icon-192.svg",
                 "modern/icon-512.svg",
                 "modern/version.js",
+                "modern/locales.js",
+                "modern/i18n.js",
                 "modern/adapter.js",
                 "modern/build-store.js",
                 "modern/search.js",
