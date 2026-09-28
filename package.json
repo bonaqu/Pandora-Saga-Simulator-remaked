@@ -16,9 +16,12 @@
     "test:ui:pwa-ui": "playwright test tests/ui/pwa-ui.spec.mjs",
     "test:ui:pwa": "playwright test tests/ui/pwa-ui.spec.mjs tests/ui/pwa-offline.spec.mjs",
     "test:ui:localization": "playwright test tests/ui/localization.spec.mjs",
+    "test:ui:data": "playwright test tests/ui/data-projections.spec.mjs",
     "extract:terms": "node scripts/extract_legacy_terms.mjs",
     "test:translations": "node scripts/extract_legacy_terms.mjs --check",
-    "test:ui:ci": "playwright test tests/ui/modern-foundation.spec.mjs tests/ui/adapter.spec.mjs tests/ui/summary-adapter.spec.mjs tests/ui/compare-differential.spec.mjs tests/ui/compare-builds.spec.mjs tests/ui/tooltips.spec.mjs tests/ui/search-builds.spec.mjs tests/ui/build-store.spec.mjs tests/ui/build-manager.spec.mjs tests/ui/mobile-polish.spec.mjs tests/ui/pwa-ui.spec.mjs tests/ui/pwa-offline.spec.mjs tests/ui/localization.spec.mjs",
+    "extract:data": "node scripts/extract_legacy_data.mjs",
+    "test:data": "node scripts/extract_legacy_data.mjs --check",
+    "test:ui:ci": "playwright test tests/ui/modern-foundation.spec.mjs tests/ui/adapter.spec.mjs tests/ui/summary-adapter.spec.mjs tests/ui/compare-differential.spec.mjs tests/ui/compare-builds.spec.mjs tests/ui/tooltips.spec.mjs tests/ui/search-builds.spec.mjs tests/ui/build-store.spec.mjs tests/ui/build-manager.spec.mjs tests/ui/mobile-polish.spec.mjs tests/ui/pwa-ui.spec.mjs tests/ui/pwa-offline.spec.mjs tests/ui/localization.spec.mjs tests/ui/data-projections.spec.mjs",
     "test:ui:visual": "playwright test tests/ui/visual-capture.spec.mjs"
   },
   "devDependencies": {

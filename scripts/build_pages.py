@@ -41,6 +41,11 @@ REQUIRED_LOCALIZATION = (
     "localization/ui.en.json",
     "localization/ui.ru.json",
 )
+REQUIRED_GENERATED = (
+    "data/generated/equipment.v1.json",
+    "data/generated/souls.v1.json",
+    "data/generated/skills.v1.json",
+)
 RUNTIME_DIRS = ("css", "js", "image")
 HERO_PARTS_DIR = pathlib.Path("modern/pandora-hero.parts")
 HERO_TARGET = pathlib.Path("modern/pandora-hero.webp")
@@ -124,6 +129,9 @@ def _require_inputs(root: pathlib.Path) -> None:
     for relative in REQUIRED_LOCALIZATION:
         if not (root / relative).is_file():
             raise FileNotFoundError(f"missing required localization catalog: {relative}")
+    for relative in REQUIRED_GENERATED:
+        if not (root / relative).is_file():
+            raise FileNotFoundError(f"missing required generated projection: {relative}")
     for dirname in RUNTIME_DIRS:
         if not (root / dirname).is_dir():
             raise FileNotFoundError(f"missing required legacy directory: {dirname}")
@@ -230,6 +238,13 @@ def _materialize_locales(root: pathlib.Path, output: pathlib.Path) -> None:
     )
 
 
+def _materialize_generated_data(root: pathlib.Path, output: pathlib.Path) -> None:
+    destination = output / "data" / "generated"
+    destination.mkdir(parents=True)
+    for relative in REQUIRED_GENERATED:
+        shutil.copy2(root / relative, destination / pathlib.Path(relative).name)
+
+
 def _read_ui_version(root: pathlib.Path) -> str:
     source = (root / "modern/version.js").read_text(encoding="utf-8")
     match = re.search(r"\bui\s*:\s*['\"]([^'\"]+)['\"]", source)
@@ -283,6 +298,7 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     _copy_runtime(root, output)
     _materialize_modern_assets(root, output)
     _materialize_locales(root, output)
+    _materialize_generated_data(root, output)
 
     source_bytes = (root / "index.html").read_bytes()
     source_text = source_bytes.decode("utf-8-sig")
