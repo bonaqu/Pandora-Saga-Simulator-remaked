@@ -114,6 +114,9 @@ jobs:
           node --check modern/app-shell.js
           node --check modern/tooltips.js
           node --check modern/compare.js
+          node --check modern/mobile.js
+          node --check modern/pwa.js
+          node --check modern/service-worker.js
 
       - name: Build Modern and Legacy Pages routes
         run: python3 scripts/build_pages.py --output _site

@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import base64
 import binascii
+import json
 import pathlib
 import re
 import shutil
@@ -17,7 +18,13 @@ REQUIRED_MODERN = (
     "modern/builds.css",
     "modern/compare.css",
     "modern/tooltips.css",
+    "modern/mobile.css",
+    "modern/pwa.css",
     "modern/favicon.svg",
+    "modern/manifest.webmanifest",
+    "modern/icon-192.svg",
+    "modern/icon-512.svg",
+    "modern/service-worker.js",
     "modern/version.js",
     "modern/adapter.js",
     "modern/build-store.js",
@@ -26,19 +33,28 @@ REQUIRED_MODERN = (
     "modern/builds.js",
     "modern/tooltips.js",
     "modern/compare.js",
+    "modern/mobile.js",
+    "modern/pwa.js",
 )
 RUNTIME_DIRS = ("css", "js", "image")
 HERO_PARTS_DIR = pathlib.Path("modern/pandora-hero.parts")
 HERO_TARGET = pathlib.Path("modern/pandora-hero.webp")
+SERVICE_WORKER_SOURCE = pathlib.Path("modern/service-worker.js")
+SERVICE_WORKER_TARGET = pathlib.Path("service-worker.js")
 
 HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#669b36" />
+<meta name="background-color" content="#f4f6ed" />
 <link rel="icon" type="image/svg+xml" href="./modern/favicon.svg" />
+<link rel="manifest" href="./modern/manifest.webmanifest" />
 <link rel="stylesheet" href="./modern/modern.css" />
 <link rel="stylesheet" href="./modern/search.css" />
 <link rel="stylesheet" href="./modern/builds.css" />
 <link rel="stylesheet" href="./modern/compare.css" />
 <link rel="stylesheet" href="./modern/tooltips.css" />
+<link rel="stylesheet" href="./modern/mobile.css" />
+<link rel="stylesheet" href="./modern/pwa.css" />
 <!-- /REMAKED:HEAD -->'''
 
 BODY_INJECTION = f'''<!-- REMAKED:BODY -->
@@ -54,6 +70,8 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/builds.js"></script>
 <script src="./modern/tooltips.js"></script>
 <script src="./modern/compare.js"></script>
+<script src="./modern/mobile.js"></script>
+<script src="./modern/pwa.js"></script>
 <!-- /REMAKED:BODY -->'''
 
 
@@ -174,6 +192,49 @@ def _materialize_modern_assets(root: pathlib.Path, output: pathlib.Path) -> None
         old_single_source.unlink()
 
 
+def _read_ui_version(root: pathlib.Path) -> str:
+    source = (root / "modern/version.js").read_text(encoding="utf-8")
+    match = re.search(r"\bui\s*:\s*['\"]([^'\"]+)['\"]", source)
+    if not match:
+        raise ValueError("modern/version.js is missing the Remaked UI version")
+    return match.group(1)
+
+
+def _relative_urls(base: pathlib.Path, directory: pathlib.Path) -> list[str]:
+    if not directory.is_dir():
+        return []
+    return [
+        "./" + path.relative_to(base).as_posix()
+        for path in directory.rglob("*")
+        if path.is_file()
+    ]
+
+
+def _precache_urls(output: pathlib.Path) -> list[str]:
+    urls = {"./index.html", "./legacy/index.html"}
+    for relative in ("css", "js", "image/interface", "modern"):
+        urls.update(_relative_urls(output, output / relative))
+    for relative in ("legacy/css", "legacy/js", "legacy/image/interface"):
+        urls.update(_relative_urls(output, output / relative))
+    urls.discard("./modern/service-worker.js")
+    return sorted(urls)
+
+
+def _materialize_service_worker(root: pathlib.Path, output: pathlib.Path) -> None:
+    template = (root / SERVICE_WORKER_SOURCE).read_text(encoding="utf-8")
+    if "__CACHE_VERSION__" not in template or "__PRECACHE_URLS__" not in template:
+        raise ValueError("modern/service-worker.js is missing build placeholders")
+    worker = template.replace("__CACHE_VERSION__", _read_ui_version(root))
+    worker = worker.replace(
+        "__PRECACHE_URLS__",
+        json.dumps(_precache_urls(output), ensure_ascii=False, indent=2),
+    )
+    (output / SERVICE_WORKER_TARGET).write_text(worker, encoding="utf-8")
+    copied_template = output / SERVICE_WORKER_SOURCE
+    if copied_template.exists():
+        copied_template.unlink()
+
+
 def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     root, output = _ensure_inside(root, output)
     _require_inputs(root)
@@ -195,6 +256,7 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     (legacy / "index.html").write_bytes(source_bytes)
 
     (output / ".nojekyll").write_text("", encoding="utf-8")
+    _materialize_service_worker(root, output)
 
 
 def main() -> int:

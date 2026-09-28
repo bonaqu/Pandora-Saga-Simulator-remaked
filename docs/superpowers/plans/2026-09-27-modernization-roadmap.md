@@ -65,7 +65,7 @@ Deliverable:
 ### Phase 3 — Compare Builds + safe diagnostics
 
 **Plan:** `docs/superpowers/plans/2026-09-27-compare-diagnostics.md`  
-**Status:** Release-ready on `feature/compare-diagnostics` as Remaked UI `2026.09.3`; final preservation diff, PR and production deployment gate remain before marking the phase shipped.
+**Status:** Shipped as Remaked UI `2026.09.3` in PR #3 (`35aca9a`); the follow-up hero restoration shipped in PR #4 (`6b1d086`).
 
 Deliverable:
 - Build A vs Build B selection;
@@ -76,6 +76,9 @@ Deliverable:
 - desktop and 390px Compare visual QA.
 
 ### Phase 4 — Mobile polish + PWA/offline
+
+**Plan:** `docs/superpowers/plans/2026-09-27-mobile-pwa.md`
+**Status:** Release-ready on `feature/mobile-pwa-r2` as Remaked UI `2026.09.4`; PR, exact production artifact and deployed-site verification remain before marking the phase shipped.
 
 Deliverable:
 - phone/tablet interaction polish;

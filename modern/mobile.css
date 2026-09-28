@@ -1,0 +1,195 @@
+.remaked-mobile-summary,
+.remaked-mobile-card-bar,
+.remaked-collapse-toggle {
+  display: none;
+}
+
+@media (max-width: 620px) {
+  .remaked-mobile-summary {
+    position: sticky;
+    top: 4px;
+    z-index: 18;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 0 8px;
+    padding: 8px 9px;
+    border: 1px solid #b8ca9e;
+    border-radius: 10px;
+    background: rgba(248, 251, 241, 0.97);
+    color: #394a2e;
+    box-shadow: 0 8px 22px rgba(54, 75, 38, 0.14);
+    backdrop-filter: blur(5px);
+  }
+
+  .remaked-mobile-summary-identity {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 6px;
+    row-gap: 2px;
+    min-width: 0;
+  }
+
+  .remaked-mobile-summary-race {
+    overflow: hidden;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .remaked-mobile-summary-job {
+    grid-column: 1;
+    overflow: hidden;
+    color: #68765e;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .remaked-mobile-summary-level {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    padding: 4px 6px;
+    border-radius: 999px;
+    background: #e6efd8;
+    color: #4f6b38;
+    font-size: 9px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .remaked-mobile-summary-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(44px, 1fr));
+    gap: 4px;
+  }
+
+  .remaked-mobile-summary-stat {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+    padding: 4px 5px;
+    border: 1px solid #cfddbd;
+    border-radius: 7px;
+    background: #fff;
+    text-align: center;
+  }
+
+  .remaked-mobile-summary-stat > span {
+    color: #76816e;
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: .03em;
+  }
+
+  .remaked-mobile-summary-value {
+    overflow: hidden;
+    color: #3f5e2d;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .remaked-mobile-card-bar {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    min-height: 40px;
+    padding-left: 10px;
+    border-bottom: 1px solid #56743d;
+    background: linear-gradient(180deg, #75945a, #607f48);
+    color: #fff;
+  }
+
+  .remaked-mobile-card-label {
+    overflow: hidden;
+    font-size: 10px;
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .remaked-collapse-toggle {
+    display: inline-grid;
+    place-items: center;
+    box-sizing: border-box;
+    min-width: 40px;
+    min-height: 40px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-left: 1px solid rgba(255,255,255,.18);
+    background: transparent;
+    color: #fff;
+    font: 800 16px/1 var(--rm-font, Inter, sans-serif);
+    cursor: pointer;
+  }
+
+  .remaked-collapse-toggle:focus-visible {
+    outline: 2px solid rgba(255,255,255,.9);
+    outline-offset: -3px;
+  }
+
+  .remaked-modern #body .sub_win[data-remaked-collapsed="true"] > :not(.remaked-mobile-card-bar) {
+    display: none !important;
+  }
+
+  .remaked-modern #body [data-remaked-equipment-line] {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 6px;
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .remaked-modern #body [data-remaked-equipment-row] {
+    box-sizing: border-box;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100%;
+    float: none !important;
+  }
+
+  .remaked-modern #body [data-remaked-equipment-row][data-remaked-equipment-kind="main"],
+  .remaked-modern #body [data-remaked-equipment-row][data-remaked-equipment-kind="soul"] {
+    grid-column: 1 / -1;
+  }
+
+  .remaked-modern #body [data-remaked-equipment-row] select,
+  .remaked-modern #body [data-remaked-equipment-row] input {
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100%;
+  }
+
+  .remaked-nav-button,
+  .remaked-segment-button,
+  .remaked-tool-button,
+  .remaked-build-button,
+  .remaked-density-button {
+    min-height: 40px !important;
+  }
+
+  .remaked-app-frame {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 440px) {
+  .remaked-mobile-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .remaked-mobile-summary-stats {
+    width: 100%;
+  }
+}

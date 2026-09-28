@@ -152,6 +152,10 @@
     var controls = document.createElement('div');
     controls.className = 'remaked-utilities remaked-utilities-controls';
     controls.appendChild(createLanguageControl(header));
+    var pwaActions = document.createElement('div');
+    pwaActions.className = 'remaked-pwa-actions';
+    pwaActions.dataset.remakedPwaActions = '';
+    controls.appendChild(pwaActions);
     var version = window.PandoraRemakedVersion || { legacyEngine: '2.00', ui: '2026.09.1' };
     var versionNode = document.createElement('span');
     versionNode.className = 'remaked-version';

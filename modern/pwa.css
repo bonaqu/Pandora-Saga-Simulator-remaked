@@ -1,0 +1,74 @@
+.remaked-pwa-actions {
+  display: inline-flex;
+  align-items: center;
+}
+
+.remaked-install-button,
+.remaked-update-reload {
+  min-height: 34px;
+  border: 1px solid #8fad6e;
+  border-radius: 8px;
+  background: #f5f8ee;
+  color: #365627;
+  font: 700 12px/1 var(--rm-font, Inter, sans-serif);
+  cursor: pointer;
+}
+
+.remaked-install-button {
+  padding: 0 12px;
+}
+
+.remaked-install-button:hover,
+.remaked-update-reload:hover {
+  border-color: #5f843c;
+  background: #e8f1dc;
+}
+
+.remaked-install-button:focus-visible,
+.remaked-update-reload:focus-visible {
+  outline: 3px solid rgba(102, 155, 54, .28);
+  outline-offset: 2px;
+}
+
+.remaked-update-notice {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  max-width: min(360px, calc(100vw - 24px));
+  padding: 10px 12px;
+  border: 1px solid #9db77e;
+  border-radius: 12px;
+  background: #f7f8ef;
+  box-shadow: 0 10px 28px rgba(42, 68, 30, .2);
+  color: #29431f;
+  font: 700 13px/1.35 var(--rm-font, Inter, sans-serif);
+}
+
+.remaked-update-reload {
+  flex: 0 0 auto;
+  padding: 0 10px;
+}
+
+.remaked-update-reload:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
+@media (max-width: 620px) {
+  .remaked-install-button,
+  .remaked-update-reload {
+    min-height: 40px;
+  }
+
+  .remaked-update-notice {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    max-width: none;
+  }
+}
