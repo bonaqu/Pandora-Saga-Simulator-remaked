@@ -54,6 +54,21 @@ class RepositoryDocsTests(unittest.TestCase):
         self.assertIn("Modern Mode", changelog)
         self.assertIn("Legacy Mode", changelog)
 
+    def test_phase_four_release_is_documented_for_players(self):
+        english = self.read("README.md")
+        russian = self.read("README.ru.md")
+        changelog = self.read("CHANGELOG.md")
+
+        self.assertIn("2026.09.4", english)
+        self.assertIn("install", english.lower())
+        self.assertIn("offline", english.lower())
+        self.assertIn("2026.09.4", russian)
+        self.assertIn("PWA", russian)
+        self.assertIn("Legacy Mode", russian)
+        self.assertIn("2026.09.4", changelog)
+        self.assertIn("New version available — Reload", changelog)
+        self.assertIn("local", changelog.lower())
+
 
 if __name__ == "__main__":
     unittest.main()

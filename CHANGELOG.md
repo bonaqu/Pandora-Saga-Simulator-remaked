@@ -2,6 +2,21 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.4 — Mobile polish and offline PWA
+
+### Added
+- A compact sticky character summary on phone screens, sourced through the existing Legacy adapter.
+- Collapsible legacy detail cards and mobile equipment rows that keep item and Soul selectors reachable without horizontal page overflow.
+- Installable PWA metadata and root-scoped offline support for both Modern Mode and the preserved `/legacy/` route.
+- A non-blocking `New version available — Reload` notice when a newly downloaded app version is ready.
+
+### Reliability and local data
+- The service worker precaches the calculator core and small interface assets while leaving external requests and the bulk item-icon library out of the required offline bundle.
+- Updates activate only after the player chooses Reload; the existing Remaked autosave is flushed before the page changes.
+- Offline reloads retain the serialized Legacy build in the current browser, and missing optional item icons do not prevent the calculator from starting.
+- All autosaves, named builds and cached app files remain local to the browser. No account, backend or cross-device sync was added.
+- Mobile, PWA, real offline, preservation and production-artifact contracts are gated in CI.
+
 ## 2026.09.3 — Compare Builds and safe diagnostics
 
 ### Added
@@ -57,4 +72,4 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 
 ### Next
 - Russian localization workflow with user-verified in-game terminology.
-- Mobile polish and PWA/offline support.
+- Reproducible structured-data projections while retaining the Legacy calculation source of truth.

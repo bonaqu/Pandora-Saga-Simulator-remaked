@@ -59,8 +59,40 @@ async function captureCompareBuilds(page, testInfo, viewport, name) {
   await page.screenshot({ path: testInfo.outputPath(name), fullPage: false });
 }
 
+async function captureMobileEquipment(page, testInfo) {
+  await openModern(page, mobile);
+  const primary = page.locator('#SelEquip_0_0');
+  await expect(primary).toBeVisible();
+  await expect(primary.locator('xpath=ancestor::*[@data-remaked-equipment-row][1]')).toHaveCount(1);
+  await primary.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath('modern-mobile-equipment.png'), fullPage: false });
+}
+
+async function captureMobileCollapsedCard(page, testInfo) {
+  await openModern(page, mobile);
+  await page.locator('[data-remaked-nav]').getByRole('button', { name: 'LOG', exact: true }).click();
+  const toggle = page.locator('[data-remaked-collapse-toggle]:visible').first();
+  await expect(toggle).toBeVisible();
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await page.screenshot({ path: testInfo.outputPath('modern-mobile-collapsed-card.png'), fullPage: false });
+}
+
+async function captureMobileUpdateNotice(page, testInfo) {
+  await openModern(page, mobile);
+  await page.evaluate(() => {
+    window.PandoraRemaked.pwa.showUpdateNotice({ postMessage() {} });
+  });
+  await expect(page.locator('[data-remaked-update-notice]')).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath('modern-mobile-update-notice.png'), fullPage: false });
+}
+
 test('capture Modern desktop QA screenshot', async ({ page }, testInfo) => {
-  await captureMain(page, testInfo, desktop, 'modern-desktop.png');
+  await openModern(page, desktop);
+  await expect(page.locator('[data-remaked-mobile-summary]')).toBeHidden();
+  await expect(page.locator('[data-remaked-collapse-toggle]').first()).toBeHidden();
+  await expect(page.locator('[data-remaked-install]')).toBeHidden();
+  await page.screenshot({ path: testInfo.outputPath('modern-desktop.png'), fullPage: true });
 });
 
 test('capture Modern mobile QA screenshot', async ({ page }, testInfo) => {
@@ -89,4 +121,16 @@ test('capture Compare Builds desktop QA screenshot', async ({ page }, testInfo) 
 
 test('capture Compare Builds mobile QA screenshot', async ({ page }, testInfo) => {
   await captureCompareBuilds(page, testInfo, mobile, 'modern-compare-builds-mobile.png');
+});
+
+test('capture Phase 4 mobile equipment QA screenshot', async ({ page }, testInfo) => {
+  await captureMobileEquipment(page, testInfo);
+});
+
+test('capture Phase 4 collapsed card QA screenshot', async ({ page }, testInfo) => {
+  await captureMobileCollapsedCard(page, testInfo);
+});
+
+test('capture Phase 4 update notice QA screenshot', async ({ page }, testInfo) => {
+  await captureMobileUpdateNotice(page, testInfo);
 });
