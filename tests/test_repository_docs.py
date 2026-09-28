@@ -109,7 +109,10 @@ class RepositoryDocsTests(unittest.TestCase):
             self.assertIn(count, changelog)
         self.assertIn("read-only", architecture)
         self.assertIn("Legacy JavaScript remains", architecture)
-        self.assertIn("Release-ready", roadmap)
+        phase_plan = self.read("docs/superpowers/plans/2026-09-28-structured-data-projections.md")
+        self.assertIn("Shipped as Remaked UI `2026.09.6` in PR #9 (`eccdda4`)", roadmap)
+        self.assertIn("Production workflow `36433459517`", roadmap)
+        self.assertIn("Shipped in PR #9 (`eccdda4`)", phase_plan)
 
 
 if __name__ == "__main__":
