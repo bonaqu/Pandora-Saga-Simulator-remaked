@@ -2,7 +2,7 @@
 
 `ui.en.json` is the complete English source catalog for the Modern interface. `ui.ru.json` contains reviewed Russian UI copy; omitted RU keys intentionally fall back to English.
 
-`game-terms.ru.json` and `game-terms.ru.csv` are deterministic exports from the preserved Legacy 2.00 runtime. Each row keeps the stable Legacy path and JP/EN/TW source values. `ru_proposed` and `ru_approved` are intentionally blank: game-client terminology must not be guessed.
+`game-terms.ru.json` and `game-terms.ru.csv` are deterministic exports from the preserved Legacy 2.00 runtime. The worksheet currently contains 1,617 terms, including all 211 actual skill names as `skill_entry.*`; the older `skill.*` IDs remain the 25 skill-discipline names. Each row keeps the stable Legacy path and JP/EN/TW source values. `ru_proposed` and `ru_approved` are intentionally blank: game-client terminology must not be guessed.
 
 Workflow:
 
