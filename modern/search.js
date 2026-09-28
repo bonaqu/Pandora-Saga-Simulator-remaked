@@ -3,7 +3,12 @@
 
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
   var adapter = namespace.adapter;
+  var i18n = namespace.i18n;
   var active = null;
+
+  function t(key, values, fallback) {
+    return i18n && typeof i18n.t === 'function' ? i18n.t(key, values) : fallback;
+  }
 
   function normalizeQuery(value) {
     return String(value == null ? '' : value).normalize('NFKC').trim().toLowerCase();
@@ -38,6 +43,13 @@
     return node;
   }
 
+  function translatedElement(tag, className, key, fallback, values) {
+    var node = element(tag, className);
+    if (i18n && typeof i18n.bindText === 'function') i18n.bindText(node, key, values);
+    else node.textContent = fallback;
+    return node;
+  }
+
   function closePanel(options) {
     if (!active) return;
     var current = active;
@@ -57,7 +69,7 @@
     closePanel();
   }
 
-  function createShell(kind, title, trigger) {
+  function createShell(kind, titleKey, titleFallback, trigger) {
     closePanel({ restoreFocus: false });
 
     var backdrop = element('div', 'remaked-search-backdrop');
@@ -72,15 +84,17 @@
 
     var header = element('div', 'remaked-search-header');
     var headingWrap = element('div', 'remaked-search-heading');
-    var eyebrow = element('span', 'remaked-search-eyebrow', kind === 'equipment' ? 'Equipment' : 'Soul');
-    var heading = element('h2', '', title);
+    var eyebrowKey = kind === 'equipment' ? 'search.eyebrow.equipment' : 'search.eyebrow.soul';
+    var eyebrow = translatedElement('span', 'remaked-search-eyebrow', eyebrowKey, kind === 'equipment' ? 'Equipment' : 'Soul');
+    var heading = translatedElement('h2', '', titleKey, titleFallback);
     heading.id = 'remaked-search-title';
     headingWrap.appendChild(eyebrow);
     headingWrap.appendChild(heading);
 
-    var close = element('button', 'remaked-search-close', 'Close search');
+    var close = translatedElement('button', 'remaked-search-close', 'search.close', 'Close search');
     close.type = 'button';
-    close.setAttribute('aria-label', 'Close search');
+    if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(close, 'aria-label', 'search.close');
+    else close.setAttribute('aria-label', 'Close search');
     close.addEventListener('click', function () { closePanel(); });
 
     header.appendChild(headingWrap);
@@ -102,9 +116,9 @@
     return { backdrop: backdrop, panel: panel, body: body };
   }
 
-  function field(labelText, control) {
+  function field(labelKey, labelText, control) {
     var wrapper = element('label', 'remaked-search-field');
-    wrapper.appendChild(element('span', 'remaked-search-label', labelText));
+    wrapper.appendChild(translatedElement('span', 'remaked-search-label', labelKey, labelText));
     wrapper.appendChild(control);
     return wrapper;
   }
@@ -135,12 +149,13 @@
     return select;
   }
 
-  function queryInput(placeholder) {
+  function queryInput(placeholderKey, placeholder) {
     var input = element('input', 'remaked-search-input');
     input.type = 'search';
     input.autocomplete = 'off';
     input.spellcheck = false;
-    input.placeholder = placeholder;
+    if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(input, 'placeholder', placeholderKey);
+    else input.placeholder = placeholder;
     input.dataset.remakedSearchQuery = '';
     return input;
   }
@@ -164,39 +179,41 @@
   function openEquipmentSearch(slotIndex, trigger) {
     if (!adapter) return null;
     var targets = adapter.listEquipmentTargets();
-    var shell = createShell('equipment', 'Find equipment', trigger);
+    var shell = createShell('equipment', 'search.equipment.title', 'Find equipment', trigger);
     var body = shell.body;
 
     if (!targets.length) {
-      renderEmpty(body, 'No equipment slots available');
+      renderEmpty(body, t('search.noEquipmentSlots', null, 'No equipment slots available'));
       return shell.panel;
     }
 
     var controls = element('div', 'remaked-search-controls');
     var targetsControl = targetSelect(targets, 'equipment', slotIndex);
-    var query = queryInput('Search equipment…');
+    var query = queryInput('search.equipment.placeholder', 'Search equipment…');
     var minLevel = element('input', 'remaked-search-input remaked-search-level');
     minLevel.type = 'number';
     minLevel.min = '0';
     minLevel.inputMode = 'numeric';
-    minLevel.placeholder = 'Min';
+    if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(minLevel, 'placeholder', 'search.min');
+    else minLevel.placeholder = 'Min';
     minLevel.dataset.remakedMinLevel = '';
     var maxLevel = element('input', 'remaked-search-input remaked-search-level');
     maxLevel.type = 'number';
     maxLevel.min = '0';
     maxLevel.inputMode = 'numeric';
-    maxLevel.placeholder = 'Max';
+    if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(maxLevel, 'placeholder', 'search.max');
+    else maxLevel.placeholder = 'Max';
     maxLevel.dataset.remakedMaxLevel = '';
 
     var levels = element('div', 'remaked-search-levels');
-    levels.appendChild(field('Min level', minLevel));
-    levels.appendChild(field('Max level', maxLevel));
+    levels.appendChild(field('search.minLevel', 'Min level', minLevel));
+    levels.appendChild(field('search.maxLevel', 'Max level', maxLevel));
 
-    var reset = element('button', 'remaked-search-reset', 'Reset filters');
+    var reset = translatedElement('button', 'remaked-search-reset', 'search.reset', 'Reset filters');
     reset.type = 'button';
 
-    controls.appendChild(field('Slot', targetsControl));
-    controls.appendChild(field('Name', query));
+    controls.appendChild(field('search.slot', 'Slot', targetsControl));
+    controls.appendChild(field('search.name', 'Name', query));
     controls.appendChild(levels);
     controls.appendChild(reset);
     body.appendChild(controls);
@@ -215,14 +232,16 @@
         minLevel: minLevel.value,
         maxLevel: maxLevel.value
       });
-      summary.textContent = filtered.length + ' of ' + options.length + ' compatible items';
+      summary.textContent = t('search.equipmentSummary', { shown: filtered.length, total: options.length }, filtered.length + ' of ' + options.length + ' compatible items');
       if (!filtered.length) {
-        renderEmpty(results, 'No matching equipment');
+        renderEmpty(results, t('search.noEquipmentMatches', null, 'No matching equipment'));
         return;
       }
       var fragment = document.createDocumentFragment();
       filtered.forEach(function (option) {
-        var detail = option.level == null ? 'Current slot option' : 'Lv ' + option.level;
+        var detail = option.level == null
+          ? t('search.currentSlotOption', null, 'Current slot option')
+          : t('search.level', { level: option.level }, 'Lv ' + option.level);
         var button = resultButton(option, detail);
         button.addEventListener('click', function () {
           if (adapter.selectEquipment(target, option.value)) closePanel();
@@ -263,19 +282,19 @@
   function openSoulSearch(preferredTarget, trigger) {
     if (!adapter) return null;
     var targets = adapter.listSoulTargets();
-    var shell = createShell('soul', 'Find Soul', trigger);
+    var shell = createShell('soul', 'search.soul.title', 'Find Soul', trigger);
     var body = shell.body;
 
     if (!targets.length) {
-      renderEmpty(body, 'No available Soul sockets');
+      renderEmpty(body, t('search.noSoulSockets', null, 'No available Soul sockets'));
       return shell.panel;
     }
 
     var controls = element('div', 'remaked-search-controls remaked-search-controls-soul');
     var targetsControl = targetSelect(targets, 'soul', preferredTarget);
-    var query = queryInput('Search Souls…');
-    controls.appendChild(field('Socket', targetsControl));
-    controls.appendChild(field('Name', query));
+    var query = queryInput('search.soul.placeholder', 'Search Souls…');
+    controls.appendChild(field('search.socket', 'Socket', targetsControl));
+    controls.appendChild(field('search.name', 'Name', query));
     body.appendChild(controls);
 
     var summary = element('div', 'remaked-search-summary');
@@ -288,22 +307,22 @@
       var currentTargets = adapter.listSoulTargets();
       var selected = findSoulTarget(currentTargets, targetsControl.value);
       if (!selected) {
-        renderEmpty(results, 'No available Soul sockets');
-        summary.textContent = '0 compatible Souls';
+        renderEmpty(results, t('search.noSoulSockets', null, 'No available Soul sockets'));
+        summary.textContent = t('search.soulSummary', { total: 0 }, '0 compatible Souls');
         return;
       }
       var needle = normalizeQuery(query.value);
       var options = adapter.listSoulOptions(selected).filter(function (option) {
         return !needle || normalizeQuery(option.name).indexOf(needle) !== -1;
       });
-      summary.textContent = options.length + ' compatible Souls';
+      summary.textContent = t('search.soulSummary', { total: options.length }, options.length + ' compatible Souls');
       if (!options.length) {
-        renderEmpty(results, 'No matching Souls');
+        renderEmpty(results, t('search.noSoulMatches', null, 'No matching Souls'));
         return;
       }
       var fragment = document.createDocumentFragment();
       options.forEach(function (option) {
-        var button = resultButton(option, 'Compatible with this socket');
+        var button = resultButton(option, t('search.soulCompatible', null, 'Compatible with this socket'));
         button.addEventListener('click', function () {
           if (adapter.selectSoul(selected, option.value)) closePanel();
         });

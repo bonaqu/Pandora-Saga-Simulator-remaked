@@ -2,11 +2,17 @@
   'use strict';
 
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
+  var i18n = namespace.i18n;
   var installPrompt = null;
   var installButton = null;
   var updateNotice = null;
   var waitingWorker = null;
   var initialized = false;
+
+  function bindText(node, key, fallback) {
+    if (i18n && typeof i18n.bindText === 'function') i18n.bindText(node, key);
+    else node.textContent = fallback;
+  }
 
   function actionsMount() {
     return document.querySelector('[data-remaked-pwa-actions]');
@@ -20,7 +26,7 @@
     installButton.type = 'button';
     installButton.className = 'remaked-install-button';
     installButton.dataset.remakedInstall = '';
-    installButton.textContent = 'Install App';
+    bindText(installButton, 'pwa.install', 'Install App');
     installButton.hidden = true;
     installButton.addEventListener('click', async function () {
       var promptEvent = installPrompt;
@@ -78,14 +84,14 @@
     updateNotice.setAttribute('aria-live', 'polite');
 
     var message = document.createElement('span');
-    message.textContent = 'New version available — ';
+    bindText(message, 'pwa.updateMessage', 'New version available — ');
     updateNotice.appendChild(message);
 
     var reload = document.createElement('button');
     reload.type = 'button';
     reload.className = 'remaked-update-reload';
     reload.dataset.remakedUpdateReload = '';
-    reload.textContent = 'Reload';
+    bindText(reload, 'pwa.reload', 'Reload');
     reload.addEventListener('click', requestUpdate);
     updateNotice.appendChild(reload);
 

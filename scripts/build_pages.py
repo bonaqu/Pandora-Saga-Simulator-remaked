@@ -26,6 +26,7 @@ REQUIRED_MODERN = (
     "modern/icon-512.svg",
     "modern/service-worker.js",
     "modern/version.js",
+    "modern/i18n.js",
     "modern/adapter.js",
     "modern/build-store.js",
     "modern/search.js",
@@ -35,6 +36,10 @@ REQUIRED_MODERN = (
     "modern/compare.js",
     "modern/mobile.js",
     "modern/pwa.js",
+)
+REQUIRED_LOCALIZATION = (
+    "localization/ui.en.json",
+    "localization/ui.ru.json",
 )
 RUNTIME_DIRS = ("css", "js", "image")
 HERO_PARTS_DIR = pathlib.Path("modern/pandora-hero.parts")
@@ -63,6 +68,8 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
   data-updates-url="{UPDATES_URL}"
   data-legacy-url="./legacy/"></div>
 <script src="./modern/version.js"></script>
+<script src="./modern/locales.js"></script>
+<script src="./modern/i18n.js"></script>
 <script src="./modern/adapter.js"></script>
 <script src="./modern/build-store.js"></script>
 <script src="./modern/search.js"></script>
@@ -114,6 +121,9 @@ def _require_inputs(root: pathlib.Path) -> None:
     for relative in ("index.html", "readme.txt"):
         if not (root / relative).is_file():
             raise FileNotFoundError(f"missing required legacy file: {relative}")
+    for relative in REQUIRED_LOCALIZATION:
+        if not (root / relative).is_file():
+            raise FileNotFoundError(f"missing required localization catalog: {relative}")
     for dirname in RUNTIME_DIRS:
         if not (root / dirname).is_dir():
             raise FileNotFoundError(f"missing required legacy directory: {dirname}")
@@ -192,6 +202,34 @@ def _materialize_modern_assets(root: pathlib.Path, output: pathlib.Path) -> None
         old_single_source.unlink()
 
 
+def _load_catalog(path: pathlib.Path, *, require_values: bool) -> dict[str, str]:
+    try:
+        catalog = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, UnicodeError) as exc:
+        raise ValueError(f"invalid localization catalog: {path.as_posix()}") from exc
+    if not isinstance(catalog, dict) or (require_values and not catalog):
+        raise ValueError(f"localization catalog must be an object with required strings: {path.as_posix()}")
+    for key, value in catalog.items():
+        if not isinstance(key, str) or not key or not isinstance(value, str):
+            raise ValueError(f"localization catalog keys and values must be strings: {path.as_posix()}")
+        if require_values and not value:
+            raise ValueError(f"English localization strings must not be empty: {key}")
+    return catalog
+
+
+def _materialize_locales(root: pathlib.Path, output: pathlib.Path) -> None:
+    english = _load_catalog(root / "localization/ui.en.json", require_values=True)
+    russian = _load_catalog(root / "localization/ui.ru.json", require_values=False)
+    unknown = sorted(set(russian) - set(english))
+    if unknown:
+        raise ValueError("Russian localization contains unknown keys: " + ", ".join(unknown))
+    payload = json.dumps({"en": english, "ru": russian}, ensure_ascii=False, sort_keys=True)
+    (output / "modern/locales.js").write_text(
+        "window.PandoraRemakedLocales = Object.freeze(" + payload + ");\n",
+        encoding="utf-8",
+    )
+
+
 def _read_ui_version(root: pathlib.Path) -> str:
     source = (root / "modern/version.js").read_text(encoding="utf-8")
     match = re.search(r"\bui\s*:\s*['\"]([^'\"]+)['\"]", source)
@@ -244,6 +282,7 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
 
     _copy_runtime(root, output)
     _materialize_modern_assets(root, output)
+    _materialize_locales(root, output)
 
     source_bytes = (root / "index.html").read_bytes()
     source_text = source_bytes.decode("utf-8-sig")

@@ -4,6 +4,7 @@
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
   var adapter = namespace.adapter;
   var store = namespace.buildStore;
+  var i18n = namespace.i18n;
   var DEBOUNCE_MS = 300;
   var timer = null;
   var lastSavedPayload = null;
@@ -17,9 +18,14 @@
   var suppressAutosave = false;
   var previousBodyOverflow = '';
 
+  function t(key, values, fallback) {
+    return i18n && typeof i18n.t === 'function' ? i18n.t(key, values) : fallback;
+  }
+
   function nowLabel() {
     var now = new Date();
-    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    var locale = i18n && i18n.getLocale && i18n.getLocale() === 'ru' ? 'ru-RU' : 'en';
+    return now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
   }
 
   function setAutosaveStatus(message, state) {
@@ -121,7 +127,7 @@
     clearScheduledAutosave();
     if (!adapter || !store) {
       var unavailable = { ok: false, error: { code: 'unavailable', message: 'Autosave is unavailable.' } };
-      setAutosaveStatus('Autosave unavailable', 'error');
+      setAutosaveStatus(t('builds.autosaveUnavailable', null, 'Autosave unavailable'), 'error');
       return unavailable;
     }
 
@@ -129,7 +135,7 @@
     try {
       payload = currentPayload();
     } catch (error) {
-      setAutosaveStatus('Autosave unavailable', 'error');
+      setAutosaveStatus(t('builds.autosaveUnavailable', null, 'Autosave unavailable'), 'error');
       return { ok: false, error: { code: 'serialize-failed', message: String(error.message || error) } };
     }
 
@@ -139,11 +145,11 @@
 
     var written = store.writeAutosave(payload);
     if (!written.ok) {
-      setAutosaveStatus('Autosave warning: ' + written.error.code, 'warning');
+      setAutosaveStatus(t('builds.autosaveWarning', { code: written.error.code }, 'Autosave warning: ' + written.error.code), 'warning');
       return written;
     }
     lastSavedPayload = payload;
-    setAutosaveStatus('Saved ' + nowLabel(), 'saved');
+    setAutosaveStatus(t('builds.savedAt', { time: nowLabel() }, 'Saved ' + nowLabel()), 'saved');
     return { ok: true, unchanged: false, payload: payload, record: written.record };
   }
 
@@ -160,46 +166,47 @@
   function persistLoadedPayload(payload, statusText) {
     var written = store.writeAutosave(payload);
     if (!written.ok) {
-      setAutosaveStatus('Autosave warning: ' + written.error.code, 'warning');
+      setAutosaveStatus(t('builds.autosaveWarning', { code: written.error.code }, 'Autosave warning: ' + written.error.code), 'warning');
       return written;
     }
     lastSavedPayload = payload;
-    setAutosaveStatus(statusText || ('Saved ' + nowLabel()), statusText === 'Restored autosave' ? 'restored' : 'saved');
+    setAutosaveStatus(statusText || t('builds.savedAt', { time: nowLabel() }, 'Saved ' + nowLabel()), statusText === 'Restored autosave' ? 'restored' : 'saved');
     return { ok: true, record: written.record };
   }
 
   function restoreAutosaveOnce() {
     if (!store || !adapter) {
-      setAutosaveStatus('Autosave unavailable', 'error');
+      setAutosaveStatus(t('builds.autosaveUnavailable', null, 'Autosave unavailable'), 'error');
       return;
     }
     var read = store.readAutosave();
     if (!read.ok) {
       try { lastSavedPayload = currentPayload(); } catch (error) { lastSavedPayload = null; }
-      setAutosaveStatus('Autosave warning: saved data ignored', 'warning');
+      setAutosaveStatus(t('builds.autosaveIgnored', null, 'Autosave warning: saved data ignored'), 'warning');
       return;
     }
     if (!read.record) {
       try { lastSavedPayload = currentPayload(); } catch (error) { lastSavedPayload = null; }
-      setAutosaveStatus('Autosave ready', 'ready');
+      setAutosaveStatus(t('builds.autosaveReady', null, 'Autosave ready'), 'ready');
       return;
     }
 
     var loaded = loadPayloadSafely(read.record.payload);
     if (!loaded.ok) {
       try { lastSavedPayload = currentPayload(); } catch (error) { lastSavedPayload = null; }
-      setAutosaveStatus('Autosave warning: saved data ignored', 'warning');
+      setAutosaveStatus(t('builds.autosaveIgnored', null, 'Autosave warning: saved data ignored'), 'warning');
       return;
     }
     lastSavedPayload = loaded.payload;
-    setAutosaveStatus('Restored autosave', 'restored');
+    setAutosaveStatus(t('builds.autosaveRestored', null, 'Restored autosave'), 'restored');
   }
 
-  function button(label, className) {
+  function button(label, className, key) {
     var node = document.createElement('button');
     node.type = 'button';
     node.className = className || 'remaked-build-button';
-    node.textContent = label;
+    if (key && i18n && typeof i18n.bindText === 'function') i18n.bindText(node, key);
+    else node.textContent = label;
     return node;
   }
 
@@ -210,18 +217,18 @@
     if (!listed.ok && listed.error && listed.error.code !== 'corrupt-entries') {
       var blocked = document.createElement('div');
       blocked.className = 'remaked-build-empty';
-      blocked.textContent = 'Saved builds are unavailable (' + listed.error.code + ').';
+      blocked.textContent = t('builds.storageUnavailable', { code: listed.error.code }, 'Saved builds are unavailable (' + listed.error.code + ').');
       buildList.appendChild(blocked);
-      setManagerStatus('Saved build storage could not be read.', 'warning');
+      setManagerStatus(t('builds.storageReadFailed', null, 'Saved build storage could not be read.'), 'warning');
       return;
     }
     if (!listed.ok && listed.error && listed.error.code === 'corrupt-entries') {
-      setManagerStatus('Some damaged saved builds were ignored.', 'warning');
+      setManagerStatus(t('builds.damagedIgnored', null, 'Some damaged saved builds were ignored.'), 'warning');
     }
     if (!listed.builds.length) {
       var empty = document.createElement('div');
       empty.className = 'remaked-build-empty';
-      empty.textContent = 'No named builds yet. Save the current character to create one.';
+      empty.textContent = t('builds.none', null, 'No named builds yet. Save the current character to create one.');
       buildList.appendChild(empty);
       return;
     }
@@ -238,63 +245,65 @@
       name.title = build.name;
       row.appendChild(name);
 
-      var load = button('Load');
+      var load = button('Load', null, 'builds.load');
       load.dataset.remakedBuildLoad = '';
       load.addEventListener('click', function () {
         var storedBuild = store.getBuild(build.id);
         if (!storedBuild) {
-          setManagerStatus('Build could not be found.', 'error');
+          setManagerStatus(t('builds.notFound', null, 'Build could not be found.'), 'error');
           renderBuilds();
           return;
         }
         var loaded = loadPayloadSafely(storedBuild.payload);
         if (!loaded.ok) {
-          setManagerStatus('Build is invalid and could not be loaded.', 'error');
+          setManagerStatus(t('builds.invalid', null, 'Build is invalid and could not be loaded.'), 'error');
           return;
         }
-        var saved = persistLoadedPayload(loaded.payload, 'Saved loaded build');
-        setManagerStatus(saved.ok ? ('Loaded “' + storedBuild.name + '”.') : 'Build loaded, but autosave is unavailable.', saved.ok ? 'success' : 'warning');
+        var saved = persistLoadedPayload(loaded.payload, t('builds.savedLoaded', null, 'Saved loaded build'));
+        setManagerStatus(saved.ok
+          ? t('builds.loaded', { name: storedBuild.name }, 'Loaded “' + storedBuild.name + '”.')
+          : t('builds.loadedNoAutosave', null, 'Build loaded, but autosave is unavailable.'), saved.ok ? 'success' : 'warning');
       });
       row.appendChild(load);
 
-      var rename = button('Rename');
+      var rename = button('Rename', null, 'builds.rename');
       rename.dataset.remakedBuildRename = '';
       rename.addEventListener('click', function () {
-        var nextName = window.prompt('Rename build', build.name);
+        var nextName = window.prompt(t('builds.renamePrompt', null, 'Rename build'), build.name);
         if (nextName === null) return;
         var result = store.updateBuild(build.id, { name: nextName });
         if (!result.ok) {
-          setManagerStatus('Build could not be renamed.', 'error');
+          setManagerStatus(t('builds.renameFailed', null, 'Build could not be renamed.'), 'error');
           return;
         }
-        setManagerStatus('Renamed to “' + result.build.name + '”.', 'success');
+        setManagerStatus(t('builds.renamed', { name: result.build.name }, 'Renamed to “' + result.build.name + '”.'), 'success');
         renderBuilds();
       });
       row.appendChild(rename);
 
-      var duplicate = button('Duplicate');
+      var duplicate = button('Duplicate', null, 'builds.duplicate');
       duplicate.dataset.remakedBuildDuplicate = '';
       duplicate.addEventListener('click', function () {
         var result = store.duplicateBuild(build.id);
         if (!result.ok) {
-          setManagerStatus('Build could not be duplicated.', 'error');
+          setManagerStatus(t('builds.duplicateFailed', null, 'Build could not be duplicated.'), 'error');
           return;
         }
-        setManagerStatus('Created “' + result.build.name + '”.', 'success');
+        setManagerStatus(t('builds.created', { name: result.build.name }, 'Created “' + result.build.name + '”.'), 'success');
         renderBuilds();
       });
       row.appendChild(duplicate);
 
-      var remove = button('Delete');
+      var remove = button('Delete', null, 'builds.delete');
       remove.dataset.remakedBuildDelete = '';
       remove.addEventListener('click', function () {
-        if (!window.confirm('Delete “' + build.name + '”?')) return;
+        if (!window.confirm(t('builds.deleteConfirm', { name: build.name }, 'Delete “' + build.name + '”?'))) return;
         var result = store.deleteBuild(build.id);
         if (!result.ok) {
-          setManagerStatus('Build could not be deleted.', 'error');
+          setManagerStatus(t('builds.deleteFailed', null, 'Build could not be deleted.'), 'error');
           return;
         }
-        setManagerStatus('Deleted “' + build.name + '”.', 'success');
+        setManagerStatus(t('builds.deleted', { name: build.name }, 'Deleted “' + build.name + '”.'), 'success');
         renderBuilds();
       });
       row.appendChild(remove);
@@ -336,10 +345,12 @@
     var title = document.createElement('h2');
     title.className = 'remaked-build-manager-title';
     title.id = 'remaked-build-manager-title';
-    title.textContent = 'Build Manager';
+    if (i18n && typeof i18n.bindText === 'function') i18n.bindText(title, 'builds.managerTitle');
+    else title.textContent = 'Build Manager';
     header.appendChild(title);
     var close = button('×', 'remaked-build-close');
-    close.setAttribute('aria-label', 'Close Build Manager');
+    if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(close, 'aria-label', 'builds.close');
+    else close.setAttribute('aria-label', 'Close Build Manager');
     close.addEventListener('click', closeManager);
     header.appendChild(close);
     panel.appendChild(header);
@@ -350,7 +361,8 @@
     var savedSection = document.createElement('section');
     savedSection.className = 'remaked-build-section';
     var savedTitle = document.createElement('h3');
-    savedTitle.textContent = 'Named builds';
+    if (i18n && typeof i18n.bindText === 'function') i18n.bindText(savedTitle, 'builds.named');
+    else savedTitle.textContent = 'Named builds';
     savedSection.appendChild(savedTitle);
 
     var create = document.createElement('div');
@@ -359,26 +371,27 @@
     buildNameInput.className = 'remaked-build-input';
     buildNameInput.type = 'text';
     buildNameInput.maxLength = 120;
-    buildNameInput.placeholder = 'Build name (optional)';
+    if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(buildNameInput, 'placeholder', 'builds.namePlaceholder');
+    else buildNameInput.placeholder = 'Build name (optional)';
     buildNameInput.dataset.remakedBuildName = '';
     create.appendChild(buildNameInput);
-    var save = button('Save current', 'remaked-build-button remaked-build-button-primary');
+    var save = button('Save current', 'remaked-build-button remaked-build-button-primary', 'builds.saveCurrent');
     save.dataset.remakedSaveBuild = '';
     save.addEventListener('click', function () {
       var payload;
       try {
         payload = currentPayload();
       } catch (error) {
-        setManagerStatus('Current build could not be serialized.', 'error');
+        setManagerStatus(t('builds.serializeFailed', null, 'Current build could not be serialized.'), 'error');
         return;
       }
       var result = store.saveBuild(buildNameInput.value, payload);
       if (!result.ok) {
-        setManagerStatus('Build could not be saved (' + result.error.code + ').', 'error');
+        setManagerStatus(t('builds.saveFailed', { code: result.error.code }, 'Build could not be saved (' + result.error.code + ').'), 'error');
         return;
       }
       buildNameInput.value = '';
-      setManagerStatus('Saved “' + result.build.name + '”.', 'success');
+      setManagerStatus(t('builds.saved', { name: result.build.name }, 'Saved “' + result.build.name + '”.'), 'success');
       renderBuilds();
     });
     create.appendChild(save);
@@ -393,41 +406,45 @@
     var codeSection = document.createElement('section');
     codeSection.className = 'remaked-build-section';
     var codeTitle = document.createElement('h3');
-    codeTitle.textContent = 'Build code';
+    if (i18n && typeof i18n.bindText === 'function') i18n.bindText(codeTitle, 'builds.codeTitle');
+    else codeTitle.textContent = 'Build code';
     codeSection.appendChild(codeTitle);
 
     buildCode = document.createElement('textarea');
     buildCode.className = 'remaked-build-code';
     buildCode.spellcheck = false;
-    buildCode.placeholder = 'Export the current build or paste a Pandora Saga Simulator code here.';
+    if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(buildCode, 'placeholder', 'builds.codePlaceholder');
+    else buildCode.placeholder = 'Export the current build or paste a Pandora Saga Simulator code here.';
     buildCode.dataset.remakedBuildCode = '';
     codeSection.appendChild(buildCode);
 
     var codeActions = document.createElement('div');
     codeActions.className = 'remaked-build-code-actions';
-    var exportButton = button('Export current');
+    var exportButton = button('Export current', null, 'builds.exportCurrent');
     exportButton.dataset.remakedExportBuild = '';
     exportButton.addEventListener('click', function () {
       try {
         buildCode.value = currentPayload();
-        setManagerStatus('Current build code exported.', 'success');
+        setManagerStatus(t('builds.exported', null, 'Current build code exported.'), 'success');
       } catch (error) {
-        setManagerStatus('Current build could not be exported.', 'error');
+        setManagerStatus(t('builds.exportFailed', null, 'Current build could not be exported.'), 'error');
       }
     });
     codeActions.appendChild(exportButton);
 
-    var importButton = button('Import code', 'remaked-build-button remaked-build-button-primary');
+    var importButton = button('Import code', 'remaked-build-button remaked-build-button-primary', 'builds.importCode');
     importButton.dataset.remakedImportBuild = '';
     importButton.addEventListener('click', function () {
       var candidate = buildCode.value.trim();
       var loaded = loadPayloadSafely(candidate);
       if (!loaded.ok) {
-        setManagerStatus('Invalid build code; current build was not changed.', 'error');
+        setManagerStatus(t('builds.invalidCode', null, 'Invalid build code; current build was not changed.'), 'error');
         return;
       }
-      var saved = persistLoadedPayload(loaded.payload, 'Saved imported build');
-      setManagerStatus(saved.ok ? 'Build code imported.' : 'Build imported, but autosave is unavailable.', saved.ok ? 'success' : 'warning');
+      var saved = persistLoadedPayload(loaded.payload, t('builds.savedImported', null, 'Saved imported build'));
+      setManagerStatus(saved.ok
+        ? t('builds.imported', null, 'Build code imported.')
+        : t('builds.importedNoAutosave', null, 'Build imported, but autosave is unavailable.'), saved.ok ? 'success' : 'warning');
     });
     codeActions.appendChild(importButton);
     codeSection.appendChild(codeActions);
@@ -455,7 +472,7 @@
     var tools = document.querySelector('[data-remaked-tools]');
     if (!tools) return;
 
-    var buildsButton = button('Builds', 'remaked-tool-button');
+    var buildsButton = button('Builds', 'remaked-tool-button', 'builds.button');
     buildsButton.dataset.remakedBuildsOpen = '';
     buildsButton.addEventListener('click', openManager);
     tools.appendChild(buildsButton);
@@ -464,7 +481,8 @@
     autosaveStatus.className = 'remaked-autosave';
     autosaveStatus.dataset.remakedAutosaveStatus = '';
     autosaveStatus.setAttribute('aria-live', 'polite');
-    autosaveStatus.textContent = 'Autosave…';
+    if (i18n && typeof i18n.bindText === 'function') i18n.bindText(autosaveStatus, 'builds.autosavePending');
+    else autosaveStatus.textContent = 'Autosave…';
     tools.appendChild(autosaveStatus);
   }
 

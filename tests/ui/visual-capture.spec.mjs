@@ -134,3 +134,17 @@ test('capture Phase 4 collapsed card QA screenshot', async ({ page }, testInfo) 
 test('capture Phase 4 update notice QA screenshot', async ({ page }, testInfo) => {
   await captureMobileUpdateNotice(page, testInfo);
 });
+
+test('capture Russian Modern desktop QA screenshot', async ({ page }, testInfo) => {
+  await openModern(page, desktop);
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+  await expect(page.locator('[data-remaked-header]')).toContainText('Проект');
+  await page.screenshot({ path: testInfo.outputPath('modern-russian-desktop.png'), fullPage: true });
+});
+
+test('capture Russian Modern mobile QA screenshot', async ({ page }, testInfo) => {
+  await openModern(page, mobile);
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+  await expect(page.locator('[data-remaked-mobile-summary]')).toHaveAttribute('aria-label', 'Сводка текущего персонажа');
+  await page.screenshot({ path: testInfo.outputPath('modern-russian-mobile.png'), fullPage: false });
+});

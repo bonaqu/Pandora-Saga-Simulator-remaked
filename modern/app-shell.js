@@ -2,14 +2,29 @@
   'use strict';
 
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
+  var i18n = namespace.i18n;
   var hooks = document.getElementById('remaked-shell-hooks');
   var defaultLabels = ['JOB', 'SKILL', 'ATTACK', 'DEFENSE', 'BUFF', 'LOG', 'FILE'];
   var HERO_ART_URL = './modern/pandora-hero.webp';
 
-  function makeLink(label, href) {
+  function localizeText(node, key, fallback, values) {
+    if (key && i18n && typeof i18n.bindText === 'function') return i18n.bindText(node, key, values);
+    node.textContent = fallback;
+    return node;
+  }
+
+  function localizeAttribute(node, attribute, key, fallback, values) {
+    if (key && i18n && typeof i18n.bindAttribute === 'function') {
+      return i18n.bindAttribute(node, attribute, key, values);
+    }
+    node.setAttribute(attribute, fallback);
+    return node;
+  }
+
+  function makeLink(label, href, key) {
     var link = document.createElement('a');
     link.className = 'remaked-link';
-    link.textContent = label;
+    localizeText(link, key, label);
     link.href = href;
     if (/^https?:/i.test(href)) {
       link.target = '_blank';
@@ -18,11 +33,11 @@
     return link;
   }
 
-  function makeButton(label, className) {
+  function makeButton(label, className, key) {
     var button = document.createElement('button');
     button.type = 'button';
     button.className = className || 'remaked-control';
-    button.textContent = label;
+    localizeText(button, key, label);
     return button;
   }
 
@@ -35,6 +50,13 @@
     header.querySelectorAll('[data-remaked-language]').forEach(function (button) {
       var active = Number(button.dataset.remakedLanguage) === current;
       button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+  }
+
+  function syncUiLocaleButtons(header) {
+    var current = i18n && typeof i18n.getLocale === 'function' ? i18n.getLocale() : 'en';
+    header.querySelectorAll('[data-remaked-ui-locale]').forEach(function (button) {
+      button.setAttribute('aria-pressed', button.dataset.remakedUiLocale === current ? 'true' : 'false');
     });
   }
 
@@ -59,7 +81,7 @@
   function createLanguageControl(header) {
     var language = document.createElement('div');
     language.className = 'remaked-segment';
-    language.setAttribute('aria-label', 'Language');
+    localizeAttribute(language, 'aria-label', 'controls.gameDataLanguage', 'Game data language');
     ['JP', 'EN', 'TW'].forEach(function (label, index) {
       var button = makeButton(label, 'remaked-segment-button');
       button.dataset.remakedLanguage = String(index);
@@ -75,6 +97,24 @@
     return language;
   }
 
+  function createUiLocaleControl(header) {
+    var control = document.createElement('div');
+    control.className = 'remaked-segment remaked-ui-locale';
+    localizeAttribute(control, 'aria-label', 'controls.interfaceLanguage', 'Interface language');
+    ['EN', 'RU'].forEach(function (label) {
+      var locale = label.toLowerCase();
+      var button = makeButton(label, 'remaked-segment-button');
+      button.dataset.remakedUiLocale = locale;
+      button.setAttribute('aria-pressed', 'false');
+      button.addEventListener('click', function () {
+        if (i18n && typeof i18n.setLocale === 'function') i18n.setLocale(locale);
+        syncUiLocaleButtons(header);
+      });
+      control.appendChild(button);
+    });
+    return control;
+  }
+
   function createHero() {
     var version = window.PandoraRemakedVersion || { legacyEngine: '2.00', ui: '2026.09.1' };
     var hero = document.createElement('section');
@@ -87,28 +127,28 @@
 
     var eyebrow = document.createElement('span');
     eyebrow.className = 'remaked-hero-eyebrow';
-    eyebrow.textContent = 'Pandora Saga · Character Builder';
+    localizeText(eyebrow, 'hero.eyebrow', 'Pandora Saga · Character Builder');
 
     var title = document.createElement('h1');
     title.id = 'remaked-hero-title';
-    title.textContent = 'Pandora Saga Simulator';
+    localizeText(title, 'hero.title', 'Pandora Saga Simulator');
 
     var meta = document.createElement('div');
     meta.className = 'remaked-hero-meta';
     var badge = document.createElement('span');
     badge.className = 'remaked-hero-badge';
-    badge.textContent = 'Remaked';
+    localizeText(badge, 'hero.badge', 'Remaked');
     var versionText = document.createElement('span');
-    versionText.textContent = 'Legacy ' + version.legacyEngine + ' · UI ' + version.ui;
+    localizeText(versionText, 'hero.version', 'Legacy ' + version.legacyEngine + ' · UI ' + version.ui, version);
     meta.appendChild(badge);
     meta.appendChild(versionText);
 
     var subtitle = document.createElement('p');
-    subtitle.textContent = 'The preserved legacy calculator, wrapped in a cleaner modern interface.';
+    localizeText(subtitle, 'hero.subtitle', 'The preserved legacy calculator, wrapped in a cleaner modern interface.');
 
     var source = document.createElement('span');
     source.className = 'remaked-hero-source';
-    source.textContent = 'Unofficial Pandora Saga fan artwork';
+    localizeText(source, 'hero.source', 'Unofficial Pandora Saga fan artwork');
 
     copy.appendChild(eyebrow);
     copy.appendChild(title);
@@ -144,13 +184,14 @@
     var projectUrl = hooks && hooks.dataset.projectUrl ? hooks.dataset.projectUrl : '#';
     var updatesUrl = hooks && hooks.dataset.updatesUrl ? hooks.dataset.updatesUrl : '#';
     var legacyUrl = hooks && hooks.dataset.legacyUrl ? hooks.dataset.legacyUrl : './legacy/';
-    primary.appendChild(makeLink('Project', projectUrl));
-    primary.appendChild(makeLink('Updates', updatesUrl));
-    primary.appendChild(makeLink('Legacy Mode', legacyUrl));
+    primary.appendChild(makeLink('Project', projectUrl, 'header.project'));
+    primary.appendChild(makeLink('Updates', updatesUrl, 'header.updates'));
+    primary.appendChild(makeLink('Legacy Mode', legacyUrl, 'header.legacyMode'));
     top.appendChild(primary);
 
     var controls = document.createElement('div');
     controls.className = 'remaked-utilities remaked-utilities-controls';
+    controls.appendChild(createUiLocaleControl(header));
     controls.appendChild(createLanguageControl(header));
     var pwaActions = document.createElement('div');
     pwaActions.className = 'remaked-pwa-actions';
@@ -160,7 +201,7 @@
     var versionNode = document.createElement('span');
     versionNode.className = 'remaked-version';
     versionNode.dataset.remakedVersion = '';
-    versionNode.textContent = 'Legacy ' + version.legacyEngine + ' · Remaked ' + version.ui;
+    localizeText(versionNode, 'shell.version', 'Legacy ' + version.legacyEngine + ' · Remaked ' + version.ui, version);
     controls.appendChild(versionNode);
     top.appendChild(controls);
 
@@ -172,7 +213,7 @@
     var nav = document.createElement('nav');
     nav.className = 'remaked-nav';
     nav.dataset.remakedNav = '';
-    nav.setAttribute('aria-label', 'Simulator sections');
+    localizeAttribute(nav, 'aria-label', 'shell.sections', 'Simulator sections');
     defaultLabels.forEach(function (label, index) {
       var button = makeButton(label, 'remaked-nav-button');
       button.dataset.remakedTab = String(index);
@@ -188,9 +229,10 @@
 
     var density = document.createElement('div');
     density.className = 'remaked-density';
-    density.setAttribute('aria-label', 'Display density');
+    localizeAttribute(density, 'aria-label', 'controls.displayDensity', 'Display density');
     ['Heavy', 'Medium', 'Light'].forEach(function (label, index) {
-      var button = makeButton(label, 'remaked-density-button');
+      var keys = ['controls.density.heavy', 'controls.density.medium', 'controls.density.light'];
+      var button = makeButton(label, 'remaked-density-button', keys[index]);
       button.dataset.remakedDensity = String(index);
       button.setAttribute('aria-pressed', 'false');
       button.addEventListener('click', function () {
@@ -204,6 +246,7 @@
     header.appendChild(navRow);
 
     syncLanguageButtons(header);
+    syncUiLocaleButtons(header);
     syncDensityButtons(header);
     syncNavButtons(header);
     return header;
@@ -213,14 +256,14 @@
     var tools = document.createElement('section');
     tools.className = 'remaked-tools';
     tools.dataset.remakedTools = '';
-    tools.setAttribute('aria-label', 'Build discovery tools');
+    localizeAttribute(tools, 'aria-label', 'tools.region', 'Build discovery tools');
 
     var label = document.createElement('span');
     label.className = 'remaked-tools-label';
-    label.textContent = 'Search current build data';
+    localizeText(label, 'tools.label', 'Search current build data');
     tools.appendChild(label);
 
-    var equipment = makeButton('Equipment Search', 'remaked-tool-button');
+    var equipment = makeButton('Equipment Search', 'remaked-tool-button', 'tools.equipmentSearch');
     equipment.dataset.remakedEquipmentSearch = '';
     equipment.addEventListener('click', function () {
       if (namespace.search && typeof namespace.search.openEquipmentSearch === 'function') {
@@ -229,7 +272,7 @@
     });
     tools.appendChild(equipment);
 
-    var souls = makeButton('Soul Search', 'remaked-tool-button');
+    var souls = makeButton('Soul Search', 'remaked-tool-button', 'tools.soulSearch');
     souls.dataset.remakedSoulSearch = '';
     souls.addEventListener('click', function () {
       if (namespace.search && typeof namespace.search.openSoulSearch === 'function') {
@@ -265,6 +308,7 @@
       var existingHeader = existing.querySelector('[data-remaked-header]');
       if (existingHeader) {
         syncLanguageButtons(existingHeader);
+        syncUiLocaleButtons(existingHeader);
         syncDensityButtons(existingHeader);
         syncNavButtons(existingHeader);
       }
@@ -282,7 +326,7 @@
     shell.dataset.remakedShell = '';
     var frame = document.createElement('main');
     frame.className = 'remaked-app-frame';
-    frame.setAttribute('aria-label', 'Pandora Saga character simulator');
+    localizeAttribute(frame, 'aria-label', 'shell.calculator', 'Pandora Saga character simulator');
     legacyBody.parentNode.insertBefore(shell, legacyBody);
     shell.appendChild(createHeader());
     shell.appendChild(createDiscoveryTools());
@@ -292,4 +336,8 @@
   };
 
   namespace.initModernShell();
+  window.addEventListener('pandora-remaked:localechange', function () {
+    var header = document.querySelector('[data-remaked-header]');
+    if (header) syncUiLocaleButtons(header);
+  });
 })();

@@ -26,7 +26,7 @@ test('Modern shell exposes meaningful navigation and defaults to English', async
   await expect(header.getByRole('link', { name: 'Updates', exact: true })).toHaveAttribute('href', /CHANGELOG\.md$/);
   await expect(header.getByRole('link', { name: 'Legacy Mode', exact: true })).toHaveAttribute('href', './legacy/');
   await expect(header.locator('a[href*="awayfromkuma"]')).toHaveCount(0);
-  await expect(header.getByRole('button', { name: 'EN', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(header.locator('[data-remaked-language="1"]')).toHaveAttribute('aria-pressed', 'true');
   await expect(header.getByRole('button', { name: 'JOB', exact: true })).toBeVisible();
   await expect(header.getByRole('button', { name: 'FILE', exact: true })).toBeVisible();
 });
@@ -58,7 +58,7 @@ test('Modern language controls drive the legacy language state', async ({ page }
   const header = page.locator('[data-remaked-header]');
   await header.getByRole('button', { name: 'JP', exact: true }).click();
   await expect.poll(() => page.evaluate(() => window.Flag[0])).toBe(0);
-  await header.getByRole('button', { name: 'EN', exact: true }).click();
+  await header.locator('[data-remaked-language="1"]').click();
   await expect.poll(() => page.evaluate(() => window.Flag[0])).toBe(1);
 });
 

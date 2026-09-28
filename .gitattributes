@@ -2,3 +2,5 @@
 /readme.txt -text
 /css/** -text
 /js/** -text
+/localization/** text eol=lf
+/scripts/extract_legacy_terms.mjs text eol=lf

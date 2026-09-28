@@ -107,6 +107,7 @@ jobs:
           node --check js/skill.js
           node --check js/ini.js
           node --check modern/version.js
+          node --check modern/i18n.js
           node --check modern/adapter.js
           node --check modern/build-store.js
           node --check modern/search.js
@@ -132,6 +133,9 @@ jobs:
 
       - name: Run shipped browser contract tests
         run: npm run test:ui:ci
+
+      - name: Verify deterministic Legacy terminology export
+        run: npm run test:translations
 
       - name: Run visual QA capture
         run: npm run test:ui:visual

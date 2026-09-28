@@ -2,6 +2,20 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.5 — Russian interface and terminology workflow
+
+### Added
+- A separate **EN / RU interface language** switch for Modern Mode. It does not change the preserved JP/EN/TW game-data language or character build bytes.
+- Russian UI copy for the persistent shell, Equipment/Soul Search, Build Manager, Compare Builds, mobile controls and PWA install/update controls.
+- English fallback for any Modern string that is not yet present in the Russian catalog.
+- A reviewable terminology worksheet containing 1,406 stable Legacy terms: races, racial skills, jobs, skill lines, equipment categories, equipment and Souls.
+
+### Translation safety
+- Legacy game names remain unchanged until their official Russian-client equivalents are supplied and approved by the user.
+- The terminology export keeps stable Legacy paths and JP/EN/TW source values; proposed and approved Russian game-term fields start empty.
+- Deterministic export validation blocks stale worksheets, duplicate IDs and carrying an approved translation across a changed English source.
+- UI locale persistence fails open when browser storage is unavailable and never blocks the calculator.
+
 ## 2026.09.4 — Mobile polish and offline PWA
 
 ### Added

@@ -59,10 +59,8 @@ class RepositoryDocsTests(unittest.TestCase):
         russian = self.read("README.ru.md")
         changelog = self.read("CHANGELOG.md")
 
-        self.assertIn("2026.09.4", english)
         self.assertIn("install", english.lower())
         self.assertIn("offline", english.lower())
-        self.assertIn("2026.09.4", russian)
         self.assertIn("PWA", russian)
         self.assertIn("Legacy Mode", russian)
         self.assertIn("2026.09.4", changelog)
@@ -76,6 +74,19 @@ class RepositoryDocsTests(unittest.TestCase):
         self.assertIn("Shipped as Remaked UI `2026.09.4` in PR #5 (`0e6cd1b`)", roadmap)
         self.assertIn("Production workflow `36390367797`", roadmap)
         self.assertIn("Shipped in PR #5 (`0e6cd1b`)", phase_plan)
+
+    def test_phase_five_release_documents_ru_ui_without_claiming_game_terms(self):
+        english = self.read("README.md")
+        russian = self.read("README.ru.md")
+        changelog = self.read("CHANGELOG.md")
+        roadmap = self.read("docs/superpowers/plans/2026-09-27-modernization-roadmap.md")
+
+        for document in (english, russian, changelog, roadmap):
+            self.assertIn("2026.09.5", document)
+        self.assertIn("game names await verification", english)
+        self.assertIn("игровые названия ждут сверки", russian)
+        self.assertIn("1,406", changelog)
+        self.assertIn("user verification", roadmap)
 
 
 if __name__ == "__main__":

@@ -3,10 +3,15 @@
 
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
   var adapter = namespace.adapter;
+  var i18n = namespace.i18n;
   var summary = null;
   var observer = null;
   var refreshTimer = null;
   var initialized = false;
+
+  function t(key, values, fallback) {
+    return i18n && typeof i18n.t === 'function' ? i18n.t(key, values) : fallback;
+  }
 
   function findSummaryField(fields, key) {
     for (var index = 0; index < fields.length; index += 1) {
@@ -31,7 +36,8 @@
     summary = document.createElement('section');
     summary.className = 'remaked-mobile-summary';
     summary.dataset.remakedMobileSummary = '';
-    summary.setAttribute('aria-label', 'Current character summary');
+    if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(summary, 'aria-label', 'mobile.summary');
+    else summary.setAttribute('aria-label', 'Current character summary');
 
     var identity = document.createElement('div');
     identity.className = 'remaked-mobile-summary-identity';
@@ -80,7 +86,7 @@
       var defense = findSummaryField(fields, 'defense');
       setText('[data-remaked-summary-race]', metadata.race);
       setText('[data-remaked-summary-job]', metadata.job);
-      setText('[data-remaked-summary-level]', metadata.level == null ? 'Lv. —' : 'Lv. ' + metadata.level);
+      setText('[data-remaked-summary-level]', metadata.level == null ? t('mobile.level', { level: '—' }, 'Lv. —') : t('mobile.level', { level: metadata.level }, 'Lv. ' + metadata.level));
       setText('[data-remaked-summary-lp]', lp ? lp.display : '—');
       setText('[data-remaked-summary-atk]', attack ? attack.display : '—');
       setText('[data-remaked-summary-def]', defense ? defense.display : '—');
@@ -118,7 +124,7 @@
 
     var label = document.createElement('span');
     label.className = 'remaked-mobile-card-label';
-    label.textContent = (legacyHead.textContent || '').trim() || 'Section';
+    label.textContent = (legacyHead.textContent || '').trim() || t('mobile.section', null, 'Section');
     bar.appendChild(label);
 
     var toggle = document.createElement('button');
@@ -126,13 +132,18 @@
     toggle.className = 'remaked-collapse-toggle';
     toggle.dataset.remakedCollapseToggle = '';
     toggle.setAttribute('aria-expanded', 'true');
-    toggle.setAttribute('aria-label', 'Collapse section');
+    if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(toggle, 'aria-label', 'mobile.collapse');
+    else toggle.setAttribute('aria-label', 'Collapse section');
     toggle.textContent = '⌃';
     toggle.addEventListener('click', function () {
       var nextCollapsed = card.dataset.remakedCollapsed !== 'true';
       card.dataset.remakedCollapsed = nextCollapsed ? 'true' : 'false';
       toggle.setAttribute('aria-expanded', nextCollapsed ? 'false' : 'true');
-      toggle.setAttribute('aria-label', nextCollapsed ? 'Expand section' : 'Collapse section');
+      if (i18n && typeof i18n.bindAttribute === 'function') {
+        i18n.bindAttribute(toggle, 'aria-label', nextCollapsed ? 'mobile.expand' : 'mobile.collapse');
+      } else {
+        toggle.setAttribute('aria-label', nextCollapsed ? 'Expand section' : 'Collapse section');
+      }
       toggle.textContent = nextCollapsed ? '⌄' : '⌃';
     });
     bar.appendChild(toggle);
@@ -215,6 +226,11 @@
     decorateCollapsibles: decorateCollapsibles,
     decorateEquipmentRows: decorateEquipmentRows
   };
+
+  window.addEventListener('pandora-remaked:localechange', function () {
+    if (summary && i18n && typeof i18n.apply === 'function') i18n.apply(summary);
+    refreshSummary();
+  });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, { once: true });
