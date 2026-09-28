@@ -119,6 +119,7 @@ class PwaBuildTests(unittest.TestCase):
             self.assertNotIn("./image/icon/0000.png", worker)
             self.assertNotIn("./legacy/image/icon/0000.png", worker)
             self.assertNotIn("https://", worker)
+            self.assertIn("url.origin !== self.location.origin", worker)
 
 
 if __name__ == "__main__":

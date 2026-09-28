@@ -14,7 +14,8 @@
     "test:ui:build-manager": "playwright test tests/ui/build-manager.spec.mjs",
     "test:ui:mobile": "playwright test tests/ui/mobile-polish.spec.mjs",
     "test:ui:pwa-ui": "playwright test tests/ui/pwa-ui.spec.mjs",
-    "test:ui:ci": "playwright test tests/ui/modern-foundation.spec.mjs tests/ui/adapter.spec.mjs tests/ui/summary-adapter.spec.mjs tests/ui/compare-differential.spec.mjs tests/ui/compare-builds.spec.mjs tests/ui/tooltips.spec.mjs tests/ui/search-builds.spec.mjs tests/ui/build-store.spec.mjs tests/ui/build-manager.spec.mjs tests/ui/mobile-polish.spec.mjs tests/ui/pwa-ui.spec.mjs",
+    "test:ui:pwa": "playwright test tests/ui/pwa-ui.spec.mjs tests/ui/pwa-offline.spec.mjs",
+    "test:ui:ci": "playwright test tests/ui/modern-foundation.spec.mjs tests/ui/adapter.spec.mjs tests/ui/summary-adapter.spec.mjs tests/ui/compare-differential.spec.mjs tests/ui/compare-builds.spec.mjs tests/ui/tooltips.spec.mjs tests/ui/search-builds.spec.mjs tests/ui/build-store.spec.mjs tests/ui/build-manager.spec.mjs tests/ui/mobile-polish.spec.mjs tests/ui/pwa-ui.spec.mjs tests/ui/pwa-offline.spec.mjs",
     "test:ui:visual": "playwright test tests/ui/visual-capture.spec.mjs"
   },
   "devDependencies": {

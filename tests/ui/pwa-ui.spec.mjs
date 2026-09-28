@@ -95,3 +95,18 @@ test('service-worker registration failure leaves the calculator usable', async (
   expect(result.shell).toBe(true);
   expect(result.store).toBe('function');
 });
+
+test('repeated PWA initialization does not duplicate controls', async ({ page }) => {
+  await openModern(page);
+  await page.evaluate(() => {
+    window.PandoraRemaked.pwa.init();
+    window.PandoraRemaked.pwa.init();
+  });
+  await expect(page.locator('[data-remaked-pwa-actions]')).toHaveCount(1);
+  await expect(page.locator('[data-remaked-install]')).toHaveCount(1);
+  await page.evaluate(() => {
+    window.PandoraRemaked.pwa.showUpdateNotice({ postMessage() {} });
+    window.PandoraRemaked.pwa.showUpdateNotice({ postMessage() {} });
+  });
+  await expect(page.locator('[data-remaked-update-notice]')).toHaveCount(1);
+});
