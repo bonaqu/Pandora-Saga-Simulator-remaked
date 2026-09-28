@@ -88,6 +88,14 @@ class RepositoryDocsTests(unittest.TestCase):
         self.assertIn("1,406", changelog)
         self.assertIn("user verification", roadmap)
 
+    def test_phase_five_roadmap_records_verified_production_release(self):
+        roadmap = self.read("docs/superpowers/plans/2026-09-27-modernization-roadmap.md")
+        phase_plan = self.read("docs/superpowers/plans/2026-09-28-russian-localization-framework.md")
+
+        self.assertIn("Shipped as Remaked UI `2026.09.5` in PR #7 (`58925ed`)", roadmap)
+        self.assertIn("Production workflow `36394028338`", roadmap)
+        self.assertIn("Shipped in PR #7 (`58925ed`)", phase_plan)
+
 
 if __name__ == "__main__":
     unittest.main()

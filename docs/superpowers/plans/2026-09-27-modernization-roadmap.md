@@ -92,7 +92,7 @@ Deliverable:
 ### Phase 5 — Russian localization framework
 
 **Plan:** `docs/superpowers/plans/2026-09-28-russian-localization-framework.md`
-**Status:** Release-ready on `feature/russian-localization-framework` as Remaked UI `2026.09.5`. The Modern RU shell, EN fallback and deterministic 1,406-term review worksheet are complete; official Russian game-term integration remains intentionally gated on user verification.
+**Status:** Shipped as Remaked UI `2026.09.5` in PR #7 (`58925ed`). Production workflow `36394028338`, its exact Pages artifact and live EN/RU state-isolation, persistence and Modern/Legacy offline routes were verified on 2026-09-28. The deterministic 1,406-term review worksheet is complete; official Russian game-term integration remains intentionally gated on user verification.
 
 Deliverable:
 - Modern UI string catalog;
