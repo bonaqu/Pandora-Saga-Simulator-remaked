@@ -4,3 +4,7 @@
 /js/** -text
 /localization/** text eol=lf
 /scripts/extract_legacy_terms.mjs text eol=lf
+/scripts/extract_legacy_data.mjs text eol=lf
+/scripts/lib/*.mjs text eol=lf
+/scripts/serve_pages.mjs text eol=lf
+/data/generated/** text eol=lf

@@ -1,0 +1,8484 @@
+{
+  "kind": "souls",
+  "metadata": {
+    "schema_version": 1,
+    "projection_version": "v1",
+    "legacy_engine": "2.00",
+    "remaked_ui": "2026.09.6",
+    "source_fingerprint": "SHA-256 after CRLF-to-LF normalization",
+    "generated_from": [
+      {
+        "path": "js/item.js",
+        "sha256": "0f3b15c83d59b8c9c1a47920022895b8db57a526322d9dabea4900fb203518d1"
+      }
+    ],
+    "policy": "read-only searchable projection; preserved Legacy JavaScript remains source of truth"
+  },
+  "count": 184,
+  "records": [
+    {
+      "id": "soul.1",
+      "legacy_id": 1,
+      "legacy_path": "SoulData[*][1]",
+      "name": {
+        "jp": "雪の魂",
+        "en": "(Snow Soul)",
+        "tw": "(雪的魂魄)"
+      },
+      "modifier": {
+        "jp": "スノー",
+        "en": "(Snow)",
+        "tw": "(雪)"
+      },
+      "option": {
+        "jp": "体力+1、冷気耐性+3%",
+        "en": "STA+1¸ Ice resist+3%",
+        "tw": "體力+1¸ 冰抗性+3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "0=1_139=3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.2",
+      "legacy_id": 2,
+      "legacy_path": "SoulData[*][2]",
+      "name": {
+        "jp": "獣の魂",
+        "en": "(Beast Soul)",
+        "tw": "(獸的魂魄)"
+      },
+      "modifier": {
+        "jp": "タフネス",
+        "en": "(Toughness)",
+        "tw": "(韌性)"
+      },
+      "option": {
+        "jp": "体力+1、敏捷+1、LP+8%",
+        "en": "STA+1¸ AGI+1¸ LP+8%",
+        "tw": "體力+1¸ 敏捷+1¸ LP+8%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "0=1_2=1_6=8%",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.3",
+      "legacy_id": 3,
+      "legacy_path": "SoulData[*][3]",
+      "name": {
+        "jp": "王者の魂",
+        "en": "(King Soul)",
+        "tw": "(國王的魂魄)"
+      },
+      "modifier": {
+        "jp": "チャンピオン",
+        "en": "(Champion)",
+        "tw": "(冠軍)"
+      },
+      "option": {
+        "jp": "体力+1、筋力+1、敏捷+1、器用+1",
+        "en": "STA+1¸ STR+1¸ AGI+1¸ DEX+1",
+        "tw": "體力+1¸ 力量+1¸ 敏捷+1¸ 技巧+1"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "0=1_1=1_2=1_3=1",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.4",
+      "legacy_id": 4,
+      "legacy_path": "SoulData[*][4]",
+      "name": {
+        "jp": "オークの魂",
+        "en": "(Oak soul)",
+        "tw": "(奧克的魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "体力+1、LP+25、防御力+1",
+        "en": "STA+1¸ LP+25¸ DEF+1",
+        "tw": "體力+1¸ LP+25¸ 防禦+1"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "0=1_6=25_49=1",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.5",
+      "legacy_id": 5,
+      "legacy_path": "SoulData[*][5]",
+      "name": {
+        "jp": "暴君の魂",
+        "en": "(Tyrannical soul)",
+        "tw": "(暴君的魂魄)"
+      },
+      "modifier": {
+        "jp": "タイラント",
+        "en": "(Tyrant)",
+        "tw": "(暴君)"
+      },
+      "option": {
+        "jp": "体力+1、魅了耐性+3%",
+        "en": "STA+1¸ Charm resist+3%",
+        "tw": "體力+1¸ 魅惑抗性+3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "0=1_142=3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.6",
+      "legacy_id": 6,
+      "legacy_path": "SoulData[*][6]",
+      "name": {
+        "jp": "不倒の魂",
+        "en": "(Fall Soul)",
+        "tw": "(不倒的魂魄)"
+      },
+      "modifier": {
+        "jp": "リビング",
+        "en": "(Living)",
+        "tw": "(生活)"
+      },
+      "option": {
+        "jp": "体力+2、移動速度-3%、転倒耐性+5%",
+        "en": "STA+2¸ Moving speed-3%¸ Knockdown resist+5%",
+        "tw": "體力+2¸ 行走速度-3%¸ 擊倒抗性+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "0=2_74=-3_75=-3_151=5",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.7",
+      "legacy_id": 7,
+      "legacy_path": "SoulData[*][7]",
+      "name": {
+        "jp": "ジャイアントスラッグの魂",
+        "en": "(Giant Slug Soul)",
+        "tw": "(巨人彈頭的魂魄)"
+      },
+      "modifier": {
+        "jp": "ペイシェント",
+        "en": "(Patient)",
+        "tw": "(患者)"
+      },
+      "option": {
+        "jp": "体力+2、身体的状態異常耐性+20%",
+        "en": "STA+2¸ Physical De-buff resist+20%",
+        "tw": "體力+2¸ 異常體抗性+20%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "0=2_146=20",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.8",
+      "legacy_id": 8,
+      "legacy_path": "SoulData[*][8]",
+      "name": {
+        "jp": "歴戦の魂",
+        "en": "(Veteran Soul)",
+        "tw": "(龍兵役的魂魄)"
+      },
+      "modifier": {
+        "jp": "ベテラン",
+        "en": "(Veteran)",
+        "tw": "(老兵)"
+      },
+      "option": {
+        "jp": "体力+2、LP-4%",
+        "en": "STA+2¸ LP-4%",
+        "tw": "體力+2¸ LP-4%"
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、LP+1%",
+        "en": "Value +1 each discipline¸ LP +1%",
+        "tw": "每個學科的價值 1¸HP 1%"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "0=2_6=-4%",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.9",
+      "legacy_id": 9,
+      "legacy_path": "SoulData[*][9]",
+      "name": {
+        "jp": "力の魂",
+        "en": "(Power Soul)",
+        "tw": "(隊的魂魄)"
+      },
+      "modifier": {
+        "jp": "パワー",
+        "en": "(Power)",
+        "tw": "(電源)"
+      },
+      "option": {
+        "jp": "筋力+1",
+        "en": "STR+1",
+        "tw": "力量+1"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "1=1",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.10",
+      "legacy_id": 10,
+      "legacy_path": "SoulData[*][10]",
+      "name": {
+        "jp": "灰燼の魂",
+        "en": "(Embers Soul)",
+        "tw": "(灰的魂魄)"
+      },
+      "modifier": {
+        "jp": "アッシュ",
+        "en": "(Ash)",
+        "tw": "(灰)"
+      },
+      "option": {
+        "jp": "筋力+1、火傷耐性+50%",
+        "en": "STR+1¸ Burn resist+50%",
+        "tw": "力量+1¸ 燒傷抗性+50%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "1=1_148=50",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.11",
+      "legacy_id": 11,
+      "legacy_path": "SoulData[*][11]",
+      "name": {
+        "jp": "狂戦士の魂",
+        "en": "(Berserker Soul)",
+        "tw": "(狂戰士的魂魄)"
+      },
+      "modifier": {
+        "jp": "バーサーク",
+        "en": "(Berserk)",
+        "tw": "(狂暴)"
+      },
+      "option": {
+        "jp": "筋力+1、敏捷+1、知性-3、クリティカル発生率+1%",
+        "en": "STR+1¸ AGI+1¸ INT-3¸ Critical hit rate+1%",
+        "tw": "力量+1¸ 敏捷+1¸ 智慧-3¸ 暴擊率+1%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "1=1_2=1_5=-3_69=1",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.12",
+      "legacy_id": 12,
+      "legacy_path": "SoulData[*][12]",
+      "name": {
+        "jp": "紅玉の魂",
+        "en": "(Ruby soul)",
+        "tw": "(紅寶石的魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "筋力+1、火炎耐性+4%",
+        "en": "STR+1¸ Fire resist+4%",
+        "tw": "力量+1¸ 火抗性+4%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "1=1_138=4",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.13",
+      "legacy_id": 13,
+      "legacy_path": "SoulData[*][13]",
+      "name": {
+        "jp": "ボクラッグの魂",
+        "en": "(Bokuraggu Soul)",
+        "tw": "(Bokuraggu的魂魄)"
+      },
+      "modifier": {
+        "jp": "サラマンダー",
+        "en": "(Salamander)",
+        "tw": "(娃娃魚)"
+      },
+      "option": {
+        "jp": "筋力+2、火傷耐性+100%",
+        "en": "STR+2¸ Burn resist+100%",
+        "tw": "力量+2¸ 燒傷抗性+100%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "1=2_148=100",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.14",
+      "legacy_id": 14,
+      "legacy_path": "SoulData[*][14]",
+      "name": {
+        "jp": "豪腕の魂",
+        "en": "(Rubber Soul)",
+        "tw": "(橡膠手臂的魂魄)"
+      },
+      "modifier": {
+        "jp": "ストロング",
+        "en": "(Strong)",
+        "tw": "(強)"
+      },
+      "option": {
+        "jp": "筋力+2",
+        "en": "STR+2",
+        "tw": "力量+2"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "1=2",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.15",
+      "legacy_id": 15,
+      "legacy_path": "SoulData[*][15]",
+      "name": {
+        "jp": "金剛石の魂",
+        "en": "(Diamond soul)",
+        "tw": "(鑽石的魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "敏捷+1、冷気耐性+4%",
+        "en": "AGI+1¸ Ice resist+4%",
+        "tw": "敏捷+1¸ 冰抗性+4%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "2=1_139=4",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.16",
+      "legacy_id": 16,
+      "legacy_path": "SoulData[*][16]",
+      "name": {
+        "jp": "飛脚の魂",
+        "en": "(Hikyaku soul)",
+        "tw": "(特快信使的魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "敏捷+1、転倒耐性+12%",
+        "en": "AGI+1¸ Knockdown resist+12%",
+        "tw": "敏捷+1¸ 擊倒抗性+12%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "2=1_151=12",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.17",
+      "legacy_id": 17,
+      "legacy_path": "SoulData[*][17]",
+      "name": {
+        "jp": "韋駄天の魂",
+        "en": "(Skanda Soul)",
+        "tw": "(韋駄天的魂魄)"
+      },
+      "modifier": {
+        "jp": "スピード",
+        "en": "(Speed)",
+        "tw": "(速度)"
+      },
+      "option": {
+        "jp": "敏捷+2、回避+5",
+        "en": "AGI+2¸ Dodge+5",
+        "tw": "敏捷+2¸ 迴避+5"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "2=2_65=5",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.18",
+      "legacy_id": 18,
+      "legacy_path": "SoulData[*][18]",
+      "name": {
+        "jp": "臆病者の魂",
+        "en": "(Coward Soul)",
+        "tw": "(懦夫的魂魄)"
+      },
+      "modifier": {
+        "jp": "チキン",
+        "en": "(Chicken)",
+        "tw": "(雞)"
+      },
+      "option": {
+        "jp": "体力-4、敏捷+4",
+        "en": "STA-4¸ AGI+4",
+        "tw": "體力-4¸ 敏捷+4"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "0=-4_2=4",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.19",
+      "legacy_id": 19,
+      "legacy_path": "SoulData[*][19]",
+      "name": {
+        "jp": "針の魂",
+        "en": "(Needle Soul)",
+        "tw": "(針的魂魄)"
+      },
+      "modifier": {
+        "jp": "ニードル",
+        "en": "(Needle)",
+        "tw": "(針)"
+      },
+      "option": {
+        "jp": "器用+1",
+        "en": "DEX+1",
+        "tw": "技巧+1"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "3=1",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.20",
+      "legacy_id": 20,
+      "legacy_path": "SoulData[*][20]",
+      "name": {
+        "jp": "チョコの魂",
+        "en": "(Chocolate Soul)",
+        "tw": "(巧克力的魂魄)"
+      },
+      "modifier": {
+        "jp": "チョコレート",
+        "en": "(Chocolate)",
+        "tw": "(巧克力)"
+      },
+      "option": {
+        "jp": "器用+1、魅了耐性+5%",
+        "en": "DEX+1¸ Charm resist+5%",
+        "tw": "技巧+1¸ 魅惑抗性+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "3=1_142=5",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.21",
+      "legacy_id": 21,
+      "legacy_path": "SoulData[*][21]",
+      "name": {
+        "jp": "祈雨の魂",
+        "en": "(Pray Soul)",
+        "tw": "(有雨的祈的魂魄禱)"
+      },
+      "modifier": {
+        "jp": "レイン",
+        "en": "(Rain)",
+        "tw": "(雨)"
+      },
+      "option": {
+        "jp": "器用+1、知性+1、回避-3",
+        "en": "DEX+1¸ INT+1¸ Dodge-3",
+        "tw": "技巧+1¸ 智慧+1¸ 迴避-3"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "3=1_5=1_65=-3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.22",
+      "legacy_id": 22,
+      "legacy_path": "SoulData[*][22]",
+      "name": {
+        "jp": "鷹の魂",
+        "en": "(Hawk Soul)",
+        "tw": "(鷹的魂魄)"
+      },
+      "modifier": {
+        "jp": "シャープ",
+        "en": "(Sharp)",
+        "tw": "(夏普)"
+      },
+      "option": {
+        "jp": "器用+2",
+        "en": "DEX+2",
+        "tw": "技巧+2"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "3=2",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.23",
+      "legacy_id": 23,
+      "legacy_path": "SoulData[*][23]",
+      "name": {
+        "jp": "サボテンの魂",
+        "en": "(Cactus Soul)",
+        "tw": "(仙人掌的魂魄)"
+      },
+      "modifier": {
+        "jp": "カクタス",
+        "en": "(Cactus)",
+        "tw": "(仙人掌)"
+      },
+      "option": {
+        "jp": "器用+2",
+        "en": "DEX+2",
+        "tw": "技巧+2"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "3=2",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.24",
+      "legacy_id": 24,
+      "legacy_path": "SoulData[*][24]",
+      "name": {
+        "jp": "影の魂",
+        "en": "(Shadow Soul)",
+        "tw": "(影子的魂魄)"
+      },
+      "modifier": {
+        "jp": "シャドー",
+        "en": "(Shadow)",
+        "tw": "(影子)"
+      },
+      "option": {
+        "jp": "器用+3",
+        "en": "DEX+3",
+        "tw": "技巧+3"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "3=3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.25",
+      "legacy_id": 25,
+      "legacy_path": "SoulData[*][25]",
+      "name": {
+        "jp": "次元の魂",
+        "en": "(Dimension oul))",
+        "tw": "(ð的魂魄)"
+      },
+      "modifier": {
+        "jp": "ディメンション",
+        "en": "(Dimension)",
+        "tw": "(尺寸)"
+      },
+      "option": {
+        "jp": "器用-3~+3、霊感-2~+1、LP+4%~8%、魔術耐性-5%~0%",
+        "en": "DEX-3~+3¸ SPR-2~+1¸ LP+4%~8%¸ Magic resist-5%~0%",
+        "tw": "技巧-3~+3¸ 靈感-2~+1¸ LP+4%~8%¸ 秘法抗性-5%~0%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "3=3_4=1_6=8%",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.26",
+      "legacy_id": 26,
+      "legacy_path": "SoulData[*][26]",
+      "name": {
+        "jp": "彷徨う魂",
+        "en": "(Wandering Soul)",
+        "tw": "(遊魂的魂魄)"
+      },
+      "modifier": {
+        "jp": "クロック",
+        "en": "(Clock)",
+        "tw": "(時鐘)"
+      },
+      "option": {
+        "jp": "霊感+1",
+        "en": "SPR+1",
+        "tw": "靈感+1"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "4=1",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.27",
+      "legacy_id": 27,
+      "legacy_path": "SoulData[*][27]",
+      "name": {
+        "jp": "炎天の魂",
+        "en": "(Dreary soul)",
+        "tw": "(烈日的魂魄)"
+      },
+      "modifier": {
+        "jp": "ホット",
+        "en": "(Hot)",
+        "tw": "(熱)"
+      },
+      "option": {
+        "jp": "霊感+1、火炎耐性+3%",
+        "en": "SPR+1¸ Fire resist+3%",
+        "tw": "靈感+1¸ 火抗性+3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "4=1_138=3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.28",
+      "legacy_id": 28,
+      "legacy_path": "SoulData[*][28]",
+      "name": {
+        "jp": "カボチャの魂",
+        "en": "(Pumpkin Soul)",
+        "tw": "(南瓜的魂魄)"
+      },
+      "modifier": {
+        "jp": "パンプキン",
+        "en": "(Pumpkin)",
+        "tw": "(南瓜)"
+      },
+      "option": {
+        "jp": "霊感+1、闇耐性+5%",
+        "en": "SPR+1¸ Darkness resist+5%",
+        "tw": "靈感+1¸ 黑暗抗性+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "4=1_144=5",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.29",
+      "legacy_id": 29,
+      "legacy_path": "SoulData[*][29]",
+      "name": {
+        "jp": "精霊の魂",
+        "en": "(Spirit Soul)",
+        "tw": "(精神的魂魄)"
+      },
+      "modifier": {
+        "jp": "スピリット",
+        "en": "(Spirit)",
+        "tw": "(精神)"
+      },
+      "option": {
+        "jp": "霊感+1、知性+1、MP+8%",
+        "en": "SPR+1¸ INT+1¸ MP+8%",
+        "tw": "靈感+1¸ 智慧+1¸ MP+8%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "4=1_5=1_7=8%",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.30",
+      "legacy_id": 30,
+      "legacy_path": "SoulData[*][30]",
+      "name": {
+        "jp": "聖職者の魂",
+        "en": "(Priestly Soul)",
+        "tw": "(教士的魂魄)"
+      },
+      "modifier": {
+        "jp": "スピリチュア",
+        "en": "(Spirituality)",
+        "tw": "(精神)"
+      },
+      "option": {
+        "jp": "霊感+2",
+        "en": "SPR+2",
+        "tw": "靈感+2"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "4=2",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.31",
+      "legacy_id": 31,
+      "legacy_path": "SoulData[*][31]",
+      "name": {
+        "jp": "月の魂",
+        "en": "(Moon Soul)",
+        "tw": "(五月的魂魄)"
+      },
+      "modifier": {
+        "jp": "ルナ",
+        "en": "(Luna)",
+        "tw": "(盧娜)"
+      },
+      "option": {
+        "jp": "霊感+2、MP回復速度+15%",
+        "en": "SPR+2¸ MP recovery speed+15%",
+        "tw": "靈感+2¸ MP自然恢復速度+15%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "4=2_10=15",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.32",
+      "legacy_id": 32,
+      "legacy_path": "SoulData[*][32]",
+      "name": {
+        "jp": "悟りの魂",
+        "en": "(Enlightenment Soul)",
+        "tw": "(啟示的魂魄)"
+      },
+      "modifier": {
+        "jp": "シッディ",
+        "en": "(Siddhi)",
+        "tw": "(西提)"
+      },
+      "option": {
+        "jp": "霊感+2、精神的状態異常耐性+20%",
+        "en": "SPR+2¸ Mental De-buff resist+20%",
+        "tw": "靈感+2¸ 精神錯亂抗性+20%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "4=2_147=20",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.33",
+      "legacy_id": 33,
+      "legacy_path": "SoulData[*][33]",
+      "name": {
+        "jp": "魔導師の魂",
+        "en": "(Mage Soul)",
+        "tw": "(惡魔大師的魂魄)"
+      },
+      "modifier": {
+        "jp": "ワイズ",
+        "en": "(Wise)",
+        "tw": "(智者)"
+      },
+      "option": {
+        "jp": "知性+1",
+        "en": "INT+1",
+        "tw": "智慧+1"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "5=1",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.34",
+      "legacy_id": 34,
+      "legacy_path": "SoulData[*][34]",
+      "name": {
+        "jp": "スケルトンの魂",
+        "en": "(Skeleton Soul)",
+        "tw": "(斯凱爾頓的魂魄)"
+      },
+      "modifier": {
+        "jp": "スケルトン",
+        "en": "(Skelton)",
+        "tw": "(斯凱爾頓)"
+      },
+      "option": {
+        "jp": "知性+1、防御力-50、回避-50",
+        "en": "INT+1¸ DEF-50¸ Dodge-50",
+        "tw": "智慧+1¸ 防禦-50¸ 迴避-50"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "5=1_49=-50_65=-50",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.35",
+      "legacy_id": 35,
+      "legacy_path": "SoulData[*][35]",
+      "name": {
+        "jp": "道化師の魂",
+        "en": "(Clown Soul)",
+        "tw": "(小丑的魂魄)"
+      },
+      "modifier": {
+        "jp": "クラウン",
+        "en": "(Crown)",
+        "tw": "(皇冠)"
+      },
+      "option": {
+        "jp": "知性+1、MP+15",
+        "en": "INT+1¸ MP+15",
+        "tw": "智慧+1¸ MP+15"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "5=1_7=15",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.36",
+      "legacy_id": 36,
+      "legacy_path": "SoulData[*][36]",
+      "name": {
+        "jp": "言霊の魂",
+        "en": "(Kotodama Soul)",
+        "tw": "(電力語言的魂魄)"
+      },
+      "modifier": {
+        "jp": "ワーズ",
+        "en": "(Wards)",
+        "tw": "(病房)"
+      },
+      "option": {
+        "jp": "知性+1、沈黙耐性+50%",
+        "en": "INT+1¸ Silence resist+50%",
+        "tw": "智慧+1¸ 沉默抗性+50%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "5=1_158=50",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.37",
+      "legacy_id": 37,
+      "legacy_path": "SoulData[*][37]",
+      "name": {
+        "jp": "蒼玉の魂",
+        "en": "(Blue Ball soul)",
+        "tw": "(藍色球的魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "知性+1、電撃耐性+4%",
+        "en": "INT+1¸ Lightning resist+4%",
+        "tw": "智慧+1¸ 雷抗性+4%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "5=1_140=4",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.38",
+      "legacy_id": 38,
+      "legacy_path": "SoulData[*][38]",
+      "name": {
+        "jp": "知的な魂",
+        "en": "(Intellectual soul)",
+        "tw": "(知識產權的魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "知性+1、消費MP-3%",
+        "en": "INT+1¸ Reduce MP-3%",
+        "tw": "智慧+1¸ 消耗MP-3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "5=1_76=-3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.39",
+      "legacy_id": 39,
+      "legacy_path": "SoulData[*][39]",
+      "name": {
+        "jp": "才気の魂",
+        "en": "(Brilliant Soul)",
+        "tw": "(機智魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "知性+2、詠唱速度+3%",
+        "en": "INT+2¸ Casting speed+3%",
+        "tw": "智慧+2¸ 詠唱速度+3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "5=2_77=3",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.40",
+      "legacy_id": 40,
+      "legacy_path": "SoulData[*][40]",
+      "name": {
+        "jp": "ノイマンの魂",
+        "en": "(Neumann Soul)",
+        "tw": "(諾伊曼的魂魄)"
+      },
+      "modifier": {
+        "jp": "ノイマン",
+        "en": "(Neumann)",
+        "tw": "(紐曼)"
+      },
+      "option": {
+        "jp": "LP+3",
+        "en": "LP+3",
+        "tw": "LP+3"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "6=3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.41",
+      "legacy_id": 41,
+      "legacy_path": "SoulData[*][41]",
+      "name": {
+        "jp": "草木の魂",
+        "en": "(Vegetation Soul)",
+        "tw": "(植物的魂魄)"
+      },
+      "modifier": {
+        "jp": "ライフ",
+        "en": "(Life)",
+        "tw": "(生活)"
+      },
+      "option": {
+        "jp": "LP+8",
+        "en": "LP+8",
+        "tw": "LP+8"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "6=8",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.42",
+      "legacy_id": 42,
+      "legacy_path": "SoulData[*][42]",
+      "name": {
+        "jp": "デザ魂",
+        "en": "(Design Soul)",
+        "tw": "(設計的魂魄)"
+      },
+      "modifier": {
+        "jp": "デザイナー",
+        "en": "(Designer)",
+        "tw": "(設計師)"
+      },
+      "option": {
+        "jp": "LP+10、MP+10、防御力+1",
+        "en": "LP+10¸ MP+10¸ DEF+1",
+        "tw": "LP+10¸ MP+10¸ 防禦+1"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "6=10_7=10_49=1",
+      "compatibility_flags": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.43",
+      "legacy_id": 43,
+      "legacy_path": "SoulData[*][43]",
+      "name": {
+        "jp": "大木の魂",
+        "en": "(Tree Soul)",
+        "tw": "(大樹的魂魄)"
+      },
+      "modifier": {
+        "jp": "ライフ",
+        "en": "(Life)",
+        "tw": "(生活)"
+      },
+      "option": {
+        "jp": "LP+15",
+        "en": "LP+15",
+        "tw": "LP+15"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "6=15",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.44",
+      "legacy_id": 44,
+      "legacy_path": "SoulData[*][44]",
+      "name": {
+        "jp": "労働者の魂",
+        "en": "(Workers Soul)",
+        "tw": "(工人的魂魄)"
+      },
+      "modifier": {
+        "jp": "ワーキング",
+        "en": "(Working)",
+        "tw": "(工作)"
+      },
+      "option": {
+        "jp": "LP+15、MP+10",
+        "en": "LP+15¸ MP+10",
+        "tw": "LP+15¸ MP+10"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "6=15_7=10",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.45",
+      "legacy_id": 45,
+      "legacy_path": "SoulData[*][45]",
+      "name": {
+        "jp": "生命力の魂",
+        "en": "(Vitality Soul)",
+        "tw": "(活力的魂魄)"
+      },
+      "modifier": {
+        "jp": "ライフ",
+        "en": "(Life)",
+        "tw": "(生活)"
+      },
+      "option": {
+        "jp": "LP+30",
+        "en": "LP+30",
+        "tw": "LP+30"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "6=30",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.46",
+      "legacy_id": 46,
+      "legacy_path": "SoulData[*][46]",
+      "name": {
+        "jp": "怒りの魂",
+        "en": "(Anger Soul)",
+        "tw": "(憤怒的魂魄)"
+      },
+      "modifier": {
+        "jp": "バースト",
+        "en": "(Burst)",
+        "tw": "(突發)"
+      },
+      "option": {
+        "jp": "LP+50、MP-20",
+        "en": "LP+50¸ MP-20",
+        "tw": "LP+50¸ MP-20"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "6=50_7=-20",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.47",
+      "legacy_id": 47,
+      "legacy_path": "SoulData[*][47]",
+      "name": {
+        "jp": "樹海の魂",
+        "en": "(Forest Soul)",
+        "tw": "(廣泛的森林的魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "LP+150、冷気耐性+4%",
+        "en": "LP+150¸ Ice resist+4%",
+        "tw": "LP+150¸ 冰抗性+4%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "6=150_139=4",
+      "compatibility_flags": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.48",
+      "legacy_id": 48,
+      "legacy_path": "SoulData[*][48]",
+      "name": {
+        "jp": "不屈の魂",
+        "en": "(Indomitable Soul)",
+        "tw": "(堅忍不拔的魂魄)"
+      },
+      "modifier": {
+        "jp": "リベンジ",
+        "en": "(Revenge)",
+        "tw": "(復仇)"
+      },
+      "option": {
+        "jp": "知性-1、LP+15%、MP-8%",
+        "en": "INT-1¸ LP+15%¸ MP-8%",
+        "tw": "智慧-1¸ LP+15%¸ MP-8%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "5=-1_6=15%_7=-8%",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.49",
+      "legacy_id": 49,
+      "legacy_path": "SoulData[*][49]",
+      "name": {
+        "jp": "騎士の魂",
+        "en": "(Knight Soul)",
+        "tw": "(騎士的魂魄)"
+      },
+      "modifier": {
+        "jp": "ナイト",
+        "en": "(Night)",
+        "tw": "(夜)"
+      },
+      "option": {
+        "jp": "LP+8%、MP+8%",
+        "en": "LP+8%¸ MP+8%",
+        "tw": "LP+8%¸ MP+8%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "6=8%_7=8%",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.50",
+      "legacy_id": 50,
+      "legacy_path": "SoulData[*][50]",
+      "name": {
+        "jp": "命の魂",
+        "en": "(Life Soul)",
+        "tw": "(生活的魂魄)"
+      },
+      "modifier": {
+        "jp": "ライフ",
+        "en": "(Life)",
+        "tw": "(生活)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、LP+10",
+        "en": "Value +1 each discipline¸ LP +10",
+        "tw": "每個學科的價值 1¸HP +10"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.51",
+      "legacy_id": 51,
+      "legacy_path": "SoulData[*][51]",
+      "name": {
+        "jp": "神秘の魂",
+        "en": "(Mystic Soul)",
+        "tw": "(神秘的魂魄)"
+      },
+      "modifier": {
+        "jp": "ミステリア",
+        "en": "(Mystery)",
+        "tw": "(神秘)"
+      },
+      "option": {
+        "jp": "LP-20、MP+40",
+        "en": "LP-20¸ MP+40",
+        "tw": "LP-20¸ MP+40"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "6=-20_7=40",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.52",
+      "legacy_id": 52,
+      "legacy_path": "SoulData[*][52]",
+      "name": {
+        "jp": "マナの魂",
+        "en": "(Mana Soul)",
+        "tw": "(法力的魂魄)"
+      },
+      "modifier": {
+        "jp": "マナ",
+        "en": "(Mana)",
+        "tw": "(法力)"
+      },
+      "option": {
+        "jp": "MP+6",
+        "en": "MP+6",
+        "tw": "MP+6"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "7=6",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.53",
+      "legacy_id": 53,
+      "legacy_path": "SoulData[*][53]",
+      "name": {
+        "jp": "泉の魂",
+        "en": "(Fountain Soul)",
+        "tw": "(春天的魂魄)"
+      },
+      "modifier": {
+        "jp": "マナ",
+        "en": "(Mana)",
+        "tw": "(法力)"
+      },
+      "option": {
+        "jp": "MP+13",
+        "en": "MP+13",
+        "tw": "MP+13"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "7=13",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.54",
+      "legacy_id": 54,
+      "legacy_path": "SoulData[*][54]",
+      "name": {
+        "jp": "精神力の魂",
+        "en": "(Spiritual Soul)",
+        "tw": "(精神力量的魂魄)"
+      },
+      "modifier": {
+        "jp": "マナ",
+        "en": "(Mana)",
+        "tw": "(法力)"
+      },
+      "option": {
+        "jp": "MP+25",
+        "en": "MP+25",
+        "tw": "MP+25"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "7=25",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.55",
+      "legacy_id": 55,
+      "legacy_path": "SoulData[*][55]",
+      "name": {
+        "jp": "賢人の魂",
+        "en": "(Philosopher Soul)",
+        "tw": "(智者的魂魄)"
+      },
+      "modifier": {
+        "jp": "セージ",
+        "en": "(Sage)",
+        "tw": "(鼠尾草)"
+      },
+      "option": {
+        "jp": "MP+50",
+        "en": "MP+50",
+        "tw": "MP+50"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "7=50",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.56",
+      "legacy_id": 56,
+      "legacy_path": "SoulData[*][56]",
+      "name": {
+        "jp": "理力の魂",
+        "en": "(Force Soul)",
+        "tw": "(修勉的魂魄)"
+      },
+      "modifier": {
+        "jp": "フォース",
+        "en": "(Force)",
+        "tw": "(力)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、MP+10",
+        "en": "Each discipline values ​​+1¸ MP +10",
+        "tw": "每個學科的值+1¸MP +10"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.57",
+      "legacy_id": 57,
+      "legacy_path": "SoulData[*][57]",
+      "name": {
+        "jp": "柔軟な魂",
+        "en": "(Flexible soul)",
+        "tw": "(靈活的魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "MP+30、転倒耐性+5%",
+        "en": "MP+30¸ Knockdown resist+5%",
+        "tw": "MP+30¸ 擊倒抗性+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "7=30_151=5",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.58",
+      "legacy_id": 58,
+      "legacy_path": "SoulData[*][58]",
+      "name": {
+        "jp": "プラズマの魂",
+        "en": "(Plasma’s Soul)",
+        "tw": "(等離子體的魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "MP+40、電撃耐性+5%",
+        "en": "MP+40¸ Lightning resist+5%",
+        "tw": "MP+40¸ 雷抗性+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "7=40_140=5",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.59",
+      "legacy_id": 59,
+      "legacy_path": "SoulData[*][59]",
+      "name": {
+        "jp": "キャンディの魂",
+        "en": "(Candy Soul)",
+        "tw": "(糖果的魂魄)"
+      },
+      "modifier": {
+        "jp": "イーター",
+        "en": "(Eater)",
+        "tw": "(鵑)"
+      },
+      "option": {
+        "jp": "ポーション回復量+5%、防御力+1",
+        "en": "Potion recovery increase+5%¸ DEF+1",
+        "tw": "藥劑效果+5%¸ 防禦+1"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "8=5_49=1",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.60",
+      "legacy_id": 60,
+      "legacy_path": "SoulData[*][60]",
+      "name": {
+        "jp": "奮い立つ魂",
+        "en": "(Cheer up Soul)",
+        "tw": "(高興起來的魂魄)"
+      },
+      "modifier": {
+        "jp": "カリッジ",
+        "en": "(Courage)",
+        "tw": "(勇氣)"
+      },
+      "option": {
+        "jp": "ポーション回復量+8%",
+        "en": "Potion recovery increase+8%",
+        "tw": "藥劑效果+8%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "8=8",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.61",
+      "legacy_id": 61,
+      "legacy_path": "SoulData[*][61]",
+      "name": {
+        "jp": "宵の魂",
+        "en": "(Evening Soul)",
+        "tw": "(晚上的魂魄)"
+      },
+      "modifier": {
+        "jp": "ダスク",
+        "en": "(Dusk)",
+        "tw": "(黃昏)"
+      },
+      "option": {
+        "jp": "MP回復速度+20%",
+        "en": "MP recovery speed+20%",
+        "tw": "MP自然恢復速度+20%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "10=20",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.62",
+      "legacy_id": 62,
+      "legacy_path": "SoulData[*][62]",
+      "name": {
+        "jp": "女神の魂",
+        "en": "(Goddess soul)",
+        "tw": "(女神的魂魄)"
+      },
+      "modifier": {
+        "jp": "ビーナス",
+        "en": "(Venus)",
+        "tw": "(金星)"
+      },
+      "option": {
+        "jp": "LP回復スキルの効果量+5%",
+        "en": "%LP Healed+5%",
+        "tw": "HP恢復技能的效果+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "11=5",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.63",
+      "legacy_id": 63,
+      "legacy_path": "SoulData[*][63]",
+      "name": {
+        "jp": "加速する魂",
+        "en": "(Accelerate Soul)",
+        "tw": "(加快的魂魄)"
+      },
+      "modifier": {
+        "jp": "アングリフ",
+        "en": "(Angurifu)",
+        "tw": "(Angurifu)"
+      },
+      "option": {
+        "jp": "攻撃力+3、攻撃速度+2%",
+        "en": "ATK+3¸ Attack speed+2%",
+        "tw": "攻擊力+3¸ 攻擊速度+2%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "18=3_73=2",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.64",
+      "legacy_id": 64,
+      "legacy_path": "SoulData[*][64]",
+      "name": {
+        "jp": "強靭の魂",
+        "en": "(Tough Soul)",
+        "tw": "(強的魂魄)"
+      },
+      "modifier": {
+        "jp": "スラッシュ",
+        "en": "(Slash)",
+        "tw": "(斜線)"
+      },
+      "option": {
+        "jp": "攻撃力+6",
+        "en": "ATK+6",
+        "tw": "攻擊力+6"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "18=6",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.65",
+      "legacy_id": 65,
+      "legacy_path": "SoulData[*][65]",
+      "name": {
+        "jp": "巨人の魂",
+        "en": "(Giants Soul)",
+        "tw": "(巨人的魂魄)"
+      },
+      "modifier": {
+        "jp": "ジャイアント",
+        "en": "(Giant)",
+        "tw": "(巨)"
+      },
+      "option": {
+        "jp": "攻撃力+15、命中-10、攻撃速度-25%",
+        "en": "ATK+15¸ Accuracy-10¸ Attack speed-25%",
+        "tw": "攻擊力+15¸ 命中-10¸ 攻擊速度-25%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "18=15_62=-10_73=-25",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.66",
+      "legacy_id": 66,
+      "legacy_path": "SoulData[*][66]",
+      "name": {
+        "jp": "ギャンブルの魂",
+        "en": "(Gambling Soul)",
+        "tw": "(賭博的魂魄)"
+      },
+      "modifier": {
+        "jp": "ギャンブル",
+        "en": "(Gambling)",
+        "tw": "(賭博)"
+      },
+      "option": {
+        "jp": "攻撃力-10~+10",
+        "en": "ATK-10~+10",
+        "tw": "攻擊力-10~+10"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "18=10",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.67",
+      "legacy_id": 67,
+      "legacy_path": "SoulData[*][67]",
+      "name": {
+        "jp": "省みぬ魂",
+        "en": "(Afraid Soul)",
+        "tw": "(不敢魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "攻撃力+10、防御力-5",
+        "en": "ATK+10¸ DEF-5",
+        "tw": "攻擊力+10¸ 防禦-5"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "18=10_49=-5",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.68",
+      "legacy_id": 68,
+      "legacy_path": "SoulData[*][68]",
+      "name": {
+        "jp": "怪力の魂",
+        "en": "(Steroids soul)",
+        "tw": "(神力的魂魄)"
+      },
+      "modifier": {
+        "jp": "サムソン",
+        "en": "(Samson)",
+        "tw": "(薩姆森)"
+      },
+      "option": {
+        "jp": "攻撃力+2%",
+        "en": "ATK+2%",
+        "tw": "攻擊力+2%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "18=2%",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.69",
+      "legacy_id": 69,
+      "legacy_path": "SoulData[*][69]",
+      "name": {
+        "jp": "針鼠の魂",
+        "en": "(Hedgehog Soul)",
+        "tw": "(刺猬的魂魄)"
+      },
+      "modifier": {
+        "jp": "イーゲル",
+        "en": "(Eagel)",
+        "tw": "(Eagel)"
+      },
+      "option": {
+        "jp": "攻撃力+5%",
+        "en": "ATK+5%",
+        "tw": "攻擊力+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "18=5%",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.70",
+      "legacy_id": 70,
+      "legacy_path": "SoulData[*][70]",
+      "name": {
+        "jp": "荒ぶる者の魂",
+        "en": "(Rowdy Soul)",
+        "tw": "(誰冒充野生的魂魄)"
+      },
+      "modifier": {
+        "jp": "インパルス",
+        "en": "(Impulse)",
+        "tw": "(脈衝)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、攻撃力+1",
+        "en": "Each discipline values ​​+1¸ Attack +1",
+        "tw": "每個學科的值+1¸攻擊 +1"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.71",
+      "legacy_id": 71,
+      "legacy_path": "SoulData[*][71]",
+      "name": {
+        "jp": "大戦士の魂",
+        "en": "(Great warrior Soul)",
+        "tw": "(偉大的戰士的魂魄)"
+      },
+      "modifier": {
+        "jp": "グレートウォーリア",
+        "en": "(Great Warrior)",
+        "tw": "(偉大的戰士)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、攻撃力+1%、攻撃速度+1%",
+        "en": "Each discipline values ​​+1¸ Attack +1% +1% Attack Speed",
+        "tw": "每個學科的值+1¸攻擊 +1%+1%攻擊速度"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.72",
+      "legacy_id": 72,
+      "legacy_path": "SoulData[*][72]",
+      "name": {
+        "jp": "魔力の魂",
+        "en": "(Magic Soul)",
+        "tw": "(巫術的魂魄)"
+      },
+      "modifier": {
+        "jp": "マジック",
+        "en": "(Magic)",
+        "tw": "(魔術)"
+      },
+      "option": {
+        "jp": "魔法攻撃力+2%",
+        "en": "Magic attack+2%",
+        "tw": "魔法攻擊+2%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "42=2",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.73",
+      "legacy_id": 73,
+      "legacy_path": "SoulData[*][73]",
+      "name": {
+        "jp": "魔界の魂",
+        "en": "(Darkness Soul)",
+        "tw": "(飼的魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "魔法攻撃力+2%",
+        "en": "Magic attack+2%",
+        "tw": "魔法攻擊+2%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "42=2",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.74",
+      "legacy_id": 74,
+      "legacy_path": "SoulData[*][74]",
+      "name": {
+        "jp": "賢者の魂",
+        "en": "(Sage Soul)",
+        "tw": "(聖人的魂魄)"
+      },
+      "modifier": {
+        "jp": "ノレッジ",
+        "en": "(Knowledge)",
+        "tw": "(知識)"
+      },
+      "option": {
+        "jp": "魔法攻撃力+5%",
+        "en": "Magic attack+5%",
+        "tw": "魔法攻擊+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "42=5",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.75",
+      "legacy_id": 75,
+      "legacy_path": "SoulData[*][75]",
+      "name": {
+        "jp": "大魔法使いの魂",
+        "en": "(Great wizard Soul)",
+        "tw": "(大巫師的魂魄)"
+      },
+      "modifier": {
+        "jp": "グレートウィザード",
+        "en": "(Grate wizard)",
+        "tw": "(爐排嚮導)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、MP+1%、魔法攻撃力+1%",
+        "en": "Value +1 each discipline¸ MP +1%¸ +1% Magic Attack",
+        "tw": "每個學科的價值 1¸MP 1%¸1%魔法攻擊"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.76",
+      "legacy_id": 76,
+      "legacy_path": "SoulData[*][76]",
+      "name": {
+        "jp": "芋虫の魂",
+        "en": "(Caterpillar Soul)",
+        "tw": "(蠕蟲的魂魄)"
+      },
+      "modifier": {
+        "jp": "インセクト",
+        "en": "(Insect)",
+        "tw": "(昆蟲)"
+      },
+      "option": {
+        "jp": "防御力+1、回避-1",
+        "en": "DEF+1¸ Dodge-1",
+        "tw": "防禦+1¸ 迴避-1"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "49=1_65=-1",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.77",
+      "legacy_id": 77,
+      "legacy_path": "SoulData[*][77]",
+      "name": {
+        "jp": "亡者の魂",
+        "en": "(Dead Soul)",
+        "tw": "(死的魂魄)"
+      },
+      "modifier": {
+        "jp": "ゴースト",
+        "en": "(Ghost)",
+        "tw": "(鬼)"
+      },
+      "option": {
+        "jp": "防御力+2、回避+3、光耐性-23%",
+        "en": "DEF+2¸ Dodge+3¸ Light resist-23%",
+        "tw": "防禦+2¸ 迴避+3¸ 光抗性-23%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "49=2_65=3_143=-23",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.78",
+      "legacy_id": 78,
+      "legacy_path": "SoulData[*][78]",
+      "name": {
+        "jp": "専守の魂",
+        "en": "(Defense-only Soul)",
+        "tw": "(専守的魂魄)"
+      },
+      "modifier": {
+        "jp": "ディフェンス",
+        "en": "(Defense)",
+        "tw": "(防禦)"
+      },
+      "option": {
+        "jp": "攻撃力-2、防御力+3",
+        "en": "ATK-2¸ DEF+3",
+        "tw": "攻擊力-2¸ 防禦+3"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "18=-2_49=3",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.79",
+      "legacy_id": 79,
+      "legacy_path": "SoulData[*][79]",
+      "name": {
+        "jp": "守護者の魂",
+        "en": "(Guardian Soul)",
+        "tw": "(衛報的魂魄)"
+      },
+      "modifier": {
+        "jp": "ガーディアン",
+        "en": "(Guardian)",
+        "tw": "(衛報)"
+      },
+      "option": {
+        "jp": "防御力+3、ブロッキング解除耐性+15%",
+        "en": "DEF+3¸ De-blocking immunity+15%",
+        "tw": "防禦+3¸ 德阻斷免疫+15%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "49=3_133=15",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.80",
+      "legacy_id": 80,
+      "legacy_path": "SoulData[*][80]",
+      "name": {
+        "jp": "鋼の魂",
+        "en": "(Iron Soul)",
+        "tw": "(鋼的魂魄)"
+      },
+      "modifier": {
+        "jp": "アイアン",
+        "en": "(Iron)",
+        "tw": "(鐵)"
+      },
+      "option": {
+        "jp": "防御力+4",
+        "en": "DEF+4",
+        "tw": "防禦+4"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "49=4",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.81",
+      "legacy_id": 81,
+      "legacy_path": "SoulData[*][81]",
+      "name": {
+        "jp": "百年亀の魂",
+        "en": "(Turtle Soul)",
+        "tw": "(森特尼爾龜的魂魄)"
+      },
+      "modifier": {
+        "jp": "タートル",
+        "en": "(Turtle)",
+        "tw": "(龜)"
+      },
+      "option": {
+        "jp": "防御力+4、移動速度-3%",
+        "en": "DEF+4¸ Moving speed-3%",
+        "tw": "防禦+4¸ 行走速度-3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "49=4_74=-3_75=-3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.82",
+      "legacy_id": 82,
+      "legacy_path": "SoulData[*][82]",
+      "name": {
+        "jp": "石頭の魂",
+        "en": "(Clyde Soul)",
+        "tw": "(偏執的魂魄)"
+      },
+      "modifier": {
+        "jp": "ストーンヘッド",
+        "en": "(Stonehead)",
+        "tw": "(石頭)"
+      },
+      "option": {
+        "jp": "被物理ダメージ-5",
+        "en": "Physical damage resist-5",
+        "tw": "物理傷害-5"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "52=-5",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.83",
+      "legacy_id": 83,
+      "legacy_path": "SoulData[*][83]",
+      "name": {
+        "jp": "加護の魂",
+        "en": "(Protection Soul)",
+        "tw": "(神的保護的魂魄)"
+      },
+      "modifier": {
+        "jp": "プロテクト",
+        "en": "(Protect)",
+        "tw": "(保護)"
+      },
+      "option": {
+        "jp": "被物理ダメージ-2%、被魔法ダメージ-2%",
+        "en": "Physical damage resist-2%¸ Magical damage resist-2%",
+        "tw": "物理傷害-2%¸ 魔法傷害-2%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "52=-2%_60=-2%",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.84",
+      "legacy_id": 84,
+      "legacy_path": "SoulData[*][84]",
+      "name": {
+        "jp": "剛性の魂",
+        "en": "(Stiffness soul)",
+        "tw": "(剛度的魂魄)"
+      },
+      "modifier": {
+        "jp": "ハードネス",
+        "en": "(Hardness)",
+        "tw": "(硬度)"
+      },
+      "option": {
+        "jp": "被物理ダメージ-2%",
+        "en": "Physical damage resist-2%",
+        "tw": "物理傷害-2%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "52=-2%",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.85",
+      "legacy_id": 85,
+      "legacy_path": "SoulData[*][85]",
+      "name": {
+        "jp": "誘惑の魂",
+        "en": "(Temptation Soul)",
+        "tw": "(誘惑的魂魄)"
+      },
+      "modifier": {
+        "jp": "チャーム",
+        "en": "(Charm)",
+        "tw": "(魅力)"
+      },
+      "option": {
+        "jp": "被物理ダメージ-2%、魅了耐性+2%",
+        "en": "Physical damage resist-2%¸ Charm resist+2%",
+        "tw": "物理傷害-2%¸ 魅惑抗性+2%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "52=-2%_142=2",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.86",
+      "legacy_id": 86,
+      "legacy_path": "SoulData[*][86]",
+      "name": {
+        "jp": "骸の魂",
+        "en": "(Mukuro Soul)",
+        "tw": "(屍體的魂魄)"
+      },
+      "modifier": {
+        "jp": "ボーン",
+        "en": "(Bohn)",
+        "tw": "(博恩)"
+      },
+      "option": {
+        "jp": "被物理ダメージ-2%、被魔法ダメージ+2%、身体的状態異常耐性+2%",
+        "en": "Physical damage resist-2%¸ Magical damage resist+2%¸ Physical De-buff resist+2%",
+        "tw": "物理傷害-2%¸ 魔法傷害+2%¸ 異常體抗性+2%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "52=-2%_60=2%_146=2",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.87",
+      "legacy_id": 87,
+      "legacy_path": "SoulData[*][87]",
+      "name": {
+        "jp": "中立領の魂",
+        "en": "(Neutral area Soul)",
+        "tw": "(中立領土魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "被物理ダメージ-2%、与物理ダメージ-50%、与魔法ダメージ-50%",
+        "en": "Physical damage resist-2%¸ ATK damage-50%¸ MATK damage-50%",
+        "tw": "物理傷害-2%¸ 攻/物理傷害-50%¸ 攻/魔法傷害-50%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "52=-2%_194=-50_195=-50",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.88",
+      "legacy_id": 88,
+      "legacy_path": "SoulData[*][88]",
+      "name": {
+        "jp": "鋼鉄の魂",
+        "en": "(Steel Soul)",
+        "tw": "(鋼的魂魄)"
+      },
+      "modifier": {
+        "jp": "スチール",
+        "en": "(Steel)",
+        "tw": "(鋼)"
+      },
+      "option": {
+        "jp": "被物理ダメージ-3%",
+        "en": "Physical damage resist-3%",
+        "tw": "物理傷害-3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "52=-3%",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.89",
+      "legacy_id": 89,
+      "legacy_path": "SoulData[*][89]",
+      "name": {
+        "jp": "痛みを知らぬ魂",
+        "en": "(Souls know the pain)",
+        "tw": "(知道痛的魂魄)"
+      },
+      "modifier": {
+        "jp": "ノーペイン",
+        "en": "(No-pain)",
+        "tw": "(無疼痛)"
+      },
+      "option": {
+        "jp": "被物理ダメージ-3%",
+        "en": "Physical damage resist-3%",
+        "tw": "物理傷害-3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "52=-3%",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.90",
+      "legacy_id": 90,
+      "legacy_path": "SoulData[*][90]",
+      "name": {
+        "jp": "虫除けの魂",
+        "en": "(Insect Soul)",
+        "tw": "(昆蟲的魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "昆虫系から受ける物理ダメージ-3%",
+        "en": "Physical damage from the insect-3%",
+        "tw": "從昆蟲的物理傷害減少-3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "54=-3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.91",
+      "legacy_id": 91,
+      "legacy_path": "SoulData[*][91]",
+      "name": {
+        "jp": "狩猟者の魂",
+        "en": "(Shooter Soul)",
+        "tw": "(射手的魂魄)"
+      },
+      "modifier": {
+        "jp": "アニマル",
+        "en": "(Animal)",
+        "tw": "(動物)"
+      },
+      "option": {
+        "jp": "動物系から受ける物理ダメージ-3%",
+        "en": "Physical damage from the animal-3%",
+        "tw": "從動物的物理傷害減少-3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "53=-3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.92",
+      "legacy_id": 92,
+      "legacy_path": "SoulData[*][92]",
+      "name": {
+        "jp": "修道士の魂",
+        "en": "(Monk Soul)",
+        "tw": "(僧侶的魂魄)"
+      },
+      "modifier": {
+        "jp": "グロリアス",
+        "en": "(Glorious)",
+        "tw": "(常)"
+      },
+      "option": {
+        "jp": "悪魔系から受ける物理ダメージ-3%",
+        "en": "Physical damage from the devil-3%",
+        "tw": "從魔鬼的物理傷害減少-3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "56=-3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.93",
+      "legacy_id": 93,
+      "legacy_path": "SoulData[*][93]",
+      "name": {
+        "jp": "聖戦士の魂",
+        "en": "(Paladin Soul)",
+        "tw": "(聖鬥士的魂魄)"
+      },
+      "modifier": {
+        "jp": "ホーリー",
+        "en": "(Holley)",
+        "tw": "(霍利)"
+      },
+      "option": {
+        "jp": "不死系から受ける物理ダメージ-3%",
+        "en": "Physical damage from the immortal-3%",
+        "tw": "從不朽的物理傷害減少-3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "57=-3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.94",
+      "legacy_id": 94,
+      "legacy_path": "SoulData[*][94]",
+      "name": {
+        "jp": "鳥の魂",
+        "en": "(Bird Soul)",
+        "tw": "(鳥類的魂魄)"
+      },
+      "modifier": {
+        "jp": "バード",
+        "en": "(Bird)",
+        "tw": "(鳥)"
+      },
+      "option": {
+        "jp": "爬虫類系から受ける物理ダメージ-3%",
+        "en": "Physical damage from the reptilian-3%",
+        "tw": "從爬蟲類的物理傷害減少-3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "55=-3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.95",
+      "legacy_id": 95,
+      "legacy_path": "SoulData[*][95]",
+      "name": {
+        "jp": "清魂の魂",
+        "en": "(Qing Soul)",
+        "tw": "(清代的魂魄)"
+      },
+      "modifier": {
+        "jp": "ホロウ",
+        "en": "(Hollow)",
+        "tw": "(中空)"
+      },
+      "option": {
+        "jp": "ゴースト系から受ける物理ダメージ-3%",
+        "en": "Physical damage from the ghost-3%",
+        "tw": "從鬼命的物理傷害減少-3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "58=-3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.96",
+      "legacy_id": 96,
+      "legacy_path": "SoulData[*][96]",
+      "name": {
+        "jp": "ゴーレムの魂",
+        "en": "(Golem Soul)",
+        "tw": "(傀儡的魂魄)"
+      },
+      "modifier": {
+        "jp": "ゴーレム",
+        "en": "(Golem)",
+        "tw": "(傀儡)"
+      },
+      "option": {
+        "jp": "無生物系から受ける物理ダメージ-3%",
+        "en": "Physical damage from the inanimate-3%",
+        "tw": "從無生命的物理傷害減少-3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "59=-3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.97",
+      "legacy_id": 97,
+      "legacy_path": "SoulData[*][97]",
+      "name": {
+        "jp": "祓魔の魂",
+        "en": "(Exorcises Soul)",
+        "tw": "(祓魔的魂魄)"
+      },
+      "modifier": {
+        "jp": "レジスト",
+        "en": "(Resist)",
+        "tw": "(抗)"
+      },
+      "option": {
+        "jp": "被魔法ダメージ-4%",
+        "en": "Magical damage resist-4%",
+        "tw": "魔法傷害-4%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "60=-4%",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.98",
+      "legacy_id": 98,
+      "legacy_path": "SoulData[*][98]",
+      "name": {
+        "jp": "心理の魂",
+        "en": "(Psychology Soul)",
+        "tw": "(心理學的魂魄)"
+      },
+      "modifier": {
+        "jp": "サイコロジー",
+        "en": "(Psychology)",
+        "tw": "(心理)"
+      },
+      "option": {
+        "jp": "被魔法ダメージ-2%",
+        "en": "Magical damage resist-2%",
+        "tw": "魔法傷害-2%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "60=-2%",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.99",
+      "legacy_id": 99,
+      "legacy_path": "SoulData[*][99]",
+      "name": {
+        "jp": "狩人の魂",
+        "en": "(Hunter Soul)",
+        "tw": "(獵人的魂魄)"
+      },
+      "modifier": {
+        "jp": "スナイパー",
+        "en": "(Sniper)",
+        "tw": "(狙擊手)"
+      },
+      "option": {
+        "jp": "命中+8",
+        "en": "Accuracy+8",
+        "tw": "命中+8"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "62=8",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.100",
+      "legacy_id": 100,
+      "legacy_path": "SoulData[*][100]",
+      "name": {
+        "jp": "見極める魂",
+        "en": "(Assess soul)",
+        "tw": "(評估的魂魄)"
+      },
+      "modifier": {
+        "jp": "サーチ",
+        "en": "(Search)",
+        "tw": "(搜索)"
+      },
+      "option": {
+        "jp": "命中+8",
+        "en": "Accuracy+8",
+        "tw": "命中+8"
+      },
+      "special_option": {
+        "jp": "鍛錬値+7以上の時、更に命中+10",
+        "en": "Over time the discipline +7¸ +10 Hit more",
+        "tw": "隨著時間的推移紀律 +7¸+10命中更"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "62=8",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.101",
+      "legacy_id": 101,
+      "legacy_path": "SoulData[*][101]",
+      "name": {
+        "jp": "見張りの魂",
+        "en": "(Watch Soul)",
+        "tw": "(觀看的魂魄)"
+      },
+      "modifier": {
+        "jp": "ルックアウト",
+        "en": "(Lookout)",
+        "tw": "(觀景台)"
+      },
+      "option": {
+        "jp": "命中+10",
+        "en": "Accuracy+10",
+        "tw": "命中+10"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "62=10",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.102",
+      "legacy_id": 102,
+      "legacy_path": "SoulData[*][102]",
+      "name": {
+        "jp": "狛の魂",
+        "en": "(Dog Soul)",
+        "tw": "(科馬的魂魄)"
+      },
+      "modifier": {
+        "jp": "ステップ",
+        "en": "(Step)",
+        "tw": "(步驟)"
+      },
+      "option": {
+        "jp": "回避+1",
+        "en": "Dodge+1",
+        "tw": "迴避+1"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "62=1%",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.103",
+      "legacy_id": 103,
+      "legacy_path": "SoulData[*][103]",
+      "name": {
+        "jp": "俊足の魂",
+        "en": "(Fleet-footed spirit)",
+        "tw": "(人才的魂魄)"
+      },
+      "modifier": {
+        "jp": "アボイド",
+        "en": "(Avoid)",
+        "tw": "(避免)"
+      },
+      "option": {
+        "jp": "回避+7",
+        "en": "Dodge+7",
+        "tw": "迴避+7"
+      },
+      "special_option": {
+        "jp": "鍛錬値が+7以上の時、更に回避+8",
+        "en": "Over time the discipline +7¸ +8 to avoid further",
+        "tw": "隨著時間的推移紀律 +7¸+8¸以避免進一步"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "65=7",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.104",
+      "legacy_id": 104,
+      "legacy_path": "SoulData[*][104]",
+      "name": {
+        "jp": "小人の魂",
+        "en": "(Midget Soul)",
+        "tw": "(矮人魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "攻撃力-10、回避+8",
+        "en": "ATK-10¸ Dodge+8",
+        "tw": "攻擊力-10¸ 迴避+8"
+      },
+      "special_option": {
+        "jp": "鍛錬値に応じて魔法攻撃を回避する",
+        "en": "To avoid magic attacks depending on the discipline",
+        "tw": "為了避免魔法攻擊取決於紀律"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "18=-10_65=8",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.105",
+      "legacy_id": 105,
+      "legacy_path": "SoulData[*][105]",
+      "name": {
+        "jp": "予期する魂",
+        "en": "(Expect soul)",
+        "tw": "(期望的魂魄)"
+      },
+      "modifier": {
+        "jp": "イクスペクト",
+        "en": "(Ikusupekuto)",
+        "tw": "(Ikusupekuto)"
+      },
+      "option": {
+        "jp": "回避+10",
+        "en": "Dodge+10",
+        "tw": "迴避+10"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "65=10",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.106",
+      "legacy_id": 106,
+      "legacy_path": "SoulData[*][106]",
+      "name": {
+        "jp": "踊る魂",
+        "en": "(Dance Soul)",
+        "tw": "(舞蹈的魂魄)"
+      },
+      "modifier": {
+        "jp": "ダンシング",
+        "en": "(Dancing)",
+        "tw": "(舞蹈)"
+      },
+      "option": {
+        "jp": "回避+10",
+        "en": "Dodge+10",
+        "tw": "迴避+10"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "65=10",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.107",
+      "legacy_id": 107,
+      "legacy_path": "SoulData[*][107]",
+      "name": {
+        "jp": "影足の魂",
+        "en": "(Shadows foot Soul)",
+        "tw": "(影腳的魂魄)"
+      },
+      "modifier": {
+        "jp": "シャドウスナップ",
+        "en": "(Shadow Snap)",
+        "tw": "(暗影快照)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、回避+1、転倒耐性+3%",
+        "en": "Each discipline values ​​+1¸ +1 avoid¸ falling 3% tolerance",
+        "tw": "每個學科的值+1¸+1迴避¸下降3%的公差"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.108",
+      "legacy_id": 108,
+      "legacy_path": "SoulData[*][108]",
+      "name": {
+        "jp": "暗殺者の魂",
+        "en": "(Assassins Soul)",
+        "tw": "(刺客的魂魄)"
+      },
+      "modifier": {
+        "jp": "アサシン",
+        "en": "(Assassin)",
+        "tw": "(刺客)"
+      },
+      "option": {
+        "jp": "被物理ダメージ+3%、回避+2、クリティカル発生率+2%",
+        "en": "Physical damage resist+3%¸ Dodge+2¸ Critical hit rate+2%",
+        "tw": "物理傷害+3%¸ 迴避+2¸ 暴擊率+2%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "52=3%_65=2_69=2",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.109",
+      "legacy_id": 109,
+      "legacy_path": "SoulData[*][109]",
+      "name": {
+        "jp": "幸運の魂",
+        "en": "(Good luck Soul)",
+        "tw": "(好運氣的魂魄)"
+      },
+      "modifier": {
+        "jp": "ラッキー",
+        "en": "(Lucky)",
+        "tw": "(幸運)"
+      },
+      "option": {
+        "jp": "クリティカル発生率+2%",
+        "en": "Critical hit rate+2%",
+        "tw": "暴擊率+2%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "69=2",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.110",
+      "legacy_id": 110,
+      "legacy_path": "SoulData[*][110]",
+      "name": {
+        "jp": "強運の魂",
+        "en": "(Lucky Soul)",
+        "tw": "(好運氣的魂魄)"
+      },
+      "modifier": {
+        "jp": "ロトリー",
+        "en": "(Rotory)",
+        "tw": "(Rotory)"
+      },
+      "option": {
+        "jp": "クリティカル発生率+5%",
+        "en": "Critical hit rate+5%",
+        "tw": "暴擊率+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "69=5",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.111",
+      "legacy_id": 111,
+      "legacy_path": "SoulData[*][111]",
+      "name": {
+        "jp": "見破る魂",
+        "en": "(Detect Soul)",
+        "tw": "(檢測的魂魄)"
+      },
+      "modifier": {
+        "jp": "ディテクト",
+        "en": "(Detect)",
+        "tw": "(檢測)"
+      },
+      "option": {
+        "jp": "クリティカル発生率+5%",
+        "en": "Critical hit rate+5%",
+        "tw": "暴擊率+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "69=5",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.112",
+      "legacy_id": 112,
+      "legacy_path": "SoulData[*][112]",
+      "name": {
+        "jp": "致命の魂",
+        "en": "(Deadly soul)",
+        "tw": "(致命的魂魄)"
+      },
+      "modifier": {
+        "jp": "モータル",
+        "en": "(Mortal)",
+        "tw": "(凡人)"
+      },
+      "option": {
+        "jp": "クリティカルダメージ+2%",
+        "en": "Critical damage+2%",
+        "tw": "暴擊威力+2%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "71=2",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.113",
+      "legacy_id": 113,
+      "legacy_path": "SoulData[*][113]",
+      "name": {
+        "jp": "疾風の魂",
+        "en": "(Gale Soul)",
+        "tw": "(大風的魂魄)"
+      },
+      "modifier": {
+        "jp": "ソニック",
+        "en": "(Sonic)",
+        "tw": "(索尼克)"
+      },
+      "option": {
+        "jp": "攻撃速度+4%",
+        "en": "Attack speed+4%",
+        "tw": "攻擊速度+4%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "73=4",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.114",
+      "legacy_id": 114,
+      "legacy_path": "SoulData[*][114]",
+      "name": {
+        "jp": "剣士の魂",
+        "en": "(Swordsman Soul)",
+        "tw": "(劍客的魂魄)"
+      },
+      "modifier": {
+        "jp": "フェンサー",
+        "en": "(Fencer)",
+        "tw": "(擊劍運動員)"
+      },
+      "option": {
+        "jp": "攻撃速度+10%",
+        "en": "Attack speed+10%",
+        "tw": "攻擊速度+10%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "73=10",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.115",
+      "legacy_id": 115,
+      "legacy_path": "SoulData[*][115]",
+      "name": {
+        "jp": "言走りの魂",
+        "en": "(Fast Soul)",
+        "tw": "(語言運行的魂魄)"
+      },
+      "modifier": {
+        "jp": "キャスト",
+        "en": "(Cast)",
+        "tw": "(鑄鐵)"
+      },
+      "option": {
+        "jp": "詠唱速度+5%",
+        "en": "Casting speed+5%",
+        "tw": "詠唱速度+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "77=5",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.116",
+      "legacy_id": 116,
+      "legacy_path": "SoulData[*][116]",
+      "name": {
+        "jp": "せっかちな魂",
+        "en": "(Impatient Soul)",
+        "tw": "(性急的的魂魄)"
+      },
+      "modifier": {
+        "jp": "ヘイスティ",
+        "en": "(Hasty)",
+        "tw": "(冬冬)"
+      },
+      "option": {
+        "jp": "再使用時間-5%",
+        "en": "Cooldown-5%",
+        "tw": "冷卻時間-5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "79=-5",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.117",
+      "legacy_id": 117,
+      "legacy_path": "SoulData[*][117]",
+      "name": {
+        "jp": "斬馬の魂",
+        "en": "(Horse killer soul)",
+        "tw": "(馬殺手的魂魄)"
+      },
+      "modifier": {
+        "jp": "ホースキラー",
+        "en": "(Horse Killer)",
+        "tw": "(馬殺手)"
+      },
+      "option": {
+        "jp": "落馬発生確率+2%",
+        "en": "Purler rate+2%",
+        "tw": "概率從馬背上掉下+2%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "85=2",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.118",
+      "legacy_id": 118,
+      "legacy_path": "SoulData[*][118]",
+      "name": {
+        "jp": "祭典の魂",
+        "en": "(Festival Soul (1))",
+        "tw": "(節的魂魄)"
+      },
+      "modifier": {
+        "jp": "フェスティバル",
+        "en": "(Festival)",
+        "tw": "(節)"
+      },
+      "option": {
+        "jp": "街での移動速度+10%",
+        "en": "Moving speed in the city+10%",
+        "tw": "速度變化的城市+10%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "75=10",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.119",
+      "legacy_id": 119,
+      "legacy_path": "SoulData[*][119]",
+      "name": {
+        "jp": "平和の魂",
+        "en": "(Peace Soul (1))",
+        "tw": "(和平的魂魄)"
+      },
+      "modifier": {
+        "jp": "カーム",
+        "en": "(Calm)",
+        "tw": "(平靜)"
+      },
+      "option": {
+        "jp": "詠唱妨害耐性+6%",
+        "en": "Cast cancel resist+6%",
+        "tw": "吟詠取消抗性+6%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "134=6",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.120",
+      "legacy_id": 120,
+      "legacy_path": "SoulData[*][120]",
+      "name": {
+        "jp": "和平の魂",
+        "en": "(Peace Soul (2))",
+        "tw": "(和平的魂魄)"
+      },
+      "modifier": {
+        "jp": "カーム",
+        "en": "(Calm)",
+        "tw": "(平靜)"
+      },
+      "option": {
+        "jp": "詠唱妨害耐性+20%",
+        "en": "Cast cancel resist+20%",
+        "tw": "吟詠取消抗性+20%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "134=20",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.121",
+      "legacy_id": 121,
+      "legacy_path": "SoulData[*][121]",
+      "name": {
+        "jp": "変化の魂",
+        "en": "(Change Soul)",
+        "tw": "(變更的魂魄)"
+      },
+      "modifier": {
+        "jp": "ライスケーキ",
+        "en": "(Ricecake)",
+        "tw": "(Ricecake)"
+      },
+      "option": {
+        "jp": "回避-1、被Debuff持続時間-2%",
+        "en": "Dodge-1¸ Debuff duration-2%",
+        "tw": "迴避-1¸ debuff的持續時間-2%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "65=-1_162=-2",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.122",
+      "legacy_id": 122,
+      "legacy_path": "SoulData[*][122]",
+      "name": {
+        "jp": "ふんばる魂",
+        "en": "(Hold Soul)",
+        "tw": "(掛在的魂魄)"
+      },
+      "modifier": {
+        "jp": "アンカー",
+        "en": "(Anchor)",
+        "tw": "(錨)"
+      },
+      "option": {
+        "jp": "ノックバック耐性+20%、気絶耐性+5%、転倒耐性+5%",
+        "en": "Knockback resist+20%¸ Stun resist+5%¸ Knockdown resist+5%",
+        "tw": "擊退抗性+20%¸ 暈眩抗性+5%¸ 擊倒抗性+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "149=5_151=5_153=20",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.123",
+      "legacy_id": 123,
+      "legacy_path": "SoulData[*][123]",
+      "name": {
+        "jp": "清浄された魂",
+        "en": "(Cleanliness Soul)",
+        "tw": "(潔淨度的魂魄)"
+      },
+      "modifier": {
+        "jp": "ピューリファイ",
+        "en": "(Purify)",
+        "tw": "(淨化)"
+      },
+      "option": {
+        "jp": "被debuff持続時間-10%",
+        "en": "Debuff duration-10%",
+        "tw": "debuff的持續時間-10%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "162=-10",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.124",
+      "legacy_id": 124,
+      "legacy_path": "SoulData[*][124]",
+      "name": {
+        "jp": "砂漠の魂",
+        "en": "(Desert Soul)",
+        "tw": "(沙漠的魂魄)"
+      },
+      "modifier": {
+        "jp": "デザート",
+        "en": "(Desert)",
+        "tw": "(沙漠)"
+      },
+      "option": {
+        "jp": "火炎耐性+3%、毒耐性+15%",
+        "en": "Fire resist+3%¸ Poison resist+15%",
+        "tw": "火抗性+3%¸ 毒抗性+15%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "138=3_141=15",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.125",
+      "legacy_id": 125,
+      "legacy_path": "SoulData[*][125]",
+      "name": {
+        "jp": "日光の魂",
+        "en": "(Sunshine Soul)",
+        "tw": "(太陽的魂魄)"
+      },
+      "modifier": {
+        "jp": "サンライト",
+        "en": "(Sunlight)",
+        "tw": "(陽光)"
+      },
+      "option": {
+        "jp": "火炎耐性+3%、冷気耐性+3%、電撃耐性+3%",
+        "en": "Fire resist+3%¸ Ice resist+3%¸ Lightning resist+3%",
+        "tw": "火抗性+3%¸ 冰抗性+3%¸ 雷抗性+3%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "138=3_139=3_140=3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.126",
+      "legacy_id": 126,
+      "legacy_path": "SoulData[*][126]",
+      "name": {
+        "jp": "妖精の魂",
+        "en": "(Fairy Soul)",
+        "tw": "(仙女的魂魄)"
+      },
+      "modifier": {
+        "jp": "フェアリー",
+        "en": "(Fairley)",
+        "tw": "(費爾利)"
+      },
+      "option": {
+        "jp": "火炎耐性+9%、冷気耐性+9%、電撃耐性+9%",
+        "en": "Fire resist+9%¸ Ice resist+9%¸ Lightning resist+9%",
+        "tw": "火抗性+9%¸ 冰抗性+9%¸ 雷抗性+9%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "138=9_139=9_140=9",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.127",
+      "legacy_id": 127,
+      "legacy_path": "SoulData[*][127]",
+      "name": {
+        "jp": "元素の魂",
+        "en": "(Elements Soul)",
+        "tw": "(元素魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "火炎耐性+10%、冷気耐性+10%、電撃耐性+10%、毒耐性-15%、魅了耐性-15%",
+        "en": "Fire resist+10%¸ Ice resist+10%¸ Lightning resist+10%¸ Poison resist-15%¸ Charm resist-15%",
+        "tw": "火抗性+10%¸ 冰抗性+10%¸ 雷抗性+10%¸ 毒抗性-15%¸ 魅惑抗性-15%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "138=10_139=10_140=10_141=-15_142=-15",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.128",
+      "legacy_id": 128,
+      "legacy_path": "SoulData[*][128]",
+      "name": {
+        "jp": "炎の魂",
+        "en": "(Flame Soul)",
+        "tw": "(消防的魂魄)"
+      },
+      "modifier": {
+        "jp": "フレイム",
+        "en": "(Flame)",
+        "tw": "(火焰)"
+      },
+      "option": {
+        "jp": "火炎耐性+50%、冷気耐性-25%",
+        "en": "Fire resist+50%¸ Ice resist-25%",
+        "tw": "火抗性+50%¸ 冰抗性-25%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "138=50_139=-25",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.129",
+      "legacy_id": 129,
+      "legacy_path": "SoulData[*][129]",
+      "name": {
+        "jp": "氷の魂",
+        "en": "(Ice Soul)",
+        "tw": "(冰的魂魄)"
+      },
+      "modifier": {
+        "jp": "アイス",
+        "en": "(Ice)",
+        "tw": "(冰)"
+      },
+      "option": {
+        "jp": "火炎耐性+25%、冷気耐性+50%、電撃耐性-50%",
+        "en": "Fire resist+25%¸ Ice resist+50%¸ Lightning resist-50%",
+        "tw": "火抗性+25%¸ 冰抗性+50%¸ 雷抗性-50%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "138=25_139=50_140=-50",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.130",
+      "legacy_id": 130,
+      "legacy_path": "SoulData[*][130]",
+      "name": {
+        "jp": "隠者の魂",
+        "en": "(Hermit Soul)",
+        "tw": "(隱士的魂魄)"
+      },
+      "modifier": {
+        "jp": "ハーミット",
+        "en": "(Hermit)",
+        "tw": "(隱士)"
+      },
+      "option": {
+        "jp": "防御力-3、魅了耐性+4%、魔術耐性+4%",
+        "en": "DEF-3¸ Charm resist+4%¸ Magic resist+4%",
+        "tw": "防禦-3¸ 魅惑抗性+4%¸ 秘法抗性+4%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "49=-3_142=4_145=4",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.131",
+      "legacy_id": 131,
+      "legacy_path": "SoulData[*][131]",
+      "name": {
+        "jp": "腐敗の魂",
+        "en": "(Corruption Soul)",
+        "tw": "(腐敗的魂魄)"
+      },
+      "modifier": {
+        "jp": "コロージョン",
+        "en": "(Corrosion)",
+        "tw": "(腐蝕)"
+      },
+      "option": {
+        "jp": "火炎耐性-5%、魅了耐性+3%、火傷耐性+5%",
+        "en": "Fire resist-5%¸ Charm resist+3%¸ Burn resist+5%",
+        "tw": "火抗性-5%¸ 魅惑抗性+3%¸ 燒傷抗性+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "138=-5_142=3_148=5",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.132",
+      "legacy_id": 132,
+      "legacy_path": "SoulData[*][132]",
+      "name": {
+        "jp": "氷土の魂",
+        "en": "(Sat ice Soul)",
+        "tw": "(坐在冰的魂魄)"
+      },
+      "modifier": {
+        "jp": "フロスト",
+        "en": "(Frost)",
+        "tw": "(霜)"
+      },
+      "option": {
+        "jp": "冷気耐性+3%、毒耐性+15%",
+        "en": "Ice resist+3%¸ Poison resist+15%",
+        "tw": "冰抗性+3%¸ 毒抗性+15%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "139=3_141=15",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.133",
+      "legacy_id": 133,
+      "legacy_path": "SoulData[*][133]",
+      "name": {
+        "jp": "雪玉の魂",
+        "en": "(Snowball soul)",
+        "tw": "(雪球的魂魄)"
+      },
+      "modifier": {
+        "jp": "スノーボール",
+        "en": "(Snowball)",
+        "tw": "(雪球)"
+      },
+      "option": {
+        "jp": "電撃耐性-3%、冷気耐性-5~+5%",
+        "en": "Lightning resist-3%¸ Ice resist-5~+5%",
+        "tw": "雷抗性-3%¸ 冰抗性-5~+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "139=5_140=-3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.134",
+      "legacy_id": 134,
+      "legacy_path": "SoulData[*][134]",
+      "name": {
+        "jp": "大地の魂",
+        "en": "(Earth Soul)",
+        "tw": "(地球的魂魄)"
+      },
+      "modifier": {
+        "jp": "アース",
+        "en": "(Earth)",
+        "tw": "(地球)"
+      },
+      "option": {
+        "jp": "電撃耐性+3%、毒耐性+15%",
+        "en": "Lightning resist+3%¸ Poison resist+15%",
+        "tw": "雷抗性+3%¸ 毒抗性+15%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "140=3_141=15",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.135",
+      "legacy_id": 135,
+      "legacy_path": "SoulData[*][135]",
+      "name": {
+        "jp": "雷の魂",
+        "en": "(Thunder Soul)",
+        "tw": "(雷聲的魂魄)"
+      },
+      "modifier": {
+        "jp": "ライトニング",
+        "en": "(Lightning)",
+        "tw": "(閃電)"
+      },
+      "option": {
+        "jp": "火炎耐性-25%、冷気耐性-25%、電撃耐性+75%",
+        "en": "Fire resist-25%¸ Ice resist-25%¸ Lightning resist+75%",
+        "tw": "火抗性-25%¸ 冰抗性-25%¸ 雷抗性+75%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "138=-25_139=-25_140=75",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.136",
+      "legacy_id": 136,
+      "legacy_path": "SoulData[*][136]",
+      "name": {
+        "jp": "不惑の魂",
+        "en": "(Not be fooled Soul)",
+        "tw": "(以下正確的的魂魄道路)"
+      },
+      "modifier": {
+        "jp": "アウェイク",
+        "en": "(Awake)",
+        "tw": "(清醒)"
+      },
+      "option": {
+        "jp": "魅了耐性+20%",
+        "en": "Charm resist+20%",
+        "tw": "魅惑抗性+20%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "142=20",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.137",
+      "legacy_id": 137,
+      "legacy_path": "SoulData[*][137]",
+      "name": {
+        "jp": "自然の魂",
+        "en": "(Natural Soul)",
+        "tw": "(自然的魂魄)"
+      },
+      "modifier": {
+        "jp": "ナチュラル",
+        "en": "(Natural)",
+        "tw": "(天然)"
+      },
+      "option": {
+        "jp": "光耐性+4%、闇耐性+4%",
+        "en": "Light resist+4%¸ Darkness resist+4%",
+        "tw": "光抗性+4%¸ 黑暗抗性+4%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "143=4_144=4",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.138",
+      "legacy_id": 138,
+      "legacy_path": "SoulData[*][138]",
+      "name": {
+        "jp": "聖痕の魂",
+        "en": "(Stigmata Soul)",
+        "tw": "(聖痕魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "光耐性+5%、闇耐性+5%",
+        "en": "Light resist+5%¸ Darkness resist+5%",
+        "tw": "光抗性+5%¸ 黑暗抗性+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "143=5_144=5",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.139",
+      "legacy_id": 139,
+      "legacy_path": "SoulData[*][139]",
+      "name": {
+        "jp": "聖なる魂",
+        "en": "(Holy Soul)",
+        "tw": "(聖的魂魄)"
+      },
+      "modifier": {
+        "jp": "ホーリー",
+        "en": "(Holy)",
+        "tw": "(神聖)"
+      },
+      "option": {
+        "jp": "光耐性+40%、闇耐性-50%",
+        "en": "Light resist+40%¸ Darkness resist-50%",
+        "tw": "光抗性+40%¸ 黑暗抗性-50%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "143=40_144=-50",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.140",
+      "legacy_id": 140,
+      "legacy_path": "SoulData[*][140]",
+      "name": {
+        "jp": "暗黒の魂",
+        "en": "(Dark Soul)",
+        "tw": "(黑暗的魂魄)"
+      },
+      "modifier": {
+        "jp": "ダークネス",
+        "en": "(Darkness)",
+        "tw": "(黑暗)"
+      },
+      "option": {
+        "jp": "光耐性-50%、闇耐性+40%",
+        "en": "Light resist-50%¸ Darkness resist+40%",
+        "tw": "光抗性-50%¸ 黑暗抗性+40%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "143=-50_144=40",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.141",
+      "legacy_id": 141,
+      "legacy_path": "SoulData[*][141]",
+      "name": {
+        "jp": "博士の魂",
+        "en": "(Docter Soul)",
+        "tw": "(博士的魂魄)"
+      },
+      "modifier": {
+        "jp": "ドクター",
+        "en": "(Doctor)",
+        "tw": "(博士)"
+      },
+      "option": {
+        "jp": "魔術耐性+4%",
+        "en": "Magic resist+4%",
+        "tw": "秘法抗性+4%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "145=4",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.142",
+      "legacy_id": 142,
+      "legacy_path": "SoulData[*][142]",
+      "name": {
+        "jp": "自在な魂",
+        "en": "(Universal soul)",
+        "tw": "(靈活的魂魄)"
+      },
+      "modifier": {
+        "jp": "アジャスト",
+        "en": "(Adjust)",
+        "tw": "(調節)"
+      },
+      "option": {
+        "jp": "魔術耐性-7~+7%",
+        "en": "Magic resist-7~+7%",
+        "tw": "秘法抗性-7~+7%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "145=7",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.143",
+      "legacy_id": 143,
+      "legacy_path": "SoulData[*][143]",
+      "name": {
+        "jp": "祝祭の魂",
+        "en": "(Festival Soul (2))",
+        "tw": "(節的魂魄)"
+      },
+      "modifier": {
+        "jp": "フェスタ",
+        "en": "(Festa)",
+        "tw": "(費斯塔)"
+      },
+      "option": {
+        "jp": "身体的状態異常耐性+1%、精神的状態異常耐性+1%",
+        "en": "Physical De-buff resist+1%¸ Mental De-buff resist+1%",
+        "tw": "異常體抗性+1%¸ 精神錯亂抗性+1%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "146=1_147=1",
+      "compatibility_flags": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.144",
+      "legacy_id": 144,
+      "legacy_path": "SoulData[*][144]",
+      "name": {
+        "jp": "不滅の魂",
+        "en": "(Immortal soul)",
+        "tw": "(不朽的魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、身体的状態異常耐性+1%、精神的状態異常耐性+1%",
+        "en": "Each discipline values ​​+1¸ +1% physical resistance to an abnormal condition¸ abnormal mental state and 1% tolerance",
+        "tw": "每個學科的值+1¸+1%物理抵抗異常狀態¸異常的精神狀態和1%公差"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.145",
+      "legacy_id": 145,
+      "legacy_path": "SoulData[*][145]",
+      "name": {
+        "jp": "大鼠の魂",
+        "en": "(Rat Soul)",
+        "tw": "(大鼠的魂魄)"
+      },
+      "modifier": {
+        "jp": "ガード",
+        "en": "(Guard)",
+        "tw": "(後衛)"
+      },
+      "option": {
+        "jp": "気絶耐性+20%",
+        "en": "Stun resist+20%",
+        "tw": "暈眩抗性+20%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "149=20",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.146",
+      "legacy_id": 146,
+      "legacy_path": "SoulData[*][146]",
+      "name": {
+        "jp": "雪男の魂",
+        "en": "(Yeti Soul)",
+        "tw": "(雪人的魂魄)"
+      },
+      "modifier": {
+        "jp": "ウインター",
+        "en": "(Winter)",
+        "tw": "(冬)"
+      },
+      "option": {
+        "jp": "凍傷耐性+25%",
+        "en": "Frozen resist+25%",
+        "tw": "凍傷抗性+25%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "150=25",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.147",
+      "legacy_id": 147,
+      "legacy_path": "SoulData[*][147]",
+      "name": {
+        "jp": "耐氷の魂",
+        "en": "(Prevent ice Soul)",
+        "tw": "(冰的魂魄)"
+      },
+      "modifier": {
+        "jp": "ブリザード",
+        "en": "(Blizzard)",
+        "tw": "(暴雪)"
+      },
+      "option": {
+        "jp": "凍傷耐性+50%",
+        "en": "Frozen resist+50%",
+        "tw": "凍傷抗性+50%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "150=50",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.148",
+      "legacy_id": 148,
+      "legacy_path": "SoulData[*][148]",
+      "name": {
+        "jp": "不動の魂",
+        "en": "((Steadfast Soul)",
+        "tw": "(不動的魂魄)"
+      },
+      "modifier": {
+        "jp": "ヘビー",
+        "en": "(Heavy)",
+        "tw": "(重)"
+      },
+      "option": {
+        "jp": "転倒耐性+20%",
+        "en": "Knockdown resist+20%",
+        "tw": "擊倒抗性+20%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "151=20",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.149",
+      "legacy_id": 149,
+      "legacy_path": "SoulData[*][149]",
+      "name": {
+        "jp": "転ばぬ先の魂",
+        "en": "(Immobility Soul)",
+        "tw": "(比抱歉的魂魄)"
+      },
+      "modifier": {
+        "jp": "ハード",
+        "en": "(Hard)",
+        "tw": "(硬)"
+      },
+      "option": {
+        "jp": "転倒耐性+20%",
+        "en": "Knockdown resist+20%",
+        "tw": "擊倒抗性+20%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "151=20",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.150",
+      "legacy_id": 150,
+      "legacy_path": "SoulData[*][150]",
+      "name": {
+        "jp": "悪夢の魂",
+        "en": "(Nightmare Soul)",
+        "tw": "(夢魘的魂魄)"
+      },
+      "modifier": {
+        "jp": "ナイトメア",
+        "en": "(Nightmare)",
+        "tw": "(噩夢)"
+      },
+      "option": {
+        "jp": "睡眠耐性+25%",
+        "en": "Sleep resist+25%",
+        "tw": "睡眠抗性+25%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "156=25",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.151",
+      "legacy_id": 151,
+      "legacy_path": "SoulData[*][151]",
+      "name": {
+        "jp": "不眠の魂",
+        "en": "(Insomnia Soul)",
+        "tw": "(失眠的魂魄)"
+      },
+      "modifier": {
+        "jp": "インソムニア",
+        "en": "(Insomnia)",
+        "tw": "(失眠)"
+      },
+      "option": {
+        "jp": "睡眠耐性+50%",
+        "en": "Sleep resist+50%",
+        "tw": "睡眠抗性+50%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "156=50",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.152",
+      "legacy_id": 152,
+      "legacy_path": "SoulData[*][152]",
+      "name": {
+        "jp": "弱者の魂",
+        "en": "(Weak Soul)",
+        "tw": "(弱的魂魄)"
+      },
+      "modifier": {
+        "jp": "ウィーク",
+        "en": "(Week)",
+        "tw": "(週)"
+      },
+      "option": {
+        "jp": "攻撃力-100",
+        "en": "ATK-100",
+        "tw": "攻擊力-100"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "18=-100",
+      "compatibility_flags": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.153",
+      "legacy_id": 153,
+      "legacy_path": "SoulData[*][153]",
+      "name": {
+        "jp": "盲目の魂",
+        "en": "(Blind Soul)",
+        "tw": "(失明的魂魄)"
+      },
+      "modifier": {
+        "jp": "ミステイク",
+        "en": "(Mistake)",
+        "tw": "(錯誤)"
+      },
+      "option": {
+        "jp": "命中-50",
+        "en": "Accuracy-50",
+        "tw": "命中-50"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "62=-50",
+      "compatibility_flags": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.154",
+      "legacy_id": 154,
+      "legacy_path": "SoulData[*][154]",
+      "name": {
+        "jp": "鈍足の魂",
+        "en": "(Slow runner Soul)",
+        "tw": "(腳沉悶的魂魄)"
+      },
+      "modifier": {
+        "jp": "スロウ",
+        "en": "(Slow)",
+        "tw": "(慢速)"
+      },
+      "option": {
+        "jp": "回避-50",
+        "en": "Dodge-50",
+        "tw": "迴避-50"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "65=-50",
+      "compatibility_flags": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.155",
+      "legacy_id": 155,
+      "legacy_path": "SoulData[*][155]",
+      "name": {
+        "jp": "不幸の魂",
+        "en": "(Unhappy Soul)",
+        "tw": "(不快樂的魂魄)"
+      },
+      "modifier": {
+        "jp": "バッドエンド",
+        "en": "(Interlopers)",
+        "tw": "(不速之客)"
+      },
+      "option": {
+        "jp": "被クリティカル発生率+200%",
+        "en": "Critical resist+200%",
+        "tw": "防/暴擊率+200%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "70=255",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.156",
+      "legacy_id": 156,
+      "legacy_path": "SoulData[*][156]",
+      "name": {
+        "jp": "舌足らずの魂",
+        "en": "(Lisp Soul)",
+        "tw": "(口齒不清的魂魄)"
+      },
+      "modifier": {
+        "jp": "ミスキャスト",
+        "en": "(Miscasting)",
+        "tw": "(Miscasting)"
+      },
+      "option": {
+        "jp": "詠唱速度-50%",
+        "en": "Casting speed-50%",
+        "tw": "詠唱速度-50%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "77=-50",
+      "compatibility_flags": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.157",
+      "legacy_id": 157,
+      "legacy_path": "SoulData[*][157]",
+      "name": {
+        "jp": "狙撃の魂",
+        "en": "(Sniper soul)",
+        "tw": "(鷸的魂魄)"
+      },
+      "modifier": {
+        "jp": "スナイプ",
+        "en": "(Snipe)",
+        "tw": "(鷸)"
+      },
+      "option": {
+        "jp": "遠距離射程距離+?",
+        "en": "Ranged weapon range",
+        "tw": "遠程武器射程"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "41=1",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.158",
+      "legacy_id": 158,
+      "legacy_path": "SoulData[*][158]",
+      "name": {
+        "jp": "三日月の魂",
+        "en": "(Crescent Soul)",
+        "tw": "(新月的魂魄)"
+      },
+      "modifier": {
+        "jp": "クレセント",
+        "en": "(Crescent)",
+        "tw": "(新月)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、MP回復速度+1%、凍傷耐性+3%",
+        "en": "Value +1 each discipline¸ the recovery rate plus 1% MP¸ +3% resistance to frostbite",
+        "tw": "每個學科的價值 1¸恢復利率加1%MP¸+3%抗凍傷"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.159",
+      "legacy_id": 159,
+      "legacy_path": "SoulData[*][159]",
+      "name": {
+        "jp": "鉄壁の魂",
+        "en": "(Bulletproof Soul)",
+        "tw": "(鐵定的魂魄)"
+      },
+      "modifier": {
+        "jp": "ウォール",
+        "en": "(Wall)",
+        "tw": "(牆)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、防御力+1、被物理ダメージ-1%",
+        "en": "Each discipline values ​​+1¸ Defense +1¸ -1% non-physical damage",
+        "tw": "每個學科的值+1¸防禦 +1¸-1%的非物理傷害"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.160",
+      "legacy_id": 160,
+      "legacy_path": "SoulData[*][160]",
+      "name": {
+        "jp": "障壁の魂",
+        "en": "(Barrier Soul)",
+        "tw": "(屏障的魂魄)"
+      },
+      "modifier": {
+        "jp": "バリア",
+        "en": "(Barrier)",
+        "tw": "(障礙)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、防御力+1、被魔法ダメージ-1%",
+        "en": "Each discipline values ​​+1¸ Defense +1¸ Magic -1% damage under",
+        "tw": "每個學科的值+1¸防禦 +1¸魔法傷害 -1%下"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.161",
+      "legacy_id": 161,
+      "legacy_path": "SoulData[*][161]",
+      "name": {
+        "jp": "祝福の魂",
+        "en": "(Blessed Soul)",
+        "tw": "(祝福的魂魄)"
+      },
+      "modifier": {
+        "jp": "ブレッシング",
+        "en": "(Blessing)",
+        "tw": "(祝福)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、消費MP-1%",
+        "en": "Value +1 each discipline¸ MP Consumption-1%",
+        "tw": "每個學科的價值 1¸MP消費為 1%"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.162",
+      "legacy_id": 162,
+      "legacy_path": "SoulData[*][162]",
+      "name": {
+        "jp": "ハロウィンの魂",
+        "en": "(Halloween Soul)",
+        "tw": "(萬聖節的魂魄)"
+      },
+      "modifier": {
+        "jp": "ハロウィン",
+        "en": "(Halloween)",
+        "tw": "(萬聖節)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、闇耐性+1%",
+        "en": "Value +1 each discipline¸ tolerance 1% black",
+        "tw": "每個學科的價值 1¸寬容 1%黑色"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.163",
+      "legacy_id": 163,
+      "legacy_path": "SoulData[*][163]",
+      "name": {
+        "jp": "鏡の魂",
+        "en": "(Mirror Soul)",
+        "tw": "(鏡子的魂魄)"
+      },
+      "modifier": {
+        "jp": "リフレクト",
+        "en": "(Reflect)",
+        "tw": "(反射)"
+      },
+      "option": {
+        "jp": "近接物理ダメージ反射+3%",
+        "en": "Physical damage reflection+3%",
+        "tw": "反射近戰傷害+3%"
+      },
+      "special_option": {
+        "jp": "鍛錬値+8以上で5%反射",
+        "en": "5% reflection over the discipline +8",
+        "tw": "5%¸反映了本學科 +8"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "135=3",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.164",
+      "legacy_id": 164,
+      "legacy_path": "SoulData[*][164]",
+      "name": {
+        "jp": "パレードの魂",
+        "en": "(Parade Soul)",
+        "tw": "(閱兵的魂魄)"
+      },
+      "modifier": {
+        "jp": "スタイリッシュ",
+        "en": "(Stylish)",
+        "tw": "(時尚)"
+      },
+      "option": {
+        "jp": "衰弱耐性+25%",
+        "en": "Weakening resist+25%",
+        "tw": "弱點抗性+25%"
+      },
+      "special_option": {
+        "jp": "鍛錬値+8以上の時、衰弱耐性+25%",
+        "en": "Over time the discipline +8¸ +25% resistance to breakdown",
+        "tw": "隨著時間的推移紀律 +8¸+25%抗崩潰"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "160=25",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.165",
+      "legacy_id": 165,
+      "legacy_path": "SoulData[*][165]",
+      "name": {
+        "jp": "止まらない魂",
+        "en": "(Nonstop Soul)",
+        "tw": "(停止的魂魄)"
+      },
+      "modifier": {
+        "jp": "ノンストップ",
+        "en": "(Nonstop)",
+        "tw": "(不間斷)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、火傷耐性+3%、気絶耐性+1%、凍傷耐性+3%",
+        "en": "Each discipline values ​​+1¸ +3% resistance to burn¸ 1% stun resistance¸ resistance to frostbite +3%",
+        "tw": "每個學科的值+1¸+3%耐燒¸1%擊暈¸耐凍傷 3%"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.166",
+      "legacy_id": 166,
+      "legacy_path": "SoulData[*][166]",
+      "name": {
+        "jp": "騒音の魂",
+        "en": "(Noise Soul)",
+        "tw": "(噪音的魂魄)"
+      },
+      "modifier": {
+        "jp": "ノイズ",
+        "en": "(Noise)",
+        "tw": "(噪音)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、魅了耐性+1%、睡眠耐性+5%",
+        "en": "Value +1 each discipline¸ attracted 1% tolerance¸ tolerance 5% Sleep",
+        "tw": "價值 1每個學科¸吸引了1%的公差¸公差5%的睡眠"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.167",
+      "legacy_id": 167,
+      "legacy_path": "SoulData[*][167]",
+      "name": {
+        "jp": "解体の魂",
+        "en": "(Demolition soul)",
+        "tw": "(拆除的魂魄)"
+      },
+      "modifier": {
+        "jp": "デモリッション",
+        "en": "(Demolition)",
+        "tw": "(拆卸)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "鍛錬値+1毎に、オブジェクトに対するダメージ+1%",
+        "en": "Each discipline values ​​+1¸ +1% damage to objects",
+        "tw": "每個學科的值+1¸+1%傷害的對象"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.168",
+      "legacy_id": 168,
+      "legacy_path": "SoulData[*][168]",
+      "name": {
+        "jp": "衝撃の魂",
+        "en": "(Shock Soul)",
+        "tw": "(影響的魂魄)"
+      },
+      "modifier": {
+        "jp": "スタンプ",
+        "en": "(Stamp)",
+        "tw": "(蓋章)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "攻撃命中時4%の確率で、気絶効果を与える",
+        "en": "4% chance on hit attack¸ giving the effect of stunning",
+        "tw": "4%的機會攻擊擊中時¸給予其效果驚人"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "91=4",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.169",
+      "legacy_id": 169,
+      "legacy_path": "SoulData[*][169]",
+      "name": {
+        "jp": "太った魂",
+        "en": "(Fat Soul)",
+        "tw": "(脂肪的魂魄)"
+      },
+      "modifier": {
+        "jp": "トランブル",
+        "en": "(Trumbull)",
+        "tw": "(特蘭伯爾)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "被物理ダメージ時5%の確立で相手に転倒効果",
+        "en": "In effect a 5% chance falling against physical damage when under",
+        "tw": "實際上下降了5%的機率對物理傷害時¸下"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.170",
+      "legacy_id": 170,
+      "legacy_path": "SoulData[*][170]",
+      "name": {
+        "jp": "毒蟲の魂",
+        "en": "(Poison Soul)",
+        "tw": "(毒蟲的魂魄)"
+      },
+      "modifier": {
+        "jp": "ベノム",
+        "en": "(Venom)",
+        "tw": "(毒)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "攻撃命中時4%の確率で、毒効果を与える",
+        "en": "4% chance on hit attack¸ giving the effect of poison",
+        "tw": "4%的機會攻擊擊中時¸給人的影響毒藥"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "97=4",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.171",
+      "legacy_id": 171,
+      "legacy_path": "SoulData[*][171]",
+      "name": {
+        "jp": "眠れる魂",
+        "en": "(Sleeping Soul)",
+        "tw": "(睡眠的魂魄)"
+      },
+      "modifier": {
+        "jp": "スリーピング",
+        "en": "(Sleeping)",
+        "tw": "(睡眠)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "攻撃命中時4%の確率で、睡眠効果を与える",
+        "en": "4% chance on hit attack¸ giving the effect of sleep",
+        "tw": "4%的機會攻擊擊中時¸給人的影響睡眠"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "103=4",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.172",
+      "legacy_id": 172,
+      "legacy_path": "SoulData[*][172]",
+      "name": {
+        "jp": "沈黙の魂",
+        "en": "(Silent Soul)",
+        "tw": "(沉默的魂魄)"
+      },
+      "modifier": {
+        "jp": "サイレント",
+        "en": "(Silent)",
+        "tw": "(沉默)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "物理攻撃命中時3%の確立で、相手に沈黙効果",
+        "en": "Establish a 3% physical damage on hit effect against silence",
+        "tw": "建立3%的物理傷害擊中時的效果對沉默"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "107=3",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.173",
+      "legacy_id": 173,
+      "legacy_path": "SoulData[*][173]",
+      "name": {
+        "jp": "蜃気楼の魂",
+        "en": "(Mirage Soul)",
+        "tw": "(幻象魂魄)"
+      },
+      "modifier": {
+        "jp": "ミラージュ",
+        "en": "(Mirage)",
+        "tw": "(蜃景)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "物理攻撃命中時3%の確率で、乱心効果を与える",
+        "en": "3% chance when hit by physical attacks¸ giving the effect of mental derangement",
+        "tw": "3%的機率物理攻擊擊中時¸給人的影響精神錯亂"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.174",
+      "legacy_id": 174,
+      "legacy_path": "SoulData[*][174]",
+      "name": {
+        "jp": "呪われた魂",
+        "en": "(Cursed Soul)",
+        "tw": "(被詛咒的魂魄)"
+      },
+      "modifier": {
+        "jp": "カーシング",
+        "en": "(Cursing)",
+        "tw": "(詛咒)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "攻撃命中時4%の確率で、衰弱効果を与える",
+        "en": "4% chance on hit attack¸ giving the debilitating effects",
+        "tw": "4%的機會攻擊擊中時¸給破壞性影響"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "109=4",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.175",
+      "legacy_id": 175,
+      "legacy_path": "SoulData[*][175]",
+      "name": {
+        "jp": "茨の魂",
+        "en": "(Thorns Soul)",
+        "tw": "(茨城的魂魄)"
+      },
+      "modifier": {
+        "jp": "ソーン",
+        "en": "(Thorn)",
+        "tw": "(刺)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "攻撃命中時5%の確率で、移動速度減少効果を与える",
+        "en": "5% chance on hit attack¸ giving the effect of movement speed reduction",
+        "tw": "5%的機會攻擊擊中時¸給人的影響移動速度降低"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "129=5",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.176",
+      "legacy_id": 176,
+      "legacy_path": "SoulData[*][176]",
+      "name": {
+        "jp": "ノロノロの魂",
+        "en": "(Dull Soul)",
+        "tw": "(呆滯魂魄)"
+      },
+      "modifier": {
+        "jp": "スロウ",
+        "en": "(Slow)",
+        "tw": "(慢速)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "物理攻撃命中時4%の確率で、相手の回避を減少させる",
+        "en": "4% chance when hit by physical attacks¸ to reduce the opponent’s avoidance",
+        "tw": "4%的機會¸當遭受物理攻擊¸減少對手的避稅"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.177",
+      "legacy_id": 177,
+      "legacy_path": "SoulData[*][177]",
+      "name": {
+        "jp": "英雄の魂",
+        "en": "(Heroes Soul)",
+        "tw": "(英雄的魂魄)"
+      },
+      "modifier": {
+        "jp": "ヒーロー",
+        "en": "(Hero)",
+        "tw": "(英雄)"
+      },
+      "option": {
+        "jp": "筋力+2、敏捷+2、クリティカル発生率+2%、デスペナルティー+100%",
+        "en": "STR+2¸ AGI+2¸ Critical hit rate+2%¸ Death Penalty+100%",
+        "tw": "力量+2¸ 敏捷+2¸ 暴擊率+2%¸ 在死亡+100%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "1=2_2=2_69=2_84=100",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.178",
+      "legacy_id": 178,
+      "legacy_path": "SoulData[*][178]",
+      "name": {
+        "jp": "達人の魂",
+        "en": "(Master soul)",
+        "tw": "(專家的魂魄)"
+      },
+      "modifier": {
+        "jp": "マスター",
+        "en": "(Master)",
+        "tw": "(主)"
+      },
+      "option": {
+        "jp": "獲得EXP+5%",
+        "en": "EXP+5%",
+        "tw": "EXP+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "82=5",
+      "compatibility_flags": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.179",
+      "legacy_id": 179,
+      "legacy_path": "SoulData[*][179]",
+      "name": {
+        "jp": "吸血鬼の魂",
+        "en": "Vampire’s Soul",
+        "tw": "(吸血鬼的魂魄)"
+      },
+      "modifier": {
+        "jp": "ヴァンパイア",
+        "en": "Vamp",
+        "tw": "(鞋面)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "攻撃命中時4%の確率で、ブラッドドレインが発動する",
+        "en": "4% chance on hit attack¸ blood drains to fire",
+        "tw": "4%的機會攻擊擊中時¸血火水渠"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.180",
+      "legacy_id": 180,
+      "legacy_path": "SoulData[*][180]",
+      "name": {
+        "jp": "落雷の魂",
+        "en": "(Thunderbolt Soul)",
+        "tw": "(雷擊魂魄)"
+      },
+      "modifier": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "物理攻撃命中時3%の確率で、相手にフラッシュの効果が発動する",
+        "en": "3% chance when hit by physical attacks¸ the effects of flash fires¸ the other",
+        "tw": "3%的機率物理攻擊擊中時¸閃光燈的效果¸其他"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.181",
+      "legacy_id": 181,
+      "legacy_path": "SoulData[*][181]",
+      "name": {
+        "jp": "食いしばる魂",
+        "en": "(Clench Soul)",
+        "tw": "(砂礫的魂魄)"
+      },
+      "modifier": {
+        "jp": "サバイブ",
+        "en": "(Survive)",
+        "tw": "(生存)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "HP0以下になる時5%の確率で、強靭な心発動",
+        "en": "In less than a 5% chance when HP0¸ triggered a strong mind",
+        "tw": "在不到5%的機會 HP0時¸引發了強烈的心靈"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.182",
+      "legacy_id": 182,
+      "legacy_path": "SoulData[*][182]",
+      "name": {
+        "jp": "不死鳥の魂",
+        "en": "(Phoenix Soul)",
+        "tw": "(鳳凰魂魄)"
+      },
+      "modifier": {
+        "jp": "フェニックス",
+        "en": "(Phoenix)",
+        "tw": "(鳳凰)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "被物理ダメージ時2%の確率で、自身にファーストエイドの効果がかかる",
+        "en": "2% chance when under physical damage¸ according to their effect on First Aid",
+        "tw": "2%的機率在物理損壞時¸根據自己對急救"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.183",
+      "legacy_id": 183,
+      "legacy_path": "SoulData[*][183]",
+      "name": {
+        "jp": "魂の魂",
+        "en": "(Soul of soul)",
+        "tw": "(魂魄的魂魄)"
+      },
+      "modifier": {
+        "jp": "トゥワイス",
+        "en": "(Twice)",
+        "tw": "(兩次)"
+      },
+      "option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "special_option": {
+        "jp": "隣接スロットの魂の性能を2倍にする",
+        "en": "To double the performance of the adjacent slot soul",
+        "tw": "要雙倍的性能相鄰槽的靈魂"
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "",
+      "compatibility_flags": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "soul.184",
+      "legacy_id": 184,
+      "legacy_path": "SoulData[*][184]",
+      "name": {
+        "jp": "デザ魂Ⅱ",
+        "en": "(Design Soul II)",
+        "tw": "(設計的魂魄2)"
+      },
+      "modifier": {
+        "jp": "デザイナーⅡ",
+        "en": "(Design II)",
+        "tw": "(設計II)"
+      },
+      "option": {
+        "jp": "LP+10、MP+10、街での移動速度+5%",
+        "en": "LP+10¸ MP+10¸ Moving speed in the city+5%",
+        "tw": "LP+10¸ MP+10¸ 速度變化的城市+5%"
+      },
+      "special_option": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "jp": "",
+        "en": "",
+        "tw": ""
+      },
+      "legacy_parameters_5_6": [
+        "",
+        ""
+      ],
+      "calculation_code": "6=10_7=10_75=5",
+      "compatibility_flags": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "legacy_trailing_value": ""
+    }
+  ]
+}

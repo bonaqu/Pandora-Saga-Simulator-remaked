@@ -2,6 +2,22 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.6 — Versioned Legacy data projections
+
+### Added
+- Deterministic read-only JSON indexes for 44 equipment categories / 1,120 equipment records, 184 Souls and 25 categories / 211 actual skills.
+- Exact mappings back to existing Legacy equipment selector values, Soul IDs and nested skill coordinates.
+- Explicit schema, projection, Legacy engine and Remaked UI versions plus cross-platform SHA-256 fingerprints of every Legacy source file used by each index.
+- Static Pages delivery under `data/generated/` for future search and tooling without a backend.
+
+### Corrected
+- The Russian terminology worksheet now contains 1,617 stable terms. It adds all 211 actual skill names as `skill_entry.*` while preserving the original skill-discipline and other term IDs.
+
+### Reliability
+- Feature and production CI regenerate all three indexes from the live Legacy runtime and reject stale committed output.
+- Browser contracts fetch the published JSON and map representative records back to `EquipData`, `SoulData` and `Skill`.
+- Legacy JavaScript remains the only calculation/data source of truth; generated JSON is not loaded as a calculator engine and `/legacy/` receives no Modern projection scripts.
+
 ## 2026.09.5 — Russian interface and terminology workflow
 
 ### Added

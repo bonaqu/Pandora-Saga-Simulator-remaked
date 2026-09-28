@@ -1,46 +1,13 @@
 import fs from 'node:fs/promises';
-import http from 'node:http';
 import path from 'node:path';
 import process from 'node:process';
-import { chromium } from '@playwright/test';
+import { withLegacyRuntime } from './lib/legacy-runtime.mjs';
 
 const root = process.cwd();
 const siteRoot = path.resolve(root, '_site');
 const jsonPath = path.resolve(root, 'localization/game-terms.ru.json');
 const csvPath = path.resolve(root, 'localization/game-terms.ru.csv');
 const checkOnly = process.argv.includes('--check');
-
-const contentTypes = {
-  '.css': 'text/css; charset=utf-8',
-  '.html': 'text/html; charset=utf-8',
-  '.js': 'text/javascript; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
-  '.svg': 'image/svg+xml',
-  '.webp': 'image/webp'
-};
-
-async function staticServer() {
-  const server = http.createServer(async (request, response) => {
-    try {
-      const requestUrl = new URL(request.url || '/', 'http://127.0.0.1');
-      const relative = decodeURIComponent(requestUrl.pathname).replace(/^\/+/, '') || 'index.html';
-      const target = path.resolve(siteRoot, relative);
-      if (target !== siteRoot && !target.startsWith(siteRoot + path.sep)) {
-        response.writeHead(403).end();
-        return;
-      }
-      const stat = await fs.stat(target);
-      const file = stat.isDirectory() ? path.join(target, 'index.html') : target;
-      const body = await fs.readFile(file);
-      response.writeHead(200, { 'content-type': contentTypes[path.extname(file)] || 'application/octet-stream' });
-      response.end(body);
-    } catch (error) {
-      response.writeHead(404).end();
-    }
-  });
-  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
-  return server;
-}
 
 async function readExistingApprovals() {
   try {
@@ -72,13 +39,7 @@ function toCsv(terms) {
 }
 
 async function collectTerms() {
-  const server = await staticServer();
-  const address = server.address();
-  const browser = await chromium.launch({ headless: true });
-  try {
-    const page = await browser.newPage();
-    await page.goto(`http://127.0.0.1:${address.port}/`, { waitUntil: 'domcontentloaded' });
-    return await page.evaluate(() => {
+  return withLegacyRuntime(siteRoot, (page) => page.evaluate(() => {
       const terms = [];
       const decode = (value) => {
         const textarea = document.createElement('textarea');
@@ -115,6 +76,15 @@ async function collectTerms() {
       window.Name.Skill.forEach((entry, skillIndex) => {
         add(`skill.${skillIndex}`, 'skill', `Name.Skill[${skillIndex}]`, { jp: entry[1], en: entry[2], tw: entry[3] });
       });
+      (window.Skill[1] || []).forEach((category, categoryIndex) => {
+        (category || []).forEach((entry, entryIndex) => {
+          add(`skill_entry.${categoryIndex}.${entryIndex}`, 'skill_entry', `Skill[*][${categoryIndex}][${entryIndex}][0]`, {
+            jp: (((window.Skill[0] || [])[categoryIndex] || [])[entryIndex] || [])[0],
+            en: entry[0],
+            tw: (((window.Skill[2] || [])[categoryIndex] || [])[entryIndex] || [])[0]
+          });
+        });
+      });
 
       const equipmentLanguages = window.EquipData;
       (equipmentLanguages[1] || []).forEach((category, categoryIndex) => {
@@ -147,11 +117,7 @@ async function collectTerms() {
         });
       });
       return terms.sort((a, b) => a.id.localeCompare(b.id, 'en', { numeric: true }));
-    });
-  } finally {
-    await browser.close();
-    await new Promise((resolve) => server.close(resolve));
-  }
+    }));
 }
 
 async function main() {

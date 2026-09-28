@@ -63,6 +63,13 @@ class BuildPagesTests(unittest.TestCase):
             (localization / "ui.ru.json").write_text(
                 json.dumps({}), encoding="utf-8"
             )
+            generated = root / "data" / "generated"
+            generated.mkdir(parents=True)
+            for name in ("equipment.v1.json", "souls.v1.json", "skills.v1.json"):
+                (generated / name).write_text(
+                    json.dumps({"kind": name.removesuffix(".v1.json"), "records": []}),
+                    encoding="utf-8",
+                )
             (modern / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
             (modern / "manifest.webmanifest").write_text(
                 json.dumps({"name": "fixture"}),
@@ -248,6 +255,9 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/mobile.js",
                 "modern/pwa.js",
                 "modern/pandora-hero.webp",
+                "data/generated/equipment.v1.json",
+                "data/generated/souls.v1.json",
+                "data/generated/skills.v1.json",
                 "service-worker.js",
                 ".nojekyll",
             ):
@@ -321,6 +331,13 @@ class BuildPagesTests(unittest.TestCase):
             root = self.make_root(pathlib.Path(td))
             (root / "modern" / "pwa.js").unlink()
             with self.assertRaisesRegex(FileNotFoundError, "modern/pwa.js"):
+                build_pages(root, root / "_site")
+
+    def test_missing_generated_projection_fails_clearly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            (root / "data" / "generated" / "skills.v1.json").unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "data/generated/skills.v1.json"):
                 build_pages(root, root / "_site")
 
     def test_missing_hero_parts_fails_clearly(self):

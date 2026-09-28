@@ -33,13 +33,14 @@ class LocalizationDataTests(unittest.TestCase):
         self.assertEqual(export["schema_version"], 1)
         self.assertEqual(export["source"]["legacy_engine"], "2.00")
         terms = export["terms"]
-        self.assertGreater(len(terms), 1000)
+        self.assertEqual(len(terms), 1617)
         ids = [term["id"] for term in terms]
         self.assertEqual(len(ids), len(set(ids)))
         self.assertEqual(
             {term["category"] for term in terms},
-            {"race", "racial_skill", "job", "skill", "equipment_category", "equipment", "soul"},
+            {"race", "racial_skill", "job", "skill", "skill_entry", "equipment_category", "equipment", "soul"},
         )
+        self.assertEqual(sum(term["category"] == "skill_entry" for term in terms), 211)
         for term in terms:
             self.assertTrue(term["legacy_path"], term["id"])
             self.assertTrue(term["source_en"], term["id"])

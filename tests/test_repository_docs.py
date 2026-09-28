@@ -81,7 +81,7 @@ class RepositoryDocsTests(unittest.TestCase):
         changelog = self.read("CHANGELOG.md")
         roadmap = self.read("docs/superpowers/plans/2026-09-27-modernization-roadmap.md")
 
-        for document in (english, russian, changelog, roadmap):
+        for document in (changelog, roadmap):
             self.assertIn("2026.09.5", document)
         self.assertIn("game names await verification", english)
         self.assertIn("игровые названия ждут сверки", russian)
@@ -95,6 +95,21 @@ class RepositoryDocsTests(unittest.TestCase):
         self.assertIn("Shipped as Remaked UI `2026.09.5` in PR #7 (`58925ed`)", roadmap)
         self.assertIn("Production workflow `36394028338`", roadmap)
         self.assertIn("Shipped in PR #7 (`58925ed`)", phase_plan)
+
+    def test_phase_six_release_documents_versioned_read_only_projections(self):
+        english = self.read("README.md")
+        russian = self.read("README.ru.md")
+        changelog = self.read("CHANGELOG.md")
+        architecture = self.read("docs/ARCHITECTURE.md")
+        roadmap = self.read("docs/superpowers/plans/2026-09-27-modernization-roadmap.md")
+
+        for document in (english, russian, changelog, roadmap):
+            self.assertIn("2026.09.6", document)
+        for count in ("1,120", "184", "211", "1,617"):
+            self.assertIn(count, changelog)
+        self.assertIn("read-only", architecture)
+        self.assertIn("Legacy JavaScript remains", architecture)
+        self.assertIn("Release-ready", roadmap)
 
 
 if __name__ == "__main__":

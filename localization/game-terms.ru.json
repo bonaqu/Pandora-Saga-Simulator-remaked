@@ -11981,6 +11981,2116 @@
       "ru_approved": ""
     },
     {
+      "id": "skill_entry.0.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][0][0]",
+      "source_en": "Provoke",
+      "source_jp": "プロボーク",
+      "source_tw": "激怒",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][1][0]",
+      "source_en": "Recovery Effects increased",
+      "source_jp": "回復量増加",
+      "source_tw": "藥劑專門",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][2][0]",
+      "source_en": "Lunge",
+      "source_jp": "ランジ",
+      "source_tw": "風之迅捷",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][3][0]",
+      "source_en": "Empower",
+      "source_jp": "ハイパワー",
+      "source_tw": "提高傷害",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][4][0]",
+      "source_en": "Leg Sweep",
+      "source_jp": "レッグカッティング",
+      "source_tw": "削足",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][5][0]",
+      "source_en": "Guard",
+      "source_jp": "フェイス",
+      "source_tw": "信念",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][6][0]",
+      "source_en": "Obscene Gesture",
+      "source_jp": "ノーティーマーク",
+      "source_tw": "瘋狂挑釁",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.7",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][7][0]",
+      "source_en": "War Cry",
+      "source_jp": "ウォークライ",
+      "source_tw": "戰爭祈禱",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.8",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][8][0]",
+      "source_en": "Providence",
+      "source_jp": "プロヴィデンス",
+      "source_tw": "天佑",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.9",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][9][0]",
+      "source_en": "Raging Soul",
+      "source_jp": "レイジングソウル",
+      "source_tw": "狂怒攻擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.10",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][10][0]",
+      "source_en": "Phalanx",
+      "source_jp": "ディフェンダー",
+      "source_tw": "防禦集中",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.11",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][11][0]",
+      "source_en": "Desperado",
+      "source_jp": "デスペラード",
+      "source_tw": "捨命攻擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.12",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][12][0]",
+      "source_en": "Skill Focus",
+      "source_jp": "アニメイトバースト",
+      "source_tw": "血之契約",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.13",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][13][0]",
+      "source_en": "Paralyzing Bond",
+      "source_jp": "バインディングキャッチ",
+      "source_tw": "致殘陷阱",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.14",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][14][0]",
+      "source_en": "Slash",
+      "source_jp": "スラッシュ",
+      "source_tw": "順劈",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.15",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][15][0]",
+      "source_en": "Bash",
+      "source_jp": "バッシュ",
+      "source_tw": "昏擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.16",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][16][0]",
+      "source_en": "Misdirection",
+      "source_jp": "ミスディレクション",
+      "source_tw": "匿蹤",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.0.17",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][0][17][0]",
+      "source_en": "Ossify",
+      "source_jp": "アンペイン",
+      "source_tw": "堅硬意志",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.1.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][1][0][0]",
+      "source_en": "Slice",
+      "source_jp": "スライス",
+      "source_tw": "二連斬",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.1.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][1][1][0]",
+      "source_en": "Dice",
+      "source_jp": "ハッシュ",
+      "source_tw": "三連斬",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.1.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][1][2][0]",
+      "source_en": "Whirling Strike",
+      "source_jp": "回転斬り",
+      "source_tw": "迴旋斬",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.1.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][1][3][0]",
+      "source_en": "Parry",
+      "source_jp": "パリィ",
+      "source_tw": "怒之反擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.1.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][1][4][0]",
+      "source_en": "Concentration",
+      "source_jp": "コンセントレーション",
+      "source_tw": "瞄準",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.1.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][1][5][0]",
+      "source_en": "Brutal Strike",
+      "source_jp": "シュート",
+      "source_tw": "急流",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.1.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][1][6][0]",
+      "source_en": "Sword Mastery",
+      "source_jp": "ソードマスタリー",
+      "source_tw": "劍術大師",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.2.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][2][0][0]",
+      "source_en": "Equine Charge",
+      "source_jp": "キーンアサルト",
+      "source_tw": "強襲",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.2.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][2][1][0]",
+      "source_en": "Charge",
+      "source_jp": "エクスチャージ",
+      "source_tw": "強突",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.2.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][2][2][0]",
+      "source_en": "Heave",
+      "source_jp": "エイミング",
+      "source_tw": "穿刺",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.2.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][2][3][0]",
+      "source_en": "Triple Stab",
+      "source_jp": "トリプルスタッブ",
+      "source_tw": "三連刺",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.2.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][2][4][0]",
+      "source_en": "Dismounting Stab",
+      "source_jp": "ウェポンスタッブ",
+      "source_tw": "回馬槍",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.2.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][2][5][0]",
+      "source_en": "Spear Volley",
+      "source_jp": "シューティングスピア",
+      "source_tw": "投槍",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.2.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][2][6][0]",
+      "source_en": "Quadruple Stab",
+      "source_jp": "クァッドスタッブ",
+      "source_tw": "四連刺",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.2.7",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][2][7][0]",
+      "source_en": "Horse Assault",
+      "source_jp": "リトート",
+      "source_tw": "反制",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.3.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][3][0][0]",
+      "source_en": "Clobber",
+      "source_jp": "兜割り",
+      "source_tw": "蓄勢",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.3.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][3][1][0]",
+      "source_en": "Riposte",
+      "source_jp": "パリィカウンター",
+      "source_tw": "反制一擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.3.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][3][2][0]",
+      "source_en": "Roar",
+      "source_jp": "イエール",
+      "source_tw": "神聖指引",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.3.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][3][3][0]",
+      "source_en": "Split",
+      "source_jp": "スプリット",
+      "source_tw": "地裂斬",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.3.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][3][4][0]",
+      "source_en": "Desperate Strike",
+      "source_jp": "フェイタルクラッシュ",
+      "source_tw": "亡命一擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.4.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][4][0][0]",
+      "source_en": "Stun",
+      "source_jp": "スタンブロウ",
+      "source_tw": "碎顱擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.4.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][4][1][0]",
+      "source_en": "Grand Shock",
+      "source_jp": "グランドショック",
+      "source_tw": "大地衝擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.4.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][4][2][0]",
+      "source_en": "Stun Hammer",
+      "source_jp": "スタンハンマー",
+      "source_tw": "眩暈錘",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.4.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][4][3][0]",
+      "source_en": "Shatter Armor",
+      "source_jp": "アーマーハードヒット",
+      "source_tw": "破防衝擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.4.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][4][4][0]",
+      "source_en": "Shield Break",
+      "source_jp": "シールドブレイク",
+      "source_tw": "？？？",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.4.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][4][5][0]",
+      "source_en": "Subvert",
+      "source_jp": "カラップストライク",
+      "source_tw": "？？？",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.5.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][5][0][0]",
+      "source_en": "Deflect",
+      "source_jp": "グレートウォール",
+      "source_tw": "棘刺護盾",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.5.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][5][1][0]",
+      "source_en": "Strong Stance",
+      "source_jp": "フィラクテリー",
+      "source_tw": "精神格擋",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.5.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][5][2][0]",
+      "source_en": "Defensive Attack",
+      "source_jp": "ディフェンシブアタック",
+      "source_tw": "防禦解散",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.5.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][5][3][0]",
+      "source_en": "Blocking",
+      "source_jp": "ブロッキング",
+      "source_tw": "格檔",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.5.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][5][4][0]",
+      "source_en": "Shield Bash",
+      "source_jp": "シールドバッシュ",
+      "source_tw": "盾牌重擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.5.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][5][5][0]",
+      "source_en": "Parapet",
+      "source_jp": "パラペット",
+      "source_tw": "剛毅護體",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.5.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][5][6][0]",
+      "source_en": "Auto-guard",
+      "source_jp": "オートガード",
+      "source_tw": "自動警衛",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.5.7",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][5][7][0]",
+      "source_en": "Shield Charge",
+      "source_jp": "シールドタックル",
+      "source_tw": "舉盾衝擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.5.8",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][5][8][0]",
+      "source_en": "Defensive March",
+      "source_jp": "ディフェンシブマーチ",
+      "source_tw": "防禦",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.5.9",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][5][9][0]",
+      "source_en": "Guardian",
+      "source_jp": "リライアンス",
+      "source_tw": "替身護衛",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.5.10",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][5][10][0]",
+      "source_en": "Bore Brunt",
+      "source_jp": "リラブランシュ",
+      "source_tw": "犧牲自我",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.5.11",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][5][11][0]",
+      "source_en": "Eternal Dirge",
+      "source_jp": "エターナルアンセム",
+      "source_tw": "詛咒的聖歌",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.6.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][6][0][0]",
+      "source_en": "Hawkeye",
+      "source_jp": "鷹の目",
+      "source_tw": "鷹眼",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.6.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][6][1][0]",
+      "source_en": "Quick Step",
+      "source_jp": "クイックステップ",
+      "source_tw": "迴避上升",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.6.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][6][2][0]",
+      "source_en": "Accelerate",
+      "source_jp": "ムーブアシスト",
+      "source_tw": "風之祝福",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.6.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][6][3][0]",
+      "source_en": "Third Eye",
+      "source_jp": "マインドサイト",
+      "source_tw": "提升專注",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.6.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][6][4][0]",
+      "source_en": "Treachery",
+      "source_jp": "ステルスワーク",
+      "source_tw": "隱密機關",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.7.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][7][0][0]",
+      "source_en": "Rapid Fire",
+      "source_jp": "ラピッドスタンス",
+      "source_tw": "速射",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.7.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][7][1][0]",
+      "source_en": "Sniper Nest",
+      "source_jp": "スナイプモード",
+      "source_tw": "精准狙擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.7.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][7][2][0]",
+      "source_en": "Kindling Arrow",
+      "source_jp": "キンドルアロー",
+      "source_tw": "燃油箭",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.7.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][7][3][0]",
+      "source_en": "Watchful Eye",
+      "source_jp": "トレースアイ",
+      "source_tw": "定時爆彈",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.7.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][7][4][0]",
+      "source_en": "Arrow Fusillade",
+      "source_jp": "アローフューゼレイド",
+      "source_tw": "風之速射",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.7.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][7][5][0]",
+      "source_en": "Flaming Arrow",
+      "source_jp": "フレーミングアロー",
+      "source_tw": "火箭",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.7.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][7][6][0]",
+      "source_en": "Cobra Arrow",
+      "source_jp": "ポイズンショット",
+      "source_tw": "毒箭",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.7.7",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][7][7][0]",
+      "source_en": "Arrow Rain",
+      "source_jp": "アングルショット",
+      "source_tw": "箭雨",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.7.8",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][7][8][0]",
+      "source_en": "Arrow Storm",
+      "source_jp": "アローストーム",
+      "source_tw": "箭之風暴",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.7.9",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][7][9][0]",
+      "source_en": "Multi Shot",
+      "source_jp": "マルチショット",
+      "source_tw": "多重箭",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.7.10",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][7][10][0]",
+      "source_en": "Charge Shot",
+      "source_jp": "チャージショット",
+      "source_tw": "擊退箭",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.7.11",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][7][11][0]",
+      "source_en": "Silence Arrow",
+      "source_jp": "シャットキャスティング",
+      "source_tw": "沉默之箭",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.7.12",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][7][12][0]",
+      "source_en": "Pinning Arrow",
+      "source_jp": "シャドースナッチ",
+      "source_tw": "影襲",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.8.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][8][0][0]",
+      "source_en": "Poison Making",
+      "source_jp": "クリエイトポイズン",
+      "source_tw": "毒藥製造",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.8.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][8][1][0]",
+      "source_en": "Toxify",
+      "source_jp": "フォックスグローブ",
+      "source_tw": "塗毒",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.8.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][8][2][0]",
+      "source_en": "Serum",
+      "source_jp": "シーラム",
+      "source_tw": "調製解毒劑",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.8.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][8][3][0]",
+      "source_en": "Potion Crafting",
+      "source_jp": "ベーシックフュージョン",
+      "source_tw": "神秘藥",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.8.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][8][4][0]",
+      "source_en": "Befuddle",
+      "source_jp": "エピデミックコラプト",
+      "source_tw": "惡魔語言",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.8.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][8][5][0]",
+      "source_en": "Toxic Aura",
+      "source_jp": "ビルトキシン",
+      "source_tw": "惡意毒素",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.8.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][8][6][0]",
+      "source_en": "Surveillance",
+      "source_jp": "クリアヴィジョン",
+      "source_tw": "洞察",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.9.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][9][0][0]",
+      "source_en": "Hide",
+      "source_jp": "ハイディング",
+      "source_tw": "隱身",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.9.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][9][1][0]",
+      "source_en": "Cloak",
+      "source_jp": "クローキング",
+      "source_tw": "隱蔽",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.9.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][9][2][0]",
+      "source_en": "Furtive Steps",
+      "source_jp": "オスモシスボディ",
+      "source_tw": "隱身專精",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.9.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][9][3][0]",
+      "source_en": "Counterpunch",
+      "source_jp": "ヴェラッシングチャンス",
+      "source_tw": "武器大師",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.9.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][9][4][0]",
+      "source_en": "Backstab",
+      "source_jp": "バックスタブ",
+      "source_tw": "背刺",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.9.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][9][5][0]",
+      "source_en": "Dagger Throw",
+      "source_jp": "ダガースロー",
+      "source_tw": "致命投擲",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.9.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][9][6][0]",
+      "source_en": "Rush",
+      "source_jp": "ラッシュ",
+      "source_tw": "鮮血之怒",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.9.7",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][9][7][0]",
+      "source_en": "Blindside",
+      "source_jp": "サプライズアタック",
+      "source_tw": "隱密刺殺",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.9.8",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][9][8][0]",
+      "source_en": "Pierce Armor",
+      "source_jp": "鎧通し",
+      "source_tw": "弱點攻擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.9.9",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][9][9][0]",
+      "source_en": "Double-Cross",
+      "source_jp": "リシディバイト",
+      "source_tw": "極惡歸返",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.10.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][10][0][0]",
+      "source_en": "Disarm",
+      "source_jp": "リムーブトラップ",
+      "source_tw": "陷阱潰散",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.10.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][10][1][0]",
+      "source_en": "Tangled Legs",
+      "source_jp": "グルーキャッチ",
+      "source_tw": "致殘陷阱",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.10.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][10][2][0]",
+      "source_en": "Plant Mine",
+      "source_jp": "エクスマイン",
+      "source_tw": "爆破陷阱",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.10.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][10][3][0]",
+      "source_en": "Worm Bomb",
+      "source_jp": "ワームボム",
+      "source_tw": "連續爆破",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.10.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][10][4][0]",
+      "source_en": "Safe Zone",
+      "source_jp": "カームスポット",
+      "source_tw": "平靜氣氛",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.10.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][10][5][0]",
+      "source_en": "Stone Prison",
+      "source_jp": "インピッドモノリス",
+      "source_tw": "陷馬坑",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.10.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][10][6][0]",
+      "source_en": "Mind Warp",
+      "source_jp": "メルトマインド",
+      "source_tw": "精神干擾",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.11.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][11][0][0]",
+      "source_en": "Invigorate",
+      "source_jp": "アナバシス",
+      "source_tw": "疾走",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.11.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][11][1][0]",
+      "source_en": "Backstep",
+      "source_jp": "バックステップ",
+      "source_tw": "遁逃",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.11.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][11][2][0]",
+      "source_en": "Dash",
+      "source_jp": "ダッシュ",
+      "source_tw": "突進",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.11.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][11][3][0]",
+      "source_en": "Quick Step",
+      "source_jp": "ファストアボイド",
+      "source_tw": "快速閃避",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.11.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][11][4][0]",
+      "source_en": "Tangled Fingers",
+      "source_jp": "タングルハンド",
+      "source_tw": "擾亂之觸",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.11.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][11][5][0]",
+      "source_en": "Reinforce",
+      "source_jp": "ラムセンス",
+      "source_tw": "炙熱守護",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.11.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][11][6][0]",
+      "source_en": "Avoidance",
+      "source_jp": "アボイダンス",
+      "source_tw": "閃避",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.11.7",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][11][7][0]",
+      "source_en": "Intuition",
+      "source_jp": "インスレイトセンス",
+      "source_tw": "堅守信仰",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.11.8",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][11][8][0]",
+      "source_en": "Bolster",
+      "source_jp": "フェアウィンド",
+      "source_tw": "疾速賦予",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.12.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][12][0][0]",
+      "source_en": "Meditation",
+      "source_jp": "メディテーション",
+      "source_tw": "靜心咒",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.12.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][12][1][0]",
+      "source_en": "Inspiration",
+      "source_jp": "インスピレーション",
+      "source_tw": "冥想",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.12.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][12][2][0]",
+      "source_en": "Blessed Garments",
+      "source_jp": "ホーリーディバイン",
+      "source_tw": "虔誠非凡",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.12.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][12][3][0]",
+      "source_en": "Physical Barrier",
+      "source_jp": "フィジカルバリア",
+      "source_tw": "守護祈禱",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.12.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][12][4][0]",
+      "source_en": "Magical Barrier",
+      "source_jp": "マジックバリア",
+      "source_tw": "意念祈禱",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.13.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][13][0][0]",
+      "source_en": "Heal",
+      "source_jp": "ヒール",
+      "source_tw": "治療術",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.13.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][13][1][0]",
+      "source_en": "Revive",
+      "source_jp": "レイズデッド",
+      "source_tw": "復活術",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.13.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][13][2][0]",
+      "source_en": "Sanctuary",
+      "source_jp": "テンプルム",
+      "source_tw": "聖堂之歌",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.13.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][13][3][0]",
+      "source_en": "Merciful Blessing",
+      "source_jp": "マグナウェリタス",
+      "source_tw": "聖母的祝福",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.13.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][13][4][0]",
+      "source_en": "Karmic Aura",
+      "source_jp": "ウァリエタース",
+      "source_tw": "聖母之心",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.13.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][13][5][0]",
+      "source_en": "First Aid",
+      "source_jp": "ファーストエイド",
+      "source_tw": "快速治癒",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.13.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][13][6][0]",
+      "source_en": "Cleanse",
+      "source_jp": "ミスリデート",
+      "source_tw": "解毒術",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.13.7",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][13][7][0]",
+      "source_en": "Regenerate",
+      "source_jp": "リクライム",
+      "source_tw": "恢復術",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.13.8",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][13][8][0]",
+      "source_en": "Vivify",
+      "source_jp": "アウェイクン",
+      "source_tw": "神聖耳語",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.13.9",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][13][9][0]",
+      "source_en": "Restoration",
+      "source_jp": "リストレーション",
+      "source_tw": "自然恢復",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.13.10",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][13][10][0]",
+      "source_en": "Healing Aura",
+      "source_jp": "ヒールスウェル",
+      "source_tw": "治療之風",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.13.11",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][13][11][0]",
+      "source_en": "Purify",
+      "source_jp": "コンプリートセラピー",
+      "source_tw": "天使障壁",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.14.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][14][0][0]",
+      "source_en": "Tranquil Mind",
+      "source_jp": "ギブンリポーズ",
+      "source_tw": "精靈的擁抱",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.14.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][14][1][0]",
+      "source_en": "Divine Aid",
+      "source_jp": "ディバインエイド",
+      "source_tw": "自然的祝福",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.14.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][14][2][0]",
+      "source_en": "Enchantment",
+      "source_jp": "エンハンスエンチャント",
+      "source_tw": "鋼力招來",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.14.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][14][3][0]",
+      "source_en": "Velox",
+      "source_jp": "グラーティア",
+      "source_tw": "風之祝福",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.14.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][14][4][0]",
+      "source_en": "Lapis Medio",
+      "source_jp": "ラピスメディオ",
+      "source_tw": "地之祝福",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.14.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][14][5][0]",
+      "source_en": "Impedimenta",
+      "source_jp": "インペディメンタ",
+      "source_tw": "殘廢咒",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.14.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][14][6][0]",
+      "source_en": "Group Barrier",
+      "source_jp": "ウィンクルム",
+      "source_tw": "聖母之守護",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.14.7",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][14][7][0]",
+      "source_en": "Aqua Elymus",
+      "source_jp": "アクアエリムス",
+      "source_tw": "聖水的祈求",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.14.8",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][14][8][0]",
+      "source_en": "Saltio",
+      "source_jp": "サルタティオ",
+      "source_tw": "祝福聖歌",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.14.9",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][14][9][0]",
+      "source_en": "Battle Prayer",
+      "source_jp": "プロエリウム",
+      "source_tw": "戰神祝福",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.15.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][15][0][0]",
+      "source_en": "Mana Restore",
+      "source_jp": "レックスナチュラリス",
+      "source_tw": "心靈啟動",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.15.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][15][1][0]",
+      "source_en": "Speedy Gale",
+      "source_jp": "ウィンドアシスト",
+      "source_tw": "閃避結界",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.15.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][15][2][0]",
+      "source_en": "Sound Mind",
+      "source_jp": "プロジェニー",
+      "source_tw": "淨化屏障",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.15.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][15][3][0]",
+      "source_en": "Mana Swap",
+      "source_jp": "スワップマナ",
+      "source_tw": "心靈轉換",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.15.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][15][4][0]",
+      "source_en": "Soul Swap",
+      "source_jp": "スワップソウル",
+      "source_tw": "身心轉換",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.15.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][15][5][0]",
+      "source_en": "Mental Aid",
+      "source_jp": "リビティウム",
+      "source_tw": "淨化",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.15.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][15][6][0]",
+      "source_en": "Pure Arrow",
+      "source_jp": "チャスタイズ",
+      "source_tw": "光之箭",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.15.7",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][15][7][0]",
+      "source_en": "Elemental Absorption",
+      "source_jp": "スワロウエレメント",
+      "source_tw": "元素屏障",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.15.8",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][15][8][0]",
+      "source_en": "Bless Weapon",
+      "source_jp": "ホーリーウェポン",
+      "source_tw": "虔誠賜予",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.15.9",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][15][9][0]",
+      "source_en": "Remedium",
+      "source_jp": "レメディウム",
+      "source_tw": "淨身術",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.15.10",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][15][10][0]",
+      "source_en": "Holy Rays",
+      "source_jp": "デシプリンサークル",
+      "source_tw": "天威降臨",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.15.11",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][15][11][0]",
+      "source_en": "Banish",
+      "source_jp": "アンサモン",
+      "source_tw": "黑暗回歸",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.15.12",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][15][12][0]",
+      "source_en": "Devotions",
+      "source_jp": "ディヴォーション",
+      "source_tw": "心靈連結",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.15.13",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][15][13][0]",
+      "source_en": "Silent Void",
+      "source_jp": "クワイエティズム",
+      "source_tw": "光之赦令",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.16.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][16][0][0]",
+      "source_en": "Minstrel's Song",
+      "source_jp": "詩人の歌",
+      "source_tw": "詩人之歌",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.16.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][16][1][0]",
+      "source_en": "Luminous Chant",
+      "source_jp": "ルミナスチャント",
+      "source_tw": "聖歌傳承",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.16.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][16][2][0]",
+      "source_en": "Peaceful Hymn",
+      "source_jp": "平和の歌",
+      "source_tw": "和平之歌",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.16.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][16][3][0]",
+      "source_en": "Sage's Song",
+      "source_jp": "魔力の歌",
+      "source_tw": "魔力之歌",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.17.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][17][0][0]",
+      "source_en": "Scholar",
+      "source_jp": "魔力上昇",
+      "source_tw": "魔力上升",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.17.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][17][1][0]",
+      "source_en": "Shadow Garments",
+      "source_jp": "ダークバインド",
+      "source_tw": "黑暗結合",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][0][0]",
+      "source_en": "Fire Bolt",
+      "source_jp": "ファイアボルト",
+      "source_tw": "火之矢",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][1][0]",
+      "source_en": "Shock",
+      "source_jp": "フラッシュ",
+      "source_tw": "閃電",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][2][0]",
+      "source_en": "Thunder Crash",
+      "source_jp": "サンダークラッシュ",
+      "source_tw": "巨雷破",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][3][0]",
+      "source_en": "Magical Aid",
+      "source_jp": "セントラライズ",
+      "source_tw": "精神修養",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][4][0]",
+      "source_en": "Hailstone",
+      "source_jp": "ヘイルストーン",
+      "source_tw": "冰之石",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][5][0]",
+      "source_en": "Thunder Ball",
+      "source_jp": "サンダーボール",
+      "source_tw": "雷鳥球",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][6][0]",
+      "source_en": "Ice Spear",
+      "source_jp": "アイススピア",
+      "source_tw": "冰之矛",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.7",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][7][0]",
+      "source_en": "Fire Storm",
+      "source_jp": "ファイアストーム",
+      "source_tw": "火之風暴",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.8",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][8][0]",
+      "source_en": "Resist Fire",
+      "source_jp": "レジストファイア",
+      "source_tw": "火系抗性",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.9",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][9][0]",
+      "source_en": "Resist Cold",
+      "source_jp": "レジストアイス",
+      "source_tw": "冰系抗性",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.10",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][10][0]",
+      "source_en": "Resist Lightning",
+      "source_jp": "レジストサンダー",
+      "source_tw": "雷系抗性",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.11",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][11][0]",
+      "source_en": "Ice Storm",
+      "source_jp": "アイスゾーン",
+      "source_tw": "冰之漩渦",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.12",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][12][0]",
+      "source_en": "Ice Tempest",
+      "source_jp": "アイステンペスト",
+      "source_tw": "冰風暴",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.13",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][13][0]",
+      "source_en": "Time Bomb",
+      "source_jp": "ディレイドボム",
+      "source_tw": "心靈爆震",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.14",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][14][0]",
+      "source_en": "Thunder Storm",
+      "source_jp": "サンダーストーム",
+      "source_tw": "雷電風暴",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.18.15",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][18][15][0]",
+      "source_en": "Meteor Shower",
+      "source_jp": "メテオストーム",
+      "source_tw": "流星風暴",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.19.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][19][0][0]",
+      "source_en": "Memorize",
+      "source_jp": "メモライズ",
+      "source_tw": "記憶咒法",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.19.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][19][1][0]",
+      "source_en": "Teleport",
+      "source_jp": "トランスポート",
+      "source_tw": "移動咒法",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.19.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][19][2][0]",
+      "source_en": "Intelletto",
+      "source_jp": "インテレット",
+      "source_tw": "長存咒法",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.19.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][19][3][0]",
+      "source_en": "Supreme Mind",
+      "source_jp": "マインドスプリーム",
+      "source_tw": "精神具現",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.19.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][19][4][0]",
+      "source_en": "Soul Blight",
+      "source_jp": "ソウルブライト",
+      "source_tw": "靈魂之光",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.19.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][19][5][0]",
+      "source_en": "Mana Shield",
+      "source_jp": "マナシールド",
+      "source_tw": "魔力屏障",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.19.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][19][6][0]",
+      "source_en": "Clear Mind",
+      "source_jp": "フォローウィンド",
+      "source_tw": "風行",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.19.7",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][19][7][0]",
+      "source_en": "Psychic Blade",
+      "source_jp": "フライングエッジ",
+      "source_tw": "虛空之刃",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.19.8",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][19][8][0]",
+      "source_en": "Blockade",
+      "source_jp": "ペインシェントウォール",
+      "source_tw": "土牆術",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.19.9",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][19][9][0]",
+      "source_en": "Summon Sandman",
+      "source_jp": "コールサンドマン",
+      "source_tw": "沙之龍",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.19.10",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][19][10][0]",
+      "source_en": "Malevolent Plant",
+      "source_jp": "イーヴルプラント",
+      "source_tw": "樹人召喚",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.20.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][20][0][0]",
+      "source_en": "Dark Shield",
+      "source_jp": "ダークフィッテスト",
+      "source_tw": "黑暗吸收",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.20.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][20][1][0]",
+      "source_en": "Conceal",
+      "source_jp": "ステルストリップ",
+      "source_tw": "偽裝結界",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.20.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][20][2][0]",
+      "source_en": "Infect",
+      "source_jp": "ポイズンシェル",
+      "source_tw": "劇毒孢子",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.20.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][20][3][0]",
+      "source_en": "Gloom",
+      "source_jp": "グルーミーエフェクト",
+      "source_tw": "黑暗契約",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.20.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][20][4][0]",
+      "source_en": "Blood Drain",
+      "source_jp": "ブラッドドレイン",
+      "source_tw": "吸血術",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.20.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][20][5][0]",
+      "source_en": "Mind Venom",
+      "source_jp": "ベノムコロージョン",
+      "source_tw": "毒液腐蝕",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.20.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][20][6][0]",
+      "source_en": "Dispel",
+      "source_jp": "ディスペル",
+      "source_tw": "魔法抹滅",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.20.7",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][20][7][0]",
+      "source_en": "Resist Malice",
+      "source_jp": "レジストマリス",
+      "source_tw": "毒系抗性",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.20.8",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][20][8][0]",
+      "source_en": "Undermine",
+      "source_jp": "エーテルフレア",
+      "source_tw": "心靈侵害",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.20.9",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][20][9][0]",
+      "source_en": "Pestilence",
+      "source_jp": "ヘイトリッドペスト",
+      "source_tw": "劇毒之源",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.20.10",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][20][10][0]",
+      "source_en": "Equalize",
+      "source_jp": "ストリップフォース",
+      "source_tw": "削弱心智",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.20.11",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][20][11][0]",
+      "source_en": "Dark Frenzy",
+      "source_jp": "ダークフレンジー",
+      "source_tw": "黑暗狂熱",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.21.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][21][0][0]",
+      "source_en": "Stasis",
+      "source_jp": "タイムステイシス",
+      "source_tw": "思考凝結",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.21.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][21][1][0]",
+      "source_en": "Leaden Hooves",
+      "source_jp": "ホリッドミラージュ",
+      "source_tw": "魔法",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.21.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][21][2][0]",
+      "source_en": "Enfeeble",
+      "source_jp": "フィーブル",
+      "source_tw": "迷惑詛咒",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.21.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][21][3][0]",
+      "source_en": "Sandstorm",
+      "source_jp": "サンドマントルネード",
+      "source_tw": "風沙襲",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.21.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][21][4][0]",
+      "source_en": "Psionic Blast",
+      "source_jp": "サイオニックブラスト",
+      "source_tw": "精神制裁",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.21.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][21][5][0]",
+      "source_en": "Weaken",
+      "source_jp": "ウィークネス",
+      "source_tw": "毀滅鎧甲",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.21.6",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][21][6][0]",
+      "source_en": "Impede",
+      "source_jp": "スロウイベイド",
+      "source_tw": "步伐緩慢",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.21.7",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][21][7][0]",
+      "source_en": "Resist Charm",
+      "source_jp": "レジストチャーム",
+      "source_tw": "秘法抗性",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.21.8",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][21][8][0]",
+      "source_en": "Icy Strike",
+      "source_jp": "チルストライク",
+      "source_tw": "寒冷意念",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.21.9",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][21][9][0]",
+      "source_en": "Wasteland",
+      "source_jp": "ベノムスワンプ",
+      "source_tw": "劇毒沼",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.21.10",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][21][10][0]",
+      "source_en": "Siren Storm",
+      "source_jp": "サイレンストーム",
+      "source_tw": "靜默風暴",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.21.11",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][21][11][0]",
+      "source_en": "Cursed Bolt",
+      "source_jp": "プレイグカース",
+      "source_tw": "惡念之箭",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.24.0",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][24][0][0]",
+      "source_en": "Jousting",
+      "source_jp": "メレーライディング",
+      "source_tw": "騎乘攻擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.24.1",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][24][1][0]",
+      "source_en": "Jousting",
+      "source_jp": "メレーライディング",
+      "source_tw": "騎乘攻擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.24.2",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][24][2][0]",
+      "source_en": "Horse Archer",
+      "source_jp": "ヤブサメライディング",
+      "source_tw": "騎乘中射擊",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.24.3",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][24][3][0]",
+      "source_en": "Median Riding",
+      "source_jp": "メディアライディング",
+      "source_tw": "騎手之魂",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.24.4",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][24][4][0]",
+      "source_en": "Summon Vehicle",
+      "source_jp": "サモンヴィークル",
+      "source_tw": "召喚",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "skill_entry.24.5",
+      "category": "skill_entry",
+      "legacy_path": "Skill[*][24][5][0]",
+      "source_en": "Horse Guardian",
+      "source_jp": "ホースプロテクション",
+      "source_tw": "騎士守護",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
       "id": "skill.0",
       "category": "skill",
       "legacy_path": "Name.Skill[0]",

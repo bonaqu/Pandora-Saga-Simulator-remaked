@@ -66,6 +66,10 @@ jobs:
           node --check modern/mobile.js
           node --check modern/pwa.js
           node --check modern/service-worker.js
+          node --check scripts/lib/legacy-runtime.mjs
+          node --check scripts/serve_pages.mjs
+          node --check scripts/extract_legacy_terms.mjs
+          node --check scripts/extract_legacy_data.mjs
 
       - name: Install browser test dependencies
         id: npm
@@ -90,6 +94,9 @@ jobs:
 
       - name: Verify deterministic Legacy terminology export
         run: npm run test:translations
+
+      - name: Verify deterministic structured data projections
+        run: npm run test:data
 
       - name: Upload browser contract report
         if: always()

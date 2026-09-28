@@ -1,0 +1,7265 @@
+{
+  "kind": "skills",
+  "metadata": {
+    "schema_version": 1,
+    "projection_version": "v1",
+    "legacy_engine": "2.00",
+    "remaked_ui": "2026.09.6",
+    "source_fingerprint": "SHA-256 after CRLF-to-LF normalization",
+    "generated_from": [
+      {
+        "path": "js/ini.js",
+        "sha256": "e2828c41b872a2ef4cc42e5de8829ac9a4a4144677335620863803ef09558d52"
+      },
+      {
+        "path": "js/skill.js",
+        "sha256": "7a77d95a5f99fc50466ac6b76bc71847e7bc2e18c5cf7634031cc242d548fde6"
+      }
+    ],
+    "policy": "read-only searchable projection; preserved Legacy JavaScript remains source of truth"
+  },
+  "category_count": 25,
+  "count": 211,
+  "categories": [
+    {
+      "id": "skill_category.0",
+      "legacy_id": 0,
+      "legacy_path": "Name.Skill[0]",
+      "legacy_hotkey": "",
+      "name": {
+        "jp": "近接",
+        "en": "Melee",
+        "tw": "接近"
+      }
+    },
+    {
+      "id": "skill_category.1",
+      "legacy_id": 1,
+      "legacy_path": "Name.Skill[1]",
+      "legacy_hotkey": "A",
+      "name": {
+        "jp": "斬る",
+        "en": "Slash",
+        "tw": "斬殺"
+      }
+    },
+    {
+      "id": "skill_category.2",
+      "legacy_id": 2,
+      "legacy_path": "Name.Skill[2]",
+      "legacy_hotkey": "S",
+      "name": {
+        "jp": "突く",
+        "en": "Thrust",
+        "tw": "突刺"
+      }
+    },
+    {
+      "id": "skill_category.3",
+      "legacy_id": 3,
+      "legacy_path": "Name.Skill[3]",
+      "legacy_hotkey": "D",
+      "name": {
+        "jp": "払う",
+        "en": "Cleave",
+        "tw": "揮砍"
+      }
+    },
+    {
+      "id": "skill_category.4",
+      "legacy_id": 4,
+      "legacy_path": "Name.Skill[4]",
+      "legacy_hotkey": "F",
+      "name": {
+        "jp": "打撃",
+        "en": "Bash",
+        "tw": "打擊"
+      }
+    },
+    {
+      "id": "skill_category.5",
+      "legacy_id": 5,
+      "legacy_path": "Name.Skill[5]",
+      "legacy_hotkey": "G",
+      "name": {
+        "jp": "防御",
+        "en": "Defend",
+        "tw": "防禦"
+      }
+    },
+    {
+      "id": "skill_category.6",
+      "legacy_id": 6,
+      "legacy_path": "Name.Skill[6]",
+      "legacy_hotkey": "",
+      "name": {
+        "jp": "技巧",
+        "en": "Technique",
+        "tw": "刺殺"
+      }
+    },
+    {
+      "id": "skill_category.7",
+      "legacy_id": 7,
+      "legacy_path": "Name.Skill[7]",
+      "legacy_hotkey": "Z",
+      "name": {
+        "jp": "射撃",
+        "en": "Shot",
+        "tw": "射擊"
+      }
+    },
+    {
+      "id": "skill_category.8",
+      "legacy_id": 8,
+      "legacy_path": "Name.Skill[8]",
+      "legacy_hotkey": "X",
+      "name": {
+        "jp": "調合",
+        "en": "Alchemy",
+        "tw": "調合"
+      }
+    },
+    {
+      "id": "skill_category.9",
+      "legacy_id": 9,
+      "legacy_path": "Name.Skill[9]",
+      "legacy_hotkey": "C",
+      "name": {
+        "jp": "暗殺",
+        "en": "Assassination",
+        "tw": "暗殺"
+      }
+    },
+    {
+      "id": "skill_category.10",
+      "legacy_id": 10,
+      "legacy_path": "Name.Skill[10]",
+      "legacy_hotkey": "V",
+      "name": {
+        "jp": "仕掛",
+        "en": "Trapping",
+        "tw": "機關"
+      }
+    },
+    {
+      "id": "skill_category.11",
+      "legacy_id": 11,
+      "legacy_path": "Name.Skill[11]",
+      "legacy_hotkey": "B",
+      "name": {
+        "jp": "回避",
+        "en": "Dodge",
+        "tw": "迴避"
+      }
+    },
+    {
+      "id": "skill_category.12",
+      "legacy_id": 12,
+      "legacy_path": "Name.Skill[12]",
+      "legacy_hotkey": "",
+      "name": {
+        "jp": "祈祷",
+        "en": "Grace",
+        "tw": "神聖"
+      }
+    },
+    {
+      "id": "skill_category.13",
+      "legacy_id": 13,
+      "legacy_path": "Name.Skill[13]",
+      "legacy_hotkey": "H",
+      "name": {
+        "jp": "慈愛",
+        "en": "Banevolence",
+        "tw": "慈愛"
+      }
+    },
+    {
+      "id": "skill_category.14",
+      "legacy_id": 14,
+      "legacy_path": "Name.Skill[14]",
+      "legacy_hotkey": "J",
+      "name": {
+        "jp": "祝福",
+        "en": "Blessing",
+        "tw": "祝福"
+      }
+    },
+    {
+      "id": "skill_category.15",
+      "legacy_id": 15,
+      "legacy_path": "Name.Skill[15]",
+      "legacy_hotkey": "K",
+      "name": {
+        "jp": "祓魔",
+        "en": "Exorcism",
+        "tw": "退魔"
+      }
+    },
+    {
+      "id": "skill_category.16",
+      "legacy_id": 16,
+      "legacy_path": "Name.Skill[16]",
+      "legacy_hotkey": "L",
+      "name": {
+        "jp": "聖歌",
+        "en": "Hymn",
+        "tw": "聖歌"
+      }
+    },
+    {
+      "id": "skill_category.17",
+      "legacy_id": 17,
+      "legacy_path": "Name.Skill[17]",
+      "legacy_hotkey": "",
+      "name": {
+        "jp": "魔術",
+        "en": "Magic",
+        "tw": "魔法"
+      }
+    },
+    {
+      "id": "skill_category.18",
+      "legacy_id": 18,
+      "legacy_path": "Name.Skill[18]",
+      "legacy_hotkey": "N",
+      "name": {
+        "jp": "元素",
+        "en": "Elemental",
+        "tw": "元素"
+      }
+    },
+    {
+      "id": "skill_category.19",
+      "legacy_id": 19,
+      "legacy_path": "Name.Skill[19]",
+      "legacy_hotkey": "M",
+      "name": {
+        "jp": "具現",
+        "en": "Invocation",
+        "tw": "具現"
+      }
+    },
+    {
+      "id": "skill_category.20",
+      "legacy_id": 20,
+      "legacy_path": "Name.Skill[20]",
+      "legacy_hotkey": "<",
+      "name": {
+        "jp": "暗黒",
+        "en": "Darkness",
+        "tw": "暗黑"
+      }
+    },
+    {
+      "id": "skill_category.21",
+      "legacy_id": 21,
+      "legacy_path": "Name.Skill[21]",
+      "legacy_hotkey": ">",
+      "name": {
+        "jp": "惑乱",
+        "en": "Confusion",
+        "tw": "咒術"
+      }
+    },
+    {
+      "id": "skill_category.22",
+      "legacy_id": 22,
+      "legacy_path": "Name.Skill[22]",
+      "legacy_hotkey": "",
+      "name": {
+        "jp": "特殊",
+        "en": "Special",
+        "tw": "其他"
+      }
+    },
+    {
+      "id": "skill_category.23",
+      "legacy_id": 23,
+      "legacy_path": "Name.Skill[23]",
+      "legacy_hotkey": "?",
+      "name": {
+        "jp": "種族",
+        "en": "Racial",
+        "tw": "種族"
+      }
+    },
+    {
+      "id": "skill_category.24",
+      "legacy_id": 24,
+      "legacy_path": "Name.Skill[24]",
+      "legacy_hotkey": "_",
+      "name": {
+        "jp": "騎乗",
+        "en": "Horsemanship",
+        "tw": "騎乘"
+      }
+    }
+  ],
+  "records": [
+    {
+      "id": "skill.0.0",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][0][0]",
+      "name": {
+        "jp": "プロボーク",
+        "en": "Provoke",
+        "tw": "激怒"
+      },
+      "prerequisites": {
+        "jp": "ウォーリア Lv5",
+        "en": "Warrior Lv5",
+        "tw": "戰士 Lv5"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "挑発をし、わざと怒りを買う。",
+        "en": "Taunts monsters to come toward you. Used in tanking or pulling mobs in from their pack (soloing).",
+        "tw": "挑撥，故意激怒對方攻擊自己"
+      },
+      "is_active": true,
+      "mp_cost": 10,
+      "cast_seconds": 0,
+      "cooldown_seconds": 15,
+      "duration_seconds": 1,
+      "prerequisite_code": "J=0=5",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.1",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][0][1]",
+      "name": {
+        "jp": "回復量増加",
+        "en": "Recovery Effects increased",
+        "tw": "藥劑專門"
+      },
+      "prerequisites": {
+        "jp": "ウォーリア Lv12",
+        "en": "Warrior Lv12",
+        "tw": "戰士 Lv12"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。ポーション使用時の回復量を増加させる。",
+        "en": "Increases the effectiveness of potions.",
+        "tw": "增加恢復類藥劑使用時的恢復量"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=0=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.2",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][0][2]",
+      "name": {
+        "jp": "ランジ",
+        "en": "Lunge",
+        "tw": "風之迅捷"
+      },
+      "prerequisites": {
+        "jp": "ウォーリア Lv18",
+        "en": "Warrior Lv18",
+        "tw": "戰士 Lv18"
+      },
+      "equipment_requirements": {
+        "jp": "近接武器",
+        "en": "Melee Weapon",
+        "tw": "近身武器、空手"
+      },
+      "description": {
+        "jp": "自身の攻撃速度を上昇させる。",
+        "en": "Increases the caster's Attack Speed. Can only be cast to self.",
+        "tw": "使自己的攻擊速度上升"
+      },
+      "is_active": true,
+      "mp_cost": 25,
+      "cast_seconds": 0,
+      "cooldown_seconds": 30,
+      "duration_seconds": 120,
+      "prerequisite_code": "J=0=18",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.3",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][0][3]",
+      "name": {
+        "jp": "ハイパワー",
+        "en": "Empower",
+        "tw": "提高傷害"
+      },
+      "prerequisites": {
+        "jp": "グラディエイター Lv20",
+        "en": "Gradiator Lv20",
+        "tw": "角鬥士 Lv20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。武器による近接戦のダメージを上昇させる。",
+        "en": "Boosts melee weapon's attacking power. Passive skill.",
+        "tw": "使武器的近戰攻擊力上升"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=1=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.4",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][0][4]",
+      "name": {
+        "jp": "レッグカッティング",
+        "en": "Leg Sweep",
+        "tw": "削足"
+      },
+      "prerequisites": {
+        "jp": "グラディエイター Lv20",
+        "en": "Gradiator Lv20",
+        "tw": "角鬥士 Lv20"
+      },
+      "equipment_requirements": {
+        "jp": "近接武器",
+        "en": "Melee Weapon",
+        "tw": "近身武器"
+      },
+      "description": {
+        "jp": "相手の足を狙って攻撃し、動きを鈍らせる。",
+        "en": "Attack aimed at the feet to slow down movement speed.",
+        "tw": "瞄準對手的腳部進行攻擊，使其移動速度降低。"
+      },
+      "is_active": true,
+      "mp_cost": 21,
+      "cast_seconds": 0,
+      "cooldown_seconds": 10,
+      "duration_seconds": 5,
+      "prerequisite_code": "J=1=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.5",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][0][5]",
+      "name": {
+        "jp": "フェイス",
+        "en": "Guard",
+        "tw": "信念"
+      },
+      "prerequisites": {
+        "jp": "ナイト Lv20",
+        "en": "Knight Lv20",
+        "tw": "騎士 Lv20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。外敵からの攻撃を防ぎ被害を減少させる。",
+        "en": "Reduces the damage of incoming attacks through guarding in a defense stance.",
+        "tw": "防止外敵的攻擊，減少自身所受到的傷害"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=4=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.6",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][0][6]",
+      "name": {
+        "jp": "ノーティーマーク",
+        "en": "Obscene Gesture",
+        "tw": "瘋狂挑釁"
+      },
+      "prerequisites": {
+        "jp": "ナイト Lv20",
+        "en": "Knight Lv20",
+        "tw": "騎士 Lv20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "挑発をし、わざと怒りを買い、しばらくの間自分に注意を引きつける。",
+        "en": "Taunts the enemy in order to enrage them, and draws their attention for a short while.",
+        "tw": "挑釁，故意使目標對象生氣。暫時將目標注意力集中在自己身上。"
+      },
+      "is_active": true,
+      "mp_cost": 12,
+      "cast_seconds": 0,
+      "cooldown_seconds": 10,
+      "duration_seconds": 10,
+      "prerequisite_code": "J=4=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.7",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 7,
+      "legacy_path": "Skill[*][0][7]",
+      "name": {
+        "jp": "ウォークライ",
+        "en": "War Cry",
+        "tw": "戰爭祈禱"
+      },
+      "prerequisites": {
+        "jp": "グラディエイター Lv28",
+        "en": "Gradiator Lv28",
+        "tw": "角鬥士 Lv28"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "身体能力を上げ、攻撃力を増強させる。",
+        "en": "Increases Physical Attack Power of all party members.",
+        "tw": "增加自身以及隊伍成員的攻擊力"
+      },
+      "is_active": true,
+      "mp_cost": 31,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 1.5,
+      "duration_seconds": 480,
+      "prerequisite_code": "J=1=28",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.8",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 8,
+      "legacy_path": "Skill[*][0][8]",
+      "name": {
+        "jp": "プロヴィデンス",
+        "en": "Providence",
+        "tw": "天佑"
+      },
+      "prerequisites": {
+        "jp": "ナイト Lv28",
+        "en": "Knight Lv28",
+        "tw": "騎士 Lv28"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "信仰心を高めることで魔法への抵抗を増加させる。",
+        "en": "Increases the magical resistance of all party members by increasing their faith.",
+        "tw": "提高信仰心，增加隊伍全員的魔法抵抗力"
+      },
+      "is_active": true,
+      "mp_cost": 62,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 1.5,
+      "duration_seconds": 480,
+      "prerequisite_code": "J=4=28",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.9",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 9,
+      "legacy_path": "Skill[*][0][9]",
+      "name": {
+        "jp": "レイジングソウル",
+        "en": "Raging Soul",
+        "tw": "狂怒攻擊"
+      },
+      "prerequisites": {
+        "jp": "グラディエイター Lv35",
+        "en": "Gradiator Lv35",
+        "tw": "角鬥士 Lv35"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "防御を犠牲に、攻撃に集中する。",
+        "en": "Concentrate to increase Attack Power at the expense of Defense.",
+        "tw": "犧牲自身防禦，增加自身命中率"
+      },
+      "is_active": true,
+      "mp_cost": 35,
+      "cast_seconds": 0,
+      "cooldown_seconds": 60,
+      "duration_seconds": 30,
+      "prerequisite_code": "J=1=35",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.10",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 10,
+      "legacy_path": "Skill[*][0][10]",
+      "name": {
+        "jp": "ディフェンダー",
+        "en": "Phalanx",
+        "tw": "防禦集中"
+      },
+      "prerequisites": {
+        "jp": "ナイト Lv35",
+        "en": "Knight Lv35",
+        "tw": "騎士 Lv35"
+      },
+      "equipment_requirements": {
+        "jp": "盾",
+        "en": "Shield",
+        "tw": "盾牌"
+      },
+      "description": {
+        "jp": "シールド装備時のみ使用可能。攻撃を犠牲に防御に集中する。",
+        "en": "Sacrifices your attack power to focus on defense. Can only be used when a shield is equipped.",
+        "tw": "只有裝備盾牌時才能使用，犧牲攻擊力，將精神集中於防禦上。"
+      },
+      "is_active": true,
+      "mp_cost": 35,
+      "cast_seconds": 0,
+      "cooldown_seconds": 60,
+      "duration_seconds": 30,
+      "prerequisite_code": "J=4=35",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.11",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 11,
+      "legacy_path": "Skill[*][0][11]",
+      "name": {
+        "jp": "デスペラード",
+        "en": "Desperado",
+        "tw": "捨命攻擊"
+      },
+      "prerequisites": {
+        "jp": "ジャガーノート Lv45",
+        "en": "Juggernaut Lv45",
+        "tw": "狂戰士 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "近接武器",
+        "en": "Melee Weapon",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "効果中、攻撃力が増加するが、受けるダメージも増加する。一度攻撃すると効果が切れる。",
+        "en": "+ Increased Physical attack power to self - Reduced Physical Defense to self.",
+        "tw": "效果時間內，攻擊力增加，但受到的傷害也增加，攻擊一次後效果消失。"
+      },
+      "is_active": true,
+      "mp_cost": 39,
+      "cast_seconds": 0,
+      "cooldown_seconds": 35,
+      "duration_seconds": 60,
+      "prerequisite_code": "J=2=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.12",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 12,
+      "legacy_path": "Skill[*][0][12]",
+      "name": {
+        "jp": "アニメイトバースト",
+        "en": "Skill Focus",
+        "tw": "血之契約"
+      },
+      "prerequisites": {
+        "jp": "ジャガーノート Lv50",
+        "en": "Juggernaut Lv50",
+        "tw": "狂戰士 Lv50"
+      },
+      "equipment_requirements": {
+        "jp": "近接武器",
+        "en": "Melee Weapon",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "LPが30%減少にする代わりにディレイタイムを半分にする。",
+        "en": "Your Skill Cooldowns are reduced by half in exchange of 30% of your LP.",
+        "tw": "HP減少30%，換取技能冷卻時間減半的效果"
+      },
+      "is_active": true,
+      "mp_cost": 3,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=2=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.13",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 13,
+      "legacy_path": "Skill[*][0][13]",
+      "name": {
+        "jp": "バインディングキャッチ",
+        "en": "Paralyzing Bond",
+        "tw": "致殘陷阱"
+      },
+      "prerequisites": {
+        "jp": "モンク Lv50",
+        "en": "Monk Lv50",
+        "tw": "武僧 Lv50"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "背後から命中した時、お互いの動きを止める。",
+        "en": "When the player is hit from behind, both player and the enemy are rendered Immobile.",
+        "tw": "從背後命中目標時，敵我雙方停止動作"
+      },
+      "is_active": true,
+      "mp_cost": 47,
+      "cast_seconds": 0,
+      "cooldown_seconds": 30,
+      "duration_seconds": 10,
+      "prerequisite_code": "J=19=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.14",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 14,
+      "legacy_path": "Skill[*][0][14]",
+      "name": {
+        "jp": "スラッシュ",
+        "en": "Slash",
+        "tw": "順劈"
+      },
+      "prerequisites": {
+        "jp": "近接 3",
+        "en": "Melee 3",
+        "tw": "近戰 3"
+      },
+      "equipment_requirements": {
+        "jp": "近接武器",
+        "en": "Melee Weapon",
+        "tw": "近身武器"
+      },
+      "description": {
+        "jp": "コンボスキルの一つ。素早い一撃を繰り出し、敵に回避する暇を与えない。",
+        "en": "A very quick slash that won't allow an enemy time to evade. One of the combo skills.",
+        "tw": "很快地猛力一擊，使敵人無法閃避。組合技能的一種"
+      },
+      "is_active": true,
+      "mp_cost": 10,
+      "cast_seconds": 0,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=0=3",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.15",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 15,
+      "legacy_path": "Skill[*][0][15]",
+      "name": {
+        "jp": "バッシュ",
+        "en": "Bash",
+        "tw": "昏擊"
+      },
+      "prerequisites": {
+        "jp": "近接 35",
+        "en": "Melee 35",
+        "tw": "近戰 35"
+      },
+      "equipment_requirements": {
+        "jp": "斧、両手(剣、槍、鈍器)",
+        "en": "Axe, 2H Sword, 2H Spear, 2H Blunt",
+        "tw": "斧、雙手劍、雙手棍、雙手槍"
+      },
+      "description": {
+        "jp": "相手を強打し、ノックバックと共に気絶効果を与える。",
+        "en": "Knocks back opponents while inflicting Stun status effect.",
+        "tw": "猛力攻擊對手，和擊退一樣給予目標暈眩效果"
+      },
+      "is_active": true,
+      "mp_cost": 18,
+      "cast_seconds": 0,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=0=35",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.16",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 16,
+      "legacy_path": "Skill[*][0][16]",
+      "name": {
+        "jp": "ミスディレクション",
+        "en": "Misdirection",
+        "tw": "匿蹤"
+      },
+      "prerequisites": {
+        "jp": "近接 70",
+        "en": "Melee 70",
+        "tw": "近戰 70"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "周りの注意をそらし、自分へのターゲットを解除させる。",
+        "en": "Distracts the enemy, causing them to lose you as their target,",
+        "tw": "避開周圍的注意，接觸對自己的鎖定"
+      },
+      "is_active": true,
+      "mp_cost": 10,
+      "cast_seconds": 0,
+      "cooldown_seconds": 60,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=0=70",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.0.17",
+      "legacy_category_id": 0,
+      "legacy_entry_index": 17,
+      "legacy_path": "Skill[*][0][17]",
+      "name": {
+        "jp": "アンペイン",
+        "en": "Ossify",
+        "tw": "堅硬意志"
+      },
+      "prerequisites": {
+        "jp": "近接 100",
+        "en": "Melee 100",
+        "tw": "近戰 100"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "効果時間中、転倒、移動速度減少、移動不可効果を受けないが、攻撃力が半分になる。",
+        "en": "+ Knockdown immunity - Attack power reduced (halved?) - Move speed reduced - Unable to move (Immobile)",
+        "tw": "效果時間內，免疫擊倒、移動速度減少、定身效果，但攻擊力減半"
+      },
+      "is_active": true,
+      "mp_cost": 24,
+      "cast_seconds": 0,
+      "cooldown_seconds": 30,
+      "duration_seconds": 10,
+      "prerequisite_code": "S=0=100",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.1.0",
+      "legacy_category_id": 1,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][1][0]",
+      "name": {
+        "jp": "スライス",
+        "en": "Slice",
+        "tw": "二連斬"
+      },
+      "prerequisites": {
+        "jp": "斬る 8",
+        "en": "Slash 8",
+        "tw": "斬殺 8"
+      },
+      "equipment_requirements": {
+        "jp": "片手(剣、斧、槍、鈍器、杖)、短剣",
+        "en": "1H Sword, 1H Axe, 1H Spear, 1H Blunt, 1H Wand, Knife",
+        "tw": "單手近身武器"
+      },
+      "description": {
+        "jp": "コンボスキルの一つ。素早く二回斬りつける。",
+        "en": "Swiftly perform 2 slashes at the enemy. One of the combo skills.",
+        "tw": "快速斬殺目標二次斬，組合技能之一"
+      },
+      "is_active": true,
+      "mp_cost": 15,
+      "cast_seconds": 0,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=1=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.1.1",
+      "legacy_category_id": 1,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][1][1]",
+      "name": {
+        "jp": "ハッシュ",
+        "en": "Dice",
+        "tw": "三連斬"
+      },
+      "prerequisites": {
+        "jp": "斬る 71",
+        "en": "Slash 71",
+        "tw": "斬殺 71"
+      },
+      "equipment_requirements": {
+        "jp": "片手(剣、斧、槍、鈍器)、両手剣、短剣",
+        "en": "1H Sword, 2H Sword 1H Axe, 1H Spear, 1H Blunt, Knife",
+        "tw": "單手近戰武器、雙手劍"
+      },
+      "description": {
+        "jp": "コンボスキルの一つ。斬る71でスライスが変化。素早く三回斬りつける。相手を出血状態にすることがある。",
+        "en": "Uses centrifugal force to attack all nearby enemies at once. Used only with 2-handed swords.",
+        "tw": "迅速斬殺目標三次，有幾率對目標造成流血效果"
+      },
+      "is_active": true,
+      "mp_cost": 15,
+      "cast_seconds": 0,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=1=71",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.1.2",
+      "legacy_category_id": 1,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][1][2]",
+      "name": {
+        "jp": "回転斬り",
+        "en": "Whirling Strike",
+        "tw": "迴旋斬"
+      },
+      "prerequisites": {
+        "jp": "斬る 12",
+        "en": "Slash 12",
+        "tw": "斬殺 12"
+      },
+      "equipment_requirements": {
+        "jp": "両手剣",
+        "en": "2H Sword",
+        "tw": "雙手劍"
+      },
+      "description": {
+        "jp": "両手剣のみ使用可能。遠心力を利用し、周囲の敵を一度に攻撃する。",
+        "en": "Allows a 2-second window to parry an incoming melee attack at your front. Futile against back/side attacks.",
+        "tw": "利用離心力，攻擊自己周圍的敵人"
+      },
+      "is_active": true,
+      "mp_cost": 28,
+      "cast_seconds": 0,
+      "cooldown_seconds": 15,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=1=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.1.3",
+      "legacy_category_id": 1,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][1][3]",
+      "name": {
+        "jp": "パリィ",
+        "en": "Parry",
+        "tw": "怒之反擊"
+      },
+      "prerequisites": {
+        "jp": "斬る 21",
+        "en": "Slash 21",
+        "tw": "斬殺 21"
+      },
+      "equipment_requirements": {
+        "jp": "両手(剣、斧、槍、鈍器)、格闘",
+        "en": "2H Sword, 2H Axe, 2H Blunt, 2H Spear, Fist",
+        "tw": "雙手劍、雙手斧、雙手棍、雙手槍、格鬥"
+      },
+      "description": {
+        "jp": "対象の攻撃を受け流し大きな隙を与える。",
+        "en": "Adds +100 Accuracy only for your next single attack.",
+        "tw": "接受對手的攻擊，並給以較大的反擊傷害"
+      },
+      "is_active": true,
+      "mp_cost": 9,
+      "cast_seconds": 0,
+      "cooldown_seconds": 10,
+      "duration_seconds": 2,
+      "prerequisite_code": "S=1=21",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.1.4",
+      "legacy_category_id": 1,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][1][4]",
+      "name": {
+        "jp": "コンセントレーション",
+        "en": "Concentration",
+        "tw": "瞄準"
+      },
+      "prerequisites": {
+        "jp": "斬る 26",
+        "en": "Slash 26",
+        "tw": "斬殺 26"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "集中力を高めることで、次の攻撃のみ命中力を上昇させる。",
+        "en": "Intense strike that can pierce through armor.",
+        "tw": "提高專注度，提升下次攻擊的命中率"
+      },
+      "is_active": true,
+      "mp_cost": 18,
+      "cast_seconds": 0,
+      "cooldown_seconds": 20,
+      "duration_seconds": 120,
+      "prerequisite_code": "S=1=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.1.5",
+      "legacy_category_id": 1,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][1][5]",
+      "name": {
+        "jp": "シュート",
+        "en": "Brutal Strike",
+        "tw": "急流"
+      },
+      "prerequisites": {
+        "jp": "斬る 41",
+        "en": "Slash 41",
+        "tw": "斬殺 41"
+      },
+      "equipment_requirements": {
+        "jp": "近接武器",
+        "en": "Melee Weapon",
+        "tw": "近身武器"
+      },
+      "description": {
+        "jp": "コンボスキルの一つ。強烈な打ち込みで、相手の防具に関係なく攻撃を叩きつける。",
+        "en": "Increases attacking power of Slash Skills while using a sword.",
+        "tw": "通過強烈的打擊，無視目標防具性能。連續技之一"
+      },
+      "is_active": true,
+      "mp_cost": 14,
+      "cast_seconds": 0,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=1=41",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.1.6",
+      "legacy_category_id": 1,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][1][6]",
+      "name": {
+        "jp": "ソードマスタリー",
+        "en": "Sword Mastery",
+        "tw": "劍術大師"
+      },
+      "prerequisites": {
+        "jp": "斬る 61",
+        "en": "Slash 61",
+        "tw": "斬殺 61"
+      },
+      "equipment_requirements": {
+        "jp": "剣、短剣",
+        "en": "Sword, Knife",
+        "tw": "劍、短劍"
+      },
+      "description": {
+        "jp": "パッシブスキル。剣を使用した時のスキル威力が増加する。",
+        "en": "3 quick slashes that may inflict Bleeding status to the victim.",
+        "tw": "裝備劍類武器時技能威力提升"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=1=61",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.2.0",
+      "legacy_category_id": 2,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][2][0]",
+      "name": {
+        "jp": "キーンアサルト",
+        "en": "Equine Charge",
+        "tw": "強襲"
+      },
+      "prerequisites": {
+        "jp": "ドラグーン Lv45",
+        "en": "Dragoon Lv45",
+        "tw": "龍騎士 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "槍",
+        "en": "Spear",
+        "tw": "槍"
+      },
+      "description": {
+        "jp": "モーメントを消費し、強力な突き攻撃を行なう。騎乗中のみ使用可能。",
+        "en": "Consumes a Moment to make a powerful thrust/charge. Only available while Riding.",
+        "tw": "消費精力，發動強大突襲，只能在騎乘中使用"
+      },
+      "is_active": true,
+      "mp_cost": 19,
+      "cast_seconds": 0,
+      "cooldown_seconds": 9,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=3=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.2.1",
+      "legacy_category_id": 2,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][2][1]",
+      "name": {
+        "jp": "エクスチャージ",
+        "en": "Charge",
+        "tw": "強突"
+      },
+      "prerequisites": {
+        "jp": "ドラグーン Lv50",
+        "en": "Dragoon Lv50",
+        "tw": "龍騎士 Lv50"
+      },
+      "equipment_requirements": {
+        "jp": "槍",
+        "en": "Spear",
+        "tw": "槍"
+      },
+      "description": {
+        "jp": "モーメントを消費し、前方に向かって突進する。騎乗中のみ使用可能。",
+        "en": "Uses Moment to lunge toward the front. Only available while Riding.",
+        "tw": "依靠慣性，向前方攻擊，只能在騎乘中使用"
+      },
+      "is_active": true,
+      "mp_cost": 41,
+      "cast_seconds": 0,
+      "cooldown_seconds": 20,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=3=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.2.2",
+      "legacy_category_id": 2,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][2][2]",
+      "name": {
+        "jp": "エイミング",
+        "en": "Heave",
+        "tw": "穿刺"
+      },
+      "prerequisites": {
+        "jp": "突く 8",
+        "en": "Thrust 8",
+        "tw": "突刺 8"
+      },
+      "equipment_requirements": {
+        "jp": "槍",
+        "en": "Spear",
+        "tw": "槍"
+      },
+      "description": {
+        "jp": "槍を力強く突き出し、前方の敵全てにダメージを与える。",
+        "en": "Skewer all targets at your front in a straight line. Medium range attack.",
+        "tw": "用力將槍刺出，攻擊前方直線範圍"
+      },
+      "is_active": true,
+      "mp_cost": 16,
+      "cast_seconds": 2,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=2=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.2.3",
+      "legacy_category_id": 2,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][2][3]",
+      "name": {
+        "jp": "トリプルスタッブ",
+        "en": "Triple Stab",
+        "tw": "三連刺"
+      },
+      "prerequisites": {
+        "jp": "突く 26",
+        "en": "Thrust 26",
+        "tw": "突刺 26"
+      },
+      "equipment_requirements": {
+        "jp": "槍",
+        "en": "Spear",
+        "tw": "槍"
+      },
+      "description": {
+        "jp": "高速な三回突きを繰り出す。",
+        "en": "Unleash 3 quick consecutive stabs on a single target. Half-second Rigid after use.",
+        "tw": "連續高速三次刺殺"
+      },
+      "is_active": true,
+      "mp_cost": 22,
+      "cast_seconds": 0,
+      "cooldown_seconds": 30,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=2=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.2.4",
+      "legacy_category_id": 2,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][2][4]",
+      "name": {
+        "jp": "ウェポンスタッブ",
+        "en": "Dismounting Stab",
+        "tw": "回馬槍"
+      },
+      "prerequisites": {
+        "jp": "突く 35",
+        "en": "Thrust 35",
+        "tw": "突刺 35"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "効果中、自分の物理攻撃命中時一定確率で落馬効果を与える。",
+        "en": "Allows a chance to dismount an opponent off a horse upon attack hit.",
+        "tw": "效果中，自身物理攻擊命中時有一定機率使目標落馬"
+      },
+      "is_active": true,
+      "mp_cost": 28,
+      "cast_seconds": 0,
+      "cooldown_seconds": 90,
+      "duration_seconds": 60,
+      "prerequisite_code": "S=2=35",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.2.5",
+      "legacy_category_id": 2,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][2][5]",
+      "name": {
+        "jp": "シューティングスピア",
+        "en": "Spear Volley",
+        "tw": "投槍"
+      },
+      "prerequisites": {
+        "jp": "突く 41",
+        "en": "Thrust 41",
+        "tw": "突刺 41"
+      },
+      "equipment_requirements": {
+        "jp": "槍",
+        "en": "Spear",
+        "tw": "槍"
+      },
+      "description": {
+        "jp": "力いっぱいに槍を投げつけ、遠くの敵を攻撃する。",
+        "en": "Throws spear towards distant targets.",
+        "tw": "用力將長槍投擲出去，攻擊遠處的敵人"
+      },
+      "is_active": true,
+      "mp_cost": 24,
+      "cast_seconds": 1,
+      "cooldown_seconds": 30,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=2=41",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.2.6",
+      "legacy_category_id": 2,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][2][6]",
+      "name": {
+        "jp": "クァッドスタッブ",
+        "en": "Quadruple Stab",
+        "tw": "四連刺"
+      },
+      "prerequisites": {
+        "jp": "突く 54",
+        "en": "Thrust 54",
+        "tw": "突刺 54"
+      },
+      "equipment_requirements": {
+        "jp": "槍",
+        "en": "Spear",
+        "tw": "槍"
+      },
+      "description": {
+        "jp": "高速な四回突きを繰り出す。トリプルスタッブの硬直中に使用した場合威力が増加する。",
+        "en": "Unleash 4 quick consecutive stabs on a single target. Attack power is increased when used while in Rigid State (after using Triple Stab).",
+        "tw": "連續高速四次刺殺，三連刺僵硬狀態下使用，增加威力"
+      },
+      "is_active": true,
+      "mp_cost": 43,
+      "cast_seconds": 0,
+      "cooldown_seconds": 16,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=2=54",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.2.7",
+      "legacy_category_id": 2,
+      "legacy_entry_index": 7,
+      "legacy_path": "Skill[*][2][7]",
+      "name": {
+        "jp": "リトート",
+        "en": "Horse Assault",
+        "tw": "反制"
+      },
+      "prerequisites": {
+        "jp": "突く 71",
+        "en": "Thrust 71",
+        "tw": "突刺 71"
+      },
+      "equipment_requirements": {
+        "jp": "槍",
+        "en": "Spear",
+        "tw": "槍"
+      },
+      "description": {
+        "jp": "相手が騎乗しているとき、ダメージが増加し、一定確率で落馬させる。",
+        "en": "+ Increased damage to mounted targets + Chance to dismount target",
+        "tw": "對手騎乘狀態時，造成傷害增加，有一定機率使其落馬"
+      },
+      "is_active": true,
+      "mp_cost": 13,
+      "cast_seconds": 0,
+      "cooldown_seconds": 7,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=2=71",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.3.0",
+      "legacy_category_id": 3,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][3][0]",
+      "name": {
+        "jp": "兜割り",
+        "en": "Clobber",
+        "tw": "蓄勢"
+      },
+      "prerequisites": {
+        "jp": "払う 8",
+        "en": "Cleave 8",
+        "tw": "揮砍 8"
+      },
+      "equipment_requirements": {
+        "jp": "斧",
+        "en": "Axe",
+        "tw": "斧"
+      },
+      "description": {
+        "jp": "クリティカルを狙った勢いのある一撃を行う。",
+        "en": "Performs a furious attack in an attempt to land a critical hit.",
+        "tw": "待機蓄力，發生會心一擊"
+      },
+      "is_active": true,
+      "mp_cost": 19,
+      "cast_seconds": 0,
+      "cooldown_seconds": 25,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=3=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.3.1",
+      "legacy_category_id": 3,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][3][1]",
+      "name": {
+        "jp": "パリィカウンター",
+        "en": "Riposte",
+        "tw": "反制一擊"
+      },
+      "prerequisites": {
+        "jp": "払う 12",
+        "en": "Cleave 12",
+        "tw": "揮砍 12"
+      },
+      "equipment_requirements": {
+        "jp": "両手(剣、斧、槍、鈍器)、格闘",
+        "en": "2H Sword, 2H Axe, 2H Spear, 2H Blunt, Fist",
+        "tw": "雙手劍、雙手斧、雙手棍、雙手槍、格鬥"
+      },
+      "description": {
+        "jp": "相手の攻撃を受け流し、反撃する。",
+        "en": "2-second window to parry a melee attack at your front then counterattack.",
+        "tw": "化解對手的攻擊，並且反擊"
+      },
+      "is_active": true,
+      "mp_cost": 12,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 10,
+      "duration_seconds": 2,
+      "prerequisite_code": "S=3=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.3.2",
+      "legacy_category_id": 3,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][3][2]",
+      "name": {
+        "jp": "イエール",
+        "en": "Roar",
+        "tw": "神聖指引"
+      },
+      "prerequisites": {
+        "jp": "払う 21",
+        "en": "Cleave 21",
+        "tw": "揮砍 21"
+      },
+      "equipment_requirements": {
+        "jp": "斧",
+        "en": "Axe",
+        "tw": "斧"
+      },
+      "description": {
+        "jp": "神経を研ぎ澄まし、行う攻撃がクリティカル攻撃になる確率を上昇させる。",
+        "en": "Sharpens the nerves to increase probability of critical attacks.",
+        "tw": "通過對聖經的鑽研，使暴擊機率上升"
+      },
+      "is_active": true,
+      "mp_cost": 30,
+      "cast_seconds": 0,
+      "cooldown_seconds": 120,
+      "duration_seconds": 60,
+      "prerequisite_code": "S=3=21",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.3.3",
+      "legacy_category_id": 3,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][3][3]",
+      "name": {
+        "jp": "スプリット",
+        "en": "Split",
+        "tw": "地裂斬"
+      },
+      "prerequisites": {
+        "jp": "払う 41",
+        "en": "Cleave 41",
+        "tw": "揮砍 41"
+      },
+      "equipment_requirements": {
+        "jp": "斧",
+        "en": "Axe",
+        "tw": "斧"
+      },
+      "description": {
+        "jp": "地面を斧で切り裂き、自分の前方へ攻撃をしかける。",
+        "en": "A ground-splitting axe attack that strikes the area in front of you.",
+        "tw": "用斧切開地面，向自己前方攻擊"
+      },
+      "is_active": true,
+      "mp_cost": 22,
+      "cast_seconds": 0,
+      "cooldown_seconds": 20,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=3=41",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.3.4",
+      "legacy_category_id": 3,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][3][4]",
+      "name": {
+        "jp": "フェイタルクラッシュ",
+        "en": "Desperate Strike",
+        "tw": "亡命一擊"
+      },
+      "prerequisites": {
+        "jp": "払う 71",
+        "en": "Cleave 71",
+        "tw": "揮砍 71"
+      },
+      "equipment_requirements": {
+        "jp": "斧、鈍器、杖、両手剣",
+        "en": "Axe, Blunt, Wand, 2H Sword",
+        "tw": "斧、鈍器、杖類、雙手劍"
+      },
+      "description": {
+        "jp": "コンボスキルの一つ。強力な一撃を与え、気絶状態にする。攻撃に失敗またはブロックされた時は反動を受ける。",
+        "en": "Strikes your opponent with a mighty attack, Knocking them out. If your attack fails or is blocked the effect is reversed.",
+        "tw": "給予目標暴力一擊，使其進入暈眩狀態。攻擊失敗或被格擋時自身受到傷害"
+      },
+      "is_active": true,
+      "mp_cost": 36,
+      "cast_seconds": 0,
+      "cooldown_seconds": 15,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=3=71",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.4.0",
+      "legacy_category_id": 4,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][4][0]",
+      "name": {
+        "jp": "スタンブロウ",
+        "en": "Stun",
+        "tw": "碎顱擊"
+      },
+      "prerequisites": {
+        "jp": "打撃 8",
+        "en": "Bash 8",
+        "tw": "打擊 8"
+      },
+      "equipment_requirements": {
+        "jp": "杖、鈍器",
+        "en": "Blunt, 2H Blunt, Wand",
+        "tw": "鈍器、杖"
+      },
+      "description": {
+        "jp": "強力な打撃。相手を一定確率でスタンさせる。",
+        "en": "Powerful strike plus a chance to stun the victim.",
+        "tw": "通過強力打擊使對手暈眩"
+      },
+      "is_active": true,
+      "mp_cost": 15,
+      "cast_seconds": 0,
+      "cooldown_seconds": 8,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=4=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.4.1",
+      "legacy_category_id": 4,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][4][1]",
+      "name": {
+        "jp": "グランドショック",
+        "en": "Grand Shock",
+        "tw": "大地衝擊"
+      },
+      "prerequisites": {
+        "jp": "打撃 26",
+        "en": "Bash 26",
+        "tw": "打擊 26"
+      },
+      "equipment_requirements": {
+        "jp": "杖、斧、鈍器",
+        "en": "Blunt, 2H Blunt, Axe, 2H Axe, Wand",
+        "tw": "鈍器、杖"
+      },
+      "description": {
+        "jp": "地面を強打し、衝撃で前面周囲にダメージを与える。",
+        "en": "Strikes the ground hard, damaging your opponent with a shockwave that interrupts their spell casting.",
+        "tw": "強力擊打地面，給予前方目標傷害，並造成吟唱中斷"
+      },
+      "is_active": true,
+      "mp_cost": 38,
+      "cast_seconds": 0,
+      "cooldown_seconds": 18,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=4=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.4.2",
+      "legacy_category_id": 4,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][4][2]",
+      "name": {
+        "jp": "スタンハンマー",
+        "en": "Stun Hammer",
+        "tw": "眩暈錘"
+      },
+      "prerequisites": {
+        "jp": "打撃 41、祓魔 21",
+        "en": "Bash 41 & Exorcism 21",
+        "tw": "打擊 41、退魔 21"
+      },
+      "equipment_requirements": {
+        "jp": "鈍器",
+        "en": "Blunt, 2H Blunt",
+        "tw": "鈍器"
+      },
+      "description": {
+        "jp": "地面を強打して強力な地面の振動により周囲の敵を気絶させる。",
+        "en": "A powerful blow to the ground that may knock a victim Unconcious.",
+        "tw": "強烈擊打地面，通過強大的地面振動使周圍的敵人暈眩"
+      },
+      "is_active": true,
+      "mp_cost": 30,
+      "cast_seconds": 0,
+      "cooldown_seconds": 15,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=4=41_S=15=21",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.4.3",
+      "legacy_category_id": 4,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][4][3]",
+      "name": {
+        "jp": "アーマーハードヒット",
+        "en": "Shatter Armor",
+        "tw": "破防衝擊"
+      },
+      "prerequisites": {
+        "jp": "打撃 50",
+        "en": "Bash 50",
+        "tw": "打擊 50"
+      },
+      "equipment_requirements": {
+        "jp": "杖、鈍器",
+        "en": "Blunt, 2H Blunt, Wand",
+        "tw": "鈍器、杖"
+      },
+      "description": {
+        "jp": "力をこめた一撃を防具に行い、装備をはずしてしまう。",
+        "en": "Knocks your opponent's armor off with a powerful attack, and interrupts their spell casting.",
+        "tw": "用力一擊，解除對象的鎧甲，中斷吟唱"
+      },
+      "is_active": true,
+      "mp_cost": 30,
+      "cast_seconds": 0,
+      "cooldown_seconds": 15,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=4=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.4.4",
+      "legacy_category_id": 4,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][4][4]",
+      "name": {
+        "jp": "シールドブレイク",
+        "en": "Shield Break",
+        "tw": "？？？"
+      },
+      "prerequisites": {
+        "jp": "打撃 61",
+        "en": "Bash 61",
+        "tw": "打擊 61"
+      },
+      "equipment_requirements": {
+        "jp": "斧、鈍器、杖",
+        "en": "Axe, Blunt, Wand",
+        "tw": "斧、鈍器、杖"
+      },
+      "description": {
+        "jp": "相手がブロッキング状態だった場合、盾装備不可効果とクリティカルダメージを与える。",
+        "en": "Disables use of Shields.",
+        "tw": "？？？"
+      },
+      "is_active": true,
+      "mp_cost": 22,
+      "cast_seconds": 0,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=4=61",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.4.5",
+      "legacy_category_id": 4,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][4][5]",
+      "name": {
+        "jp": "カラップストライク",
+        "en": "Subvert",
+        "tw": "？？？"
+      },
+      "prerequisites": {
+        "jp": "打撃 71",
+        "en": "Bash 71",
+        "tw": "打擊 71"
+      },
+      "equipment_requirements": {
+        "jp": "鈍器、素手",
+        "en": "Blunt",
+        "tw": "鈍器、空手"
+      },
+      "description": {
+        "jp": "敵に気を送り込み内部から破壊する。対象の防御力が高いほどダメージが増加する。",
+        "en": "Destroys targets with high defense. Higher Defense of target = Higher damage received.",
+        "tw": "？？？"
+      },
+      "is_active": true,
+      "mp_cost": 69,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 25,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=4=71",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.5.0",
+      "legacy_category_id": 5,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][5][0]",
+      "name": {
+        "jp": "グレートウォール",
+        "en": "Deflect",
+        "tw": "棘刺護盾"
+      },
+      "prerequisites": {
+        "jp": "ジェネラル Lv45",
+        "en": "General Lv45",
+        "tw": "重裝騎士 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "盾",
+        "en": "Shield",
+        "tw": "盾牌"
+      },
+      "description": {
+        "jp": "パッシブスキル。チャージ攻撃を受けた時にブロッキング状態だった場合、ダメージを跳ね返す。",
+        "en": "If you are hit with a charge attack while you are Blocking, you will deflect the damage.",
+        "tw": "格擋狀態下，受到蓄力攻擊時，反彈傷害"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=5=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.5.1",
+      "legacy_category_id": 5,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][5][1]",
+      "name": {
+        "jp": "フィラクテリー",
+        "en": "Strong Stance",
+        "tw": "精神格擋"
+      },
+      "prerequisites": {
+        "jp": "パラディン Lv45",
+        "en": "Paradin Lv45",
+        "tw": "聖騎士 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "盾",
+        "en": "Shield",
+        "tw": "盾牌"
+      },
+      "description": {
+        "jp": "パッシブスキル。ブロッキング状態の時、魔法ダメージもブロックすることができる。",
+        "en": "Empowers the Blocking skill to defend against Magic attacks as well.",
+        "tw": "格擋姿態時，可以防禦魔法傷害，不會被擊退"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=6=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.5.2",
+      "legacy_category_id": 5,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][5][2]",
+      "name": {
+        "jp": "ディフェンシブアタック",
+        "en": "Defensive Attack",
+        "tw": "防禦解散"
+      },
+      "prerequisites": {
+        "jp": "パラディン Lv50",
+        "en": "Paradin Lv50",
+        "tw": "聖騎士 Lv50"
+      },
+      "equipment_requirements": {
+        "jp": "盾",
+        "en": "Shield",
+        "tw": "盾牌"
+      },
+      "description": {
+        "jp": "パッシブスキル。ディフェンシブマーチ中の行動制限が解除される。",
+        "en": "????",
+        "tw": "解除防禦中的行動限制"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=6=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.5.3",
+      "legacy_category_id": 5,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][5][3]",
+      "name": {
+        "jp": "ブロッキング",
+        "en": "Blocking",
+        "tw": "格檔"
+      },
+      "prerequisites": {
+        "jp": "防御 8",
+        "en": "Defend 8",
+        "tw": "防禦 8"
+      },
+      "equipment_requirements": {
+        "jp": "盾",
+        "en": "Shield",
+        "tw": "盾牌"
+      },
+      "description": {
+        "jp": "盾装着時のみ使用可能。盾を構えて物理攻撃を受けきる。",
+        "en": "Reduces damage by half or lesser.Applicable for any 1-handed weapon while wielding a Shield. Useful against frontal melee attacks.",
+        "tw": "迅速舉盾，大幅減少物理傷害"
+      },
+      "is_active": true,
+      "mp_cost": 5,
+      "cast_seconds": 0,
+      "cooldown_seconds": 2,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=5=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.5.4",
+      "legacy_category_id": 5,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][5][4]",
+      "name": {
+        "jp": "シールドバッシュ",
+        "en": "Shield Bash",
+        "tw": "盾牌重擊"
+      },
+      "prerequisites": {
+        "jp": "防御 12",
+        "en": "Defend 12",
+        "tw": "防禦 12"
+      },
+      "equipment_requirements": {
+        "jp": "盾",
+        "en": "Shield",
+        "tw": "盾牌"
+      },
+      "description": {
+        "jp": "ブロッキング中のみ使用可能。盾で防御すると同時にそのまま押し返して相手を強打する。",
+        "en": "Can only be used after Blocking is activated.2-sec window to pushback an attacker (to knock him over?).",
+        "tw": "只可在格檔姿態中使用，盾防禦同時，給予目標強力反擊"
+      },
+      "is_active": true,
+      "mp_cost": 14,
+      "cast_seconds": 0,
+      "cooldown_seconds": 10,
+      "duration_seconds": 2,
+      "prerequisite_code": "S=5=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.5.5",
+      "legacy_category_id": 5,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][5][5]",
+      "name": {
+        "jp": "パラペット",
+        "en": "Parapet",
+        "tw": "剛毅護體"
+      },
+      "prerequisites": {
+        "jp": "防御 21",
+        "en": "Defend 21",
+        "tw": "防禦 21"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "回避は下がってしまうが、急所を避けクリティカル攻撃を受けにくくする。",
+        "en": "- Evasion % + Critical hit resistance",
+        "tw": "閃避率下降，但能夠避開緊急情況，不易受到暴擊"
+      },
+      "is_active": true,
+      "mp_cost": 25,
+      "cast_seconds": 2,
+      "cooldown_seconds": 30,
+      "duration_seconds": 120,
+      "prerequisite_code": "S=5=21",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.5.6",
+      "legacy_category_id": 5,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][5][6]",
+      "name": {
+        "jp": "オートガード",
+        "en": "Auto-guard",
+        "tw": "自動警衛"
+      },
+      "prerequisites": {
+        "jp": "防御 26",
+        "en": "Defend 26",
+        "tw": "防禦 26"
+      },
+      "equipment_requirements": {
+        "jp": "盾",
+        "en": "Shield",
+        "tw": "盾牌"
+      },
+      "description": {
+        "jp": "常に盾が攻撃を受けるようにし、行動中でも自動的に攻撃を防御する。",
+        "en": "Automatically block attacks using your shield (blocking only reduces damage) within duration of skill.",
+        "tw": "熟練用盾進行攻擊，行動中也能夠自動防禦攻擊"
+      },
+      "is_active": true,
+      "mp_cost": 20,
+      "cast_seconds": 0,
+      "cooldown_seconds": 30,
+      "duration_seconds": 120,
+      "prerequisite_code": "S=5=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.5.7",
+      "legacy_category_id": 5,
+      "legacy_entry_index": 7,
+      "legacy_path": "Skill[*][5][7]",
+      "name": {
+        "jp": "シールドタックル",
+        "en": "Shield Charge",
+        "tw": "舉盾衝擊"
+      },
+      "prerequisites": {
+        "jp": "防御 31",
+        "en": "Defend 31",
+        "tw": "防禦 31"
+      },
+      "equipment_requirements": {
+        "jp": "盾",
+        "en": "Shield",
+        "tw": "盾牌"
+      },
+      "description": {
+        "jp": "ブロッキング中のみ使用可能。盾を構え前面に突進を行い、前方の敵を一定確率で転倒させる。",
+        "en": "Only usable while you are Blocking. Raise your shield and charge forward, knocking aside enemies that stand in your way.",
+        "tw": "只能在格檔中使用。拿著盾往前衝刺，驅散前方的敵人"
+      },
+      "is_active": true,
+      "mp_cost": 18,
+      "cast_seconds": 0,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=5=31",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.5.8",
+      "legacy_category_id": 5,
+      "legacy_entry_index": 8,
+      "legacy_path": "Skill[*][5][8]",
+      "name": {
+        "jp": "ディフェンシブマーチ",
+        "en": "Defensive March",
+        "tw": "防禦"
+      },
+      "prerequisites": {
+        "jp": "防御 41",
+        "en": "Defend 41",
+        "tw": "防禦 41"
+      },
+      "equipment_requirements": {
+        "jp": "盾",
+        "en": "Shield",
+        "tw": "盾牌"
+      },
+      "description": {
+        "jp": "盾を構えたまま行進を行う事ができる。",
+        "en": "Enables Blocking (stance) while moving at the cost of moving speed.",
+        "tw": "可舉盾推進"
+      },
+      "is_active": true,
+      "mp_cost": 10,
+      "cast_seconds": 0,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=5=41",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.5.9",
+      "legacy_category_id": 5,
+      "legacy_entry_index": 9,
+      "legacy_path": "Skill[*][5][9]",
+      "name": {
+        "jp": "リライアンス",
+        "en": "Guardian",
+        "tw": "替身護衛"
+      },
+      "prerequisites": {
+        "jp": "防御 54",
+        "en": "Defend 54",
+        "tw": "防禦 54"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象が受けたダメージを全て自分が受ける。",
+        "en": "Take all the damage in place of a party member.",
+        "tw": "承受某位隊伍成員所受到的傷害"
+      },
+      "is_active": true,
+      "mp_cost": 16,
+      "cast_seconds": 4,
+      "cooldown_seconds": 10,
+      "duration_seconds": 300,
+      "prerequisite_code": "S=5=54",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.5.10",
+      "legacy_category_id": 5,
+      "legacy_entry_index": 10,
+      "legacy_path": "Skill[*][5][10]",
+      "name": {
+        "jp": "リラブランシュ",
+        "en": "Bore Brunt",
+        "tw": "犧牲自我"
+      },
+      "prerequisites": {
+        "jp": "ジェネラル Lv50、防御 54",
+        "en": "General Lv50 & Defend 54",
+        "tw": "重裝騎士 Lv50、防禦 54"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "ジェネラルLv50でリライアンスが変化。対象のパーティメンバーが受けるダメージを変わりに受ける。同時に3人まで使用可能。",
+        "en": "Allows you to take damage in place of the targeted party member. This can be used on up to three people at once.",
+        "tw": "承受隊伍成員所受到的傷害，最多3人"
+      },
+      "is_active": true,
+      "mp_cost": 16,
+      "cast_seconds": 4,
+      "cooldown_seconds": 1,
+      "duration_seconds": 300,
+      "prerequisite_code": "J=5=50_S=5=54",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.5.11",
+      "legacy_category_id": 5,
+      "legacy_entry_index": 11,
+      "legacy_path": "Skill[*][5][11]",
+      "name": {
+        "jp": "エターナルアンセム",
+        "en": "Eternal Dirge",
+        "tw": "詛咒的聖歌"
+      },
+      "prerequisites": {
+        "jp": "防御 61",
+        "en": "Defend 61",
+        "tw": "防禦 61"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "範囲内にいるプレイヤーはスキルを使用することができなくなる。",
+        "en": "Disables skill usage to all players within area of effect.",
+        "tw": "在範圍內的玩家不能使用技能"
+      },
+      "is_active": true,
+      "mp_cost": 74,
+      "cast_seconds": 0,
+      "cooldown_seconds": 20,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=5=61",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.6.0",
+      "legacy_category_id": 6,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][6][0]",
+      "name": {
+        "jp": "鷹の目",
+        "en": "Hawkeye",
+        "tw": "鷹眼"
+      },
+      "prerequisites": {
+        "jp": "アーチャー Lv20",
+        "en": "Archer Lv20",
+        "tw": "弓箭手 Lv20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。鷹のような鋭い目配りで、命中力を上昇させる。",
+        "en": "Increases attack power while using ranged weapons.",
+        "tw": "用如同鷹一般銳利的眼四處張望，使命中率上升"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=8=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.6.1",
+      "legacy_category_id": 6,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][6][1]",
+      "name": {
+        "jp": "クイックステップ",
+        "en": "Quick Step",
+        "tw": "迴避上升"
+      },
+      "prerequisites": {
+        "jp": "エージェント Lv20",
+        "en": "Provacateur Lv20",
+        "tw": "密探 Lv20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。素早い動きを心がけ、回避を上昇させる。",
+        "en": "Whisk in mind, to increase the power around.",
+        "tw": "可以看到敵人快速的動作並且預防，使迴避上升"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=11=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.6.2",
+      "legacy_category_id": 6,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][6][2]",
+      "name": {
+        "jp": "ムーブアシスト",
+        "en": "Accelerate",
+        "tw": "風之祝福"
+      },
+      "prerequisites": {
+        "jp": "アーチャー Lv28",
+        "en": "Archer Lv28",
+        "tw": "弓箭手 Lv28"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "風の祝福をにより追い風を受け、移動速度を増加させる。",
+        "en": "Boosts moving speed.(need more info on this =3 )",
+        "tw": "藉由封的祝福，迎著順風，使自身移動速度增加"
+      },
+      "is_active": true,
+      "mp_cost": 16,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 1.5,
+      "duration_seconds": 480,
+      "prerequisite_code": "J=8=28",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.6.3",
+      "legacy_category_id": 6,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][6][3]",
+      "name": {
+        "jp": "マインドサイト",
+        "en": "Third Eye",
+        "tw": "提升專注"
+      },
+      "prerequisites": {
+        "jp": "エージェント Lv28",
+        "en": "Provacateur Lv28",
+        "tw": "密探 Lv28"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パーティメンバー全員の命中を増加させる。",
+        "en": "Increases the Hit rate or physical attack accuracy PT members.",
+        "tw": "使隊伍成員全員命中率增加"
+      },
+      "is_active": true,
+      "mp_cost": 48,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 1.5,
+      "duration_seconds": 480,
+      "prerequisite_code": "J=11=28",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.6.4",
+      "legacy_category_id": 6,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][6][4]",
+      "name": {
+        "jp": "ステルスワーク",
+        "en": "Treachery",
+        "tw": "隱密機關"
+      },
+      "prerequisites": {
+        "jp": "ディスターバンス Lv45",
+        "en": "Saboteur Lv45",
+        "tw": "機關師 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。クローキング時に罠を置いてもハイディング状態が解除されなくなる。",
+        "en": "Prevents you from dropping out of Hiding state when you set up a trap while cloaking.",
+        "tw": "障眼法時即使設置了陷阱，也不接觸隱身狀態"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=13=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.7.0",
+      "legacy_category_id": 7,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][7][0]",
+      "name": {
+        "jp": "ラピッドスタンス",
+        "en": "Rapid Fire",
+        "tw": "速射"
+      },
+      "prerequisites": {
+        "jp": "アーチャー Lv35",
+        "en": "Archer Lv35",
+        "tw": "弓箭手 Lv35"
+      },
+      "equipment_requirements": {
+        "jp": "クロスボウ",
+        "en": "Crossbow",
+        "tw": "十字弩"
+      },
+      "description": {
+        "jp": "素早い動きでクロスボウを連射できるようにする。",
+        "en": "? The dart crossbow allow blazing.",
+        "tw": "能夠以快速的動作使弩連射"
+      },
+      "is_active": true,
+      "mp_cost": 45,
+      "cast_seconds": 0,
+      "cooldown_seconds": 45,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=8=35",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.7.1",
+      "legacy_category_id": 7,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][7][1]",
+      "name": {
+        "jp": "スナイプモード",
+        "en": "Sniper Nest",
+        "tw": "精准狙擊"
+      },
+      "prerequisites": {
+        "jp": "スナイパー Lv45",
+        "en": "Sniper Lv45",
+        "tw": "狙擊手 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "弓、クロスボウ",
+        "en": "Bow, Crowssbow",
+        "tw": "弓、十字弩"
+      },
+      "description": {
+        "jp": "攻撃力・命中・射程距離が増加し移動不可となる。もう一度使用すると効果が切れる。",
+        "en": "Greatly increases attack power but movement is disabled.",
+        "tw": "攻擊力、命中、射程增加，但不可移動。再一次使用後效果消失"
+      },
+      "is_active": true,
+      "mp_cost": 45,
+      "cast_seconds": 2,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=9=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.7.2",
+      "legacy_category_id": 7,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][7][2]",
+      "name": {
+        "jp": "キンドルアロー",
+        "en": "Kindling Arrow",
+        "tw": "燃油箭"
+      },
+      "prerequisites": {
+        "jp": "スナイパー Lv50",
+        "en": "Sniper Lv50",
+        "tw": "狙擊手 Lv50"
+      },
+      "equipment_requirements": {
+        "jp": "弓",
+        "en": "Bow",
+        "tw": "弓"
+      },
+      "description": {
+        "jp": "指定した地点を火の弓で燃やし、炎のフィールドを作り出す。",
+        "en": "?? Create a field of fire at an area using a fire arrow.",
+        "tw": "用火箭使目標的地點燃燒，形成火系區域"
+      },
+      "is_active": true,
+      "mp_cost": 41,
+      "cast_seconds": 1,
+      "cooldown_seconds": 15,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=9=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.7.3",
+      "legacy_category_id": 7,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][7][3]",
+      "name": {
+        "jp": "トレースアイ",
+        "en": "Watchful Eye",
+        "tw": "定時爆彈"
+      },
+      "prerequisites": {
+        "jp": "プレデター Lv45",
+        "en": "Hunter Lv45",
+        "tw": "狩獵者 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "視界内にいるハイディング状態の敵を目視でき、ダメージが増加するが移動不可となる。",
+        "en": "Prevents movement, but allows you to spot and attacking Hiding enemies.",
+        "tw": "能夠看到視野內隱身狀態的敵人，增加傷害，但不能移動"
+      },
+      "is_active": true,
+      "mp_cost": 44,
+      "cast_seconds": 2,
+      "cooldown_seconds": 20,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=10=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.7.4",
+      "legacy_category_id": 7,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][7][4]",
+      "name": {
+        "jp": "アローフューゼレイド",
+        "en": "Arrow Fusillade",
+        "tw": "風之速射"
+      },
+      "prerequisites": {
+        "jp": "プレデター Lv50",
+        "en": "Hunter Lv50",
+        "tw": "狩獵者 Lv50"
+      },
+      "equipment_requirements": {
+        "jp": "クロスボウ",
+        "en": "Crossbow",
+        "tw": "十字弩"
+      },
+      "description": {
+        "jp": "パッシブスキル。クロスボウ使用時に射程距離が増加し、2連射になる。",
+        "en": "When using a crossbow, range increases and you are granted the ability to fire twice in a row.",
+        "tw": "使用弩時射程增加，並觸發2連射"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 90,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=10=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.7.5",
+      "legacy_category_id": 7,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][7][5]",
+      "name": {
+        "jp": "フレーミングアロー",
+        "en": "Flaming Arrow",
+        "tw": "火箭"
+      },
+      "prerequisites": {
+        "jp": "射撃 8",
+        "en": "Shot 8",
+        "tw": "射擊 8"
+      },
+      "equipment_requirements": {
+        "jp": "弓、クロスボウ",
+        "en": "Bow, Crowssbow",
+        "tw": "弓、十字弓"
+      },
+      "description": {
+        "jp": "炎の矢を放つ。",
+        "en": "Shoot fire bolts or fire arrows.",
+        "tw": "放出火箭"
+      },
+      "is_active": true,
+      "mp_cost": 12,
+      "cast_seconds": 0,
+      "cooldown_seconds": 30,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=7=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.7.6",
+      "legacy_category_id": 7,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][7][6]",
+      "name": {
+        "jp": "ポイズンショット",
+        "en": "Cobra Arrow",
+        "tw": "毒箭"
+      },
+      "prerequisites": {
+        "jp": "射撃 12",
+        "en": "Shot 12",
+        "tw": "射擊 12"
+      },
+      "equipment_requirements": {
+        "jp": "弓、クロスボウ",
+        "en": "Bow, Crowssbow",
+        "tw": "弓、十字弓"
+      },
+      "description": {
+        "jp": "毒の矢を放ち、相手を毒状態にする。",
+        "en": "Shoot poison bolts or poison arrows that inflict Poison status.",
+        "tw": "放出毒箭，付與目標中毒效果"
+      },
+      "is_active": true,
+      "mp_cost": 12,
+      "cast_seconds": 0,
+      "cooldown_seconds": 30,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=7=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.7.7",
+      "legacy_category_id": 7,
+      "legacy_entry_index": 7,
+      "legacy_path": "Skill[*][7][7]",
+      "name": {
+        "jp": "アングルショット",
+        "en": "Arrow Rain",
+        "tw": "箭雨"
+      },
+      "prerequisites": {
+        "jp": "射撃 26",
+        "en": "Shot 26",
+        "tw": "射擊 26"
+      },
+      "equipment_requirements": {
+        "jp": "弓",
+        "en": "Bow",
+        "tw": "弓"
+      },
+      "description": {
+        "jp": "対象地点へ矢の雨を降らせるように、上空目掛けて高角で矢を放つ。",
+        "en": "Aim up to the skies to rain down arrows at a specified Area of Effect (AOE).",
+        "tw": "朝天空放箭，像雨一樣落向目的地區域"
+      },
+      "is_active": true,
+      "mp_cost": 15,
+      "cast_seconds": 1,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=7=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.7.8",
+      "legacy_category_id": 7,
+      "legacy_entry_index": 8,
+      "legacy_path": "Skill[*][7][8]",
+      "name": {
+        "jp": "アローストーム",
+        "en": "Arrow Storm",
+        "tw": "箭之風暴"
+      },
+      "prerequisites": {
+        "jp": "射撃 61",
+        "en": "Shot 61",
+        "tw": "射擊 61"
+      },
+      "equipment_requirements": {
+        "jp": "弓",
+        "en": "Bow",
+        "tw": "弓"
+      },
+      "description": {
+        "jp": "射撃61でアングルショットが変化。対象地点へ矢の嵐を降らせ、連続でダメージを与える。",
+        "en": "?? We rained a storm of arrows into the target site, continuous damage. The shooting proficiency, to increase the number of consecutive damage. (Up to 3 times) ( angle shot in order to acquire the skills and the level angle shot disappear from the skill list)",
+        "tw": "箭像風暴一樣落到物件地點，造成連續傷害"
+      },
+      "is_active": true,
+      "mp_cost": 15,
+      "cast_seconds": 1,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=7=61",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.7.9",
+      "legacy_category_id": 7,
+      "legacy_entry_index": 9,
+      "legacy_path": "Skill[*][7][9]",
+      "name": {
+        "jp": "マルチショット",
+        "en": "Multi Shot",
+        "tw": "多重箭"
+      },
+      "prerequisites": {
+        "jp": "射撃 41、仕掛 21",
+        "en": "Shot 41 & Trapping 21",
+        "tw": "射擊 41、機關 21"
+      },
+      "equipment_requirements": {
+        "jp": "クロスボウ",
+        "en": "Crossbow",
+        "tw": "十字弓"
+      },
+      "description": {
+        "jp": "矢を同時に5方向に発射する事ができる。",
+        "en": "Fire crossbow bolts in five directions at once.",
+        "tw": "能夠同時向5個方向射箭"
+      },
+      "is_active": true,
+      "mp_cost": 20,
+      "cast_seconds": 0,
+      "cooldown_seconds": 30,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=7=41_S=10=21",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.7.10",
+      "legacy_category_id": 7,
+      "legacy_entry_index": 10,
+      "legacy_path": "Skill[*][7][10]",
+      "name": {
+        "jp": "チャージショット",
+        "en": "Charge Shot",
+        "tw": "擊退箭"
+      },
+      "prerequisites": {
+        "jp": "射撃 50、暗殺 21",
+        "en": "Shot 50 & Assassination 21",
+        "tw": "射擊 50、暗殺 21"
+      },
+      "equipment_requirements": {
+        "jp": "弓",
+        "en": "Bow",
+        "tw": "弓"
+      },
+      "description": {
+        "jp": "対象をノックバックさせる強力な矢を放つ。",
+        "en": "Target when hit, gets Knockback status.",
+        "tw": "放出擊退目標的強力箭"
+      },
+      "is_active": true,
+      "mp_cost": 18,
+      "cast_seconds": 0,
+      "cooldown_seconds": 30,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=7=50_S=9=21",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.7.11",
+      "legacy_category_id": 7,
+      "legacy_entry_index": 11,
+      "legacy_path": "Skill[*][7][11]",
+      "name": {
+        "jp": "シャットキャスティング",
+        "en": "Silence Arrow",
+        "tw": "沉默之箭"
+      },
+      "prerequisites": {
+        "jp": "射撃 54",
+        "en": "Shot 54",
+        "tw": "射擊 54"
+      },
+      "equipment_requirements": {
+        "jp": "弓、クロスボウ",
+        "en": "Bow, Crowssbow",
+        "tw": "弓、十字弓"
+      },
+      "description": {
+        "jp": "命中した相手を沈黙状態にする、一定確率で長い沈黙を相手に与える。",
+        "en": "Silence a victim to disable spell casting.",
+        "tw": "使命中的目標變為沉默狀態，以一定機率使目標處於長期沉默"
+      },
+      "is_active": true,
+      "mp_cost": 33,
+      "cast_seconds": 0,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=7=54",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.7.12",
+      "legacy_category_id": 7,
+      "legacy_entry_index": 12,
+      "legacy_path": "Skill[*][7][12]",
+      "name": {
+        "jp": "シャドースナッチ",
+        "en": "Pinning Arrow",
+        "tw": "影襲"
+      },
+      "prerequisites": {
+        "jp": "射撃 71",
+        "en": "Shot 71",
+        "tw": "射擊 71"
+      },
+      "equipment_requirements": {
+        "jp": "弓、クロスボウ",
+        "en": "Bow, Crowssbow",
+        "tw": "弓、十字弩"
+      },
+      "description": {
+        "jp": "相手の背後に命中した場合、移動不可効果を与える。攻撃が命中すると効果が解除される。",
+        "en": "Chance to render target Immobile. ?? Need more info on this skill.",
+        "tw": "在目標背後發動攻擊時，施加定身效果，下次攻擊命中後，該效果解除"
+      },
+      "is_active": true,
+      "mp_cost": 49,
+      "cast_seconds": 0,
+      "cooldown_seconds": 30,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=7=71",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.8.0",
+      "legacy_category_id": 8,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][8][0]",
+      "name": {
+        "jp": "クリエイトポイズン",
+        "en": "Poison Making",
+        "tw": "毒藥製造"
+      },
+      "prerequisites": {
+        "jp": "調合 8",
+        "en": "Alchemy 8",
+        "tw": "調合 8"
+      },
+      "equipment_requirements": {
+        "jp": "猛毒草*1、空の容器*1",
+        "en": "1x Deadly Nightshade, 1x Empty Bottle",
+        "tw": "巨毒草、空瓶"
+      },
+      "description": {
+        "jp": "猛毒草、空の容器を消費し、毒薬を作成する事ができる。",
+        "en": "Create a Poison Vial using: 1x Deadly Nightshade, 1x Container.",
+        "tw": "消耗巨毒草、空瓶，製造毒藥"
+      },
+      "is_active": true,
+      "mp_cost": 3,
+      "cast_seconds": 1,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=8=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.8.1",
+      "legacy_category_id": 8,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][8][1]",
+      "name": {
+        "jp": "フォックスグローブ",
+        "en": "Toxify",
+        "tw": "塗毒"
+      },
+      "prerequisites": {
+        "jp": "調合 12",
+        "en": "Alchemy 12",
+        "tw": "調合 12"
+      },
+      "equipment_requirements": {
+        "jp": "毒薬*1",
+        "en": "1x Poison Vial",
+        "tw": "毒藥"
+      },
+      "description": {
+        "jp": "毒薬を費やし、自分の武器に薬を塗る。一定時間、攻撃に毒発生効果が付与される。",
+        "en": "Apply poison attribute on weapon to inflict Poison status. Consumes 1 Poison Vial.",
+        "tw": "消耗毒藥，在武器上塗抹毒藥"
+      },
+      "is_active": true,
+      "mp_cost": 15,
+      "cast_seconds": 2,
+      "cooldown_seconds": 10,
+      "duration_seconds": 120,
+      "prerequisite_code": "S=8=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.8.2",
+      "legacy_category_id": 8,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][8][2]",
+      "name": {
+        "jp": "シーラム",
+        "en": "Serum",
+        "tw": "調製解毒劑"
+      },
+      "prerequisites": {
+        "jp": "調合 26",
+        "en": "Alchemy 26",
+        "tw": "調合 26"
+      },
+      "equipment_requirements": {
+        "jp": "解毒草*1、空の容器*1",
+        "en": "1x Antidote Herb, 1x Empty Bottle",
+        "tw": "解毒草、空瓶"
+      },
+      "description": {
+        "jp": "解毒草、空の容器を消費し、解毒薬を作成する。",
+        "en": "Create an Antidote Vial using: 1x Antidote Herb, 1x Container.",
+        "tw": "消耗解毒草、空瓶，製作解毒劑"
+      },
+      "is_active": true,
+      "mp_cost": 3,
+      "cast_seconds": 1,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=8=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.8.3",
+      "legacy_category_id": 8,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][8][3]",
+      "name": {
+        "jp": "ベーシックフュージョン",
+        "en": "Potion Crafting",
+        "tw": "神秘藥"
+      },
+      "prerequisites": {
+        "jp": "調合 41",
+        "en": "Alchemy 41",
+        "tw": "調合 41"
+      },
+      "equipment_requirements": {
+        "jp": "月光草*1、蓬莱花*1、空の容器*1",
+        "en": "1x Moonlight Herb, 1x Aquilegia, 1x Empty Bottle",
+        "tw": "月光草、蓬萊花、空瓶"
+      },
+      "description": {
+        "jp": "月光草、蓬莱花、空の容器を消費し、神秘のポーションを作成する。",
+        "en": "Create a Mysterious Potion using: 1x Moonlight Herb, 1x Aquilegia, 1x Container.",
+        "tw": "消耗月光草、蓬萊花、空瓶，製作神祕的藥劑"
+      },
+      "is_active": true,
+      "mp_cost": 3,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=8=41",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.8.4",
+      "legacy_category_id": 8,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][8][4]",
+      "name": {
+        "jp": "エピデミックコラプト",
+        "en": "Befuddle",
+        "tw": "惡魔語言"
+      },
+      "prerequisites": {
+        "jp": "調合 50",
+        "en": "Alchemy 50",
+        "tw": "調合 50"
+      },
+      "equipment_requirements": {
+        "jp": "毒薬*1",
+        "en": "1x Poison Vial",
+        "tw": "毒藥"
+      },
+      "description": {
+        "jp": "攻撃命中時に対象が詠唱中だった場合、詠唱速度減少を与える。毒薬を1つ消費する。",
+        "en": "Causes more Cast Time Delay to a target if hit while casting. 1x Poison Vial consumed",
+        "tw": "攻擊命中時，對象為吟唱中時，減少吟唱速度，消費1個毒藥"
+      },
+      "is_active": true,
+      "mp_cost": 31,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 150,
+      "prerequisite_code": "S=8=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.8.5",
+      "legacy_category_id": 8,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][8][5]",
+      "name": {
+        "jp": "ビルトキシン",
+        "en": "Toxic Aura",
+        "tw": "惡意毒素"
+      },
+      "prerequisites": {
+        "jp": "調合 61",
+        "en": "Alchemy 61",
+        "tw": "調合 61"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。フォックスグローブ使用時のオーラダメージが増加する。",
+        "en": "Increases Aura Damage while Toxify is active.",
+        "tw": "增加涂毒時的屬性傷害"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=8=61",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.8.6",
+      "legacy_category_id": 8,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][8][6]",
+      "name": {
+        "jp": "クリアヴィジョン",
+        "en": "Surveillance",
+        "tw": "洞察"
+      },
+      "prerequisites": {
+        "jp": "調合 71",
+        "en": "Alchemy 71",
+        "tw": "調合 71"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "効果中、命中が増加し、敵が設置した罠が見えるようになる。",
+        "en": "Enable to spot traps laid by the enemy.",
+        "tw": "能夠看到敵人設置的陷阱"
+      },
+      "is_active": true,
+      "mp_cost": 44,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 20,
+      "duration_seconds": 10,
+      "prerequisite_code": "S=8=71",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.9.0",
+      "legacy_category_id": 9,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][9][0]",
+      "name": {
+        "jp": "ハイディング",
+        "en": "Hide",
+        "tw": "隱身"
+      },
+      "prerequisites": {
+        "jp": "スカウト Lv18",
+        "en": "Scout Lv18",
+        "tw": "斥侯 Lv18"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "その場で姿を隠すことができる。",
+        "en": "Enables hiding/cloaking on a the spot. *User cannot move while Hiding",
+        "tw": "變為隱身狀態，可當場消失"
+      },
+      "is_active": true,
+      "mp_cost": 24,
+      "cast_seconds": 0,
+      "cooldown_seconds": 3,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=7=18",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.9.1",
+      "legacy_category_id": 9,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][9][1]",
+      "name": {
+        "jp": "クローキング",
+        "en": "Cloak",
+        "tw": "隱蔽"
+      },
+      "prerequisites": {
+        "jp": "エージェント Lv20",
+        "en": "Provacateur Lv20",
+        "tw": "密探 Lv20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "ハイディング状態になり、そのまま移動することができる。",
+        "en": "Enables movement while in Hidden status.",
+        "tw": "進入隱遁狀態，可以直接移動。隱遁狀態將持續消耗MP。"
+      },
+      "is_active": true,
+      "mp_cost": 45,
+      "cast_seconds": 2,
+      "cooldown_seconds": 30,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=11=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.9.2",
+      "legacy_category_id": 9,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][9][2]",
+      "name": {
+        "jp": "オスモシスボディ",
+        "en": "Furtive Steps",
+        "tw": "隱身專精"
+      },
+      "prerequisites": {
+        "jp": "アサシン Lv45",
+        "en": "Assassin Lv45",
+        "tw": "刺客 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。クローキング時の移動ペナルティが無くなり、マナが少し自動で回復する。",
+        "en": "Increases MP regeneration and removes the moving penalty while cloaking.",
+        "tw": "消除障眼法時的移動懲罰，魔力自動恢復"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=12=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.9.3",
+      "legacy_category_id": 9,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][9][3]",
+      "name": {
+        "jp": "ヴェラッシングチャンス",
+        "en": "Counterpunch",
+        "tw": "武器大師"
+      },
+      "prerequisites": {
+        "jp": "アサシン Lv50",
+        "en": "Assassin Lv50",
+        "tw": "刺客 Lv50"
+      },
+      "equipment_requirements": {
+        "jp": "格闘",
+        "en": "Fist",
+        "tw": "格鬥武器"
+      },
+      "description": {
+        "jp": "パッシブスキル。格闘武器使用時、低威力で追加攻撃が発動する。",
+        "en": "When using first weapons, you will strike with a weaker follow-up attack.",
+        "tw": "使用後格鬥武器時，會發動低威力的追加攻擊"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 90,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=12=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.9.4",
+      "legacy_category_id": 9,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][9][4]",
+      "name": {
+        "jp": "バックスタブ",
+        "en": "Backstab",
+        "tw": "背刺"
+      },
+      "prerequisites": {
+        "jp": "暗殺 8",
+        "en": "Assassination 8",
+        "tw": "暗殺 8"
+      },
+      "equipment_requirements": {
+        "jp": "短剣、格闘",
+        "en": "Knife, Fist",
+        "tw": "短劍、格鬥"
+      },
+      "description": {
+        "jp": "暗器装備時のみ使用可能。相手の背後から攻撃をした場合、強力な一撃を与える突き攻撃。",
+        "en": "A strong blow to the enemy is incurred if attacked from behind.",
+        "tw": "對於目標的背後給予強大的一擊"
+      },
+      "is_active": true,
+      "mp_cost": 15,
+      "cast_seconds": 0,
+      "cooldown_seconds": 30,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=9=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.9.5",
+      "legacy_category_id": 9,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][9][5]",
+      "name": {
+        "jp": "ダガースロー",
+        "en": "Dagger Throw",
+        "tw": "致命投擲"
+      },
+      "prerequisites": {
+        "jp": "暗殺 12",
+        "en": "Assassination 12",
+        "tw": "暗殺 12"
+      },
+      "equipment_requirements": {
+        "jp": "短剣",
+        "en": "Knife",
+        "tw": "短劍"
+      },
+      "description": {
+        "jp": "暗器装備時のみ使用可能。素早く近くの敵に短剣を投げつける。",
+        "en": "Quickly throw daggers at a single target.",
+        "tw": "快速向敵人投擲匕首"
+      },
+      "is_active": true,
+      "mp_cost": 10,
+      "cast_seconds": 0,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=9=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.9.6",
+      "legacy_category_id": 9,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][9][6]",
+      "name": {
+        "jp": "ラッシュ",
+        "en": "Rush",
+        "tw": "鮮血之怒"
+      },
+      "prerequisites": {
+        "jp": "暗殺 26",
+        "en": "Assassination 26",
+        "tw": "暗殺 26"
+      },
+      "equipment_requirements": {
+        "jp": "短剣、格闘",
+        "en": "Knife, Fist",
+        "tw": "短劍、格鬥"
+      },
+      "description": {
+        "jp": "防御をかえりみない代わりに、素早い速度で対象を攻撃できるようになる。(習得条件/暗殺、所属/斬る)",
+        "en": "Attack opponent repeatedly while neglecting your own defense.",
+        "tw": "不顧防禦，連續攻擊對手"
+      },
+      "is_active": true,
+      "mp_cost": 30,
+      "cast_seconds": 0,
+      "cooldown_seconds": 90,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=9=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.9.7",
+      "legacy_category_id": 9,
+      "legacy_entry_index": 7,
+      "legacy_path": "Skill[*][9][7]",
+      "name": {
+        "jp": "サプライズアタック",
+        "en": "Blindside",
+        "tw": "隱密刺殺"
+      },
+      "prerequisites": {
+        "jp": "暗殺 41",
+        "en": "Assassination 41",
+        "tw": "暗殺 41"
+      },
+      "equipment_requirements": {
+        "jp": "短剣、格闘",
+        "en": "Knife, Fist",
+        "tw": "短劍、格鬥"
+      },
+      "description": {
+        "jp": "ハイディング状態時使用可能。攻撃命中時ハイディング状態が解除されない。",
+        "en": "Only available while in Hiding state. Hiding state is not removed when attack hits.",
+        "tw": "隱身狀態時可以使用，攻擊命中時不解除隱身狀態"
+      },
+      "is_active": true,
+      "mp_cost": 15,
+      "cast_seconds": 0,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=9=41",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.9.8",
+      "legacy_category_id": 9,
+      "legacy_entry_index": 8,
+      "legacy_path": "Skill[*][9][8]",
+      "name": {
+        "jp": "鎧通し",
+        "en": "Pierce Armor",
+        "tw": "弱點攻擊"
+      },
+      "prerequisites": {
+        "jp": "暗殺 54",
+        "en": "Assassination 54",
+        "tw": "暗殺 54"
+      },
+      "equipment_requirements": {
+        "jp": "短剣、格闘",
+        "en": "Knife, Fist",
+        "tw": "短劍、格鬥"
+      },
+      "description": {
+        "jp": "転倒している相手の鎧の隙間を狙い攻撃する。防御力を無視した大ダメージを与える。",
+        "en": "A strike that aims for openings in your opponent's armor. Especially effective for enemies who are Knocked Down.",
+        "tw": "瞄準鎧甲的間隙突擊，對擊倒的目標有附加傷害效果"
+      },
+      "is_active": true,
+      "mp_cost": 15,
+      "cast_seconds": 0,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=9=54",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.9.9",
+      "legacy_category_id": 9,
+      "legacy_entry_index": 9,
+      "legacy_path": "Skill[*][9][9]",
+      "name": {
+        "jp": "リシディバイト",
+        "en": "Double-Cross",
+        "tw": "極惡歸返"
+      },
+      "prerequisites": {
+        "jp": "暗殺 71",
+        "en": "Assassination 71",
+        "tw": "暗殺 71"
+      },
+      "equipment_requirements": {
+        "jp": "短剣、格闘",
+        "en": "Knife, Fist",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "相手の背後に命中した場合、このスキル以外のディレイタイムを全て解除する。",
+        "en": "All skills (except this skill) in Cooldown status are reset after striking the enemy in the back.",
+        "tw": "命中目標的背後時，該技能以外的技能冷卻時間全部解除"
+      },
+      "is_active": true,
+      "mp_cost": 58,
+      "cast_seconds": 0,
+      "cooldown_seconds": 55,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=9=71",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.10.0",
+      "legacy_category_id": 10,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][10][0]",
+      "name": {
+        "jp": "リムーブトラップ",
+        "en": "Disarm",
+        "tw": "陷阱潰散"
+      },
+      "prerequisites": {
+        "jp": "仕掛 8",
+        "en": "Trapping 8",
+        "tw": "機關 8"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "指定した地点から一定範囲に設置された罠を、敵味方の区別無く解除する。",
+        "en": "Defuses all traps within user's area of effect.",
+        "tw": "無論敵我，將這一帶設置的陷阱全部解除"
+      },
+      "is_active": true,
+      "mp_cost": 10,
+      "cast_seconds": 1,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=10=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.10.1",
+      "legacy_category_id": 10,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][10][1]",
+      "name": {
+        "jp": "グルーキャッチ",
+        "en": "Tangled Legs",
+        "tw": "致殘陷阱"
+      },
+      "prerequisites": {
+        "jp": "仕掛 16",
+        "en": "Trapping 16",
+        "tw": "機關 16"
+      },
+      "equipment_requirements": {
+        "jp": "罠*1",
+        "en": "1x Trap",
+        "tw": "陷阱"
+      },
+      "description": {
+        "jp": "相手の足を捕らえ、移動不可状態にする罠を設置する。罠を１つ消費する。",
+        "en": "Trap to render the enemy Immobile. 1x Trap is consumed.",
+        "tw": "設置一個致殘陷阱，讓對方無法移動。消費1個陷阱"
+      },
+      "is_active": true,
+      "mp_cost": 20,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 3,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=10=16",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.10.2",
+      "legacy_category_id": 10,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][10][2]",
+      "name": {
+        "jp": "エクスマイン",
+        "en": "Plant Mine",
+        "tw": "爆破陷阱"
+      },
+      "prerequisites": {
+        "jp": "仕掛 26",
+        "en": "Trapping 26",
+        "tw": "機關 26"
+      },
+      "equipment_requirements": {
+        "jp": "罠*1",
+        "en": "1x Trap",
+        "tw": "陷阱"
+      },
+      "description": {
+        "jp": "踏むと爆発し、周囲にダメージを与える罠を設置する。罠を1つ消費する。",
+        "en": "Explosive trap damages surround areas when stepped on. 1x Trap is consumed.",
+        "tw": "設置爆炸一整排的爆破陷阱，消費2個陷阱"
+      },
+      "is_active": true,
+      "mp_cost": 30,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 3,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=10=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.10.3",
+      "legacy_category_id": 10,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][10][3]",
+      "name": {
+        "jp": "ワームボム",
+        "en": "Worm Bomb",
+        "tw": "連續爆破"
+      },
+      "prerequisites": {
+        "jp": "仕掛 41",
+        "en": "Trapping 41",
+        "tw": "機關 41"
+      },
+      "equipment_requirements": {
+        "jp": "罠*2",
+        "en": "2x Trap",
+        "tw": "陷阱x2"
+      },
+      "description": {
+        "jp": "前方に向かって直進し、触れると爆発する罠を設置する。罠を2つ消費する。",
+        "en": "Unleashes a worm that moves forward in a straight line, exploding whatever it touches. 2x Traps are used.",
+        "tw": "設置爆炸一整排的爆破陷阱，消費2個陷阱"
+      },
+      "is_active": true,
+      "mp_cost": 33,
+      "cast_seconds": 3,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=10=41",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.10.4",
+      "legacy_category_id": 10,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][10][4]",
+      "name": {
+        "jp": "カームスポット",
+        "en": "Safe Zone",
+        "tw": "平靜氣氛"
+      },
+      "prerequisites": {
+        "jp": "仕掛 50",
+        "en": "Trapping 50",
+        "tw": "機關 50"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "効果範囲内にいるプレイヤーは、フィールドに作用するスキル効果を無効にする。",
+        "en": "When a players enters the area of effect, any effects on them caused by Field skills will be dispelled.",
+        "tw": "在效果範圍內的玩家，使範圍技能效果失效"
+      },
+      "is_active": true,
+      "mp_cost": 46,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 8,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=10=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.10.5",
+      "legacy_category_id": 10,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][10][5]",
+      "name": {
+        "jp": "インピッドモノリス",
+        "en": "Stone Prison",
+        "tw": "陷馬坑"
+      },
+      "prerequisites": {
+        "jp": "仕掛 61",
+        "en": "Trapping 61",
+        "tw": "機關 61"
+      },
+      "equipment_requirements": {
+        "jp": "罠*1",
+        "en": "1x Trap",
+        "tw": "陷阱x4"
+      },
+      "description": {
+        "jp": "馬のみに効果発動。踏んだプレイヤーの周囲の4方向に壁を出現させ、閉じ込める。",
+        "en": "Locks a player on horseback in a 4-walled area trap when stepped on. 1x Trap used.",
+        "tw": "只對馬產生效果，踏到的玩家周圍的4個方向出現牆壁"
+      },
+      "is_active": true,
+      "mp_cost": 48,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 3,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=10=61",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.10.6",
+      "legacy_category_id": 10,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][10][6]",
+      "name": {
+        "jp": "メルトマインド",
+        "en": "Mind Warp",
+        "tw": "精神干擾"
+      },
+      "prerequisites": {
+        "jp": "仕掛 71",
+        "en": "Trapping 71",
+        "tw": "機關 71"
+      },
+      "equipment_requirements": {
+        "jp": "罠*1",
+        "en": "1x Trap",
+        "tw": "陷阱"
+      },
+      "description": {
+        "jp": "相手のMPを減少させる罠を設定する。罠を1つ消費する。",
+        "en": "Trap that reduces some MP of the victim. 1x Trap used.",
+        "tw": "設定一個減少對手MP的陷阱，消費1個陷阱"
+      },
+      "is_active": true,
+      "mp_cost": 48,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 3,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=10=71",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.11.0",
+      "legacy_category_id": 11,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][11][0]",
+      "name": {
+        "jp": "アナバシス",
+        "en": "Invigorate",
+        "tw": "疾走"
+      },
+      "prerequisites": {
+        "jp": "スカウト Lv12",
+        "en": "Scout Lv12",
+        "tw": "斥侯 Lv12"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "自身の移動速度を上昇させる。",
+        "en": "Increases movement speed.",
+        "tw": "增加自己的移動速度"
+      },
+      "is_active": true,
+      "mp_cost": 16,
+      "cast_seconds": 0,
+      "cooldown_seconds": 10,
+      "duration_seconds": 180,
+      "prerequisite_code": "J=7=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.11.1",
+      "legacy_category_id": 11,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][11][1]",
+      "name": {
+        "jp": "バックステップ",
+        "en": "Backstep",
+        "tw": "遁逃"
+      },
+      "prerequisites": {
+        "jp": "技巧 3",
+        "en": "Techniques 3",
+        "tw": "技巧 3"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "素早く後ろにあとずさる。(回避+100)",
+        "en": "Step backward to instantly avoid a side or frontal attack. ? Also useful in escaping pursuers.",
+        "tw": "快速地往後退"
+      },
+      "is_active": true,
+      "mp_cost": 5,
+      "cast_seconds": 0,
+      "cooldown_seconds": 3,
+      "duration_seconds": 1,
+      "prerequisite_code": "S=6=3",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.11.2",
+      "legacy_category_id": 11,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][11][2]",
+      "name": {
+        "jp": "ダッシュ",
+        "en": "Dash",
+        "tw": "突進"
+      },
+      "prerequisites": {
+        "jp": "回避 8",
+        "en": "Dodge 8",
+        "tw": "閃避 8"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "瞬間的に脚力を上げ、高速に移動する事が出来る。(2秒)",
+        "en": "Boost running speed. Best for chasing chickens.",
+        "tw": "瞬間提升腳力，能夠高速移動"
+      },
+      "is_active": true,
+      "mp_cost": 18,
+      "cast_seconds": 0,
+      "cooldown_seconds": 30,
+      "duration_seconds": 2,
+      "prerequisite_code": "S=11=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.11.3",
+      "legacy_category_id": 11,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][11][3]",
+      "name": {
+        "jp": "ファストアボイド",
+        "en": "Quick Step",
+        "tw": "快速閃避"
+      },
+      "prerequisites": {
+        "jp": "回避 16",
+        "en": "Dodge 16",
+        "tw": "閃避 16"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "自身の回避力を増加させる。",
+        "en": "Increases Evasion ability.",
+        "tw": "增加自己的閃避"
+      },
+      "is_active": true,
+      "mp_cost": 35,
+      "cast_seconds": 0,
+      "cooldown_seconds": 90,
+      "duration_seconds": 60,
+      "prerequisite_code": "S=11=16",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.11.4",
+      "legacy_category_id": 11,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][11][4]",
+      "name": {
+        "jp": "タングルハンド",
+        "en": "Tangled Fingers",
+        "tw": "擾亂之觸"
+      },
+      "prerequisites": {
+        "jp": "回避 21",
+        "en": "Dodge 21",
+        "tw": "閃避 21"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "相手の命中力を減少させる。",
+        "en": "Reduce an opponent's physical attack accuracy.",
+        "tw": "減少目標命中率"
+      },
+      "is_active": true,
+      "mp_cost": 22,
+      "cast_seconds": 0,
+      "cooldown_seconds": 30,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=11=21",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.11.5",
+      "legacy_category_id": 11,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][11][5]",
+      "name": {
+        "jp": "ラムセンス",
+        "en": "Reinforce",
+        "tw": "炙熱守護"
+      },
+      "prerequisites": {
+        "jp": "回避 26",
+        "en": "Dodge 26",
+        "tw": "閃避 26"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。転倒耐性、気絶耐性、凍傷耐性+15％。",
+        "en": "+15% Knock Down, Knock Out, Freeze Resistance.",
+        "tw": "擊倒抗性、暈眩抗性、凍傷抗性+15%"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=11=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.11.6",
+      "legacy_category_id": 11,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][11][6]",
+      "name": {
+        "jp": "アボイダンス",
+        "en": "Avoidance",
+        "tw": "閃避"
+      },
+      "prerequisites": {
+        "jp": "回避 41",
+        "en": "Dodge 41",
+        "tw": "閃避 41"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "効果時間中、回避を増加させる。2回物理攻撃をされると効果が終了する。",
+        "en": "While this skill is in effect, your dodge rate increases. The effects ends when you are hit by two physical attacks.",
+        "tw": "效果時間中，增加閃避。受到2次物理攻擊後，效果結束"
+      },
+      "is_active": true,
+      "mp_cost": 38,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 30,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=11=41",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.11.7",
+      "legacy_category_id": 11,
+      "legacy_entry_index": 7,
+      "legacy_path": "Skill[*][11][7]",
+      "name": {
+        "jp": "インスレイトセンス",
+        "en": "Intuition",
+        "tw": "堅守信仰"
+      },
+      "prerequisites": {
+        "jp": "回避 50",
+        "en": "Dodge 50",
+        "tw": "閃避 50"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。一定確率で敵からの魔法を回避することができる。",
+        "en": "Enables chance to evade an enemy's magical attack.",
+        "tw": "一定機率閃避敵人的魔法"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=11=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.11.8",
+      "legacy_category_id": 11,
+      "legacy_entry_index": 8,
+      "legacy_path": "Skill[*][11][8]",
+      "name": {
+        "jp": "フェアウィンド",
+        "en": "Bolster",
+        "tw": "疾速賦予"
+      },
+      "prerequisites": {
+        "jp": "回避 66",
+        "en": "Dodge 66",
+        "tw": "閃避 66"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象のプレイヤーにダッシュの効果を与える。",
+        "en": "Gives a Dash skill effect to a target player. Temporarily boost a target's moving speed.",
+        "tw": "對目標施加突進效果"
+      },
+      "is_active": true,
+      "mp_cost": 29,
+      "cast_seconds": 1,
+      "cooldown_seconds": 1.5,
+      "duration_seconds": 2,
+      "prerequisite_code": "S=11=66",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.12.0",
+      "legacy_category_id": 12,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][12][0]",
+      "name": {
+        "jp": "メディテーション",
+        "en": "Meditation",
+        "tw": "靜心咒"
+      },
+      "prerequisites": {
+        "jp": "アコライト Lv12",
+        "en": "Acolyte Lv12",
+        "tw": "聖職者 Lv12"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。座った状態での深い精神統一により、マナの回復量を上昇させる。",
+        "en": "Unifies your spirit and increases the amount regained by Mana (MP) recovery.",
+        "tw": "通過坐下狀態的深刻的精神統一來增加魔力的恢復量"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=14=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.12.1",
+      "legacy_category_id": 12,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][12][1]",
+      "name": {
+        "jp": "インスピレーション",
+        "en": "Inspiration",
+        "tw": "冥想"
+      },
+      "prerequisites": {
+        "jp": "プリースト Lv20",
+        "en": "Priest Lv20",
+        "tw": "牧師 Lv20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。感覚を研ぎ澄まし、霊感を上昇させる。",
+        "en": "Increases your spirit through honed senses.",
+        "tw": "使感覺靈敏，提升靈感"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=15=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.12.2",
+      "legacy_category_id": 12,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][12][2]",
+      "name": {
+        "jp": "ホーリーディバイン",
+        "en": "Blessed Garments",
+        "tw": "虔誠非凡"
+      },
+      "prerequisites": {
+        "jp": "アセティック Lv20",
+        "en": "Ascetic Lv20",
+        "tw": "苦修士 Lv20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。光のオーラの装備を身に付けると、魅了・魔術に対する抵抗を得る。",
+        "en": "When you wear a equipment that has a Light Aura: + Poison, Charm, Magic Resistance.",
+        "tw": "裝備光屬性裝備後，對於毒系、魅惑、秘法擁有抗性"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=18=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.12.3",
+      "legacy_category_id": 12,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][12][3]",
+      "name": {
+        "jp": "フィジカルバリア",
+        "en": "Physical Barrier",
+        "tw": "守護祈禱"
+      },
+      "prerequisites": {
+        "jp": "祈祷 102",
+        "en": "Grace 102",
+        "tw": "神聖 102"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象に物理攻撃を1度だけ完全に防ぐバリアを張る。",
+        "en": "Raises a barrier that prevents physical attacks against a target.",
+        "tw": "賦予目標完全免疫物理攻擊1次 的護盾"
+      },
+      "is_active": true,
+      "mp_cost": 128,
+      "cast_seconds": 2,
+      "cooldown_seconds": 10,
+      "duration_seconds": 120,
+      "prerequisite_code": "S=12=102",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.12.4",
+      "legacy_category_id": 12,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][12][4]",
+      "name": {
+        "jp": "マジックバリア",
+        "en": "Magical Barrier",
+        "tw": "意念祈禱"
+      },
+      "prerequisites": {
+        "jp": "祈祷 102",
+        "en": "Grace 102",
+        "tw": "神聖 102"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象に魔法攻撃を1度だけ完全に防ぐバリアを張る。",
+        "en": "Raises a barrier that prevents magical attacks against a target.",
+        "tw": "賦予目標完全免疫魔法攻擊1次 的護盾"
+      },
+      "is_active": true,
+      "mp_cost": 128,
+      "cast_seconds": 2,
+      "cooldown_seconds": 10,
+      "duration_seconds": 120,
+      "prerequisite_code": "S=12=102",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.13.0",
+      "legacy_category_id": 13,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][13][0]",
+      "name": {
+        "jp": "ヒール",
+        "en": "Heal",
+        "tw": "治療術"
+      },
+      "prerequisites": {
+        "jp": "アコライト Lv8",
+        "en": "Acolyte Lv8",
+        "tw": "聖職者 Lv18"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "治癒の魔法でライフを回復させる事ができる。",
+        "en": "Recovers a target's LP using healing magic.",
+        "tw": "能夠恢復生命的治癒魔法"
+      },
+      "is_active": true,
+      "mp_cost": 62,
+      "cast_seconds": 2,
+      "cooldown_seconds": 3,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=14=18",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.13.1",
+      "legacy_category_id": 13,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][13][1]",
+      "name": {
+        "jp": "レイズデッド",
+        "en": "Revive",
+        "tw": "復活術"
+      },
+      "prerequisites": {
+        "jp": "プリースト Lv35",
+        "en": "Priest Lv35",
+        "tw": "牧師 Lv35"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "聖水3個"
+      },
+      "description": {
+        "jp": "戦いに倒れてしまった者を復活させる事が出来る。聖水を3つ消費する。",
+        "en": "Resurrects a fallen ally. 3x Holy Water is consumed.",
+        "tw": "可以讓死亡的目標復活。消耗3個聖水"
+      },
+      "is_active": true,
+      "mp_cost": 65,
+      "cast_seconds": 5,
+      "cooldown_seconds": 30,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=15=35",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.13.2",
+      "legacy_category_id": 13,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][13][2]",
+      "name": {
+        "jp": "テンプルム",
+        "en": "Sanctuary",
+        "tw": "聖堂之歌"
+      },
+      "prerequisites": {
+        "jp": "クレリック Lv45",
+        "en": "Cleric Lv45",
+        "tw": "主教 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "聖域を作り出し、範囲内にいるプレイヤー全員のLPを回復させる。",
+        "en": "Creates an area of effect where all players regenerate LP over time.",
+        "tw": "能夠使範圍內的全部玩家的HP恢復"
+      },
+      "is_active": true,
+      "mp_cost": 87,
+      "cast_seconds": 5,
+      "cooldown_seconds": 60,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=16=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.13.3",
+      "legacy_category_id": 13,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][13][3]",
+      "name": {
+        "jp": "マグナウェリタス",
+        "en": "Merciful Blessing",
+        "tw": "聖母的祝福"
+      },
+      "prerequisites": {
+        "jp": "クレリック Lv50",
+        "en": "Cleric Lv50",
+        "tw": "主教 Lv50"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。大いなる慈愛の力によりLP回復スキルの力を引き出すことができる。",
+        "en": "Increases the power LP recovery spells.",
+        "tw": "通過強大的慈愛之力，能夠增強HP恢復技能的力量"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=16=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.13.4",
+      "legacy_category_id": 13,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][13][4]",
+      "name": {
+        "jp": "ウァリエタース",
+        "en": "Karmic Aura",
+        "tw": "聖母之心"
+      },
+      "prerequisites": {
+        "jp": "エンチャンター Lv50",
+        "en": "Enchanter Lv50",
+        "tw": "吟遊詩人 Lv50"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。良い効果の祝福スキルは効果範囲が自分の周囲にいる味方全員になる。",
+        "en": "Grants nearby allies the positive effects of blessings.",
+        "tw": "使增益效果的祝福技能，效果範圍遍及自己周圍的己方全體人員"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=17=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.13.5",
+      "legacy_category_id": 13,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][13][5]",
+      "name": {
+        "jp": "ファーストエイド",
+        "en": "First Aid",
+        "tw": "快速治癒"
+      },
+      "prerequisites": {
+        "jp": "慈愛 8",
+        "en": "Banevolence 8",
+        "tw": "慈愛 8"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "治癒の魔法でライフを回復させることができる。",
+        "en": "Recovers a target's LP by a small amount.",
+        "tw": "快速恢復目標少量生命值"
+      },
+      "is_active": true,
+      "mp_cost": 28,
+      "cast_seconds": 1,
+      "cooldown_seconds": 4,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=13=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.13.6",
+      "legacy_category_id": 13,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][13][6]",
+      "name": {
+        "jp": "ミスリデート",
+        "en": "Cleanse",
+        "tw": "解毒術"
+      },
+      "prerequisites": {
+        "jp": "慈愛 12",
+        "en": "Banevolence 12",
+        "tw": "慈愛 12"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "毒にかかってしまった者を解毒することが出来る。",
+        "en": "Detoxify a target afflicted with Poison status.",
+        "tw": "能夠清除目標毒素"
+      },
+      "is_active": true,
+      "mp_cost": 15,
+      "cast_seconds": 1,
+      "cooldown_seconds": 3,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=13=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.13.7",
+      "legacy_category_id": 13,
+      "legacy_entry_index": 7,
+      "legacy_path": "Skill[*][13][7]",
+      "name": {
+        "jp": "リクライム",
+        "en": "Regenerate",
+        "tw": "恢復術"
+      },
+      "prerequisites": {
+        "jp": "慈愛 21",
+        "en": "Banevolence 21",
+        "tw": "慈愛 21"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "治癒の魔法を宿らせ、一定時間ライフを回復させ続ける。",
+        "en": "Regenerates a target's LP over time.",
+        "tw": "使用治癒的魔法,一定時間內恢復生命"
+      },
+      "is_active": true,
+      "mp_cost": 40,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 5,
+      "duration_seconds": 120,
+      "prerequisite_code": "S=13=21",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.13.8",
+      "legacy_category_id": 13,
+      "legacy_entry_index": 8,
+      "legacy_path": "Skill[*][13][8]",
+      "name": {
+        "jp": "アウェイクン",
+        "en": "Vivify",
+        "tw": "神聖耳語"
+      },
+      "prerequisites": {
+        "jp": "慈愛 26",
+        "en": "Banevolence 26",
+        "tw": "慈愛 26"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "睡眠、気絶、凍傷を治療する事ができる。",
+        "en": "Cures: Sleep, Knock Out, and Freeze status to one target.",
+        "tw": "能夠治療睡眠,暈眩,凍傷"
+      },
+      "is_active": true,
+      "mp_cost": 18,
+      "cast_seconds": 1,
+      "cooldown_seconds": 3,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=13=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.13.9",
+      "legacy_category_id": 13,
+      "legacy_entry_index": 9,
+      "legacy_path": "Skill[*][13][9]",
+      "name": {
+        "jp": "リストレーション",
+        "en": "Restoration",
+        "tw": "自然恢復"
+      },
+      "prerequisites": {
+        "jp": "慈愛 41",
+        "en": "Banevolence 41",
+        "tw": "慈愛 41"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パーティメンバー全員のライフを回復させ続ける事が出来る。",
+        "en": "Regenerates LP of all PT members over time.",
+        "tw": "能夠使隊伍全體成員的生命恢復,繼續戰鬥"
+      },
+      "is_active": true,
+      "mp_cost": 90,
+      "cast_seconds": 3,
+      "cooldown_seconds": 20,
+      "duration_seconds": 120,
+      "prerequisite_code": "S=13=41",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.13.10",
+      "legacy_category_id": 13,
+      "legacy_entry_index": 10,
+      "legacy_path": "Skill[*][13][10]",
+      "name": {
+        "jp": "ヒールスウェル",
+        "en": "Healing Aura",
+        "tw": "治療之風"
+      },
+      "prerequisites": {
+        "jp": "慈愛 54",
+        "en": "Banevolence 54",
+        "tw": "慈愛 54"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パーティメンバー全員のライフを大きく回復させる事が出来る。",
+        "en": "Recovers LP of all PT members.",
+        "tw": "能夠為隊伍全體成員恢復生命的魔法"
+      },
+      "is_active": true,
+      "mp_cost": 256,
+      "cast_seconds": 1,
+      "cooldown_seconds": 30,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=13=54",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.13.11",
+      "legacy_category_id": 13,
+      "legacy_entry_index": 11,
+      "legacy_path": "Skill[*][13][11]",
+      "name": {
+        "jp": "コンプリートセラピー",
+        "en": "Purify",
+        "tw": "天使障壁"
+      },
+      "prerequisites": {
+        "jp": "慈愛 71",
+        "en": "Banevolence 71",
+        "tw": "慈愛 71"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の状態異常を全て回復させ、状態異常耐性を増加させる。",
+        "en": "Removes all negative status of a target. Also increases resistance against status effects.",
+        "tw": "完全消除目標異常狀態，並增加異常狀態抵抗力"
+      },
+      "is_active": true,
+      "mp_cost": 76,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 35,
+      "duration_seconds": 15,
+      "prerequisite_code": "S=13=71",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.14.0",
+      "legacy_category_id": 14,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][14][0]",
+      "name": {
+        "jp": "ギブンリポーズ",
+        "en": "Tranquil Mind",
+        "tw": "精靈的擁抱"
+      },
+      "prerequisites": {
+        "jp": "プリースト Lv20",
+        "en": "Priest Lv20",
+        "tw": "牧師 Lv20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パーティーメンバー全員のマナの回復速度を上昇させる。",
+        "en": "Increases MP recovery rate of all PT members.",
+        "tw": "使隊伍成員全員的魔力恢復速度增加"
+      },
+      "is_active": true,
+      "mp_cost": 50,
+      "cast_seconds": 5,
+      "cooldown_seconds": 20,
+      "duration_seconds": 120,
+      "prerequisite_code": "J=15=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.14.1",
+      "legacy_category_id": 14,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][14][1]",
+      "name": {
+        "jp": "ディバインエイド",
+        "en": "Divine Aid",
+        "tw": "自然的祝福"
+      },
+      "prerequisites": {
+        "jp": "プリースト Lv28",
+        "en": "Priest Lv28",
+        "tw": "牧師 Lv28"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "生命を祝福する事により、パーティメンバー全員の最大ライフ量を増加させる。",
+        "en": "Temporarily increase all PT member's Max LP.",
+        "tw": "藉由祝福生命，使最大生命量大幅增加"
+      },
+      "is_active": true,
+      "mp_cost": 89,
+      "cast_seconds": 4,
+      "cooldown_seconds": 1.5,
+      "duration_seconds": 480,
+      "prerequisite_code": "J=15=28",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.14.2",
+      "legacy_category_id": 14,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][14][2]",
+      "name": {
+        "jp": "エンハンスエンチャント",
+        "en": "Enchantment",
+        "tw": "鋼力招來"
+      },
+      "prerequisites": {
+        "jp": "エンチャンター Lv45",
+        "en": "Enchanter Lv45",
+        "tw": "吟遊詩人 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の味方プレイヤーにオーラダメージを増加させる効果を与える。",
+        "en": "Places an effect on a targeted ally player granting them increased Aura Damage and Magic Attack Power.",
+        "tw": "給效果時間內己方玩家增加屬性傷害和魔法攻擊力"
+      },
+      "is_active": true,
+      "mp_cost": 68,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 1.5,
+      "duration_seconds": 480,
+      "prerequisite_code": "J=17=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.14.3",
+      "legacy_category_id": 14,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][14][3]",
+      "name": {
+        "jp": "グラーティア",
+        "en": "Velox",
+        "tw": "風之祝福"
+      },
+      "prerequisites": {
+        "jp": "祝福 8",
+        "en": "Blessing 8",
+        "tw": "祝福 8"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の攻撃速度を増加させる。",
+        "en": "Increases the Attack Speed of a target.",
+        "tw": "增加目標的攻擊速度"
+      },
+      "is_active": true,
+      "mp_cost": 26,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 1.5,
+      "duration_seconds": 480,
+      "prerequisite_code": "S=14=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.14.4",
+      "legacy_category_id": 14,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][14][4]",
+      "name": {
+        "jp": "ラピスメディオ",
+        "en": "Lapis Medio",
+        "tw": "地之祝福"
+      },
+      "prerequisites": {
+        "jp": "祝福 12",
+        "en": "Blessing 12",
+        "tw": "祝福 12"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の物理防御力を増加させる。",
+        "en": "Increases the physical defense of all party members.",
+        "tw": "增加隊伍全體成員的防禦力"
+      },
+      "is_active": true,
+      "mp_cost": 22,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 1.5,
+      "duration_seconds": 480,
+      "prerequisite_code": "S=14=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.14.5",
+      "legacy_category_id": 14,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][14][5]",
+      "name": {
+        "jp": "インペディメンタ",
+        "en": "Impedimenta",
+        "tw": "殘廢咒"
+      },
+      "prerequisites": {
+        "jp": "祝福 21",
+        "en": "Blessing 21",
+        "tw": "祝福 21"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の移動速度を減少させる。",
+        "en": "Reduces an enemy's moving speed.",
+        "tw": "減少目標的移動速度"
+      },
+      "is_active": true,
+      "mp_cost": 33,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 10,
+      "duration_seconds": 10,
+      "prerequisite_code": "S=14=21",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.14.6",
+      "legacy_category_id": 14,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][14][6]",
+      "name": {
+        "jp": "ウィンクルム",
+        "en": "Group Barrier",
+        "tw": "聖母之守護"
+      },
+      "prerequisites": {
+        "jp": "祝福 26",
+        "en": "Blessing 26",
+        "tw": "祝福 26"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パーティーメンバー全員の受けるダメージを軽減できる。",
+        "en": "Reduces damage received by all PT members.",
+        "tw": "能夠減少全體隊伍成員受到的傷害"
+      },
+      "is_active": true,
+      "mp_cost": 70,
+      "cast_seconds": 1,
+      "cooldown_seconds": 1.5,
+      "duration_seconds": 120,
+      "prerequisite_code": "S=14=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.14.7",
+      "legacy_category_id": 14,
+      "legacy_entry_index": 7,
+      "legacy_path": "Skill[*][14][7]",
+      "name": {
+        "jp": "アクアエリムス",
+        "en": "Aqua Elymus",
+        "tw": "聖水的祈求"
+      },
+      "prerequisites": {
+        "jp": "祝福 41",
+        "en": "Blessing 41",
+        "tw": "祝福 41"
+      },
+      "equipment_requirements": {
+        "jp": "空の容器*1",
+        "en": "1x Empty Bottle",
+        "tw": "空瓶"
+      },
+      "description": {
+        "jp": "空の容器を消費し、聖水を作成する。",
+        "en": "Create one Holy Water using: 1x Empty Bottle",
+        "tw": "消費空瓶,製作聖水"
+      },
+      "is_active": true,
+      "mp_cost": 4,
+      "cast_seconds": 1,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=14=41",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.14.8",
+      "legacy_category_id": 14,
+      "legacy_entry_index": 8,
+      "legacy_path": "Skill[*][14][8]",
+      "name": {
+        "jp": "サルタティオ",
+        "en": "Saltio",
+        "tw": "祝福聖歌"
+      },
+      "prerequisites": {
+        "jp": "祝福 54",
+        "en": "Blessing 54",
+        "tw": "祝福 54"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "一定時間の間、自分以外の対象が使用するスキルの詠唱速度を約30%増加させる。",
+        "en": "Increases a target's casting speed.",
+        "tw": "施加在友軍身上時,增加技能的吟唱速度"
+      },
+      "is_active": true,
+      "mp_cost": 31,
+      "cast_seconds": 0,
+      "cooldown_seconds": 5,
+      "duration_seconds": 90,
+      "prerequisite_code": "S=14=54",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.14.9",
+      "legacy_category_id": 14,
+      "legacy_entry_index": 9,
+      "legacy_path": "Skill[*][14][9]",
+      "name": {
+        "jp": "プロエリウム",
+        "en": "Battle Prayer",
+        "tw": "戰神祝福"
+      },
+      "prerequisites": {
+        "jp": "祝福 61",
+        "en": "Blessing 61",
+        "tw": "祝福 61"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の筋力、敏捷、知性を増加させる。",
+        "en": "Target increases in Strength, Agility, and Intelligence stats.",
+        "tw": "增加目標的力量，敏捷，智慧"
+      },
+      "is_active": true,
+      "mp_cost": 78,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 1.5,
+      "duration_seconds": 480,
+      "prerequisite_code": "S=14=61",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.15.0",
+      "legacy_category_id": 15,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][15][0]",
+      "name": {
+        "jp": "レックスナチュラリス",
+        "en": "Mana Restore",
+        "tw": "心靈啟動"
+      },
+      "prerequisites": {
+        "jp": "アセティック Lv20",
+        "en": "Ascetic Lv20",
+        "tw": "苦修士 Lv20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "MPを一定時間、少しづつ回復させることができる。",
+        "en": "Restores the target's MP (Mana) by invigorating their magical power.",
+        "tw": "使目標或自身的魔力活化，讓MP慢慢的回覆"
+      },
+      "is_active": true,
+      "mp_cost": 32,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 10,
+      "duration_seconds": 120,
+      "prerequisite_code": "J=18=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.15.1",
+      "legacy_category_id": 15,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][15][1]",
+      "name": {
+        "jp": "ウィンドアシスト",
+        "en": "Speedy Gale",
+        "tw": "閃避結界"
+      },
+      "prerequisites": {
+        "jp": "アセティック Lv28",
+        "en": "Ascetic Lv28",
+        "tw": "苦修士 Lv28"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パーティーメンバー全員の回避を増加させる。",
+        "en": "Increases Evasion of all PT members.",
+        "tw": "增加隊伍全員的閃避率"
+      },
+      "is_active": true,
+      "mp_cost": 55,
+      "cast_seconds": 0,
+      "cooldown_seconds": 1,
+      "duration_seconds": 480,
+      "prerequisite_code": "J=18=28",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.15.2",
+      "legacy_category_id": 15,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][15][2]",
+      "name": {
+        "jp": "プロジェニー",
+        "en": "Sound Mind",
+        "tw": "淨化屏障"
+      },
+      "prerequisites": {
+        "jp": "モンク Lv45",
+        "en": "Monk Lv45",
+        "tw": "武僧 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。害を与える魔法効果の効果時間を減少させる。",
+        "en": "Reduces the duration of De-Buff spells or negative status effects inflicted on a player.",
+        "tw": "使負面傷害的魔法效果時間減少"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=19=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.15.3",
+      "legacy_category_id": 15,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][15][3]",
+      "name": {
+        "jp": "スワップマナ",
+        "en": "Mana Swap",
+        "tw": "心靈轉換"
+      },
+      "prerequisites": {
+        "jp": "エクソシスト Lv45",
+        "en": "Exorcist Lv45",
+        "tw": "驅魔人 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象のプレイヤーと自分のMPを入れ替える。",
+        "en": "Swaps MP with an ally's.",
+        "tw": "交換目標玩家和自己的MP值"
+      },
+      "is_active": true,
+      "mp_cost": 16,
+      "cast_seconds": 2,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=20=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.15.4",
+      "legacy_category_id": 15,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][15][4]",
+      "name": {
+        "jp": "スワップソウル",
+        "en": "Soul Swap",
+        "tw": "身心轉換"
+      },
+      "prerequisites": {
+        "jp": "エクソシスト Lv50",
+        "en": "Exorcist Lv50",
+        "tw": "驅魔人 Lv50"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "自分と相手にかかっている魔法効果を全て入れ替える。",
+        "en": "Exchanges your status effects to a targets's",
+        "tw": "替換自身與目標身上魔法效果的技能"
+      },
+      "is_active": true,
+      "mp_cost": 21,
+      "cast_seconds": 1,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=20=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.15.5",
+      "legacy_category_id": 15,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][15][5]",
+      "name": {
+        "jp": "リビティウム",
+        "en": "Mental Aid",
+        "tw": "淨化"
+      },
+      "prerequisites": {
+        "jp": "祈祷 35",
+        "en": "Grace 35",
+        "tw": "神聖 35"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "害を与えていた魔法効果を1つ打ち消す。",
+        "en": "Dispels a single mental status effects to a target.",
+        "tw": "消除1個負面的魔法效果"
+      },
+      "is_active": true,
+      "mp_cost": 14,
+      "cast_seconds": 2,
+      "cooldown_seconds": 60,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=12=35",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.15.6",
+      "legacy_category_id": 15,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][15][6]",
+      "name": {
+        "jp": "チャスタイズ",
+        "en": "Pure Arrow",
+        "tw": "光之箭"
+      },
+      "prerequisites": {
+        "jp": "祓魔 8",
+        "en": "Exorcism 8",
+        "tw": "退魔 8"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "光で作られた矢を飛ばす。悪魔やアンデットに効果が高い。",
+        "en": "Arrow of light that is effective against Demons and Undead elemental enemies.",
+        "tw": "發出光之箭體，對惡魔和不死族的怪物有加成效果"
+      },
+      "is_active": true,
+      "mp_cost": 18,
+      "cast_seconds": 1,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=15=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.15.7",
+      "legacy_category_id": 15,
+      "legacy_entry_index": 7,
+      "legacy_path": "Skill[*][15][7]",
+      "name": {
+        "jp": "スワロウエレメント",
+        "en": "Elemental Absorption",
+        "tw": "元素屏障"
+      },
+      "prerequisites": {
+        "jp": "祓魔 12",
+        "en": "Exorcism 12",
+        "tw": "退魔 12"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "火炎・冷気・電撃魔法のダメージを軽減する。",
+        "en": "Fire, Ice, Lightning elemental damage resistance.",
+        "tw": "減少火系、冰系、雷系魔法的傷害"
+      },
+      "is_active": true,
+      "mp_cost": 60,
+      "cast_seconds": 0.8,
+      "cooldown_seconds": 10,
+      "duration_seconds": 60,
+      "prerequisite_code": "S=15=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.15.8",
+      "legacy_category_id": 15,
+      "legacy_entry_index": 8,
+      "legacy_path": "Skill[*][15][8]",
+      "name": {
+        "jp": "ホーリーウェポン",
+        "en": "Bless Weapon",
+        "tw": "虔誠賜予"
+      },
+      "prerequisites": {
+        "jp": "祓魔 26",
+        "en": "Exorcism 26",
+        "tw": "退魔 26"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "武器に聖なる祝福を宿らせる。",
+        "en": "Grants an aura of Light to a target's weapon.",
+        "tw": "使目標的武器帶有光屬性"
+      },
+      "is_active": true,
+      "mp_cost": 30,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 1.5,
+      "duration_seconds": 480,
+      "prerequisite_code": "S=15=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.15.9",
+      "legacy_category_id": 15,
+      "legacy_entry_index": 9,
+      "legacy_path": "Skill[*][15][9]",
+      "name": {
+        "jp": "レメディウム",
+        "en": "Remedium",
+        "tw": "淨身術"
+      },
+      "prerequisites": {
+        "jp": "祓魔 41",
+        "en": "Exorcism 41",
+        "tw": "退魔 41"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "祝福により、害を与えていた魔法効果を１つ打ち消す。聖水を1つ消費する。",
+        "en": "Dispels a negative status effect through the power of blessing.",
+        "tw": "通過祝福,消除負面效果的魔法效果"
+      },
+      "is_active": true,
+      "mp_cost": 26,
+      "cast_seconds": 1,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=15=41",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.15.10",
+      "legacy_category_id": 15,
+      "legacy_entry_index": 10,
+      "legacy_path": "Skill[*][15][10]",
+      "name": {
+        "jp": "デシプリンサークル",
+        "en": "Holy Rays",
+        "tw": "天威降臨"
+      },
+      "prerequisites": {
+        "jp": "祓魔 54",
+        "en": "Exorcism 54",
+        "tw": "退魔 54"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "自分の周囲に光の柱を出現させダメージを与える。",
+        "en": "Creates pillars of light surrounding the caster, damaging one's enemies who come near.",
+        "tw": "在自己的周圍出現光之柱,給予傷害"
+      },
+      "is_active": true,
+      "mp_cost": 132,
+      "cast_seconds": 6,
+      "cooldown_seconds": 60,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=15=54",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.15.11",
+      "legacy_category_id": 15,
+      "legacy_entry_index": 11,
+      "legacy_path": "Skill[*][15][11]",
+      "name": {
+        "jp": "アンサモン",
+        "en": "Banish",
+        "tw": "黑暗回歸"
+      },
+      "prerequisites": {
+        "jp": "祓魔 61",
+        "en": "Exorcism 61",
+        "tw": "退魔 61"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "範囲内にある、召還された物を消滅させる。",
+        "en": "Eliminates all summoned creatures within a certain radius of the caster.",
+        "tw": "將範圍內被召喚的東西消滅"
+      },
+      "is_active": true,
+      "mp_cost": 41,
+      "cast_seconds": 5,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=15=61",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.15.12",
+      "legacy_category_id": 15,
+      "legacy_entry_index": 12,
+      "legacy_path": "Skill[*][15][12]",
+      "name": {
+        "jp": "ディヴォーション",
+        "en": "Devotions",
+        "tw": "心靈連結"
+      },
+      "prerequisites": {
+        "jp": "祝福 20、祓魔 61",
+        "en": "Blessing 20 & Exorcism 61",
+        "tw": "退魔 61、祝福 20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象がスキルを使用する時のMPを、自分が肩代わりする。同時に4人まで使用可能。",
+        "en": "Supplies the MP for any skills used by the target. This can be used to up to 4 people. Up to 4 players can share/use your MP.",
+        "tw": "將目標使用技能時的MP由自己代替，同時可使用4人"
+      },
+      "is_active": true,
+      "mp_cost": 50,
+      "cast_seconds": 3,
+      "cooldown_seconds": 0.5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=14=20_S=15=61",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.15.13",
+      "legacy_category_id": 15,
+      "legacy_entry_index": 13,
+      "legacy_path": "Skill[*][15][13]",
+      "name": {
+        "jp": "クワイエティズム",
+        "en": "Silent Void",
+        "tw": "光之赦令"
+      },
+      "prerequisites": {
+        "jp": "祓魔 71",
+        "en": "Exorcism 71",
+        "tw": "退魔 71"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "範囲内のフィールドに作用するスキルを無効にし、地点指定をすることができなくなる。",
+        "en": "Disables Field Skills and prevents targeting areas within the area of effect. Disables AOE spell targetting.",
+        "tw": "使作用到一定區域內的範圍技能失效，不能指定地點"
+      },
+      "is_active": true,
+      "mp_cost": 93,
+      "cast_seconds": 5,
+      "cooldown_seconds": 12,
+      "duration_seconds": 120,
+      "prerequisite_code": "S=15=71",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.16.0",
+      "legacy_category_id": 16,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][16][0]",
+      "name": {
+        "jp": "詩人の歌",
+        "en": "Minstrel's Song",
+        "tw": "詩人之歌"
+      },
+      "prerequisites": {
+        "jp": "聖歌 8",
+        "en": "Hymn 8",
+        "tw": "聖歌 8"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "集中力を高める歌を歌う。効果内のプレイヤーの命中・回避増加。",
+        "en": "Song that improves concentration. Increases Accuracy & Evasion to affected players.",
+        "tw": "唱增加命中力的歌，效果內的玩家的命中&閃避增加"
+      },
+      "is_active": true,
+      "mp_cost": 30,
+      "cast_seconds": 0,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=16=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.16.1",
+      "legacy_category_id": 16,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][16][1]",
+      "name": {
+        "jp": "ルミナスチャント",
+        "en": "Luminous Chant",
+        "tw": "聖歌傳承"
+      },
+      "prerequisites": {
+        "jp": "聖歌 21",
+        "en": "Hymn 21",
+        "tw": "聖歌 21"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。聖歌スキル使用中に、熟練度に応じて移動が可能となる。",
+        "en": "Enable use Chant skills while moving. Moving speed depends of Chant skill level.",
+        "tw": "使用聖歌技能中，可根據熟練度增加移動速度的效果"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=16=21",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.16.2",
+      "legacy_category_id": 16,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][16][2]",
+      "name": {
+        "jp": "平和の歌",
+        "en": "Peaceful Hymn",
+        "tw": "和平之歌"
+      },
+      "prerequisites": {
+        "jp": "慈愛 61、聖歌 30",
+        "en": "Banevolence 61 & Hymn 30",
+        "tw": "慈愛 61、聖歌 30"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "防御力を増加させる歌を歌う。効果内のプレイヤーは一定以下のダメージを無効にする。",
+        "en": "Song that increases defense. Affected players do not suffer damage below a certain amount.",
+        "tw": "唱增加防禦力的歌，效果內玩家受到一定量的傷害減免"
+      },
+      "is_active": true,
+      "mp_cost": 33,
+      "cast_seconds": 0,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=13=61_S=16=30",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.16.3",
+      "legacy_category_id": 16,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][16][3]",
+      "name": {
+        "jp": "魔力の歌",
+        "en": "Sage's Song",
+        "tw": "魔力之歌"
+      },
+      "prerequisites": {
+        "jp": "祝福 71、聖歌 30",
+        "en": "Blessing 71 & Hymn 30",
+        "tw": "祝福 71、聖歌 30"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "魔力を増加させる歌を歌う。効果内のプレイヤーの魔法攻撃力を増加、ディレイタイム減少。",
+        "en": "Song that increases magic attack power and reduces cool-down time of players within range of effect.",
+        "tw": "增加效果內的玩家的魔法攻擊力，減少技能冷卻時間"
+      },
+      "is_active": true,
+      "mp_cost": 33,
+      "cast_seconds": 0,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=14=71_S=16=30",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.17.0",
+      "legacy_category_id": 17,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][17][0]",
+      "name": {
+        "jp": "魔力上昇",
+        "en": "Scholar",
+        "tw": "魔力上升"
+      },
+      "prerequisites": {
+        "jp": "ウィザード Lv20",
+        "en": "Wizard Lv20",
+        "tw": "術士 Lv20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。多彩な魔法の知識を得て、魔法威力を上昇させる。",
+        "en": "Your vast knowledge of the magical arts increases your magical strength.",
+        "tw": "獲得豐富多彩的魔法知識，在一定時間內使魔法威力上升"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=22=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.17.1",
+      "legacy_category_id": 17,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][17][1]",
+      "name": {
+        "jp": "ダークバインド",
+        "en": "Shadow Garments",
+        "tw": "黑暗結合"
+      },
+      "prerequisites": {
+        "jp": "ダークロア Lv20",
+        "en": "Sorcerer Lv20",
+        "tw": "巫師 Lv20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。闇のオーラ装備を身につけると、火炎・冷気・電撃・毒に対する抵抗を得る。",
+        "en": "When you wear equipment with Dark Aura, you gain: + Fire, Ice, Lightning Resistance",
+        "tw": "全身覆蓋黑暗光環，提升對於火焰、冷氣、電擊的抵抗能力"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=25=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.0",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][18][0]",
+      "name": {
+        "jp": "ファイアボルト",
+        "en": "Fire Bolt",
+        "tw": "火之矢"
+      },
+      "prerequisites": {
+        "jp": "メイジ Lv1",
+        "en": "Mage Lv1",
+        "tw": "法師 Lv1"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "火炎でつくられた矢を飛ばしダメージを与える。",
+        "en": "Inflict magic damage with a flaming arrow.",
+        "tw": "射出火系箭，造成傷害"
+      },
+      "is_active": true,
+      "mp_cost": 28,
+      "cast_seconds": 0.8,
+      "cooldown_seconds": 2,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=21=1",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.1",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][18][1]",
+      "name": {
+        "jp": "フラッシュ",
+        "en": "Shock",
+        "tw": "閃電"
+      },
+      "prerequisites": {
+        "jp": "メイジ Lv12",
+        "en": "Mage Lv12",
+        "tw": "法師 Lv12"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "電撃で作られた矢を遠くに飛ばす。",
+        "en": "Lightning strike on the enemy with stun effect.",
+        "tw": "從對手的頭上落雷，在一段時間停止移動"
+      },
+      "is_active": true,
+      "mp_cost": 44,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 20,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=21=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.2",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][18][2]",
+      "name": {
+        "jp": "サンダークラッシュ",
+        "en": "Thunder Crash",
+        "tw": "巨雷破"
+      },
+      "prerequisites": {
+        "jp": "ウィザード Lv20",
+        "en": "Wizard Lv20",
+        "tw": "術士 Lv20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "電撃の矢を遠くに飛ばす。",
+        "en": "Causes powerful lightning to strike your opponent's head.",
+        "tw": "從對手的頭上落下強力的雷"
+      },
+      "is_active": true,
+      "mp_cost": 78,
+      "cast_seconds": 3.5,
+      "cooldown_seconds": 12,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=22=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.3",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][18][3]",
+      "name": {
+        "jp": "セントラライズ",
+        "en": "Magical Aid",
+        "tw": "精神修養"
+      },
+      "prerequisites": {
+        "jp": "ウォーロック Lv45",
+        "en": "Warlock Lv45",
+        "tw": "元素師 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "自分が次に使用する魔法威力を増加させる。",
+        "en": "Further increases magic attack power.",
+        "tw": "增加自己下次使用的魔法威力"
+      },
+      "is_active": true,
+      "mp_cost": 56,
+      "cast_seconds": 2.5,
+      "cooldown_seconds": 15,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=23=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.4",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][18][4]",
+      "name": {
+        "jp": "ヘイルストーン",
+        "en": "Hailstone",
+        "tw": "冰之石"
+      },
+      "prerequisites": {
+        "jp": "元素 8",
+        "en": "Elemental 8",
+        "tw": "元素 8"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "素早く氷の塊を作り、対象に飛ばす。",
+        "en": "Launch a mass of ice towards the enemy.",
+        "tw": "快速製作冰塊,扔向對象"
+      },
+      "is_active": true,
+      "mp_cost": 18,
+      "cast_seconds": 0.3,
+      "cooldown_seconds": 2,
+      "duration_seconds": 4,
+      "prerequisite_code": "S=18=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.5",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][18][5]",
+      "name": {
+        "jp": "サンダーボール",
+        "en": "Thunder Ball",
+        "tw": "雷鳥球"
+      },
+      "prerequisites": {
+        "jp": "元素 12",
+        "en": "Elemental 12",
+        "tw": "元素 12"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象に電撃の塊を飛ばし周囲に電撃ダメージを与える。",
+        "en": "Create a lightning ball which strike the surroundings causing damage to multiple enemies.",
+        "tw": "從遠處扔出一個雷球,對周圍進行傷害"
+      },
+      "is_active": true,
+      "mp_cost": 50,
+      "cast_seconds": 2,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=18=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.6",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][18][6]",
+      "name": {
+        "jp": "アイススピア",
+        "en": "Ice Spear",
+        "tw": "冰之矛"
+      },
+      "prerequisites": {
+        "jp": "元素 21",
+        "en": "Elemental 21",
+        "tw": "元素 21"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "素早く鋭い氷の矢を作り出し、対象に飛ばす。",
+        "en": "Shoot the enemy with an ice arrow.",
+        "tw": "快速向對象射出銳利的冰箭"
+      },
+      "is_active": true,
+      "mp_cost": 59,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=18=21",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.7",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 7,
+      "legacy_path": "Skill[*][18][7]",
+      "name": {
+        "jp": "ファイアストーム",
+        "en": "Fire Storm",
+        "tw": "火之風暴"
+      },
+      "prerequisites": {
+        "jp": "元素 26",
+        "en": "Elemental 26",
+        "tw": "元素 26"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "自分の周囲に火炎の竜巻を発生させる。",
+        "en": "Generates a tornado of flame around the caster. AOE spell.",
+        "tw": "在自己的周圍發生火系龍捲風"
+      },
+      "is_active": true,
+      "mp_cost": 100,
+      "cast_seconds": 6,
+      "cooldown_seconds": 30,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=18=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.8",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 8,
+      "legacy_path": "Skill[*][18][8]",
+      "name": {
+        "jp": "レジストファイア",
+        "en": "Resist Fire",
+        "tw": "火系抗性"
+      },
+      "prerequisites": {
+        "jp": "元素 33",
+        "en": "Elemental 33",
+        "tw": "元素 33"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の火炎耐性を増加させるが、冷気耐性、電撃耐性を減少させる。",
+        "en": "+ Ice Resist. - Fire, Lightning Resist.",
+        "tw": "增加對象的火系抵抗,減少冰系抵抗、雷系抵抗"
+      },
+      "is_active": true,
+      "mp_cost": 32,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 3.5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=18=33",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.9",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 9,
+      "legacy_path": "Skill[*][18][9]",
+      "name": {
+        "jp": "レジストアイス",
+        "en": "Resist Cold",
+        "tw": "冰系抗性"
+      },
+      "prerequisites": {
+        "jp": "元素 33",
+        "en": "Elemental 33",
+        "tw": "元素 35"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の冷気耐性を増加させるが、火炎耐性、電撃耐性を減少させる。",
+        "en": "+ Fire Resist. - Ice, Lightning Resist.",
+        "tw": "增加對象的冰系抵抗,但減少火系抵抗、雷系抵抗"
+      },
+      "is_active": true,
+      "mp_cost": 32,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 3.5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=18=33",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.10",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 10,
+      "legacy_path": "Skill[*][18][10]",
+      "name": {
+        "jp": "レジストサンダー",
+        "en": "Resist Lightning",
+        "tw": "雷系抗性"
+      },
+      "prerequisites": {
+        "jp": "元素 33",
+        "en": "Elemental 33",
+        "tw": "元素 41"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の電撃耐性を増加させるが、火炎耐性、冷気耐性を減少させる。",
+        "en": "+ Lightning Resist. - Fire, Ice Resist.",
+        "tw": "增加對象的雷系抵抗,但減少火系抵抗、冰系抵抗"
+      },
+      "is_active": true,
+      "mp_cost": 32,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 3.5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=18=33",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.11",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 11,
+      "legacy_path": "Skill[*][18][11]",
+      "name": {
+        "jp": "アイスゾーン",
+        "en": "Ice Storm",
+        "tw": "冰之漩渦"
+      },
+      "prerequisites": {
+        "jp": "元素 54",
+        "en": "Elemental 54",
+        "tw": "元素 54"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "素早く一帯に冷気の渦を作り上げる。",
+        "en": "Creates a vortex of cold air that can Knockback foes. AOE spell.",
+        "tw": "快速在指定區域內生成寒流旋渦,可以擊退被命中的目標"
+      },
+      "is_active": true,
+      "mp_cost": 112,
+      "cast_seconds": 7.5,
+      "cooldown_seconds": 20,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=18=54",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.12",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 12,
+      "legacy_path": "Skill[*][18][12]",
+      "name": {
+        "jp": "アイステンペスト",
+        "en": "Ice Tempest",
+        "tw": "冰風暴"
+      },
+      "prerequisites": {
+        "jp": "元素 71",
+        "en": "Elemental 71",
+        "tw": "元素 71"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "元素71でアイスゾーンが変化。広範囲に強力な冷気の渦を作り上げ、命中した相手を確実にノックバックさせる。",
+        "en": "Creates an immense icy vortex that can Knock back foes. AOE spell.",
+        "tw": "生成範圍更大、威力更強的寒流漩渦，可以擊退被命中的目標"
+      },
+      "is_active": true,
+      "mp_cost": 287,
+      "cast_seconds": 7.5,
+      "cooldown_seconds": 20,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=18=71",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.13",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 13,
+      "legacy_path": "Skill[*][18][13]",
+      "name": {
+        "jp": "ディレイドボム",
+        "en": "Time Bomb",
+        "tw": "心靈爆震"
+      },
+      "prerequisites": {
+        "jp": "元素 61",
+        "en": "Elemental 61",
+        "tw": "元素 61"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象を一定時間後に爆破する。威力は爆破までに掛かった時間に依存する。",
+        "en": "Blow up a target after a certain period of time. Attack power is dependent on time elapsed before activation.",
+        "tw": "使目標在一定時間后爆破，威力與爆破存在的時間有關"
+      },
+      "is_active": true,
+      "mp_cost": 61,
+      "cast_seconds": 2,
+      "cooldown_seconds": 6,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=18=61",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.14",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 14,
+      "legacy_path": "Skill[*][18][14]",
+      "name": {
+        "jp": "サンダーストーム",
+        "en": "Thunder Storm",
+        "tw": "雷電風暴"
+      },
+      "prerequisites": {
+        "jp": "祓魔 40、元素 61",
+        "en": "Exorcism 40 & Elemental 61",
+        "tw": "元素 61、退魔 40"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "指定した地点に雷を発生させる。騎乗していると移動することができなくなる。",
+        "en": "Cause thunderstorms at a given point. Targets on horseback will be rendered Immobile. AOE spell.",
+        "tw": "在指定地點召喚天雷，目標騎乘狀態下將被定身"
+      },
+      "is_active": true,
+      "mp_cost": 227,
+      "cast_seconds": 20,
+      "cooldown_seconds": 20,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=15=40_S=18=61",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.18.15",
+      "legacy_category_id": 18,
+      "legacy_entry_index": 15,
+      "legacy_path": "Skill[*][18][15]",
+      "name": {
+        "jp": "メテオストーム",
+        "en": "Meteor Shower",
+        "tw": "流星風暴"
+      },
+      "prerequisites": {
+        "jp": "元素 61、具現 40",
+        "en": "Elemental 61 & Invocation 40",
+        "tw": "元素 61、具現化 40"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "指定した地点の周囲に隕石を落下させる。気絶効果を与えることがある。",
+        "en": "Meteorites fall around a specified point. Those in the area of effect can be Knocked Out. AOE spell.",
+        "tw": "在指定的地點周圍落下隕石，有暈眩效果"
+      },
+      "is_active": true,
+      "mp_cost": 312,
+      "cast_seconds": 20,
+      "cooldown_seconds": 20,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=18=61_S=19=40",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.19.0",
+      "legacy_category_id": 19,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][19][0]",
+      "name": {
+        "jp": "メモライズ",
+        "en": "Memorize",
+        "tw": "記憶咒法"
+      },
+      "prerequisites": {
+        "jp": "コンジュラー Lv45",
+        "en": "Conjurer Lv45",
+        "tw": "德魯伊 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "ワープ先を1つまで記憶する。一部マップのみ使用可能となりマップ移動で効果が切れる。",
+        "en": "Registers a location for Teleportation. Can only be used on certain maps.",
+        "tw": "記憶1個地點，只能在部份地圖使用"
+      },
+      "is_active": true,
+      "mp_cost": 10,
+      "cast_seconds": 1,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=24=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.19.1",
+      "legacy_category_id": 19,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][19][1]",
+      "name": {
+        "jp": "トランスポート",
+        "en": "Teleport",
+        "tw": "移動咒法"
+      },
+      "prerequisites": {
+        "jp": "コンジュラー Lv45",
+        "en": "Conjurer Lv45",
+        "tw": "德魯伊 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "メモライズで記憶した場所と現在の場所を繋ぐワープを出現させる。",
+        "en": "Creates a warp linking your current location with the location saved by Memorize skill.",
+        "tw": "出現一個連結記錄點的特殊傳送門"
+      },
+      "is_active": true,
+      "mp_cost": 24,
+      "cast_seconds": 2,
+      "cooldown_seconds": 300,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=24=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.19.2",
+      "legacy_category_id": 19,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][19][2]",
+      "name": {
+        "jp": "インテレット",
+        "en": "Intelletto",
+        "tw": "長存咒法"
+      },
+      "prerequisites": {
+        "jp": "コンジュラー Lv50",
+        "en": "Conjurer Lv50",
+        "tw": "德魯伊 Lv50"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。メモライズで記憶できる場所を1つ増加させることができる。",
+        "en": "Increases number of locations saved by Memorize Skill based on the Invocation Proficiency level of the user.",
+        "tw": "能夠根據熟練度的增加，增加可保存復活點的個數"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=24=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.19.3",
+      "legacy_category_id": 19,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][19][3]",
+      "name": {
+        "jp": "マインドスプリーム",
+        "en": "Supreme Mind",
+        "tw": "精神具現"
+      },
+      "prerequisites": {
+        "jp": "コンジュラー Lv50",
+        "en": "Conjurer Lv50",
+        "tw": "德魯伊 Lv50"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。精神の鍛錬により、具現スキルを強化することができる。",
+        "en": "Improves your skills by strengthening your mind.",
+        "tw": "通過精神的鍛煉，能夠強化具現系技能"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=24=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.19.4",
+      "legacy_category_id": 19,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][19][4]",
+      "name": {
+        "jp": "ソウルブライト",
+        "en": "Soul Blight",
+        "tw": "靈魂之光"
+      },
+      "prerequisites": {
+        "jp": "具現 8",
+        "en": "Invocation 8",
+        "tw": "具現 8"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "自分の周囲を照らし、ハイディング状態を解除させる。",
+        "en": "Illuminate the caster's surroundings to dispel the enemy's invisibility status.",
+        "tw": "照亮自己的周圍,解除隱身狀態"
+      },
+      "is_active": true,
+      "mp_cost": 14,
+      "cast_seconds": 1,
+      "cooldown_seconds": 7,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=19=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.19.5",
+      "legacy_category_id": 19,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][19][5]",
+      "name": {
+        "jp": "マナシールド",
+        "en": "Mana Shield",
+        "tw": "魔力屏障"
+      },
+      "prerequisites": {
+        "jp": "具現 21",
+        "en": "Invocation 21",
+        "tw": "具現 21"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "攻撃を受ける度にマナを消費するが、自分が受ける物理ダメージを軽減させる。",
+        "en": "Caster's MP will be taken instead of HP each (physical?) damage suffered.",
+        "tw": "每次受到攻擊時扣除一定的魔法值來抵消受到的物理傷害。"
+      },
+      "is_active": true,
+      "mp_cost": 24,
+      "cast_seconds": 3,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=19=21",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.19.6",
+      "legacy_category_id": 19,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][19][6]",
+      "name": {
+        "jp": "フォローウィンド",
+        "en": "Clear Mind",
+        "tw": "風行"
+      },
+      "prerequisites": {
+        "jp": "具現 31",
+        "en": "Invocation 31",
+        "tw": "具現 31"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "風を身に纏うことで、詠唱を妨害されにくくなる。",
+        "en": "Reduces probability of cast interruption.",
+        "tw": "風包圍身體,降低被妨礙吟唱的機率"
+      },
+      "is_active": true,
+      "mp_cost": 59,
+      "cast_seconds": 5,
+      "cooldown_seconds": 1.5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=19=31",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.19.7",
+      "legacy_category_id": 19,
+      "legacy_entry_index": 7,
+      "legacy_path": "Skill[*][19][7]",
+      "name": {
+        "jp": "フライングエッジ",
+        "en": "Psychic Blade",
+        "tw": "虛空之刃"
+      },
+      "prerequisites": {
+        "jp": "具現 41",
+        "en": "Invocation 41",
+        "tw": "具現 41"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "念で作られた刃を対象に飛ばす。ダメージは相手の防御力に依存する。",
+        "en": "Attack damage depends on opponent's defense.",
+        "tw": "通過意念射出一把空之刃,目標物理防禦力將會降低傷害"
+      },
+      "is_active": true,
+      "mp_cost": 39,
+      "cast_seconds": 3.5,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=19=41",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.19.8",
+      "legacy_category_id": 19,
+      "legacy_entry_index": 8,
+      "legacy_path": "Skill[*][19][8]",
+      "name": {
+        "jp": "ペインシェントウォール",
+        "en": "Blockade",
+        "tw": "土牆術"
+      },
+      "prerequisites": {
+        "jp": "具現 50",
+        "en": "Invocation 50",
+        "tw": "具現 50"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "巨大な壁を具現化する。全てのプレイヤーは通過することができない。",
+        "en": "Embodies caster in a huge wall that all players cannot pass through.",
+        "tw": "現出巨大的牆壁。所有玩家都不能通過"
+      },
+      "is_active": true,
+      "mp_cost": 79,
+      "cast_seconds": 5,
+      "cooldown_seconds": 120,
+      "duration_seconds": 150,
+      "prerequisite_code": "S=19=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.19.9",
+      "legacy_category_id": 19,
+      "legacy_entry_index": 9,
+      "legacy_path": "Skill[*][19][9]",
+      "name": {
+        "jp": "コールサンドマン",
+        "en": "Summon Sandman",
+        "tw": "沙之龍"
+      },
+      "prerequisites": {
+        "jp": "具現 61",
+        "en": "Invocation 61",
+        "tw": "具現 61"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "巨大な竜巻を召還しダメージを与える。相手を眠らせることがある。",
+        "en": "Summons a giant tornado that inflict damage and can put your opponent to Sleep.",
+        "tw": "召喚巨大的龍捲風進行傷害，能夠使對手睡眠"
+      },
+      "is_active": true,
+      "mp_cost": 58,
+      "cast_seconds": 7,
+      "cooldown_seconds": 15,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=19=61",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.19.10",
+      "legacy_category_id": 19,
+      "legacy_entry_index": 10,
+      "legacy_path": "Skill[*][19][10]",
+      "name": {
+        "jp": "イーヴルプラント",
+        "en": "Malevolent Plant",
+        "tw": "樹人召喚"
+      },
+      "prerequisites": {
+        "jp": "具現 71",
+        "en": "Invocation 71",
+        "tw": "具現 71"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "指定した地点に植物を召還する。植物は近くの敵に対して遠距離攻撃を行う。攻撃命中時、一定確率で毒の効果を付与する。",
+        "en": "Summons a plant at a designated point. The plant will begin using ranged attacks on nearby enemies.",
+        "tw": "在指定地點召喚樹人，遠距離攻擊靠近的目標"
+      },
+      "is_active": true,
+      "mp_cost": 64,
+      "cast_seconds": 2,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=19=71",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.20.0",
+      "legacy_category_id": 20,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][20][0]",
+      "name": {
+        "jp": "ダークフィッテスト",
+        "en": "Dark Shield",
+        "tw": "黑暗吸收"
+      },
+      "prerequisites": {
+        "jp": "カラミティ Lv45",
+        "en": "Shadowblade Lv45",
+        "tw": "咒術師 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。闇のオーラによる反動ダメージを軽減する。",
+        "en": "Reduces the amount of Rebound damage you take from Dark auras.",
+        "tw": "減少暗黑屬性的反動傷害"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=27=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.20.1",
+      "legacy_category_id": 20,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][20][1]",
+      "name": {
+        "jp": "ステルストリップ",
+        "en": "Conceal",
+        "tw": "偽裝結界"
+      },
+      "prerequisites": {
+        "jp": "カラミティ Lv50",
+        "en": "Shadowblade Lv50",
+        "tw": "咒術師 Lv50"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "範囲内のパーティメンバーをハイディング状態にする。",
+        "en": "Grants the hiding state to nearby party members.",
+        "tw": "範圍內小隊成員變為隱身狀態"
+      },
+      "is_active": true,
+      "mp_cost": 240,
+      "cast_seconds": 3,
+      "cooldown_seconds": 120,
+      "duration_seconds": 300,
+      "prerequisite_code": "J=27=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.20.2",
+      "legacy_category_id": 20,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][20][2]",
+      "name": {
+        "jp": "ポイズンシェル",
+        "en": "Infect",
+        "tw": "劇毒孢子"
+      },
+      "prerequisites": {
+        "jp": "暗黒 8",
+        "en": "Darkness 8",
+        "tw": "暗黑 8"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の体内に毒を送り込み、毒状態にする。",
+        "en": "A strike which inject deadly poison into the body. Inflicts Poison status effect to victim.",
+        "tw": "向目標體內送入毒素,使其變為中毒狀態"
+      },
+      "is_active": true,
+      "mp_cost": 12,
+      "cast_seconds": 2,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=20=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.20.3",
+      "legacy_category_id": 20,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][20][3]",
+      "name": {
+        "jp": "グルーミーエフェクト",
+        "en": "Gloom",
+        "tw": "黑暗契約"
+      },
+      "prerequisites": {
+        "jp": "暗黒 16",
+        "en": "Darkness 16",
+        "tw": "暗黑 16"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "武器に暗黒の力を宿らせる。",
+        "en": "Casting a dark aura on the weapon. Those injured by the weapon will suffer a curse which will revert back any kind of attack to himself.",
+        "tw": "使武器帶有暗黑屬性。每次攻擊自身會受到傷害"
+      },
+      "is_active": true,
+      "mp_cost": 38,
+      "cast_seconds": 2,
+      "cooldown_seconds": 10,
+      "duration_seconds": 120,
+      "prerequisite_code": "S=20=16",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.20.4",
+      "legacy_category_id": 20,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][20][4]",
+      "name": {
+        "jp": "ブラッドドレイン",
+        "en": "Blood Drain",
+        "tw": "吸血術"
+      },
+      "prerequisites": {
+        "jp": "暗黒 21",
+        "en": "Darkness 21",
+        "tw": "暗黑 21"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "相手の生命力を抜き出し、自分のものとしてしまう。",
+        "en": "Extracts your opponent's HP to add it to your own.",
+        "tw": "吸收對手的生命力,變為自己的"
+      },
+      "is_active": true,
+      "mp_cost": 32,
+      "cast_seconds": 1,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=20=21",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.20.5",
+      "legacy_category_id": 20,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][20][5]",
+      "name": {
+        "jp": "ベノムコロージョン",
+        "en": "Mind Venom",
+        "tw": "毒液腐蝕"
+      },
+      "prerequisites": {
+        "jp": "暗黒 26",
+        "en": "Darkness 26",
+        "tw": "暗黑 26"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "小さな傷口から相手の体内に毒を送り込み、腐食状態にする。",
+        "en": "Feed poison into a person's body from a small wound, inflicting Corrosion status effect.",
+        "tw": "由傷口向目標體內輸入毒素,使其變為腐蝕狀態"
+      },
+      "is_active": true,
+      "mp_cost": 33,
+      "cast_seconds": 2.5,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=20=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.20.6",
+      "legacy_category_id": 20,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][20][6]",
+      "name": {
+        "jp": "ディスペル",
+        "en": "Dispel",
+        "tw": "魔法抹滅"
+      },
+      "prerequisites": {
+        "jp": "暗黒 33",
+        "en": "Darkness 33",
+        "tw": "暗黑 33"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の強化魔法効果を１つ打ち消す。",
+        "en": "Removes one target's Positive Status Effect, Enchantment, or Buffs.",
+        "tw": "消除對象的強化魔法效果"
+      },
+      "is_active": true,
+      "mp_cost": 26,
+      "cast_seconds": 1,
+      "cooldown_seconds": 15,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=20=33",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.20.7",
+      "legacy_category_id": 20,
+      "legacy_entry_index": 7,
+      "legacy_path": "Skill[*][20][7]",
+      "name": {
+        "jp": "レジストマリス",
+        "en": "Resist Malice",
+        "tw": "毒系抗性"
+      },
+      "prerequisites": {
+        "jp": "暗黒 35",
+        "en": "Darkness 35",
+        "tw": "暗黑 35"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の毒耐性、闇耐性を増加させるが、魅了耐性を減少させる。",
+        "en": "+ Poison, Dark Resistance. - Charm Resistance.",
+        "tw": "增加對象的毒系抗性、暗系抗性,減少魅惑抗性"
+      },
+      "is_active": true,
+      "mp_cost": 32,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 3.5,
+      "duration_seconds": 20,
+      "prerequisite_code": "S=20=35",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.20.8",
+      "legacy_category_id": 20,
+      "legacy_entry_index": 8,
+      "legacy_path": "Skill[*][20][8]",
+      "name": {
+        "jp": "エーテルフレア",
+        "en": "Undermine",
+        "tw": "心靈侵害"
+      },
+      "prerequisites": {
+        "jp": "暗黒 41",
+        "en": "Darkness 41",
+        "tw": "暗黑 41"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "次に受けるダメージを倍増させる罰を与える。",
+        "en": "Amplifies the damage a target will receive.",
+        "tw": "目標下次受到的傷害大增"
+      },
+      "is_active": true,
+      "mp_cost": 23,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 10,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=20=41",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.20.9",
+      "legacy_category_id": 20,
+      "legacy_entry_index": 9,
+      "legacy_path": "Skill[*][20][9]",
+      "name": {
+        "jp": "ヘイトリッドペスト",
+        "en": "Pestilence",
+        "tw": "劇毒之源"
+      },
+      "prerequisites": {
+        "jp": "暗黒 54",
+        "en": "Darkness 54",
+        "tw": "暗黑 54"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "地面から負のオーラを呼出し、毒属性のダメージを与える。稀に相手を衰弱状態にする。",
+        "en": "Summons forth a malign aura from the ground, causing Poison damage. Rarely causes the Weakness effect.",
+        "tw": "由大地召喚負面屬性,給予目標毒性傷害。偶爾給與衰弱效果"
+      },
+      "is_active": true,
+      "mp_cost": 62,
+      "cast_seconds": 5,
+      "cooldown_seconds": 6,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=20=54",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.20.10",
+      "legacy_category_id": 20,
+      "legacy_entry_index": 10,
+      "legacy_path": "Skill[*][20][10]",
+      "name": {
+        "jp": "ストリップフォース",
+        "en": "Equalize",
+        "tw": "削弱心智"
+      },
+      "prerequisites": {
+        "jp": "暗黒 61",
+        "en": "Darkness 61",
+        "tw": "暗黑 61"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。効果中、物理攻撃を行なうと、一定確率で対象の強化魔法を打ち消す。",
+        "en": "When you hit with an attack, this skil gives you a chance to remove a Support effect from your target.",
+        "tw": "進行物理攻擊後，以一定機率消除物件的強化魔法效果"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=20=61",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.20.11",
+      "legacy_category_id": 20,
+      "legacy_entry_index": 11,
+      "legacy_path": "Skill[*][20][11]",
+      "name": {
+        "jp": "ダークフレンジー",
+        "en": "Dark Frenzy",
+        "tw": "黑暗狂熱"
+      },
+      "prerequisites": {
+        "jp": "暗黒 71",
+        "en": "Darkness 71",
+        "tw": "暗黑 71"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "武器に強力な闇のオーラを付与し、周囲にダメージを与える。",
+        "en": "Imbues the powerful aura of darkness to a weapon, causing damage to surrounding enemies.",
+        "tw": "使武器加上強大的暗黑屬性，攻擊時會出現擴散傷害"
+      },
+      "is_active": true,
+      "mp_cost": 122,
+      "cast_seconds": 3,
+      "cooldown_seconds": 10,
+      "duration_seconds": 6,
+      "prerequisite_code": "S=20=71",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.21.0",
+      "legacy_category_id": 21,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][21][0]",
+      "name": {
+        "jp": "タイムステイシス",
+        "en": "Stasis",
+        "tw": "思考凝結"
+      },
+      "prerequisites": {
+        "jp": "ジェスター Lv45",
+        "en": "Corrupter Lv45",
+        "tw": "幻術師 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "このスキルの効果中、害を与える魔法効果の効果時間を停止させる。",
+        "en": "Stops the duration of negative status effects and reduces the target's LP recovery rate.",
+        "tw": "停止負面魔法效果的時間，有減少HP恢復量的效果"
+      },
+      "is_active": true,
+      "mp_cost": 31,
+      "cast_seconds": 2,
+      "cooldown_seconds": 15,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=26=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.21.1",
+      "legacy_category_id": 21,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][21][1]",
+      "name": {
+        "jp": "ホリッドミラージュ",
+        "en": "Leaden Hooves",
+        "tw": "魔法"
+      },
+      "prerequisites": {
+        "jp": "ジェスター Lv50",
+        "en": "Corrupter Lv50",
+        "tw": "幻術師 Lv50"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "幻覚を見せることで騎手を混乱させ、馬の脚力を減少させる。",
+        "en": "Reduce a target's horse running speed using confusing hallucination.",
+        "tw": "看到幻覺，使騎手混亂，減少馬的腳力"
+      },
+      "is_active": true,
+      "mp_cost": 58,
+      "cast_seconds": 1,
+      "cooldown_seconds": 10,
+      "duration_seconds": 60,
+      "prerequisite_code": "J=26=50",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.21.2",
+      "legacy_category_id": 21,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][21][2]",
+      "name": {
+        "jp": "フィーブル",
+        "en": "Enfeeble",
+        "tw": "迷惑詛咒"
+      },
+      "prerequisites": {
+        "jp": "惑乱 8",
+        "en": "Confusion 8",
+        "tw": "咒術 8"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の攻撃力を減少させる。",
+        "en": "Decreases an enemy's physical attack power.",
+        "tw": "減少目標的攻擊力"
+      },
+      "is_active": true,
+      "mp_cost": 18,
+      "cast_seconds": 1,
+      "cooldown_seconds": 5,
+      "duration_seconds": 120,
+      "prerequisite_code": "S=21=8",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.21.3",
+      "legacy_category_id": 21,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][21][3]",
+      "name": {
+        "jp": "サンドマントルネード",
+        "en": "Sandstorm",
+        "tw": "風沙襲"
+      },
+      "prerequisites": {
+        "jp": "惑乱 12",
+        "en": "Confusion 12",
+        "tw": "咒術 12"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "足元から砂の竜巻をおこし物理ダメージと同時に睡眠効果を与える。",
+        "en": "Damage plus added Sleep status effect.",
+        "tw": "在附近刮起沙的龍捲風,傷害的同時有睡眠效果"
+      },
+      "is_active": true,
+      "mp_cost": 51,
+      "cast_seconds": 2,
+      "cooldown_seconds": 20,
+      "duration_seconds": 20,
+      "prerequisite_code": "S=21=12",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.21.4",
+      "legacy_category_id": 21,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][21][4]",
+      "name": {
+        "jp": "サイオニックブラスト",
+        "en": "Psionic Blast",
+        "tw": "精神制裁"
+      },
+      "prerequisites": {
+        "jp": "惑乱 21",
+        "en": "Confusion 21",
+        "tw": "咒術 21"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "マナを使った精神による攻撃で、相手の精神に直接ダメージを与える。",
+        "en": "Attack the enemy's MP points to reduce spell casting capability.",
+        "tw": "對目標精神以直接傷害,減少目標魔力"
+      },
+      "is_active": true,
+      "mp_cost": 25,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 5,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=21=21",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.21.5",
+      "legacy_category_id": 21,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][21][5]",
+      "name": {
+        "jp": "ウィークネス",
+        "en": "Weaken",
+        "tw": "毀滅鎧甲"
+      },
+      "prerequisites": {
+        "jp": "惑乱 26",
+        "en": "Confusion 26",
+        "tw": "咒術 26"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の防御力を減少させる。",
+        "en": "Reduces target's defense.",
+        "tw": "減少對象的防禦力"
+      },
+      "is_active": true,
+      "mp_cost": 18,
+      "cast_seconds": 1,
+      "cooldown_seconds": 5,
+      "duration_seconds": 120,
+      "prerequisite_code": "S=21=26",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.21.6",
+      "legacy_category_id": 21,
+      "legacy_entry_index": 6,
+      "legacy_path": "Skill[*][21][6]",
+      "name": {
+        "jp": "スロウイベイド",
+        "en": "Impede",
+        "tw": "步伐緩慢"
+      },
+      "prerequisites": {
+        "jp": "惑乱 33",
+        "en": "Confusion 33",
+        "tw": "咒術 33"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の回避を減少させる。",
+        "en": "Slows target's moving speed and reduces evasion rate.",
+        "tw": "減少對象的閃避"
+      },
+      "is_active": true,
+      "mp_cost": 28,
+      "cast_seconds": 2,
+      "cooldown_seconds": 5,
+      "duration_seconds": 120,
+      "prerequisite_code": "S=21=33",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.21.7",
+      "legacy_category_id": 21,
+      "legacy_entry_index": 7,
+      "legacy_path": "Skill[*][21][7]",
+      "name": {
+        "jp": "レジストチャーム",
+        "en": "Resist Charm",
+        "tw": "秘法抗性"
+      },
+      "prerequisites": {
+        "jp": "惑乱 35",
+        "en": "Confusion 35",
+        "tw": "咒術 35"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象の魅了耐性を増加させるが、毒耐性、闇耐性を減少させる。",
+        "en": "+ Charm Resistance. - Poison, Dark Resistance.",
+        "tw": "增加目標的魅惑抗性,減少毒系抗性、暗系抗性"
+      },
+      "is_active": true,
+      "mp_cost": 32,
+      "cast_seconds": 1.5,
+      "cooldown_seconds": 3.5,
+      "duration_seconds": 7,
+      "prerequisite_code": "S=21=35",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.21.8",
+      "legacy_category_id": 21,
+      "legacy_entry_index": 8,
+      "legacy_path": "Skill[*][21][8]",
+      "name": {
+        "jp": "チルストライク",
+        "en": "Icy Strike",
+        "tw": "寒冷意念"
+      },
+      "prerequisites": {
+        "jp": "惑乱 41",
+        "en": "Confusion 41",
+        "tw": "咒術 41"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "素早く対象に冷気ダメージを与え、凍傷状態にする。",
+        "en": "Cools the air quickly to inflict Freeze status effect to an enemy.",
+        "tw": "快速將冰系施展在目標上,變為凍傷狀態"
+      },
+      "is_active": true,
+      "mp_cost": 44,
+      "cast_seconds": 0.3,
+      "cooldown_seconds": 12,
+      "duration_seconds": 15,
+      "prerequisite_code": "S=21=41",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.21.9",
+      "legacy_category_id": 21,
+      "legacy_entry_index": 9,
+      "legacy_path": "Skill[*][21][9]",
+      "name": {
+        "jp": "ベノムスワンプ",
+        "en": "Wasteland",
+        "tw": "劇毒沼"
+      },
+      "prerequisites": {
+        "jp": "惑乱 54",
+        "en": "Confusion 54",
+        "tw": "咒術 54"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "沼地を作り出し、素早さを封じて移動を困難にさせてしまう。",
+        "en": "Creates a poisonous swamp that prohibits fast movements and poisons the enemies.",
+        "tw": "召喚劇毒沼澤,使目標變為中毒狀態、並且移動困難"
+      },
+      "is_active": true,
+      "mp_cost": 44,
+      "cast_seconds": 0.5,
+      "cooldown_seconds": 30,
+      "duration_seconds": 30,
+      "prerequisite_code": "S=21=54",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.21.10",
+      "legacy_category_id": 21,
+      "legacy_entry_index": 10,
+      "legacy_path": "Skill[*][21][10]",
+      "name": {
+        "jp": "サイレンストーム",
+        "en": "Siren Storm",
+        "tw": "靜默風暴"
+      },
+      "prerequisites": {
+        "jp": "惑乱 61",
+        "en": "Confusion 61",
+        "tw": "咒術 61"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "範囲内にいる敵のマナにダメージを与える。相手を沈黙にすることがある。",
+        "en": "(AOE) MP damage to enemies within area of effect. May inflict Silence status to victims.",
+        "tw": "傷害範圍內敵人的精神，使對手沉默"
+      },
+      "is_active": true,
+      "mp_cost": 99,
+      "cast_seconds": 4.5,
+      "cooldown_seconds": 15,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=21=61",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.21.11",
+      "legacy_category_id": 21,
+      "legacy_entry_index": 11,
+      "legacy_path": "Skill[*][21][11]",
+      "name": {
+        "jp": "プレイグカース",
+        "en": "Cursed Bolt",
+        "tw": "惡念之箭"
+      },
+      "prerequisites": {
+        "jp": "惑乱 71",
+        "en": "Confusion 71",
+        "tw": "咒術 71"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "対象にボルトを放つ。命中した敵とその周囲の敵に一定確率で呪いと病気の効果を与える。",
+        "en": "Has a chance to inflict Curse and Disease on the target and any enemies surrounding them.",
+        "tw": "向目標射出矢，命中敵人後，有一定機率對其周圍的敵人造成詛咒和疾病的效果"
+      },
+      "is_active": true,
+      "mp_cost": 69,
+      "cast_seconds": 2,
+      "cooldown_seconds": 20,
+      "duration_seconds": 30,
+      "prerequisite_code": "S=21=71",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.24.0",
+      "legacy_category_id": 24,
+      "legacy_entry_index": 0,
+      "legacy_path": "Skill[*][24][0]",
+      "name": {
+        "jp": "メレーライディング",
+        "en": "Jousting",
+        "tw": "騎乘攻擊"
+      },
+      "prerequisites": {
+        "jp": "ドラグーン Lv45",
+        "en": "Dragoon Lv45",
+        "tw": "龍騎士 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。騎乗時に一部スキルとチャージ攻撃を使用することができる。",
+        "en": "Enables normal and skill attacks while mounted on horseback.",
+        "tw": "騎乘時能夠使用騎乘專用技能"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=3=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.24.1",
+      "legacy_category_id": 24,
+      "legacy_entry_index": 1,
+      "legacy_path": "Skill[*][24][1]",
+      "name": {
+        "jp": "メレーライディング",
+        "en": "Jousting",
+        "tw": "騎乘攻擊"
+      },
+      "prerequisites": {
+        "jp": "パラディン Lv45",
+        "en": "Paradin Lv45",
+        "tw": "聖騎士 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。騎乗時に一部スキルとチャージ攻撃を使用することができる。",
+        "en": "Enables normal and skill attacks while mounted on horseback.",
+        "tw": "騎乘時能夠使用騎乘專用技能"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=6=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.24.2",
+      "legacy_category_id": 24,
+      "legacy_entry_index": 2,
+      "legacy_path": "Skill[*][24][2]",
+      "name": {
+        "jp": "ヤブサメライディング",
+        "en": "Horse Archer",
+        "tw": "騎乘中射擊"
+      },
+      "prerequisites": {
+        "jp": "プレデター Lv45",
+        "en": "Hunter Lv45",
+        "tw": "狩獵者 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。騎乗時に一部スキルとチャージ攻撃を使用することができる。",
+        "en": "Allows usage or certain skills and charge attacks while on horseback.",
+        "tw": "騎乘時能夠使用騎乘專用技能"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=10=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.24.3",
+      "legacy_category_id": 24,
+      "legacy_entry_index": 3,
+      "legacy_path": "Skill[*][24][3]",
+      "name": {
+        "jp": "メディアライディング",
+        "en": "Median Riding",
+        "tw": "騎手之魂"
+      },
+      "prerequisites": {
+        "jp": "カラミティ Lv45",
+        "en": "Shadowblade Lv45",
+        "tw": "咒術師 Lv45"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "パッシブスキル。騎乗時に一部スキルとチャージ攻撃を使用することができる。",
+        "en": "Allows usage of certain skills and charge attacks while on horseback.",
+        "tw": "騎乘時能夠使用騎乘專用技能"
+      },
+      "is_active": false,
+      "mp_cost": 0,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "J=27=45",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.24.4",
+      "legacy_category_id": 24,
+      "legacy_entry_index": 4,
+      "legacy_path": "Skill[*][24][4]",
+      "name": {
+        "jp": "サモンヴィークル",
+        "en": "Summon Vehicle",
+        "tw": "召喚"
+      },
+      "prerequisites": {
+        "jp": "騎乗 20",
+        "en": "Horsemanship 20",
+        "tw": "騎乘 20"
+      },
+      "equipment_requirements": {
+        "jp": "無",
+        "en": "None",
+        "tw": "無"
+      },
+      "description": {
+        "jp": "騎乗可能な場所であれば、馬を呼び出すことができる。",
+        "en": "Allows you to summon your horse if you are an area suitable for riding.",
+        "tw": "只要是能夠騎乘的場所，都能召喚馬"
+      },
+      "is_active": true,
+      "mp_cost": 22,
+      "cast_seconds": 3,
+      "cooldown_seconds": 180,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=24=20",
+      "legacy_trailing_value": ""
+    },
+    {
+      "id": "skill.24.5",
+      "legacy_category_id": 24,
+      "legacy_entry_index": 5,
+      "legacy_path": "Skill[*][24][5]",
+      "name": {
+        "jp": "ホースプロテクション",
+        "en": "Horse Guardian",
+        "tw": "騎士守護"
+      },
+      "prerequisites": {
+        "jp": "騎乗 31",
+        "en": "Horsemanship 31",
+        "tw": "騎乘 31"
+      },
+      "equipment_requirements": {
+        "jp": "盾",
+        "en": "None",
+        "tw": "盾牌"
+      },
+      "description": {
+        "jp": "効果中、馬が受けるはずのダメージを自分が受ける。",
+        "en": "Causes you to absorb attacks targeting your horse.",
+        "tw": "效果中，自身承受坐騎受到的傷害"
+      },
+      "is_active": true,
+      "mp_cost": 5,
+      "cast_seconds": 0,
+      "cooldown_seconds": 0,
+      "duration_seconds": 0,
+      "prerequisite_code": "S=24=31",
+      "legacy_trailing_value": ""
+    }
+  ]
+}

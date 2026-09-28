@@ -10,6 +10,8 @@ flowchart TB
     index --> CSS[css/*]
     index --> JS[js/*]
     JS --> Data[items / skills / options / formulas]
+    JS -. deterministic export .-> Projection[data/generated/*.v1.json]
+    Projection --> Tooling[read-only search / tooling data]
     JS --> Images[image/*]
     Data --> UI[calculated character UI]
     Images --> UI
@@ -41,6 +43,12 @@ The original simulator themes/styles.
 
 Legacy local image assets and item/skill icons.
 
+### `data/generated/`
+
+Versioned read-only projections of the live Legacy runtime for search and tooling. Equipment IDs map to the existing select values, Soul IDs remain unchanged and skill coordinates map directly to `Skill[*][category][entry]`. Each file carries deterministic source fingerprints; CRLF is normalized to LF before hashing so the fingerprint is stable across Windows and Linux checkouts.
+
+Legacy JavaScript remains the sole calculation/data source of truth. The generated JSON is published as static data, is not injected into `/legacy/`, and is not used to reimplement formulas.
+
 ## Deployment path
 
 ```mermaid
@@ -69,6 +77,6 @@ A backend should only be introduced for genuinely server-side features such as a
 
 ## Preservation boundary
 
-The original calculator logic and data are treated as the preservation core. Hosting glue, documentation, CI and validation live around that core.
+The original calculator logic and data are treated as the preservation core. Hosting glue, generated read-only projections, documentation, CI and validation live around that core.
 
 That separation makes it possible to modernize the project later without silently changing the preserved calculator.

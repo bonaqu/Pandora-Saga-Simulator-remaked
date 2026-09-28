@@ -10,7 +10,7 @@ export default defineConfig({
     screenshot: 'only-on-failure'
   },
   webServer: {
-    command: 'python3 scripts/build_pages.py --output _site && python3 -m http.server 8000 -d _site',
+    command: 'python scripts/build_pages.py --output _site && node scripts/serve_pages.mjs _site',
     url: 'http://127.0.0.1:8000',
     reuseExistingServer: true,
     timeout: 30000

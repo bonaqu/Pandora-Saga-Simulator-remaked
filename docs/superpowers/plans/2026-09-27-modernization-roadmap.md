@@ -105,6 +105,9 @@ Deliverable:
 
 ### Phase 6 — Structured data projections
 
+**Plan:** `docs/superpowers/plans/2026-09-28-structured-data-projections.md`
+**Status:** Release-ready on `feature/structured-data-projections` as Remaked UI `2026.09.6`. Deterministic projections contain 1,120 equipment, 184 Soul and 211 actual skill records; the terminology worksheet now covers 1,617 stable terms.
+
 Deliverable:
 - reproducible exporters for equipment/Soul/skill read-only JSON indexes;
 - legacy IDs preserved;
