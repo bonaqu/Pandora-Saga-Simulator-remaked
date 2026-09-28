@@ -68,7 +68,7 @@ function toCsv(terms) {
   const columns = ['id', 'category', 'legacy_path', 'source_en', 'source_jp', 'source_tw', 'ru_proposed', 'ru_approved'];
   const lines = [columns.join(',')];
   for (const term of terms) lines.push(columns.map((key) => csvCell(term[key])).join(','));
-  return '\uFEFF' + lines.join('\r\n') + '\r\n';
+  return '\uFEFF' + lines.join('\n') + '\n';
 }
 
 async function collectTerms() {
