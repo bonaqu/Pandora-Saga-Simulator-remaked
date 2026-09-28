@@ -4,7 +4,7 @@ import tempfile
 import unittest
 
 from scripts.build_pages import build_pages
-from tests.test_build_pages import BuildPagesTests
+from tests import test_build_pages
 
 
 MANIFEST = {
@@ -33,12 +33,17 @@ MANIFEST = {
 
 SERVICE_WORKER_TEMPLATE = """const CACHE_NAME = 'pandora-remaked-__CACHE_VERSION__';
 const PRECACHE_URLS = __PRECACHE_URLS__;
+self.addEventListener('fetch', (event) => {
+  const request = event.request;
+  const url = new URL(request.url);
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+});
 """
 
 
 class PwaBuildTests(unittest.TestCase):
     def make_root(self, base: pathlib.Path) -> pathlib.Path:
-        root = BuildPagesTests().make_root(base)
+        root = test_build_pages.BuildPagesTests().make_root(base)
         modern = root / "modern"
         (modern / "version.js").write_text(
             "window.PandoraRemakedVersion = { ui: '2026.09.4' };",
