@@ -7,7 +7,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 ### Added
 - Deterministic read-only JSON indexes for 44 equipment categories / 1,120 equipment records, 184 Souls and 25 categories / 211 actual skills.
 - Exact mappings back to existing Legacy equipment selector values, Soul IDs and nested skill coordinates.
-- Explicit schema, projection, Legacy engine and Remaked UI versions plus SHA-256 fingerprints of every Legacy source file used by each index.
+- Explicit schema, projection, Legacy engine and Remaked UI versions plus cross-platform SHA-256 fingerprints of every Legacy source file used by each index.
 - Static Pages delivery under `data/generated/` for future search and tooling without a backend.
 
 ### Corrected

@@ -17,7 +17,8 @@ const outputs = {
 
 async function sha256(relativePath) {
   const bytes = await fs.readFile(path.resolve(root, relativePath));
-  return createHash('sha256').update(bytes).digest('hex');
+  const canonicalBytes = bytes.toString('latin1').replace(/\r\n/g, '\n');
+  return createHash('sha256').update(canonicalBytes, 'latin1').digest('hex');
 }
 
 async function metadata(remakedUi, sourcePaths) {
@@ -30,6 +31,7 @@ async function metadata(remakedUi, sourcePaths) {
     projection_version: 'v1',
     legacy_engine: '2.00',
     remaked_ui: remakedUi,
+    source_fingerprint: 'SHA-256 after CRLF-to-LF normalization',
     generated_from: generatedFrom,
     policy: 'read-only searchable projection; preserved Legacy JavaScript remains source of truth'
   };

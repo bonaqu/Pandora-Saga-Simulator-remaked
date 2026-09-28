@@ -5,10 +5,11 @@
     "projection_version": "v1",
     "legacy_engine": "2.00",
     "remaked_ui": "2026.09.6",
+    "source_fingerprint": "SHA-256 after CRLF-to-LF normalization",
     "generated_from": [
       {
         "path": "js/item.js",
-        "sha256": "da6b04b29cb3971c4d1db1917cf42d2b49578bd2ae20c1b9d190110b8e8eb096"
+        "sha256": "0f3b15c83d59b8c9c1a47920022895b8db57a526322d9dabea4900fb203518d1"
       }
     ],
     "policy": "read-only searchable projection; preserved Legacy JavaScript remains source of truth"

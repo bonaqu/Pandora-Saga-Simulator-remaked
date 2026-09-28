@@ -27,11 +27,16 @@ class GeneratedDataTests(unittest.TestCase):
             self.assertEqual(metadata["projection_version"], "v1")
             self.assertEqual(metadata["legacy_engine"], "2.00")
             self.assertEqual(metadata["remaked_ui"], "2026.09.6")
+            self.assertEqual(
+                metadata["source_fingerprint"],
+                "SHA-256 after CRLF-to-LF normalization",
+            )
             self.assertEqual(payload["count"], count)
             self.assertEqual(len(payload["records"]), count)
             self.assertEqual({entry["path"] for entry in metadata["generated_from"]}, source_paths)
             for entry in metadata["generated_from"]:
-                digest = hashlib.sha256((ROOT / entry["path"]).read_bytes()).hexdigest()
+                source = (ROOT / entry["path"]).read_bytes().replace(b"\r\n", b"\n")
+                digest = hashlib.sha256(source).hexdigest()
                 self.assertEqual(entry["sha256"], digest, entry["path"])
 
     def test_equipment_ids_are_exact_legacy_selector_values(self):
