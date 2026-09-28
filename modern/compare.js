@@ -4,6 +4,7 @@
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
   var adapter = namespace.adapter;
   var store = namespace.buildStore;
+  var i18n = namespace.i18n;
   var overlay = null;
   var panel = null;
   var selectA = null;
@@ -18,11 +19,16 @@
   var previousBodyOverflow = '';
   var initialized = false;
 
-  function button(label, className) {
+  function t(key, values, fallback) {
+    return i18n && typeof i18n.t === 'function' ? i18n.t(key, values) : fallback;
+  }
+
+  function button(label, className, key) {
     var node = document.createElement('button');
     node.type = 'button';
     node.className = className || 'remaked-compare-button';
-    node.textContent = label;
+    if (key && i18n && typeof i18n.bindText === 'function') i18n.bindText(node, key);
+    else node.textContent = label;
     return node;
   }
 
@@ -97,7 +103,7 @@
 
   function populateSelect(select, builds, previous) {
     clearNode(select);
-    select.appendChild(option('', 'Choose a saved build…'));
+    select.appendChild(option('', t('compare.choose', null, 'Choose a saved build…')));
     for (var index = 0; index < builds.length; index += 1) {
       select.appendChild(option(builds[index].id, builds[index].name));
     }
@@ -115,7 +121,7 @@
     var parts = [build.name];
     if (metadata.race) parts.push(metadata.race);
     if (metadata.job) parts.push(metadata.job);
-    if (metadata.level != null) parts.push('Lv. ' + metadata.level);
+    if (metadata.level != null) parts.push(t('compare.level', { level: metadata.level }, 'Lv. ' + metadata.level));
     return parts.join(' · ');
   }
 
@@ -172,12 +178,12 @@
     var idB = selectB.value;
     if (!idA || !idB) {
       setComparisonVisible(false);
-      setStatus('Choose two saved builds to compare.', 'ready');
+      setStatus(t('compare.chooseTwo', null, 'Choose two saved builds to compare.'), 'ready');
       return;
     }
     if (idA === idB) {
       setComparisonVisible(false);
-      setStatus('Choose two different saved builds.', 'warning');
+      setStatus(t('compare.chooseDifferent', null, 'Choose two different saved builds.'), 'warning');
       return;
     }
 
@@ -185,7 +191,7 @@
     var buildB = store.getBuild(idB);
     if (!buildA || !buildB) {
       setComparisonVisible(false);
-      setStatus('A selected build is no longer available. Choose two builds again.', 'warning');
+      setStatus(t('compare.missing', null, 'A selected build is no longer available. Choose two builds again.'), 'warning');
       return;
     }
 
@@ -196,10 +202,10 @@
       metaB.textContent = metadataText(buildB, projectionB);
       renderTable(projectionA, projectionB);
       setComparisonVisible(true);
-      setStatus('Δ shows Build B minus Build A. Direction is informational only.', 'ready');
+      setStatus(t('compare.deltaHelp', null, 'Δ shows Build B minus Build A. Direction is informational only.'), 'ready');
     } catch (error) {
       setComparisonVisible(false);
-      setStatus('One of the saved builds could not be evaluated.', 'error');
+      setStatus(t('compare.evaluateFailed', null, 'One of the saved builds could not be evaluated.'), 'error');
     }
   }
 
@@ -214,16 +220,16 @@
 
     if (builds.length < 2) {
       emptyState.hidden = false;
-      emptyState.textContent = 'Save at least two named builds before comparing them.';
+      emptyState.textContent = t('compare.needTwoEmpty', null, 'Save at least two named builds before comparing them.');
       setComparisonVisible(false);
-      setStatus('Compare Builds needs at least two saved builds.', 'ready');
+      setStatus(t('compare.needTwoStatus', null, 'Compare Builds needs at least two saved builds.'), 'ready');
       return;
     }
 
     emptyState.hidden = true;
     if ((previousA && !hasBuild(builds, previousA)) || (previousB && !hasBuild(builds, previousB))) {
       setComparisonVisible(false);
-      setStatus('A selected build is no longer available. Choose two builds again.', 'warning');
+      setStatus(t('compare.missing', null, 'A selected build is no longer available. Choose two builds again.'), 'warning');
       return;
     }
     evaluateSelection();
@@ -248,11 +254,12 @@
     if (selectA) selectA.focus();
   }
 
-  function labeledSelect(labelText, dataAttribute) {
+  function labeledSelect(labelKey, labelText, dataAttribute) {
     var group = document.createElement('label');
     group.className = 'remaked-compare-select-group';
     var label = document.createElement('span');
-    label.textContent = labelText;
+    if (i18n && typeof i18n.bindText === 'function') i18n.bindText(label, labelKey);
+    else label.textContent = labelText;
     var select = document.createElement('select');
     select.className = 'remaked-compare-select';
     select.setAttribute(dataAttribute, '');
@@ -278,10 +285,12 @@
     header.className = 'remaked-compare-header';
     var title = document.createElement('h2');
     title.id = 'remaked-compare-title';
-    title.textContent = 'Compare Builds';
+    if (i18n && typeof i18n.bindText === 'function') i18n.bindText(title, 'compare.title');
+    else title.textContent = 'Compare Builds';
     header.appendChild(title);
     var closeButton = button('×', 'remaked-compare-close');
-    closeButton.setAttribute('aria-label', 'Close Compare Builds');
+    if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(closeButton, 'aria-label', 'compare.close');
+    else closeButton.setAttribute('aria-label', 'Close Compare Builds');
     closeButton.addEventListener('click', close);
     header.appendChild(closeButton);
     panel.appendChild(header);
@@ -291,15 +300,15 @@
 
     var controls = document.createElement('div');
     controls.className = 'remaked-compare-controls';
-    var a = labeledSelect('Build A', 'data-remaked-compare-a');
-    var b = labeledSelect('Build B', 'data-remaked-compare-b');
+    var a = labeledSelect('compare.buildA', 'Build A', 'data-remaked-compare-a');
+    var b = labeledSelect('compare.buildB', 'Build B', 'data-remaked-compare-b');
     selectA = a.select;
     selectB = b.select;
     selectA.addEventListener('change', evaluateSelection);
     selectB.addEventListener('change', evaluateSelection);
     controls.appendChild(a.group);
     controls.appendChild(b.group);
-    var refresh = button('Refresh', 'remaked-compare-button');
+    var refresh = button('Refresh', 'remaked-compare-button', 'compare.refresh');
     refresh.dataset.remakedCompareRefresh = '';
     refresh.addEventListener('click', refreshChoices);
     controls.appendChild(refresh);
@@ -330,10 +339,16 @@
     table.dataset.remakedCompareTable = '';
     var head = document.createElement('thead');
     var headRow = document.createElement('tr');
-    ['Stat', 'Build A', 'Build B', 'Δ (B − A)'].forEach(function (labelText) {
+    [
+      ['compare.column.stat', 'Stat'],
+      ['compare.buildA', 'Build A'],
+      ['compare.buildB', 'Build B'],
+      ['compare.column.delta', 'Δ (B − A)']
+    ].forEach(function (entry) {
       var cell = document.createElement('th');
       cell.scope = 'col';
-      cell.textContent = labelText;
+      if (i18n && typeof i18n.bindText === 'function') i18n.bindText(cell, entry[0]);
+      else cell.textContent = entry[1];
       headRow.appendChild(cell);
     });
     head.appendChild(headRow);
@@ -365,7 +380,7 @@
   function createTrigger() {
     var tools = document.querySelector('[data-remaked-tools]');
     if (!tools || tools.querySelector('[data-remaked-compare-open]')) return;
-    var trigger = button('Compare Builds', 'remaked-tool-button');
+    var trigger = button('Compare Builds', 'remaked-tool-button', 'compare.button');
     trigger.dataset.remakedCompareOpen = '';
     trigger.addEventListener('click', function () { open(trigger); });
     tools.appendChild(trigger);
@@ -386,6 +401,10 @@
     refresh: refreshChoices,
     computeDelta: computeDelta
   };
+
+  window.addEventListener('pandora-remaked:localechange', function () {
+    if (overlay && !overlay.hidden) refreshChoices();
+  });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, { once: true });

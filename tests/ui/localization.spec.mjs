@@ -54,3 +54,30 @@ test('unknown locale is rejected to English without breaking storage', async ({ 
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.locator('[data-remaked-header]')).toContainText('Project');
 });
+
+test('RU covers Modern feature surfaces while game-derived labels stay unchanged', async ({ page }) => {
+  const raceBefore = await page.locator('[data-remaked-summary-race]').textContent();
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+
+  await page.locator('[data-remaked-equipment-search]').click();
+  await expect(page.locator('[data-remaked-search-panel]')).toContainText('Найти экипировку');
+  await page.getByRole('button', { name: 'Закрыть поиск' }).click();
+
+  await page.locator('[data-remaked-builds-open]').click();
+  await expect(page.locator('[data-remaked-build-manager]')).toContainText('Менеджер билдов');
+  await page.getByRole('button', { name: 'Закрыть менеджер билдов' }).click();
+
+  await expect(page.locator('[data-remaked-compare-open]')).toHaveText('Сравнить билды');
+  await page.locator('[data-remaked-compare-open]').click();
+  await expect(page.locator('[data-remaked-compare]')).toContainText('Сравнение билдов');
+
+  await expect(page.locator('[data-remaked-mobile-summary]')).toHaveAttribute('aria-label', 'Сводка текущего персонажа');
+  expect(await page.locator('[data-remaked-summary-race]').textContent()).toBe(raceBefore);
+
+  const tooltip = await page.evaluate(() => window.PandoraRemaked.tooltips.get('lp'));
+  expect(tooltip.source).toContain('Расчётный узел Legacy 2.00');
+  expect(tooltip.definition).toContain('reported by the preserved Legacy calculator');
+
+  await page.evaluate(() => window.PandoraRemaked.pwa.showUpdateNotice({ postMessage() {} }));
+  await expect(page.locator('[data-remaked-update-notice]')).toContainText('Доступна новая версия — Обновить');
+});

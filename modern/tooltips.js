@@ -2,6 +2,7 @@
   'use strict';
 
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
+  var i18n = namespace.i18n;
   var tooltipCounter = 0;
 
   var DEFINITIONS = {
@@ -66,8 +67,10 @@
     if (!Object.prototype.hasOwnProperty.call(DEFINITIONS, key)) return null;
     if (!Object.prototype.hasOwnProperty.call(SOURCE_IDS, key)) return null;
     return {
-      definition: DEFINITIONS[key],
-      source: 'Legacy 2.00 calculated output node ' + SOURCE_IDS[key] + '.'
+      definition: i18n && typeof i18n.t === 'function' ? i18n.t('tooltip.definition.' + key) : DEFINITIONS[key],
+      source: i18n && typeof i18n.t === 'function'
+        ? i18n.t('tooltip.source', { node: SOURCE_IDS[key] })
+        : 'Legacy 2.00 calculated output node ' + SOURCE_IDS[key] + '.'
     };
   }
 
@@ -87,7 +90,12 @@
     help.className = 'remaked-stat-help';
     help.dataset.remakedStatHelp = key;
     help.textContent = '?';
-    help.setAttribute('aria-label', 'About ' + (labelNode.textContent || key).trim());
+    var label = (labelNode.textContent || key).trim();
+    if (i18n && typeof i18n.bindAttribute === 'function') {
+      i18n.bindAttribute(help, 'aria-label', 'tooltip.about', { label: label });
+    } else {
+      help.setAttribute('aria-label', 'About ' + label);
+    }
     help.setAttribute('aria-describedby', tooltipId);
 
     var tooltip = document.createElement('span');
@@ -98,12 +106,14 @@
 
     var definition = document.createElement('span');
     definition.className = 'remaked-stat-tooltip-definition';
-    definition.textContent = entry.definition;
+    if (i18n && typeof i18n.bindText === 'function') i18n.bindText(definition, 'tooltip.definition.' + key);
+    else definition.textContent = entry.definition;
     tooltip.appendChild(definition);
 
     var source = document.createElement('span');
     source.className = 'remaked-stat-tooltip-source';
-    source.textContent = entry.source;
+    if (i18n && typeof i18n.bindText === 'function') i18n.bindText(source, 'tooltip.source', { node: SOURCE_IDS[key] });
+    else source.textContent = entry.source;
     tooltip.appendChild(source);
 
     function show() {
