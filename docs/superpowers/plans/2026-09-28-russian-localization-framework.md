@@ -2,7 +2,7 @@
 
 **Goal:** Ship Remaked UI `2026.09.5` with a first-class EN/RU Modern interface, deterministic translation catalogs and a user-reviewable export of Legacy game terminology, without changing or guessing Legacy game data.
 
-**Status:** Release-ready on `feature/russian-localization-framework`; production PR/artifact/live verification remain before marking the framework shipped. The exported official-game-term fields intentionally remain empty pending user review.
+**Status:** Shipped in PR #7 (`58925ed`) as Remaked UI `2026.09.5`. Production workflow `36394028338` passed; its exact Pages artifact and the live EN/RU state-isolation, locale-persistence and Modern/Legacy offline routes were verified on 2026-09-28. The exported official-game-term fields intentionally remain empty pending user review.
 
 **Architecture:** Keep UI locale separate from the preserved JP/EN/TW Legacy data language. Build validated JSON UI catalogs into a synchronous Modern runtime bundle, expose one namespaced translation API with English fallback, and let components update live on locale changes. Export Legacy terminology from the built calculator through its existing runtime data into stable machine-readable JSON and CSV; leave the approved Russian field blank until the user supplies official-client terms.
 
