@@ -70,7 +70,7 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 The modernization roadmap includes:
 
 - user-verified Russian game terminology;
-- reproducible structured-data projections while keeping the legacy engine as the calculation source of truth.
+- final visual, accessibility and cross-browser polish.
 
 See [CHANGELOG.md](CHANGELOG.md) for released changes and current progress.
 
@@ -83,7 +83,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** 2026.09.5
+- **Remaked UI:** 2026.09.6
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 

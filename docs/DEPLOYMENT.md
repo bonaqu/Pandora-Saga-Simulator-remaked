@@ -39,9 +39,9 @@ The workflow can also be started manually from **Actions → Deploy restored sim
 
 ## Validation
 
-The deployment blocks publication when required files are missing or when the entry point still contains known FC2 runtime injection.
+The deployment blocks publication when required files are missing or when the entry point still contains known FC2 runtime injection. It also rebuilds the equipment, Soul and skill projections from the live Legacy runtime and rejects stale JSON or source fingerprints.
 
-The workflow also syntax-checks the core JavaScript files with Node.js.
+The workflow also syntax-checks the core JavaScript files with Node.js and runs the complete browser contract suite before artifact upload.
 
 ## Updating the preserved source intentionally
 

@@ -2,7 +2,7 @@
 
 **Goal:** Ship Remaked UI `2026.09.6` with deterministic, searchable equipment, Soul and skill JSON projections generated from the preserved Legacy 2.00 runtime, while leaving Legacy JavaScript as the only calculation/data source of truth.
 
-**Status:** In progress on `feature/structured-data-projections`.
+**Status:** Release-ready on `feature/structured-data-projections`; PR, exact Pages artifact and live production verification remain before marking Phase 6 shipped.
 
 **Architecture:** Load the built Modern route in headless Chromium so the existing Legacy scripts construct their real runtime globals. Export read-only JSON from `EquipData`, `SoulData`, `Skill` and `Name.Skill`; retain exact selector coordinates/IDs and record source-file fingerprints. Commit the generated indexes for static tooling and copy them unchanged into GitHub Pages. A deterministic `--check` gate must fail whenever Legacy inputs and committed projections diverge.
 
