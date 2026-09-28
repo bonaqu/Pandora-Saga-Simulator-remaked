@@ -78,7 +78,7 @@ Deliverable:
 ### Phase 4 — Mobile polish + PWA/offline
 
 **Plan:** `docs/superpowers/plans/2026-09-27-mobile-pwa.md`
-**Status:** Release-ready on `feature/mobile-pwa-r2` as Remaked UI `2026.09.4`; PR, exact production artifact and deployed-site verification remain before marking the phase shipped.
+**Status:** Shipped as Remaked UI `2026.09.4` in PR #5 (`0e6cd1b`). Production workflow `36390367797`, its exact Pages artifact and live Modern/Legacy offline routes were verified on 2026-09-28.
 
 Deliverable:
 - phone/tablet interaction polish;

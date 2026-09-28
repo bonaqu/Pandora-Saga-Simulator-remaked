@@ -69,6 +69,14 @@ class RepositoryDocsTests(unittest.TestCase):
         self.assertIn("New version available — Reload", changelog)
         self.assertIn("local", changelog.lower())
 
+    def test_phase_four_roadmap_records_verified_production_release(self):
+        roadmap = self.read("docs/superpowers/plans/2026-09-27-modernization-roadmap.md")
+        phase_plan = self.read("docs/superpowers/plans/2026-09-27-mobile-pwa.md")
+
+        self.assertIn("Shipped as Remaked UI `2026.09.4` in PR #5 (`0e6cd1b`)", roadmap)
+        self.assertIn("Production workflow `36390367797`", roadmap)
+        self.assertIn("Shipped in PR #5 (`0e6cd1b`)", phase_plan)
+
 
 if __name__ == "__main__":
     unittest.main()

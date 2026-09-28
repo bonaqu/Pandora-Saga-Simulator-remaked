@@ -4,6 +4,8 @@
 
 **Goal:** Ship Remaked UI `2026.09.4` with a genuinely usable phone layout, an adapter-backed sticky character summary, collapsible legacy cards, installable PWA metadata, reliable offline boot, and a non-blocking update flow.
 
+**Status:** Shipped in PR #5 (`0e6cd1b`) after exact-head CI, downloaded Pages-artifact inspection, production deployment and live online/offline Chromium verification.
+
 **Architecture:** Keep the Legacy 2.00 engine and serialized state untouched. Add Modern-only mobile decoration through `modern/mobile.js`/`mobile.css`, reading state only through the existing adapter; add PWA install/update UX through `modern/pwa.js`; generate a root-scoped `service-worker.js` from a Modern source template during the deterministic Pages build. Precache the functional calculator core and small interface assets, runtime-cache other same-origin GET assets, and never cache external/GitHub API traffic.
 
 **Tech Stack:** Static HTML/CSS/JavaScript, existing Legacy 2.00 JavaScript engine, Python 3 standard library build tooling, Playwright, GitHub Actions, GitHub Pages, Web App Manifest, Service Worker API.
