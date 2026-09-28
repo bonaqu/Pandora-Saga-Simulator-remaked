@@ -81,3 +81,16 @@ test('RU covers Modern feature surfaces while game-derived labels stay unchanged
   await page.evaluate(() => window.PandoraRemaked.pwa.showUpdateNotice({ postMessage() {} }));
   await expect(page.locator('[data-remaked-update-notice]')).toContainText('Доступна новая версия — Обновить');
 });
+
+test('Russian shell remains usable without body overflow at 390px', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+  await expect(page.getByRole('link', { name: 'Старая версия' })).toBeVisible();
+  await expect(page.locator('[data-remaked-ui-locale="ru"]')).toHaveCSS('background-color', 'rgb(102, 155, 54)');
+  await expect(page.locator('[data-remaked-equipment-search]')).toBeVisible();
+  const metrics = await page.evaluate(() => ({
+    clientWidth: document.documentElement.clientWidth,
+    scrollWidth: document.documentElement.scrollWidth
+  }));
+  expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 1);
+});

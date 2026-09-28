@@ -41,6 +41,7 @@ The main site opens in **Modern Mode**:
 - a compact sticky character summary and collapsible detail cards on phone screens;
 - an installable PWA shell with reliable offline boot for both Modern and Legacy routes;
 - a non-blocking update notice that lets you finish or save work before reloading;
+- a separate EN/RU Modern interface switch; the JP/EN/TW selector still controls only preserved game data;
 - all Remaked autosaves and named builds stay local to the current browser in this release.
 
 Compare Builds does not replace the calculator formulas. Both sides are evaluated through the preserved legacy calculation path, and the current active character is restored afterwards. Stat help intentionally does **not** invent detailed attribute/equipment/buff formula breakdowns where those components have not been verified.
@@ -62,13 +63,13 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 | English | Default |
 | 日本語 | Available through the legacy data |
 | 繁體中文 | Available through the legacy data |
-| Русский | In development; game terminology will be verified against the Russian client |
+| Русский | Modern interface available; game names await verification against the Russian client |
 
 ## 🚧 What's coming next
 
 The modernization roadmap includes:
 
-- full Russian localization with verified in-game terminology;
+- user-verified Russian game terminology;
 - reproducible structured-data projections while keeping the legacy engine as the calculation source of truth.
 
 See [CHANGELOG.md](CHANGELOG.md) for released changes and current progress.
@@ -82,7 +83,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** 2026.09.4
+- **Remaked UI:** 2026.09.5
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 
