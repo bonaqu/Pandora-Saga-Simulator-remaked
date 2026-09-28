@@ -12,8 +12,10 @@ const contentTypes = {
   '.webp': 'image/webp'
 };
 
-async function startStaticServer(siteRoot) {
+export async function startStaticServer(siteRoot, options = {}) {
   const root = path.resolve(siteRoot);
+  const host = options.host || '127.0.0.1';
+  const port = options.port == null ? 0 : options.port;
   const server = http.createServer(async (request, response) => {
     try {
       const requestUrl = new URL(request.url || '/', 'http://127.0.0.1');
@@ -32,7 +34,7 @@ async function startStaticServer(siteRoot) {
       response.writeHead(404).end();
     }
   });
-  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  await new Promise((resolve) => server.listen(port, host, resolve));
   return server;
 }
 

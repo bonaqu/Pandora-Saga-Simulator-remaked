@@ -119,6 +119,7 @@ jobs:
           node --check modern/pwa.js
           node --check modern/service-worker.js
           node --check scripts/lib/legacy-runtime.mjs
+          node --check scripts/serve_pages.mjs
           node --check scripts/extract_legacy_terms.mjs
           node --check scripts/extract_legacy_data.mjs
 
