@@ -105,6 +105,9 @@ Deliverable:
 
 ### Phase 6 — Structured data projections
 
+**Plan:** `docs/superpowers/plans/2026-09-28-structured-data-projections.md`
+**Status:** In progress on `feature/structured-data-projections`.
+
 Deliverable:
 - reproducible exporters for equipment/Soul/skill read-only JSON indexes;
 - legacy IDs preserved;
