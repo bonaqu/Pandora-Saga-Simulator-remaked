@@ -1,15 +1,31 @@
-# Russian terminology workflow
+# Translation workbook
 
-`ui.en.json` is the complete English source catalog for the Modern interface. `ui.ru.json` contains reviewed Russian UI copy; omitted RU keys intentionally fall back to English.
+`translations.xlsx` is the only file a translator edits. It contains 1,764 rows:
 
-`game-terms.ru.json` and `game-terms.ru.csv` are deterministic exports from the preserved Legacy 2.00 runtime. The worksheet currently contains 1,617 terms, including all 211 actual skill names as `skill_entry.*`; the older `skill.*` IDs remain the 25 skill-discipline names. Each row keeps the stable Legacy path and JP/EN/TW source values. `ru_proposed` and `ru_approved` are intentionally blank: game-client terminology must not be guessed.
+- 147 Modern interface strings;
+- 1,617 stable Legacy game terms, including races, classes, equipment, Souls, skill groups and all 211 actual skill names.
 
-Workflow:
+The yellow **Русский — заполнять здесь** column is the editable input. All other columns are validated source data. Rows may be filtered or sorted; IDs, source columns, worksheet name and header row must not be changed. A blank Russian cell safely falls back to English.
 
-1. Build the site with `py scripts/build_pages.py --output _site`.
-2. Run `npm run extract:terms` after Legacy data changes.
-3. Edit only `ru_approved` in the JSON source after checking the official Russian client; use the CSV as the review worksheet.
-4. Run `npm run extract:terms` again. Existing approved values are preserved only while their English source remains unchanged.
-5. Run `npm run test:translations` to prove the checked-in JSON/CSV match the current Legacy runtime.
+`ui.en.json` and `game-terms.ru.json` are machine-maintained source indexes. Do not enter translations there.
 
-The exporter refuses to carry a non-empty approved Russian value across a changed English source string. Full game-term integration is a later step after user review.
+During every Pages build, `scripts/translation_workbook.py` validates the workbook and generates:
+
+- the EN/RU Modern UI catalog;
+- the approved Russian game-term map used by Modern equipment and Soul search;
+- a downloadable copy at `/localization/translations.xlsx`.
+
+CI refuses a workbook with missing/duplicate IDs, changed source values, formulas, unknown rows or broken UI placeholders. A failed build does not replace the currently published site.
+
+For the no-terminal, step-by-step workflow, read [LOCALIZATION_FOR_BEGINNERS.ru.md](../docs/LOCALIZATION_FOR_BEGINNERS.ru.md).
+
+Developer checks:
+
+```powershell
+python scripts/translation_workbook.py
+npm run test:translations
+python scripts/build_pages.py --output _site
+npx playwright test tests/ui/localization.spec.mjs
+```
+
+When preserved Legacy data intentionally changes, run `npm run extract:terms` to refresh `game-terms.ru.json`, then regenerate the workbook source rows before release. Existing Russian values must only be carried forward when their stable ID and source text still match.

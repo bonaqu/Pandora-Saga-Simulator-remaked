@@ -138,13 +138,15 @@ test('capture Phase 4 update notice QA screenshot', async ({ page }, testInfo) =
 test('capture Russian Modern desktop QA screenshot', async ({ page }, testInfo) => {
   await openModern(page, desktop);
   await page.locator('[data-remaked-ui-locale="ru"]').click();
-  await expect(page.locator('[data-remaked-header]')).toContainText('Проект');
+  const project = await page.evaluate(() => window.PandoraRemaked.i18n.t('header.project'));
+  await expect(page.locator('[data-remaked-header]')).toContainText(project);
   await page.screenshot({ path: testInfo.outputPath('modern-russian-desktop.png'), fullPage: true });
 });
 
 test('capture Russian Modern mobile QA screenshot', async ({ page }, testInfo) => {
   await openModern(page, mobile);
   await page.locator('[data-remaked-ui-locale="ru"]').click();
-  await expect(page.locator('[data-remaked-mobile-summary]')).toHaveAttribute('aria-label', 'Сводка текущего персонажа');
+  const summary = await page.evaluate(() => window.PandoraRemaked.i18n.t('mobile.summary'));
+  await expect(page.locator('[data-remaked-mobile-summary]')).toHaveAttribute('aria-label', summary);
   await page.screenshot({ path: testInfo.outputPath('modern-russian-mobile.png'), fullPage: false });
 });

@@ -4,10 +4,16 @@ from __future__ import annotations
 import argparse
 import base64
 import binascii
+import hashlib
 import json
 import pathlib
 import re
 import shutil
+
+try:
+    from scripts.translation_workbook import load_translation_catalogs
+except ModuleNotFoundError:  # Direct execution keeps only scripts/ on sys.path.
+    from translation_workbook import load_translation_catalogs
 
 PROJECT_URL = "https://github.com/bonaqu/Pandora-Saga-Simulator-remaked"
 UPDATES_URL = "https://github.com/bonaqu/Pandora-Saga-Simulator-remaked/blob/bonaqu_projects/CHANGELOG.md"
@@ -39,7 +45,8 @@ REQUIRED_MODERN = (
 )
 REQUIRED_LOCALIZATION = (
     "localization/ui.en.json",
-    "localization/ui.ru.json",
+    "localization/game-terms.ru.json",
+    "localization/translations.xlsx",
 )
 REQUIRED_GENERATED = (
     "data/generated/equipment.v1.json",
@@ -74,6 +81,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
   data-legacy-url="./legacy/"></div>
 <script src="./modern/version.js"></script>
 <script src="./modern/locales.js"></script>
+<script src="./modern/game-terms.js"></script>
 <script src="./modern/i18n.js"></script>
 <script src="./modern/adapter.js"></script>
 <script src="./modern/build-store.js"></script>
@@ -225,17 +233,27 @@ def _load_catalog(path: pathlib.Path, *, require_values: bool) -> dict[str, str]
     return catalog
 
 
-def _materialize_locales(root: pathlib.Path, output: pathlib.Path) -> None:
+def _materialize_locales(root: pathlib.Path, output: pathlib.Path, russian: dict[str, str]) -> None:
     english = _load_catalog(root / "localization/ui.en.json", require_values=True)
-    russian = _load_catalog(root / "localization/ui.ru.json", require_values=False)
-    unknown = sorted(set(russian) - set(english))
-    if unknown:
-        raise ValueError("Russian localization contains unknown keys: " + ", ".join(unknown))
     payload = json.dumps({"en": english, "ru": russian}, ensure_ascii=False, sort_keys=True)
     (output / "modern/locales.js").write_text(
         "window.PandoraRemakedLocales = Object.freeze(" + payload + ");\n",
         encoding="utf-8",
     )
+
+
+def _materialize_game_terms(output: pathlib.Path, russian: dict[str, str]) -> None:
+    payload = json.dumps({"ru": russian}, ensure_ascii=False, sort_keys=True)
+    (output / "modern/game-terms.js").write_text(
+        "window.PandoraRemakedGameTerms = " + payload + ";\n",
+        encoding="utf-8",
+    )
+
+
+def _publish_translation_workbook(root: pathlib.Path, output: pathlib.Path) -> None:
+    destination = output / "localization"
+    destination.mkdir(parents=True)
+    shutil.copy2(root / "localization/translations.xlsx", destination / "translations.xlsx")
 
 
 def _materialize_generated_data(root: pathlib.Path, output: pathlib.Path) -> None:
@@ -277,10 +295,17 @@ def _materialize_service_worker(root: pathlib.Path, output: pathlib.Path) -> Non
     template = (root / SERVICE_WORKER_SOURCE).read_text(encoding="utf-8")
     if "__CACHE_VERSION__" not in template or "__PRECACHE_URLS__" not in template:
         raise ValueError("modern/service-worker.js is missing build placeholders")
-    worker = template.replace("__CACHE_VERSION__", _read_ui_version(root))
+    urls = _precache_urls(output)
+    fingerprint = hashlib.sha256()
+    for url in urls:
+        fingerprint.update(url.encode("utf-8"))
+        fingerprint.update(b"\0")
+        fingerprint.update(hashlib.sha256((output / url.removeprefix("./")).read_bytes()).digest())
+    cache_version = _read_ui_version(root) + "-" + fingerprint.hexdigest()[:16]
+    worker = template.replace("__CACHE_VERSION__", cache_version)
     worker = worker.replace(
         "__PRECACHE_URLS__",
-        json.dumps(_precache_urls(output), ensure_ascii=False, indent=2),
+        json.dumps(urls, ensure_ascii=False, indent=2),
     )
     (output / SERVICE_WORKER_TARGET).write_text(worker, encoding="utf-8")
     copied_template = output / SERVICE_WORKER_SOURCE
@@ -291,13 +316,16 @@ def _materialize_service_worker(root: pathlib.Path, output: pathlib.Path) -> Non
 def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     root, output = _ensure_inside(root, output)
     _require_inputs(root)
+    ui_russian, game_russian, _ = load_translation_catalogs(root)
     if output.exists():
         shutil.rmtree(output)
     output.mkdir(parents=True)
 
     _copy_runtime(root, output)
     _materialize_modern_assets(root, output)
-    _materialize_locales(root, output)
+    _materialize_locales(root, output, ui_russian)
+    _materialize_game_terms(output, game_russian)
+    _publish_translation_workbook(root, output)
     _materialize_generated_data(root, output)
 
     source_bytes = (root / "index.html").read_bytes()

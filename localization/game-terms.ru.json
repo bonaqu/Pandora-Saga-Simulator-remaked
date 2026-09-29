@@ -7,7 +7,7 @@
       "js/item.js",
       "js/skill.js"
     ],
-    "policy": "ru_approved remains empty until verified against the official Russian client"
+    "policy": "source rows only; approved Russian text lives in localization/translations.xlsx"
   },
   "terms": [
     {

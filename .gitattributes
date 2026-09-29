@@ -3,6 +3,7 @@
 /css/** -text
 /js/** -text
 /localization/** text eol=lf
+/localization/*.xlsx binary
 /scripts/extract_legacy_terms.mjs text eol=lf
 /scripts/extract_legacy_data.mjs text eol=lf
 /scripts/lib/*.mjs text eol=lf

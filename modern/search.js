@@ -21,12 +21,29 @@
     return Number.isFinite(parsed) ? parsed : null;
   }
 
+  function gameName(identifier, fallback) {
+    return i18n && typeof i18n.game === 'function' ? i18n.game(identifier, fallback) : fallback;
+  }
+
+  function equipmentTermId(value) {
+    var legacyId = Number(value);
+    if (!Number.isInteger(legacyId) || legacyId <= 0) return '';
+    return 'equipment.' + String(Math.floor(legacyId / 10000)) + '.' + String(legacyId % 10000);
+  }
+
+  function soulTermId(value) {
+    var legacyId = Number(value);
+    return Number.isInteger(legacyId) && legacyId > 0 ? 'soul.' + String(legacyId) : '';
+  }
+
   function filterEquipment(options, filters) {
     var query = normalizeQuery(filters && filters.query);
     var minLevel = parseOptionalLevel(filters && filters.minLevel);
     var maxLevel = parseOptionalLevel(filters && filters.maxLevel);
     return (options || []).filter(function (option) {
-      if (query && normalizeQuery(option.name).indexOf(query) === -1) return false;
+      var localized = gameName(equipmentTermId(option.value), option.name);
+      var searchable = normalizeQuery(option.name + ' ' + localized);
+      if (query && searchable.indexOf(query) === -1) return false;
       if (minLevel != null || maxLevel != null) {
         if (option.level == null) return false;
         if (minLevel != null && option.level < minLevel) return false;
@@ -242,7 +259,10 @@
         var detail = option.level == null
           ? t('search.currentSlotOption', null, 'Current slot option')
           : t('search.level', { level: option.level }, 'Lv ' + option.level);
-        var button = resultButton(option, detail);
+        var displayed = Object.assign({}, option, {
+          name: gameName(equipmentTermId(option.value), option.name)
+        });
+        var button = resultButton(displayed, detail);
         button.addEventListener('click', function () {
           if (adapter.selectEquipment(target, option.value)) closePanel();
         });
@@ -251,6 +271,7 @@
       results.replaceChildren(fragment);
     }
 
+    active.render = render;
     targetsControl.addEventListener('change', render);
     query.addEventListener('input', render);
     minLevel.addEventListener('input', render);
@@ -313,7 +334,8 @@
       }
       var needle = normalizeQuery(query.value);
       var options = adapter.listSoulOptions(selected).filter(function (option) {
-        return !needle || normalizeQuery(option.name).indexOf(needle) !== -1;
+        var localized = gameName(soulTermId(option.value), option.name);
+        return !needle || normalizeQuery(option.name + ' ' + localized).indexOf(needle) !== -1;
       });
       summary.textContent = t('search.soulSummary', { total: options.length }, options.length + ' compatible Souls');
       if (!options.length) {
@@ -322,7 +344,10 @@
       }
       var fragment = document.createDocumentFragment();
       options.forEach(function (option) {
-        var button = resultButton(option, t('search.soulCompatible', null, 'Compatible with this socket'));
+        var displayed = Object.assign({}, option, {
+          name: gameName(soulTermId(option.value), option.name)
+        });
+        var button = resultButton(displayed, t('search.soulCompatible', null, 'Compatible with this socket'));
         button.addEventListener('click', function () {
           if (adapter.selectSoul(selected, option.value)) closePanel();
         });
@@ -331,6 +356,7 @@
       results.replaceChildren(fragment);
     }
 
+    active.render = render;
     targetsControl.addEventListener('change', render);
     query.addEventListener('input', render);
     render();
@@ -345,4 +371,8 @@
     openSoulSearch: openSoulSearch,
     close: closePanel
   };
+
+  window.addEventListener('pandora-remaked:localechange', function () {
+    if (active && typeof active.render === 'function') active.render();
+  });
 })();

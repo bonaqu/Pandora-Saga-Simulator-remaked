@@ -117,6 +117,8 @@ Deliverable:
 
 ### Phase 7 — Brand, changelog, media, final QA
 
+**Before Phase 7:** The user requested a beginner-friendly, single-Excel Russian translation workflow. Implementation plan: `2026-09-28-simple-translation-workflow.md`, targeting Remaked UI `2026.09.7`. It replaces translator-edited JSON/CSV with one validated workbook and automatic Pages/PWA updates.
+
 Deliverable:
 - polished favicon/PWA/OG/repository cover assets;
 - visuals based on verified Pandora Saga references and clearly marked unofficial;

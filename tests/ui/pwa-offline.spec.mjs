@@ -1,4 +1,9 @@
 import { test, expect } from '@playwright/test';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { startStaticServer } from '../../scripts/lib/legacy-runtime.mjs';
 
 test('installed Modern and Legacy routes boot offline without changing the build', async ({ page, context }) => {
   await page.goto('/');
@@ -43,5 +48,49 @@ test('installed Modern and Legacy routes boot offline without changing the build
     expect(legacy.calc).toBe('function');
   } finally {
     await context.setOffline(false);
+  }
+});
+
+test('translation-only artifact update reaches an existing offline installation', async ({ page, context }) => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'pandora-translation-update-'));
+  const site = path.join(temporary, 'site');
+  await fs.cp(path.resolve('_site'), site, { recursive: true });
+  const server = await startStaticServer(site);
+  const url = `http://127.0.0.1:${server.address().port}/`;
+  try {
+    await page.goto(url);
+    await page.evaluate(() => navigator.serviceWorker.ready);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+    await page.locator('[data-remaked-ui-locale="ru"]').click();
+    const before = await page.evaluate(() => ({ payload: window.Store(), version: window.PandoraRemakedVersion.ui }));
+
+    const catalogPath = path.join(site, 'modern/locales.js');
+    const source = await fs.readFile(catalogPath, 'utf8');
+    const catalogs = JSON.parse(source.split('Object.freeze(')[1].replace(/\);\s*$/, ''));
+    catalogs.ru['header.project'] = 'Проверка обновления из таблицы';
+    await fs.writeFile(catalogPath, 'window.PandoraRemakedLocales = Object.freeze(' + JSON.stringify(catalogs) + ');\n');
+    execFileSync(process.env.PYTHON || 'python', [
+      '-c',
+      'import pathlib,sys; from scripts.build_pages import _materialize_service_worker; _materialize_service_worker(pathlib.Path.cwd(), pathlib.Path(sys.argv[1]))',
+      site
+    ]);
+
+    await page.evaluate(async () => (await navigator.serviceWorker.getRegistration()).update());
+    await expect(page.locator('[data-remaked-update-notice]')).toBeVisible();
+    await page.locator('[data-remaked-update-reload]').click();
+    await expect(page.locator('[data-remaked-header]')).toContainText('Проверка обновления из таблицы');
+    const after = await page.evaluate(() => ({ payload: window.Store(), version: window.PandoraRemakedVersion.ui }));
+    expect(after).toEqual(before);
+
+    await context.setOffline(true);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-remaked-header]')).toContainText('Проверка обновления из таблицы');
+    expect(await page.evaluate(() => window.Store())).toBe(before.payload);
+  } finally {
+    await context.setOffline(false);
+    await page.goto('about:blank');
+    await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
+    await fs.rm(temporary, { recursive: true, force: true });
   }
 });

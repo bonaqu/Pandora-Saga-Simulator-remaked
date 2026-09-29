@@ -6,37 +6,7 @@ import { withLegacyRuntime } from './lib/legacy-runtime.mjs';
 const root = process.cwd();
 const siteRoot = path.resolve(root, '_site');
 const jsonPath = path.resolve(root, 'localization/game-terms.ru.json');
-const csvPath = path.resolve(root, 'localization/game-terms.ru.csv');
 const checkOnly = process.argv.includes('--check');
-
-async function readExistingApprovals() {
-  try {
-    const parsed = JSON.parse(await fs.readFile(jsonPath, 'utf8'));
-    const approvals = new Map();
-    for (const term of parsed.terms || []) {
-      approvals.set(term.id, {
-        source_en: term.source_en,
-        ru_approved: typeof term.ru_approved === 'string' ? term.ru_approved : ''
-      });
-    }
-    return approvals;
-  } catch (error) {
-    if (error && error.code === 'ENOENT') return new Map();
-    throw error;
-  }
-}
-
-function csvCell(value) {
-  const text = String(value == null ? '' : value);
-  return /[",\r\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
-}
-
-function toCsv(terms) {
-  const columns = ['id', 'category', 'legacy_path', 'source_en', 'source_jp', 'source_tw', 'ru_proposed', 'ru_approved'];
-  const lines = [columns.join(',')];
-  for (const term of terms) lines.push(columns.map((key) => csvCell(term[key])).join(','));
-  return '\uFEFF' + lines.join('\n') + '\n';
-}
 
 async function collectTerms() {
   return withLegacyRuntime(siteRoot, (page) => page.evaluate(() => {
@@ -122,48 +92,31 @@ async function collectTerms() {
 
 async function main() {
   await fs.access(path.join(siteRoot, 'index.html'));
-  const approvals = await readExistingApprovals();
   const terms = await collectTerms();
   const seen = new Set();
   for (const term of terms) {
     if (seen.has(term.id)) throw new Error(`Duplicate term id: ${term.id}`);
     seen.add(term.id);
-    const previous = approvals.get(term.id);
-    if (previous && previous.ru_approved) {
-      if (previous.source_en !== term.source_en) {
-        throw new Error(`Refusing to carry approved RU text across changed English source: ${term.id}`);
-      }
-      term.ru_approved = previous.ru_approved;
-    }
   }
   const payload = {
     schema_version: 1,
     source: {
       legacy_engine: '2.00',
       generated_from: ['js/ini.js', 'js/item.js', 'js/skill.js'],
-      policy: 'ru_approved remains empty until verified against the official Russian client'
+      policy: 'source rows only; approved Russian text lives in localization/translations.xlsx'
     },
     terms
   };
   const json = JSON.stringify(payload, null, 2) + '\n';
-  const csv = toCsv(terms);
 
   if (checkOnly) {
-    const [existingJson, existingCsv] = await Promise.all([
-      fs.readFile(jsonPath, 'utf8'),
-      fs.readFile(csvPath, 'utf8')
-    ]);
-    if (existingJson !== json || existingCsv !== csv) {
-      throw new Error('Legacy terminology exports are stale; run npm run extract:terms');
-    }
+    const existingJson = await fs.readFile(jsonPath, 'utf8');
+    if (existingJson !== json) throw new Error('Legacy terminology export is stale; run npm run extract:terms');
     process.stdout.write(`Verified ${terms.length} deterministic Legacy terms.\n`);
     return;
   }
 
-  await Promise.all([
-    fs.writeFile(jsonPath, json, 'utf8'),
-    fs.writeFile(csvPath, csv, 'utf8')
-  ]);
+  await fs.writeFile(jsonPath, json, 'utf8');
   process.stdout.write(`Exported ${terms.length} Legacy terms.\n`);
 }
 
