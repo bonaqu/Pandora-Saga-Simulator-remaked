@@ -185,7 +185,10 @@
     var updatesUrl = hooks && hooks.dataset.updatesUrl ? hooks.dataset.updatesUrl : '#';
     var legacyUrl = hooks && hooks.dataset.legacyUrl ? hooks.dataset.legacyUrl : './legacy/';
     primary.appendChild(makeLink('Project', projectUrl, 'header.project'));
-    primary.appendChild(makeLink('Updates', updatesUrl, 'header.updates'));
+    var updates = makeButton('Updates', 'remaked-link', 'header.updates');
+    updates.dataset.remakedUpdatesOpen = '';
+    updates.addEventListener('click', function () { openUpdates(updatesUrl, projectUrl); });
+    primary.appendChild(updates);
     primary.appendChild(makeLink('Legacy Mode', legacyUrl, 'header.legacyMode'));
     top.appendChild(primary);
 
@@ -284,6 +287,40 @@
     return tools;
   }
 
+  var updatesDialog;
+  function openUpdates(changelogUrl, projectUrl) {
+    if (!updatesDialog) {
+      updatesDialog = document.createElement('dialog');
+      updatesDialog.className = 'remaked-modal remaked-updates-overlay';
+      updatesDialog.dataset.remakedUpdates = '';
+      updatesDialog.setAttribute('aria-labelledby', 'remaked-updates-title');
+      var panel = document.createElement('section');
+      panel.className = 'remaked-updates-panel';
+      var header = document.createElement('div'); header.className = 'remaked-updates-header';
+      var title = document.createElement('h2'); title.id = 'remaked-updates-title';
+      localizeText(title, 'updates.title', "What's new");
+      var close = makeButton('Close updates', 'remaked-tool-button', 'updates.close');
+      close.autofocus = true;
+      close.addEventListener('click', function () { updatesDialog.close(); });
+      header.appendChild(title); header.appendChild(close); panel.appendChild(header);
+      var version = document.createElement('p'); version.className = 'remaked-updates-version';
+      localizeText(version, 'updates.version', '', window.PandoraRemakedVersion);
+      panel.appendChild(version);
+      var list = document.createElement('ul');
+      ['keyboard', 'translations', 'builds', 'offline', 'preservation'].forEach(function (key) {
+        var item = document.createElement('li'); localizeText(item, 'updates.' + key, ''); list.appendChild(item);
+      });
+      panel.appendChild(list);
+      var links = document.createElement('div'); links.className = 'remaked-updates-links';
+      links.appendChild(makeLink('Full changelog', changelogUrl, 'updates.fullChangelog'));
+      links.appendChild(makeLink('Report a problem', projectUrl + '/issues/new?template=bug_report.yml', 'updates.report'));
+      panel.appendChild(links); updatesDialog.appendChild(panel);
+      updatesDialog.addEventListener('click', function (event) { if (event.target === updatesDialog) updatesDialog.close(); });
+      document.body.appendChild(updatesDialog);
+    }
+    if (!updatesDialog.open) updatesDialog.showModal();
+  }
+
   function markToolbarContaining(id) {
     var element = document.getElementById(id);
     if (!element) return;
@@ -326,8 +363,16 @@
     shell.dataset.remakedShell = '';
     var frame = document.createElement('main');
     frame.className = 'remaked-app-frame';
+    frame.id = 'remaked-calculator';
+    frame.tabIndex = -1;
     localizeAttribute(frame, 'aria-label', 'shell.calculator', 'Pandora Saga character simulator');
     legacyBody.parentNode.insertBefore(shell, legacyBody);
+    var skip = document.createElement('a');
+    skip.className = 'remaked-skip-link';
+    skip.href = '#remaked-calculator';
+    localizeText(skip, 'shell.skipCalculator', 'Skip to calculator');
+    skip.addEventListener('click', function () { frame.focus(); });
+    shell.appendChild(skip);
     shell.appendChild(createHeader());
     shell.appendChild(createDiscoveryTools());
     shell.appendChild(frame);
@@ -336,6 +381,20 @@
   };
 
   namespace.initModernShell();
+  document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Tab' || !event.target.closest) return;
+    var dialog = event.target.closest('dialog[open]');
+    if (!dialog) return;
+    var stops = Array.from(dialog.querySelectorAll('button, input, select, textarea, a[href], [tabindex]')).filter(function (node) {
+      return node.tabIndex >= 0 && !node.disabled && !node.closest('[inert]') && node.getClientRects().length;
+    });
+    if (!stops.length) return;
+    if (event.shiftKey && event.target === stops[0]) {
+      event.preventDefault(); stops[stops.length - 1].focus();
+    } else if (!event.shiftKey && event.target === stops[stops.length - 1]) {
+      event.preventDefault(); stops[0].focus();
+    }
+  });
   window.addEventListener('pandora-remaked:localechange', function () {
     var header = document.querySelector('[data-remaked-header]');
     if (header) syncUiLocaleButtons(header);

@@ -68,6 +68,12 @@ test('focusing a stat help control reveals definition and source and blur hides 
   await expect(tooltip).toContainText(/physical attack/i);
   await expect(tooltip).toContainText(/Status_18/);
   await expect(tooltip).toContainText(/Legacy 2\.00/i);
+  await page.keyboard.press('Escape');
+  await expect(tooltip).toBeHidden();
+  await expect(page.locator('[data-remaked-compare]')).toBeVisible();
+  await help.blur();
+  await help.focus();
+  await expect(tooltip).toBeVisible();
   await page.keyboard.press('Tab');
   await expect(tooltip).toBeHidden();
 });

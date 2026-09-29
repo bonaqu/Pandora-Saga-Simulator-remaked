@@ -131,6 +131,11 @@
       if (document.activeElement !== help) hide();
     });
     help.addEventListener('click', show);
+    help.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !tooltip.hidden) {
+        hide(); event.preventDefault(); event.stopPropagation();
+      }
+    });
 
     labelNode.appendChild(document.createTextNode(' '));
     labelNode.appendChild(help);

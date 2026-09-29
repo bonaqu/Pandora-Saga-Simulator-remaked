@@ -6,17 +6,21 @@ async function openModern(page) {
 }
 
 async function optionRecords(page, selector) {
-  const options = page.locator(`${selector} option`);
-  const count = await options.count();
-  const records = [];
-  for (let index = 0; index < count; index += 1) {
-    const option = options.nth(index);
-    records.push({
-      value: (await option.getAttribute('value')) ?? '',
-      text: ((await option.textContent()) ?? '').trim()
-    });
-  }
-  return records;
+  // Capture one coherent DOM snapshot instead of hundreds of protocol trips.
+  // Preserve exactly the same value/text fields and every parity assertion.
+  // Legacy owns window.Set; locator.evaluateAll's selector runtime assumes the
+  // native Set constructor. Plain DOM evaluation does not touch that global.
+  return page.evaluate(selector => {
+    const records = [];
+    const options = document.querySelectorAll(`${selector} option`);
+    for (let index = 0; index < options.length; index += 1) {
+      records.push({
+        value: options[index].getAttribute('value') ?? '',
+        text: (options[index].textContent ?? '').trim()
+      });
+    }
+    return records;
+  }, selector);
 }
 
 async function optionValues(page, selector) {

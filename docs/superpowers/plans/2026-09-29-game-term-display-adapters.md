@@ -2,7 +2,7 @@
 
 **Goal:** Complete the user's table-based localization request by applying approved game names throughout Modern Mode and collecting the inherited calculator's interface labels in the same workbook before Phase 7.
 
-**Status:** Implemented locally as Remaked UI `2026.09.8`; CI/publication acceptance pending. The workbook publication workflow was delivered separately as Remaked UI `2026.09.7`.
+**Status:** Shipped as Remaked UI `2026.09.8` in PR #13 (`4176718`). Feature CI `36628459114` and `36628483316` passed for exact feature head `d107de8`. Production workflow `36628855993` built/deployed the merge; its exact Pages artifact and live site passed workbook, display/state, compressed save/load and offline acceptance on 2026-09-29. The workbook publication foundation was delivered separately as `2026.09.7`.
 
 ## Proven source mappings
 
@@ -33,9 +33,16 @@
 - [x] Workbook migration preserving all existing user input: 2,817 rows and all 119 prior Russian UI values; zero invented approved game translations.
 - [x] Differential calculations/build bytes and complete Legacy-global snapshots before/after RU rendering.
 - [x] EN/JP/TW changes, load/compare, keyboard and mobile visual QA. Regression test proved DOM replacement lost help-node focus; in-place help updates preserve the node and other decorators' attributes/listeners.
-- [ ] Full local/CI checks, PR/merge, exact production artifact and live workbook workflow.
+- [x] Full local/CI checks: 54 Python, 90 browser contracts, 15 visual captures, deterministic terminology/data exports; exact Git archive preservation validation. PR/merge, exact production artifact and live workbook workflow verified.
 - [x] Update beginner guide to implemented display coverage; record production acceptance in roadmap after deployment.
 
 ## Scope boundary
 
 The original diagnostic Log text is intentionally not translated. Embedded image lettering is not editable through text cells. Native full-name titles and wrapped skill descriptions accompany fixed-width inherited rows. Original Legacy source, formula/data globals and compressed payloads remain untouched.
+
+## Production evidence
+
+- Published workbook SHA-256: `6d3af8fe3b1d04c26debfa1c15f266e4ce2c1e1329a031fb5755cd1ce5909852`, matching both the exact Pages artifact and live download.
+- Live UI version `2026.09.8`, 119 approved RU UI strings, zero invented approved game translations.
+- Ephemeral runtime fixtures confirmed names/labels, source search, EN restoration and complete Legacy-global isolation. They were removed from the browser runtime; none were added to the shipped workbook.
+- Modern/Legacy offline boot, compressed File save/load and error-free runtime passed on the real Pages origin.

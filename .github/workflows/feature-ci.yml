@@ -85,8 +85,8 @@ jobs:
             echo 'lock_created=true' >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright browser engines
+        run: npx playwright install --with-deps chromium firefox webkit
 
       - name: Run shipped browser contract tests
         shell: bash
@@ -96,6 +96,9 @@ jobs:
 
       - name: Verify deterministic Legacy terminology export
         run: npm run test:translations
+
+      - name: Run Chromium Firefox and WebKit smoke tests
+        run: npm run test:ui:cross-browser
 
       - name: Syntax-check recovered archived codecs
         run: |

@@ -148,5 +148,16 @@
   "tooltip.definition.lightResist": "Light resistance is the light-resistance value reported by the preserved Legacy calculator.",
   "tooltip.definition.darkResist": "Dark resistance is the dark-resistance value reported by the preserved Legacy calculator.",
   "tooltip.definition.magicResist": "Magic resistance is the magic-resistance value reported by the preserved Legacy calculator.",
-  "test.englishOnly": "English fallback sentinel"
+  "test.englishOnly": "English fallback sentinel",
+  "shell.skipCalculator": "Skip to calculator",
+  "updates.title": "What's new",
+  "updates.close": "Close updates",
+  "updates.version": "Legacy engine: {legacyEngine} · Remaked UI: {ui}",
+  "updates.keyboard": "Keyboard navigation: skip straight to the calculator, keep focus inside open dialogs, and return to the opener with Escape.",
+  "updates.translations": "Translate the Modern interface, game names, labels and skill descriptions in one Excel workbook. Upload it to GitHub to publish an update.",
+  "updates.builds": "Search compatible equipment and Souls, save named builds locally, and compare their calculated stats without changing your current character.",
+  "updates.offline": "Install the site or use Modern and Legacy modes offline after the first successful load. Save your work before accepting an update.",
+  "updates.preservation": "The Legacy 2.00 engine remains the calculation source. This is an unofficial community project. Build storage is local to this browser.",
+  "updates.fullChangelog": "Full changelog",
+  "updates.report": "Report a problem"
 }

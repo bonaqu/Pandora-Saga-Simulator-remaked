@@ -23,7 +23,7 @@ test('Modern shell exposes meaningful navigation and defaults to English', async
   const header = page.locator('[data-remaked-header]');
   await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href', './modern/favicon.svg');
   await expect(header.getByRole('link', { name: 'Project', exact: true })).toHaveAttribute('href', repoUrl);
-  await expect(header.getByRole('link', { name: 'Updates', exact: true })).toHaveAttribute('href', /CHANGELOG\.md$/);
+  await expect(header.getByRole('button', { name: 'Updates', exact: true })).toBeVisible();
   await expect(header.getByRole('link', { name: 'Legacy Mode', exact: true })).toHaveAttribute('href', './legacy/');
   await expect(header.locator('a[href*="awayfromkuma"]')).toHaveCount(0);
   await expect(header.locator('[data-remaked-language="1"]')).toHaveAttribute('aria-pressed', 'true');

@@ -312,33 +312,33 @@
   }
 
   function closeManager() {
-    if (!managerOverlay) return;
+    if (!managerOverlay || managerOverlay.hidden) return;
+    managerOverlay.close();
     managerOverlay.hidden = true;
     document.body.style.overflow = previousBodyOverflow;
   }
 
   function openManager() {
-    if (!managerOverlay) return;
+    if (!managerOverlay || managerOverlay.open) return;
     previousBodyOverflow = document.body.style.overflow;
     managerOverlay.hidden = false;
     document.body.style.overflow = 'hidden';
     setManagerStatus('', 'ready');
     renderBuilds();
+    managerOverlay.showModal();
     if (buildNameInput) buildNameInput.focus();
   }
 
   function createManager() {
-    var overlay = document.createElement('div');
-    overlay.className = 'remaked-build-overlay';
+    var overlay = document.createElement('dialog');
+    overlay.className = 'remaked-build-overlay remaked-modal';
     overlay.hidden = true;
     overlay.dataset.remakedBuildManagerOverlay = '';
 
     var panel = document.createElement('section');
     panel.className = 'remaked-build-manager';
     panel.dataset.remakedBuildManager = '';
-    panel.setAttribute('role', 'dialog');
-    panel.setAttribute('aria-modal', 'true');
-    panel.setAttribute('aria-labelledby', 'remaked-build-manager-title');
+    overlay.setAttribute('aria-labelledby', 'remaked-build-manager-title');
 
     var header = document.createElement('div');
     header.className = 'remaked-build-manager-header';
@@ -461,9 +461,7 @@
     overlay.addEventListener('click', function (event) {
       if (event.target === overlay) closeManager();
     });
-    document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && managerOverlay && !managerOverlay.hidden) closeManager();
-    });
+    overlay.addEventListener('cancel', function (event) { event.preventDefault(); closeManager(); });
     document.body.appendChild(overlay);
     managerOverlay = overlay;
   }

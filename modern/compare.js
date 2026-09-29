@@ -237,6 +237,7 @@
 
   function close() {
     if (!overlay || overlay.hidden) return;
+    overlay.close();
     overlay.hidden = true;
     document.body.style.overflow = previousBodyOverflow;
     var target = opener;
@@ -245,12 +246,13 @@
   }
 
   function open(trigger) {
-    if (!overlay) return;
+    if (!overlay || overlay.open) return;
     opener = trigger || document.activeElement;
     previousBodyOverflow = document.body.style.overflow;
     overlay.hidden = false;
     document.body.style.overflow = 'hidden';
     refreshChoices();
+    overlay.showModal();
     if (selectA) selectA.focus();
   }
 
@@ -269,17 +271,15 @@
   }
 
   function createDialog() {
-    overlay = document.createElement('div');
-    overlay.className = 'remaked-compare-overlay';
+    overlay = document.createElement('dialog');
+    overlay.className = 'remaked-compare-overlay remaked-modal';
     overlay.dataset.remakedCompareOverlay = '';
     overlay.hidden = true;
 
     panel = document.createElement('section');
     panel.className = 'remaked-compare';
     panel.dataset.remakedCompare = '';
-    panel.setAttribute('role', 'dialog');
-    panel.setAttribute('aria-modal', 'true');
-    panel.setAttribute('aria-labelledby', 'remaked-compare-title');
+    overlay.setAttribute('aria-labelledby', 'remaked-compare-title');
 
     var header = document.createElement('div');
     header.className = 'remaked-compare-header';
@@ -371,9 +371,7 @@
     overlay.addEventListener('click', function (event) {
       if (event.target === overlay) close();
     });
-    document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && overlay && !overlay.hidden) close();
-    });
+    overlay.addEventListener('cancel', function (event) { event.preventDefault(); close(); });
     setComparisonVisible(false);
   }
 
