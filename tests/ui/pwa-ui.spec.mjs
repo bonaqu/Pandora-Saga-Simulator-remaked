@@ -5,6 +5,27 @@ async function openModern(page) {
   await expect(page.locator('[data-remaked-shell]')).toBeVisible();
 }
 
+test('share and installation assets decode with declared dimensions and stay out of Legacy', async ({ page }) => {
+  await openModern(page);
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', 'https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/modern/social-preview.png');
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href', './modern/apple-touch-icon.png');
+  for (const [name, width, height] of [
+    ['icon-192.png', 192, 192], ['icon-512.png', 512, 512],
+    ['apple-touch-icon.png', 180, 180], ['social-preview.png', 1200, 630]
+  ]) {
+    const response = await page.request.get(`/modern/${name}`);
+    expect(response.ok()).toBe(true);
+    expect(response.headers()['content-type']).toContain('image/png');
+    expect(await page.evaluate(async name => {
+      const image = document.createElement('img'); image.src = `./modern/${name}`;
+      await image.decode(); return [image.naturalWidth, image.naturalHeight];
+    }, name)).toEqual([width, height]);
+  }
+  await page.goto('/legacy/');
+  await expect(page.locator('meta[property^="og:"]')).toHaveCount(0);
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveCount(0);
+});
+
 test('PWA action mount exists while Install App stays hidden before capture', async ({ page }) => {
   await openModern(page);
   await expect(page.locator('[data-remaked-pwa-actions]')).toHaveCount(1);

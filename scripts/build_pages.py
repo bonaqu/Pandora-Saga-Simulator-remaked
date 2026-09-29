@@ -32,6 +32,10 @@ REQUIRED_MODERN = (
     "modern/manifest.webmanifest",
     "modern/icon-192.svg",
     "modern/icon-512.svg",
+    "modern/icon-192.png",
+    "modern/icon-512.png",
+    "modern/apple-touch-icon.png",
+    "modern/social-preview.png",
     "modern/service-worker.js",
     "modern/version.js",
     "modern/i18n.js",
@@ -67,7 +71,20 @@ HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#669b36" />
 <meta name="background-color" content="#f4f6ed" />
+<meta name="description" content="Unofficial Pandora Saga character calculator: search equipment, save builds locally and compare stats using the preserved Legacy 2.00 engine." />
+<link rel="canonical" href="https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Pandora Saga Simulator — Remaked" />
+<meta property="og:description" content="Unofficial character calculator. Search equipment, save builds locally and compare stats with the preserved Legacy 2.00 engine." />
+<meta property="og:url" content="https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/" />
+<meta property="og:image" content="https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/modern/social-preview.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Pandora Saga Simulator Remaked: authentic game artwork above the Modern character calculator" />
+<meta name="twitter:card" content="summary_large_image" />
 <link rel="icon" type="image/svg+xml" href="./modern/favicon.svg" />
+<link rel="apple-touch-icon" sizes="180x180" href="./modern/apple-touch-icon.png" />
 <link rel="manifest" href="./modern/manifest.webmanifest" />
 <link rel="stylesheet" href="./modern/modern.css" />
 <link rel="stylesheet" href="./modern/search.css" />
@@ -301,6 +318,8 @@ def _precache_urls(output: pathlib.Path) -> list[str]:
     for relative in ("legacy/css", "legacy/js", "legacy/image/interface"):
         urls.update(_relative_urls(output, output / relative))
     urls.discard("./modern/service-worker.js")
+    # Link-preview crawlers fetch this online; it is not needed to use the app.
+    urls.discard("./modern/social-preview.png")
     return sorted(urls)
 
 

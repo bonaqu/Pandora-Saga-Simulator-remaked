@@ -51,6 +51,21 @@ Compare Builds does not replace the calculator formulas. Both sides are evaluate
 **Open Modern Mode:**  
 https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/
 
+## In use
+
+Real Modern Mode screens, captured from the published UI `2026.09.9`. The comparison uses two example builds with different races; names and calculations come from the preserved engine.
+
+<img src="docs/assets/screenshots/equipment-search-desktop.png" alt="Equipment Search on desktop: compatible items with name and level filters" width="720" />
+
+<details>
+<summary>Compare Builds and mobile Build Manager</summary>
+
+<img src="docs/assets/screenshots/compare-builds-desktop.png" alt="Two example builds compared with stat values and neutral Build B minus Build A differences" width="880" />
+
+<img src="docs/assets/screenshots/build-manager-mobile.png" alt="Build Manager at a 390-pixel phone width with two named example builds and import/export controls" width="390" />
+
+</details>
+
 ## 🕰️ Legacy Mode
 
 Want the old simulator exactly the way longtime users remember it? The preserved **Legacy Mode** remains available separately as a historical reference and compatibility baseline.
@@ -87,7 +102,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** 2026.09.9
+- **Remaked UI:** 2026.09.10
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 

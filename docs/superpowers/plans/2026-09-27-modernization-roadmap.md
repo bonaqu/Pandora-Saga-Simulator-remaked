@@ -119,7 +119,7 @@ Deliverable:
 
 **Before Phase 7:** The user requested a beginner-friendly, single-Excel Russian translation workflow. Its foundation shipped as UI `2026.09.7` (PR #11) and codec recovery (PR #12), verified through workflow `36622163023`. The calculator display extension shipped as UI `2026.09.8` in PR #13 (`4176718`), with 2,817 workbook rows preserving prior input. Production workflow `36628855993`, exact Pages artifact and live workbook/state/offline/compressed-save acceptance were verified on 2026-09-29. Plans: `2026-09-28-simple-translation-workflow.md` and `2026-09-29-game-term-display-adapters.md`.
 
-**Phase 7 status:** UI `2026.09.9` release-panel/keyboard block implemented locally on `codex/phase7-release-polish`. Plan: `2026-09-29-phase-seven-release-polish.md`. Twelve Chromium/Firefox/WebKit smoke checks passed. Native modal focus, skip navigation and localized on-site Updates are implemented; CI/production, media and final release gates remain open. No manual screen-reader conformance claim.
+**Phase 7 status:** Native modal focus, skip navigation and localized on-site Updates shipped as UI `2026.09.9` in PR #14 (`816e72f`), verified through feature CI `36631948186` and production workflow/artifact/live acceptance `36632481054`. Final real media, OG/installation metadata and documentation are implemented as UI `2026.09.10`. Release completion is recorded by annotated tag `v2026.09.10`, created only after final CI/Pages artifact/live acceptance. Plan: `2026-09-29-phase-seven-release-polish.md`; gate scope: `docs/RELEASE_ACCEPTANCE.md`. No manual screen-reader or physical-device conformance claim.
 
 Deliverable:
 - polished favicon/PWA/OG/repository cover assets;
