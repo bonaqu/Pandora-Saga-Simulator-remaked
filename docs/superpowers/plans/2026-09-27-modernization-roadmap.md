@@ -117,7 +117,9 @@ Deliverable:
 
 ### Phase 7 — Brand, changelog, media, final QA
 
-**Before Phase 7:** The user requested a beginner-friendly, single-Excel Russian translation workflow. Its publication foundation shipped as Remaked UI `2026.09.7` (PR #11) and preserved codec recovery (PR #12), verified through production workflow `36622163023`. The Modern calculator display extension is implemented locally as `2026.09.8`, with a 2,817-row workbook preserving all prior input; publication gates remain pending. Plans: `2026-09-28-simple-translation-workflow.md` and `2026-09-29-game-term-display-adapters.md`.
+**Before Phase 7:** The user requested a beginner-friendly, single-Excel Russian translation workflow. Its foundation shipped as UI `2026.09.7` (PR #11) and codec recovery (PR #12), verified through workflow `36622163023`. The calculator display extension shipped as UI `2026.09.8` in PR #13 (`4176718`), with 2,817 workbook rows preserving prior input. Production workflow `36628855993`, exact Pages artifact and live workbook/state/offline/compressed-save acceptance were verified on 2026-09-29. Plans: `2026-09-28-simple-translation-workflow.md` and `2026-09-29-game-term-display-adapters.md`.
+
+**Phase 7 status:** Started on `codex/phase7-release-polish`. Plan: `2026-09-29-phase-seven-release-polish.md`. Nine local Chromium/Firefox/WebKit smoke checks passed; release-panel, accessibility, media and final production gates remain open.
 
 Deliverable:
 - polished favicon/PWA/OG/repository cover assets;

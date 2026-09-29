@@ -17,6 +17,7 @@
     "test:ui:pwa": "playwright test tests/ui/pwa-ui.spec.mjs tests/ui/pwa-offline.spec.mjs",
     "test:ui:localization": "playwright test tests/ui/localization.spec.mjs",
     "test:ui:data": "playwright test tests/ui/data-projections.spec.mjs",
+    "test:ui:cross-browser": "playwright test tests/ui/cross-browser-smoke.spec.mjs",
     "extract:terms": "node scripts/extract_legacy_terms.mjs",
     "test:translations": "node scripts/extract_legacy_terms.mjs --check && python scripts/translation_workbook.py",
     "extract:data": "node scripts/extract_legacy_data.mjs",
