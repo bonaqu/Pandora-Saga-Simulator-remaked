@@ -29,6 +29,9 @@ CATEGORY_NAMES = {
     "equipment_category": "Категория экипировки",
     "equipment": "Предмет",
     "soul": "Soul",
+    "calculator_label": "Подпись калькулятора",
+    "calculator_hint": "Подсказка калькулятора",
+    "skill_detail": "Описание навыка",
 }
 MAIN_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 DOCUMENT_REL_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"

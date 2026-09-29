@@ -9,7 +9,12 @@ const jsonPath = path.resolve(root, 'localization/game-terms.ru.json');
 const checkOnly = process.argv.includes('--check');
 
 async function collectTerms() {
-  return withLegacyRuntime(siteRoot, (page) => page.evaluate(() => {
+  return withLegacyRuntime(siteRoot, async (page) => {
+    // The built calculator supplies the preserved runtime; always load the
+    // current source map so exporting a new workbook does not depend on an
+    // older _site copy of that map.
+    await page.addScriptTag({ path: path.resolve(root, 'modern/calculator-labels.js') });
+    return page.evaluate(() => {
       const terms = [];
       const decode = (value) => {
         const textarea = document.createElement('textarea');
@@ -78,6 +83,11 @@ async function collectTerms() {
       });
 
       const souls = window.SoulData;
+      add('soul.0', 'calculator_label', 'SoulData[*][0][0]', {
+        jp: decode(souls[0][0][0]).replace(/^\+?-+\s*/, ''),
+        en: decode(souls[1][0][0]).replace(/^\+?-+\s*/, ''),
+        tw: decode(souls[2][0][0]).replace(/^\+?-+\s*/, '')
+      });
       (souls[1] || []).slice(1).forEach((entry, offset) => {
         const soulIndex = offset + 1;
         add(`soul.${soulIndex}`, 'soul', `SoulData[*][${soulIndex}][0]`, {
@@ -86,8 +96,16 @@ async function collectTerms() {
           tw: (souls[2][soulIndex] || [])[0]
         });
       });
+      if (!window.PandoraRemaked?.calculatorLabels) throw new Error('Calculator label source map is unavailable');
+      window.PandoraRemaked.calculatorLabels.collect().forEach(row => {
+        const plain = window.PandoraRemaked.calculatorLabels.plain;
+        add(row.id, row.category, row.legacy_path, {
+          jp: plain(row.values[0]), en: plain(row.values[1]), tw: plain(row.values[2])
+        });
+      });
       return terms.sort((a, b) => a.id.localeCompare(b.id, 'en', { numeric: true }));
-    }));
+    });
+  });
 }
 
 async function main() {
@@ -102,7 +120,7 @@ async function main() {
     schema_version: 1,
     source: {
       legacy_engine: '2.00',
-      generated_from: ['js/ini.js', 'js/item.js', 'js/skill.js'],
+      generated_from: ['index.html', 'js/ini.js', 'js/item.js', 'js/skill.js', 'js/option.js', 'js/create.js', 'modern/calculator-labels.js'],
       policy: 'source rows only; approved Russian text lives in localization/translations.xlsx'
     },
     terms

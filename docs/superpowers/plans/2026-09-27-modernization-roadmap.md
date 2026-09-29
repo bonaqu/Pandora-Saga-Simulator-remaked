@@ -117,7 +117,7 @@ Deliverable:
 
 ### Phase 7 — Brand, changelog, media, final QA
 
-**Before Phase 7:** The user requested a beginner-friendly, single-Excel Russian translation workflow. Implementation plan: `2026-09-28-simple-translation-workflow.md`, targeting Remaked UI `2026.09.7`. It replaces translator-edited JSON/CSV with one validated workbook and automatic Pages/PWA updates.
+**Before Phase 7:** The user requested a beginner-friendly, single-Excel Russian translation workflow. Its publication foundation shipped as Remaked UI `2026.09.7` (PR #11) and preserved codec recovery (PR #12), verified through production workflow `36622163023`. The Modern calculator display extension is implemented locally as `2026.09.8`, with a 2,817-row workbook preserving all prior input; publication gates remain pending. Plans: `2026-09-28-simple-translation-workflow.md` and `2026-09-29-game-term-display-adapters.md`.
 
 Deliverable:
 - polished favicon/PWA/OG/repository cover assets;

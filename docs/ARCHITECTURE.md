@@ -53,7 +53,7 @@ Legacy JavaScript remains the sole calculation/data source of truth. The generat
 
 ### Translator input
 
-`localization/translations.xlsx` is the translator's only editable source. The Pages builder validates all 1,764 rows against `ui.en.json` and the machine-exported Legacy term index, then generates `modern/locales.js` and `modern/game-terms.js`. Russian game names currently decorate Modern equipment/Soul search through stable IDs. They do not replace Legacy globals or calculation inputs.
+`localization/translations.xlsx` is the translator's only editable source. The Pages builder validates all 2,817 rows against `ui.en.json` and the machine-exported Legacy term index, then generates `modern/locales.js` and `modern/game-terms.js`. Its 150 UI strings, 1,617 core game terms, 259 calculator labels, 158 hints and 633 skill-detail fields share stable IDs. `modern/calculator-labels.js` provides the exporter and display adapter with one source-to-DOM map. `modern/game-term-display.js` decorates Modern native lists, selected names, inherited labels and skill popups after Legacy redraws and build loads. It writes approved input as literal text, preserves control values and existing help nodes, and restores the selected JP/EN/TW source when leaving RU. It does not replace Legacy globals or calculation inputs; diagnostic Log output remains original.
 
 The service worker cache key includes a deterministic fingerprint of its precached files. Updating only workbook translations changes the generated catalogs and cache key, allowing the normal update notice to deliver them to existing offline installations.
 

@@ -123,13 +123,18 @@ class RepositoryDocsTests(unittest.TestCase):
         deployment = self.read("docs/DEPLOYMENT.md")
         plan = self.read("docs/superpowers/plans/2026-09-28-simple-translation-workflow.md")
 
-        for document in (english, russian, changelog, plan):
+        for document in (changelog, plan):
             self.assertIn("2026.09.7", document)
+        for document in (english, russian, changelog):
+            self.assertIn("2026.09.8", document)
         self.assertIn("LOCALIZATION_FOR_BEGINNERS.ru.md", russian)
         self.assertIn("translations.xlsx", english)
         self.assertIn("translations.xlsx", guide)
         self.assertIn("Русский — заполнять здесь", guide)
-        self.assertIn("1 764", guide)
+        self.assertIn("2 817", guide)
+        self.assertIn("Log", guide)
+        self.assertIn("Alt+Enter", guide)
+        self.assertIn("game-term-display.js", architecture)
         self.assertIn("translations.xlsx", architecture)
         self.assertIn("translations.xlsx", deployment)
 

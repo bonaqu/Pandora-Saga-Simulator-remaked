@@ -49,20 +49,21 @@
     var stats = document.createElement('div');
     stats.className = 'remaked-mobile-summary-stats';
 
-    function addStat(label, dataName) {
+    function addStat(label, dataName, key) {
       var card = document.createElement('div');
       card.className = 'remaked-mobile-summary-stat';
       var name = document.createElement('span');
-      name.textContent = label;
+      if (i18n && typeof i18n.bindText === 'function') i18n.bindText(name, key);
+      else name.textContent = label;
       var value = textNode('strong', 'remaked-mobile-summary-value', dataName);
       card.appendChild(name);
       card.appendChild(value);
       stats.appendChild(card);
     }
 
-    addStat('LP / HP', 'data-remaked-summary-lp');
-    addStat('ATK', 'data-remaked-summary-atk');
-    addStat('DEF', 'data-remaked-summary-def');
+    addStat('LP / HP', 'data-remaked-summary-lp', 'mobile.stat.lp');
+    addStat('ATK', 'data-remaked-summary-atk', 'mobile.stat.atk');
+    addStat('DEF', 'data-remaked-summary-def', 'mobile.stat.def');
     summary.appendChild(stats);
 
     shell.insertBefore(summary, frame);
@@ -72,7 +73,10 @@
   function setText(selector, value) {
     if (!summary) return;
     var node = summary.querySelector(selector);
-    if (node) node.textContent = value == null || value === '' ? '—' : String(value);
+    if (node) {
+      node.textContent = value == null || value === '' ? '—' : String(value);
+      if (selector === '[data-remaked-summary-race]' || selector === '[data-remaked-summary-job]') node.title = node.textContent;
+    }
   }
 
   function refreshSummary() {

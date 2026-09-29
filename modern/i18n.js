@@ -117,6 +117,9 @@
     }
     document.documentElement.lang = currentLocale;
     apply(document);
+    // Consumers such as search read the calculator DOM during localechange.
+    // Commit its display projection before notifying them.
+    if (namespace.gameTermDisplay) namespace.gameTermDisplay.refresh();
     window.dispatchEvent(new CustomEvent('pandora-remaked:localechange', {
       detail: { locale: currentLocale }
     }));

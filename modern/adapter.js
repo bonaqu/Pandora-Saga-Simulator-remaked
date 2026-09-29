@@ -53,7 +53,7 @@
   }
 
   function parseEquipmentOption(option) {
-    var raw = textOf(option);
+    var raw = option._remakedGameDisplay ? option._remakedGameDisplay.sourceText : textOf(option);
     var match = raw.match(/^Lv:\s*(\d+)\s+(.*)$/);
     return {
       value: String(option.value),
@@ -177,6 +177,9 @@
       if (typeof window.Expand !== 'function') throw new Error('Legacy Expand() is unavailable');
       window.Expand(payload);
       refreshLoadedState();
+      // Build projections read names synchronously; a MutationObserver refresh
+      // alone would leave compare results in the previous/source language.
+      if (namespace.gameTermDisplay) namespace.gameTermDisplay.refresh();
     },
 
     readCalculatedSummary: readCalculatedSummary,
@@ -259,7 +262,7 @@
       for (var index = 0; index < select.options.length; index += 1) {
         options.push({
           value: String(select.options[index].value),
-          name: textOf(select.options[index])
+          name: select.options[index]._remakedGameDisplay ? select.options[index]._remakedGameDisplay.sourceText : textOf(select.options[index])
         });
       }
       return options;
