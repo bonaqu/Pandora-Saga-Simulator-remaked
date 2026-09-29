@@ -54,6 +54,16 @@ class RepositoryDocsTests(unittest.TestCase):
         self.assertIn("Modern Mode", changelog)
         self.assertIn("Legacy Mode", changelog)
 
+    def test_player_readmes_use_real_release_screenshots_with_provenance(self):
+        provenance = self.read("docs/assets/screenshots/README.md")
+        self.assertIn("816e72f77cdab776bb27f2d06c24ce31ac384899", provenance)
+        self.assertIn("36632481054", provenance)
+        for name in ("equipment-search-desktop.png", "compare-builds-desktop.png", "build-manager-mobile.png"):
+            relative = "docs/assets/screenshots/" + name
+            for readme in ("README.md", "README.ru.md"):
+                self.assertIn(relative, self.read(readme))
+            self.assertTrue((ROOT / relative).is_file())
+
     def test_phase_four_release_is_documented_for_players(self):
         english = self.read("README.md")
         russian = self.read("README.ru.md")
@@ -126,7 +136,7 @@ class RepositoryDocsTests(unittest.TestCase):
         for document in (changelog, plan):
             self.assertIn("2026.09.7", document)
         for document in (english, russian, changelog):
-            self.assertIn("2026.09.9", document)
+            self.assertIn("2026.09.10", document)
         self.assertIn("LOCALIZATION_FOR_BEGINNERS.ru.md", russian)
         self.assertIn("translations.xlsx", english)
         self.assertIn("translations.xlsx", guide)

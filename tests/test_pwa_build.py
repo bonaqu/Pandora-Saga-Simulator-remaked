@@ -1,5 +1,6 @@
 import json
 import pathlib
+import struct
 import tempfile
 import unittest
 
@@ -43,6 +44,34 @@ self.addEventListener('fetch', (event) => {
 
 
 class PwaBuildTests(unittest.TestCase):
+    def test_real_manifest_has_raster_fallbacks_and_touch_icon(self):
+        modern = pathlib.Path(__file__).resolve().parents[1] / "modern"
+        manifest = json.loads((modern / "manifest.webmanifest").read_text(encoding="utf-8"))
+        png_icons = [icon for icon in manifest["icons"] if icon["type"] == "image/png"]
+        self.assertEqual({icon["sizes"] for icon in png_icons}, {"192x192", "512x512"})
+        for size in (180, 192, 512):
+            name = "apple-touch-icon.png" if size == 180 else f"icon-{size}.png"
+            raw = (modern / name).read_bytes()
+            self.assertEqual(raw[:8], b"\x89PNG\r\n\x1a\n")
+            self.assertEqual(struct.unpack(">II", raw[16:24]), (size, size))
+        preview = (modern / "social-preview.png").read_bytes()
+        self.assertEqual(preview[:8], b"\x89PNG\r\n\x1a\n")
+        self.assertEqual(struct.unpack(">II", preview[16:24]), (1200, 630))
+
+    def test_modern_share_metadata_does_not_leak_into_museum(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            output = root / "_site"
+            build_pages(root, output)
+            html = (output / "index.html").read_text(encoding="utf-8")
+            self.assertIn('property="og:title" content="Pandora Saga Simulator — Remaked"', html)
+            self.assertIn('property="og:image" content="https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/modern/social-preview.png"', html)
+            self.assertIn('name="twitter:card" content="summary_large_image"', html)
+            self.assertIn('rel="apple-touch-icon" sizes="180x180" href="./modern/apple-touch-icon.png"', html)
+            legacy = (output / "legacy/index.html").read_text(encoding="utf-8")
+            self.assertNotIn('property="og:', legacy)
+            self.assertNotIn('apple-touch-icon', legacy)
+
     def make_root(self, base: pathlib.Path) -> pathlib.Path:
         root = test_build_pages.BuildPagesTests().make_root(base)
         modern = root / "modern"
@@ -123,6 +152,7 @@ class PwaBuildTests(unittest.TestCase):
             ):
                 self.assertIn(relative, worker)
             self.assertNotIn("./image/icon/0000.png", worker)
+            self.assertNotIn("./modern/social-preview.png", worker)
             self.assertNotIn("./legacy/image/icon/0000.png", worker)
             self.assertNotIn("https://", worker)
             self.assertIn("url.origin !== self.location.origin", worker)

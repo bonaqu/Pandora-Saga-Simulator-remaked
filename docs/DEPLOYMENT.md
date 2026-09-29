@@ -47,6 +47,8 @@ The workflow also syntax-checks the core JavaScript files with Node.js and runs 
 
 The generated Base64/DEFLATE files are syntax-checked after extraction from their archived CodeRepos HTML pages. Browser contracts also reject startup exceptions and verify the preserved compressed File save/load path on both routes.
 
+CI also runs bounded Chromium/Firefox/WebKit smoke for both routes, native modal keyboard behavior and mobile RU search. PNG installation/share assets have decoding/dimension and museum-isolation contracts. Release evidence and the immutable annotated tag policy are documented in [release acceptance](RELEASE_ACCEPTANCE.md).
+
 ## Updating the preserved source intentionally
 
 Do **not** delete `.source-imported` casually. If a new preservation snapshot must replace the current one:

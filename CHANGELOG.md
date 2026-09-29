@@ -2,6 +2,13 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.10 — Release media and installation metadata
+
+- Added real desktop/mobile screenshots to both player READMEs: compatible equipment search, example build comparison and mobile build management. They were captured from verified production UI 2026.09.9, not mockups or invented Russian game names.
+- Added an absolute Open Graph image URL, descriptive unofficial-project metadata and a large-image sharing card. The image shows the real Modern calculator with the approved Pandora artwork; it is not required for the offline precache.
+- Added opaque PNG exports of the existing PWA icons and a 180px Apple touch icon, keeping the vector sources and original design. Browser image decoding and exact dimensions are regression-tested.
+- GitHub Pages remains free and static. The Legacy source, formulas and translation workbook are unchanged in this release.
+
 ## 2026.09.9 — On-site updates and keyboard-safe Modern dialogs
 
 - Added an EN/RU What's new panel with current engine/UI versions, feature highlights, full changelog and report links.

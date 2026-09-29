@@ -51,6 +51,21 @@ Compare Builds не подменяет формулы игры собствен�
 **Открыть Modern Mode:**  
 https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/
 
+## Как это выглядит
+
+Реальные экраны Modern Mode из опубликованной версии `2026.09.9`. Для сравнения взяты два примерных билда с разными расами; игровые названия и расчёты получены из сохранённого движка.
+
+<img src="docs/assets/screenshots/equipment-search-desktop.png" alt="Поиск экипировки на компьютере: совместимые предметы и фильтры названия и уровня" width="720" />
+
+<details>
+<summary>Сравнение билдов и Build Manager на телефоне</summary>
+
+<img src="docs/assets/screenshots/compare-builds-desktop.png" alt="Сравнение двух примерных билдов: характеристики и нейтральная разница Билд B минус Билд A" width="880" />
+
+<img src="docs/assets/screenshots/build-manager-mobile.png" alt="Build Manager на экране шириной 390 пикселей: два именованных билда, импорт и экспорт" width="390" />
+
+</details>
+
 ## 🕰️ Старая версия
 
 Если нужен именно прежний интерфейс, отдельно сохраняется **Legacy Mode** — историческая версия симулятора и эталон для проверки поведения расчётов.
@@ -87,7 +102,7 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 ## 📌 Состояние проекта
 
 - **Старое расчётное ядро:** Pandora Saga Simulator 2.00
-- **Remaked UI:** 2026.09.9
+- **Remaked UI:** 2026.09.10
 - **Сайт:** GitHub Pages
 - **Статус:** независимый проект по сохранению и развитию полезного инструмента для игроков
 

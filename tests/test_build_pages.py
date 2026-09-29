@@ -72,6 +72,8 @@ class BuildPagesTests(unittest.TestCase):
                     encoding="utf-8",
                 )
             (modern / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
+            for name in ("icon-192.png", "icon-512.png", "apple-touch-icon.png", "social-preview.png"):
+                (modern / name).write_bytes(b"fixture-png")
             (modern / "manifest.webmanifest").write_text(
                 json.dumps({"name": "fixture"}),
                 encoding="utf-8",

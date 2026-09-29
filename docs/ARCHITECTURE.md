@@ -1,5 +1,7 @@
 # Architecture
 
+Modern share/installation metadata is injected only at the build boundary: absolute OG URL and a 1200×630 real-site PNG preview, PNG fallbacks of the preserved SVG PWA icons and a 180px Apple touch icon. Original Legacy HTML/assets are not rewritten for branding. The share preview is excluded from the bounded offline precache; installer icons remain available offline. Capture/export scripts and screenshot provenance live in `scripts/` and `docs/assets/screenshots/README.md`.
+
 ## Summary
 
 Pandora Saga Simulator is a static, browser-side application. The restored deployment has no application server, PHP runtime or database.
