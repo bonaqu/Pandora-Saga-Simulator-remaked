@@ -2,6 +2,14 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.9 — On-site updates and keyboard-safe Modern dialogs
+
+- Added an EN/RU What's new panel with current engine/UI versions, feature highlights, full changelog and report links.
+- Search, Build Manager and Compare now use native modal dialogs: background controls are inert, Tab/Shift+Tab stays inside, Escape closes and returns focus to the opener. Focused stat help dismisses before its parent dialog.
+- Added a first-focusable Skip to calculator link and platform-native keyboard focus indicators.
+- Extended the translation workbook to 2,828 rows without changing any existing input. The 11 new interface strings include Russian copy; official game names remain user-owned.
+- Added Chromium/Firefox/WebKit smoke gates for both Legacy/Modern compressed save/load and mobile Russian search.
+
 ## 2026.09.8 — Workbook translations throughout the Modern calculator
 
 - Expanded the same workbook to 2,817 rows, preserving all 119 existing approved UI translations: 150 UI strings, 1,617 core game terms, 259 inherited labels, 158 hints and 633 skill-detail fields.

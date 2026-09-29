@@ -71,7 +71,7 @@
     if (!active) return;
     var current = active;
     active = null;
-    document.removeEventListener('keydown', current.onKeydown, true);
+    current.backdrop.close();
     current.backdrop.remove();
     if (!options || options.restoreFocus !== false) {
       if (current.returnFocus && document.contains(current.returnFocus) && typeof current.returnFocus.focus === 'function') {
@@ -80,24 +80,16 @@
     }
   }
 
-  function onEscape(event) {
-    if (event.key !== 'Escape' || !active) return;
-    event.preventDefault();
-    closePanel();
-  }
-
   function createShell(kind, titleKey, titleFallback, trigger) {
     closePanel({ restoreFocus: false });
 
-    var backdrop = element('div', 'remaked-search-backdrop');
+    var backdrop = element('dialog', 'remaked-search-backdrop remaked-modal');
     backdrop.dataset.remakedSearchBackdrop = '';
 
     var panel = element('section', 'remaked-search-panel');
     panel.dataset.remakedSearchPanel = '';
     panel.dataset.searchKind = kind;
-    panel.setAttribute('role', 'dialog');
-    panel.setAttribute('aria-modal', 'true');
-    panel.setAttribute('aria-labelledby', 'remaked-search-title');
+    backdrop.setAttribute('aria-labelledby', 'remaked-search-title');
 
     var header = element('div', 'remaked-search-header');
     var headingWrap = element('div', 'remaked-search-heading');
@@ -128,8 +120,14 @@
     });
 
     var returnFocus = trigger && typeof trigger.focus === 'function' ? trigger : document.activeElement;
-    active = { backdrop: backdrop, panel: panel, returnFocus: returnFocus, onKeydown: onEscape };
-    document.addEventListener('keydown', onEscape, true);
+    active = { backdrop: backdrop, panel: panel, returnFocus: returnFocus };
+    backdrop.addEventListener('cancel', function (event) { event.preventDefault(); closePanel(); });
+    panel.addEventListener('keydown', function (event) {
+      // Chromium/Firefox otherwise consume Escape to clear a type=search input
+      // before the native dialog can cancel. Keep the established one-key close.
+      if (event.key === 'Escape') { event.preventDefault(); closePanel(); }
+    });
+    backdrop.showModal();
     return { backdrop: backdrop, panel: panel, body: body };
   }
 

@@ -38,6 +38,8 @@ The main site opens in **Modern Mode**:
 - import/export using the simulator's existing serialized build code;
 - **Compare Builds** for side-by-side stats from two saved builds, including neutral `Build B − Build A` deltas;
 - keyboard-accessible stat help that explains what a displayed value represents and identifies its exact Legacy 2.00 output node;
+- a keyboard skip link and native modal dialogs that keep focus inside and return it to the opener on Escape;
+- an on-site **Updates** panel with separate Legacy/UI versions, release highlights and the full changelog;
 - a compact sticky character summary and collapsible detail cards on phone screens;
 - an installable PWA shell with reliable offline boot for both Modern and Legacy routes;
 - a non-blocking update notice that lets you finish or save work before reloading;
@@ -85,7 +87,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** 2026.09.8
+- **Remaked UI:** 2026.09.9
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 

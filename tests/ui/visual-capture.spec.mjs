@@ -3,6 +3,17 @@ import { test, expect } from '@playwright/test';
 const desktop = { width: 1440, height: 1000 };
 const mobile = { width: 390, height: 844 };
 
+for (const [name, viewport] of [['desktop', desktop], ['mobile', mobile]]) {
+  test(`capture on-site Updates ${name}`, async ({ page }, testInfo) => {
+    await openModern(page, viewport);
+    if (name === 'mobile') await page.locator('[data-remaked-ui-locale="ru"]').click();
+    await page.locator('[data-remaked-updates-open]').click();
+    await expect(page.locator('[data-remaked-updates]')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: testInfo.outputPath(`modern-updates-${name}.png`), fullPage: false });
+  });
+}
+
 async function openModern(page, viewport) {
   await page.setViewportSize(viewport);
   await page.goto('/');

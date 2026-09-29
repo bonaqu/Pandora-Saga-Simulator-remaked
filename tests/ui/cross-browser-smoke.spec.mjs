@@ -1,5 +1,27 @@
 import { test, expect } from '@playwright/test';
 
+test('native Modern dialogs keep focus and restore their opener', async ({ page }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  for (const selector of ['[data-remaked-equipment-search]', '[data-remaked-builds-open]', '[data-remaked-compare-open]', '[data-remaked-updates-open]']) {
+    const opener = page.locator(selector);
+    await opener.focus(); await page.keyboard.press('Enter');
+    const dialog = page.locator('dialog[open]');
+    await expect(dialog).toHaveCount(1);
+    await page.locator('[data-remaked-ui-locale="ru"]').evaluate(node => node.focus());
+    expect(await page.evaluate(() => Boolean(document.activeElement.closest('dialog[open]')))).toBe(true);
+    await dialog.locator('button').first().focus();
+    await page.keyboard.press('Shift+Tab');
+    expect(await page.evaluate(() => Boolean(document.activeElement.closest('dialog[open]')))).toBe(true);
+    await page.keyboard.press('Tab');
+    await expect(dialog.locator('button').first()).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+    await expect(opener).toBeFocused();
+  }
+  expect(await page.evaluate(() => Store())).toBe(before);
+});
+
     for (const route of ['/', '/legacy/']) {
       test(`compressed build round-trip and runtime at ${route}`, async ({ page }) => {
         const errors = [];
