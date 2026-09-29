@@ -35,6 +35,8 @@ REQUIRED_MODERN = (
     "modern/service-worker.js",
     "modern/version.js",
     "modern/i18n.js",
+    "modern/game-term-display.js",
+    "modern/calculator-labels.js",
     "modern/adapter.js",
     "modern/build-store.js",
     "modern/search.js",
@@ -89,6 +91,8 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/build-store.js"></script>
 <script src="./modern/search.js"></script>
 <script src="./modern/app-shell.js"></script>
+<script src="./modern/calculator-labels.js"></script>
+<script src="./modern/game-term-display.js"></script>
 <script src="./modern/builds.js"></script>
 <script src="./modern/tooltips.js"></script>
 <script src="./modern/compare.js"></script>

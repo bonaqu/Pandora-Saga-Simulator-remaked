@@ -2,6 +2,13 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.8 — Workbook translations throughout the Modern calculator
+
+- Expanded the same workbook to 2,817 rows, preserving all 119 existing approved UI translations: 150 UI strings, 1,617 core game terms, 259 inherited labels, 158 hints and 633 skill-detail fields.
+- Added Modern-only display adapters for race/class/racial skill, equipment/Soul lists, skill names, descriptions, requirements, calculator labels and hints. Blank Russian fields retain the chosen source language; no official Russian game translations were invented.
+- Preserved Legacy arrays, formulas, selected values, compressed build bytes and existing help-node focus/listeners. The museum route and diagnostic Log output remain unchanged.
+- Updated the beginner guide with the complete table workflow and current display coverage.
+
 ## 2026.09.7 — One Excel file for Russian translations
 
 ### Added

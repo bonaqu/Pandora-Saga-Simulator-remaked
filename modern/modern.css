@@ -612,3 +612,22 @@ body.remaked-modern {
     transition: none;
   }
 }
+
+/* The inherited calculator uses fixed-width rows. Keep approved names inside
+   their own label; the full text remains available in the native title. */
+#body [data-remaked-game-name]:not(option),
+#body [data-remaked-game-name] .help {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#body [data-remaked-game-name] .help {
+  display: block;
+  max-width: 100%;
+}
+
+#body [id^="LearnSkill_"] [data-remaked-game-name] {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}

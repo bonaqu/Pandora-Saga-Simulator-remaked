@@ -104,6 +104,8 @@ test('approved workbook game terms appear in Modern search without changing Lega
   await page.locator('[data-remaked-equipment-search]').click();
 
   await expect(page.locator('[data-remaked-search-result][data-value="1"]')).toContainText('Проверочный меч');
+  await page.locator('[data-remaked-search-query]').fill(sourceName);
+  await expect(page.locator('[data-remaked-search-result][data-value="1"]')).toContainText('Проверочный меч');
   await page.locator('[data-remaked-search-query]').fill('проверочный меч');
   await expect(page.locator('[data-remaked-search-result]')).toHaveCount(1);
   await expect(page.locator('[data-remaked-search-result]')).toHaveAttribute('data-value', '1');

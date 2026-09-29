@@ -48,6 +48,8 @@ class BuildPagesTests(unittest.TestCase):
                 encoding="utf-8",
             )
             (modern / "i18n.js").write_text("// i18n", encoding="utf-8")
+            (modern / "game-term-display.js").write_text("// game terms", encoding="utf-8")
+            (modern / "calculator-labels.js").write_text("// label sources", encoding="utf-8")
             (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
             (modern / "build-store.js").write_text("// build store", encoding="utf-8")
             (modern / "search.js").write_text("// search", encoding="utf-8")
@@ -153,6 +155,8 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/build-store.js",
                 "modern/search.js",
                 "modern/app-shell.js",
+                "modern/calculator-labels.js",
+                "modern/game-term-display.js",
                 "modern/builds.js",
                 "modern/tooltips.js",
                 "modern/compare.js",
@@ -168,6 +172,8 @@ class BuildPagesTests(unittest.TestCase):
             self.assertLess(html.index("modern/build-store.js"), html.index("modern/search.js"))
             self.assertLess(html.index("modern/search.js"), html.index("modern/app-shell.js"))
             self.assertLess(html.index("modern/app-shell.js"), html.index("modern/builds.js"))
+            self.assertLess(html.index("modern/calculator-labels.js"), html.index("modern/game-term-display.js"))
+            self.assertLess(html.index("modern/game-term-display.js"), html.index("modern/mobile.js"))
             self.assertLess(html.index("modern/builds.js"), html.index("modern/tooltips.js"))
             self.assertLess(html.index("modern/tooltips.js"), html.index("modern/compare.js"))
             self.assertLess(html.index("modern/compare.js"), html.index("modern/mobile.js"))
@@ -190,6 +196,8 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/locales.js",
                 "modern/game-terms.js",
                 "modern/i18n.js",
+                "modern/calculator-labels.js",
+                "modern/game-term-display.js",
                 "modern/adapter.js",
                 "modern/build-store.js",
                 "modern/search.js",

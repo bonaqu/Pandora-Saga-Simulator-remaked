@@ -2,7 +2,7 @@
 
 **Goal:** Complete the user's table-based localization request by applying approved game names throughout Modern Mode and collecting the inherited calculator's interface labels in the same workbook before Phase 7.
 
-**Status:** Source mapping audit started. The workbook publication workflow is delivered separately as Remaked UI `2026.09.7`.
+**Status:** Implemented locally as Remaked UI `2026.09.8`; CI/publication acceptance pending. The workbook publication workflow was delivered separately as Remaked UI `2026.09.7`.
 
 ## Proven source mappings
 
@@ -28,10 +28,14 @@
 
 ## Gates
 
-- [ ] RED tests for race/class/racial skill/group/item/Soul/individual skill display and source-language restoration.
-- [ ] Read-only Modern adapter and inherited interface source export.
-- [ ] Workbook migration preserving all existing user input.
-- [ ] Differential calculations/build bytes and complete Legacy-global snapshots before/after RU rendering.
-- [ ] EN/JP/TW changes, load/compare, keyboard and mobile visual QA.
+- [x] RED tests for race/class/racial skill/group/item/Soul/individual skill display and source-language restoration.
+- [x] Read-only Modern adapter and inherited interface source export.
+- [x] Workbook migration preserving all existing user input: 2,817 rows and all 119 prior Russian UI values; zero invented approved game translations.
+- [x] Differential calculations/build bytes and complete Legacy-global snapshots before/after RU rendering.
+- [x] EN/JP/TW changes, load/compare, keyboard and mobile visual QA. Regression test proved DOM replacement lost help-node focus; in-place help updates preserve the node and other decorators' attributes/listeners.
 - [ ] Full local/CI checks, PR/merge, exact production artifact and live workbook workflow.
-- [ ] Update beginner guide and roadmap to the verified display coverage.
+- [x] Update beginner guide to implemented display coverage; record production acceptance in roadmap after deployment.
+
+## Scope boundary
+
+The original diagnostic Log text is intentionally not translated. Embedded image lettering is not editable through text cells. Native full-name titles and wrapped skill descriptions accompany fixed-width inherited rows. Original Legacy source, formula/data globals and compressed payloads remain untouched.
