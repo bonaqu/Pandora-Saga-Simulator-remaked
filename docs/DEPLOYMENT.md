@@ -45,6 +45,8 @@ The deployment blocks publication when required files are missing or when the en
 
 The workflow also syntax-checks the core JavaScript files with Node.js and runs the complete browser contract suite before artifact upload.
 
+The generated Base64/DEFLATE files are syntax-checked after extraction from their archived CodeRepos HTML pages. Browser contracts also reject startup exceptions and verify the preserved compressed File save/load path on both routes.
+
 ## Updating the preserved source intentionally
 
 Do **not** delete `.source-imported` casually. If a new preservation snapshot must replace the current one:

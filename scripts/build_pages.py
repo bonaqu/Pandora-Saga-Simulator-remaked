@@ -12,8 +12,10 @@ import shutil
 
 try:
     from scripts.translation_workbook import load_translation_catalogs
+    from scripts.recover_archived_javascript import recover_archived_javascript
 except ModuleNotFoundError:  # Direct execution keeps only scripts/ on sys.path.
     from translation_workbook import load_translation_catalogs
+    from recover_archived_javascript import recover_archived_javascript
 
 PROJECT_URL = "https://github.com/bonaqu/Pandora-Saga-Simulator-remaked"
 UPDATES_URL = "https://github.com/bonaqu/Pandora-Saga-Simulator-remaked/blob/bonaqu_projects/CHANGELOG.md"
@@ -164,6 +166,13 @@ def _modernize_html(source: str) -> str:
 
 
 def _patch_runtime_browser_compatibility(destination: pathlib.Path) -> None:
+    for name in ("base64.js", "rawinflate.js", "rawdeflate.js"):
+        codec = destination / "js" / name
+        if codec.is_file():
+            source = codec.read_text(encoding="utf-8-sig")
+            recovered = recover_archived_javascript(source)
+            if recovered != source:
+                codec.write_text(recovered, encoding="utf-8")
     simulator = destination / "js" / "simulator.js"
     if not simulator.is_file():
         return

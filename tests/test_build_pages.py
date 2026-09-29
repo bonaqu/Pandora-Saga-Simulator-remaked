@@ -223,6 +223,19 @@ class BuildPagesTests(unittest.TestCase):
             self.assertEqual(parsed_game["ru"], game_russian)
             self.assertTrue((output / "localization" / "translations.xlsx").is_file())
 
+    def test_recovers_archived_codecs_only_in_published_runtime(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            archived = '<html><table class="code"><tr><th id="L1">1</th><td>window.fixture = 1;</td></tr></table></html>'
+            for name in ("base64.js", "rawinflate.js", "rawdeflate.js"):
+                (root / "js" / name).write_text(archived, encoding="utf-8")
+            output = root / "_site"
+            build_pages(root, output)
+            for name in ("base64.js", "rawinflate.js", "rawdeflate.js"):
+                self.assertEqual((root / "js" / name).read_text(encoding="utf-8"), archived)
+                for route in (output, output / "legacy"):
+                    self.assertEqual((route / "js" / name).read_text(encoding="utf-8"), "window.fixture = 1;\n")
+
     def test_copies_shared_runtime_and_modern_assets(self):
         with tempfile.TemporaryDirectory() as td:
             root = self.make_root(pathlib.Path(td))
