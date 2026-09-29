@@ -5,6 +5,7 @@ import unittest
 
 from scripts.build_pages import build_pages
 from tests import test_build_pages
+from tests.test_translation_workbook import set_russian_cell
 
 
 MANIFEST = {
@@ -125,6 +126,23 @@ class PwaBuildTests(unittest.TestCase):
             self.assertNotIn("./legacy/image/icon/0000.png", worker)
             self.assertNotIn("https://", worker)
             self.assertIn("url.origin !== self.location.origin", worker)
+
+    def test_translation_only_update_changes_worker_and_keeps_builds_deterministic(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            output = root / "_site"
+            build_pages(root, output)
+            before = (output / "service-worker.js").read_bytes()
+            build_pages(root, output)
+            self.assertEqual((output / "service-worker.js").read_bytes(), before)
+
+            set_russian_cell(root / "localization/translations.xlsx", "equipment.0.1", "Проверочный предмет")
+            build_pages(root, output)
+            after = (output / "service-worker.js").read_bytes()
+            self.assertNotEqual(after, before)
+            self.assertIn("Проверочный предмет", (output / "modern/game-terms.js").read_text(encoding="utf-8"))
+            build_pages(root, output)
+            self.assertEqual((output / "service-worker.js").read_bytes(), after)
 
 
 if __name__ == "__main__":

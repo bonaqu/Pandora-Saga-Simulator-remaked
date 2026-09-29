@@ -3,6 +3,7 @@
 
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
   var catalogs = window.PandoraRemakedLocales || { en: {} };
+  var gameCatalogs = window.PandoraRemakedGameTerms || { ru: {} };
   var STORAGE_KEY = 'pandora.remaked.uiLocale.v1';
   var DEFAULT_LOCALE = 'en';
   var supported = Object.keys(catalogs).filter(function (locale) {
@@ -44,6 +45,12 @@
     var english = catalogs[DEFAULT_LOCALE] || {};
     var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : english[key];
     return interpolate(typeof value === 'string' ? value : key, values);
+  }
+
+  function translateGameTerm(key, fallback) {
+    var active = gameCatalogs[currentLocale] || {};
+    var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : '';
+    return typeof value === 'string' && value ? value : String(fallback == null ? '' : fallback);
   }
 
   function storedValues(node) {
@@ -120,6 +127,7 @@
     apply: apply,
     bindAttribute: bindAttribute,
     bindText: bindText,
+    game: translateGameTerm,
     getLocale: function () { return currentLocale; },
     setLocale: setLocale,
     supportedLocales: supported.slice(),

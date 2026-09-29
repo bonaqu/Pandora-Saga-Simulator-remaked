@@ -1,10 +1,12 @@
 import base64
 import json
 import pathlib
+import shutil
 import tempfile
 import unittest
 
 from scripts.build_pages import build_pages
+from scripts.translation_workbook import load_translation_catalogs
 
 
 LEGACY_HTML = '''<!DOCTYPE html><html><head><title>Pandora Saga Simulator</title></head><body>
@@ -57,12 +59,9 @@ class BuildPagesTests(unittest.TestCase):
             (modern / "pwa.js").write_text("// pwa", encoding="utf-8")
             localization = root / "localization"
             localization.mkdir()
-            (localization / "ui.en.json").write_text(
-                json.dumps({"shell.title": "Title"}), encoding="utf-8"
-            )
-            (localization / "ui.ru.json").write_text(
-                json.dumps({}), encoding="utf-8"
-            )
+            repository_localization = pathlib.Path(__file__).resolve().parents[1] / "localization"
+            for name in ("ui.en.json", "game-terms.ru.json", "translations.xlsx"):
+                shutil.copy2(repository_localization / name, localization / name)
             generated = root / "data" / "generated"
             generated.mkdir(parents=True)
             for name in ("equipment.v1.json", "souls.v1.json", "skills.v1.json"):
@@ -148,6 +147,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/manifest.webmanifest",
                 "modern/version.js",
                 "modern/locales.js",
+                "modern/game-terms.js",
                 "modern/i18n.js",
                 "modern/adapter.js",
                 "modern/build-store.js",
@@ -161,7 +161,8 @@ class BuildPagesTests(unittest.TestCase):
             ):
                 self.assertEqual(html.count(relative), 1, relative)
             self.assertLess(html.index("modern/version.js"), html.index("modern/locales.js"))
-            self.assertLess(html.index("modern/locales.js"), html.index("modern/i18n.js"))
+            self.assertLess(html.index("modern/locales.js"), html.index("modern/game-terms.js"))
+            self.assertLess(html.index("modern/game-terms.js"), html.index("modern/i18n.js"))
             self.assertLess(html.index("modern/i18n.js"), html.index("modern/adapter.js"))
             self.assertLess(html.index("modern/adapter.js"), html.index("modern/build-store.js"))
             self.assertLess(html.index("modern/build-store.js"), html.index("modern/search.js"))
@@ -187,6 +188,7 @@ class BuildPagesTests(unittest.TestCase):
             self.assertIn("   0 // [ 0]", legacy)
             for relative in (
                 "modern/locales.js",
+                "modern/game-terms.js",
                 "modern/i18n.js",
                 "modern/adapter.js",
                 "modern/build-store.js",
@@ -212,14 +214,14 @@ class BuildPagesTests(unittest.TestCase):
             output = root / "_site"
             build_pages(root, output)
             locales = (output / "modern" / "locales.js").read_text(encoding="utf-8")
-            self.assertIn('"en": {"shell.title": "Title"}', locales)
-            self.assertIn('"ru": {}', locales)
-
-            (root / "localization" / "ui.ru.json").write_text(
-                json.dumps({"unknown": "value"}), encoding="utf-8"
-            )
-            with self.assertRaisesRegex(ValueError, "unknown keys"):
-                build_pages(root, output)
+            self.assertIn('"controls.interfaceLanguage": "Interface language"', locales)
+            ui_russian, game_russian, _ = load_translation_catalogs(root)
+            parsed_locales = json.loads(locales.split("Object.freeze(", 1)[1].removesuffix(");\n"))
+            self.assertEqual(parsed_locales["ru"], ui_russian)
+            game_terms = (output / "modern" / "game-terms.js").read_text(encoding="utf-8")
+            parsed_game = json.loads(game_terms.split(" = ", 1)[1].removesuffix(";\n"))
+            self.assertEqual(parsed_game["ru"], game_russian)
+            self.assertTrue((output / "localization" / "translations.xlsx").is_file())
 
     def test_copies_shared_runtime_and_modern_assets(self):
         with tempfile.TemporaryDirectory() as td:
@@ -244,6 +246,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/icon-512.svg",
                 "modern/version.js",
                 "modern/locales.js",
+                "modern/game-terms.js",
                 "modern/i18n.js",
                 "modern/adapter.js",
                 "modern/build-store.js",
@@ -258,6 +261,7 @@ class BuildPagesTests(unittest.TestCase):
                 "data/generated/equipment.v1.json",
                 "data/generated/souls.v1.json",
                 "data/generated/skills.v1.json",
+                "localization/translations.xlsx",
                 "service-worker.js",
                 ".nojekyll",
             ):

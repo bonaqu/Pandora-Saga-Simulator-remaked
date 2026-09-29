@@ -65,6 +65,8 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 | 繁體中文 | Available through the legacy data |
 | Русский | Modern interface available; game names await verification against the Russian client |
 
+Russian translations are maintained in one [Excel workbook](localization/translations.xlsx). Edit its yellow column and upload it to GitHub; Pages validates and publishes the update automatically. See the [step-by-step Russian guide](docs/LOCALIZATION_FOR_BEGINNERS.ru.md). Approved equipment and Soul names appear in Modern search; the remaining game terms are collected for future display adapters.
+
 ## 🚧 What's coming next
 
 The modernization roadmap includes:
@@ -83,7 +85,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** 2026.09.6
+- **Remaked UI:** 2026.09.7
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 

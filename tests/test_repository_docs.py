@@ -103,7 +103,7 @@ class RepositoryDocsTests(unittest.TestCase):
         architecture = self.read("docs/ARCHITECTURE.md")
         roadmap = self.read("docs/superpowers/plans/2026-09-27-modernization-roadmap.md")
 
-        for document in (english, russian, changelog, roadmap):
+        for document in (changelog, roadmap):
             self.assertIn("2026.09.6", document)
         for count in ("1,120", "184", "211", "1,617"):
             self.assertIn(count, changelog)
@@ -113,6 +113,25 @@ class RepositoryDocsTests(unittest.TestCase):
         self.assertIn("Shipped as Remaked UI `2026.09.6` in PR #9 (`eccdda4`)", roadmap)
         self.assertIn("Production workflow `36433459517`", roadmap)
         self.assertIn("Shipped in PR #9 (`eccdda4`)", phase_plan)
+
+    def test_translation_workbook_release_is_beginner_friendly_and_documented(self):
+        english = self.read("README.md")
+        russian = self.read("README.ru.md")
+        changelog = self.read("CHANGELOG.md")
+        guide = self.read("docs/LOCALIZATION_FOR_BEGINNERS.ru.md")
+        architecture = self.read("docs/ARCHITECTURE.md")
+        deployment = self.read("docs/DEPLOYMENT.md")
+        plan = self.read("docs/superpowers/plans/2026-09-28-simple-translation-workflow.md")
+
+        for document in (english, russian, changelog, plan):
+            self.assertIn("2026.09.7", document)
+        self.assertIn("LOCALIZATION_FOR_BEGINNERS.ru.md", russian)
+        self.assertIn("translations.xlsx", english)
+        self.assertIn("translations.xlsx", guide)
+        self.assertIn("Русский — заполнять здесь", guide)
+        self.assertIn("1 764", guide)
+        self.assertIn("translations.xlsx", architecture)
+        self.assertIn("translations.xlsx", deployment)
 
 
 if __name__ == "__main__":

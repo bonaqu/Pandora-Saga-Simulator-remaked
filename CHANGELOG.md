@@ -2,6 +2,18 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.7 — One Excel file for Russian translations
+
+### Added
+- A single editable `localization/translations.xlsx` with 1,764 rows: 147 Modern UI strings and 1,617 game terms, including all 211 actual skills. English, Japanese and Traditional Chinese source names sit beside the yellow Russian input column.
+- A beginner's Russian guide covering download, editing, GitHub upload, automatic deployment and common errors without terminal commands.
+- Approved Russian equipment and Soul names in Modern search, with matching by both source and Russian names. Other game terms are collected in the same workbook for subsequent display adapters.
+
+### Reliability
+- Every Pages build validates stable IDs, source columns, row coverage and UI placeholders before generating runtime catalogs. Invalid uploads leave the previously published site available.
+- Translation-only changes now alter the service worker cache fingerprint automatically, so offline installations receive the updated catalogs without a manual app-version edit.
+- English fallback, Legacy data, calculation formulas and serialized builds are preserved.
+
 ## 2026.09.6 — Versioned Legacy data projections
 
 ### Added

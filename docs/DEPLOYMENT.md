@@ -35,7 +35,9 @@ A `.source-imported` marker prevents future runs from re-importing over your loc
 
 After bootstrap, any push to `bonaqu_projects` runs validation and redeploys GitHub Pages.
 
-The workflow can also be started manually from **Actions → Deploy restored simulator → Run workflow**.
+The workflow can also be started manually from **Actions → Deploy Pandora Saga Simulator → Run workflow**.
+
+For Russian translations, upload the edited `localization/translations.xlsx` through GitHub's web interface. The same workflow validates the workbook, generates the runtime catalogs and deploys them. No local build or manual version bump is needed. Follow [the beginner's guide](LOCALIZATION_FOR_BEGINNERS.ru.md).
 
 ## Validation
 

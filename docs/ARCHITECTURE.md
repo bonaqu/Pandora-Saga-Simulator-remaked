@@ -51,6 +51,12 @@ Legacy JavaScript remains the sole calculation/data source of truth. The generat
 
 ## Deployment path
 
+### Translator input
+
+`localization/translations.xlsx` is the translator's only editable source. The Pages builder validates all 1,764 rows against `ui.en.json` and the machine-exported Legacy term index, then generates `modern/locales.js` and `modern/game-terms.js`. Russian game names currently decorate Modern equipment/Soul search through stable IDs. They do not replace Legacy globals or calculation inputs.
+
+The service worker cache key includes a deterministic fingerprint of its precached files. Updating only workbook translations changes the generated catalogs and cache key, allowing the normal update notice to deliver them to existing offline installations.
+
 ```mermaid
 sequenceDiagram
     participant GH as GitHub repository

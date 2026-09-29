@@ -1,5 +1,13 @@
 import { test, expect } from '@playwright/test';
 
+async function russianText(page, key, values = {}) {
+  return page.evaluate(({ key, values }) => {
+    const catalogs = window.PandoraRemakedLocales;
+    const text = catalogs.ru[key] || catalogs.en[key];
+    return text.replace(/\{([A-Za-z0-9_]+)\}/g, (match, name) => name in values ? String(values[name]) : match);
+  }, { key, values });
+}
+
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('[data-remaked-shell]')).toBeVisible();
@@ -21,9 +29,9 @@ test('RU translates the Modern shell live without changing Legacy build bytes or
   const before = await page.evaluate(() => ({ payload: window.Store(), language: window.Flag[0] }));
   await page.locator('[data-remaked-ui-locale="ru"]').click();
 
-  await expect(page.locator('[data-remaked-header]')).toContainText('Проект');
-  await expect(page.locator('[data-remaked-hero]')).toContainText('Конструктор персонажа');
-  await expect(page.locator('[data-remaked-tools]')).toContainText('Поиск экипировки');
+  await expect(page.locator('[data-remaked-header]')).toContainText(await russianText(page, 'header.project'));
+  await expect(page.locator('[data-remaked-hero]')).toContainText(await russianText(page, 'hero.eyebrow'));
+  await expect(page.locator('[data-remaked-tools]')).toContainText(await russianText(page, 'tools.equipmentSearch'));
   await expect(page.locator('html')).toHaveAttribute('lang', 'ru');
   await expect(page.locator('[data-remaked-ui-locale="ru"]')).toHaveAttribute('aria-pressed', 'true');
 
@@ -41,8 +49,12 @@ test('saved RU locale survives reload and missing strings fall back to English',
   await page.locator('[data-remaked-ui-locale="ru"]').click();
   await page.reload();
   await expect(page.locator('[data-remaked-shell]')).toBeVisible();
-  await expect(page.locator('[data-remaked-hero]')).toContainText('Конструктор персонажа');
-  expect(await page.evaluate(() => window.PandoraRemaked.i18n.t('test.englishOnly'))).toBe('English fallback sentinel');
+  await expect(page.locator('[data-remaked-hero]')).toContainText(await russianText(page, 'hero.eyebrow'));
+  const fallback = await page.evaluate(() => {
+    window.PandoraRemakedLocales.en['fixture.missingRussian'] = 'English fallback sentinel';
+    return window.PandoraRemaked.i18n.t('fixture.missingRussian');
+  });
+  expect(fallback).toBe('English fallback sentinel');
 });
 
 test('unknown locale is rejected to English without breaking storage', async ({ page }) => {
@@ -55,37 +67,57 @@ test('unknown locale is rejected to English without breaking storage', async ({ 
   await expect(page.locator('[data-remaked-header]')).toContainText('Project');
 });
 
-test('RU covers Modern feature surfaces while game-derived labels stay unchanged', async ({ page }) => {
+test('RU covers Modern feature surfaces while unapproved game-derived labels stay unchanged', async ({ page }) => {
   const raceBefore = await page.locator('[data-remaked-summary-race]').textContent();
   await page.locator('[data-remaked-ui-locale="ru"]').click();
 
   await page.locator('[data-remaked-equipment-search]').click();
-  await expect(page.locator('[data-remaked-search-panel]')).toContainText('Найти экипировку');
-  await page.getByRole('button', { name: 'Закрыть поиск' }).click();
+  await expect(page.locator('[data-remaked-search-panel]')).toContainText(await russianText(page, 'search.equipment.title'));
+  await page.getByRole('button', { name: await russianText(page, 'search.close'), exact: true }).click();
 
   await page.locator('[data-remaked-builds-open]').click();
-  await expect(page.locator('[data-remaked-build-manager]')).toContainText('Менеджер билдов');
-  await page.getByRole('button', { name: 'Закрыть менеджер билдов' }).click();
+  await expect(page.locator('[data-remaked-build-manager]')).toContainText(await russianText(page, 'builds.managerTitle'));
+  await page.getByRole('button', { name: await russianText(page, 'builds.close'), exact: true }).click();
 
-  await expect(page.locator('[data-remaked-compare-open]')).toHaveText('Сравнить билды');
+  await expect(page.locator('[data-remaked-compare-open]')).toHaveText(await russianText(page, 'compare.button'));
   await page.locator('[data-remaked-compare-open]').click();
-  await expect(page.locator('[data-remaked-compare]')).toContainText('Сравнение билдов');
+  await expect(page.locator('[data-remaked-compare]')).toContainText(await russianText(page, 'compare.title'));
 
-  await expect(page.locator('[data-remaked-mobile-summary]')).toHaveAttribute('aria-label', 'Сводка текущего персонажа');
+  await expect(page.locator('[data-remaked-mobile-summary]')).toHaveAttribute('aria-label', await russianText(page, 'mobile.summary'));
   expect(await page.locator('[data-remaked-summary-race]').textContent()).toBe(raceBefore);
 
   const tooltip = await page.evaluate(() => window.PandoraRemaked.tooltips.get('lp'));
-  expect(tooltip.source).toContain('Расчётный узел Legacy 2.00');
-  expect(tooltip.definition).toContain('reported by the preserved Legacy calculator');
+  expect(tooltip.source).toBe(await russianText(page, 'tooltip.source', { node: 'Status_6' }));
+  expect(tooltip.definition).toBe(await russianText(page, 'tooltip.definition.lp'));
 
   await page.evaluate(() => window.PandoraRemaked.pwa.showUpdateNotice({ postMessage() {} }));
-  await expect(page.locator('[data-remaked-update-notice]')).toContainText('Доступна новая версия — Обновить');
+  await expect(page.locator('[data-remaked-update-notice]')).toContainText(await russianText(page, 'pwa.updateMessage') + await russianText(page, 'pwa.reload'));
+});
+
+test('approved workbook game terms appear in Modern search without changing Legacy data', async ({ page }) => {
+  const before = await page.evaluate(() => ({ payload: window.Store(), language: window.Flag[0] }));
+  const sourceName = await page.evaluate(() => window.PandoraRemaked.adapter.listEquipmentOptions(0).find(option => option.value === '1').name);
+  await page.evaluate(() => {
+    window.PandoraRemakedGameTerms.ru['equipment.0.1'] = 'Проверочный меч';
+  });
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+  await page.locator('[data-remaked-equipment-search]').click();
+
+  await expect(page.locator('[data-remaked-search-result][data-value="1"]')).toContainText('Проверочный меч');
+  await page.locator('[data-remaked-search-query]').fill('проверочный меч');
+  await expect(page.locator('[data-remaked-search-result]')).toHaveCount(1);
+  await expect(page.locator('[data-remaked-search-result]')).toHaveAttribute('data-value', '1');
+  await page.locator('[data-remaked-search-query]').fill('');
+  await page.evaluate(() => window.PandoraRemaked.i18n.setLocale('en'));
+  await expect(page.locator('[data-remaked-search-result][data-value="1"] .remaked-search-result-name')).toHaveText(sourceName);
+  const after = await page.evaluate(() => ({ payload: window.Store(), language: window.Flag[0] }));
+  expect(after).toEqual(before);
 });
 
 test('Russian shell remains usable without body overflow at 390px', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator('[data-remaked-ui-locale="ru"]').click();
-  await expect(page.getByRole('link', { name: 'Старая версия' })).toBeVisible();
+  await expect(page.getByRole('link', { name: await russianText(page, 'header.legacyMode'), exact: true })).toBeVisible();
   await expect(page.locator('[data-remaked-ui-locale="ru"]')).toHaveCSS('background-color', 'rgb(102, 155, 54)');
   await expect(page.locator('[data-remaked-equipment-search]')).toBeVisible();
   const metrics = await page.evaluate(() => ({
