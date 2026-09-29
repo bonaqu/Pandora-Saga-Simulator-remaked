@@ -95,6 +95,12 @@ jobs:
       - name: Verify deterministic Legacy terminology export
         run: npm run test:translations
 
+      - name: Syntax-check recovered archived codecs
+        run: |
+          node --check _site/js/base64.js
+          node --check _site/js/rawinflate.js
+          node --check _site/js/rawdeflate.js
+
       - name: Verify deterministic structured data projections
         run: npm run test:data
 

@@ -14,6 +14,10 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Translation-only changes now alter the service worker cache fingerprint automatically, so offline installations receive the updated catalogs without a manual app-version edit.
 - English fallback, Legacy data, calculation formulas and serialized builds are preserved.
 
+### Corrected after production inspection
+- Recovered the original Base64 and DEFLATE libraries from the source-code tables inside the archived CodeRepos HTML pages. The Pages builder emits executable JavaScript for Modern and Legacy routes while retaining the archival repository files byte-for-byte.
+- Restored the preserved compressed File save/load path and removed its three startup syntax errors. CI now gates browser parse errors, compressed save/load round-trips and generated codec syntax.
+
 ## 2026.09.6 — Versioned Legacy data projections
 
 ### Added

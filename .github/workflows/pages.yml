@@ -129,6 +129,12 @@ jobs:
       - name: Verify Pages defaults to English
         run: python3 scripts/check_default_language.py _site/index.html
 
+      - name: Syntax-check recovered archived codecs
+        run: |
+          node --check _site/js/base64.js
+          node --check _site/js/rawinflate.js
+          node --check _site/js/rawdeflate.js
+
       - name: Install browser test dependencies
         run: npm ci --no-audit --no-fund
 
