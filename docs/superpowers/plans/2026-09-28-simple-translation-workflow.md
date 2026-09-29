@@ -2,7 +2,7 @@
 
 **Goal:** Deliver the user's requested no-terminal Excel translation workflow before Phase 7, as Remaked UI `2026.09.7`.
 
-**Status:** Workbook workflow shipped in PR #11 (`3e3227d`) as Remaked UI `2026.09.7`. Production workflow `36619927477` passed, and the exact Pages artifact/live downloadable workbook SHA-256 matched the repository. Final browser inspection uncovered pre-existing archived-codec startup errors, now under a separate build-time recovery and regression gate before final clean-production acceptance.
+**Status:** Workbook publication workflow verified in production as Remaked UI `2026.09.7`. PR #11 (`3e3227d`) delivered the workbook; PR #12 (`c5aac53`) recovered the pre-existing broken codec transport. Exact production workflow `36622163023` and live Modern/Legacy verification passed. Calculator-wide translation display continues in the separate game-term adapter plan; it is not claimed complete here.
 
 ## Accepted workflow
 
@@ -21,8 +21,18 @@
 - [x] Display approved equipment/Soul names in Modern search and match Russian queries.
 - [x] Add beginner instructions and link them from both READMEs.
 - [x] Test a real edited Russian game cell and deterministic translation-only cache invalidation.
-- [ ] Full Python/browser/visual/CI gates and preservation diff.
-- [ ] PR, squash merge, production artifact and live route verification.
+- [x] Full Python/browser/visual/CI gates and preservation diff.
+- [x] PR, squash merge, production artifact and live route verification.
+
+## Final publication acceptance — 2026-09-29
+
+- 53 Python tests and 78 shipped browser contracts passed locally. Both feature CI runs for PR #12 (`36621608903`, `36621613740`) and the exact production build/deploy/wiki workflow passed.
+- Desktop/mobile workbook-release visual QA was inspected; the transport correction does not change the layout.
+- The downloaded Pages artifact contains executable recovered codecs on both routes. All six codec runtime files passed `node --check`.
+- Live workbook SHA-256 matches the repository: `51bc5741ef61659f001ed734176cc8a032e9ef0717dc024dcc69b407d65b4887`.
+- Live RU shell, equipment search, unchanged build serialization/data language, service-worker control, offline Modern/Legacy boot, and compressed Legacy File save/load round-trip passed with zero page errors or failed site requests.
+- Published cache fingerprint changed to `pandora-remaked-2026.09.7-897b347d2c21727f` without a manual UI-version bump.
+- Preserved source files remain unchanged. The workbook has 119 approved Russian UI values and no invented approved Russian game terms.
 
 ## Production-discovered codec defect
 
