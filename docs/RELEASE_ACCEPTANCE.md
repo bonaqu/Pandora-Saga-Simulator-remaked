@@ -1,4 +1,37 @@
-# Release acceptance — Calculator code UI 2026.09.17
+# Release acceptance — Modern 3.00 candidate
+
+Status: PR24 is a draft; Pages still publishes accepted UI16. No Modern 3.00
+acceptance tag or public frontend publication is claimed. The new approved
+scope is `superpowers/plans/2026-09-30-modern-3-admin.md`.
+
+The candidate includes editable EN/RU workbook, secure Worker/D1 administration,
+initial gear/Soul/class/active/passive/racial editors, version-pinned catalog
+and complete C1 build context, compact desktop controls, one Builds/Compare
+header group, consolidated Code operations and explicit Legacy FILE recovery.
+The 459 preserved source files stay unchanged. All 2842 pre-extension workbook
+rows remain intact; five new bilingual UI rows bring the total to 2847.
+
+Worker version `c488e6d9-9403-4285-94e0-37b427a72888` is deployed and passed real
+first-party auth/security and read-only editor acceptance. Public revision is
+0; no test game data was published. Public frontend acceptance is still pending.
+
+Remaining gates:
+
+- Latest feature CI and API verification, including Linux font fallback layout.
+- Explicit safe adoption of a published catalog for existing pinned builds;
+  no automatic replacement of their data or protected unavailable autosave.
+- Final supported-capability/editor review, operational docs and version 3.00.
+- Squash merge, GitHub-token Worker deployment and exact Pages artifact/live
+  verification: all four languages, actual IDDQD login, fresh shared recipient,
+  desktop/mobile visual review and isolated installed/offline PWA.
+- Supersede PR23 only after its safe import behavior is present in the release.
+
+New arbitrary class/skill slots, native class-passive replacement, active combat
+damage simulation, physical phones and manual screen-reader conformance are
+not implemented or asserted. Numeric editor fields must affect the retained
+engine or be explicitly scoped to native skill metadata, never invented rules.
+
+## Superseded standalone candidate — Calculator code UI 2026.09.17
 
 Scope: `superpowers/plans/2026-09-30-calculator-code-safety.md`. Safe shared
 Modern import, native code/riding actions and existing min/max translation

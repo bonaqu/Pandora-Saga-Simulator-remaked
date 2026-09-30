@@ -4,6 +4,7 @@ for (const width of [320, 1440]) test(`capture calculator riding and code feedba
   await page.setViewportSize({ width, height: 900 }); await page.goto('/');
   await page.locator('[data-remaked-calculator-action="Text_16"]').click();
   await page.locator('[data-remaked-calculator-character]').screenshot({ path: testInfo.outputPath(`modern-riding-${width}.png`) });
+  await page.locator('[data-remaked-builds-open]').click();
   await page.locator('[data-remaked-code-action="create"]').click();
   await page.screenshot({ path: testInfo.outputPath(`modern-code-export-${width}.png`) });
   await page.locator('#InCode').fill('1,2,3'); await page.locator('#InCode').press('Enter');

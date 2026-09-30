@@ -188,3 +188,33 @@ were not printed or copied into the repository.
   changed to JOB and its focused rerun passed. Desktop/mobile images were
   inspected. GitHub CI is the next gate for this increment. Code-form duplication,
   arbitrary new class/skill mechanics and final Modern 3.00 release remain open.
+
+## Progress, 2026-10-01
+
+- Compact increment `22fde2f` passed API verification but Feature CI reported
+  two layout failures on Linux. Its report showed a 45.375px skill row and
+  Equipment pushed to y=1483.234375. A local Verdana fallback reproduced the
+  exact +1 wrap: its 28px button had only 18px of text room. Nonwrapping signed
+  steps and 2px inline padding fix the cause; assertions/targets stay intact.
+- Builds now contains the actual retained Code field and one export/import/
+  clear set, rather than a second textarea with duplicate handlers. Source
+  exports remain exactly native-compressed; PS3/C1 retains complete context.
+  Clear changes only the field. Validation stays next to the field when sharing
+  and reopening; malformed imports preserve current context and all storage.
+  The shared safe import handler also prevents unvalidated native CodeLoad if
+  the calculator enhancement fails to load. Missing Builds fails closed.
+- Appending the Clear code label preserved all 2846 prior workbook rows and
+  their EN/RU cells. Workbook/data/preservation checks pass: 2847 rows, 146 RU
+  UI strings, no fabricated game terms or new EN overrides, 459 source files.
+- Local full UI CI passed 179 scenarios, Python passed 62, related catalog/
+  context/entry/translation/layout checks passed 53, and three-engine smoke
+  passed 45. Final focused import/export/fallback/context checks passed 25;
+  the CI selection now contains 180 tests. Latest GitHub verification remains
+  required. All 28 visual captures passed and
+  desktop/mobile images were inspected. A missing-enhancement export RED test
+  exposed loss of C1 riding state; the retained Create callback now wraps PS3
+  itself. Another RED covered successful native compression followed by failed
+  context export; prior text is restored on either failure. Pages and Worker were not redeployed
+  for these frontend-only edits.
+- Next release block is explicit public-catalog adoption for existing builds,
+  without silently changing their pinned revision or losing unavailable saves.

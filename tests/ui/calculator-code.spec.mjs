@@ -2,12 +2,15 @@ import { test, expect } from '@playwright/test';
 
 const sourceLoad = 'li[onclick="File(\'CodeLoad\');"]';
 const codeAction = id => `[data-remaked-code-action="${id}"]`;
+const openCode = page => page.locator('[data-remaked-builds-open]').click();
 
 test('code creation/clearing call retained handlers once and failed creation keeps prior input', async ({ page }) => {
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
+  await openCode(page);
   await page.evaluate(() => {
     window.__codeCalls = 0;
+    window.__sourceDeflate = RawDeflate.deflate;
     for (const action of ['create', 'delete']) {
       const source = document.querySelector(`[data-remaked-code-action="${action}"]`).parentElement;
       const retained = source.onclick;
@@ -22,12 +25,21 @@ test('code creation/clearing call retained handlers once and failed creation kee
   await expect(page.locator('#InCode')).toHaveValue('prior input');
   await expect(page.locator('[data-remaked-code-status]')).toContainText('could not be exported');
   expect(await page.evaluate(() => window.__codeCalls)).toBe(3);
+  await page.evaluate(() => {
+    RawDeflate.deflate = window.__sourceDeflate;
+    PandoraRemaked.adapter.serialize = function () { throw new Error('context export unavailable'); };
+  });
+  await page.locator(codeAction('create')).click();
+  await expect(page.locator('#InCode')).toHaveValue('prior input');
+  await expect(page.locator('[data-remaked-code-status]')).toContainText('could not be exported');
+  expect(await page.evaluate(() => window.__codeCalls)).toBe(4);
   expect(errors).toEqual([]);
 });
 
 test('invalid calculator Code Load preserves state and every stored record', async ({ page }) => {
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
+  await openCode(page);
   const before = await page.evaluate(() => {
     PandoraRemaked.builds.flushAutosave();
     return { payload: Store(), storage: JSON.stringify(localStorage) };
@@ -66,6 +78,7 @@ test('native riding delegates once and preserves source calculations in both sta
 test('calculator native code actions round-trip compressed and CSV without touching File storage', async ({ page }) => {
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
+  await openCode(page);
   const saved = await page.evaluate(() => {
     StatusMove('Lev', 54); CalcSet('Lev'); StatusMove('STR', 1); CalcSet('STR');
     localStorage.file = 'legacy-sentinel';
@@ -74,7 +87,7 @@ test('calculator native code actions round-trip compressed and CSV without touch
   await page.locator(codeAction('create')).focus(); await page.keyboard.press('Enter');
   await expect(page.locator('#InCode')).toHaveValue(saved.code);
   for (const code of [saved.code, saved.payload]) {
-    await page.locator('[data-remaked-calculator-action="Text_9"]').click();
+    await page.evaluate(() => document.getElementById('Text_9').parentElement.click());
     expect(await page.evaluate(() => Store())).not.toBe(saved.payload);
     await page.locator('#InCode').fill('  ' + code + '  ');
     await page.locator(codeAction('load')).focus(); await page.keyboard.press('Enter');
@@ -91,6 +104,7 @@ test('calculator native code actions round-trip compressed and CSV without touch
 
 test('malformed compressed and invalid full CSV imports preserve a non-default character', async ({ page }) => {
   await page.goto('/');
+  await openCode(page);
   const before = await page.evaluate(() => {
     StatusMove('Lev', 54); CalcSet('Lev'); StatusMove('STR', 1); CalcSet('STR');
     PandoraRemaked.builds.flushAutosave();
@@ -111,13 +125,6 @@ test('malformed compressed and invalid full CSV imports preserve a non-default c
 
 for (const width of [320, 390, 768, 1440]) test(`riding and calculator code targets fit at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 }); await page.goto('/');
-  for (const selector of ['[data-remaked-calculator-action="Text_16"]', '#InCode', codeAction('create'), codeAction('load'), codeAction('delete')]) {
-    const box = await page.locator(selector).boundingBox();
-    expect(box.x, selector).toBeGreaterThanOrEqual(0);
-    expect(box.x + box.width, selector).toBeLessThanOrEqual(width);
-    expect(box.height, selector).toBeGreaterThanOrEqual(width <= 620 ? 44 : 28);
-    expect(box.width, selector).toBeGreaterThanOrEqual(width <= 620 ? 44 : 28);
-  }
   const riding = await page.locator('[data-remaked-calculator-horse]').evaluate(node => {
     const value = node.querySelector('#Status_81');
     const unit = document.createRange(); unit.selectNode(value.parentElement.parentElement.lastChild);
@@ -127,6 +134,17 @@ for (const width of [320, 390, 768, 1440]) test(`riding and calculator code targ
   expect(riding.height).toBeLessThan(100);
   expect(riding.difference).toBeLessThan(1);
   expect(riding.buttonWidth).toBeGreaterThanOrEqual(riding.width - 4);
+  const horse = await page.locator('[data-remaked-calculator-action="Text_16"]').boundingBox();
+  expect(horse.height).toBeGreaterThanOrEqual(width <= 620 ? 44 : 28);
+  expect(horse.x).toBeGreaterThanOrEqual(0); expect(horse.x + horse.width).toBeLessThanOrEqual(width);
+  await openCode(page);
+  for (const selector of ['#InCode', codeAction('create'), codeAction('load'), codeAction('delete')]) {
+    const box = await page.locator(selector).boundingBox();
+    expect(box.x, selector).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width, selector).toBeLessThanOrEqual(width);
+    expect(box.height, selector).toBeGreaterThanOrEqual(width <= 620 ? 44 : 28);
+    expect(box.width, selector).toBeGreaterThanOrEqual(width <= 620 ? 44 : 28);
+  }
   await page.locator('#InCode').fill('invalid'); await page.locator(codeAction('load')).click();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
@@ -139,6 +157,7 @@ test('approved labels, repeated refresh and missing safe-import module keep cont
   });
   await page.locator('[data-remaked-ui-locale="ru"]').click();
   await expect(page.locator('[data-remaked-calculator-action="Text_16"]')).toHaveText('Верховая езда');
+  await openCode(page);
   await expect(page.locator(codeAction('create'))).toHaveText('Создать код');
   await expect(page.locator('[data-remaked-code-action]')).toHaveCount(3);
   const payload = await page.evaluate(() => Store());
@@ -157,6 +176,7 @@ test('approved labels, repeated refresh and missing safe-import module keep cont
 
 test('valid code with unavailable autosave preserves old storage and reports a warning', async ({ page }) => {
   await page.goto('/');
+  await openCode(page);
   const before = await page.evaluate(() => {
     PandoraRemaked.builds.flushAutosave();
     const payload = Store(); StatusMove('Lev', 54); CalcSet('Lev');
@@ -174,8 +194,10 @@ test('valid code with unavailable autosave preserves old storage and reports a w
 
 test('clearing an error stays cleared across locales and skill min/max labels use the existing translation keys', async ({ page }) => {
   await page.goto('/');
+  await openCode(page);
   await page.locator('#InCode').fill('invalid'); await page.locator(codeAction('load')).click();
   await page.locator('#InCode').fill('new input');
+  await page.keyboard.press('Escape');
   await page.evaluate(() => Object.assign(PandoraRemakedGameTerms.ru, { 'calculator.literal.max': 'Максимум', 'calculator.literal.min': 'Минимум' }));
   await page.locator('[data-remaked-ui-locale="ru"]').click();
   await expect(page.locator('[data-remaked-code-status]')).toBeEmpty();

@@ -81,15 +81,17 @@ test('calculator code rejects invalid data, restores compressed data and riding 
   await page.setViewportSize({ width: 320, height: 900 }); await page.goto('/');
   await page.locator('[data-remaked-step="remaked-level-up3"]').click();
   const before = await page.evaluate(() => { localStorage.file = 'legacy-sentinel'; return Store(); });
+  await page.locator('[data-remaked-builds-open]').click();
   await page.locator('[data-remaked-code-action="create"]').focus(); await page.keyboard.press('Enter');
   const code = await page.locator('#InCode').inputValue();
   await page.locator('#InCode').fill('1,2,3'); await page.locator('#InCode').press('Enter');
   expect(await page.evaluate(() => Store())).toBe(before);
   await expect(page.locator('#InCode')).toHaveAttribute('aria-invalid', 'true');
-  await page.locator('[data-remaked-calculator-action="Text_9"]').click();
+  await page.evaluate(() => document.getElementById('Text_9').parentElement.click());
   await page.locator('#InCode').fill(code); await page.locator('#InCode').press('Enter');
   expect(await page.evaluate(() => Store())).toBe(before);
   expect(await page.evaluate(() => localStorage.file)).toBe('legacy-sentinel');
+  await page.keyboard.press('Escape');
   const horse = page.locator('[data-remaked-calculator-action="Text_16"]');
   await horse.focus(); await page.keyboard.press('Space');
   await expect(horse).toHaveAttribute('aria-pressed', 'true');

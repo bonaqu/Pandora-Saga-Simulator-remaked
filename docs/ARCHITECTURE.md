@@ -114,14 +114,19 @@ Full branch names are rendered through the existing game-term projection.
 Effect buttons retain original switching functions but remove hover-only
 activation in Modern; percentages, next-SPR hints and engine IDs remain intact.
 
-Riding and compressed Code Create/Delete use native buttons delegating once
-to retained source handlers. Modern replaces only the Code Load DOM callback
-with `builds.importPayload`, shared with Build Manager. It validates/rolls back
+Riding and compressed Code export/clear use native buttons delegating once
+to retained source handlers. Modern moves the actual Code field and handlers
+into Build Manager, removing the second export/import interface. Modern replaces
+only the Code Load DOM callback with `builds.importPreparedPayload`. It validates/rolls back
 through the existing adapter and persists Modern autosave separately; it never
 calls `File('CodeLoad')` or reads/writes compressed Legacy File slots. Source
 label anchors remain available for the same translation workbook. Inline
 feedback, input validation/focus and explicit unavailable-import fallback do
 not change `File`, `Expand`, `Store`, codecs or museum behavior.
+Versioned/context-bearing codes export the complete `PS3` envelope instead of
+lossy compressed CSV. Plain source exports still use the exact native codec.
+Code errors remain described next to the field when other manager actions run;
+clearing the field does not delete named builds, FILE slots or character state.
 
 The original calculator logic and data are treated as the preservation core. Hosting glue, generated read-only projections, documentation, CI and validation live around that core.
 

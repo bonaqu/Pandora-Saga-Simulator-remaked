@@ -75,6 +75,7 @@ for (const width of [320, 390, 768, 1440]) test(`primary calculator sections and
     expect(target.right).toBeLessThanOrEqual(width);
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.locator('[data-remaked-builds-open]').click();
   const code = await page.locator('#InCode').boundingBox();
   expect(code.width).toBeGreaterThan(160);
   expect(code.x + code.width).toBeLessThanOrEqual(width);

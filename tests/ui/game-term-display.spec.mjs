@@ -51,6 +51,7 @@ test('translated static actions retain handlers and compressed build behavior', 
     return Store();
   });
   await page.locator('[data-remaked-ui-locale="ru"]').click();
+  await page.locator('[data-remaked-builds-open]').click();
   const create = page.locator('[data-remaked-code-action="create"]');
   const load = page.locator('[data-remaked-code-action="load"]');
   await expect(create).toHaveText('Создать код');
@@ -70,8 +71,9 @@ test('translated static actions retain handlers and compressed build behavior', 
   // preserves old browser slots; translation anchors remain display-only.
   await page.evaluate(() => window.File('Save', 0));
   expect(await page.evaluate(() => Boolean(localStorage.file))).toBe(true);
+  await page.keyboard.press('Escape');
   await page.locator('[data-remaked-ui-locale="en"]').click();
-  await expect(create).toHaveText('Create');
+  await expect(create).toHaveText('Export current');
 });
 
 test('translated skill descriptions and units leave their numeric values unchanged', async ({ page }) => {

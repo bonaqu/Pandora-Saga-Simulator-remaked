@@ -26,6 +26,7 @@ test('Modern code restores riding, effects, honor, clan and caster data without 
   expect(state.reset).toEqual({ horse: 0, buff: 0, honor: 0, clan: 0, caster: '134' });
   expect(state.summary).toEqual(saved.summary); expect(state.roundtrip).toBe(saved.payload);
   expect(state.raw).toBe(saved.original); expect(state.horse).toBe(1); expect(state.buff).toBe(1); expect(state.honor).toBe(3); expect(state.clan).toBe(3); expect(state.caster).toBe('175'); expect(state.pressed).toBe('btn2_on');
+  await page.locator('[data-remaked-builds-open]').click();
   await page.locator('[data-remaked-code-action="create"]').click();
   await expect(page.locator('#InCode')).toHaveValue(saved.payload);
 });

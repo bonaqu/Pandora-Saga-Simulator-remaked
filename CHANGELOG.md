@@ -18,8 +18,13 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   conditional trigger is not simulated. No MP penalty is invented. The exact
   source row is restored even when another calculation fails; real errors still
   propagate. Legacy museum retains its source behavior.
-- These UI/recovery/guard changes are not published on Pages. The retained Code
-  form still duplicates part of Builds and remains a consolidation follow-up.
+- Consolidated Modern code export/import/clear into Builds using the original
+  field and retained handlers. Plain source exports use the native compressed
+  codec; versioned/context-bearing exports retain the full PS3 payload. Code
+  validation stays visible when sharing, and clearing does not delete a build.
+- Fixed signed skill-step labels wrapping in wider system-font fallbacks;
+  desktop rows stay compact without reducing phone targets or test limits.
+- These UI/recovery/guard changes are not published on Pages.
 - Modern build context C1 transfers riding, enabled effects, Honor, clan and
   caster attributes to fresh shared recipients and offline reloads. Comparisons
   restore the active context and storage afterward. Old CSV/compressed codes

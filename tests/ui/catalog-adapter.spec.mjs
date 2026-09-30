@@ -249,6 +249,7 @@ test('versioned codes round-trip through calculator and Build Manager, while ori
   await page.evaluate(data => { window.PandoraRemaked.catalog.applySnapshot(data); window.PandoraRemaked.adapter.selectEquipment(0, data.records[0].engineId); }, snapshot([weapon]));
   const payload = await page.evaluate(() => window.PandoraRemaked.adapter.serialize());
   expect(payload).toMatch(/^PS3:1:/);
+  await page.locator('[data-remaked-builds-open]').click();
   await page.locator('[data-remaked-code-action="create"]').click();
   await expect(page.locator('#InCode')).toHaveValue(payload);
   const restored = await page.evaluate(code => window.PandoraRemaked.builds.importPayload(code), original);

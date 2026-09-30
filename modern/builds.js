@@ -254,6 +254,19 @@
     return importPayload(candidate);
   }
 
+  async function importCodeField(code, feedback) {
+    feedback = feedback || function (key, state, fallback) { setManagerStatus(t(key, null, fallback), state); };
+    var result = await importPreparedPayload(code.value.trim());
+    if (!result.ok) {
+      code.setAttribute('aria-invalid', 'true');
+      feedback('builds.invalidCode', 'error', 'Invalid build code; current build was not changed.');
+      code.focus(); return result;
+    }
+    code.removeAttribute('aria-invalid');
+    feedback(result.autosaved ? 'builds.imported' : 'builds.importedNoAutosave', result.autosaved ? 'success' : 'warning', 'Build code imported.');
+    return result;
+  }
+
   function restoreAutosaveOnce() {
     if (!store || !adapter) {
       setAutosaveStatus(t('builds.autosaveUnavailable', null, 'Autosave unavailable'), 'error');
@@ -514,47 +527,45 @@
     else codeTitle.textContent = 'Build code';
     codeSection.appendChild(codeTitle);
 
-    buildCode = document.createElement('textarea');
-    buildCode.className = 'remaked-build-code';
+    // Move the actual source field and handlers, not a second Code interface.
+    // TextSet and old File callbacks keep their original DOM/translation anchors;
+    // calculator-controls supplies safe keyboard actions at this one location.
+    buildCode = document.getElementById('InCode');
+    var sourceField = buildCode.closest('li').parentElement;
+    var sourceActions = sourceField.nextElementSibling;
+    var workspace = document.createElement('div');
+    workspace.dataset.remakedBuildCodeWorkspace = '';
+    workspace.appendChild(sourceField); workspace.appendChild(sourceActions);
+    workspace.querySelectorAll('[style]').forEach(function (node) { node.removeAttribute('style'); });
+    buildCode.classList.add('remaked-build-input');
     buildCode.spellcheck = false;
+    // Fail safely even if calculator-controls does not load: the preserved
+    // click anchor must never fall back to unvalidated Modern CodeLoad.
+    sourceActions.querySelector('li[onclick="File(\'CodeLoad\');"]').onclick = function () { return importCodeField(buildCode); };
+    var sourceExport = sourceActions.querySelector('li[onclick*="Base64.toBase64"]');
+    var retainedExport = sourceExport.onclick;
+    sourceExport.dataset.remakedCompleteExport = '';
+    sourceExport.onclick = function (event) {
+      var prior = buildCode.value;
+      try {
+        var result = retainedExport.call(this, event);
+        var payload = currentPayload();
+        if (payload.indexOf('PS3:') === 0) buildCode.value = payload;
+        return result;
+      } catch (error) { buildCode.value = prior; throw error; }
+    };
     if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(buildCode, 'placeholder', 'builds.codePlaceholder');
     else buildCode.placeholder = 'Export the current build or paste a Pandora Saga Simulator code here.';
     buildCode.dataset.remakedBuildCode = '';
-    codeSection.appendChild(buildCode);
+    codeSection.appendChild(workspace);
 
-    var codeActions = document.createElement('div');
-    codeActions.className = 'remaked-build-code-actions';
-    var exportButton = button('Export current', null, 'builds.exportCurrent');
-    exportButton.dataset.remakedExportBuild = '';
-    exportButton.addEventListener('click', function () {
-      try {
-        buildCode.value = currentPayload();
-        setManagerStatus(t('builds.exported', null, 'Current build code exported.'), 'success');
-      } catch (error) {
-        setManagerStatus(t('builds.exportFailed', null, 'Current build could not be exported.'), 'error');
-      }
-    });
-    codeActions.appendChild(exportButton);
-
-    var importButton = button('Import code', 'remaked-build-button remaked-build-button-primary', 'builds.importCode');
-    importButton.dataset.remakedImportBuild = '';
-    importButton.addEventListener('click', async function () {
-      var candidate = buildCode.value.trim();
-      var loaded = await importPreparedPayload(candidate);
-      if (!loaded.ok) {
-        setManagerStatus(t('builds.invalidCode', null, 'Invalid build code; current build was not changed.'), 'error');
-        return;
-      }
-      setManagerStatus(loaded.autosaved
-        ? t('builds.imported', null, 'Build code imported.')
-        : t('builds.importedNoAutosave', null, 'Build imported, but autosave is unavailable.'), loaded.autosaved ? 'success' : 'warning');
-    });
-    codeActions.appendChild(importButton);
+    var codeActions = sourceActions.querySelector('ul');
+    codeActions.classList.add('remaked-build-code-actions');
     var share = button('Share build', 'remaked-build-button', 'builds.share');
     share.dataset.remakedShareBuild = '';
     share.addEventListener('click', shareCurrentBuild);
-    codeActions.appendChild(share);
-    codeSection.appendChild(codeActions);
+    var shareAction = document.createElement('li'); shareAction.appendChild(share);
+    codeActions.appendChild(shareAction);
     shareUrl = document.createElement('input');
     shareUrl.type = 'url'; shareUrl.readOnly = true; shareUrl.hidden = true;
     shareUrl.className = 'remaked-build-input';
@@ -626,6 +637,7 @@
   namespace.builds = {
     importPayload: importPayload,
     importPreparedPayload: importPreparedPayload,
+    importCodeField: importCodeField,
     scheduleAutosave: scheduleAutosave,
     flushAutosave: flushAutosave,
     openManager: openManager,

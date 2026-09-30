@@ -87,8 +87,8 @@ class TranslationWorkbookTests(unittest.TestCase):
             tables = [name for name in archive.namelist() if name.startswith("xl/tables/") and name.endswith(".xml")]
             self.assertEqual(len(tables), 1)
             table = ElementTree.fromstring(archive.read(tables[0]))
-            self.assertEqual(table.attrib["ref"], "A1:I2847")
-            self.assertEqual(table.find(f"{{{MAIN_NS}}}autoFilter").attrib["ref"], "A1:I2847")
+            self.assertEqual(table.attrib["ref"], "A1:I2848")
+            self.assertEqual(table.find(f"{{{MAIN_NS}}}autoFilter").attrib["ref"], "A1:I2848")
             sheet = ElementTree.fromstring(archive.read("xl/worksheets/sheet1.xml"))
             pane = sheet.find(f".//{{{MAIN_NS}}}pane")
             self.assertEqual(pane.attrib["state"], "frozen")
@@ -97,7 +97,7 @@ class TranslationWorkbookTests(unittest.TestCase):
 
     def test_workbook_matches_every_ui_and_game_source_row(self):
         ui_russian, game_russian, total = load_translation_catalogs(ROOT)
-        self.assertEqual(total, 2846)
+        self.assertEqual(total, 2847)
         rows = read_rows(ROOT / "localization/translations.xlsx")[1:]
         self.assertEqual(ui_russian, {row[1]: row[7] for row in rows if row[0] == "Интерфейс" and row[7].strip()})
         self.assertEqual(game_russian, {row[1]: row[7].strip() for row in rows if row[0] == "Игра" and row[7].strip()})
@@ -134,7 +134,7 @@ class TranslationWorkbookTests(unittest.TestCase):
             set_russian_cell(localization / "translations.xlsx", "equipment.0.1", "Проверочный предмет")
 
             _, game_russian, total = load_translation_catalogs(root)
-            self.assertEqual(total, 2846)
+            self.assertEqual(total, 2847)
             self.assertEqual(game_russian["equipment.0.1"], "Проверочный предмет")
 
 

@@ -66,6 +66,7 @@
   "builds.codePlaceholder": "Export the current build or paste a Pandora Saga Simulator code here.",
   "builds.exportCurrent": "Export current",
   "builds.importCode": "Import code",
+  "builds.clearCode": "Clear code",
   "builds.load": "Load",
   "builds.rename": "Rename",
   "builds.duplicate": "Duplicate",

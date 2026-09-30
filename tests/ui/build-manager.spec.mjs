@@ -160,7 +160,7 @@ test('Build Manager saves, loads, renames, duplicates and confirms deletion', as
   expect(await page.evaluate(() => localStorage.getItem('file'))).toBe('legacy-sentinel');
 });
 
-test('Build Manager exports exact legacy code and imports valid code without using legacy File storage', async ({ page }) => {
+test('Build Manager exports exact native compressed code and imports it without using legacy File storage', async ({ page }) => {
   await openModern(page);
   const original = await page.evaluate(() => window.PandoraRemaked.adapter.serialize());
   const changed = await chooseDifferentRace(page);
@@ -169,7 +169,8 @@ test('Build Manager exports exact legacy code and imports valid code without usi
   await page.getByRole('button', { name: 'Builds', exact: true }).click();
   const manager = page.locator('[data-remaked-build-manager]');
   await manager.locator('[data-remaked-export-build]').click();
-  await expect(manager.locator('[data-remaked-build-code]')).toHaveValue(changed);
+  const compressed = await page.evaluate(payload => Base64.toBase64(RawDeflate.deflate(Base64.utob(payload))), changed);
+  await expect(manager.locator('[data-remaked-build-code]')).toHaveValue(compressed);
 
   await page.evaluate((payload) => window.PandoraRemaked.adapter.load(payload), original);
   await manager.locator('[data-remaked-import-build]').click();
@@ -185,7 +186,7 @@ test('malformed import is rejected and current build stays unchanged', async ({ 
   const manager = page.locator('[data-remaked-build-manager]');
   await manager.locator('[data-remaked-build-code]').fill('definitely-not-a-pandora-build');
   await manager.locator('[data-remaked-import-build]').click();
-  await expect(manager.locator('[data-remaked-build-manager-status]')).toContainText(/invalid|could not/i);
+  await expect(manager.locator('[data-remaked-code-status]')).toContainText(/invalid|could not/i);
   expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(before);
 });
 

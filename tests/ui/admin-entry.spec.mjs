@@ -24,8 +24,10 @@ test('IDDQD reveals a native first-party login form without changing the charact
 
 test('editable fields, modifiers, repeats, composition and interrupted prefixes do not unlock the admin entry', async ({ page }) => {
   await page.goto('/');
+  await page.locator('[data-remaked-builds-open]').click();
   await page.locator('#InCode').fill(''); await page.locator('#InCode').focus(); await page.keyboard.type('IDDQD');
   await expect(page.locator('[data-remaked-admin-entry]')).toHaveCount(0);
+  await page.keyboard.press('Escape');
   for (const tag of ['textarea', 'div']) {
     await page.evaluate(tag => { const field = document.createElement(tag); if (tag === 'div') field.contentEditable = 'true'; field.id = 'editable-test'; document.body.appendChild(field); field.focus(); }, tag);
     await page.keyboard.type('IDDQD');

@@ -21,7 +21,8 @@
   }
 
   function codeActions(code) {
-    if (byId('remaked-code-status')) return;
+    if (code.hasAttribute('data-remaked-code-decorated')) return;
+    code.dataset.remakedCodeDecorated = '';
     var label = code.closest('li').previousElementSibling;
     label.id = 'remaked-code-label';
     code.setAttribute('aria-labelledby', label.id);
@@ -31,7 +32,8 @@
     var list = mark(actions.querySelector('ul'), 'code-buttons');
     var status = document.createElement('li');
     status.id = 'remaked-code-status'; status.dataset.remakedCodeStatus = '';
-    status.setAttribute('role', 'status'); actions.appendChild(status);
+    status.setAttribute('role', 'status');
+    actions.appendChild(status);
     var sources = [
       ['create', 'li[onclick*="Base64.toBase64"]'],
       ['load', 'li[onclick="File(\'CodeLoad\');"]'],
@@ -45,30 +47,29 @@
         // Replace only this Modern DOM handler, not File(), Expand() or any
         // museum source. Keep its attribute as the translation-map anchor.
         source.onclick = async function () {
-          if (!namespace.builds || !namespace.builds.importPayload) {
+          if (!namespace.builds || !namespace.builds.importCodeField) {
             codeStatus('builds.autosaveUnavailable', 'warning', 'Autosave unavailable'); return;
           }
-          var result = await namespace.builds.importPreparedPayload(code.value);
-          if (!result.ok) {
-            code.setAttribute('aria-invalid', 'true');
-            codeStatus('builds.invalidCode', 'error', 'Invalid build code; current build was not changed.');
-            code.focus(); return;
-          }
-          code.removeAttribute('aria-invalid');
-          codeStatus(result.autosaved ? 'builds.imported' : 'builds.importedNoAutosave', result.autosaved ? 'success' : 'warning', 'Build code imported.');
+          return namespace.builds.importCodeField(code, codeStatus);
         };
       }
       var button = document.createElement('button');
-      button.type = 'button'; button.className = 'remaked-calculator-action';
+      button.type = 'button'; button.className = 'remaked-calculator-action remaked-build-button';
       button.dataset.remakedCodeAction = entry[0];
+      if (entry[0] === 'create') button.dataset.remakedExportBuild = '';
+      if (entry[0] === 'load') {
+        button.dataset.remakedImportBuild = '';
+        button.classList.add('remaked-build-button-primary');
+      }
       button.addEventListener('click', async function (event) {
         event.stopPropagation();
+        var prior = code.value;
         try {
           // Invoke the retained DOM callback directly so a codec failure is
           // catchable here; click() reports listener errors to the global page
           // instead of throwing to its caller. No callback/formula is copied.
           await source.onclick.call(source, event);
-          if (entry[0] === 'create' && namespace.catalog) {
+          if (entry[0] === 'create' && namespace.catalog && !source.hasAttribute('data-remaked-complete-export')) {
             var payload = namespace.adapter.serialize();
             if (payload.indexOf('PS3:') === 0) code.value = payload;
           }
@@ -78,6 +79,7 @@
             else clearCodeStatus();
           }
         } catch (error) {
+          if (entry[0] === 'create') code.value = prior;
           codeStatus('builds.exportFailed', 'error', 'Current build could not be exported.');
         }
         refresh();
@@ -210,7 +212,10 @@
         if (label.parentElement.id.indexOf('SwitchUse_') === 0) button.setAttribute('aria-pressed', String(label.parentElement.classList.contains('btn2_on')));
       });
       document.querySelectorAll('[data-remaked-code-action]').forEach(function (button) {
-        var text = byId('remaked-code-' + button.dataset.remakedCodeAction + '-label').textContent;
+        var action = button.dataset.remakedCodeAction;
+        var key = { create: 'builds.exportCurrent', load: 'builds.importCode', delete: 'builds.clearCode' }[action];
+        var source = byId('remaked-code-' + action + '-label').textContent;
+        var text = namespace.i18n ? namespace.i18n.game('calculator.literal.' + (action === 'load' ? 'code_load' : action), '') || namespace.i18n.t(key) : source;
         if (button.textContent !== text) button.textContent = text;
       });
     } finally {
