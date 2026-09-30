@@ -34,6 +34,7 @@ The main site opens in **Modern Mode**:
 - Japanese and Traditional Chinese legacy data remain available;
 - responsive application shell for desktop, ultrawide, tablet and phone screens;
 - **Equipment Search** with name and level filters over the current compatible legacy options;
+- **Equipment selection** with item/Soul characteristics, deliberate desktop hover and a separate touch disclosure; review never equips a candidate;
 - **Soul Search** for currently available sockets and compatible legacy Soul options;
 - automatic local autosave with recovery after refresh;
 - **Build Manager** for named local builds: save, load, rename, duplicate and delete;

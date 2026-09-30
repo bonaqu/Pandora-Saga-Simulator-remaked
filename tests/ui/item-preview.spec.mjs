@@ -69,6 +69,7 @@ test('equipment hover and keyboard preview expose Legacy descriptions without eq
   await row.locator('[data-remaked-item-description]').hover();
   await page.locator('[data-remaked-search-query]').hover();
   await expect(row.locator('details')).not.toHaveAttribute('open', '');
+  await page.keyboard.press('Tab');
   await row.locator('[data-remaked-search-result]').focus();
   await expect(row.locator('details')).toHaveAttribute('open', '');
   await page.keyboard.press('Escape');

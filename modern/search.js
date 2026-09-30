@@ -5,6 +5,16 @@
   var adapter = namespace.adapter;
   var i18n = namespace.i18n;
   var active = null;
+  var keyboardInput = true;
+  var previewSequence = 0;
+  document.addEventListener('keydown', function () { keyboardInput = true; }, true);
+  document.addEventListener('pointerdown', function () { keyboardInput = false; }, true);
+
+  function cancelPreviews(keepInline) {
+    if (!active) return;
+    active.hoverPausedUntil = Date.now() + 450;
+    active.cancelPreviews.forEach(function (cancel) { cancel(keepInline === true); });
+  }
 
   function t(key, values, fallback) {
     return i18n && typeof i18n.t === 'function' ? i18n.t(key, values) : fallback;
@@ -70,6 +80,7 @@
   function closePanel(options) {
     if (!active) return;
     var current = active;
+    cancelPreviews();
     active = null;
     current.backdrop.close();
     current.backdrop.remove();
@@ -120,7 +131,7 @@
     });
 
     var returnFocus = trigger && typeof trigger.focus === 'function' ? trigger : document.activeElement;
-    active = { backdrop: backdrop, panel: panel, returnFocus: returnFocus };
+    active = { backdrop: backdrop, panel: panel, returnFocus: returnFocus, cancelPreviews: [], hoverPausedUntil: 0 };
     backdrop.addEventListener('cancel', function (event) { event.preventDefault(); closePanel(); });
     panel.addEventListener('keydown', function (event) {
       // Chromium/Firefox otherwise consume Escape to clear a type=search input
@@ -134,8 +145,12 @@
     });
     panel.addEventListener('scroll', function (event) {
       if (event.target.closest && event.target.closest('.remaked-item-description')) return;
-      panel.querySelectorAll('details[open]').forEach(function (preview) { preview.open = false; });
+      cancelPreviews(true);
     }, true);
+    panel.addEventListener('wheel', function (event) {
+      if (!event.target.closest('.remaked-item-description')) cancelPreviews(true);
+    }, { passive: true });
+    panel.addEventListener('touchstart', function () { cancelPreviews(true); }, { passive: true });
     backdrop.showModal();
     return { backdrop: backdrop, panel: panel, body: body };
   }
@@ -204,14 +219,14 @@
     var row = element('div', 'remaked-search-row');
     row.dataset.remakedSearchRow = ''; row.dataset.value = String(value);
     row.appendChild(button);
-    var item = adapter.readItemDetails(kind, value, targetSlot);
+    var item = kind === 'equipment' && Number(value) % 10000 === 0 ? null : adapter.readItemDetails(kind, value, targetSlot);
     if (!item) return row;
     var details = element('details', 'remaked-item-preview');
     var summary = translatedElement('summary', '', 'search.details', 'Details');
     details.appendChild(summary);
     var description = element('div', 'remaked-item-description');
     description.dataset.remakedItemDescription = '';
-    description.id = 'remaked-item-detail-' + kind + '-' + value;
+    description.id = 'remaked-item-detail-' + (++previewSequence);
     summary.setAttribute('aria-controls', description.id);
     var name = button.querySelector('.remaked-search-result-name').textContent;
     description.appendChild(element('strong', '', item.equippedName ? item.equippedName.replace(item.name, name) : name));
@@ -238,9 +253,19 @@
     description.appendChild(translatedElement('small', '', 'search.itemSource', 'Item descriptions from Legacy 2.00; not calculated build deltas.'));
     details.appendChild(description); row.appendChild(details);
     var pinned = false;
+    var hoverTimer = null;
+    function cancelHover() { window.clearTimeout(hoverTimer); hoverTimer = null; }
     var floating = window.matchMedia('(min-width: 701px) and (hover: hover)').matches && typeof description.showPopover === 'function';
+    if (active) active.cancelPreviews.push(function (keepInline) {
+      cancelHover();
+      // A deliberately expanded phone card is document content, not a hover
+      // overlay. Keep it while reading/scrolling or tapping its summary closed.
+      if (keepInline && !floating && pinned) return;
+      details.open = false; pinned = false;
+    });
     if (floating) description.setAttribute('popover', 'manual');
     details.addEventListener('toggle', function () {
+      if (!details.open) pinned = false;
       summary.setAttribute('aria-expanded', details.open ? 'true' : 'false');
       if (!floating || !description.isConnected) return;
       if (!details.open) { description.hidePopover(); return; }
@@ -253,20 +278,92 @@
       description.style.top = Math.max(12, Math.min(rect.top, innerHeight - description.getBoundingClientRect().height - 12)) + 'px';
     });
     summary.addEventListener('click', function () { pinned = !details.open; });
-    button.addEventListener('mouseenter', function () { if (window.matchMedia('(hover: hover)').matches) details.open = true; });
-    button.addEventListener('focus', function () { details.open = true; });
+    button.addEventListener('mouseenter', function () {
+      cancelHover();
+      if (!window.matchMedia('(min-width: 701px) and (hover: hover)').matches || !active) return;
+      hoverTimer = window.setTimeout(function () {
+        hoverTimer = null;
+        if (row.isConnected && button.matches(':hover') && active && Date.now() >= active.hoverPausedUntil) details.open = true;
+      }, 450);
+    });
+    button.addEventListener('pointerdown', cancelHover);
+    button.addEventListener('focus', function () { if (keyboardInput && button.matches(':focus-visible')) details.open = true; });
     row.addEventListener('mouseleave', function () {
+      cancelHover();
       window.setTimeout(function () {
-        if (!pinned && !row.contains(document.activeElement) && !row.matches(':hover') && !description.matches(':hover')) details.open = false;
+        if (!pinned && !(keyboardInput && row.contains(document.activeElement)) && !row.matches(':hover') && !description.matches(':hover')) details.open = false;
       }, 100);
+    });
+    description.addEventListener('mouseleave', function () {
+      if (!pinned && !(keyboardInput && row.contains(document.activeElement)) && !row.matches(':hover')) details.open = false;
     });
     row.addEventListener('focusout', function (event) { if (!pinned && !row.contains(event.relatedTarget)) details.open = false; });
     row.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && details.open) {
-        event.preventDefault(); event.stopPropagation(); details.open = false; pinned = false;
+        event.preventDefault(); event.stopPropagation(); cancelHover(); details.open = false; pinned = false;
       }
     });
     return row;
+  }
+
+  // Equipment controls use the same read-only source cards, but a locked
+  // simulation target: no target switching or Soul insertion in an item list.
+  function openEquipmentPicker(selectId, trigger) {
+    var select = document.getElementById(selectId);
+    var match = String(selectId).match(/^SelEquip_(\d+)_(0|[4-6])$/);
+    if (!select || !match || select.style.display === 'none') return null;
+    var slot = Number(match[1]), fieldIndex = Number(match[2]);
+    var kind = fieldIndex === 0 ? 'equipment' : 'soul';
+    var shell = createShell(kind, kind === 'equipment' ? 'search.equipment.title' : 'search.soul.title', 'Equipment', trigger);
+    shell.panel.dataset.remakedPickerPanel = selectId;
+    shell.panel.querySelector('h2').removeAttribute('data-remaked-i18n');
+    shell.panel.querySelector('h2').textContent = adapter.listEquipmentTargets().find(function (target) { return target.slotIndex === slot; }).label + (fieldIndex ? ' · Soul ' + (fieldIndex - 3) : '');
+    var query = queryInput(kind === 'equipment' ? 'search.equipment.placeholder' : 'search.soul.placeholder', 'Search…');
+    shell.body.appendChild(field('search.name', 'Name', query));
+    var results = element('div', 'remaked-search-results remaked-picker-results');
+    results.dataset.remakedSearchResults = '';
+    shell.body.appendChild(results);
+    function render() {
+      cancelPreviews();
+      active.cancelPreviews = [];
+      var current = document.getElementById(selectId);
+      if (!current || current.style.display === 'none') { closePanel(); return; }
+      var options = kind === 'equipment' ? adapter.listEquipmentOptions(slot) : adapter.listSoulOptions({ slotIndex: slot, socketIndex: fieldIndex });
+      var filtered = options.filter(function (option) {
+        var id = kind === 'equipment' ? equipmentTermId(option.value) : soulTermId(option.value);
+        return normalizeQuery(option.name + ' ' + gameName(id, option.name)).indexOf(normalizeQuery(query.value)) !== -1;
+      });
+      var fragment = document.createDocumentFragment();
+      filtered.forEach(function (option) {
+        var id = kind === 'equipment' ? equipmentTermId(option.value) : soulTermId(option.value);
+        var button = resultButton({ value: option.value, name: gameName(id, option.name) }, option.level == null ? '' : t('search.level', { level: option.level }, 'Lv ' + option.level));
+        button.dataset.selected = current.value === String(option.value) ? 'true' : 'false';
+        button.setAttribute('aria-pressed', button.dataset.selected);
+        button.addEventListener('click', function () {
+          var changed = kind === 'equipment' ? adapter.selectEquipment(slot, option.value) : adapter.selectSoul({ slotIndex: slot, socketIndex: fieldIndex }, option.value);
+          if (changed) closePanel();
+        });
+        fragment.appendChild(resultRow(button, kind, option.value, slot));
+      });
+      results.replaceChildren(fragment);
+      if (!filtered.length) renderEmpty(results, t(kind === 'equipment' ? 'search.noEquipmentMatches' : 'search.noSoulMatches', null, 'No matches'));
+    }
+    // Native buttons + disclosures, not a fake listbox containing interactive
+    // children. Tab traverses actions; arrows provide an additional shortcut.
+    results.addEventListener('keydown', function (event) {
+      if (['ArrowDown', 'ArrowUp', 'Home', 'End'].indexOf(event.key) === -1 || event.target.tagName !== 'BUTTON') return;
+      var buttons = Array.from(results.querySelectorAll('[data-remaked-search-result]'));
+      var index = buttons.indexOf(event.target);
+      if (event.key === 'Home') index = 0;
+      else if (event.key === 'End') index = buttons.length - 1;
+      else index = Math.max(0, Math.min(buttons.length - 1, index + (event.key === 'ArrowDown' ? 1 : -1)));
+      event.preventDefault(); buttons[index]?.focus();
+    });
+    active.render = render;
+    query.addEventListener('input', render);
+    render();
+    query.focus();
+    return shell.panel;
   }
 
   function openEquipmentSearch(slotIndex, trigger) {
@@ -319,6 +416,7 @@
 
     function render() {
       var target = Number(targetsControl.value);
+      cancelPreviews(); active.cancelPreviews = [];
       var options = adapter.listEquipmentOptions(target);
       var filtered = filterEquipment(options, {
         query: query.value,
@@ -402,6 +500,7 @@
 
     function render() {
       var currentTargets = adapter.listSoulTargets();
+      cancelPreviews(); active.cancelPreviews = [];
       var selected = findSoulTarget(currentTargets, targetsControl.value);
       if (!selected) {
         renderEmpty(results, t('search.noSoulSockets', null, 'No available Soul sockets'));
@@ -445,6 +544,7 @@
     filterEquipment: filterEquipment,
     openEquipmentSearch: openEquipmentSearch,
     openSoulSearch: openSoulSearch,
+    openEquipmentPicker: openEquipmentPicker,
     close: closePanel
   };
 
@@ -452,6 +552,6 @@
     if (active && typeof active.render === 'function') active.render();
   });
   window.addEventListener('resize', function () {
-    if (active) active.panel.querySelectorAll('details[open]').forEach(function (preview) { preview.open = false; });
+    cancelPreviews();
   });
 })();

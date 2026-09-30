@@ -130,7 +130,26 @@ Deliverable:
 - cross-browser smoke pass;
 - final documentation cleanup and release tag.
 
+### Verified final acceptance and current-server references
+
+**Verified Phase 7 completion:** UI `2026.09.11`, PR #16 (`e0ee03d`), feature CI
+`36653977707`, Pages `36654352147`, exact artifact/live acceptance and isolated
+real desktop PWA install all passed. Annotated `v2026.09.11` now exists and
+records fingerprints/limits. The preceding conditional tag wording describes
+the release gate; the gate has passed.
+
+**Current-server reference follow-up:** Weapons of Balance is the target. The
+Human/W2g level-40 baseline matches HP/MP/attributes and point budgets, not proof
+of full balance parity. Client terminology/server observations are recorded in
+`docs/localization/RU_CLIENT_REFERENCE.md`. The user confirmed temporary server
+caps must NOT restrict Modern; retain 55 levels, all 28 classes and saved builds.
+
 ### Later project — Cloud save
+
+User follow-up after UI11: actual Equipment selection still needs characteristic
+cards and hover must not interfere with scrolling. This is tracked separately in
+`2026-09-30-equipment-picker-followup.md`; the UI11 publication record is historical
+evidence, not acceptance of this later-identified interaction gap.
 
 Not part of this roadmap's implementation plans. Requires a new design/spec after Phases 0–7 are stable.
 

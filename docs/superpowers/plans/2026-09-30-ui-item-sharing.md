@@ -3,6 +3,14 @@
 The user's 2026-09-30 screenshots and follow-up requests authorize this block.
 Do not alter preserved Legacy files or implement new calculation formulas.
 
+**Status:** Shipped as UI `2026.09.11` in PR #16 (`e0ee03d`), feature HEAD
+`54af919`, feature CI `36653977707`, production workflow/artifact `36654352147`.
+The recorded UI11 release gates passed. Immutable fingerprints/results:
+annotated `v2026.09.11`. User feedback subsequently identified a scope gap:
+the previews exist in Search, not in the actual Equipment selection lists,
+and instant hover disrupts scrolling. The Equipment-picker follow-up is open;
+the earlier release evidence does not establish acceptance of this interaction.
+
 ## Acceptance
 
 - One EN/RU/JP/TW control; exactly one active button; same serialized build.
@@ -40,8 +48,14 @@ checks, 19 visual captures. Quota failure during shared-build autosave was
 reproduced RED and fixed without hiding the warning. An earlier parallel-run
 report-directory collision was an orchestration error; final suites run
 sequentially or with distinct output directories. Original source directories
-remain unchanged. Exact feature CI/production acceptance is still required.
+remain unchanged. Feature CI and exact production acceptance passed: 459
+Legacy files byte-identical to UI10; live workbook/PNGs, languages, upgraded
+item/Soul preview, fresh-browser sharing, native modals, source isolation and
+both offline/compressed-save routes; no browser/HTTP errors. Real isolated
+desktop Chromium install/standalone online/offline launches/uninstall passed.
 
 User clarification: Weapons of Balance is the target server. Follow-up server
 compatibility verification is separate from preserving Legacy 2.00. See
 `docs/localization/RU_CLIENT_REFERENCE.md`; current balance parity is not claimed.
+The user explicitly rejected restrictions based on temporary level-40/reduced
+class progression: Modern retains its existing 55 levels, 28 classes and builds.

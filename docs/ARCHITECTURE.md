@@ -21,6 +21,15 @@ flowchart TB
 
 ## Main components
 
+Modern Equipment selection is progressively enhanced by
+`modern/equipment-picker.js`: native dialog lists with separate selection and
+read-only characteristic actions reuse `modern/search.js`. Original numeric
+selects/handlers remain the engine boundary and the fallback if enhancement is
+unavailable. Soul availability follows Legacy SoulCheck, not the hidden state of
+enhanced selects. Modern load rebuilds the existing equipment-effect cache via
+`CalcSet('Equip')` before recalculation, avoiding stale prior-item effects without
+copying formulas. The museum route remains unchanged.
+
 ### `index.html`
 
 The recovered legacy UI and entry point. GitHub Pages serves it from the repository root.

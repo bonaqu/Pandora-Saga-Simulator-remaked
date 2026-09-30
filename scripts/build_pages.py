@@ -44,6 +44,7 @@ REQUIRED_MODERN = (
     "modern/adapter.js",
     "modern/build-store.js",
     "modern/search.js",
+    "modern/equipment-picker.js",
     "modern/app-shell.js",
     "modern/builds.js",
     "modern/tooltips.js",
@@ -114,6 +115,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/tooltips.js"></script>
 <script src="./modern/compare.js"></script>
 <script src="./modern/mobile.js"></script>
+<script src="./modern/equipment-picker.js"></script>
 <script src="./modern/pwa.js"></script>
 <!-- /REMAKED:BODY -->'''
 
