@@ -10,6 +10,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 
 - Fixed characteristic cards closing when keyboard focus automatically scrolls to an off-screen Equipment item. Keyboard review waits for that scroll to settle; manual wheel/touch input still cancels previews and never changes equipment.
 - Added the off-screen keyboard regression to Chromium, Firefox and WebKit checks, plus a desktop visual capture. Pointer previews retain their 450 ms dwell, scroll cancellation and separate explicit touch disclosure.
+- Fixed late focus-induced WebKit scroll events closing an already open keyboard card. Cancellation now follows actual wheel/touch/scrollbar/Page-key intent rather than assuming scrolling always finishes within two frames.
 - Legacy source, formulas, serialized builds and the translation workbook remain unchanged.
 
 ## 2026.09.12 — Equipment selection and deliberate previews

@@ -58,6 +58,27 @@ test('opening Equipment keeps the currently worn item in view without opening or
   expect(await page.evaluate(() => Store())).toBe(before);
 });
 
+test('keyboard review survives late automatic scroll but PageDown and scrollbar intent cancel it', async ({ page }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').focus();
+  await page.keyboard.press('ArrowDown');
+  const panel = page.locator('[data-remaked-picker-panel]');
+  const row = panel.locator('[data-remaked-search-row][data-value="8"]');
+  await row.locator('button').focus();
+  await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
+  await page.evaluate(() => document.querySelector('[data-remaked-picker-panel] [data-remaked-search-results]').dispatchEvent(new Event('scroll', { bubbles: true })));
+  await expect(row.locator('details')).toHaveAttribute('open', '');
+  await page.keyboard.press('PageDown');
+  await expect(row.locator('details')).not.toHaveAttribute('open', '');
+  await panel.locator('[data-remaked-search-query]').focus();
+  await row.locator('button').focus();
+  await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
+  await page.evaluate(() => document.querySelector('[data-remaked-picker-panel] [data-remaked-search-results]').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })));
+  await expect(row.locator('details')).not.toHaveAttribute('open', '');
+  expect(await page.evaluate(() => Store())).toBe(before);
+});
+
 test('keyboard focus beyond the visible Equipment list keeps its card after automatic scroll; wheel cancels it', async ({ page }) => {
   await page.goto('/');
   const before = await page.evaluate(() => Store());
