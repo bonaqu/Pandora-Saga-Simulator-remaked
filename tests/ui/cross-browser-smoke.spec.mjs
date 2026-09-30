@@ -1,5 +1,22 @@
 import { test, expect } from '@playwright/test';
 
+test('native calculator steps retain callback parity and phone primary sections reflow', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = []; page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/');
+  const button = page.locator('[data-remaked-step="remaked-level-up3"]');
+  await button.focus(); await page.keyboard.press('Space');
+  await expect(page.locator('#StatusLev')).toHaveText('55');
+  const before = await page.evaluate(() => Store());
+  const expected = await page.evaluate(() => { document.getElementById('remaked-attribute-STR-up1').click(); return Store(); });
+  await page.evaluate(code => PandoraRemaked.adapter.load(code), before);
+  await page.locator('[data-remaked-step="remaked-attribute-STR-up1"]').click();
+  expect(await page.evaluate(() => Store())).toBe(expected);
+  const bounds = await page.locator('#SkillSet').boundingBox();
+  expect(bounds.x + bounds.width).toBeLessThanOrEqual(390);
+  expect(errors).toEqual([]);
+});
+
 test('off-screen Equipment keyboard review survives automatic scroll but not wheel input', async ({ page }) => {
   await page.goto('/');
   const before = await page.evaluate(() => Store());

@@ -2,6 +2,15 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.15 — Readable calculator and native character controls
+
+- Corrected inherited Japanese bitmap/monospace fonts on calculator list/table descendants. Modern uses its system font; the museum route is unchanged.
+- Reflowed character, skill-allocation and effect sections into viewport-sized columns, stacking them on phones instead of hiding the last sections beyond a 992px canvas. Dense source skill controls retain their own horizontal scrolling where needed.
+- Added readable native level/attribute buttons, with 44px phone targets, that call retained Legacy handlers exactly once. Point costs, min/max, level 55, all classes, calculations and build encoding remain in the existing engine.
+- Converted calculated statistics and character metadata into readable label/value pairs. Long approved labels wrap without hiding numeric values. Corrected the old float layout collapsing the build-code field.
+- Made source reset/options actions keyboard-operable native buttons with current toggle state. Retained source nodes and callbacks, source-locale changes, load/reset/autosave/share compatibility and fallback when enhancement is unavailable.
+- Added callback parity, boundaries, locale/load, long-label and 320/390/768/1440px regressions plus three-engine and visual checks. Legacy source/formulas and the translation workbook remain unchanged. Skill-allocation arrows and other dense Legacy controls are a separate usability follow-up.
+
 ## 2026.09.14 — Explicit item review survives automatic scrolling
 
 - Fixed a late pointer-focus scroll event closing an explicitly opened desktop item card. The installed-app check exposed this after UI13 publication; focused explicit review now survives automatic scrolling, while manual wheel/touch/scrollbar/Page input still cancels floating cards.

@@ -100,6 +100,13 @@ A backend should only be introduced for genuinely server-side features such as a
 
 ## Preservation boundary
 
+Modern's `calculator-controls.js` decorates retained calculator nodes rather
+than rebuilding the engine. Its native level/attribute/options buttons call
+the original node's callback via `click()` exactly once; numeric fields, point
+budgets, reset/load and serialized state remain source-owned. Responsive
+containers and label/value pairs preserve every engine ID. If the enhancement
+is unavailable, original inputs and callbacks remain visible and usable.
+
 The original calculator logic and data are treated as the preservation core. Hosting glue, generated read-only projections, documentation, CI and validation live around that core.
 
 That separation makes it possible to modernize the project later without silently changing the preserved calculator.

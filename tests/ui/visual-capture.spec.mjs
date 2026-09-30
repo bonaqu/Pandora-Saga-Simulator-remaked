@@ -1,5 +1,18 @@
 import { test, expect } from '@playwright/test';
 
+for (const width of [320, 1440]) test(`capture calculator controls and long translated identity at ${width}px`, async ({ page }, testInfo) => {
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto('/');
+  await page.evaluate(() => Object.assign(PandoraRemakedGameTerms.ru, {
+    'race.0': 'Проверочное очень длинное название расы персонажа',
+    'calculator.status.0': 'Проверочное длинное имя характеристики'
+  }));
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+  await page.locator('[data-remaked-step="remaked-level-up3"]').click();
+  await page.locator('[data-remaked-step="remaked-attribute-STR-up1"]').focus();
+  await page.locator('[data-remaked-calculator-character]').screenshot({ path: testInfo.outputPath(`modern-calculator-controls-${width}.png`) });
+});
+
 test('capture off-screen Equipment keyboard characteristic card', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
