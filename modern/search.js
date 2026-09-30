@@ -10,10 +10,10 @@
   document.addEventListener('keydown', function () { keyboardInput = true; }, true);
   document.addEventListener('pointerdown', function () { keyboardInput = false; }, true);
 
-  function cancelPreviews(keepInline) {
+  function cancelPreviews(keepInline, keepKeyboardRequest) {
     if (!active) return;
     active.hoverPausedUntil = Date.now() + 450;
-    active.cancelPreviews.forEach(function (cancel) { cancel(keepInline === true); });
+    active.cancelPreviews.forEach(function (cancel) { cancel(keepInline === true, keepKeyboardRequest === true); });
   }
 
   function t(key, values, fallback) {
@@ -82,7 +82,10 @@
     var current = active;
     cancelPreviews();
     active = null;
-    current.backdrop.close();
+    if (current.cleanup) current.cleanup();
+    if (current.returnFocus && current.dropdown) current.returnFocus.setAttribute('aria-expanded', 'false');
+    if (current.dropdown) { if (current.backdrop.matches(':popover-open')) current.backdrop.hidePopover(); }
+    else current.backdrop.close();
     current.backdrop.remove();
     if (!options || options.restoreFocus !== false) {
       if (current.returnFocus && document.contains(current.returnFocus) && typeof current.returnFocus.focus === 'function') {
@@ -91,10 +94,16 @@
     }
   }
 
-  function createShell(kind, titleKey, titleFallback, trigger) {
+  function createShell(kind, titleKey, titleFallback, trigger, dropdown) {
     closePanel({ restoreFocus: false });
 
-    var backdrop = element('dialog', 'remaked-search-backdrop remaked-modal');
+    var backdrop = element(dropdown ? 'div' : 'dialog', dropdown ? 'remaked-equipment-dropdown' : 'remaked-search-backdrop remaked-modal');
+    if (dropdown) {
+      backdrop.setAttribute('popover', 'auto');
+      backdrop.setAttribute('role', 'dialog');
+      backdrop.dataset.remakedEquipmentDropdown = '';
+      backdrop.id = 'remaked-equipment-dropdown';
+    }
     backdrop.dataset.remakedSearchBackdrop = '';
 
     var panel = element('section', 'remaked-search-panel');
@@ -113,6 +122,7 @@
 
     var close = translatedElement('button', 'remaked-search-close', 'search.close', 'Close search');
     close.type = 'button';
+    if (dropdown) { close.removeAttribute('data-remaked-i18n'); close.textContent = '×'; }
     if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(close, 'aria-label', 'search.close');
     else close.setAttribute('aria-label', 'Close search');
     close.addEventListener('click', function () { closePanel(); });
@@ -131,7 +141,7 @@
     });
 
     var returnFocus = trigger && typeof trigger.focus === 'function' ? trigger : document.activeElement;
-    active = { backdrop: backdrop, panel: panel, returnFocus: returnFocus, cancelPreviews: [], hoverPausedUntil: 0 };
+    active = { backdrop: backdrop, panel: panel, returnFocus: returnFocus, dropdown: dropdown, cancelPreviews: [], hoverPausedUntil: 0 };
     backdrop.addEventListener('cancel', function (event) { event.preventDefault(); closePanel(); });
     panel.addEventListener('keydown', function (event) {
       // Chromium/Firefox otherwise consume Escape to clear a type=search input
@@ -145,13 +155,47 @@
     });
     panel.addEventListener('scroll', function (event) {
       if (event.target.closest && event.target.closest('.remaked-item-description')) return;
-      cancelPreviews(true);
+      cancelPreviews(true, true);
     }, true);
     panel.addEventListener('wheel', function (event) {
       if (!event.target.closest('.remaked-item-description')) cancelPreviews(true);
     }, { passive: true });
     panel.addEventListener('touchstart', function () { cancelPreviews(true); }, { passive: true });
-    backdrop.showModal();
+    if (dropdown) {
+      returnFocus.setAttribute('aria-expanded', 'true');
+      returnFocus.setAttribute('aria-controls', backdrop.id);
+      backdrop.addEventListener('toggle', function (event) {
+        if (event.newState === 'closed' && active && active.backdrop === backdrop) closePanel({ restoreFocus: false });
+      });
+      function outsideScroll(event) {
+        // A click may queue the browser's scroll-to-trigger event. Its geometry
+        // is already reflected in rect; only a subsequent anchor move dismisses.
+        if (!backdrop.contains(event.target) && rect && Math.abs(returnFocus.getBoundingClientRect().top - rect.top) > 1 && active && active.backdrop === backdrop) closePanel({ restoreFocus: false });
+      }
+      function resize() { if (active && active.backdrop === backdrop) closePanel(); }
+      function outsideFocus(event) {
+        if (event.target !== returnFocus && !backdrop.contains(event.target) && active && active.backdrop === backdrop) closePanel({ restoreFocus: false });
+      }
+      document.addEventListener('scroll', outsideScroll, true);
+      document.addEventListener('focusin', outsideFocus);
+      window.addEventListener('resize', resize);
+      active.cleanup = function () {
+        document.removeEventListener('scroll', outsideScroll, true);
+        document.removeEventListener('focusin', outsideFocus);
+        window.removeEventListener('resize', resize);
+      };
+      backdrop.showPopover();
+      var rect = returnFocus.getBoundingClientRect();
+      var width = Math.min(420, Math.max(320, rect.width), innerWidth - 16);
+      var below = innerHeight - rect.bottom - 8, above = rect.top - 8;
+      var useBelow = below >= 240 || below >= above;
+      var height = Math.min(420, Math.max(120, useBelow ? below : above));
+      backdrop.style.width = width + 'px';
+      backdrop.style.left = Math.max(8, Math.min(rect.left, innerWidth - width - 8)) + 'px';
+      backdrop.style.setProperty('--rm-dropdown-height', height + 'px');
+      if (useBelow) backdrop.style.top = (rect.bottom + 4) + 'px';
+      else backdrop.style.bottom = (innerHeight - rect.top + 4) + 'px';
+    } else backdrop.showModal();
     return { backdrop: backdrop, panel: panel, body: body };
   }
 
@@ -222,7 +266,12 @@
     var item = kind === 'equipment' && Number(value) % 10000 === 0 ? null : adapter.readItemDetails(kind, value, targetSlot);
     if (!item) return row;
     var details = element('details', 'remaked-item-preview');
-    var summary = translatedElement('summary', '', 'search.details', 'Details');
+    var summary = element('summary');
+    if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(summary, 'aria-label', 'search.details');
+    else summary.setAttribute('aria-label', 'Details');
+    var infoIcon = element('span', 'remaked-item-info-icon', 'i');
+    infoIcon.setAttribute('aria-hidden', 'true');
+    summary.appendChild(infoIcon);
     details.appendChild(summary);
     var description = element('div', 'remaked-item-description');
     description.dataset.remakedItemDescription = '';
@@ -254,10 +303,13 @@
     details.appendChild(description); row.appendChild(details);
     var pinned = false;
     var hoverTimer = null;
+    var focusFrame = null;
     function cancelHover() { window.clearTimeout(hoverTimer); hoverTimer = null; }
+    function cancelFocusPreview() { window.cancelAnimationFrame(focusFrame); focusFrame = null; }
     var floating = window.matchMedia('(min-width: 701px) and (hover: hover)').matches && typeof description.showPopover === 'function';
-    if (active) active.cancelPreviews.push(function (keepInline) {
+    if (active) active.cancelPreviews.push(function (keepInline, keepKeyboardRequest) {
       cancelHover();
+      if (!keepKeyboardRequest) cancelFocusPreview();
       // A deliberately expanded phone card is document content, not a hover
       // overlay. Keep it while reading/scrolling or tapping its summary closed.
       if (keepInline && !floating && pinned) return;
@@ -287,7 +339,20 @@
       }, 450);
     });
     button.addEventListener('pointerdown', cancelHover);
-    button.addEventListener('focus', function () { if (keyboardInput && button.matches(':focus-visible')) details.open = true; });
+    button.addEventListener('focus', function () {
+      if (!keyboardInput || !button.matches(':focus-visible')) return;
+      cancelFocusPreview();
+      // Focus scrolls an off-screen option before rendering. Open after that
+      // scroll has settled; wheel/touch/close still cancel this request. This is
+      // a render-frame handoff, not the pointer's 450ms dwell delay.
+      focusFrame = window.requestAnimationFrame(function () {
+        focusFrame = window.requestAnimationFrame(function () {
+          focusFrame = null;
+          if (row.isConnected && keyboardInput && document.activeElement === button) details.open = true;
+        });
+      });
+    });
+    button.addEventListener('blur', cancelFocusPreview);
     row.addEventListener('mouseleave', function () {
       cancelHover();
       window.setTimeout(function () {
@@ -300,7 +365,7 @@
     row.addEventListener('focusout', function (event) { if (!pinned && !row.contains(event.relatedTarget)) details.open = false; });
     row.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && details.open) {
-        event.preventDefault(); event.stopPropagation(); cancelHover(); details.open = false; pinned = false;
+        event.preventDefault(); event.stopPropagation(); cancelHover(); cancelFocusPreview(); details.open = false; pinned = false;
       }
     });
     return row;
@@ -314,7 +379,7 @@
     if (!select || !match || select.style.display === 'none') return null;
     var slot = Number(match[1]), fieldIndex = Number(match[2]);
     var kind = fieldIndex === 0 ? 'equipment' : 'soul';
-    var shell = createShell(kind, kind === 'equipment' ? 'search.equipment.title' : 'search.soul.title', 'Equipment', trigger);
+    var shell = createShell(kind, kind === 'equipment' ? 'search.equipment.title' : 'search.soul.title', 'Equipment', trigger, true);
     shell.panel.dataset.remakedPickerPanel = selectId;
     shell.panel.querySelector('h2').removeAttribute('data-remaked-i18n');
     shell.panel.querySelector('h2').textContent = adapter.listEquipmentTargets().find(function (target) { return target.slotIndex === slot; }).label + (fieldIndex ? ' · Soul ' + (fieldIndex - 3) : '');
@@ -362,7 +427,13 @@
     active.render = render;
     query.addEventListener('input', render);
     render();
-    query.focus();
+    query.focus({ preventScroll: true });
+    query.addEventListener('keydown', function (event) {
+      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+      var buttons = results.querySelectorAll('[data-remaked-search-result]');
+      var target = event.key === 'ArrowUp' ? buttons[buttons.length - 1] : results.querySelector('[data-selected="true"]') || buttons[0];
+      if (target) { event.preventDefault(); target.focus(); }
+    });
     return shell.panel;
   }
 

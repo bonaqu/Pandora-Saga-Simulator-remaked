@@ -1,12 +1,16 @@
-# Equipment interaction follow-up — UI 2026.09.12
+# Equipment interaction follow-up — UI 2026.09.12–13
 
-Status: implementation and verification in progress; not production accepted.
+UI12: published and artifact/live verified (PR #17; feature CI `36658390600`,
+Pages `36658979809`). UI13: compact anchored dropdowns, quieter information
+actions and off-screen keyboard regression correction. Its final
+CI/artifact/live/installed-PWA evidence is recorded in annotated `v2026.09.13`
+only after those gates pass; without that tag, final acceptance remains pending.
 
 Local evidence: 119 Chromium contract tests and 57 Python tests passed, with
 strict serialization/rollback assertions intact. Eighteen three-engine smoke
 checks passed; twenty-one visual-capture checks plus corrected Equipment mobile
-geometry captures were inspected. Final feature CI and production acceptance
-remain required. The unchanged workbook still has 2,837 rows (139 Russian UI
+geometry captures were inspected. UI12 feature CI and production acceptance
+also passed. The unchanged workbook still has 2,837 rows (139 Russian UI
 strings, no unapproved Russian game names); all 55 levels/28 classes remain.
 
 User feedback supersedes the earlier assumption that Search cards fulfilled the
@@ -27,11 +31,26 @@ not a new socket editor. Existing Soul insertion and upgrades must keep working.
   restores numeric state but ALL does not rebuild the equipment-effect cache.
   Modern now calls the original Equip handler before recalculation. Museum
   source is untouched; the strict build-byte invariant remains tested.
+- UI12 keyboard focus opened cards before browser automatic scrolling finished;
+  the list's scroll cancellation then closed them. UI13 defers keyboard review
+  through two rendering frames and preserves that pending request across scroll
+  events. Manual wheel/touch, blur, close and rerender still cancel it. A strict
+  off-screen regression failed before the fix and passed afterward.
 
 ## Implementation boundaries
 
-- Progressively enhance item/Soul selectors with native buttons opening a native
-  modal dialog. Lists contain selection buttons and separate native disclosures,
+Latest user feedback supersedes UI12's Equipment modal design: UI13 uses an
+anchored native auto-popover with named nonmodal dialog semantics (filter and
+native selection/disclosure actions, not a fake listbox). It flips above/below
+the field, clamps to the viewport and does not dim or make the calculator inert.
+Outside click, Escape, anchor movement and focus leaving dismiss it. A second
+trigger click toggles closed. Search remains a separate modal discovery tool.
+Repeated Characteristics text/triangles become a 44px named info action: hidden
+visually until row hover/focus on pointer desktops, always available on touch.
+Keyboard review and explicit read-only touch cards remain intact.
+
+- Progressively enhance item/Soul selectors with native buttons opening an
+  anchored dropdown (UI12 used a modal). Lists contain selection buttons and separate native disclosures,
   not ARIA listboxes with illegally nested interactive children.
 - Keep original selects, numeric options and handlers. Use the adapter for every
   selection; re-project labels/options after load, language/race/class redraw.
@@ -40,7 +59,8 @@ not a new socket editor. Existing Soul insertion and upgrades must keep working.
   gem and inserted Soul names. Source descriptions are not calculated deltas.
 - Delay pointer hover 450 ms; cancel pending work on leave, wheel, scroll, touch,
   close and rerender. No animation. Explicit disclosure and keyboard focus are
-  immediate; pointer focus is not. Scroll requires fresh pointer intent.
+  available without hover dwell; keyboard review waits for automatic scrolling
+  to settle. Pointer focus is not review. Scroll requires fresh pointer intent.
 - Explicit inline touch disclosures remain expanded while reading/scrolling,
   and a second tap closes them; only hover overlays disappear on list scrolling.
 - Desktop/mobile Equipment rows grow to their controls. Native fallback remains

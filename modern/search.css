@@ -337,13 +337,21 @@
 }
 .remaked-search-row { position: relative; min-width: 0; }
 .remaked-search-row .remaked-search-result { width: 100%; min-height: 2.75rem; }
+.remaked-search-row .remaked-search-result:not(:only-child) { width: calc(100% - 48px); }
 .remaked-item-preview { font: .8125rem/1.5 var(--rm-font); color: var(--rm-text); }
 .remaked-item-preview summary {
-  box-sizing: border-box; min-height: 2.75rem;
-  padding: .5rem .75rem;
-  border: 1px solid var(--rm-border); border-top: 0;
-  border-radius: 0 0 .5rem .5rem;
-  background: #f3f7ec; cursor: pointer;
+  position: absolute; top: 0; right: 0; width: 44px;
+  box-sizing: border-box; min-height: 44px;
+  padding: 10px; list-style: none; text-align: center;
+  border: 0; border-radius: 6px;
+  background: transparent; cursor: pointer;
+}
+.remaked-item-preview summary::-webkit-details-marker { display: none; }
+.remaked-item-info-icon { display: inline-grid; place-items: center; width: 18px; height: 18px; border: 1px solid currentColor; border-radius: 50%; font: 700 13px/1 var(--rm-font); }
+.remaked-item-preview summary:hover { background: #e4f1d6; }
+@media (min-width: 701px) and (hover: hover) {
+  .remaked-item-preview summary { opacity: 0; }
+  .remaked-search-row:hover summary, .remaked-search-row:focus-within summary { opacity: 1; }
 }
 .remaked-item-description {
   padding: .75rem;
@@ -388,15 +396,37 @@
 .remaked-item-preview summary:focus-visible { outline: 2px solid #35591e; outline-offset: 2px; }
 .remaked-picker-results { grid-template-columns: 1fr; margin-top: 12px; overscroll-behavior: contain; }
 .remaked-picker-results .remaked-search-row { position: relative; }
-.remaked-picker-results .remaked-search-result { width: calc(100% - 114px); position: relative; padding-left: 28px; }
+.remaked-picker-results .remaked-search-result { width: calc(100% - 48px); position: relative; padding-left: 28px; }
 .remaked-picker-results .remaked-search-result:only-child { width: 100%; }
 .remaked-picker-results .remaked-search-result-name { flex: 1; }
 .remaked-picker-results .remaked-item-preview { display: block; }
-.remaked-picker-results summary { position: absolute; top: 0; right: 0; width: 110px; border: 1px solid var(--rm-border); border-radius: 8px; font-size: 12px; }
+.remaked-picker-results summary { position: absolute; top: 0; right: 0; width: 44px; }
 .remaked-picker-results .remaked-item-description:not([popover]) { margin-top: 4px; }
 .remaked-picker-results .remaked-search-result[data-selected="true"] { border-color: #598832; background: #e4f1d6; }
 .remaked-picker-results .remaked-search-result[data-selected="true"]::before { content: '✓'; position: absolute; left: 10px; }
 @media (max-width: 700px) { .remaked-equipment-picker { min-height: 44px; } }
+.remaked-equipment-dropdown {
+  position: fixed; inset: auto; margin: 0; padding: 0; border: 0;
+  max-width: calc(100vw - 16px); background: transparent; overflow: visible;
+  font-family: var(--rm-font); color: var(--rm-text);
+}
+.remaked-equipment-dropdown .remaked-search-panel {
+  width: 100%; max-height: var(--rm-dropdown-height); border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(34,49,25,.22);
+}
+.remaked-equipment-dropdown .remaked-search-header { padding: 4px 8px; align-items: center; }
+.remaked-equipment-dropdown .remaked-search-eyebrow { display: none; }
+.remaked-equipment-dropdown h2 { font-size: 13px; }
+.remaked-equipment-dropdown .remaked-search-close { min-width: 44px; min-height: 44px; padding: 0; border: 0; background: transparent; font-size: 24px; }
+.remaked-equipment-dropdown .remaked-search-body { padding: 4px; min-height: 0; }
+.remaked-equipment-dropdown .remaked-search-label { display: none; }
+.remaked-equipment-dropdown .remaked-search-input { min-height: 36px; }
+.remaked-equipment-dropdown .remaked-picker-results { margin-top: 4px; gap: 0; max-height: max(40px, calc(var(--rm-dropdown-height) - 108px)); min-height: 40px; }
+.remaked-equipment-dropdown .remaked-search-result { min-height: 44px; border: 0; border-radius: 4px; background: transparent; }
+.remaked-equipment-dropdown .remaked-search-result:hover, .remaked-equipment-dropdown .remaked-search-result:focus-visible { background: #edf6e3; }
+.remaked-equipment-dropdown .remaked-search-result:focus-visible { outline: 2px solid #35591e; outline-offset: -2px; }
+.remaked-equipment-dropdown .remaked-search-result[data-selected="true"] { background: #e4f1d6; }
+@media (max-width: 700px) { .remaked-equipment-dropdown .remaked-search-input { font-size: 16px; min-height: 44px; } }
 
 /* Legacy equipment rows have fixed 16/18px heights. Let the enhanced controls
    define their own height rather than overlap the next slot or intercept clicks. */
