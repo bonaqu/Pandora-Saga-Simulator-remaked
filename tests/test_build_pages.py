@@ -50,6 +50,7 @@ class BuildPagesTests(unittest.TestCase):
             (modern / "i18n.js").write_text("// i18n", encoding="utf-8")
             (modern / "game-term-display.js").write_text("// game terms", encoding="utf-8")
             (modern / "calculator-labels.js").write_text("// label sources", encoding="utf-8")
+            (modern / "calculator-controls.js").write_text("// native controls", encoding="utf-8")
             (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
             (modern / "build-store.js").write_text("// build store", encoding="utf-8")
             (modern / "search.js").write_text("// search", encoding="utf-8")
@@ -155,6 +156,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/game-terms.js",
                 "modern/i18n.js",
                 "modern/adapter.js",
+                "modern/calculator-controls.js",
                 "modern/build-store.js",
                 "modern/search.js",
                 "modern/app-shell.js",
@@ -303,6 +305,13 @@ class BuildPagesTests(unittest.TestCase):
             root = self.make_root(pathlib.Path(td))
             (root / "modern" / "adapter.js").unlink()
             with self.assertRaisesRegex(FileNotFoundError, "modern/adapter.js"):
+                build_pages(root, root / "_site")
+
+    def test_missing_calculator_controls_fails_clearly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            (root / "modern" / "calculator-controls.js").unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "modern/calculator-controls.js"):
                 build_pages(root, root / "_site")
 
     def test_missing_build_store_fails_clearly(self):

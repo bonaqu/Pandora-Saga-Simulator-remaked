@@ -3,6 +3,6 @@
 
   window.PandoraRemakedVersion = Object.freeze({
     legacyEngine: '2.00',
-    ui: '2026.09.14'
+    ui: '2026.09.15'
   });
 })();

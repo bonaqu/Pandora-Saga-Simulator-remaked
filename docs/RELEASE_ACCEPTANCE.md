@@ -1,4 +1,19 @@
-# Release acceptance — Equipment follow-up UI 2026.09.14
+# Release acceptance — Calculator readability UI 2026.09.15
+
+UI15's scope is recorded in
+`superpowers/plans/2026-09-30-calculator-readability.md`. It corrects calculator
+descendant fonts, adds source-delegating native character controls and reflows
+primary sections. Publication is accepted only after feature CI, Pages exact
+artifact/live verification and isolated installed-PWA online/offline checks.
+Annotated **`v2026.09.15`** records the successful runs and fingerprints when
+those gates pass; absence of that tag means acceptance is still pending.
+
+The translation workbook and all Legacy files must remain identical to UI14.
+Physical iOS/Android devices, screen-reader acceptance and complete WoB balance
+parity are not asserted. Dense skill-allocation arrows, horse/effect controls
+and some secondary source panels remain a separate usability follow-up.
+
+## Historical Equipment follow-up — UI14
 
 UI12 shipped in PR #17, feature HEAD `12fffd4dd3a28877d66ac0eab5c631415149d911`,
 feature CI `36658390600`, squash `edfb202d58b9f8e0e1b7866e15c73d4aaf443559`

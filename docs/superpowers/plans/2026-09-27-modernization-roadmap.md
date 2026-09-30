@@ -155,6 +155,15 @@ artifact/live acceptance passed, but real installed-app review exposed late
 pointer-focus scroll cancellation of an explicitly opened card; UI14 corrects
 it before final Equipment follow-up acceptance.
 
+**Calculator readability follow-up:** UI15 fixes inherited descendant fonts,
+adds native level/attribute/reset/options controls using retained callbacks and
+reflows primary sections for phones. Scope/acceptance is in
+`2026-09-30-calculator-readability.md`; the annotated `v2026.09.15` records final
+feature-CI/Pages artifact/live/installed-PWA acceptance only after those gates
+pass. All 55 levels/28 classes and the translation workbook remain intact.
+Dense skill allocation, horse/effect controls and secondary source panels are
+still usability follow-ups, not proof of universal mobile accessibility.
+
 ### Later project — Cloud save
 
 Not part of this roadmap's implementation plans. Requires a new design/spec after Phases 0–7 are stable.
