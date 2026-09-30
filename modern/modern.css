@@ -555,7 +555,7 @@ body.remaked-modern {
 }
 
 .remaked-calculator-action[aria-pressed="true"] {
-  background: #66863e;
+  background: var(--rm-accent-strong);
   color: white;
 }
 

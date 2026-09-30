@@ -1,5 +1,26 @@
 import { test, expect } from '@playwright/test';
 
+test('native option text retains measured contrast in both toggle states', async ({ page }) => {
+  await page.goto('/');
+  const action = page.locator('[data-remaked-calculator-action="Text_3"]');
+  for (const state of ['false', 'true']) {
+    await expect(action).toHaveAttribute('aria-pressed', state);
+    const ratio = await action.evaluate(node => {
+      const css = getComputedStyle(node);
+      function luminance(rgb) {
+        const channels = rgb.match(/[\d.]+/g).slice(0, 3).map(Number).map(value => {
+          const s = value / 255; return s <= .04045 ? s / 12.92 : ((s + .055) / 1.055) ** 2.4;
+        });
+        return channels[0] * .2126 + channels[1] * .7152 + channels[2] * .0722;
+      }
+      const fg = luminance(css.color), bg = luminance(css.backgroundColor);
+      return (Math.max(fg, bg) + .05) / (Math.min(fg, bg) + .05);
+    });
+    expect(ratio).toBeGreaterThanOrEqual(4.5);
+    await action.click();
+  }
+});
+
 test('Modern calculator descendants use the UI font, without changing museum typography', async ({ page }) => {
   await page.goto('/');
   const font = await page.locator('#StatusSTR_0').evaluate(node => getComputedStyle(node).fontFamily);

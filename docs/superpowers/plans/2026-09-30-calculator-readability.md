@@ -25,7 +25,7 @@ whole site. Builds on shipped UI14, not an unfinished roadmap phase.
 - [x] Locale/reset/load and repeat initialization retain nodes and state.
 - [x] 320/390/768/1440px and long source labels have no clipped primary values
       or overlapping new targets; desktop/mobile visual inspection passes.
-- [x] Full local regression: 137 Chromium, 58 Python, 24 three-engine smoke,
+- [x] Full local regression: 138 Chromium, 58 Python, 24 three-engine smoke,
       24 visual captures, translation/projection checks and isolated installed
       online/offline PWA checks pass. Actual screenshot inspection is required,
       not just successful capture output.
