@@ -66,6 +66,24 @@ test('additional shield/riding bonus responds to native Equip and Horse callback
   expect(result.selected).toBe(true); expect(result.before).toBe(0); expect(result.unmounted).toBe(0); expect(result.mounted).toBe(5); expect(result.stopped).toBe(0);
 });
 
+test('fresh recipient restores a learned riding-gated passive with the pinned catalog and effect context', async ({ page, browser }) => {
+  const data = publication('skill.0.1', edit => { edit.effects = [{ stat: 1, value: 5, unit: 'flat' }]; edit.bonusRequirements.ridingRequired = true; });
+  await page.goto('/');
+  const saved = await page.evaluate(data => {
+    const api = window.PandoraRemaked; window.StatusMove('Lev', 54); window.CalcSet('Lev'); api.catalog.applySnapshot(data);
+    document.getElementById('SwitchUse_4').click(); return { payload: api.adapter.serialize(), summary: api.adapter.readCalculatedSummary(), strength: window.Status.STR[2] };
+  }, data);
+  expect(saved.strength).toBe(5); expect(saved.payload).toMatch(/^PS3:1:C1:/);
+  const context = await browser.newContext();
+  await context.route('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog**', route => route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(data) }));
+  const recipient = await context.newPage(); await recipient.goto('http://127.0.0.1:8000/#build=' + encodeURIComponent(saved.payload));
+  await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
+  expect(await recipient.evaluate(() => window.Status.STR[2])).toBe(5);
+  expect(await recipient.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(saved.payload);
+  expect(await recipient.evaluate(() => window.PandoraRemaked.adapter.readCalculatedSummary())).toEqual(saved.summary);
+  await context.close();
+});
+
 test('all 211 source skill projections preserve native summary, prerequisites and type; source revision restores exact tables', async ({ page }) => {
   await page.goto('/');
   const records = skills.records.map(source => publication(source.id, () => {}).records[0]);

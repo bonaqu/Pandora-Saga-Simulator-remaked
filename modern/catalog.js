@@ -210,12 +210,77 @@
     return record[field]?.[language] || record[field]?.en || '';
   }
   function sourceSnapshot() { return { ok: true, schemaVersion: 1, sourceFingerprint: SOURCE_FINGERPRINT, revision: 0, records: [] }; }
+  // Modern build context is data only. Store()/Expand() and the museum CSV stay
+  // unchanged. Presentation flags, credentials and arbitrary Flag keys are never
+  // included. These are the actual source controls that affect calculations.
+  var buffKeys = [], exclusiveBuffs = Object.create(null);
+  window.Set.Buff.forEach(function (row) {
+    for (var column = 0; column < 9; column += 3) {
+      if (!row[column] && !row[column + 1]) continue;
+      var key = row[column] + '_' + row[column + 1];
+      if (buffKeys.indexOf(key) === -1) buffKeys.push(key);
+      var group = row[column + 2];
+      if (group >= 2 && group <= 10) exclusiveBuffs[key] = group <= 3 ? 1 : group <= 5 ? 2 : 3;
+    }
+  });
+  var defaultContext = { riding: 0, buffs: [], honor: 0,
+    clan: window.Name.Clan.map(function () { return 0; }),
+    caster: [0, 1, 2].map(function (index) { return Number(document.getElementById('InBuff_' + index).value); }) };
+  function validateContext(context) {
+    check(context && typeof context === 'object' && !Array.isArray(context) && Object.keys(context).length === 5 &&
+      Object.keys(context).every(function (key) { return ['riding', 'buffs', 'honor', 'clan', 'caster'].indexOf(key) !== -1; }), 'Invalid build context');
+    check(context.riding === 0 || context.riding === 1, 'Invalid riding state');
+    check(Number.isInteger(context.honor) && context.honor >= 0 && context.honor <= window.Skill.Honor.length, 'Invalid Honor effect');
+    check(Array.isArray(context.buffs) && context.buffs.length <= buffKeys.length, 'Invalid effect selection');
+    var seen = Object.create(null), groups = Object.create(null);
+    context.buffs.forEach(function (key) {
+      check(typeof key === 'string' && buffKeys.indexOf(key) !== -1 && !seen[key], 'Unsupported or duplicate effect'); seen[key] = true;
+      var group = exclusiveBuffs[key];
+      check(!group || !groups[group], 'Mutually exclusive effects'); if (group) groups[group] = true;
+    });
+    check(Array.isArray(context.clan) && context.clan.length === window.Name.Clan.length && context.clan.every(function (value, index) {
+      return Number.isInteger(value) && value >= 0 && value <= window.Name.Clan[index][0];
+    }), 'Invalid clan effect');
+    check(Array.isArray(context.caster) && context.caster.length === 3 && context.caster.every(function (value) {
+      return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1000 && Math.abs(value * 100 - Math.round(value * 100)) < 0.000001;
+    }), 'Invalid caster attributes');
+    return { riding: context.riding, buffs: buffKeys.filter(function (key) { return seen[key]; }), honor: context.honor, clan: context.clan.slice(), caster: context.caster.slice() };
+  }
+  function captureContext() {
+    return validateContext({ riding: Number(window.Flag[7]), buffs: buffKeys.filter(function (key) { return Boolean(window.Flag[key]); }),
+      honor: Number(window.Flag.Honor || 0), clan: window.Name.Clan.map(function (_, index) { return document.getElementById('SelBuffClan_' + index).selectedIndex; }),
+      caster: [0, 1, 2].map(function (index) {
+        var value = document.getElementById('InBuff_' + index).value;
+        return value.trim() ? Number(value) : NaN;
+      }) });
+  }
+  function applyContext(context) {
+    context = validateContext(context || defaultContext);
+    window.Flag[7] = context.riding; window.Flag.Honor = context.honor;
+    document.getElementById('SwitchUse_4').className = context.riding ? 'btn2_on' : 'btn2_off';
+    buffKeys.forEach(function (key) {
+      window.Flag[key] = context.buffs.indexOf(key) !== -1 ? 1 : 0;
+      document.getElementById('Buff_' + key).className = window.Flag[key] ? 'btn2_on' : 'btn2_off';
+    });
+    for (var index = 0; index < window.Skill.Honor.length; index++) document.getElementById('BuffHonor_' + index).className = context.honor === index + 1 ? 'btn2_on' : 'btn2_off';
+    context.clan.forEach(function (value, index) { document.getElementById('SelBuffClan_' + index).selectedIndex = value; });
+    context.caster.forEach(function (value, index) { document.getElementById('InBuff_' + index).value = String(value); });
+  }
+  function packPayload(payload) {
+    var context = captureContext();
+    if (JSON.stringify(context) !== JSON.stringify(defaultContext)) {
+      var encoded = btoa(JSON.stringify(context)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      return 'PS3:' + revision + ':C1:' + encoded + ':' + payload;
+    }
+    return revision ? 'PS3:' + revision + ':' + payload : payload;
+  }
   function unpackPayload(payload) {
     check(typeof payload === 'string' && payload.length > 0 && payload.length <= 20000, 'Invalid build code');
-    if (payload.indexOf('PS3:') !== 0) return { revision: 0, payload };
-    var match = payload.match(/^PS3:(\d{1,9}):(.+)$/);
-    check(match && Number(match[1]) > 0 && match[2].indexOf(',') !== -1, 'Invalid versioned build code');
-    return { revision: Number(match[1]), payload: match[2] };
+    if (payload.indexOf('PS3:') !== 0) return { revision: 0, payload, context: null };
+    var match = payload.match(/^PS3:(\d{1,9}):(?:C1:([A-Za-z0-9_-]{1,2048}):)?([^:]+)$/);
+    check(match && (Number(match[1]) > 0 || match[2]) && match[3].indexOf(',') !== -1, 'Invalid versioned build code');
+    var context = match[2] ? validateContext(JSON.parse(atob(match[2].replace(/-/g, '+').replace(/_/g, '/')))) : null;
+    return { revision: Number(match[1]), payload: match[3], context };
   }
   function database() {
     if (databasePromise) return databasePromise;
@@ -294,7 +359,7 @@
     },
     item: function (kind, value) { var id = Number(value); return recordsByTerm[kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id] || null; },
     itemText: function (kind, value, field) { var id = Number(value); return textFor(kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id, field); },
-    packPayload: function (payload) { return revision ? 'PS3:' + revision + ':' + payload : payload; },
+    packPayload, captureContext, applyContext,
     unpackPayload, preparePayload, useRevision, fetchSnapshot, bootstrap,
     validateCurrentState: function () { selectedStateExists(window.EquipData, window.SoulData); },
     needsRecovery: function () { return recovery; }, clearRecovery: function () { recovery = false; }
@@ -355,6 +420,16 @@
       if (setDepth === 1 && passiveRecords.length && arguments[0] !== 'ALL') retainedCalcSet('ALL');
       return result;
     } finally { setDepth--; }
+  };
+  // TextSet rebuilds clan selects and would erase their selected levels during
+  // a source-language change. Restore the data after the original renderer;
+  // preserve all source callbacks and calculate using the retained engine.
+  var retainedTextSet = window.TextSet;
+  window.TextSet = function () {
+    var clan = window.Name.Clan.map(function (_, index) { return document.getElementById('SelBuffClan_' + index).selectedIndex; });
+    var result = retainedTextSet.apply(this, arguments);
+    clan.forEach(function (value, index) { document.getElementById('SelBuffClan_' + index).selectedIndex = value; });
+    window.CalcSet('ALL'); return result;
   };
   namespace.catalog.ready = bootstrap();
 })();

@@ -1,4 +1,17 @@
 import { test, expect } from '@playwright/test';
+
+test('complete effect context restores riding and clan data and survives source language change in every engine', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(() => {
+    const api = window.PandoraRemaked; const source = api.adapter.serialize();
+    document.getElementById('Buff_0_7').click(); document.getElementById('SwitchUse_4').click();
+    document.getElementById('SelBuffClan_10').selectedIndex = 3; window.CalcSet('ALL');
+    const payload = api.adapter.serialize(), summary = api.adapter.readCalculatedSummary(); api.adapter.load(source); api.adapter.load(payload);
+    document.getElementById('Lang_2').click();
+    return { payload, after: api.adapter.serialize(), summary, afterSummary: api.adapter.readCalculatedSummary(), horse: window.Flag[7], clan: document.getElementById('SelBuffClan_10').selectedIndex };
+  });
+  expect(result.payload).toMatch(/^PS3:0:C1:/); expect(result.after).toBe(result.payload); expect(result.afterSummary).toEqual(result.summary); expect(result.horse).toBe(1); expect(result.clan).toBe(3);
+});
 import { compileRecord, draftFromSource, validateDraft } from '../../admin-api/src/catalog-model.mjs';
 import character from '../../data/generated/character.v1.json' with { type: 'json' };
 import equipment from '../../data/generated/equipment.v1.json' with { type: 'json' };

@@ -11,6 +11,13 @@ reversible: revision 0 always means the preserved source catalog.
 
 An unchanged source build retains its original CSV/compressed import format.
 When a published catalog is active, Modern exports `PS3:<revision>:<Legacy CSV>`.
+With non-default calculation context, it exports
+`PS3:<revision>:C1:<base64url JSON>:<Legacy CSV>`, including revision 0. The typed
+context contains riding, source buff selections, Honor, clan levels and three
+caster attributes; no arbitrary flag keys or executable expressions. Source
+mutually exclusive buff groups are validated. Default source builds retain
+their exact CSV/compressed format. Old codes lack context and load with source
+defaults (unmounted, effects off), never with the recipient's current switches.
 The shared URL carries the same versioned payload. A recipient requests that
 exact immutable revision, even if the administrator has since changed an item
 or rolled the catalog back. Comparisons evaluate each build with its own data
@@ -50,7 +57,8 @@ valid equipment during restoration.
   builds restore their class parameters; revision 0 restores all original
   coefficients. No class lineage, skill caps or hardcoded passive is replaced.
   New arbitrary classes are deliberately unavailable until the engine can
-  represent and serialize them correctly. This class increment is not deployed.
+  represent and serialize them correctly. The initial class editor is deployed
+  on Worker, but its public Pages consumer is not released.
 - Classes, active skills, character passives and racial passives require typed
   schemas and engine capability tests, not merely translated descriptions.
 - The local editor now supports all 18 existing racial passive slots. `preserve`
@@ -62,7 +70,7 @@ valid equipment during restoration.
   Empty replacement removes the native calculation effect. Other race/skill
   selections do not inherit the edited bonus; source revision 0 restores it.
   Unsupported combat actions are not created by a description or numeric bonus.
-  This increment is not deployed.
+  The editor is deployed on Worker; its Pages consumer is not released.
 - The local editor covers the 178 active and 33 passive source skills. Active
   text, MP cost and cast/cooldown/duration values update the actual learned-skill
   view, not a new combat simulation. Type and prerequisite code stay immutable.
@@ -72,12 +80,13 @@ valid equipment during restoration.
   `CalcSet` completes recalculation when a level, branch or riding change affects
   a bonus; no learning or damage formula is copied into Modern. Source revision
   0 restores the exact original skill tables. Native hardcoded class passives
-  cannot yet be replaced, and new skill/class slots are not supported.
-- The original CSV does not save riding or active-effect switches. The current
-  `PS3` envelope pins data but does not yet serialize those switches either.
-  A fresh recipient therefore defaults to unmounted/native effect settings.
-  Additional riding-dependent bonuses are verified locally, but full context
-  persistence must be implemented and tested before release.
+  cannot yet be replaced, and new skill/class slots are not supported. These
+  initial editors are deployed on Worker; their Pages consumer is not released.
+- Context C1 restoration is locally verified with a fresh recipient, offline
+  reload, a pinned riding-dependent passive, comparison state/storage restoration,
+  invalid input rejection and all three browser engines. Source language changes
+  preserve clan levels instead of silently resetting them. Pages deployment
+  acceptance is still required.
 - Arbitrary scripts, HTML, SQL or game-effect expressions are not supported.
 - Combat mechanics absent from Legacy cannot be advertised as simulated.
 - Source `equipment.42.32` (Wyss Belt) has malformed effect code `0=1_-7`.
@@ -91,4 +100,7 @@ valid equipment during restoration.
   data published), desktop/mobile rendering and logout revocation. The new
   IDDQD frontend was injected locally on the real Pages origin for this check;
   it is not yet the deployed Pages artifact. Expanded CMS and public release
-  acceptance remain pending.
+  acceptance remain pending. Expanded editors are now deployed on version
+  `c488e6d9-9403-4285-94e0-37b427a72888`: ten real auth/security checks and
+  read-only authenticated reads of 1561 records passed, including the four new
+  editors on desktop/mobile. Public revision remains 0; no test data published.

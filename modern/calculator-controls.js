@@ -68,7 +68,10 @@
           // catchable here; click() reports listener errors to the global page
           // instead of throwing to its caller. No callback/formula is copied.
           await source.onclick.call(source, event);
-          if (entry[0] === 'create' && namespace.catalog?.getRevision()) code.value = namespace.adapter.serialize();
+          if (entry[0] === 'create' && namespace.catalog) {
+            var payload = namespace.adapter.serialize();
+            if (payload.indexOf('PS3:') === 0) code.value = payload;
+          }
           if (entry[0] !== 'load') {
             code.removeAttribute('aria-invalid');
             if (entry[0] === 'create') codeStatus('builds.exported', 'success', 'Current build code exported.');

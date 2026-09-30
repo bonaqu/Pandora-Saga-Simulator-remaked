@@ -196,6 +196,7 @@
         namespace.catalog.useRevision(parsed.revision); payload = parsed.payload;
       }
       window.Expand(payload);
+      if (namespace.catalog) namespace.catalog.applyContext(parsed.context);
       if (namespace.catalog) namespace.catalog.validateCurrentState();
       refreshLoadedState();
       // Build projections read names synchronously; a MutationObserver refresh

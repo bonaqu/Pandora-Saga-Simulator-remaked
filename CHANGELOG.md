@@ -4,12 +4,21 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 
 ## Unreleased — Modern 3.00
 
+- Modern build context C1 transfers riding, enabled effects, Honor, clan and
+  caster attributes to fresh shared recipients and offline reloads. Comparisons
+  restore the active context and storage afterward. Old CSV/compressed codes
+  retain compatibility and load with source defaults. Changing source language
+  no longer clears clan bonuses. These frontend changes are not on Pages yet.
+- The initial expanded CMS is deployed on Cloudflare: 28 class, 18 racial,
+  178 active and 33 passive entries, with authenticated read-only production
+  checks and desktop/mobile visual inspection. Public catalog remains revision 0;
+  no test game data published. This is not the completed Modern 3.00 release.
 - Local active/passive editor covers all 211 retained skills: multilingual
   text, active MP/timing metadata and additive passive bonuses gated by native
   learning and typed weapon/shield/riding requirements. Hidden skill lists and
   partial native callbacks do not leave bonus calculations stale. Prerequisite
-  code and built-in mechanics remain unchanged; arbitrary new skills, native
-  passive replacement and riding/effect-switch build persistence are not done.
+  code and built-in mechanics remain unchanged; arbitrary new skills and native
+  passive replacement are not done. Context C1 persistence is verified locally.
 - Local racial-passive editor supports 18 retained slots with separate
   multilingual text and explicit preserve/add/replace numeric effects. Actual
   retained-engine results, revision restoration and exception-safe temporary

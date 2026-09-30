@@ -141,3 +141,17 @@ were not printed or copied into the repository.
   increment. Native passive replacement/new slots remain unfinished.
   Riding and effect-switch persistence is a known release gate because the
   original CSV and current `PS3` envelope do not serialize these switches.
+- Skill increment `5c30e08` passed GitHub Feature CI and API verify. Expanded
+  CMS deployed on Worker `c488e6d9-9403-4285-94e0-37b427a72888`: ten auth checks
+  and real authenticated reads of 1561 entries passed. All four expanded editors
+  were rendered and visually inspected on desktop/mobile without creating drafts
+  or publishing test data; public revision remains 0. One production probe used
+  the wrong passive-field selector; correcting it to the existing `shieldRequired`
+  field made the check pass. No app assertion or authorization was relaxed.
+- Build context C1 implemented locally after RED tests demonstrated lost riding/
+  effects and clan reset during language switching. Modern-only typed envelope
+  pins those values alongside revision; old CSV/compressed codes load defaults.
+  Six context tests, seven skill tests, related adapter/code checks (39 combined)
+  and 42 three-engine smoke tests passed. Full browser CI passed 159/159 with
+  unchanged assertions and time limits. GitHub CI is the next gate for this
+  increment. The final compact calculator block has not started.
