@@ -279,4 +279,55 @@
   };
 
   namespace.adapter = adapter;
+  // Read-only descriptions, not reimplemented calculation rules. Numeric fields
+  // retain canonical JP data exactly as the Legacy engine does.
+  adapter.readItemDetails = function (kind, value, targetSlot) {
+    var id = Number(value), language = Number(window.Flag[0]), canonical, record;
+    if (!Number.isInteger(id) || id <= 0) return null;
+    if (kind === 'equipment') {
+      var category = Math.floor(id / 10000), index = id % 10000;
+      canonical = window.EquipData[0]?.[category]?.[index];
+      record = window.EquipData[language]?.[category]?.[index];
+    } else if (kind === 'soul') {
+      canonical = window.SoulData[0]?.[id];
+      record = window.SoulData[language]?.[id];
+    } else return null;
+    if (!canonical || !record) return null;
+    function text(html) {
+      var node = document.createElement('div');
+      node.innerHTML = String(html == null ? '' : html);
+      node.querySelectorAll('br').forEach(function (br) { br.replaceWith('\n'); });
+      return node.textContent.trim();
+    }
+    var columns = kind === 'equipment' ? [1, 2, 3] : [1, 2, 3, 4];
+    var current = kind === 'equipment' ? window.Status.Equip[Number(targetSlot)] : null;
+    var equipped = Boolean(current && Number(current[0]) === id);
+    var souls = [];
+    if (kind === 'equipment') {
+      for (var socket = 0; socket < canonical[5]; socket++) {
+        var soulId = equipped ? Number(current[socket + 4]) : 0;
+        souls.push({ id: soulId, name: soulId ? text(window.SoulData[language]?.[soulId]?.[0]) : '' });
+      }
+    }
+    var baseStats = [];
+    // Presentation of literal base data only; conditional/percentage formulas
+    // are deliberately not evaluated or reconstructed here.
+    String(canonical[7] || '').split('_').forEach(function (code) {
+      var match = code.match(/^(18)=W(\d+(?:\.\d+)?)$/) || code.match(/^(49)=(\d+(?:\.\d+)?)$/);
+      if (match) baseStats.push({ label: text(window.Name.Option[Number(match[1])][3 + language]), value: match[2] });
+    });
+    var classes = [];
+    if (kind === 'equipment') window.Name.Job.forEach(function (job, jobIndex) {
+      // Flags follow the preserved ListCreate('Equip') layout (offset 16).
+      if (canonical[16 + jobIndex]) classes.push(text(job[2 + language]));
+    });
+    return { name: text(record[0]), level: kind === 'equipment' ? canonical[4] : null,
+      sockets: kind === 'equipment' ? canonical[5] : null,
+      souls: souls, baseStats: baseStats, classes: classes,
+      category: kind === 'equipment' ? text(window.EquipData[language][category][0][0]).replace(/^\+?-+\s*/, '') : '',
+      equipped: equipped,
+      equippedName: equipped ? text(window.EquipOption.apply(null, current)) : '',
+      gem: equipped && Number(current[3]) > 0 ? text(window.Name.Gem[0][current[1]][language]) + ' · ' + text(window.Name.Gem[1][current[2]][language]) : '',
+      descriptions: columns.map(function (column) { return text(record[column]); }).filter(Boolean) };
+  };
 })();

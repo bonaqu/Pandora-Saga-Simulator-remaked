@@ -47,17 +47,15 @@
 
   function syncLanguageButtons(header) {
     var current = Number(getFlag(0, 1));
-    header.querySelectorAll('[data-remaked-language]').forEach(function (button) {
-      var active = Number(button.dataset.remakedLanguage) === current;
+    var locale = i18n && i18n.getLocale() === 'ru' ? 'RU' : ['JP', 'EN', 'TW'][current];
+    header.querySelectorAll('[data-remaked-language-panel] button').forEach(function (button) {
+      var active = button.textContent === locale;
       button.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
   }
 
   function syncUiLocaleButtons(header) {
-    var current = i18n && typeof i18n.getLocale === 'function' ? i18n.getLocale() : 'en';
-    header.querySelectorAll('[data-remaked-ui-locale]').forEach(function (button) {
-      button.setAttribute('aria-pressed', button.dataset.remakedUiLocale === current ? 'true' : 'false');
-    });
+    syncLanguageButtons(header);
   }
 
   function syncDensityButtons(header) {
@@ -80,39 +78,26 @@
 
   function createLanguageControl(header) {
     var language = document.createElement('div');
-    language.className = 'remaked-segment';
-    localizeAttribute(language, 'aria-label', 'controls.gameDataLanguage', 'Game data language');
-    ['JP', 'EN', 'TW'].forEach(function (label, index) {
+    language.className = 'remaked-segment remaked-ui-locale';
+    language.dataset.remakedLanguagePanel = '';
+    language.setAttribute('role', 'group');
+    localizeAttribute(language, 'aria-label', 'controls.interfaceLanguage', 'Interface language');
+    ['EN', 'RU', 'JP', 'TW'].forEach(function (label) {
+      var index = label === 'JP' ? 0 : label === 'TW' ? 2 : 1;
       var button = makeButton(label, 'remaked-segment-button');
-      button.dataset.remakedLanguage = String(index);
+      if (label !== 'RU') button.dataset.remakedLanguage = String(index);
+      if (label === 'RU' || label === 'EN') button.dataset.remakedUiLocale = label.toLowerCase();
       button.setAttribute('aria-pressed', 'false');
       button.addEventListener('click', function () {
         var legacyControl = document.getElementById('Lang_' + index);
         if (legacyControl) legacyControl.click();
+        if (i18n) i18n.setLocale(label === 'RU' ? 'ru' : 'en');
         syncLanguageButtons(header);
         syncNavButtons(header);
       });
       language.appendChild(button);
     });
     return language;
-  }
-
-  function createUiLocaleControl(header) {
-    var control = document.createElement('div');
-    control.className = 'remaked-segment remaked-ui-locale';
-    localizeAttribute(control, 'aria-label', 'controls.interfaceLanguage', 'Interface language');
-    ['EN', 'RU'].forEach(function (label) {
-      var locale = label.toLowerCase();
-      var button = makeButton(label, 'remaked-segment-button');
-      button.dataset.remakedUiLocale = locale;
-      button.setAttribute('aria-pressed', 'false');
-      button.addEventListener('click', function () {
-        if (i18n && typeof i18n.setLocale === 'function') i18n.setLocale(locale);
-        syncUiLocaleButtons(header);
-      });
-      control.appendChild(button);
-    });
-    return control;
   }
 
   function createHero() {
@@ -194,7 +179,6 @@
 
     var controls = document.createElement('div');
     controls.className = 'remaked-utilities remaked-utilities-controls';
-    controls.appendChild(createUiLocaleControl(header));
     controls.appendChild(createLanguageControl(header));
     var pwaActions = document.createElement('div');
     pwaActions.className = 'remaked-pwa-actions';
@@ -385,7 +369,7 @@
     if (event.key !== 'Tab' || !event.target.closest) return;
     var dialog = event.target.closest('dialog[open]');
     if (!dialog) return;
-    var stops = Array.from(dialog.querySelectorAll('button, input, select, textarea, a[href], [tabindex]')).filter(function (node) {
+    var stops = Array.from(dialog.querySelectorAll('button, summary, input, select, textarea, a[href], [tabindex]')).filter(function (node) {
       return node.tabIndex >= 0 && !node.disabled && !node.closest('[inert]') && node.getClientRects().length;
     });
     if (!stops.length) return;

@@ -1,7 +1,7 @@
 # Pandora Saga Simulator Remaked — Modernization Design Spec
 
 **Date:** 2026-09-27  
-**Status:** Design approved in chat; written spec awaiting final review  
+**Status:** Approved by the user; historical requirements. Current implementation and acceptance evidence are tracked in the roadmap and release acceptance.
 **Repository:** `bonaqu/Pandora-Saga-Simulator-remaked`  
 **Target branch:** `bonaqu_projects`
 
@@ -10,6 +10,8 @@
 ## 1. Product goal
 
 Turn the recovered 2011 Pandora Saga Simulator into a polished public game tool that ordinary Pandora Saga players can open, understand, and use immediately, while preserving the original simulator as a historical reference and keeping the legacy calculation behavior intact.
+
+**User clarification, 2026-09-30:** Modern Mode targets the current Pandora Saga: Weapons of Balance server at https://pandorasaga-os.com/. Its skill wiki is an explicitly supplied reference. This does not authorize silently replacing Legacy 2.00 data/formulas: server compatibility must be mapped, documented and independently verified while `/legacy/` remains the museum baseline. The original Phases 0–7 below describe the completed modernization foundation, not a proof of current-server balance parity.
 
 The project has two equally important goals:
 

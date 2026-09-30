@@ -178,7 +178,9 @@
   border-collapse: collapse;
   table-layout: fixed;
   color: #394733;
-  font-size: 10px;
+  font: 13px/1.4 var(--rm-font);
+  letter-spacing: normal;
+  font-variant-numeric: tabular-nums;
 }
 
 .remaked-compare-table[hidden] {
@@ -199,8 +201,8 @@
   z-index: 1;
   background: #edf4e4;
   color: #536749;
-  font-size: 9px;
-  letter-spacing: .03em;
+  font-size: 12px;
+  letter-spacing: normal;
   text-transform: uppercase;
 }
 

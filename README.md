@@ -23,6 +23,8 @@
 
 The project is made for players who want to experiment with classes, attributes, skills, equipment and other character settings without depending on the long-dead original FC2 page.
 
+The target server is [Pandora Saga: Weapons of Balance](https://pandorasaga-os.com/). Current calculations still use the preserved Legacy 2.00 engine; matching this server's current balance is a separate verification task, not an accuracy claim for every server-specific mechanic.
+
 ## ✨ Modern Mode
 
 The main site opens in **Modern Mode**:
@@ -43,7 +45,8 @@ The main site opens in **Modern Mode**:
 - a compact sticky character summary and collapsible detail cards on phone screens;
 - an installable PWA shell with reliable offline boot for both Modern and Legacy routes;
 - a non-blocking update notice that lets you finish or save work before reloading;
-- a separate EN/RU Modern interface switch; the JP/EN/TW selector still controls only preserved game data;
+- one EN/RU/JP/TW language panel: RU with English fallback, or original JP/TW game data with the English Modern shell;
+- read-only item/Soul details in Modern search and a Share build link that restores the character in another browser;
 - all Remaked autosaves and named builds stay local to the current browser in this release.
 
 Compare Builds does not replace the calculator formulas. Both sides are evaluated through the preserved legacy calculation path, and the current active character is restored afterwards. Stat help intentionally does **not** invent detailed attribute/equipment/buff formula breakdowns where those components have not been verified.
@@ -53,7 +56,7 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/
 
 ## In use
 
-Real Modern Mode screens, captured from the published UI `2026.09.9`. The comparison uses two example builds with different races; names and calculations come from the preserved engine.
+Real Modern Mode screens from UI `2026.09.11`, captured from the release candidate published with this update. The comparison uses two example builds with different races; names and calculations come from the preserved engine.
 
 <img src="docs/assets/screenshots/equipment-search-desktop.png" alt="Equipment Search on desktop: compatible items with name and level filters" width="720" />
 
@@ -102,7 +105,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** 2026.09.10
+- **Remaked UI:** 2026.09.11
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 

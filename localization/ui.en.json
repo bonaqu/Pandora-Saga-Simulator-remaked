@@ -159,5 +159,14 @@
   "updates.offline": "Install the site or use Modern and Legacy modes offline after the first successful load. Save your work before accepting an update.",
   "updates.preservation": "The Legacy 2.00 engine remains the calculation source. This is an unofficial community project. Build storage is local to this browser.",
   "updates.fullChangelog": "Full changelog",
-  "updates.report": "Report a problem"
+  "updates.report": "Report a problem",
+  "builds.share": "Share build",
+  "builds.shareLink": "Build sharing link",
+  "builds.shareCopied": "Build link copied.",
+  "builds.shareManual": "Copy the link below to share your build.",
+  "builds.sharedLoaded": "Shared build loaded",
+  "builds.invalidShare": "Invalid share link; current build kept",
+  "search.details": "Details",
+  "search.sockets": "Soul sockets: {count}",
+  "search.itemSource": "Item descriptions from Legacy 2.00; not calculated build deltas."
 }

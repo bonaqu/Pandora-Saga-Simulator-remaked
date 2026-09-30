@@ -125,8 +125,17 @@
     panel.addEventListener('keydown', function (event) {
       // Chromium/Firefox otherwise consume Escape to clear a type=search input
       // before the native dialog can cancel. Keep the established one-key close.
-      if (event.key === 'Escape') { event.preventDefault(); closePanel(); }
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        var previews = panel.querySelectorAll('details[open]');
+        if (previews.length) previews.forEach(function (preview) { preview.open = false; });
+        else closePanel();
+      }
     });
+    panel.addEventListener('scroll', function (event) {
+      if (event.target.closest && event.target.closest('.remaked-item-description')) return;
+      panel.querySelectorAll('details[open]').forEach(function (preview) { preview.open = false; });
+    }, true);
     backdrop.showModal();
     return { backdrop: backdrop, panel: panel, body: body };
   }
@@ -189,6 +198,75 @@
 
   function renderEmpty(container, message) {
     container.replaceChildren(element('div', 'remaked-search-empty', message));
+  }
+
+  function resultRow(button, kind, value, targetSlot) {
+    var row = element('div', 'remaked-search-row');
+    row.dataset.remakedSearchRow = ''; row.dataset.value = String(value);
+    row.appendChild(button);
+    var item = adapter.readItemDetails(kind, value, targetSlot);
+    if (!item) return row;
+    var details = element('details', 'remaked-item-preview');
+    var summary = translatedElement('summary', '', 'search.details', 'Details');
+    details.appendChild(summary);
+    var description = element('div', 'remaked-item-description');
+    description.dataset.remakedItemDescription = '';
+    description.id = 'remaked-item-detail-' + kind + '-' + value;
+    summary.setAttribute('aria-controls', description.id);
+    var name = button.querySelector('.remaked-search-result-name').textContent;
+    description.appendChild(element('strong', '', item.equippedName ? item.equippedName.replace(item.name, name) : name));
+    if (item.category) description.appendChild(element('p', '', item.category));
+    item.baseStats.forEach(function (stat) { description.appendChild(element('p', '', stat.label + ': ' + stat.value)); });
+    if (item.level != null) description.appendChild(element('p', '', t('search.level', { level: item.level }, 'Lv ' + item.level)));
+    if (item.sockets != null) description.appendChild(element('p', '', t('search.sockets', { count: item.sockets }, 'Soul sockets: ' + item.sockets)));
+    if (item.souls.length) {
+      var sockets = element('div', 'remaked-item-sockets');
+      item.souls.forEach(function (soul, index) {
+        var socket = element('span', 'remaked-item-socket');
+        socket.dataset.remakedSocket = ''; socket.dataset.filled = soul.id > 0 ? 'true' : 'false';
+        var label = soul.id > 0 ? gameName(soulTermId(soul.id), soul.name) : '—';
+        socket.setAttribute('aria-label', 'Soul ' + (index + 1) + ': ' + label);
+        socket.setAttribute('role', 'img'); socket.title = label;
+        sockets.appendChild(socket);
+        if (soul.id > 0) description.appendChild(element('p', '', 'Soul ' + (index + 1) + ': ' + label));
+      });
+      description.insertBefore(sockets, description.children[1]);
+    }
+    if (item.gem) description.appendChild(element('p', '', item.gem));
+    if (item.classes.length) description.appendChild(element('p', 'remaked-item-classes', item.classes.join(' · ')));
+    item.descriptions.forEach(function (text) { description.appendChild(element('p', '', text)); });
+    description.appendChild(translatedElement('small', '', 'search.itemSource', 'Item descriptions from Legacy 2.00; not calculated build deltas.'));
+    details.appendChild(description); row.appendChild(details);
+    var pinned = false;
+    var floating = window.matchMedia('(min-width: 701px) and (hover: hover)').matches && typeof description.showPopover === 'function';
+    if (floating) description.setAttribute('popover', 'manual');
+    details.addEventListener('toggle', function () {
+      summary.setAttribute('aria-expanded', details.open ? 'true' : 'false');
+      if (!floating || !description.isConnected) return;
+      if (!details.open) { description.hidePopover(); return; }
+      row.closest('[data-remaked-search-results]').querySelectorAll('details[open]').forEach(function (other) { if (other !== details) other.open = false; });
+      description.showPopover();
+      var rect = row.getBoundingClientRect(), width = description.getBoundingClientRect().width;
+      var left = rect.right + 8;
+      if (left + width > innerWidth - 12) left = rect.left - width - 8;
+      description.style.left = Math.max(12, Math.min(left, innerWidth - width - 12)) + 'px';
+      description.style.top = Math.max(12, Math.min(rect.top, innerHeight - description.getBoundingClientRect().height - 12)) + 'px';
+    });
+    summary.addEventListener('click', function () { pinned = !details.open; });
+    button.addEventListener('mouseenter', function () { if (window.matchMedia('(hover: hover)').matches) details.open = true; });
+    button.addEventListener('focus', function () { details.open = true; });
+    row.addEventListener('mouseleave', function () {
+      window.setTimeout(function () {
+        if (!pinned && !row.contains(document.activeElement) && !row.matches(':hover') && !description.matches(':hover')) details.open = false;
+      }, 100);
+    });
+    row.addEventListener('focusout', function (event) { if (!pinned && !row.contains(event.relatedTarget)) details.open = false; });
+    row.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && details.open) {
+        event.preventDefault(); event.stopPropagation(); details.open = false; pinned = false;
+      }
+    });
+    return row;
   }
 
   function openEquipmentSearch(slotIndex, trigger) {
@@ -264,7 +342,7 @@
         button.addEventListener('click', function () {
           if (adapter.selectEquipment(target, option.value)) closePanel();
         });
-        fragment.appendChild(button);
+        fragment.appendChild(resultRow(button, 'equipment', option.value, target));
       });
       results.replaceChildren(fragment);
     }
@@ -349,7 +427,7 @@
         button.addEventListener('click', function () {
           if (adapter.selectSoul(selected, option.value)) closePanel();
         });
-        fragment.appendChild(button);
+        fragment.appendChild(resultRow(button, 'soul', option.value));
       });
       results.replaceChildren(fragment);
     }
@@ -372,5 +450,8 @@
 
   window.addEventListener('pandora-remaked:localechange', function () {
     if (active && typeof active.render === 'function') active.render();
+  });
+  window.addEventListener('resize', function () {
+    if (active) active.panel.querySelectorAll('details[open]').forEach(function (preview) { preview.open = false; });
   });
 })();

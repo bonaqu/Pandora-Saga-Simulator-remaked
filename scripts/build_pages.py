@@ -81,7 +81,7 @@ HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="Pandora Saga Simulator Remaked: authentic game artwork above the Modern character calculator" />
+<meta property="og:image:alt" content="Pandora Saga Simulator Remaked: approved unofficial fan artwork above the Modern character calculator" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="icon" type="image/svg+xml" href="./modern/favicon.svg" />
 <link rel="apple-touch-icon" sizes="180x180" href="./modern/apple-touch-icon.png" />

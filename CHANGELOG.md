@@ -2,6 +2,14 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.11 — Consistent controls, item previews and build links
+
+- Replaced two language panels with one EN/RU/JP/TW group and exactly one selected language. RU uses English game-source fallback until the user supplies verified translations; JP/TW keep native game data with the English Modern shell.
+- Fixed Legacy font leakage into the Compare table; increased table text and unified toolbar/install sizing. Autosave is a readable status, not a differently sized pseudo-button. Mobile actions are at least 44px high.
+- Added read-only equipment/weapon/Soul cards to Modern search: adjacent desktop hover/focus popovers and a separate Details disclosure for touch. Socket rings distinguish empty/filled slots (up to three); an equipped item shows its actual Soul names, gem and enhancement. Other candidates remain base items. Literal base ATK/DEF and class flags come from Legacy data; conditional formulas are not reconstructed. Escape dismisses a preview before the dialog. Native Legacy select menus remain unchanged.
+- Added Share build in Build Manager. The link carries the exact Legacy CSV and opens the character in another browser; a valid incoming link takes precedence over local autosave. Invalid links retain current data. Clipboard rejection exposes a selectable URL rather than claiming success. Link contents are public to anyone receiving it.
+- Extended the same translation workbook to 2,837 rows, preserving all prior rows and Russian input. Legacy source, formulas and arrays are unchanged.
+
 ## 2026.09.10 — Release media and installation metadata
 
 - Added real desktop/mobile screenshots to both player READMEs: compatible equipment search, example build comparison and mobile build management. They were captured from verified production UI 2026.09.9, not mockups or invented Russian game names.

@@ -56,8 +56,12 @@ class RepositoryDocsTests(unittest.TestCase):
 
     def test_player_readmes_use_real_release_screenshots_with_provenance(self):
         provenance = self.read("docs/assets/screenshots/README.md")
-        self.assertIn("816e72f77cdab776bb27f2d06c24ce31ac384899", provenance)
-        self.assertIn("36632481054", provenance)
+        self.assertIn("2026.09.11", provenance)
+        self.assertIn("scripts/build_pages.py", provenance)
+        self.assertIn("scripts/serve_pages.mjs", provenance)
+        self.assertIn("release candidate", provenance)
+        self.assertIn("v2026.09.11", provenance)
+        self.assertIn("after production verification", provenance)
         for name in ("equipment-search-desktop.png", "compare-builds-desktop.png", "build-manager-mobile.png"):
             relative = "docs/assets/screenshots/" + name
             for readme in ("README.md", "README.ru.md"):
@@ -136,12 +140,12 @@ class RepositoryDocsTests(unittest.TestCase):
         for document in (changelog, plan):
             self.assertIn("2026.09.7", document)
         for document in (english, russian, changelog):
-            self.assertIn("2026.09.10", document)
+            self.assertIn("2026.09.11", document)
         self.assertIn("LOCALIZATION_FOR_BEGINNERS.ru.md", russian)
         self.assertIn("translations.xlsx", english)
         self.assertIn("translations.xlsx", guide)
         self.assertIn("Русский — заполнять здесь", guide)
-        self.assertIn("2 828", guide)
+        self.assertIn("2 837", guide)
         self.assertIn("Log", guide)
         self.assertIn("Alt+Enter", guide)
         self.assertIn("game-term-display.js", architecture)
