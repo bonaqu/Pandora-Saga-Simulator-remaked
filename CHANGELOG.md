@@ -2,6 +2,13 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.17 — Safe calculator code and riding controls
+
+- Fixed Modern calculator Code Load accepting incomplete input and corrupting the current character before an exception. It now shares Build Manager's validated, rollback-capable import, accepts existing compressed/CSV codes, and does not touch Legacy File slots.
+- Native Create/Load/Delete and riding controls support Enter/Space and phone-size targets. Code input has a visible programmatic label, paste/Enter support, focused inline validation and success/autosave-failure feedback.
+- Riding and compressed code creation/clearing retain source callbacks; no game formula, source array, build format, museum file or translation-workbook cell changed. Skill min/max actions now share the existing translated min/max keys too.
+- Added invalid/non-default/rollback, compressed/CSV, storage-failure, callback, keyboard, locale, missing-module and desktop/mobile regression/visual checks. Publication acceptance is recorded only after full CI and exact production gates.
+
 ## 2026.09.16 — Native skill allocation and explicit effects
 
 - Full skill branch names replace four-letter abbreviations in the calculator. Approved workbook translations and original JP/EN/TW names remain display-only projections.

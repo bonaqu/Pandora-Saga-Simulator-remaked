@@ -216,6 +216,15 @@
     return { ok: true, record: written.record };
   }
 
+  // Shared by both Modern import surfaces. Never call File('CodeLoad'): it
+  // mutates before validation and also reads/writes unrelated Legacy slots.
+  function importPayload(candidate) {
+    var loaded = loadPayloadSafely(typeof candidate === 'string' ? candidate.trim() : candidate);
+    if (!loaded.ok) return loaded;
+    var saved = persistLoadedPayload(loaded.payload, t('builds.savedImported', null, 'Saved imported build'));
+    return { ok: true, payload: loaded.payload, autosaved: saved.ok };
+  }
+
   function restoreAutosaveOnce() {
     if (!store || !adapter) {
       setAutosaveStatus(t('builds.autosaveUnavailable', null, 'Autosave unavailable'), 'error');
@@ -478,15 +487,14 @@
     importButton.dataset.remakedImportBuild = '';
     importButton.addEventListener('click', function () {
       var candidate = buildCode.value.trim();
-      var loaded = loadPayloadSafely(candidate);
+      var loaded = importPayload(candidate);
       if (!loaded.ok) {
         setManagerStatus(t('builds.invalidCode', null, 'Invalid build code; current build was not changed.'), 'error');
         return;
       }
-      var saved = persistLoadedPayload(loaded.payload, t('builds.savedImported', null, 'Saved imported build'));
-      setManagerStatus(saved.ok
+      setManagerStatus(loaded.autosaved
         ? t('builds.imported', null, 'Build code imported.')
-        : t('builds.importedNoAutosave', null, 'Build imported, but autosave is unavailable.'), saved.ok ? 'success' : 'warning');
+        : t('builds.importedNoAutosave', null, 'Build imported, but autosave is unavailable.'), loaded.autosaved ? 'success' : 'warning');
     });
     codeActions.appendChild(importButton);
     var share = button('Share build', 'remaked-build-button', 'builds.share');
@@ -561,6 +569,7 @@
   }
 
   namespace.builds = {
+    importPayload: importPayload,
     scheduleAutosave: scheduleAutosave,
     flushAutosave: flushAutosave,
     openManager: openManager,

@@ -820,10 +820,64 @@ body.remaked-modern {
 .remaked-modern #body [data-remaked-calculator-code] input {
   box-sizing: border-box;
   width: 100% !important;
+  min-height: 28px;
 }
 
 .remaked-modern #body [data-remaked-calculator-code-actions] > li {
   width: 100% !important;
+  height: auto !important;
+}
+
+.remaked-modern #body [data-remaked-calculator-code] > li {
+  height: auto !important;
+}
+
+.remaked-modern #body [data-remaked-calculator-code-buttons] {
+  position: static !important;
+  display: flex;
+  gap: 5px;
+  height: auto !important;
+  margin: 5px 0 0;
+}
+
+.remaked-modern #body [data-remaked-calculator-code-source] {
+  flex: 1;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0;
+  background: transparent;
+}
+
+.remaked-modern #body [data-remaked-code-status] {
+  width: 100%;
+  margin-top: 5px;
+  line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.remaked-modern #body [data-remaked-code-status]:empty { display: none; }
+.remaked-modern #body [data-remaked-code-status][data-state="error"] { color: #8e2921; }
+
+.remaked-modern #body [data-remaked-calculator-horse] {
+  width: 100% !important;
+  height: auto !important;
+  margin-top: 8px;
+}
+.remaked-modern #body [data-remaked-calculator-horse-container] { width: 100%; }
+.remaked-modern #body [data-remaked-calculator-horse] :is(td, ul, li) {
+  height: auto !important;
+  min-width: 0;
+}
+.remaked-modern #body [data-remaked-calculator-horse] tr:last-child ul { display: flex; }
+.remaked-modern #body [data-remaked-calculator-horse] tr:last-child li { flex: 1; width: auto !important; }
+.remaked-modern #body [data-remaked-calculator-horse] .input_gt { display: flex; align-items: center; justify-content: end; }
+.remaked-modern #body [data-remaked-calculator-horse] .input_gt > ul { display: contents; }
+.remaked-modern #body [data-remaked-calculator-horse] #Status_81 { width: auto !important; }
+
+@media (max-width: 620px) {
+  .remaked-modern #body [data-remaked-calculator-code] input { min-height: 44px; font-size: 16px; }
 }
 
 @media (max-width: 860px) {

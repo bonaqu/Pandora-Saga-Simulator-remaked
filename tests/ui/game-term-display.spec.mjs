@@ -51,8 +51,8 @@ test('translated static actions retain handlers and compressed build behavior', 
     return Store();
   });
   await page.locator('[data-remaked-ui-locale="ru"]').click();
-  const create = page.locator('li[onclick*="Base64.toBase64"] > div');
-  const load = page.locator('li[onclick="File(\'CodeLoad\');"] > div');
+  const create = page.locator('[data-remaked-code-action="create"]');
+  const load = page.locator('[data-remaked-code-action="load"]');
   await expect(create).toHaveText('Создать код');
   await expect(load).toHaveText('Применить код');
   await create.click();

@@ -6,6 +6,86 @@
   function byId(id) { return document.getElementById(id); }
   function mark(node, name) { if (node) node.setAttribute('data-remaked-calculator-' + name, ''); return node; }
 
+  function codeStatus(key, state, fallback) {
+    var status = byId('remaked-code-status');
+    if (namespace.i18n) namespace.i18n.bindText(status, key);
+    else status.textContent = fallback;
+    status.dataset.state = state;
+  }
+
+  function clearCodeStatus() {
+    var status = byId('remaked-code-status');
+    delete status.dataset.remakedI18n;
+    delete status.dataset.state;
+    status.textContent = '';
+  }
+
+  function codeActions(code) {
+    if (byId('remaked-code-status')) return;
+    var label = code.closest('li').previousElementSibling;
+    label.id = 'remaked-code-label';
+    code.setAttribute('aria-labelledby', label.id);
+    code.setAttribute('aria-describedby', 'remaked-code-status');
+    code.spellcheck = false; code.autocomplete = 'off';
+    var actions = code.closest('li').parentElement.nextElementSibling;
+    var list = mark(actions.querySelector('ul'), 'code-buttons');
+    var status = document.createElement('li');
+    status.id = 'remaked-code-status'; status.dataset.remakedCodeStatus = '';
+    status.setAttribute('role', 'status'); actions.appendChild(status);
+    var sources = [
+      ['create', 'li[onclick*="Base64.toBase64"]'],
+      ['load', 'li[onclick="File(\'CodeLoad\');"]'],
+      ['delete', 'li[onclick="$(\'InCode\').value=\'\';"]']
+    ];
+    sources.forEach(function (entry) {
+      var source = list.querySelector(entry[1]), text = source.firstElementChild;
+      text.id = 'remaked-code-' + entry[0] + '-label'; text.hidden = true;
+      mark(source, 'code-source');
+      if (entry[0] === 'load') {
+        // Replace only this Modern DOM handler, not File(), Expand() or any
+        // museum source. Keep its attribute as the translation-map anchor.
+        source.onclick = function () {
+          if (!namespace.builds || !namespace.builds.importPayload) {
+            codeStatus('builds.autosaveUnavailable', 'warning', 'Autosave unavailable'); return;
+          }
+          var result = namespace.builds.importPayload(code.value);
+          if (!result.ok) {
+            code.setAttribute('aria-invalid', 'true');
+            codeStatus('builds.invalidCode', 'error', 'Invalid build code; current build was not changed.');
+            code.focus(); return;
+          }
+          code.removeAttribute('aria-invalid');
+          codeStatus(result.autosaved ? 'builds.imported' : 'builds.importedNoAutosave', result.autosaved ? 'success' : 'warning', 'Build code imported.');
+        };
+      }
+      var button = document.createElement('button');
+      button.type = 'button'; button.className = 'remaked-calculator-action';
+      button.dataset.remakedCodeAction = entry[0];
+      button.addEventListener('click', function (event) {
+        event.stopPropagation();
+        try {
+          // Invoke the retained DOM callback directly so a codec failure is
+          // catchable here; click() reports listener errors to the global page
+          // instead of throwing to its caller. No callback/formula is copied.
+          source.onclick.call(source, event);
+          if (entry[0] !== 'load') {
+            code.removeAttribute('aria-invalid');
+            if (entry[0] === 'create') codeStatus('builds.exported', 'success', 'Current build code exported.');
+            else clearCodeStatus();
+          }
+        } catch (error) {
+          codeStatus('builds.exportFailed', 'error', 'Current build could not be exported.');
+        }
+        refresh();
+      });
+      source.appendChild(button);
+    });
+    code.addEventListener('input', function () { code.removeAttribute('aria-invalid'); clearCodeStatus(); });
+    code.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') { event.preventDefault(); list.querySelector('[data-remaked-code-action="load"]').click(); }
+    });
+  }
+
   function stepButtons(inputs, label, target, prefix) {
     Array.prototype.forEach.call(inputs, function (source) {
       if (source.dataset.remakedStepSource) return;
@@ -82,11 +162,14 @@
       mark(levelRow.parentElement.parentElement, 'settings');
     }
 
-    for (var action = 3; action <= 9; action++) {
+    [3, 4, 5, 6, 7, 8, 9, 16].forEach(function (action) {
       var text = byId('Text_' + action), source = text.parentElement;
-      if (source.querySelector('[data-remaked-calculator-action]')) continue;
+      if (source.querySelector('[data-remaked-calculator-action]')) return;
       mark(source, 'action-source');
-      mark(source.parentElement.parentElement, 'actions');
+      if (action === 16) {
+        var horse = mark(source.closest('table'), 'horse');
+        mark(horse.parentElement, 'horse-container');
+      } else mark(source.parentElement.parentElement, 'actions');
       var button = document.createElement('button');
       button.type = 'button'; button.className = 'remaked-calculator-action';
       button.dataset.remakedCalculatorAction = text.id;
@@ -95,13 +178,14 @@
         byId(this.dataset.remakedCalculatorAction).parentElement.click(); refresh();
       });
       source.appendChild(button); text.hidden = true;
-    }
+    });
 
     mark(byId('StatusView'), 'results');
     pairRows(byId('StatusView'), '[id^="TextStatus_"]');
     var code = byId('InCode');
     mark(code.closest('li').parentElement, 'code');
     mark(code.closest('li').parentElement.nextElementSibling, 'code-actions');
+    codeActions(code);
   }
 
   function refresh() {
@@ -120,6 +204,10 @@
         var label = byId(button.dataset.remakedCalculatorAction);
         if (button.textContent !== label.textContent) button.textContent = label.textContent;
         if (label.parentElement.id.indexOf('SwitchUse_') === 0) button.setAttribute('aria-pressed', String(label.parentElement.classList.contains('btn2_on')));
+      });
+      document.querySelectorAll('[data-remaked-code-action]').forEach(function (button) {
+        var text = byId('remaked-code-' + button.dataset.remakedCodeAction + '-label').textContent;
+        if (button.textContent !== text) button.textContent = text;
       });
     } finally {
       if (observer) observer.observe(byId('body'), { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['class', 'title', 'disabled'] });
