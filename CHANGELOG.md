@@ -4,6 +4,14 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 
 ## Unreleased — Modern 3.00
 
+- Modern-only equipment/Soul catalog adapter uses the retained calculation
+  engine, with immutable catalog revisions pinned in `PS3` saved/shared codes.
+  Cached public revisions work offline; missing revisions protect existing
+  builds and autosaves. Original CSV/compressed imports stay supported.
+- Catalog switching checks Soul-slot and race/class compatibility before
+  rebuilding lists. Numeric IDs prevent a Legacy lexicographic weapon-reset
+  bug; stale asynchronous share requests cannot replace a newer selection.
+
 - English interface and game names can be overridden in column I of the same
   translation workbook. Russian remains in H; preserved English/JP/TW source
   columns and all prior Russian values remain intact. Empty overrides restore
@@ -15,8 +23,9 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Secured Worker authentication is deployed and production-tested separately
   from Pages. A Modern-only equipment/Soul editor now has validated multilingual
   fields, numeric effects, private drafts, atomic publication, immutable history,
-  conflict protection and rollback. Public engine/catalog integration and the
-  expanded class/active/passive/racial-skill editor remain in development.
+  conflict protection and rollback. Equipment/Soul engine integration is now
+  verified locally; remote acceptance and the expanded
+  class/active/passive/racial-skill editor remain in development.
 
 ## 2026.09.17 — Safe calculator code and riding controls
 

@@ -94,11 +94,12 @@ async function saveDraft(request, env, now) {
     await env.DB.prepare('INSERT INTO catalog_sequences (kind, category, next_index) VALUES (?, ?, ?) ON CONFLICT DO NOTHING').bind(kind, counterCategory, identity.index).run();
     // D1 batch is one transaction. Allocate + insert + save either all commit or
     // all roll back; concurrent creation cannot reuse an encoded item ID.
-    await env.DB.batch([
-      env.DB.prepare('UPDATE catalog_sequences SET next_index = next_index + 1 WHERE kind = ? AND category = ?').bind(kind, counterCategory),
-      env.DB.prepare('INSERT INTO catalog_allocations (id, kind, category, item_index, created_at) SELECT ?, ?, ?, next_index - 1, ? FROM catalog_sequences WHERE kind = ? AND category = ?').bind(id, kind, counterCategory, now, kind, counterCategory),
-      env.DB.prepare('INSERT INTO catalog_drafts (id, payload_json, version, updated_at) VALUES (?, ?, 1, ?)').bind(id, JSON.stringify(edit), now)
+    const allocated = await env.DB.batch([
+      env.DB.prepare('UPDATE catalog_sequences SET next_index = next_index + 1 WHERE kind = ? AND category = ? AND next_index < ?').bind(kind, counterCategory, identity.index + 1024),
+      env.DB.prepare('INSERT INTO catalog_allocations (id, kind, category, item_index, created_at) SELECT ?, ?, ?, next_index - 1, ? FROM catalog_sequences WHERE kind = ? AND category = ? AND changes() = 1').bind(id, kind, counterCategory, now, kind, counterCategory),
+      env.DB.prepare('INSERT INTO catalog_drafts (id, payload_json, version, updated_at) SELECT ?, ?, 1, ? WHERE EXISTS (SELECT 1 FROM catalog_allocations WHERE id = ?)').bind(id, JSON.stringify(edit), now, id)
     ]);
+    if (allocated[0].meta.changes !== 1) fail('This item type reached its safe capacity (1024 additions)', 413);
     return jsonResponse(await detail(env, id), 201);
   }
   identity = await identityFor(env, input.edit?.id || '');

@@ -44,11 +44,11 @@
       if (entry[0] === 'load') {
         // Replace only this Modern DOM handler, not File(), Expand() or any
         // museum source. Keep its attribute as the translation-map anchor.
-        source.onclick = function () {
+        source.onclick = async function () {
           if (!namespace.builds || !namespace.builds.importPayload) {
             codeStatus('builds.autosaveUnavailable', 'warning', 'Autosave unavailable'); return;
           }
-          var result = namespace.builds.importPayload(code.value);
+          var result = await namespace.builds.importPreparedPayload(code.value);
           if (!result.ok) {
             code.setAttribute('aria-invalid', 'true');
             codeStatus('builds.invalidCode', 'error', 'Invalid build code; current build was not changed.');
@@ -61,13 +61,14 @@
       var button = document.createElement('button');
       button.type = 'button'; button.className = 'remaked-calculator-action';
       button.dataset.remakedCodeAction = entry[0];
-      button.addEventListener('click', function (event) {
+      button.addEventListener('click', async function (event) {
         event.stopPropagation();
         try {
           // Invoke the retained DOM callback directly so a codec failure is
           // catchable here; click() reports listener errors to the global page
           // instead of throwing to its caller. No callback/formula is copied.
-          source.onclick.call(source, event);
+          await source.onclick.call(source, event);
+          if (entry[0] === 'create' && namespace.catalog?.getRevision()) code.value = namespace.adapter.serialize();
           if (entry[0] !== 'load') {
             code.removeAttribute('aria-invalid');
             if (entry[0] === 'create') codeStatus('builds.exported', 'success', 'Current build code exported.');

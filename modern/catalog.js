@@ -1,0 +1,226 @@
+(function () {
+  'use strict';
+  var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
+  if (namespace.catalog) return;
+  var SOURCE_FINGERPRINT = '0f3b15c83d59b8c9c1a47920022895b8db57a526322d9dabea4900fb203518d1';
+  var allowedCategories = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 20, 30, 31, 32, 33, 34, 35, 40, 41, 42, 43];
+  var languages = ['jp', 'en', 'tw'];
+  var baselineEquipment, baselineSouls, revision = 0, recordsByTerm = Object.create(null);
+  var snapshots = Object.create(null), recovery = false;
+  var PUBLIC_API = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog';
+  var databasePromise;
+  function check(condition, message) { if (!condition) throw new Error(message); }
+  function escaped(value) { return String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+  function cloneEquipment(source) {
+    var result = [];
+    for (var language = 0; language < 3; language++) {
+      result[language] = [];
+      for (var category = 0; category < source[language].length; category++) result[language][category] = source[language][category].map(function (row) { return row.slice(); });
+    }
+    return result;
+  }
+  function cloneSouls(source) { return source.map(function (rows) { return rows.map(function (row) { return row.slice(); }); }); }
+  function captureBaseline() {
+    if (baselineEquipment) return;
+    check(window.EquipData && window.SoulData, 'Legacy catalog not initialized');
+    baselineEquipment = cloneEquipment(window.EquipData); baselineSouls = cloneSouls(window.SoulData);
+  }
+  function sourceRow(record) {
+    return record.kind === 'equipment' ? baselineEquipment[0][record.category][record.index] : baselineSouls[0][record.index];
+  }
+  function termFor(record) { return record.kind === 'equipment' ? 'equipment.' + record.category + '.' + record.index : 'soul.' + record.index; }
+  function textMap(value, limit) {
+    check(value && typeof value === 'object' && !Array.isArray(value), 'Invalid catalog text');
+    Object.keys(value).forEach(function (language) { check(['en', 'ru', 'jp', 'tw'].indexOf(language) !== -1 && typeof value[language] === 'string' && value[language].length <= limit, 'Invalid catalog text'); });
+  }
+  function validate(snapshot) {
+    captureBaseline();
+    check(snapshot && snapshot.ok === true && snapshot.schemaVersion === 1 && snapshot.sourceFingerprint === SOURCE_FINGERPRINT, 'Catalog source/version mismatch');
+    check(Number.isSafeInteger(snapshot.revision) && snapshot.revision >= 0 && Array.isArray(snapshot.records) && snapshot.records.length <= 4000, 'Invalid catalog snapshot');
+    check(snapshot.revision > 0 || snapshot.records.length === 0, 'Source revision must not contain overrides');
+    var seen = Object.create(null);
+    snapshot.records.forEach(function (record) {
+      check(record && ['equipment', 'soul'].indexOf(record.kind) !== -1 && typeof record.id === 'string', 'Invalid item identity');
+      check(record.kind === 'equipment' ? allowedCategories.indexOf(record.category) !== -1 : record.category === null, 'Unsupported item type');
+      check(Number.isInteger(record.index) && record.index > 0 && record.index < 10000, 'Invalid item index');
+      check(record.index < (record.kind === 'equipment' ? baselineEquipment[0][record.category].length : baselineSouls[0].length) + 1024, 'Catalog allocation exceeds safe client capacity');
+      var term = termFor(record); check(!seen[term], 'Duplicate item identity'); seen[term] = true;
+      check(!seen['id:' + record.id], 'Duplicate stable item ID'); seen['id:' + record.id] = true;
+      check(record.engineId === (record.kind === 'equipment' ? record.category * 10000 + record.index : record.index), 'Encoded item ID mismatch');
+      var original = sourceRow(record);
+      check(original ? record.id === term : record.id.indexOf('modern.' + record.kind + '.') === 0 && record.engineKey === 'Modern:' + record.id, 'Item identity does not match source');
+      check(Number.isInteger(record.level) && record.level >= 0 && record.level <= 1000 && Number.isInteger(record.sockets) && record.sockets >= 0 && record.sockets <= 3, 'Invalid item requirements');
+      check(typeof record.disabled === 'boolean', 'Invalid item availability');
+      ['names', 'modifiers'].forEach(function (field) { textMap(record[field], 160); });
+      ['description', 'notes', 'acquisition'].forEach(function (field) { textMap(record[field], 4000); });
+      check(Boolean(record.names.en?.trim()), 'English item name required');
+      check(Array.isArray(record.compatibility) && record.compatibility.length === (record.kind === 'equipment' ? 36 : 8) && record.compatibility.every(function (flag) { return flag === 0 || flag === 1; }), 'Invalid compatibility flags');
+      check(typeof record.calculationCode === 'string' && record.calculationCode.length <= 8192, 'Invalid engine data');
+      record.calculationCode.split('_').filter(Boolean).forEach(function (token) {
+        var match = token.match(/^(\d{1,3})=(-?\d+(?:\.\d{1,2})?%?|W\d+)$/);
+        // An existing malformed/unsupported Legacy marker is not rewritten by
+        // this codec. It is accepted only if it was already in that exact row.
+        check(match ? Number(match[1]) < window.Name.Option.length && Number.isFinite(Number(match[2].replace(/^W/, '').replace(/%$/, ''))) && Math.abs(Number(match[2].replace(/^W/, '').replace(/%$/, ''))) <= 10000 : original && String(original[7]).split('_').indexOf(token) !== -1, 'Unsupported engine effect');
+      });
+      if (record.kind === 'equipment' && record.category <= 13) check(/^18=W\d+(?:_|$)/.test(record.calculationCode), 'Missing weapon attack');
+      [record.parameter6, record.trailing].forEach(function (value) { check(typeof value === 'string' && value.length <= 160 || typeof value === 'number' && Number.isFinite(value), 'Invalid auxiliary engine data'); });
+      check(Array.isArray(record.soulParameters) && record.soulParameters.length === 2 && record.soulParameters.every(function (value) { return typeof value === 'string' && value.length <= 160 || typeof value === 'number' && Number.isFinite(value); }), 'Invalid Soul data');
+    });
+  }
+  function placeholder(source) {
+    var row = source.slice(); row[0] = '[Unavailable catalog record]'; row[7] = '';
+    for (var index = 8; index < row.length; index++) row[index] = 0;
+    row._pandoraPlaceholder = true; return row;
+  }
+  function selectedStateExists(equipment, souls) {
+    for (var slot = 0; slot < window.Status.Equip.length; slot++) {
+      var state = window.Status.Equip[slot], id = Number(state[0]); var category = Math.floor(id / 10000), index = id % 10000;
+      var row = equipment[0]?.[category]?.[index];
+      check(row && !row._pandoraPlaceholder, 'Current build needs another catalog revision');
+      check(!index || row[10 + window.Status.Job[0]] && row[16 + window.Status.Job[2]], 'Current build is incompatible with this catalog revision');
+      for (var socket = 4; socket <= 6; socket++) {
+        var soul = Number(state[socket]); if (!soul) continue;
+        check(souls[0][soul] && !souls[0][soul]._pandoraPlaceholder && socket - 3 <= row[5], 'Current Soul needs another catalog revision');
+        // The eight flags use the original ListCreate('Soul') slot mapping;
+        // reject before SoulSelect can silently clear an incompatible Soul.
+        var soulSlot = slot <= 6 ? slot : slot === 11 ? 7 : -1;
+        check(soulSlot >= 0 && souls[0][soul][8 + soulSlot] === 1, 'Current Soul is incompatible with this catalog revision');
+      }
+    }
+  }
+  function refreshAvailability() {
+    document.querySelectorAll('select[id^="SelEquip_"]').forEach(function (select) {
+      var match = select.id.match(/^SelEquip_\d+_(0|[4-6])$/); if (!match) return;
+      var kind = Number(match[1]) === 0 ? 'equipment' : 'soul';
+      for (var index = 0; index < select.options.length; index++) {
+        var option = select.options[index], id = Number(option.value);
+        var term = kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id;
+        option.disabled = Boolean(recordsByTerm[term]?.disabled);
+      }
+    });
+  }
+  function applySnapshot(snapshot, options) {
+    validate(snapshot); options = options || {};
+    var equipment = cloneEquipment(baselineEquipment), souls = cloneSouls(baselineSouls), terms = Object.create(null);
+    snapshot.records.forEach(function (record) {
+      terms[termFor(record)] = record;
+      for (var language = 0; language < 3; language++) {
+        var code = languages[language], original = sourceRow(record), key = original?.[0] || record.engineKey;
+        var name = language === 0 ? key : escaped(record.names[code] || record.names.en);
+        var row = record.kind === 'equipment'
+          ? [name, escaped(record.description[code] || record.description.en), escaped(record.notes[code] || record.notes.en), escaped(record.acquisition[code] || record.acquisition.en), record.level, record.sockets, record.parameter6, record.calculationCode, ...record.compatibility, record.trailing]
+          : [name, escaped(record.modifiers[code] || record.modifiers.en || record.names.en), escaped(record.description[code] || record.description.en), escaped(record.notes[code] || record.notes.en), escaped(record.acquisition[code] || record.acquisition.en), ...record.soulParameters, record.calculationCode, ...record.compatibility, record.trailing];
+        var group = record.kind === 'equipment' ? equipment[language][record.category] : souls[language];
+        while (group.length < record.index) group.push(placeholder(group[0]));
+        group[record.index] = row;
+      }
+    });
+    if (options.rebuild !== false) selectedStateExists(equipment, souls);
+    // Source files and captured baseline arrays remain immutable. Only the
+    // explicitly documented Modern runtime data projection is replaced.
+    window.EquipData = equipment; window.SoulData = souls; recordsByTerm = terms; revision = snapshot.revision;
+    snapshots[revision] = structuredClone(snapshot);
+    if (options.rebuild !== false) {
+      window.Status.Equip.forEach(function (state) { state[0] = Number(state[0]); });
+      window.ListCreate('Equip'); window.SoulCompare = window.Status.Equip.map(function () { return []; });
+      window.ListCreate('Soul'); window.ListCreate('SoulSelect'); window.ListCreate('SoulCheck'); window.CalcSet('Equip');
+      if (namespace.gameTermDisplay) namespace.gameTermDisplay.refresh();
+      if (namespace.equipmentPicker) namespace.equipmentPicker.refresh();
+      refreshAvailability();
+    }
+    return revision;
+  }
+  function textFor(term, field) {
+    var record = recordsByTerm[term]; if (!record) return '';
+    var language = namespace.i18n?.getLocale() === 'ru' ? 'ru' : languages[Number(window.Flag[0])];
+    return record[field]?.[language] || record[field]?.en || '';
+  }
+  function sourceSnapshot() { return { ok: true, schemaVersion: 1, sourceFingerprint: SOURCE_FINGERPRINT, revision: 0, records: [] }; }
+  function unpackPayload(payload) {
+    check(typeof payload === 'string' && payload.length > 0 && payload.length <= 20000, 'Invalid build code');
+    if (payload.indexOf('PS3:') !== 0) return { revision: 0, payload };
+    var match = payload.match(/^PS3:(\d{1,9}):(.+)$/);
+    check(match && Number(match[1]) > 0 && match[2].indexOf(',') !== -1, 'Invalid versioned build code');
+    return { revision: Number(match[1]), payload: match[2] };
+  }
+  function database() {
+    if (databasePromise) return databasePromise;
+    databasePromise = new Promise(function (resolve, reject) {
+      var request = indexedDB.open('pandora-remaked-public-catalog', 1);
+      request.onupgradeneeded = function () { request.result.createObjectStore('snapshots', { keyPath: 'revision' }); };
+      request.onsuccess = function () { request.result.onversionchange = function () { request.result.close(); }; resolve(request.result); };
+      request.onerror = function () { reject(new Error('Catalog cache unavailable')); };
+      request.onblocked = function () { reject(new Error('Catalog cache unavailable')); };
+    });
+    return databasePromise;
+  }
+  async function cached(requested) {
+    try {
+      var db = await database();
+      return await new Promise(function (resolve) { var request = db.transaction('snapshots').objectStore('snapshots').get(requested); request.onsuccess = function () { resolve(request.result || null); }; request.onerror = function () { resolve(null); }; });
+    } catch { return null; }
+  }
+  async function remember(snapshot, latest) {
+    try {
+      var db = await database();
+      await new Promise(function (resolve) {
+        var transaction = db.transaction('snapshots', 'readwrite'); var store = transaction.objectStore('snapshots');
+        store.put(snapshot); if (latest) store.put({ revision: -1, head: snapshot.revision });
+        transaction.oncomplete = resolve; transaction.onerror = resolve; transaction.onabort = resolve;
+      });
+    } catch { /* Public cache failure cannot destroy the character or builds. */ }
+  }
+  async function fetchSnapshot(requested) {
+    if (requested === 0) return sourceSnapshot();
+    if (requested !== null && snapshots[requested]) return snapshots[requested];
+    try {
+      var response = await fetch(PUBLIC_API + (requested === null ? '' : '?revision=' + requested), { credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(4000) });
+      check(response.ok, 'Catalog revision unavailable');
+      var snapshot = await response.json(); validate(snapshot);
+      check(requested === null || snapshot.revision === requested, 'Catalog revision mismatch');
+      snapshots[snapshot.revision] = snapshot; await remember(snapshot, requested === null); return snapshot;
+    } catch (error) {
+      var target = requested;
+      if (target === null) target = (await cached(-1))?.head;
+      var offline = target === 0 ? sourceSnapshot() : target !== undefined ? await cached(target) : null;
+      if (offline) { validate(offline); check(requested === null || offline.revision === requested, 'Cached catalog revision mismatch'); snapshots[offline.revision] = offline; return offline; }
+      throw error;
+    }
+  }
+  async function preparePayload(payload) { var parsed = unpackPayload(payload); await fetchSnapshot(parsed.revision); return parsed; }
+  function useRevision(requested) {
+    if (requested === revision) return;
+    var snapshot = requested === 0 ? sourceSnapshot() : snapshots[requested];
+    check(snapshot, 'This build needs a catalog revision that is not loaded');
+    applySnapshot(snapshot, { rebuild: false });
+  }
+  async function bootstrap() {
+    // Public Pages only. Local development cannot bypass the strict production
+    // CORS policy; tests exercise this public loader with explicit mock routes.
+    var autosave = namespace.buildStore?.readAutosave();
+    if (autosave?.ok && autosave.record) {
+      try { await preparePayload(autosave.record.payload); }
+      catch { recovery = true; }
+    }
+    var shared = location.hash.indexOf('#build=') === 0;
+    if (shared) {
+      try { await preparePayload(decodeURIComponent(location.hash.slice(7))); }
+      catch { /* Builds owns the visible error; no partial character load. */ }
+    }
+    if (!autosave?.record && !shared && location.origin === 'https://bonaqu.github.io') {
+      try { applySnapshot(await fetchSnapshot(null)); }
+      catch { /* A first visit can always use the preserved source catalog. */ }
+    }
+  }
+  namespace.catalog = { applySnapshot, validateSnapshot: validate, refreshAvailability,
+    getRevision: function () { return revision; }, hasOverrides: function () { return Object.keys(recordsByTerm).length > 0; },
+    gameLabel: function (term) { return textFor(term, 'names'); },
+    item: function (kind, value) { var id = Number(value); return recordsByTerm[kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id] || null; },
+    itemText: function (kind, value, field) { var id = Number(value); return textFor(kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id, field); },
+    packPayload: function (payload) { return revision ? 'PS3:' + revision + ':' + payload : payload; },
+    unpackPayload, preparePayload, useRevision, fetchSnapshot, bootstrap,
+    validateCurrentState: function () { selectedStateExists(window.EquipData, window.SoulData); },
+    needsRecovery: function () { return recovery; }, clearRecovery: function () { recovery = false; }
+  };
+  namespace.catalog.ready = bootstrap();
+})();

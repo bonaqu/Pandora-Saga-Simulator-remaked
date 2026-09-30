@@ -111,6 +111,10 @@
   }
 
   function refreshLoadedState() {
+    // ListCreate('Equip') flattens right-hand IDs to strings. A restored ID
+    // must be numeric or its `>` check becomes lexicographic ('4' > '30')
+    // and clears a valid weapon before reaching its option.
+    window.Status.Equip.forEach(function (state) { state[0] = Number(state[0]); });
     window.ListCreate('Set');
     window.ListCreate('Equip');
     window.ListCreate('Soul');
@@ -178,7 +182,8 @@
   var adapter = {
     serialize: function () {
       if (typeof window.Store !== 'function') throw new Error('Legacy Store() is unavailable');
-      return String(window.Store());
+      var payload = String(window.Store());
+      return namespace.catalog ? namespace.catalog.packPayload(payload) : payload;
     },
 
     load: function (payload) {
@@ -186,12 +191,18 @@
         throw new TypeError('Build payload must be a non-empty string');
       }
       if (typeof window.Expand !== 'function') throw new Error('Legacy Expand() is unavailable');
+      if (namespace.catalog) {
+        var parsed = namespace.catalog.unpackPayload(payload);
+        namespace.catalog.useRevision(parsed.revision); payload = parsed.payload;
+      }
       window.Expand(payload);
+      if (namespace.catalog) namespace.catalog.validateCurrentState();
       refreshLoadedState();
       // Build projections read names synchronously; a MutationObserver refresh
       // alone would leave compare results in the previous/source language.
       if (namespace.gameTermDisplay) namespace.gameTermDisplay.refresh();
       if (namespace.equipmentPicker) namespace.equipmentPicker.refresh();
+      if (namespace.catalog) namespace.catalog.refreshAvailability();
     },
 
     readCalculatedSummary: readCalculatedSummary,
@@ -240,7 +251,7 @@
 
     selectEquipment: function (slotIndex, value) {
       var select = byId('SelEquip_' + Number(slotIndex) + '_0');
-      if (!select || !hasOption(select, value)) return false;
+      if (!select || !hasOption(select, value) || namespace.catalog?.item('equipment', value)?.disabled) return false;
       select.value = String(value);
       dispatchLegacyChange(select);
       return true;
@@ -288,7 +299,7 @@
     selectSoul: function (target, value) {
       if (!target || typeof target.slotIndex === 'undefined' || typeof target.socketIndex === 'undefined') return false;
       var select = byId('SelEquip_' + Number(target.slotIndex) + '_' + Number(target.socketIndex));
-      if (!select || !hasOption(select, value)) return false;
+      if (!select || !hasOption(select, value) || namespace.catalog?.item('soul', value)?.disabled) return false;
       select.value = String(value);
       dispatchLegacyChange(select);
       return true;
@@ -338,13 +349,16 @@
       // Flags follow the preserved ListCreate('Equip') layout (offset 16).
       if (canonical[16 + jobIndex]) classes.push(text(job[2 + language]));
     });
-    return { name: text(record[0]), level: kind === 'equipment' ? canonical[4] : null,
+    var overrideName = namespace.catalog?.itemText(kind, value, 'names');
+    var descriptions = columns.map(function (column) { return text(record[column]); }).filter(Boolean);
+    if (namespace.catalog?.item(kind, value)) descriptions = ['description', 'notes', 'acquisition'].map(function (field) { return namespace.catalog.itemText(kind, value, field); }).filter(Boolean);
+    return { name: overrideName || text(record[0]), level: kind === 'equipment' ? canonical[4] : null,
       sockets: kind === 'equipment' ? canonical[5] : null,
       souls: souls, baseStats: baseStats, classes: classes,
       category: kind === 'equipment' ? text(window.EquipData[language][category][0][0]).replace(/^\+?-+\s*/, '') : '',
       equipped: equipped,
-      equippedName: equipped ? text(window.EquipOption.apply(null, current)) : '',
+      equippedName: equipped ? text(window.EquipOption.apply(null, current)).replace(text(record[0]), function () { return overrideName || text(record[0]); }) : '',
       gem: equipped && Number(current[3]) > 0 ? text(window.Name.Gem[0][current[1]][language]) + ' · ' + text(window.Name.Gem[1][current[2]][language]) : '',
-      descriptions: columns.map(function (column) { return text(record[column]); }).filter(Boolean) };
+      descriptions: descriptions };
   };
 })();

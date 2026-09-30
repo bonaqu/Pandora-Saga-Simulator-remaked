@@ -48,6 +48,8 @@
   }
 
   function translateGameTerm(key, fallback) {
+    var published = namespace.catalog && namespace.catalog.gameLabel(key);
+    if (published) return published;
     // JP/TW use the original game's language, while their Modern shell is EN.
     // An English name override must not silently replace those source languages.
     var useEnglish = !window.Flag || Number(window.Flag[0]) === 1;

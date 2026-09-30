@@ -96,6 +96,19 @@ test('rollback creates a new revision while old recipient revisions, allocated I
   await assert.rejects(() => call(env, 'rollback', { revision: 0, expectedCatalogRevision: 1 }), error => error.status === 409);
 });
 
+test('new-record capacity matches the public adapter and cannot leave orphan drafts or allocated IDs', async () => {
+  const { env, sqlite } = fixture();
+  // Soul source IDs end at 184; exactly 1024 additional stable IDs are allowed.
+  sqlite.prepare('INSERT INTO catalog_sequences (kind, category, next_index) VALUES (?, ?, ?)').run('soul', -1, 1208);
+  const edit = draftFromSource(null, 'soul'); edit.names.en = 'Last allowed Soul';
+  const last = await save(env, { edit, draftVersion: 0, catalogRevision: 0 });
+  assert.equal(last.identity.index, 1208);
+  await assert.rejects(() => save(env, { edit, draftVersion: 0, catalogRevision: 0 }), error => error.status === 413);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_allocations').get().n, 1);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n, 1);
+  assert.equal(sqlite.prepare('SELECT next_index FROM catalog_sequences WHERE kind = ?').get('soul').next_index, 1209);
+});
+
 test('strict request shape, unknown IDs, unsupported raw effects, malformed and oversized bodies fail closed', async () => {
   const { env, sqlite } = fixture();
   const item = await detail(env);

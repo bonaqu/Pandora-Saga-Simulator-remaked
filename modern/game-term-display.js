@@ -85,7 +85,7 @@
       if (!labels && namespace.calculatorLabels) labels = namespace.calculatorLabels.collect();
       var gameCatalogs = window.PandoraRemakedGameTerms || {};
       var inactive = !hasDecorated && !Object.keys(gameCatalogs[i18n.getLocale()] || {}).length
-        && !(language === 1 && Object.keys(gameCatalogs.en || {}).length);
+        && !(language === 1 && Object.keys(gameCatalogs.en || {}).length) && !namespace.catalog?.hasOverrides();
       (labels || []).forEach(function (row) {
         row.targets.forEach(function (target) {
           if (inactive && !target.alwaysSource) return;

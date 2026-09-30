@@ -85,7 +85,11 @@ were not printed or copied into the repository.
   Initial equipment/Soul editor supports four languages, compatibility, slots
   and numeric effects. All 1304 original effect strings round-trip exactly;
   33 backend tests and three synthetic-session browser workflows passed.
-  Remaining scope includes classes/active/passive/racial skills, actual engine
-  integration and versioned saved/shared build loading.
+  Equipment/Soul engine integration and pinned `PS3` build codes are now
+  implemented locally, including a real fresh-recipient offline reload test,
+  protected unavailable autosaves, compatibility preflight and stale-share
+  request protection. See `docs/CATALOG_COMPATIBILITY.md`.
+  Remaining scope includes classes/active/passive/racial skills and remote CMS
+  acceptance; these are not presented as completed mechanics.
 - PR24 is a draft. Main Pages production remains UI16. IDDQD public entry,
-  catalog engine adapter and compact Modern 3.00 remain required work.
+  expanded catalog acceptance and compact Modern 3.00 remain required work.

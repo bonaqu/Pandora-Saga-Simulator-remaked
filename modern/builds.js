@@ -47,8 +47,16 @@
 
   function payloadLooksLikeCurrentCsv(payload, reference) {
     if (typeof payload !== 'string' || !payload.trim()) return false;
+    try {
+      if (namespace.catalog) {
+        payload = namespace.catalog.unpackPayload(payload).payload;
+        if (reference) reference = namespace.catalog.unpackPayload(reference).payload;
+      }
+    } catch { return false; }
     if (payload.indexOf(',') === -1) return null;
-    var expected = String(reference || currentPayload()).split(',').length;
+    var ref = reference || currentPayload();
+    if (namespace.catalog) ref = namespace.catalog.unpackPayload(ref).payload;
+    var expected = String(ref).split(',').length;
     var values = payload.split(',');
     if (values.length !== expected) return false;
     for (var index = 0; index < values.length; index += 1) {
@@ -63,6 +71,10 @@
       after = currentPayload();
     } catch (error) {
       return false;
+    }
+    if (namespace.catalog) {
+      try { before = namespace.catalog.unpackPayload(before).payload; after = namespace.catalog.unpackPayload(after).payload; }
+      catch { return false; }
     }
     var beforeParts = before.split(',');
     var afterParts = after.split(',');
@@ -108,6 +120,7 @@
         throw new Error('Invalid Pandora Saga build code.');
       }
       var loaded = currentPayload();
+      if (namespace.catalog) namespace.catalog.clearRecovery();
       return { ok: true, payload: loaded };
     } catch (error) {
       rollback(before);
@@ -124,12 +137,16 @@
     }
   }
 
-  function loadSharedBuild() {
+  var shareRequest = 0;
+  async function loadSharedBuild() {
+    var request = ++shareRequest, hash = window.location.hash;
     if (window.location.hash.indexOf('#build=') !== 0) return false;
     var payload;
     try {
       if (window.location.hash.length > 20000) throw new Error('Share link too large');
       payload = decodeURIComponent(window.location.hash.slice(7));
+      if (namespace.catalog) await namespace.catalog.preparePayload(payload);
+      if (request !== shareRequest || hash !== window.location.hash) return false;
       // Links use plain numeric Legacy CSV, never untrusted compressed input.
       if (payloadLooksLikeCurrentCsv(payload) !== true) throw new Error('Invalid shared CSV');
       var loaded = loadPayloadSafely(payload);
@@ -142,6 +159,7 @@
       if (saved.ok) setAutosaveStatus(t('builds.sharedLoaded', null, 'Shared build loaded'), 'restored');
       return true;
     } catch (error) {
+      if (request !== shareRequest || hash !== window.location.hash) return false;
       setAutosaveStatus(t('builds.invalidShare', null, 'Invalid share link; current build kept'), 'warning');
       return false;
     }
@@ -167,6 +185,10 @@
 
   function flushAutosave() {
     clearScheduledAutosave();
+    if (namespace.catalog?.needsRecovery()) {
+      setAutosaveStatus('Catalog unavailable; saved build kept. Autosave paused.', 'warning');
+      return { ok: false, error: { code: 'catalog-unavailable' } };
+    }
     if (!adapter || !store) {
       var unavailable = { ok: false, error: { code: 'unavailable', message: 'Autosave is unavailable.' } };
       setAutosaveStatus(t('builds.autosaveUnavailable', null, 'Autosave unavailable'), 'error');
@@ -223,6 +245,12 @@
     if (!loaded.ok) return loaded;
     var saved = persistLoadedPayload(loaded.payload, t('builds.savedImported', null, 'Saved imported build'));
     return { ok: true, payload: loaded.payload, autosaved: saved.ok };
+  }
+
+  async function importPreparedPayload(candidate) {
+    try { if (namespace.catalog) await namespace.catalog.preparePayload(candidate); }
+    catch (error) { return { ok: false, error }; }
+    return importPayload(candidate);
   }
 
   function restoreAutosaveOnce() {
@@ -298,13 +326,15 @@
 
       var load = button('Load', null, 'builds.load');
       load.dataset.remakedBuildLoad = '';
-      load.addEventListener('click', function () {
+      load.addEventListener('click', async function () {
         var storedBuild = store.getBuild(build.id);
         if (!storedBuild) {
           setManagerStatus(t('builds.notFound', null, 'Build could not be found.'), 'error');
           renderBuilds();
           return;
         }
+        try { if (namespace.catalog) await namespace.catalog.preparePayload(storedBuild.payload); }
+        catch { setManagerStatus('Catalog revision unavailable; your current and saved builds were kept.', 'warning'); return; }
         var loaded = loadPayloadSafely(storedBuild.payload);
         if (!loaded.ok) {
           setManagerStatus(t('builds.invalid', null, 'Build is invalid and could not be loaded.'), 'error');
@@ -485,9 +515,9 @@
 
     var importButton = button('Import code', 'remaked-build-button remaked-build-button-primary', 'builds.importCode');
     importButton.dataset.remakedImportBuild = '';
-    importButton.addEventListener('click', function () {
+    importButton.addEventListener('click', async function () {
       var candidate = buildCode.value.trim();
-      var loaded = importPayload(candidate);
+      var loaded = await importPreparedPayload(candidate);
       if (!loaded.ok) {
         setManagerStatus(t('builds.invalidCode', null, 'Invalid build code; current build was not changed.'), 'error');
         return;
@@ -562,14 +592,17 @@
     if (!adapter || !store) return;
     createBuildTools();
     createManager();
-    restoreAutosaveOnce();
-    loadSharedBuild();
-    window.addEventListener('hashchange', loadSharedBuild);
-    bindLegacyChanges();
+    var legacy = document.getElementById('body');
+    suppressAutosave = true; if (legacy && namespace.catalog) legacy.inert = true;
+    Promise.resolve(namespace.catalog?.ready).then(async function () {
+      restoreAutosaveOnce(); await loadSharedBuild();
+      window.addEventListener('hashchange', loadSharedBuild); bindLegacyChanges();
+    }).finally(function () { suppressAutosave = false; if (legacy) legacy.inert = false; });
   }
 
   namespace.builds = {
     importPayload: importPayload,
+    importPreparedPayload: importPreparedPayload,
     scheduleAutosave: scheduleAutosave,
     flushAutosave: flushAutosave,
     openManager: openManager,

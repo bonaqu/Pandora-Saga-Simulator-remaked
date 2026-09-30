@@ -172,7 +172,7 @@
     }
   }
 
-  function evaluateSelection() {
+  async function evaluateSelection() {
     if (!selectA || !selectB) return;
     var idA = selectA.value;
     var idB = selectB.value;
@@ -196,6 +196,8 @@
     }
 
     try {
+      if (namespace.catalog) await Promise.all([namespace.catalog.preparePayload(buildA.payload), namespace.catalog.preparePayload(buildB.payload)]);
+      if (selectA.value !== idA || selectB.value !== idB) return;
       var projectionA = adapter.evaluateBuild(buildA.payload);
       var projectionB = adapter.evaluateBuild(buildB.payload);
       metaA.textContent = metadataText(buildA, projectionA);

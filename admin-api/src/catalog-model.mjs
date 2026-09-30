@@ -8,7 +8,7 @@ export const EFFECTS = [
   [0, 'STA', FLAT], [1, 'STR', FLAT], [2, 'AGI', FLAT], [3, 'DEX', FLAT], [4, 'SPR', FLAT], [5, 'INT', FLAT],
   [6, 'LP', BOTH], [7, 'MP', BOTH], [42, 'Magic attack (percentage points)', FLAT], [49, 'Defense', BOTH],
   [50, 'Front damage resistance', FLAT], [51, 'Back damage resistance', FLAT], [52, 'Physical damage resistance', BOTH],
-  [60, 'Magic damage resistance (percentage points)', BOTH], [62, 'Accuracy', BOTH], [65, 'Dodge', BOTH],
+  [60, 'Magic damage resistance (percentage points)', FLAT], [62, 'Accuracy', BOTH], [65, 'Dodge', BOTH],
   [69, 'Critical chance (percentage points)', FLAT], [70, 'Critical resistance (percentage points)', FLAT],
   [71, 'Critical damage (percentage points)', FLAT], [72, 'Critical damage resistance (percentage points)', FLAT],
   [73, 'Attack speed (percentage points)', FLAT], [74, 'Movement speed (percentage points)', FLAT],
