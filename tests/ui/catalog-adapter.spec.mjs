@@ -25,6 +25,81 @@ function classSnapshot(revision = 1) {
   edit.names.en = 'Edited Warrior'; edit.names.ru = 'Изменённый воин';
   return { ...snapshot([compileRecord(validateDraft(edit, identity), identity, source)], revision), characterSourceFingerprint: character.sourceFingerprint };
 }
+function racialSnapshot(mode, effects = [], revision = 1, id = 'racial_skill.0.2') {
+  const source = character.records.find(item => item.id === id);
+  const identity = { id: source.id, kind: 'racial', category: source.category, index: source.index };
+  const edit = draftFromSource(source, 'racial'); edit.effectMode = mode; edit.effects = effects;
+  return { ...snapshot([compileRecord(validateDraft(edit, identity), identity, source)], revision), characterSourceFingerprint: character.sourceFingerprint };
+}
+
+test('racial passive replacement changes the native potion result, never doubles the original and survives recalculation/load', async ({ page }) => {
+  await open(page);
+  const result = await page.evaluate(({ replaced, added, preserved }) => {
+    const api = window.PandoraRemaked; window.Status.Job[1] = 2; window.CalcSet('ALL');
+    const original = api.adapter.serialize(); const source = window.Status.POT;
+    api.catalog.applySnapshot(replaced); const replacement = window.Status.POT; const code = api.adapter.serialize();
+    window.CalcSet('ALL'); window.CalcSet('Equip'); window.CalcSet('ALL');
+    const repeated = window.Status.POT; api.adapter.load(original); const restored = window.Status.POT;
+    api.adapter.load(code); const loaded = window.Status.POT;
+    api.catalog.applySnapshot(added); const additive = window.Status.POT;
+    api.catalog.applySnapshot(preserved); const unchanged = window.Status.POT;
+    window.Status.Job[1] = 1; window.CalcSet('ALL'); const other = window.Status.POT;
+    return { source, replacement, repeated, restored, loaded, additive, unchanged, other, selected: window.Status.Job[1] };
+  }, { replaced: racialSnapshot('replace', [{ stat: 8, value: 20, unit: 'flat' }]), added: racialSnapshot('add', [{ stat: 8, value: 20, unit: 'flat' }], 2), preserved: racialSnapshot('preserve', [], 3) });
+  expect(result.source).toBe(115); expect(result.replacement).toBe(120); expect(result.repeated).toBe(120);
+  expect(result.restored).toBe(115); expect(result.loaded).toBe(120); expect(result.additive).toBe(135);
+  expect(result.unchanged).toBe(115); expect(result.other).toBe(100); expect(result.selected).toBe(1);
+});
+
+test('all 18 racial passives preserve exact native output and explicit empty replacement bypasses only native racial conditionals', async ({ page }) => {
+  await open(page);
+  const preserved = character.records.filter(item => item.kind === 'racial').map(source => {
+    const id = { id: source.id, kind: 'racial', category: source.category, index: source.index };
+    return compileRecord(validateDraft(draftFromSource(source, 'racial'), id), id, source);
+  });
+  const result = await page.evaluate(data => {
+    const api = window.PandoraRemaked; const source = api.adapter.serialize(); const originalNames = JSON.stringify(window.Name.Race.Skill);
+    const calculated = () => {
+      const values = []; for (let index = 0; index < window.Name.Option.length; index++) {
+        const element = document.getElementById('Status_' + index); if (element) values.push([index, element.textContent]);
+      } return JSON.stringify([values, api.adapter.readCalculatedSummary()]);
+    };
+    const rows = [];
+    data.records.forEach(record => {
+      window.Status.Job[0] = record.category; window.Status.Job[1] = record.index; window.CalcSet('ALL');
+      const native = calculated();
+      window.Status.Job[1] = 3; window.CalcSet('ALL'); const without = calculated();
+      window.Status.Job[1] = record.index;
+      api.catalog.applySnapshot({ ...data, records: [record] }); const same = calculated();
+      api.catalog.applySnapshot({ ...data, revision: 2, records: [{ ...record, effectMode: 'replace' }] });
+      rows.push({ same: same === native, replacement: calculated() === without, selected: window.Status.Job[1] === record.index });
+      api.catalog.useRevision(0);
+    });
+    api.adapter.load(source);
+    return { rows, namesSame: originalNames === JSON.stringify(window.Name.Race.Skill), restored: api.adapter.serialize() === source };
+  }, { ...snapshot(preserved), characterSourceFingerprint: character.sourceFingerprint });
+  expect(result.rows).toHaveLength(18); expect(result.rows.every(row => row.same && row.replacement && row.selected)).toBe(true);
+  expect(result.namesSame).toBe(true); expect(result.restored).toBe(true);
+});
+
+test('racial malformed publication and native calculation exception leave selected slot and equipment option cache intact', async ({ page }) => {
+  await open(page);
+  const result = await page.evaluate(data => {
+    const api = window.PandoraRemaked; const original = api.adapter.serialize(); const opts = JSON.stringify(window.EquipOpt);
+    const invalid = [ { ...data, characterSourceFingerprint: 'wrong' }, { ...data, records: [{ ...data.records[0], category: 6 }] },
+      { ...data, records: [{ ...data.records[0], effects: [{ stat: 8, value: 20, unit: 'percent' }] }] },
+      { ...data, records: [{ ...data.records[0], effects: [{ stat: 8, value: 20, unit: 'flat' }, { stat: 8, value: 10, unit: 'flat' }] }] },
+      { ...data, records: [{ ...data.records[0], effectMode: 'preserve' }] } ];
+    const rejected = invalid.map(input => { try { api.catalog.applySnapshot(input); return false; } catch { return true; } });
+    const unchanged = api.adapter.serialize() === original && opts === JSON.stringify(window.EquipOpt);
+    window.Status.Job[1] = 2; api.catalog.applySnapshot(data); const before = api.adapter.serialize(); const cache = window.EquipOpt; const dollar = window.$;
+    let failed = false; window.$ = function () { throw new Error('Native calculation fixture'); };
+    try { window.Calc('POT'); } catch { failed = true; } finally { window.$ = dollar; }
+    return { rejected, unchanged, failed, slot: window.Status.Job[1], sameOptions: window.EquipOpt === cache, before, after: api.adapter.serialize() };
+  }, racialSnapshot('replace', [{ stat: 8, value: 20, unit: 'flat' }]));
+  expect(result.rejected).toEqual([true, true, true, true, true]); expect(result.unchanged).toBe(true); expect(result.failed).toBe(true);
+  expect(result.slot).toBe(2); expect(result.sameOptions).toBe(true); expect(result.after).toBe(result.before);
+});
 
 test('published class parameters change native LP, retain canonical lineage and round-trip pinned build data', async ({ page }) => {
   await open(page);

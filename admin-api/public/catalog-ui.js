@@ -3,7 +3,7 @@
   var host = document.getElementById('catalog-console');
   var status = document.getElementById('catalog-state');
   var meta, getCsrf, expired, current, editor, listHost, listStatus, search, kind, newButton, page = 0;
-  var generation = 0, pending = 0, dirty = false, catalogRevision = 0;
+  var generation = 0, pending = 0, editorRequest = 0, searchTimer, dirty = false, catalogRevision = 0;
   var languages = [['en', 'English'], ['ru', 'Русский'], ['jp', '日本語'], ['tw', '繁體中文']];
   function node(tag, text, className) { var result = document.createElement(tag); if (text !== undefined) result.textContent = text; if (className) result.className = className; return result; }
   function button(text, action, className) { var result = node('button', text, className); result.type = 'button'; result.addEventListener('click', action); return result; }
@@ -72,6 +72,11 @@
       edit.progression = edit.progression.map(function (_, index) { return Number(formValue('progression' + index)); });
       return edit;
     }
+    if (edit.kind === 'racial') {
+      edit.effectMode = formValue('effectMode'); edit.effects = [];
+      editor.querySelectorAll('.effect-row').forEach(function (row) { var inputs = row.querySelectorAll('select, input'); edit.effects.push({ stat: Number(inputs[0].value), value: Number(inputs[1].value), unit: inputs[2].value }); });
+      return edit;
+    }
     if (edit.kind === 'equipment') { edit.category = Number(formValue('category')); edit.level = Number(formValue('level')); edit.sockets = Number(formValue('sockets')); }
     edit.disabled = editor.querySelector('[data-field="disabled"]').checked;
     edit.baseAttack = editor.querySelector('[data-field="baseAttack"]') && formValue('baseAttack') !== '' ? Number(formValue('baseAttack')) : null;
@@ -83,25 +88,46 @@
   }
   async function saveDraft() {
     if (!editor.reportValidity()) return;
+    var thisGeneration = generation;
+    host.inert = true; host.setAttribute('aria-busy', 'true');
     var busy = editor.querySelectorAll('.editor-actions button'); busy.forEach(function (button) { button.disabled = true; });
     try {
       var result = await api('draft', { edit: collect(), expectedDraftVersion: current.draftVersion, expectedCatalogRevision: current.catalogRevision });
+      if (thisGeneration !== generation) return;
       current = result; dirty = false; renderEditor(); report('Черновик сохранён. На сайте он ещё не опубликован.'); await loadList();
-    } catch (error) { report(error.message + ' Несохранённые поля оставлены на месте.', true); }
-    finally { busy.forEach(function (button) { button.disabled = false; }); }
+    } catch (error) { if (thisGeneration === generation) report(error.message + ' Несохранённые поля оставлены на месте.', true); }
+    finally { busy.forEach(function (button) { button.disabled = false; }); if (thisGeneration === generation) { host.inert = false; host.removeAttribute('aria-busy'); } }
   }
   async function publish() {
     if (dirty || !current.hasDraft) { report('Сначала сохраните черновик.'); return; }
     if (!window.confirm('Опубликовать «' + current.edit.names.en + '»? Названия и характеристики изменятся в Modern. Legacy останется неизменным.')) return;
+    var thisGeneration = generation, id = current.identity.id;
+    host.inert = true; host.setAttribute('aria-busy', 'true');
     try {
       var result = await api('publish', { id: current.identity.id, expectedDraftVersion: current.draftVersion, expectedCatalogRevision: current.catalogRevision });
-      current = await api('item?id=' + encodeURIComponent(current.identity.id)); renderEditor(); await loadList(); report('Опубликована версия каталога ' + result.catalogRevision + '.');
-    } catch (error) { report(error.message, true); }
+      if (thisGeneration !== generation) return;
+      var refreshed = await api('item?id=' + encodeURIComponent(id)); if (thisGeneration !== generation) return;
+      current = refreshed; renderEditor(); await loadList(); if (thisGeneration === generation) report('Опубликована версия каталога ' + result.catalogRevision + '.');
+    } catch (error) { if (thisGeneration === generation) report(error.message, true); }
+    finally { if (thisGeneration === generation) { host.inert = false; host.removeAttribute('aria-busy'); } }
   }
   function renderEditor() {
     editor.replaceChildren(); var edit = current.edit;
     editor.appendChild(node('h3', edit.id ? edit.names.en : 'Новая запись'));
     editor.appendChild(node('p', (edit.id || 'ID выдаст сервер') + ' · ' + (current.hasDraft ? 'ЧЕРНОВИК ' + current.draftVersion : current.published ? 'ОПУБЛИКОВАНО' : 'LEGACY SOURCE'), 'item-identity'));
+    if (edit.kind === 'racial') {
+      var race = meta.compatibilityLabels.race.find(function (entry) { return entry.index === edit.category; });
+      editor.appendChild(node('p', 'Раса: ' + race.label + ' · слот ' + (current.identity.index + 1), 'item-identity'));
+      multilingual('Название расовой пассивки · English обязателен', 'names', edit.names, editor, false);
+      multilingual('Описание — текст, не формула', 'description', edit.description, editor, true);
+      var racialEffects = node('fieldset', undefined, 'numeric-effects'); racialEffects.appendChild(node('legend', 'Эффект выбранной расовой пассивки'));
+      selectField('Как применять числовые бонусы', [['preserve', 'Сохранить исходную механику (только текст)'], ['add', 'Добавить к исходной механике'], ['replace', 'Заменить исходную механику указанными бонусами']], edit.effectMode, 'effectMode', racialEffects);
+      racialEffects.appendChild(node('p', 'Бонус действует только когда персонаж выбрал эту расовую способность. «Заменить» отключает её встроенные эффекты расчёта и применяет только числа ниже. Пустая замена убирает встроенный эффект. Боевые действия, которых нет в Legacy, это не создаёт.', 'help-text'));
+      var racialRows = node('div', undefined, 'effect-rows'); racialEffects.appendChild(racialRows); edit.effects.forEach(function (effect) { effectRow(effect, racialRows); });
+      racialEffects.appendChild(button('Добавить характеристику', function () { effectRow({ stat: 1, value: 0, unit: 'flat' }, racialRows); var mode = editor.querySelector('[data-field="effectMode"]'); if (mode.value === 'preserve') mode.value = 'add'; changing(); }, 'secondary')); editor.appendChild(racialEffects);
+      var racialActions = node('div', undefined, 'editor-actions'); racialActions.append(button('Сохранить черновик', saveDraft), button('Опубликовать', publish)); editor.appendChild(racialActions);
+      editor.dataset.unsaved = dirty ? 'true' : 'false'; return;
+    }
     if (edit.kind === 'class') {
       multilingual('Название класса · English обязателен', 'names', edit.names, editor, false);
       multilingual('Описание класса — текст, не формула', 'description', edit.description, editor, true);
@@ -154,28 +180,34 @@
   }
   async function openItem(id) {
     if (!canLeave()) return;
-    try { current = await api('item?id=' + encodeURIComponent(id)); dirty = false; renderEditor(); report('Выбрано: ' + current.edit.names.en + '. Изменения пока не опубликованы.'); }
-    catch (error) { report(error.message, true); }
+    var sequence = ++editorRequest, thisGeneration = generation;
+    current = null; dirty = false; editor.replaceChildren(node('p', 'Загрузка ' + id + '…'));
+    try {
+      var result = await api('item?id=' + encodeURIComponent(id)); if (thisGeneration !== generation || sequence !== editorRequest) return;
+      current = result; renderEditor(); report('Выбрано: ' + current.edit.names.en + '. Изменения пока не опубликованы.');
+    } catch (error) { if (thisGeneration === generation && sequence === editorRequest) report(error.message, true); }
   }
   async function loadList() {
     var sequence = ++pending, thisGeneration = generation;
+    listHost.replaceChildren(); listHost.setAttribute('aria-busy', 'true'); listStatus.textContent = 'Поиск…';
     try {
       var result = await api('catalog?kind=' + kind.value + '&q=' + encodeURIComponent(search.value) + '&page=' + page);
       if (sequence !== pending || thisGeneration !== generation) return;
-      catalogRevision = result.catalogRevision; listHost.replaceChildren();
+      catalogRevision = result.catalogRevision; listHost.replaceChildren(); listHost.removeAttribute('aria-busy');
       listStatus.textContent = 'Версия ' + catalogRevision + ' · ' + result.count + ' записей · страница ' + (page + 1);
       result.items.forEach(function (item) {
         var select = button(item.names.ru || item.names.en, function () { openItem(item.id); }, 'catalog-entry');
-        select.appendChild(node('span', (item.draftVersion ? 'DRAFT · ' : '') + item.names.en + (item.category !== null ? ' · Lv ' + item.level + ' · ○ ' + item.sockets : ''), 'catalog-entry-meta')); listHost.appendChild(select);
+        select.appendChild(node('span', (item.draftVersion ? 'DRAFT · ' : '') + item.names.en + (kind.value === 'equipment' ? ' · Lv ' + item.level + ' · ○ ' + item.sockets : ''), 'catalog-entry-meta')); listHost.appendChild(select);
       });
       if (!result.items.length) listHost.appendChild(node('p', 'Ничего не найдено.'));
       var pagination = node('div', undefined, 'pagination'); var back = button('← Назад', function () { page--; loadList(); }, 'secondary'); back.disabled = page === 0;
       var next = button('Далее →', function () { page++; loadList(); }, 'secondary'); next.disabled = (page + 1) * result.pageSize >= result.count; pagination.append(back, next); listHost.appendChild(pagination);
-    } catch (error) { if (thisGeneration === generation) report(error.message, true); }
+    } catch (error) { if (thisGeneration === generation && sequence === pending) { listHost.removeAttribute('aria-busy'); listStatus.textContent = 'Список не загружен'; report(error.message, true); } }
   }
   function newItem() {
-    if (kind.value === 'class') { report('Для классов пока поддерживаются только существующие слоты и параметры LP / MP.'); return; }
+    if (kind.value === 'class' || kind.value === 'racial') { report('Для этого каталога пока поддерживаются только существующие слоты.'); return; }
     if (!canLeave()) return;
+    editorRequest++;
     current = { draftVersion: 0, catalogRevision, hasDraft: false, edit: { id: '', kind: kind.value, category: kind.value === 'equipment' ? 0 : null,
       names: { en: '', ru: '', jp: '', tw: '' }, description: {}, notes: {}, acquisition: {}, modifiers: {}, level: 1, sockets: 0,
       races: Array(6).fill(1), classes: Array(28).fill(1), slots: Array(8).fill(1), baseAttack: kind.value === 'equipment' ? 0 : null,
@@ -183,8 +215,11 @@
   }
   async function revisions() {
     if (!canLeave()) return;
+    var sequence = ++editorRequest, thisGeneration = generation;
+    current = null; dirty = false; editor.replaceChildren(node('p', 'Загрузка истории…'));
     try {
-      var result = await api('revisions'); editor.replaceChildren(); current = null; dirty = false;
+      var result = await api('revisions'); if (thisGeneration !== generation || sequence !== editorRequest) return;
+      editor.replaceChildren(); current = null; dirty = false;
       editor.appendChild(node('h3', 'История публикаций'));
       editor.appendChild(node('p', 'Откат создаёт новую версию. Старые версии и черновики сохраняются.'));
       [{ version: 0, note: 'Исходный Legacy-каталог', created_at: 0 }].concat(result.revisions).forEach(function (revision) {
@@ -194,15 +229,18 @@
           try { var restored = await api('rollback', { revision: revision.version, expectedCatalogRevision: result.catalogRevision }); await loadList(); await revisions(); report('Восстановлено как новая версия ' + restored.catalogRevision + '.'); } catch (error) { report(error.message, true); }
         }, 'secondary')); editor.appendChild(row);
       });
-    } catch (error) { report(error.message, true); }
+    } catch (error) { if (thisGeneration === generation && sequence === editorRequest) report(error.message, true); }
   }
   async function start(csrf, onExpired) {
     getCsrf = csrf; expired = onExpired; var thisGeneration = ++generation;
     try { meta = await api('meta'); if (thisGeneration !== generation) return;
       host.replaceChildren(); var controls = node('div', undefined, 'catalog-controls');
-      kind = node('select'); kind.setAttribute('aria-label', 'Каталог'); [['equipment', 'Экипировка / оружие'], ['soul', 'Souls / души'], ['class', 'Классы персонажей']].forEach(function (entry) { var option = node('option', entry[1]); option.value = entry[0]; kind.appendChild(option); });
+      kind = node('select'); kind.setAttribute('aria-label', 'Каталог'); [['equipment', 'Экипировка / оружие'], ['soul', 'Souls / души'], ['class', 'Классы персонажей'], ['racial', 'Расовые пассивки']].forEach(function (entry) { var option = node('option', entry[1]); option.value = entry[0]; kind.appendChild(option); });
       search = node('input'); search.type = 'search'; search.placeholder = 'Поиск по названию или ID'; search.setAttribute('aria-label', 'Поиск в каталоге');
-      var debounce; search.addEventListener('input', function () { clearTimeout(debounce); debounce = setTimeout(function () { page = 0; loadList(); }, 300); }); kind.addEventListener('change', function () { newButton.disabled = kind.value === 'class'; page = 0; loadList(); });
+      search.addEventListener('input', function () {
+        clearTimeout(searchTimer); pending++; listHost.replaceChildren(); listHost.setAttribute('aria-busy', 'true'); listStatus.textContent = 'Поиск…';
+        searchTimer = setTimeout(function () { if (thisGeneration === generation) { page = 0; loadList(); } }, 300);
+      }); kind.addEventListener('change', function () { clearTimeout(searchTimer); newButton.disabled = kind.value === 'class' || kind.value === 'racial'; page = 0; loadList(); });
       newButton = button('Новая запись', newItem);
       controls.append(kind, search, newButton, button('История / откат', revisions, 'secondary')); host.appendChild(controls);
       var grid = node('div', undefined, 'catalog-grid'); var sidebar = node('section', undefined, 'catalog-sidebar'); sidebar.setAttribute('aria-label', 'Список записей');
@@ -212,5 +250,5 @@
     } catch (error) { report(error.message, true); }
   }
   window.addEventListener('beforeunload', function (event) { if (dirty) { event.preventDefault(); event.returnValue = ''; } });
-  window.PandoraCatalogConsole = { start, clear: function () { generation++; pending++; dirty = false; current = null; meta = null; host.replaceChildren(); } };
+  window.PandoraCatalogConsole = { start, clear: function () { generation++; pending++; editorRequest++; clearTimeout(searchTimer); dirty = false; current = null; meta = null; host.inert = false; host.removeAttribute('aria-busy'); host.replaceChildren(); } };
 })();

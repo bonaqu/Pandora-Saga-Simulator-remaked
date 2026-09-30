@@ -158,7 +158,7 @@ async function rollback(request, env, now) {
 async function list(request, env) {
   const url = new URL(request.url);
   const kind = url.searchParams.get('kind') || 'equipment';
-  if (!['equipment', 'soul', 'class'].includes(kind)) fail('Unknown catalog');
+  if (!['equipment', 'soul', 'class', 'racial'].includes(kind)) fail('Unknown catalog');
   const q = (url.searchParams.get('q') || '').trim().toLowerCase(); if (q.length > 160) fail('Search too long');
   const pageText = url.searchParams.get('page') || '0'; if (!/^\d{1,5}$/.test(pageText)) fail('Invalid page');
   const page = Number(pageText);

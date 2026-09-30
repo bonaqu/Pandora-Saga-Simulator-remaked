@@ -53,6 +53,16 @@ valid equipment during restoration.
   represent and serialize them correctly. This class increment is not deployed.
 - Classes, active skills, character passives and racial passives require typed
   schemas and engine capability tests, not merely translated descriptions.
+- The local editor now supports all 18 existing racial passive slots. `preserve`
+  leaves native mechanics unchanged, `add` adds typed numeric options, and
+  `replace` explicitly bypasses the selected native racial conditionals inside
+  the retained `Calc` call. A temporary out-of-range selector and temporary
+  option projection are always restored in `finally`, including engine errors;
+  no sentinel enters build data or the UI. All native formulas stay in Legacy.
+  Empty replacement removes the native calculation effect. Other race/skill
+  selections do not inherit the edited bonus; source revision 0 restores it.
+  Unsupported combat actions are not created by a description or numeric bonus.
+  This increment is not deployed; active/class passive work remains required.
 - Arbitrary scripts, HTML, SQL or game-effect expressions are not supported.
 - Combat mechanics absent from Legacy cannot be advertised as simulated.
 - Source `equipment.42.32` (Wyss Belt) has malformed effect code `0=1_-7`.

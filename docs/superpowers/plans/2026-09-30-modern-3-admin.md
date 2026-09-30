@@ -114,3 +114,14 @@ were not printed or copied into the repository.
   LP delta, pinned-code restoration, invalid coefficients/fingerprint rejection,
   private draft/publication and desktop/mobile UI. Not deployed to Worker/Pages.
   The last committed IDDQD block also passed GitHub Feature CI and API verify.
+- The class increment `6f5cf37` passed local full browser CI (159), Python (62),
+  preservation validation, deterministic data projection and GitHub Feature CI
+  plus API verify. No remote class data was published.
+- Racial editor increment implemented locally for all 18 existing slots:
+  explicit preserve/add/replace, typed options through retained `Calc`, native
+  conditional bypass only for an explicit replacement, temporary state restored
+  even on errors. Native parity across all 18, repeated-calculation/code-load,
+  malformed-input and three-engine checks passed. Admin search invalidates old
+  results immediately; stale detail replies cannot replace a newer choice and
+  saves freeze controls to prevent losing typing. Remaining active/class passive
+  and compact 3.00 work is not declared complete.

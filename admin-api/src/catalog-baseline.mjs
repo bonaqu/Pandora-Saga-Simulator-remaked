@@ -3,7 +3,7 @@ import souls from '../../data/generated/souls.v1.json' with { type: 'json' };
 import terms from '../../localization/game-terms.ru.json' with { type: 'json' };
 import character from '../../data/generated/character.v1.json' with { type: 'json' };
 
-export const baselineRecords = [...equipment.records, ...souls.records, ...character.records.filter(record => record.kind === 'class')];
+export const baselineRecords = [...equipment.records, ...souls.records, ...character.records.filter(record => ['class', 'racial'].includes(record.kind))];
 export const baselineById = new Map(baselineRecords.map(record => [record.id, record]));
 export const categories = equipment.categories;
 export const sourceFingerprint = equipment.metadata.generated_from[0].sha256;
@@ -14,6 +14,7 @@ export const compatibilityLabels = Object.fromEntries(['race', 'job'].map(kind =
   .sort((a, b) => a.index - b.index)]));
 export function sourceIdentity(source) {
   if (source.kind === 'class') return { id: source.id, kind: 'class', category: null, index: source.index };
+  if (source.kind === 'racial') return { id: source.id, kind: 'racial', category: source.category, index: source.index };
   return source.id.startsWith('equipment.')
     ? { id: source.id, kind: 'equipment', category: source.legacy_category_id, index: source.legacy_item_index }
     : { id: source.id, kind: 'soul', category: null, index: source.legacy_id };

@@ -1,4 +1,26 @@
 import { test, expect } from '@playwright/test';
+import { compileRecord, draftFromSource, validateDraft } from '../../admin-api/src/catalog-model.mjs';
+import character from '../../data/generated/character.v1.json' with { type: 'json' };
+import equipment from '../../data/generated/equipment.v1.json' with { type: 'json' };
+
+test('native class parameters and racial replacement survive pinned-code load in each browser engine', async ({ page }) => {
+  await page.goto('/');
+  const records = ['job.0', 'racial_skill.0.2'].map(id => {
+    const source = character.records.find(record => record.id === id);
+    const identity = { id, kind: source.kind, category: source.category, index: source.index }; const edit = draftFromSource(source, source.kind);
+    if (source.kind === 'class') edit.progression[0] += 100;
+    else { edit.effectMode = 'replace'; edit.effects = [{ stat: 8, value: 20, unit: 'flat' }]; }
+    return compileRecord(validateDraft(edit, identity), identity, source);
+  });
+  const result = await page.evaluate(data => {
+    const api = window.PandoraRemaked; window.Status.Job[1] = 2; window.CalcSet('ALL');
+    const original = api.adapter.serialize(); const lp = window.Status.LP;
+    api.catalog.applySnapshot(data); const code = api.adapter.serialize(); const published = { lp: window.Status.LP, pot: window.Status.POT };
+    api.adapter.load(original); const source = { lp: window.Status.LP, pot: window.Status.POT };
+    api.adapter.load(code); return { lp, published, source, loaded: { lp: window.Status.LP, pot: window.Status.POT }, slot: window.Status.Job[1] };
+  }, { ok: true, schemaVersion: 1, sourceFingerprint: equipment.metadata.generated_from[0].sha256, characterSourceFingerprint: character.sourceFingerprint, revision: 1, records });
+  expect(result.published).toEqual({ lp: result.lp + 100, pot: 120 }); expect(result.source).toEqual({ lp: result.lp, pot: 115 }); expect(result.loaded).toEqual(result.published); expect(result.slot).toBe(2);
+});
 
 test('IDDQD login is a keyboard-accessible native modal with unchanged character state', async ({ page }) => {
   await page.goto('/'); const before = await page.evaluate(() => Store());

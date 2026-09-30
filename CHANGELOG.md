@@ -4,6 +4,13 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 
 ## Unreleased — Modern 3.00
 
+- Local racial-passive editor supports 18 retained slots with separate
+  multilingual text and explicit preserve/add/replace numeric effects. Actual
+  retained-engine results, revision restoration and exception-safe temporary
+  state are verified; native formulas and museum data remain unchanged.
+- Admin search no longer offers stale results while a query changes. Late item
+  responses cannot replace the current selection; saves temporarily freeze
+  fields so a successful response cannot discard subsequent typing.
 - Local administrator class editor supports all 28 retained class slots,
   multilingual text and native LP/MP progression parameters. Typed source
   fingerprint checks and pinned build revisions preserve old class calculations.

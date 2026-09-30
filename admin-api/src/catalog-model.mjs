@@ -6,7 +6,7 @@ export const LANGUAGES = ['en', 'ru', 'jp', 'tw'];
 export const EQUIPMENT_CATEGORIES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 20, 30, 31, 32, 33, 34, 35, 40, 41, 42, 43];
 export const EFFECTS = [
   [0, 'STA', FLAT], [1, 'STR', FLAT], [2, 'AGI', FLAT], [3, 'DEX', FLAT], [4, 'SPR', FLAT], [5, 'INT', FLAT],
-  [6, 'LP', BOTH], [7, 'MP', BOTH], [42, 'Magic attack (percentage points)', FLAT], [49, 'Defense', BOTH],
+  [6, 'LP', BOTH], [7, 'MP', BOTH], [8, 'Potion effectiveness (percentage points)', FLAT], [42, 'Magic attack (percentage points)', FLAT], [49, 'Defense', BOTH],
   [50, 'Front damage resistance', FLAT], [51, 'Back damage resistance', FLAT], [52, 'Physical damage resistance', BOTH],
   [60, 'Magic damage resistance (percentage points)', FLAT], [62, 'Accuracy', BOTH], [65, 'Dodge', BOTH],
   [69, 'Critical chance (percentage points)', FLAT], [70, 'Critical resistance (percentage points)', FLAT],
@@ -51,8 +51,24 @@ function flags(value, count, label) {
   return [...value];
 }
 const texts = source => Object.fromEntries(LANGUAGES.map(language => [language, source?.[language] || '']));
+function effects(input) {
+  check(Array.isArray(input) && input.length <= EFFECTS.length, 'Too many effects');
+  const seen = new Set();
+  return input.map(effect => {
+    keys(effect, ['stat', 'value', 'unit'], 'Effect');
+    const definition = effectById.get(effect.stat);
+    check(definition && definition.units.includes(effect.unit), 'Unsupported effect or unit');
+    check(!seen.has(effect.stat), 'Duplicate stat'); seen.add(effect.stat);
+    check(typeof effect.value === 'number' && Number.isFinite(effect.value) && Math.abs(effect.value) <= 10000 && Number.isInteger(effect.value * 100), 'Effect must be a bounded number with at most two decimals');
+    return { stat: effect.stat, value: effect.value, unit: effect.unit };
+  });
+}
 
 export function draftFromSource(source, kind) {
+  if (kind === 'racial') {
+    check(source?.kind === 'racial', 'Only existing racial passive slots are supported');
+    return { id: source.id, kind, category: source.category, names: texts(source.name), description: texts(null), effectMode: 'preserve', effects: [] };
+  }
   if (kind === 'class') {
     check(source?.kind === 'class', 'Only the 28 existing class slots are supported');
     return { id: source.id, kind, category: null, names: texts(source.name), description: texts(null), progression: [...source.progression] };
@@ -70,6 +86,14 @@ export function draftFromSource(source, kind) {
 }
 
 export function validateDraft(input, identity) {
+  if (identity.kind === 'racial') {
+    keys(input, ['id', 'kind', 'category', 'names', 'description', 'effectMode', 'effects'], 'Racial passive');
+    check(input.id === identity.id && input.kind === 'racial' && input.category === identity.category && Number.isInteger(identity.category) && identity.category >= 0 && identity.category < 6 && Number.isInteger(identity.index) && identity.index >= 0 && identity.index < 3 && input.id === 'racial_skill.' + identity.category + '.' + identity.index, 'Racial passive identity cannot be changed');
+    const names = textMap(input.names, 160, 'Names'); check(names.en.length > 0, 'English name is required');
+    check(['preserve', 'add', 'replace'].includes(input.effectMode), 'Unknown racial effect mode');
+    const typed = effects(input.effects); check(input.effectMode !== 'preserve' || typed.length === 0, 'Preserve mode must not discard submitted effects');
+    return { id: input.id, kind: 'racial', category: identity.category, names, description: textMap(input.description, 4000, 'Description'), effectMode: input.effectMode, effects: typed };
+  }
   if (identity.kind === 'class') {
     keys(input, ['id', 'kind', 'category', 'names', 'description', 'progression'], 'Class');
     check(input.id === identity.id && input.kind === 'class' && input.category === null && identity.category === null && Number.isInteger(identity.index) && identity.index >= 0 && identity.index < 28 && input.id === 'job.' + identity.index, 'Class identity cannot be changed');
@@ -99,21 +123,16 @@ export function validateDraft(input, identity) {
   check(['preserve', 'patch', 'replace'].includes(input.effectMode), 'Unknown effect mode'); result.effectMode = input.effectMode;
   check(input.baseAttack === null || (input.kind === 'equipment' && input.category <= 13), 'Weapon attack only applies to weapons');
   result.baseAttack = input.baseAttack === null ? null : integer(input.baseAttack, 0, 10000, 'Weapon attack');
-  check(Array.isArray(input.effects) && input.effects.length <= EFFECTS.length, 'Too many effects');
-  const seen = new Set();
-  result.effects = input.effects.map(effect => {
-    keys(effect, ['stat', 'value', 'unit'], 'Effect');
-    const definition = effectById.get(effect.stat);
-    check(definition && definition.units.includes(effect.unit), 'Unsupported effect or unit');
-    check(!seen.has(effect.stat), 'Duplicate stat'); seen.add(effect.stat);
-    check(typeof effect.value === 'number' && Number.isFinite(effect.value) && Math.abs(effect.value) <= 10000 && Number.isInteger(effect.value * 100), 'Effect must be a bounded number with at most two decimals');
-    return { stat: effect.stat, value: effect.value, unit: effect.unit };
-  });
+  result.effects = effects(input.effects);
   check(result.effectMode !== 'preserve' || (result.effects.length === 0 && result.baseAttack === null), 'Preserve mode must not discard submitted effects');
   return result;
 }
 
 export function compileRecord(edit, identity, source) {
+  if (identity.kind === 'racial') {
+    check(source?.kind === 'racial', 'New racial selection slots require a separate engine capability');
+    return { id: identity.id, kind: 'racial', category: identity.category, index: identity.index, names: edit.names, description: edit.description, effectMode: edit.effectMode, effects: edit.effects.map(effect => ({ ...effect })) };
+  }
   if (identity.kind === 'class') {
     check(source?.kind === 'class', 'New class mechanics require a separate engine capability');
     return { id: identity.id, kind: 'class', category: null, index: identity.index, names: edit.names, description: edit.description, progression: [...edit.progression] };

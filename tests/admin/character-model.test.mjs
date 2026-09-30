@@ -33,3 +33,16 @@ test('all 28 classes round-trip exact Legacy progression without reducing origin
     assert.deepEqual(compileRecord(validateDraft(draftFromSource(source, 'class'), id), id, source).progression, source.progression);
   }
 });
+
+test('all racial passives keep native mechanics by default and accept only explicit typed replacement/addition', () => {
+  const records = character.records.filter(record => record.kind === 'racial'); assert.equal(records.length, 18);
+  for (const source of records) {
+    const id = { id: source.id, kind: 'racial', category: source.category, index: source.index };
+    const edit = draftFromSource(source, 'racial');
+    const record = compileRecord(validateDraft(edit, id), id, source);
+    assert.equal(record.effectMode, 'preserve'); assert.deepEqual(record.effects, []);
+    edit.effectMode = 'replace'; edit.effects = [{ stat: 8, value: 20, unit: 'flat' }];
+    assert.deepEqual(compileRecord(validateDraft(edit, id), id, source).effects, edit.effects);
+    for (const bad of [{ ...edit, category: 6 }, { ...edit, nativeCode: 'eval(1)' }, { ...edit, effectMode: 'preserve' }, { ...edit, effects: [{ stat: 8, value: 2, unit: 'percent' }] }]) assert.throws(() => validateDraft(bad, id));
+  }
+});

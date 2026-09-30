@@ -136,3 +136,57 @@ test('class editor saves and publishes typed native progression, without pretend
   await page.screenshot({ path: testInfo.outputPath('class-editor-mobile.png'), fullPage: true });
   expect(errors).toEqual([]);
 });
+
+test('racial editor publishes explicit typed replacement as a private draft first, without gear-only controls', async ({ page }, testInfo) => {
+  const { sqlite, errors } = await openConsole(page);
+  await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('racial');
+  await expect(page.getByRole('button', { name: 'Новая запись', exact: true })).toBeDisabled();
+  await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill('racial_skill.0.2');
+  await page.locator('.catalog-entry').first().click();
+  await expect(page.locator('.catalog-editor')).toContainText('Раса: Human');
+  await expect(page.locator('[data-field="sockets"]')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Создать вариант', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Добавить характеристику', exact: true }).click();
+  await expect(page.locator('[data-field="effectMode"]')).toHaveValue('add');
+  await page.locator('[data-field="effectMode"]').selectOption('replace');
+  await page.getByRole('combobox', { name: 'Характеристика', exact: true }).selectOption('8');
+  await page.getByRole('spinbutton', { name: 'Значение', exact: true }).fill('20');
+  await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(0);
+  page.on('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: 'Опубликовать', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Опубликована версия каталога 1');
+  const published = JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head').get().snapshot_json)[0];
+  expect(published.edit.effects).toEqual([{ stat: 8, value: 20, unit: 'flat' }]); expect(published.edit.effectMode).toBe('replace');
+  expect(published.identity.id).toBe('racial_skill.0.2');
+  await page.screenshot({ path: testInfo.outputPath('racial-editor-desktop.png'), fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath('racial-editor-mobile.png'), fullPage: true });
+  expect(errors).toEqual([]);
+});
+
+test('late item response cannot replace a newer selection, and saving freezes fields instead of discarding later typing', async ({ page }) => {
+  const { errors } = await openConsole(page);
+  let releaseItem; const itemGate = new Promise(resolve => { releaseItem = resolve; });
+  await page.route(admin + '/api/admin/item**', async route => {
+    if (new URL(route.request().url()).searchParams.get('id') === 'equipment.0.1') await itemGate;
+    await route.fallback();
+  });
+  await page.locator('.catalog-entry').first().click();
+  await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill('equipment.0.2');
+  await page.locator('.catalog-entry').first().click();
+  await expect(page.locator('.catalog-editor .item-identity')).toContainText('equipment.0.2');
+  releaseItem(); await page.waitForTimeout(150);
+  await expect(page.locator('.catalog-editor .item-identity')).toContainText('equipment.0.2');
+  let releaseSave; const saveGate = new Promise(resolve => { releaseSave = resolve; });
+  await page.route(admin + '/api/admin/draft', async route => { await saveGate; await route.fallback(); });
+  await page.locator('[data-field="names"][data-language="en"]').fill('Saved selection');
+  await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
+  await expect(page.locator('#catalog-console')).toHaveAttribute('inert', '');
+  releaseSave(); await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  await expect(page.locator('#catalog-console')).not.toHaveAttribute('inert', '');
+  await expect(page.locator('[data-field="names"][data-language="en"]')).toHaveValue('Saved selection');
+  expect(errors).toEqual([]);
+});
