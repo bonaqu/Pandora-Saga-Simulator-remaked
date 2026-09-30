@@ -5,6 +5,7 @@ import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { createPasswordRecord } from '../admin-api/src/auth.mjs';
+import { parseWranglerJson } from './lib/wrangler-json.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const privateDirectory = path.resolve('D:/CODEX/Private/PandoraSagaSimulator');
@@ -36,10 +37,7 @@ async function cli(args, input) {
   });
 }
 
-function decodeJson(output) {
-  // --json/list outputs must actually be JSON, never parse arbitrary log text.
-  return JSON.parse(output.trim());
-}
+const decodeJson = parseWranglerJson;
 
 async function main() {
   if (privateDirectory.toLowerCase().startsWith(root.toLowerCase() + path.sep) || privateDirectory === root) throw new Error('Credential directory must be outside the repository');

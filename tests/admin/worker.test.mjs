@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import worker from '../../admin-api/src/worker.mjs';
 
 const origin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
@@ -8,6 +9,19 @@ const env = {
   PUBLIC_ORIGIN: pages, ADMIN_ORIGIN: origin,
   ASSETS: { fetch: async () => new Response('<!doctype html><title>Admin</title>', { headers: { 'Content-Type': 'text/html' } }) }
 };
+
+test('Worker-owned admin URL does not conflict with Assets HTML canonical redirects', async () => {
+  const config = JSON.parse(fs.readFileSync(new URL('../../admin-api/wrangler.jsonc', import.meta.url), 'utf8'));
+  assert.equal(config.assets.html_handling, 'none');
+  let requested;
+  const result = await worker.fetch(new Request(origin + '/admin'), { ...env, ASSETS: { fetch: async request => {
+    requested = new URL(request.url).pathname;
+    return new Response('<!doctype html><title>Admin</title>', { headers: { 'Content-Type': 'text/html' } });
+  } } });
+  assert.equal(requested, '/admin.html');
+  assert.equal(result.status, 200);
+  assert.equal(result.headers.has('Location'), false);
+});
 
 test('every private route rejects missing sessions, independent of hidden UI', async () => {
   for (const method of ['GET', 'POST', 'PUT', 'DELETE']) {

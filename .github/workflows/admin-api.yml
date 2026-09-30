@@ -2,10 +2,10 @@ name: Cloudflare Admin API
 
 on:
   pull_request:
-    paths: ['admin-api/**', 'tests/admin/**', 'scripts/create_first_admin.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
+    paths: ['admin-api/**', 'tests/admin/**', 'scripts/create_first_admin.mjs', 'scripts/lib/wrangler-json.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
   push:
     branches: [bonaqu_projects]
-    paths: ['admin-api/**', 'tests/admin/**', 'scripts/create_first_admin.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
+    paths: ['admin-api/**', 'tests/admin/**', 'scripts/create_first_admin.mjs', 'scripts/lib/wrangler-json.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
   workflow_dispatch:
 
 permissions:

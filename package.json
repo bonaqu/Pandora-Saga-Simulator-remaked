@@ -2,7 +2,7 @@
   "name": "pandora-saga-simulator-remaked",
   "private": true,
   "scripts": {
-    "test:admin": "node --test tests/admin/auth.test.mjs tests/admin/worker.test.mjs",
+    "test:admin": "node --test tests/admin/auth.test.mjs tests/admin/worker.test.mjs tests/admin/wrangler-json.test.mjs",
     "admin:check": "wrangler deploy --config admin-api/wrangler.jsonc --dry-run",
     "admin:dev": "wrangler dev --config admin-api/wrangler.jsonc --ip 127.0.0.1 --port 18788 --inspector-port 19230",
     "admin:migrate": "wrangler d1 migrations apply pandora-saga-simulator-remaked-admin-db --config admin-api/wrangler.jsonc --remote",
