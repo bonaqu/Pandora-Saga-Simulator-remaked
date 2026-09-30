@@ -86,13 +86,17 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 | 繁體中文 | Available through the legacy data |
 | Русский | Modern interface available; game names await verification against the Russian client |
 
-Russian translations are maintained in one [Excel workbook](localization/translations.xlsx). Edit its yellow column and upload it to GitHub; Pages validates and publishes the update automatically. See the [step-by-step Russian guide](docs/LOCALIZATION_FOR_BEGINNERS.ru.md). Approved translations appear throughout the Modern calculator, native lists, search and skill descriptions. Blank game fields retain the selected source language. Legacy Mode and the diagnostic Log output remain unchanged.
+Translations are maintained in one [Excel workbook](localization/translations.xlsx): H (yellow) is Russian, I (green) is an editable English override. The original source columns stay read-only. See the [step-by-step Russian guide](docs/LOCALIZATION_FOR_BEGINNERS.ru.md). Approved translations appear throughout the Modern calculator, lists, search and skill descriptions. Blank game fields retain the selected source language; Legacy Mode stays unchanged.
+
+The expanded workbook and Modern 3.00 are currently a draft branch, not a Pages release. Do not upload this branch's workbook alone to the old production code. After the matching code is merged, Pages validates and publishes workbook updates automatically.
 
 ## 🚧 What's coming next
 
 The modernization roadmap includes:
 
 - user-verified Russian game terminology;
+- secure catalog administration for equipment, Souls, classes and character skills;
+- compact desktop workflow and non-destructive Legacy FILE recovery;
 - final visual, accessibility and cross-browser polish.
 
 See [CHANGELOG.md](CHANGELOG.md) for released changes and current progress.
@@ -106,7 +110,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** 2026.09.11
+- **Published Remaked UI:** 2026.09.16; Modern 3.00 is an unreleased candidate
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 

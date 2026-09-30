@@ -373,6 +373,51 @@
     return found ? cloneBuild(found) : null;
   }
 
+  function readLegacySlots() {
+    var raw = storageGet('file');
+    if (!raw.ok) return raw;
+    if (!raw.value) return { ok: true, slots: [] };
+    try {
+      if (raw.value.length > 100000) throw new Error('Oversized FILE data');
+      // Decode with the retained codecs; never call File('Load') or mutate the character.
+      var decoded = window.Base64.btou(window.RawDeflate.inflate(window.Base64.fromBase64(raw.value)));
+      if (typeof decoded !== 'string' || !decoded || decoded.length > 200000) throw new Error('Invalid FILE data');
+      var slots = decoded.split('/');
+      var fields = String(window.Store()).split(',').length;
+      if (slots.length > 10) throw new Error('Too many FILE slots');
+      for (var index = 0; index < slots.length; index++) {
+        var values = slots[index].split(',');
+        if (values.length !== fields) throw new Error('Incomplete FILE slot');
+        for (var field = 0; field < values.length; field++) {
+          if (!values[field].trim() || !Number.isFinite(Number(values[field]))) throw new Error('Invalid FILE field');
+        }
+      }
+      return { ok: true, slots: slots };
+    } catch (error) {
+      return { ok: false, error: resultError('invalid-legacy-slots', 'Legacy FILE slots could not be decoded safely.', error) };
+    }
+  }
+
+  function importLegacySlots() {
+    var legacy = readLegacySlots();
+    if (!legacy.ok) return legacy;
+    var collection = cleanCollectionForMutation();
+    // Do not silently repair a damaged Modern collection during migration.
+    if (!collection.ok) return collection;
+    var now = new Date().toISOString(), added = 0, skipped = 0;
+    legacy.slots.forEach(function (payload, index) {
+      if (collection.builds.some(function (build) { return build.payload === payload; })) { skipped++; return; }
+      collection.builds.push({ id: createId(collection.builds), name: 'Legacy FILE ' + String(index + 1).padStart(2, '0'), createdAt: now, updatedAt: now, payload: payload });
+      added++;
+    });
+    if (added) {
+      // One atomic storage write. A quota failure keeps every original key intact.
+      var written = writeBuildCollection(collection.builds);
+      if (!written.ok) return written;
+    }
+    return { ok: true, added: added, skipped: skipped };
+  }
+
   namespace.buildStore = {
     AUTOSAVE_KEY: AUTOSAVE_KEY,
     BUILDS_KEY: BUILDS_KEY,
@@ -385,6 +430,8 @@
     updateBuild: updateBuild,
     duplicateBuild: duplicateBuild,
     deleteBuild: deleteBuild,
+    readLegacySlots: readLegacySlots,
+    importLegacySlots: importLegacySlots,
     getBuild: getBuild
   };
 })();

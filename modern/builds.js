@@ -12,6 +12,7 @@
   var managerOverlay = null;
   var managerStatus = null;
   var buildList = null;
+  var legacyRecovery = null;
   var buildNameInput = null;
   var buildCode = null;
   var shareUrl = null;
@@ -291,6 +292,10 @@
 
   function renderBuilds() {
     if (!buildList || !store) return;
+    if (legacyRecovery) {
+      var oldSlots = store.readLegacySlots();
+      legacyRecovery.hidden = oldSlots.ok && !oldSlots.slots.length;
+    }
     buildList.textContent = '';
     var listed = store.listBuilds();
     if (!listed.ok && listed.error && listed.error.code !== 'corrupt-entries') {
@@ -482,6 +487,24 @@
     buildList.className = 'remaked-build-list';
     buildList.dataset.remakedBuildList = '';
     savedSection.appendChild(buildList);
+    legacyRecovery = document.createElement('div');
+    legacyRecovery.className = 'remaked-legacy-recovery';
+    var recoveryNote = document.createElement('p');
+    if (i18n) i18n.bindText(recoveryNote, 'builds.legacyHelp');
+    else recoveryNote.textContent = 'Copy old FILE slots into named builds. Originals stay untouched; duplicate codes are skipped.';
+    legacyRecovery.appendChild(recoveryNote);
+    var recover = button('Copy Legacy FILE slots', null, 'builds.legacyImport');
+    recover.dataset.remakedImportLegacy = '';
+    recover.addEventListener('click', function () {
+      var result = store.importLegacySlots();
+      if (!result.ok) {
+        setManagerStatus(t('builds.legacyFailed', { code: result.error.code }, 'FILE recovery failed (' + result.error.code + '). Originals and current build were kept.'), 'error');
+        return;
+      }
+      renderBuilds();
+      setManagerStatus(t('builds.legacyCopied', { added: result.added, skipped: result.skipped }, 'Copied ' + result.added + ' builds; skipped ' + result.skipped + ' duplicates. Original FILE slots kept.'), 'success');
+    });
+    legacyRecovery.appendChild(recover); savedSection.appendChild(legacyRecovery);
     body.appendChild(savedSection);
 
     var codeSection = document.createElement('section');
@@ -563,7 +586,7 @@
     var buildsButton = button('Builds', 'remaked-tool-button', 'builds.button');
     buildsButton.dataset.remakedBuildsOpen = '';
     buildsButton.addEventListener('click', openManager);
-    tools.appendChild(buildsButton);
+    (document.querySelector('[data-remaked-build-actions]') || tools).appendChild(buildsButton);
 
     autosaveStatus = document.createElement('span');
     autosaveStatus.className = 'remaked-autosave';

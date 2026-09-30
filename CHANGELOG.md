@@ -4,6 +4,22 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 
 ## Unreleased — Modern 3.00
 
+- Compact desktop candidate puts attributes beside results, uses the working
+  area width and keeps branch names, Adeptness/Potential and their native actions
+  in aligned rows. The Hybrid C art remains; the desktop banner is shorter.
+  Phones retain 44px primary targets and visible Builds/Compare actions.
+- Modern header replaces FILE/LOG with one Builds/Compare group. Misleading
+  Heavy/Medium/Light controls and Modern log output are removed; museum controls
+  remain. Legacy FILE slots can be explicitly copied into named builds without
+  changing originals, character or autosave. Copies are atomic and idempotent;
+  malformed data and quota failures leave the original collections intact.
+- Modern handles the exact malformed Wyss Belt source marker `0=1_-7` without
+  crashing: STA +1 remains, and a visible warning states that the unresolved
+  conditional trigger is not simulated. No MP penalty is invented. The exact
+  source row is restored even when another calculation fails; real errors still
+  propagate. Legacy museum retains its source behavior.
+- These UI/recovery/guard changes are not published on Pages. The retained Code
+  form still duplicates part of Builds and remains a consolidation follow-up.
 - Modern build context C1 transfers riding, enabled effects, Honor, clan and
   caster attributes to fresh shared recipients and offline reloads. Comparisons
   restore the active context and storage afterward. Old CSV/compressed codes
@@ -29,8 +45,8 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Local administrator class editor supports all 28 retained class slots,
   multilingual text and native LP/MP progression parameters. Typed source
   fingerprint checks and pinned build revisions preserve old class calculations.
-  Class lineage, arbitrary new classes and skill/passive editors are still work
-  in progress; this increment has not been deployed.
+  Class lineage and arbitrary new classes remain unfinished. The first existing
+  class/skill/passive editors are deployed on the Worker, not the Pages frontend.
 - Modern-only equipment/Soul catalog adapter uses the retained calculation
   engine, with immutable catalog revisions pinned in `PS3` saved/shared codes.
   Cached public revisions work offline; missing revisions protect existing
@@ -56,8 +72,8 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   from Pages. A Modern-only equipment/Soul editor now has validated multilingual
   fields, numeric effects, private drafts, atomic publication, immutable history,
   conflict protection and rollback. Equipment/Soul engine integration is now
-  verified locally; remote acceptance and the expanded
-  class/active/passive/racial-skill editor remain in development.
+  verified locally. Expanded existing class/active/passive/racial editors have
+  since passed remote acceptance; additional mechanics remain in development.
 
 ## 2026.09.17 — Safe calculator code and riding controls
 

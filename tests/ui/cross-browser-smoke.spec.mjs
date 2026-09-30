@@ -1,5 +1,21 @@
 import { test, expect } from '@playwright/test';
 
+test('compact workspace keeps Builds visible on phones and Legacy FILE recovery unchanged in every engine', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 }); await page.goto('/');
+  for (const selector of ['[data-remaked-builds-open]', '[data-remaked-compare-open]']) {
+    const box = await page.locator(selector).boundingBox();
+    expect(box.x).toBeGreaterThanOrEqual(0); expect(box.x + box.width).toBeLessThanOrEqual(390);
+  }
+  const result = await page.evaluate(() => {
+    const store = window.PandoraRemaked.buildStore, payload = window.Store();
+    const raw = window.Base64.toBase64(window.RawDeflate.deflate(window.Base64.utob(payload)));
+    localStorage.setItem('file', raw);
+    const first = store.importLegacySlots(), second = store.importLegacySlots();
+    return { first, second, intact: localStorage.getItem('file') === raw && window.Store() === payload };
+  });
+  expect(result).toEqual({ first: { ok: true, added: 1, skipped: 0 }, second: { ok: true, added: 0, skipped: 1 }, intact: true });
+});
+
 test('complete effect context restores riding and clan data and survives source language change in every engine', async ({ page }) => {
   await page.goto('/');
   const result = await page.evaluate(() => {

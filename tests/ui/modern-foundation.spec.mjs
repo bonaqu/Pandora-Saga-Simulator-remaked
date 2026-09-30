@@ -28,7 +28,8 @@ test('Modern shell exposes meaningful navigation and defaults to English', async
   await expect(header.locator('a[href*="awayfromkuma"]')).toHaveCount(0);
   await expect(header.locator('[data-remaked-language="1"]')).toHaveAttribute('aria-pressed', 'true');
   await expect(header.getByRole('button', { name: 'JOB', exact: true })).toBeVisible();
-  await expect(header.getByRole('button', { name: 'FILE', exact: true })).toBeVisible();
+  await expect(header.getByRole('button', { name: 'FILE', exact: true })).toHaveCount(0);
+  await expect(header.locator('[data-remaked-build-actions] [data-remaked-builds-open]')).toBeVisible();
 });
 
 test('Modern header includes the approved Hybrid C hero treatment', async ({ page }) => {
@@ -49,8 +50,9 @@ test('Modern header includes the approved Hybrid C hero treatment', async ({ pag
   expect(imageMetrics.height).toBeGreaterThanOrEqual(300);
   expect(imageMetrics.width / imageMetrics.height).toBeGreaterThanOrEqual(2.5);
   const metrics = await hero.evaluate((element) => ({ height: element.getBoundingClientRect().height }));
-  expect(metrics.height).toBeGreaterThanOrEqual(160);
-  expect(metrics.height).toBeLessThanOrEqual(210);
+  // Desktop now prioritizes the compact workspace; retain the same verified art.
+  expect(metrics.height).toBeGreaterThanOrEqual(80);
+  expect(metrics.height).toBeLessThanOrEqual(100);
 });
 
 test('Modern language controls drive the legacy language state', async ({ page }) => {

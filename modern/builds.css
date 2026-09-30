@@ -290,3 +290,6 @@
     width: 100%;
   }
 }
+.remaked-legacy-recovery { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rm-border); }
+.remaked-legacy-recovery[hidden] { display: none; }
+.remaked-legacy-recovery p { margin: 0 0 8px; color: var(--rm-muted); font: 12px/1.5 var(--rm-font); }

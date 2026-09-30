@@ -193,7 +193,7 @@ async function captureMobileEquipment(page, testInfo) {
 
 async function captureMobileCollapsedCard(page, testInfo) {
   await openModern(page, mobile);
-  await page.locator('[data-remaked-nav]').getByRole('button', { name: 'LOG', exact: true }).click();
+  await page.locator('[data-remaked-nav]').getByRole('button', { name: 'JOB', exact: true }).click();
   const toggle = page.locator('[data-remaked-collapse-toggle]:visible').first();
   await expect(toggle).toBeVisible();
   await toggle.click();

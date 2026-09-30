@@ -173,5 +173,9 @@
   "skills.potential": "Potential",
   "skills.largerSteps": "Larger steps",
   "skills.help": "Adeptness uses Skill points. Potential uses its own point pool beside Level. Limits and costs follow the Legacy engine.",
-  "skills.indicator": "Legacy next-point indicator: "
+  "skills.indicator": "Legacy next-point indicator: ",
+  "builds.legacyImport": "Copy Legacy FILE slots",
+  "builds.legacyHelp": "Copy old FILE slots into named builds. Originals stay untouched; duplicate codes are skipped.",
+  "builds.legacyCopied": "Copied {added} builds; skipped {skipped} duplicates. Original FILE slots kept.",
+  "builds.legacyFailed": "FILE recovery failed ({code}). Originals and current build were kept."
 }

@@ -90,9 +90,13 @@ valid equipment during restoration.
 - Arbitrary scripts, HTML, SQL or game-effect expressions are not supported.
 - Combat mechanics absent from Legacy cannot be advertised as simulated.
 - Source `equipment.42.32` (Wyss Belt) has malformed effect code `0=1_-7`.
-  Its historical crash and a transparent Modern-only compatibility treatment
-  still need their own regression test. Do not interpret `-7` as an invented
-  MP penalty or rewrite the museum data.
+  The museum still reproduces its historical `EquipOpt[-7].push` failure.
+  An exact identity/code guard in Modern presents only confirmed STA +1 during
+  the retained equipment check, restores the original row in `finally` and
+  displays the unresolved Rex Naturalis trigger warning. It does not invent
+  an MP penalty, mask other engine errors or rewrite source data. Five tests
+  cover source parity, round-trip/recalculation, exception propagation and
+  desktop/mobile warning layouts.
 - Remote migration 0002 and the initial equipment/Soul CMS are deployed on
   Worker version `e1d50807-85d4-410d-aa10-c39065002ae6`. Production checks
   confirmed first-party login from Pages with third-party cookies blocked,

@@ -154,4 +154,37 @@ were not printed or copied into the repository.
   Six context tests, seven skill tests, related adapter/code checks (39 combined)
   and 42 three-engine smoke tests passed. Full browser CI passed 159/159 with
   unchanged assertions and time limits. GitHub CI is the next gate for this
-  increment. The final compact calculator block has not started.
+  increment. The compact calculator block follows below.
+- Context increment `3a85db7` passed GitHub Feature CI and API verify. No frontend
+  Pages publication was performed.
+- Wyss Belt source `equipment.42.32` reproduced a native `EquipOpt[-7].push`
+  failure. A Modern-only exact identity/code guard presents confirmed STA +1 to
+  retained equipment calculation, restores the original source row in `finally`
+  and warns that the unresolved conditional trigger is not simulated. Five
+  regression checks passed, including real exception propagation and 390/1440
+  warning layouts. Source content and preservation hashes remain unchanged.
+- Compact candidate removes Modern FILE/LOG and inherited theme controls, moves
+  the existing Builds/Compare actions into one header group and keeps them
+  visible at phone widths. Desktop character attributes/results sit alongside
+  each other, branch actions use aligned compact rows, and the Hybrid C banner
+  is shorter. Phone primary targets remain 44px. Skill allocation explanation
+  now opens deliberately by keyboard/click, not by immediate hover.
+- Legacy FILE recovery is explicit, copies original CSV slots atomically into
+  named builds, skips duplicate codes and never changes originals, character or
+  autosave. Malformed input/corrupt Modern collections/quota errors are tested.
+  Four bilingual recovery labels were appended to the nine-column workbook;
+  all 2842 previous rows, including RU/EN overrides, were preserved.
+- Initial full compact-candidate run found five obsolete LOG/toolbar test
+  expectations. Tests now assert the new locations and retained invariants.
+  Visual inspection then found the Builds group clipped by horizontal phone
+  navigation; a dedicated RED test exposed it and the phone row was corrected.
+  An overlapping local test invocation later removed another run's trace files;
+  subsequent verification is sequential, with no changed timeout/assertions.
+  Full browser CI then passed 172/172, Python passed 62/62 and three-engine
+  smoke results reported passed (45 scenarios). Additional catalog/context/
+  skill/entry/admin workflows passed 39/39. Preservation validation still
+  verifies all 459 source files; generated data and workbook checks pass.
+  Visual capture passed 27 scenarios; the last old LOG navigation capture was
+  changed to JOB and its focused rerun passed. Desktop/mobile images were
+  inspected. GitHub CI is the next gate for this increment. Code-form duplication,
+  arbitrary new class/skill mechanics and final Modern 3.00 release remain open.

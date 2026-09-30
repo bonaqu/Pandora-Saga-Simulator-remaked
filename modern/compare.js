@@ -383,7 +383,7 @@
     var trigger = button('Compare Builds', 'remaked-tool-button', 'compare.button');
     trigger.dataset.remakedCompareOpen = '';
     trigger.addEventListener('click', function () { open(trigger); });
-    tools.appendChild(trigger);
+    (document.querySelector('[data-remaked-build-actions]') || tools).appendChild(trigger);
   }
 
   function init() {

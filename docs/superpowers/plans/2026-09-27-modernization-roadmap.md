@@ -166,6 +166,13 @@ still usability follow-ups, not proof of universal mobile accessibility.
 
 ### Later project — Cloud save
 
+**Approved Modern 3.00 extension:** The user has separately authorized a secure
+Cloudflare Worker/D1 administrator CMS (not player cloud saves), editable English
+workbook overrides, compact desktop UI and FILE/LOG consolidation. Current scope
+and remaining acceptance gates are in `2026-09-30-modern-3-admin.md`. Worker auth
+and initial editors are production-tested; Pages remains UI16. This does not
+declare the full new release complete or alter the museum engine.
+
 Not part of this roadmap's implementation plans. Requires a new design/spec after Phases 0–7 are stable.
 
 ---

@@ -26,15 +26,18 @@ for (const width of [320, 390, 768, 1440]) {
         return { height: node.getBoundingClientRect().height, size: css.fontSize, radius: css.borderRadius };
       }
       const toolbar = [];
-      document.querySelectorAll('[data-remaked-tools] button').forEach(node => {
+      document.querySelectorAll('[data-remaked-tools] button, [data-remaked-build-actions] button').forEach(node => {
         const css = getComputedStyle(node);
-        toolbar.push({ height: node.getBoundingClientRect().height, size: css.fontSize, radius: css.borderRadius });
+        toolbar.push({ height: node.getBoundingClientRect().height, size: css.fontSize });
       });
       return { toolbar, install: box('[data-remaked-install]'), language: box('[data-remaked-language-panel]'), overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth };
     });
     expect(metrics.overflow).toBeLessThanOrEqual(1);
     expect(metrics.install.height).toBe(metrics.language.height);
-    expect(metrics.toolbar.length).toBeGreaterThanOrEqual(4);
+    // Builds/Compare now occupy the former FILE/LOG space, not a second toolbar copy.
+    await expect(page.locator('[data-remaked-tools] button')).toHaveCount(2);
+    await expect(page.locator('[data-remaked-build-actions] button')).toHaveCount(2);
+    expect(metrics.toolbar.length).toBe(4);
     for (const entry of metrics.toolbar) expect(entry).toEqual(metrics.toolbar[0]);
     expect(parseFloat(metrics.toolbar[0].size)).toBeGreaterThanOrEqual(12);
     expect(metrics.toolbar[0].height).toBeGreaterThanOrEqual(width <= 620 ? 44 : 36);
