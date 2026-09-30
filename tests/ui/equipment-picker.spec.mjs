@@ -1,5 +1,37 @@
 import { test, expect } from '@playwright/test';
 
+test('explicit desktop review survives its late automatic scroll; wheel still cancels it', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 600 });
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
+  const row = page.locator('[data-remaked-picker-panel] [data-remaked-search-row][data-value="8"]');
+  await row.locator('summary').click();
+  await page.evaluate(() => document.querySelector('[data-remaked-picker-panel] [data-remaked-search-results]').dispatchEvent(new Event('scroll', { bubbles: true })));
+  await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
+  await row.locator('summary').hover();
+  await page.mouse.wheel(0, -1);
+  await expect(row.locator('details')).not.toHaveAttribute('open', '');
+  expect(await page.evaluate(() => Store())).toBe(before);
+});
+
+test('clicking info pins an already hovered card and a second click closes it', async ({ page }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
+  // Keep this fixture in view: scrolling must deliberately cancel pointer
+  // hover, which is covered separately. Here we exercise hover -> explicit pin.
+  await page.locator('[data-remaked-picker-panel] [data-remaked-search-query]').fill('Cutlass');
+  const row = page.locator('[data-remaked-picker-panel] [data-remaked-search-row][data-value="8"]');
+  await row.locator('button').hover();
+  await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
+  await row.locator('summary').click();
+  await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
+  await row.locator('summary').click();
+  await expect(row.locator('details')).not.toHaveAttribute('open', '');
+  expect(await page.evaluate(() => Store())).toBe(before);
+});
+
 for (const width of [320, 390, 1440]) test(`Equipment opens an anchored nonmodal dropdown and dismisses outside at ${width}px without changing the build`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
   await page.goto('/');

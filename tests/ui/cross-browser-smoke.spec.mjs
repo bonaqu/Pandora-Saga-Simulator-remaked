@@ -32,6 +32,7 @@ test('actual Equipment picker separates review and selection and preserves nativ
   const panel = page.locator('[data-remaked-picker-panel]');
   const row = panel.locator('[data-remaked-search-row][data-value="2"]');
   await row.locator('summary').click();
+  await page.evaluate(() => document.querySelector('[data-remaked-picker-panel] [data-remaked-search-results]').dispatchEvent(new Event('scroll', { bubbles: true })));
   await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
   expect(await page.evaluate(() => Store())).toBe(original);
   await row.locator('button').click();

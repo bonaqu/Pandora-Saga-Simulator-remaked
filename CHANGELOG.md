@@ -2,6 +2,11 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.14 — Explicit item review survives automatic scrolling
+
+- Fixed a late pointer-focus scroll event closing an explicitly opened desktop item card. The installed-app check exposed this after UI13 publication; focused explicit review now survives automatic scrolling, while manual wheel/touch/scrollbar/Page input still cancels floating cards.
+- Clicking the info action pins an already opened hover card; a second click closes it. Reviewing still does not change equipment, Souls or builds. Legacy source and translations remain unchanged.
+
 ## 2026.09.13 — Compact Equipment dropdowns and quieter item rows
 
 - Replaced the large Equipment selection modal with a compact dropdown anchored to the original field. It opens below or above according to available space, leaves the calculator visible, supports filtering/arrows/Enter and dismisses on Escape, outside click, anchor scrolling or focus moving away. The preserved native engine remains the fallback.

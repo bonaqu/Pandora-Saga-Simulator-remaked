@@ -1,9 +1,9 @@
-# Equipment interaction follow-up — UI 2026.09.12–13
+# Equipment interaction follow-up — UI 2026.09.12–14
 
 UI12: published and artifact/live verified (PR #17; feature CI `36658390600`,
 Pages `36658979809`). UI13: compact anchored dropdowns, quieter information
 actions and off-screen keyboard regression correction. Its final
-CI/artifact/live/installed-PWA evidence is recorded in annotated `v2026.09.13`
+CI/artifact/live/installed-PWA evidence is recorded in annotated `v2026.09.14`
 only after those gates pass; without that tag, final acceptance remains pending.
 
 Local evidence: 119 Chromium contract tests and 57 Python tests passed, with
@@ -42,6 +42,12 @@ not a new socket editor. Existing Soul insertion and upgrades must keep working.
   regression now requires the focused keyboard card to remain open and be
   repositioned; manual wheel/touch/scrollbar/Page-key intent still closes it.
   No assertion was weakened and the failed deployment was not retried unchanged.
+- The final UI13 artifact/live checks passed, but real isolated installed-PWA
+  review exposed late pointer-focus scrolling closing an explicitly opened
+  floating card. Event diagnostics showed click -> open -> scroll -> close;
+  waiting did not repair it. UI14 retains focused explicit review across that
+  automatic scroll and pins an already hovered card on its first info click.
+  Wheel/touch/scrollbar/Page cancellation and nonmutation remain strict gates.
 
 ## Implementation boundaries
 
