@@ -4,6 +4,38 @@ const desktop = { width: 1440, height: 1000 };
 const mobile = { width: 390, height: 844 };
 
 for (const [name, viewport] of [['desktop', desktop], ['mobile', mobile]]) {
+  test(`capture item preview and sharing ${name}`, async ({ page }, testInfo) => {
+    await openModern(page, viewport);
+    await page.locator('[data-remaked-ui-locale="ru"]').click();
+    await page.locator('[data-remaked-equipment-search]').click();
+    const row = page.locator('[data-remaked-search-row][data-value="2"]');
+    await row.locator('summary').click();
+    await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath(`modern-item-preview-${name}.png`), fullPage: false });
+    await page.locator('.remaked-search-close').click();
+    await page.evaluate(() => {
+      const adapter = PandoraRemaked.adapter;
+      if (!adapter.selectEquipment(0, '2')) throw new Error('Cannot equip the socketed screenshot fixture');
+      const enhancement = document.getElementById('SelEquip_0_3');
+      enhancement.value = '4'; enhancement.dispatchEvent(new Event('change', { bubbles: true }));
+      const target = adapter.listSoulTargets().find(t => t.slotIndex === 0);
+      const soul = adapter.listSoulOptions(target).find(s => Number(s.value) > 0);
+      if (!soul || !adapter.selectSoul(target, soul.value)) throw new Error('No compatible Soul for screenshot');
+    });
+    await page.locator('[data-remaked-equipment-search]').click();
+    await row.locator('summary').click();
+    await expect(row.locator('[data-remaked-item-description] strong')).toContainText('+4');
+    await expect(row.locator('[data-remaked-socket][data-filled="true"]')).toHaveCount(1);
+    await page.screenshot({ path: testInfo.outputPath(`modern-equipped-item-${name}.png`), fullPage: false });
+    await page.locator('.remaked-search-close').click();
+    await page.locator('[data-remaked-builds-open]').click();
+    await page.locator('[data-remaked-share-build]').click();
+    await expect(page.locator('[data-remaked-share-url]')).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath(`modern-build-sharing-${name}.png`), fullPage: false });
+  });
+}
+
+for (const [name, viewport] of [['desktop', desktop], ['mobile', mobile]]) {
   test(`capture on-site Updates ${name}`, async ({ page }, testInfo) => {
     await openModern(page, viewport);
     if (name === 'mobile') await page.locator('[data-remaked-ui-locale="ru"]').click();

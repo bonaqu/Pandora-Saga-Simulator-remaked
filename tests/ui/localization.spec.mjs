@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
   await expect(page.locator('[data-remaked-shell]')).toBeVisible();
 });
 
-test('English is the default UI locale and is independent from Legacy data language', async ({ page }) => {
+test('English is the default language in the unified Modern control', async ({ page }) => {
   const ui = page.locator('[data-remaked-ui-locale]');
   const data = page.locator('[data-remaked-language]');
 

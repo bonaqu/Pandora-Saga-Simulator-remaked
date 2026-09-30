@@ -27,7 +27,10 @@ try {
   await page.locator('[data-remaked-equipment-search]').click();
   await page.locator('[data-remaked-search-panel]').waitFor();
   await page.locator('[data-remaked-search-panel]').screenshot({ path: path.join(media, 'equipment-search-desktop.png') });
-  await page.keyboard.press('Escape');
+  // Hovering/focusing a result can open its preview; Escape dismisses that
+  // layer first. Close the search dialog explicitly before the next capture.
+  await page.locator('.remaked-search-close').click();
+  await page.locator('[data-remaked-search-backdrop]').waitFor({ state: 'hidden' });
   const ids = await page.evaluate(() => {
     const adapter = PandoraRemaked.adapter;
     const store = PandoraRemaked.buildStore;

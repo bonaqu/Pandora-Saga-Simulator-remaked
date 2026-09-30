@@ -249,12 +249,15 @@ test('native equipment and Soul options translate by value, retain prefixes and 
   await expect(soul).toHaveText('Проверочный камень');
   for (const language of [0, 2, 1]) {
     await page.locator(`[data-remaked-language="${language}"]`).click();
-    await expect(item).toHaveText(fixture.prefix + 'Проверочное оружие');
     const source = await page.evaluate(({ category, index, soulValue }) => ({ item: EquipData[Flag[0]][category][index][0], soul: SoulData[Flag[0]][soulValue][0] }), fixture);
-    await page.locator('[data-remaked-ui-locale="en"]').click();
+    // Unified user control selects the source language and English shell together.
+    expect(await page.evaluate(() => PandoraRemaked.i18n.getLocale())).toBe('en');
     await expect(item).toHaveText(fixture.prefix + source.item);
     await expect(soul).toHaveText(source.soul);
     await page.locator('[data-remaked-ui-locale="ru"]').click();
+    expect(await page.evaluate(() => Flag[0])).toBe(1);
+    await expect(item).toHaveText(fixture.prefix + 'Проверочное оружие');
+    await expect(soul).toHaveText('Проверочный камень');
   }
 });
 

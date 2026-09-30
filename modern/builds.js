@@ -14,6 +14,7 @@
   var buildList = null;
   var buildNameInput = null;
   var buildCode = null;
+  var shareUrl = null;
   var initialized = false;
   var suppressAutosave = false;
   var previousBodyOverflow = '';
@@ -120,6 +121,47 @@
     if (timer !== null) {
       window.clearTimeout(timer);
       timer = null;
+    }
+  }
+
+  function loadSharedBuild() {
+    if (window.location.hash.indexOf('#build=') !== 0) return false;
+    var payload;
+    try {
+      if (window.location.hash.length > 20000) throw new Error('Share link too large');
+      payload = decodeURIComponent(window.location.hash.slice(7));
+      // Links use plain numeric Legacy CSV, never untrusted compressed input.
+      if (payloadLooksLikeCurrentCsv(payload) !== true) throw new Error('Invalid shared CSV');
+      var loaded = loadPayloadSafely(payload);
+      if (!loaded.ok) throw loaded.error;
+      clearScheduledAutosave();
+      lastSavedPayload = null;
+      var saved = flushAutosave();
+      // The character can load successfully even when browser storage is full.
+      // Preserve the autosave warning rather than hiding it with a success label.
+      if (saved.ok) setAutosaveStatus(t('builds.sharedLoaded', null, 'Shared build loaded'), 'restored');
+      return true;
+    } catch (error) {
+      setAutosaveStatus(t('builds.invalidShare', null, 'Invalid share link; current build kept'), 'warning');
+      return false;
+    }
+  }
+
+  async function shareCurrentBuild() {
+    try {
+      var url = new URL(window.location.href);
+      url.search = '';
+      url.hash = 'build=' + encodeURIComponent(currentPayload());
+      shareUrl.value = url.href;
+      shareUrl.hidden = false;
+      if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(url.href);
+      setManagerStatus(t('builds.shareCopied', null, 'Build link copied.'), 'success');
+    } catch (error) {
+      if (shareUrl && shareUrl.value) {
+        shareUrl.hidden = false; shareUrl.focus(); shareUrl.select();
+        setManagerStatus(t('builds.shareManual', null, 'Copy the link below to share your build.'), 'warning');
+      } else setManagerStatus(t('builds.exportFailed', null, 'Current build could not be exported.'), 'error');
     }
   }
 
@@ -447,7 +489,17 @@
         : t('builds.importedNoAutosave', null, 'Build imported, but autosave is unavailable.'), saved.ok ? 'success' : 'warning');
     });
     codeActions.appendChild(importButton);
+    var share = button('Share build', 'remaked-build-button', 'builds.share');
+    share.dataset.remakedShareBuild = '';
+    share.addEventListener('click', shareCurrentBuild);
+    codeActions.appendChild(share);
     codeSection.appendChild(codeActions);
+    shareUrl = document.createElement('input');
+    shareUrl.type = 'url'; shareUrl.readOnly = true; shareUrl.hidden = true;
+    shareUrl.className = 'remaked-build-input';
+    shareUrl.dataset.remakedShareUrl = '';
+    if (i18n) i18n.bindAttribute(shareUrl, 'aria-label', 'builds.shareLink');
+    codeSection.appendChild(shareUrl);
     body.appendChild(codeSection);
 
     managerStatus = document.createElement('p');
@@ -503,6 +555,8 @@
     createBuildTools();
     createManager();
     restoreAutosaveOnce();
+    loadSharedBuild();
+    window.addEventListener('hashchange', loadSharedBuild);
     bindLegacyChanges();
   }
 

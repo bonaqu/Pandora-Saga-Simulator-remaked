@@ -1,5 +1,30 @@
 import { test, expect } from '@playwright/test';
 
+test('item preview and shared build link work without mutating Legacy data', async ({ page, browser }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => ({ code: Store(), data: JSON.stringify(EquipData) }));
+  await page.locator('[data-remaked-equipment-search]').click();
+  const row = page.locator('[data-remaked-search-row][data-value="1"]');
+  await row.locator('summary').click();
+  await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
+  await row.locator('summary').focus();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('dialog[open]')).toHaveCount(1);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('dialog[open]')).toHaveCount(0);
+  expect(await page.evaluate(() => ({ code: Store(), data: JSON.stringify(EquipData) }))).toEqual(before);
+  await page.locator('[data-remaked-builds-open]').click();
+  await page.locator('[data-remaked-share-build]').click();
+  const url = await page.locator('[data-remaked-share-url]').inputValue();
+  const recipientContext = await browser.newContext();
+  try {
+    const recipient = await recipientContext.newPage();
+    await recipient.goto(url);
+    await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
+    expect(await recipient.evaluate(() => Store())).toBe(before.code);
+  } finally { await recipientContext.close(); }
+});
+
 test('native Modern dialogs keep focus and restore their opener', async ({ page }) => {
   await page.goto('/');
   const before = await page.evaluate(() => Store());

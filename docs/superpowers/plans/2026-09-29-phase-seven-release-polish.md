@@ -2,7 +2,7 @@
 
 **Approved scope:** Phase 7 of `2026-09-27-pandora-saga-modernization-design.md` and the modernization roadmap. No new backend or paid hosting.
 
-**Status:** Release-panel/keyboard block shipped as UI `2026.09.9` in PR #14 (`816e72f`): feature CI `36631948186`, production workflow `36632481054`, exact artifact and live acceptance verified. Final media/installation block is implemented as UI `2026.09.10` on `codex/phase7-release-media`. Its immutable acceptance record is the annotated `v2026.09.10` tag; that tag must not be created until the final CI, Pages artifact and live gates pass. See `docs/RELEASE_ACCEPTANCE.md` for gate scope and limitations.
+**Status:** Release-panel/keyboard block shipped as UI `2026.09.9` in PR #14 (`816e72f`): feature CI `36631948186`, production workflow `36632481054`, exact artifact and live acceptance verified. Media/installation metadata shipped as UI `2026.09.10` in PR #15 (`f7771dd`), feature CI `36633848793`, production workflow/artifact/live acceptance `36634171950`. A real isolated desktop Chromium install, standalone online/offline launches of both routes and uninstall also passed. The user's follow-up corrections are implemented as UI `2026.09.11` on `codex/ui-consistency`; final acceptance now includes this block. Its immutable acceptance record is the annotated `v2026.09.11` tag, created only after final CI, Pages artifact and live gates. See `docs/RELEASE_ACCEPTANCE.md` and `2026-09-30-ui-item-sharing.md` for scope and limitations. Counts below describe the historical blocks, not the final UI 2026.09.11 gate totals.
 
 ## Audit findings and remaining work
 
