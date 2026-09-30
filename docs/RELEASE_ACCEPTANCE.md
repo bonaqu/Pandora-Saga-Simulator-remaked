@@ -1,4 +1,4 @@
-# Release acceptance — Equipment follow-up UI 2026.09.13
+# Release acceptance — Equipment follow-up UI 2026.09.14
 
 UI12 shipped in PR #17, feature HEAD `12fffd4dd3a28877d66ac0eab5c631415149d911`,
 feature CI `36658390600`, squash `edfb202d58b9f8e0e1b7866e15c73d4aaf443559`
@@ -13,10 +13,18 @@ item's focused card. Further user feedback requested compact anchored dropdowns
 instead of Equipment modals and removal of repeated Characteristics rows. UI13
 addresses these together; gates are tracked in
 `superpowers/plans/2026-09-30-equipment-picker-followup.md`. Final acceptance is
-recorded by annotated **`v2026.09.13`**, created only after exact feature CI,
+recorded by annotated **`v2026.09.14`**, created only after exact feature CI,
 Pages artifact, live-site and isolated installed-PWA verification. Its message
 records those run IDs and fingerprints. If the tag does not exist, these final
-gates are not complete. UI11/UI12 evidence does not substitute for UI13 gates.
+gates are not complete. Earlier releases do not substitute for UI14 gates.
+
+UI13 published through PRs #18/#19, final feature CI `36687313590` and Pages
+`36687944657` (squash `e0371ff4caad94610642b27ce8220703a7b2453a`). Its 126
+Chromium/57 Python/21 three-engine/22 visual checks and live site acceptance
+passed; all 459 Legacy files stayed identical. Final installed-app acceptance
+then exposed a late pointer-focus scroll closing an explicitly opened card.
+No `v2026.09.13` acceptance tag was created. UI14 corrects that event-ordering
+defect and the hover-to-explicit pinning behavior; it must pass the same gates.
 
 ## Historical UI11 release record
 

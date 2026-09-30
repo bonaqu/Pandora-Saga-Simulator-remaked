@@ -326,7 +326,7 @@
       // Focus-driven scrolling is asynchronous in WebKit and can arrive after
       // any fixed number of frames. Keep the active keyboard card, reposition
       // it, and let explicit wheel/touch/scrollbar/Page keys cancel instead.
-      if (keepKeyboardRequest && keyboardInput && document.activeElement === button && details.open) {
+      if (keepKeyboardRequest && details.open && ((keyboardInput && document.activeElement === button) || (pinned && row.contains(document.activeElement)))) {
         if (floating && description.matches(':popover-open')) positionDescription();
         return;
       }
@@ -345,7 +345,12 @@
       description.showPopover();
       positionDescription();
     });
-    summary.addEventListener('click', function () { pinned = !details.open; });
+    summary.addEventListener('click', function (event) {
+      // Explicit review pins a transient hover card. Do not make the first
+      // click unexpectedly dismiss content that happened to open before it.
+      if (details.open && !pinned) { event.preventDefault(); pinned = true; }
+      else pinned = !details.open;
+    });
     button.addEventListener('mouseenter', function () {
       cancelHover();
       if (!window.matchMedia('(min-width: 701px) and (hover: hover)').matches || !active) return;

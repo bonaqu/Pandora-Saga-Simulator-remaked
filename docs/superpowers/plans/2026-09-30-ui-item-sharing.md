@@ -11,7 +11,8 @@ the previews exist in Search, not in the actual Equipment selection lists,
 and instant hover disrupts scrolling. UI12 corrected those in PR #17, with exact
 artifact/live acceptance. UI13 addresses later dropdown-density and off-screen
 keyboard feedback; see `2026-09-30-equipment-picker-followup.md` and conditional
-`v2026.09.13` acceptance. Earlier release evidence does not substitute for its gates.
+`v2026.09.14` acceptance (UI13 installed-app review exposed a later explicit-card
+scroll regression). Earlier release evidence does not substitute for its gates.
 
 ## Acceptance
 

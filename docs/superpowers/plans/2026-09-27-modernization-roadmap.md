@@ -150,7 +150,10 @@ and Legacy cache refresh corrections in PR #17 (feature CI `36658390600`, Pages
 `36658979809`, exact artifact/live acceptance). Further QA exposed off-screen
 keyboard auto-scroll closing a focused card; UI13 corrects it. The plan is
 `2026-09-30-equipment-picker-followup.md`; final UI13 publication evidence is the
-annotated `v2026.09.13`, created only after its own release gates pass.
+annotated `v2026.09.14`, created only after its own release gates pass. UI13's
+artifact/live acceptance passed, but real installed-app review exposed late
+pointer-focus scroll cancellation of an explicitly opened card; UI14 corrects
+it before final Equipment follow-up acceptance.
 
 ### Later project — Cloud save
 
