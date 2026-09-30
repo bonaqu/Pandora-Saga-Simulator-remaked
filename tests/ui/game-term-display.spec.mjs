@@ -117,16 +117,20 @@ test('an actual edited workbook publishes calculator labels and names together',
     execFileSync('python', ['-c', [
       'import pathlib, sys',
       'sys.path.insert(0, str(pathlib.Path.cwd() / "tests"))',
-      'from test_translation_workbook import set_russian_cell',
+      'from test_translation_workbook import set_russian_cell, set_translation_cell',
       'from scripts.build_pages import _materialize_locales, _materialize_game_terms, _materialize_service_worker',
-      'from scripts.translation_workbook import load_translation_catalogs',
+      'from scripts.translation_workbook import load_editable_catalogs',
       'root, site = map(pathlib.Path, sys.argv[1:])',
       'workbook = root / "localization/translations.xlsx"',
       'set_russian_cell(workbook, "race.0", "Имя из таблицы")',
       'set_russian_cell(workbook, "calculator.text.0", "Подпись из таблицы")',
-      'ui, game, _ = load_translation_catalogs(root)',
-      '_materialize_locales(root, site, ui)',
-      '_materialize_game_terms(site, game)',
+      'set_translation_cell(workbook, "race.0", "Custom Human", "I")',
+      'set_translation_cell(workbook, "equipment.0.1", "Owner\'s custom weapon", "I")',
+      'set_translation_cell(workbook, "calculator.text.0", "Custom race label", "I")',
+      'set_translation_cell(workbook, "header.project", "Community project", "I")',
+      'catalogs = load_editable_catalogs(root)',
+      '_materialize_locales(root, site, catalogs.ui_russian, catalogs.ui_english)',
+      '_materialize_game_terms(site, catalogs.game_russian, catalogs.game_english)',
       '_materialize_service_worker(pathlib.Path.cwd(), site)'
     ].join('\n'), source, site], { cwd: process.cwd(), stdio: 'pipe' });
     server = await startStaticServer(site);
@@ -138,6 +142,24 @@ test('an actual edited workbook publishes calculator labels and names together',
     await expect(page.locator('#StatusRace')).toHaveText('Имя из таблицы');
     await expect(page.locator('#Text_0')).toHaveText('Подпись из таблицы');
     await expect(page.locator('[data-remaked-summary-race]')).toHaveText('Имя из таблицы');
+    const original = await page.evaluate(() => ({
+      source: JSON.stringify({ Name, EquipData, SoulData, Skill }), payload: Store(),
+      jp: Name.Race[0][0], tw: Name.Race[0][2]
+    }));
+    await page.locator('[data-remaked-ui-locale="en"]').click();
+    await expect(page.locator('#StatusRace')).toHaveText('Custom Human');
+    await expect(page.locator('#Text_0')).toHaveText('Custom race label');
+    await expect(page.locator('[data-remaked-i18n="header.project"]')).toHaveText('Community project');
+    expect(await page.evaluate(() => PandoraRemaked.i18n.game('equipment.0.1', 'fallback'))).toBe("Owner's custom weapon");
+    await page.locator('[data-remaked-language="0"]').click();
+    await expect(page.locator('#StatusRace')).toHaveText(original.jp);
+    await page.locator('[data-remaked-language="2"]').click();
+    await expect(page.locator('#StatusRace')).toHaveText(original.tw);
+    await page.locator('[data-remaked-ui-locale="ru"]').click();
+    await expect(page.locator('#StatusRace')).toHaveText('Имя из таблицы');
+    expect(await page.evaluate(() => PandoraRemaked.i18n.game('equipment.0.1', 'fallback'))).toBe("Owner's custom weapon");
+    expect(await page.evaluate(() => ({ source: JSON.stringify({ Name, EquipData, SoulData, Skill }), payload: Store() })))
+      .toEqual({ source: original.source, payload: original.payload });
     expect(errors).toEqual([]);
   } finally {
     await context?.close();

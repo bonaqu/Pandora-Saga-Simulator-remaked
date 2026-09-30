@@ -48,8 +48,12 @@
   }
 
   function translateGameTerm(key, fallback) {
-    var active = gameCatalogs[currentLocale] || {};
+    // JP/TW use the original game's language, while their Modern shell is EN.
+    // An English name override must not silently replace those source languages.
+    var useEnglish = !window.Flag || Number(window.Flag[0]) === 1;
+    var active = currentLocale === 'en' && !useEnglish ? {} : gameCatalogs[currentLocale] || {};
     var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : '';
+    if (!value && currentLocale === 'ru' && useEnglish) value = (gameCatalogs.en || {})[key] || '';
     return typeof value === 'string' && value ? value : String(fallback == null ? '' : fallback);
   }
 

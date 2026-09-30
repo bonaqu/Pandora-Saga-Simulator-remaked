@@ -11,10 +11,10 @@ import re
 import shutil
 
 try:
-    from scripts.translation_workbook import load_translation_catalogs
+    from scripts.translation_workbook import load_editable_catalogs
     from scripts.recover_archived_javascript import recover_archived_javascript
 except ModuleNotFoundError:  # Direct execution keeps only scripts/ on sys.path.
-    from translation_workbook import load_translation_catalogs
+    from translation_workbook import load_editable_catalogs
     from recover_archived_javascript import recover_archived_javascript
 
 PROJECT_URL = "https://github.com/bonaqu/Pandora-Saga-Simulator-remaked"
@@ -269,8 +269,9 @@ def _load_catalog(path: pathlib.Path, *, require_values: bool) -> dict[str, str]
     return catalog
 
 
-def _materialize_locales(root: pathlib.Path, output: pathlib.Path, russian: dict[str, str]) -> None:
+def _materialize_locales(root: pathlib.Path, output: pathlib.Path, russian: dict[str, str], english_overrides: dict[str, str] | None = None) -> None:
     english = _load_catalog(root / "localization/ui.en.json", require_values=True)
+    english.update(english_overrides or {})
     payload = json.dumps({"en": english, "ru": russian}, ensure_ascii=False, sort_keys=True)
     (output / "modern/locales.js").write_text(
         "window.PandoraRemakedLocales = Object.freeze(" + payload + ");\n",
@@ -278,8 +279,8 @@ def _materialize_locales(root: pathlib.Path, output: pathlib.Path, russian: dict
     )
 
 
-def _materialize_game_terms(output: pathlib.Path, russian: dict[str, str]) -> None:
-    payload = json.dumps({"ru": russian}, ensure_ascii=False, sort_keys=True)
+def _materialize_game_terms(output: pathlib.Path, russian: dict[str, str], english: dict[str, str] | None = None) -> None:
+    payload = json.dumps({"en": english or {}, "ru": russian}, ensure_ascii=False, sort_keys=True)
     (output / "modern/game-terms.js").write_text(
         "window.PandoraRemakedGameTerms = " + payload + ";\n",
         encoding="utf-8",
@@ -354,15 +355,15 @@ def _materialize_service_worker(root: pathlib.Path, output: pathlib.Path) -> Non
 def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     root, output = _ensure_inside(root, output)
     _require_inputs(root)
-    ui_russian, game_russian, _ = load_translation_catalogs(root)
+    translations = load_editable_catalogs(root)
     if output.exists():
         shutil.rmtree(output)
     output.mkdir(parents=True)
 
     _copy_runtime(root, output)
     _materialize_modern_assets(root, output)
-    _materialize_locales(root, output, ui_russian)
-    _materialize_game_terms(output, game_russian)
+    _materialize_locales(root, output, translations.ui_russian, translations.ui_english)
+    _materialize_game_terms(output, translations.game_russian, translations.game_english)
     _publish_translation_workbook(root, output)
     _materialize_generated_data(root, output)
 

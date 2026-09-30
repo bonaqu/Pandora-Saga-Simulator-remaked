@@ -2,6 +2,17 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Unreleased — Modern 3.00
+
+- English interface and game names can be overridden in column I of the same
+  translation workbook. Russian remains in H; preserved English/JP/TW source
+  columns and all prior Russian values remain intact. Empty overrides restore
+  the original; JP/TW names are not replaced by an English override.
+- Updated the beginner's upload/publish guide. Browser verification uses an
+  actually edited workbook and checks unchanged game data and serialized builds.
+- Administrator CMS, IDDQD auth and compact desktop redesign are in progress,
+  not published features yet.
+
 ## 2026.09.17 — Safe calculator code and riding controls
 
 - Fixed Modern calculator Code Load accepting incomplete input and corrupting the current character before an exception. It now shares Build Manager's validated, rollback-capable import, accepts existing compressed/CSV codes, and does not touch Legacy File slots.
