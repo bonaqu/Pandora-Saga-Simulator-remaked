@@ -1,5 +1,18 @@
 import { test, expect } from '@playwright/test';
 
+test('capture off-screen Equipment keyboard characteristic card', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').focus();
+  await page.keyboard.press('ArrowDown');
+  const row = page.locator('[data-remaked-picker-panel] [data-remaked-search-row][data-value="120011"]');
+  await row.locator('button').focus();
+  await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
+  await page.waitForTimeout(150);
+  await expect(row.locator('details')).toHaveAttribute('open', '');
+  await page.screenshot({ path: testInfo.outputPath('modern-equipment-keyboard-bottom-1440.png') });
+});
+
 for (const width of [390, 1440]) {
   test(`capture actual Equipment picker at ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });

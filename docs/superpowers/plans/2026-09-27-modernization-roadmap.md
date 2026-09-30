@@ -144,12 +144,15 @@ of full balance parity. Client terminology/server observations are recorded in
 `docs/localization/RU_CLIENT_REFERENCE.md`. The user confirmed temporary server
 caps must NOT restrict Modern; retain 55 levels, all 28 classes and saved builds.
 
-### Later project — Cloud save
+**Equipment follow-up:** UI12 shipped actual Equipment characteristic cards,
+450 ms hover intent, manual-scroll cancellation, responsive equipment controls
+and Legacy cache refresh corrections in PR #17 (feature CI `36658390600`, Pages
+`36658979809`, exact artifact/live acceptance). Further QA exposed off-screen
+keyboard auto-scroll closing a focused card; UI13 corrects it. The plan is
+`2026-09-30-equipment-picker-followup.md`; final UI13 publication evidence is the
+annotated `v2026.09.13`, created only after its own release gates pass.
 
-User follow-up after UI11: actual Equipment selection still needs characteristic
-cards and hover must not interfere with scrolling. This is tracked separately in
-`2026-09-30-equipment-picker-followup.md`; the UI11 publication record is historical
-evidence, not acceptance of this later-identified interaction gap.
+### Later project — Cloud save
 
 Not part of this roadmap's implementation plans. Requires a new design/spec after Phases 0–7 are stable.
 

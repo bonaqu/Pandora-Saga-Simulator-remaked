@@ -1,5 +1,89 @@
 import { test, expect } from '@playwright/test';
 
+for (const width of [320, 390, 1440]) test(`Equipment opens an anchored nonmodal dropdown and dismisses outside at ${width}px without changing the build`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  const opener = page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]');
+  await opener.click();
+  await expect(opener).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('dialog[open]')).toHaveCount(0);
+  const dropdown = page.locator('[data-remaked-equipment-dropdown]');
+  await expect(dropdown).toBeVisible();
+  const triggerBox = await opener.boundingBox();
+  const box = await dropdown.boundingBox();
+  expect(Math.min(Math.abs(box.y - triggerBox.y - triggerBox.height), Math.abs(box.y + box.height - triggerBox.y))).toBeLessThanOrEqual(10);
+  expect(box.width).toBeLessThanOrEqual(420);
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(width);
+  await opener.click();
+  await expect(dropdown).toHaveCount(0);
+  await opener.click();
+  await expect(dropdown).toBeVisible();
+  await page.locator('[data-remaked-header]').click({ position: { x: 5, y: 5 } });
+  await expect(dropdown).toHaveCount(0);
+  await expect(opener).toHaveAttribute('aria-expanded', 'false');
+  expect(await page.evaluate(() => Store())).toBe(before);
+});
+
+test('Search and Equipment use compact labelled info controls without a second characteristics row', async ({ page }) => {
+  await page.goto('/');
+  for (const selector of ['[data-remaked-equipment-search]', '[data-remaked-equipment-picker="SelEquip_0_0"]']) {
+    await page.locator(selector).click();
+    const row = page.locator('[data-remaked-search-row][data-value="8"]');
+    await row.locator('button').hover();
+    const itemBox = await row.locator('button').boundingBox();
+    const infoBox = await row.locator('summary').boundingBox();
+    expect(Math.abs(itemBox.y - infoBox.y)).toBeLessThanOrEqual(2);
+    expect(infoBox.width).toBeLessThanOrEqual(44);
+    await expect(row.locator('summary')).toHaveAccessibleName('Details');
+    await page.locator('.remaked-search-close').click();
+  }
+});
+
+test('opening Equipment keeps the currently worn item in view without opening or changing it', async ({ page }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => {
+    if (!PandoraRemaked.adapter.selectEquipment(0, '120011')) throw new Error('Cannot select last-page fixture');
+    return Store();
+  });
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
+  const row = page.locator('[data-remaked-picker-panel] [data-remaked-search-row][data-value="120011"]');
+  const itemBox = await row.locator('button').boundingBox();
+  const listBox = await page.locator('[data-remaked-picker-panel] [data-remaked-search-results]').boundingBox();
+  expect(itemBox.y).toBeGreaterThanOrEqual(listBox.y);
+  expect(itemBox.y + itemBox.height).toBeLessThanOrEqual(listBox.y + listBox.height);
+  await expect(row.locator('button')).toHaveAttribute('aria-pressed', 'true');
+  await expect(row.locator('details')).not.toHaveAttribute('open', '');
+  expect(await page.evaluate(() => Store())).toBe(before);
+});
+
+test('keyboard focus beyond the visible Equipment list keeps its card after automatic scroll; wheel cancels it', async ({ page }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').focus();
+  await page.keyboard.press('ArrowDown');
+  const value = await page.evaluate(() => {
+    const options = PandoraRemaked.adapter.listEquipmentOptions(0);
+    for (let index = options.length - 1; index >= 0; index--) {
+      const id = Number(options[index].value);
+      if (id % 10000 && PandoraRemaked.adapter.readItemDetails('equipment', id, 0).descriptions.length) return String(id);
+    }
+    throw new Error('No described last-page item');
+  });
+  const row = page.locator(`[data-remaked-picker-panel] [data-remaked-search-row][data-value="${value}"]`);
+  await row.locator('button').focus();
+  await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
+  await page.waitForTimeout(150);
+  await expect(row.locator('details')).toHaveAttribute('open', '');
+  expect(await page.evaluate(() => Store())).toBe(before);
+  await row.locator('button').hover();
+  await page.mouse.wheel(0, -1);
+  await page.waitForTimeout(550);
+  await expect(row.locator('details')).not.toHaveAttribute('open', '');
+  expect(await page.evaluate(() => Store())).toBe(before);
+});
+
 async function fixture(page) {
   return page.evaluate(() => {
     for (const option of PandoraRemaked.adapter.listEquipmentOptions(0)) {
@@ -97,7 +181,7 @@ test('search pointer click does not flash characteristics and wheel cancels a pe
   expect(await page.evaluate(() => window.fixturePreviewFlashed)).toBe(false);
 });
 
-test('all fourteen actual slots have correct source labels and usable selection dialogs', async ({ page }) => {
+test('all fourteen actual slots have correct source labels and usable selection dropdowns', async ({ page }) => {
   await page.goto('/');
   const targets = await page.evaluate(() => PandoraRemaked.adapter.listEquipmentTargets());
   expect(targets).toHaveLength(14);

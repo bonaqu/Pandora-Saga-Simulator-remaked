@@ -2,6 +2,16 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.13 — Compact Equipment dropdowns and quieter item rows
+
+- Replaced the large Equipment selection modal with a compact dropdown anchored to the original field. It opens below or above according to available space, leaves the calculator visible, supports filtering/arrows/Enter and dismisses on Escape, outside click, anchor scrolling or focus moving away. The preserved native engine remains the fallback.
+- Removed repeated Characteristics labels/arrows from Search and Equipment rows. A compact named information action remains for explicit review: shown on hover/focus on desktop, always available on touch. Viewing still never equips a candidate.
+- Opening a dropdown reveals the currently worn item, as a native select does, without opening its card or changing the character.
+
+- Fixed characteristic cards closing when keyboard focus automatically scrolls to an off-screen Equipment item. Keyboard review waits for that scroll to settle; manual wheel/touch input still cancels previews and never changes equipment.
+- Added the off-screen keyboard regression to Chromium, Firefox and WebKit checks, plus a desktop visual capture. Pointer previews retain their 450 ms dwell, scroll cancellation and separate explicit touch disclosure.
+- Legacy source, formulas, serialized builds and the translation workbook remain unchanged.
+
 ## 2026.09.12 — Equipment selection and deliberate previews
 
 - Added characteristic cards to the actual Equipment item and Soul selection lists, not only Search. Each picker is locked to its character slot; activation calls the preserved Legacy selector handler. Gem/enhancement fields and existing socket state remain in Equipment. Reviewing candidates never inserts Souls or changes the build.

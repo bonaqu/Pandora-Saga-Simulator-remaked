@@ -1,10 +1,31 @@
 import { test, expect } from '@playwright/test';
 
+test('off-screen Equipment keyboard review survives automatic scroll but not wheel input', async ({ page }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').focus();
+  await page.keyboard.press('ArrowDown');
+  const row = page.locator('[data-remaked-picker-panel] [data-remaked-search-row][data-value="120011"]');
+  await row.locator('button').focus();
+  await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
+  await page.waitForTimeout(150);
+  await expect(row.locator('details')).toHaveAttribute('open', '');
+  expect(await page.evaluate(() => Store())).toBe(before);
+  await row.locator('button').hover();
+  await page.mouse.wheel(0, -1);
+  await page.waitForTimeout(550);
+  await expect(row.locator('details')).not.toHaveAttribute('open', '');
+  expect(await page.evaluate(() => Store())).toBe(before);
+});
+
 test('actual Equipment picker separates review and selection and preserves native-engine parity', async ({ page }) => {
   await page.goto('/');
   const original = await page.evaluate(() => Store());
   const opener = page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]');
   await opener.click();
+  await expect(page.locator('dialog[open]')).toHaveCount(0);
+  await expect(page.locator('[data-remaked-equipment-dropdown]')).toBeVisible();
+  await expect(opener).toHaveAttribute('aria-expanded', 'true');
   const panel = page.locator('[data-remaked-picker-panel]');
   const row = panel.locator('[data-remaked-search-row][data-value="2"]');
   await row.locator('summary').click();

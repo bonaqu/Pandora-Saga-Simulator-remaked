@@ -26,7 +26,14 @@
         button.className = 'remaked-equipment-picker';
         button.dataset.remakedEquipmentPicker = select.id;
         button.setAttribute('aria-haspopup', 'dialog');
-        button.addEventListener('click', function () { namespace.search.openEquipmentPicker(select.id, button); });
+        button.setAttribute('aria-expanded', 'false');
+        var closeOnClick = false;
+        button.addEventListener('pointerdown', function () { closeOnClick = button.getAttribute('aria-expanded') === 'true'; });
+        button.addEventListener('click', function () {
+          if (closeOnClick || button.getAttribute('aria-expanded') === 'true') namespace.search.close();
+          else namespace.search.openEquipmentPicker(select.id, button);
+          closeOnClick = false;
+        });
         button.addEventListener('keydown', function (event) {
           if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
             event.preventDefault(); namespace.search.openEquipmentPicker(select.id, button);

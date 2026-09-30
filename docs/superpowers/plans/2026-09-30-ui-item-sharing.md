@@ -8,8 +8,10 @@ Do not alter preserved Legacy files or implement new calculation formulas.
 The recorded UI11 release gates passed. Immutable fingerprints/results:
 annotated `v2026.09.11`. User feedback subsequently identified a scope gap:
 the previews exist in Search, not in the actual Equipment selection lists,
-and instant hover disrupts scrolling. The Equipment-picker follow-up is open;
-the earlier release evidence does not establish acceptance of this interaction.
+and instant hover disrupts scrolling. UI12 corrected those in PR #17, with exact
+artifact/live acceptance. UI13 addresses later dropdown-density and off-screen
+keyboard feedback; see `2026-09-30-equipment-picker-followup.md` and conditional
+`v2026.09.13` acceptance. Earlier release evidence does not substitute for its gates.
 
 ## Acceptance
 

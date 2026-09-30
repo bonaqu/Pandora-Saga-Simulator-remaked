@@ -1,11 +1,22 @@
-# Release acceptance — Equipment follow-up UI 2026.09.12
+# Release acceptance — Equipment follow-up UI 2026.09.13
 
-UI12 is a correction candidate, not yet production accepted. Its gates are
-tracked in `superpowers/plans/2026-09-30-equipment-picker-followup.md`: actual
-Equipment/Soul selection, delayed hover/scroll cancellation, touch and keyboard
-review without mutation, load/evaluation cache rebuild and all fourteen slots.
-The original engine fields remain the fallback. Historical UI11 results below
-do not substitute for this candidate's CI, visual and deployed-artifact checks.
+UI12 shipped in PR #17, feature HEAD `12fffd4dd3a28877d66ac0eab5c631415149d911`,
+feature CI `36658390600`, squash `edfb202d58b9f8e0e1b7866e15c73d4aaf443559`
+and Pages `36658979809`. Passed: 57 Python, 119 Chromium, 18 three-engine and
+21 visual checks; exact artifact and live Equipment/hover/load/share/offline
+acceptance. All 459 Legacy files and the translation workbook remain unchanged.
+Artifact SHA-256: `396b919cf3c8d82513d3e0b2e7d423debdb14f6e4e8c8528493f84d5d1781ff1`;
+cache: `pandora-remaked-2026.09.12-c14cb1612004a7bc`.
+
+Additional keyboard QA found automatic scrolling could close an off-screen
+item's focused card. Further user feedback requested compact anchored dropdowns
+instead of Equipment modals and removal of repeated Characteristics rows. UI13
+addresses these together; gates are tracked in
+`superpowers/plans/2026-09-30-equipment-picker-followup.md`. Final acceptance is
+recorded by annotated **`v2026.09.13`**, created only after exact feature CI,
+Pages artifact, live-site and isolated installed-PWA verification. Its message
+records those run IDs and fingerprints. If the tag does not exist, these final
+gates are not complete. UI11/UI12 evidence does not substitute for UI13 gates.
 
 ## Historical UI11 release record
 
@@ -27,8 +38,8 @@ Real isolated desktop PWA install, both routes standalone online/offline and
 uninstall also passed for production UI11. These are historical automated
 release results, not acceptance of every requested interaction: subsequent user
 feedback identified immediate hover previews and missing characteristics in the
-actual Equipment selectors. That Equipment UX follow-up remains open until its
-own tests, visual checks and production verification pass. Current-server
+actual Equipment selectors. UI12 corrected that gap; UI13 covers the later
+off-screen keyboard regression described above. Current-server
 complete balance parity is not claimed.
 
 - Exact Git archive static validation and original Legacy preservation manifest; no original `index.html`, `js/`, `css/`, `image/` or preservation-source edits.
@@ -44,7 +55,7 @@ complete balance parity is not claimed.
 - Real isolated desktop Chromium installations of production UI 2026.09.10 and UI 2026.09.11 passed standalone Modern and Legacy launches, both online and offline; they were then uninstalled without touching the user's browser/profile. This is not physical iOS/Android device acceptance. The SVG/PNG/touch icon files are real, decode and have verified dimensions.
 - Social metadata is verified from the actual public response; third-party messenger preview caches/refresh timing are not controlled by the project.
 - Named builds remain local to the current browser. Export important builds before clearing browser storage, or use Share build to send the current character to another browser. Anyone with the URL can read that build; this is not private/cloud storage.
-- Item previews show source descriptions, not calculated stat deltas. Native browser select popups stay unchanged; use Modern Equipment Search/Soul Search for hover/focus/touch details.
+- Item previews show source descriptions, not calculated stat deltas. Modern Equipment item/Soul selectors now offer read-only cards with deliberate hover, keyboard review and explicit touch disclosures. Search also provides cards but is not a new socket editor. Original native selects remain the script-unavailable fallback; museum menus stay unchanged.
 - Russian game names are not guessed. Empty workbook translations use source-language fallback; the museum route, diagnostic Log and image lettering are not Russian text surfaces.
 - The user clarified that Modern targets Weapons of Balance. Phases 0–7 prove the modernization against Legacy 2.00, not parity with this server's current balance. Server-specific data/formulas require a separately visible and tested compatibility layer, never a silent museum-source rewrite.
 

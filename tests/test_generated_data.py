@@ -26,7 +26,7 @@ class GeneratedDataTests(unittest.TestCase):
             self.assertEqual(metadata["schema_version"], 1)
             self.assertEqual(metadata["projection_version"], "v1")
             self.assertEqual(metadata["legacy_engine"], "2.00")
-            self.assertEqual(metadata["remaked_ui"], "2026.09.12")
+            self.assertEqual(metadata["remaked_ui"], "2026.09.13")
             self.assertEqual(
                 metadata["source_fingerprint"],
                 "SHA-256 after CRLF-to-LF normalization",
