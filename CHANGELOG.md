@@ -12,6 +12,11 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   actually edited workbook and checks unchanged game data and serialized builds.
 - Administrator CMS, IDDQD auth and compact desktop redesign are in progress,
   not published features yet.
+- Secured Worker authentication is deployed and production-tested separately
+  from Pages. A Modern-only equipment/Soul editor now has validated multilingual
+  fields, numeric effects, private drafts, atomic publication, immutable history,
+  conflict protection and rollback. Public engine/catalog integration and the
+  expanded class/active/passive/racial-skill editor remain in development.
 
 ## 2026.09.17 — Safe calculator code and riding controls
 

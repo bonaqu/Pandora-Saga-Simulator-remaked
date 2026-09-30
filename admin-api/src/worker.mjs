@@ -1,4 +1,6 @@
 import { authorize, jsonResponse, login, logout } from './auth.mjs';
+import { adminCatalog, publicCatalog } from './catalog.mjs';
+import { CatalogError } from './catalog-model.mjs';
 
 const PRIVATE_CSP = "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'; font-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'";
 
@@ -42,6 +44,7 @@ async function route(request, env) {
     return response;
   }
   if (url.pathname === '/api/auth/logout') return logout(request, env);
+  if (url.pathname === '/api/catalog' && request.method === 'GET') return publicCatalog(request, env);
 
   // Authorize before routing: even a future/new/unknown admin endpoint cannot
   // accidentally bypass the guard. IDDQD is not part of the security boundary.
@@ -49,11 +52,11 @@ async function route(request, env) {
     const session = await authorize(request, env);
     if (!session.ok) return jsonResponse({ ok: false, message: 'CHEAT FAILED / ACCESS DENIED' }, session.status);
     if (url.pathname === '/api/session' && request.method === 'GET') return jsonResponse({ ok: true, username: 'admin', csrfToken: session.csrfToken, expiresAt: session.expiresAt });
-    return jsonResponse({ ok: false, message: 'Unknown admin operation' }, 404);
+    return adminCatalog(request, env);
   }
 
   if (url.pathname === '/health' && request.method === 'GET') return jsonResponse({ ok: true, service: 'pandora-admin-api', apiVersion: 1, workerVersion: env.CF_VERSION_METADATA?.id || null });
-  if (['/admin', '/admin.css', '/admin.js'].includes(url.pathname) && ['GET', 'HEAD'].includes(request.method)) {
+  if (['/admin', '/admin.css', '/admin.js', '/catalog-ui.js'].includes(url.pathname) && ['GET', 'HEAD'].includes(request.method)) {
     if (!env.ASSETS) return jsonResponse({ ok: false }, 503);
     const assetUrl = new URL(request.url);
     if (url.pathname === '/admin') assetUrl.pathname = '/admin.html';
@@ -65,7 +68,8 @@ async function route(request, env) {
 export default {
   async fetch(request, env) {
     try { return secureResponse(await route(request, env), request, env); }
-    catch {
+    catch (error) {
+      if (error instanceof CatalogError) return secureResponse(jsonResponse({ ok: false, message: error.message }, error.status), request, env);
       // Never log request bodies, password records, secrets, cookies or tokens.
       return secureResponse(jsonResponse({ ok: false, message: 'Service temporarily unavailable' }, 503), request, env);
     }

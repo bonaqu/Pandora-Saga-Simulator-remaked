@@ -35,6 +35,12 @@ desktop layout direction, not its build-import safety fix. Branch:
    effects. No arbitrary code/HTML/SQL/effect expressions. Publish through the
    retained engine adapter. Verify an edited and a new item changes actual
    calculated stats, compatible saved/shared builds and offline fallback.
+   Owner expanded scope on 2026-09-30 to include character classes, active
+   skills, character passives and racial passives, not just gear/Souls. Audit
+   each engine table/conditional before defining editable fields. Numerical
+   edits must affect the retained simulation; descriptions alone must never
+   be presented as implemented mechanics. IDs stay stable. Unsupported new
+   mechanics need an explicit capability boundary, not arbitrary CMS code.
 4. **IDDQD interface.** Ignore editable fields, modifiers and key repetition;
    original restrained CRT effect with reduced-motion support, authenticating
    form and Doom-inspired green/beige CMS without copyrighted game assets.
@@ -57,6 +63,29 @@ desktop layout direction, not its build-import safety fix. Branch:
 ## Verified starting infrastructure
 
 Wrangler 4.144.0 OAuth has Workers/D1 write permission. Existing database UUID:
-`a786d50a-56e1-4868-8ca5-58cd1b248d85`. No application tables yet. GitHub has
+`a786d50a-56e1-4868-8ca5-58cd1b248d85`. GitHub has
 `CLOUDFLARE_API_TOKEN` secret and `CLOUDFLARE_ACCOUNT_ID` variable. Credentials
 were not printed or copied into the repository.
+
+## Progress, 2026-09-30
+
+- Editable EN workbook implemented; all 2842 rows/141 RU values preserved.
+  Python suite (62) and focused Chromium localization suite (19) passed.
+- Authentication deployed and accepted on Worker version
+  `9e4a3266-46ee-4a51-ad8d-525bd62e0a74`: migration 0001, single administrator,
+  private local credentials, Cloudflare-only pepper and revocable server
+  sessions. Twenty backend tests and ten real production checks passed,
+  including native Pages-origin login with third-party cookies blocked,
+  CSRF rejection, logout revocation and desktop/mobile visual inspection.
+- Existing Cloudflare deployment uses OAuth; GitHub PR verification passed.
+  The deploy job using the owner's GitHub token is still a release gate.
+- Catalog block is in development: additive migration 0002, validated typed
+  data codec, private drafts, immutable revisions, optimistic concurrency and
+  rollback. No catalog changes have been published on the main site yet.
+  Initial equipment/Soul editor supports four languages, compatibility, slots
+  and numeric effects. All 1304 original effect strings round-trip exactly;
+  33 backend tests and three synthetic-session browser workflows passed.
+  Remaining scope includes classes/active/passive/racial skills, actual engine
+  integration and versioned saved/shared build loading.
+- PR24 is a draft. Main Pages production remains UI16. IDDQD public entry,
+  catalog engine adapter and compact Modern 3.00 remain required work.

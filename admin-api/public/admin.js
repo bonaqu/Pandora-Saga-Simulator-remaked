@@ -9,6 +9,7 @@
   // The actual server session is an HttpOnly cookie, inaccessible to this JS.
   var csrf = null;
   function showLogin(text) {
+    if (window.PandoraCatalogConsole) window.PandoraCatalogConsole.clear();
     csrf = null; form.hidden = false; workspace.hidden = true;
     title.textContent = 'GOD MODE REQUIRES AUTHENTICATION';
     message.textContent = text; message.classList.toggle('denied', text.indexOf('DENIED') !== -1);
@@ -30,6 +31,7 @@
       message.classList.remove('denied');
       document.getElementById('password').value = '';
       history.replaceState(null, '', '/admin');
+      if (window.PandoraCatalogConsole) await window.PandoraCatalogConsole.start(function () { return csrf; }, function () { showLogin('Session expired. Sign in again.'); });
     } catch { showLogin('Secure service unavailable. Please try again later.'); }
   }
   logout.addEventListener('click', async function () {

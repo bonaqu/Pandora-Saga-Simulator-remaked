@@ -6,6 +6,7 @@
   <meta name="robots" content="noindex, nofollow">
   <title>Pandora Admin Terminal</title>
   <link rel="stylesheet" href="/admin.css">
+  <script src="/catalog-ui.js" defer></script>
   <script src="/admin.js" defer></script>
 </head>
 <body>
@@ -24,8 +25,8 @@
       </form>
       <section id="admin-workspace" hidden aria-label="Catalog management">
         <div class="workspace-toolbar"><h2>CATALOG CONTROL</h2><button id="logout" type="button">LOGOUT</button></div>
-        <p>Secure administrator session established.</p>
-        <p id="catalog-state">Catalog editor is being integrated. No data has been changed.</p>
+        <p id="catalog-state" role="status" aria-live="polite">Loading the catalog…</p>
+        <div id="catalog-console"></div>
       </section>
     </section>
     <footer>MODERN CATALOG / MUSEUM ENGINE 2.00</footer>

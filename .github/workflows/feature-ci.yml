@@ -29,6 +29,11 @@ jobs:
         with:
           python-version: '3.13'
 
+      - name: Set up project Node runtime
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
       - name: Generate preservation baseline when bootstrapping
         id: baseline
         shell: bash
@@ -99,6 +104,9 @@ jobs:
 
       - name: Verify deterministic Legacy terminology export
         run: npm run test:translations
+
+      - name: Verify admin editor with synthetic sessions only
+        run: npm run test:ui:admin
 
       - name: Run Chromium Firefox and WebKit smoke tests
         run: npm run test:ui:cross-browser
