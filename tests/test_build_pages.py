@@ -53,6 +53,7 @@ class BuildPagesTests(unittest.TestCase):
             (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
             (modern / "build-store.js").write_text("// build store", encoding="utf-8")
             (modern / "search.js").write_text("// search", encoding="utf-8")
+            (modern / "equipment-picker.js").write_text("// equipment picker", encoding="utf-8")
             (modern / "app-shell.js").write_text("// shell", encoding="utf-8")
             (modern / "builds.js").write_text("// builds", encoding="utf-8")
             (modern / "tooltips.js").write_text("// tooltips", encoding="utf-8")

@@ -1,4 +1,13 @@
-# Release acceptance — UI 2026.09.11
+# Release acceptance — Equipment follow-up UI 2026.09.12
+
+UI12 is a correction candidate, not yet production accepted. Its gates are
+tracked in `superpowers/plans/2026-09-30-equipment-picker-followup.md`: actual
+Equipment/Soul selection, delayed hover/scroll cancellation, touch and keyboard
+review without mutation, load/evaluation cache rebuild and all fourteen slots.
+The original engine fields remain the fallback. Historical UI11 results below
+do not substitute for this candidate's CI, visual and deployed-artifact checks.
+
+## Historical UI11 release record
 
 This is the completion boundary for the approved Phases 0–7. Cloud save/backend is a later, separately designed project; GitHub Pages stays free/static. Official Russian game translations remain user input through the workbook.
 
@@ -15,8 +24,12 @@ The preceding keyboard/localization block shipped in PR #14 (`816e72f`), feature
 workflow `36654352147`, exact artifact/live acceptance. Annotated `v2026.09.11`
 exists and records fingerprints/results. All 459 Legacy files match UI10.
 Real isolated desktop PWA install, both routes standalone online/offline and
-uninstall also passed for production UI11. This closes Phases 0–7 and user
-UI/item/share requests, not a claim of current-server complete balance parity.
+uninstall also passed for production UI11. These are historical automated
+release results, not acceptance of every requested interaction: subsequent user
+feedback identified immediate hover previews and missing characteristics in the
+actual Equipment selectors. That Equipment UX follow-up remains open until its
+own tests, visual checks and production verification pass. Current-server
+complete balance parity is not claimed.
 
 - Exact Git archive static validation and original Legacy preservation manifest; no original `index.html`, `js/`, `css/`, `image/` or preservation-source edits.
 - 57 Python tests; deterministic 2,667 Legacy terms, 2,837 translation rows, 1,120 equipment, 184 Souls, 211 skills. All prior translator input is preserved; nine new interface translations were appended.

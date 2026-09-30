@@ -39,13 +39,15 @@ async function findSocketBearingTarget(page) {
     const selector = `#SelEquip_${slotIndex}_0`;
     const values = await optionValues(page, selector);
     for (const value of values.slice(1, 60)) {
-      await page.locator(selector).selectOption(value);
+      // Direct engine-field parity, not a user-facing Modern interaction.
+      await page.locator(selector).selectOption(value, { force: true });
       const target = await page.evaluate((slot) => {
         for (let socket = 4; socket <= 6; socket += 1) {
           const node = document.getElementById(`SelEquip_${slot}_${socket}`);
           if (!node) continue;
-          const style = getComputedStyle(node);
-          if (style.display !== 'none' && node.options.length > 1) {
+          // SoulCheck alone controls actual socket availability, even when
+          // Modern hides the original select behind its picker trigger.
+          if (node.style.display !== 'none' && node.options.length > 1) {
             return { slotIndex: slot, socketIndex: socket, selectId: node.id };
           }
         }
@@ -90,7 +92,7 @@ test('adapter load round-trips build state without touching legacy localStorage.
 
   const otherValues = await optionValues(page, '#SelEquip_0_0');
   const alternate = otherValues.find((candidate) => candidate !== value) ?? otherValues[0];
-  await page.locator('#SelEquip_0_0').selectOption(alternate);
+  await page.locator('#SelEquip_0_0').selectOption(alternate, { force: true });
 
   await page.evaluate((payload) => window.PandoraRemaked.adapter.load(payload), payloadA);
   expect(await page.evaluate(() => window.Store())).toBe(payloadA);
@@ -130,7 +132,7 @@ test('Equipment adapter selection is payload-identical to manual legacy selectio
   const viaAdapter = await page.evaluate(() => window.Store());
 
   await page.evaluate((payload) => window.PandoraRemaked.adapter.load(payload), baseline);
-  await page.locator('#SelEquip_0_0').selectOption(value);
+  await page.locator('#SelEquip_0_0').selectOption(value, { force: true });
   const manually = await page.evaluate(() => window.Store());
   expect(viaAdapter).toBe(manually);
 
@@ -159,7 +161,7 @@ test('Soul targets/options mirror usable legacy socket selects and select with p
   const viaAdapter = await page.evaluate(() => window.Store());
 
   await page.evaluate((payload) => window.PandoraRemaked.adapter.load(payload), socketBuild);
-  await page.locator(`#${target.selectId}`).selectOption(soulValue);
+  await page.locator(`#${target.selectId}`).selectOption(soulValue, { force: true });
   const manually = await page.evaluate(() => window.Store());
   expect(viaAdapter).toBe(manually);
 });

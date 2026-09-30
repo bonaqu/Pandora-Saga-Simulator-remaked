@@ -1,5 +1,37 @@
 import { test, expect } from '@playwright/test';
 
+for (const width of [390, 1440]) {
+  test(`capture actual Equipment picker at ${width}px`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    await page.evaluate(() => {
+      const adapter = PandoraRemaked.adapter;
+      for (const option of adapter.listEquipmentOptions(0)) {
+        const item = adapter.readItemDetails('equipment', option.value, 0);
+        if (item?.sockets === 3 && Number(option.value) % 10000) {
+          adapter.selectEquipment(0, option.value);
+          const select = document.getElementById('SelEquip_0_3');
+          select.value = '4'; select.dispatchEvent(new Event('change', { bubbles: true }));
+          const target = adapter.listSoulTargets().find(t => t.slotIndex === 0);
+          const soul = adapter.listSoulOptions(target).find(s => Number(s.value) > 0);
+          adapter.selectSoul(target, soul.value);
+          break;
+        }
+      }
+    });
+    const opener = page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]');
+    await opener.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: testInfo.outputPath(`modern-actual-equipment-${width}.png`) });
+    await opener.click();
+    const selected = await page.evaluate(() => String(Status.Equip[0][0]));
+    const row = page.locator(`[data-remaked-picker-panel] [data-remaked-search-row][data-value="${selected}"]`);
+    await row.locator('summary').click();
+    await expect(row.locator('[data-remaked-item-description] strong')).toContainText('+4');
+    await expect(row.locator('[data-remaked-socket][data-filled="true"]')).toHaveCount(1);
+    await page.screenshot({ path: testInfo.outputPath(`modern-actual-equipment-preview-${width}.png`) });
+  });
+}
+
 const desktop = { width: 1440, height: 1000 };
 const mobile = { width: 390, height: 844 };
 
@@ -104,7 +136,7 @@ async function captureCompareBuilds(page, testInfo, viewport, name) {
 
 async function captureMobileEquipment(page, testInfo) {
   await openModern(page, mobile);
-  const primary = page.locator('#SelEquip_0_0');
+  const primary = page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]');
   await expect(primary).toBeVisible();
   await expect(primary.locator('xpath=ancestor::*[@data-remaked-equipment-row][1]')).toHaveCount(1);
   await primary.scrollIntoViewIfNeeded();

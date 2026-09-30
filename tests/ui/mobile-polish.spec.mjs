@@ -69,10 +69,11 @@ test('collapsible Legacy cards are keyboard-focusable and presentation-only', as
   expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(before);
 });
 
-test('equipment row is decorated for phone layout while original selects remain reachable', async ({ page }) => {
+test('equipment row is decorated for phone layout with a usable picker and retained engine select', async ({ page }) => {
   await openMobile(page);
   const primary = page.locator('#SelEquip_0_0');
-  await expect(primary).toBeVisible();
+  await expect(primary).toBeHidden();
+  await expect(page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]')).toBeVisible();
   const row = primary.locator('xpath=ancestor::*[@data-remaked-equipment-row][1]');
   const line = primary.locator('xpath=ancestor::*[@data-remaked-equipment-line][1]');
   await expect(row).toHaveCount(1);

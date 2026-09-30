@@ -50,6 +50,7 @@
 
   function dispatchLegacyChange(select) {
     select.dispatchEvent(new Event('change', { bubbles: true }));
+    if (namespace.equipmentPicker) namespace.equipmentPicker.refresh();
   }
 
   function parseEquipmentOption(option) {
@@ -63,7 +64,13 @@
   }
 
   function equipmentLabel(slotIndex) {
-    return textOf(byId('TextEquip_' + slotIndex)) || ('Slot ' + slotIndex);
+    // Ear/Ring labels are repeated in Legacy DOM; IDs are not slot indices.
+    var select = byId('SelEquip_' + slotIndex + '_0');
+    var row = select && select.parentElement.parentElement.parentElement.parentElement;
+    var label = textOf(row && row.firstElementChild) || ('Slot ' + slotIndex);
+    if (slotIndex === 8 || slotIndex === 9) label += ' · ' + (slotIndex - 7);
+    if (slotIndex === 12 || slotIndex === 13) label += ' · ' + (slotIndex - 11);
+    return label;
   }
 
   function parseCalculatedValue(raw) {
@@ -109,6 +116,10 @@
     window.ListCreate('Soul');
     window.ListCreate('SoulSelect');
     window.ListCreate('SoulCheck');
+    // Expand restores numeric state but does not rebuild SPOpt, the engine's
+    // equipment-effect cache. Use the original engine before recalculating:
+    // otherwise previous equipment bonuses survive a load/evaluate rollback.
+    window.CalcSet('Equip');
 
     var race = byId('SelRace');
     if (race) race.selectedIndex = window.Status['Job'][0];
@@ -180,6 +191,7 @@
       // Build projections read names synchronously; a MutationObserver refresh
       // alone would leave compare results in the previous/source language.
       if (namespace.gameTermDisplay) namespace.gameTermDisplay.refresh();
+      if (namespace.equipmentPicker) namespace.equipmentPicker.refresh();
     },
 
     readCalculatedSummary: readCalculatedSummary,
@@ -241,7 +253,12 @@
           var selectId = 'SelEquip_' + slotIndex + '_' + socketIndex;
           var select = byId(selectId);
           if (!select) continue;
-          var style = window.getComputedStyle(select);
+          // Enhanced selectors are hidden only as a presentation detail. Socket
+          // availability remains the Legacy SoulCheck inline display state.
+          var style = select._remakedPicker ? {
+            display: select.style.display,
+            visibility: window.getComputedStyle(select.parentElement).visibility
+          } : window.getComputedStyle(select);
           if (style.display === 'none' || style.visibility === 'hidden') continue;
           targets.push({
             slotIndex: slotIndex,

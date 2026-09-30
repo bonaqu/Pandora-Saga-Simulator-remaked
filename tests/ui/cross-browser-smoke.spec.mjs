@@ -1,5 +1,28 @@
 import { test, expect } from '@playwright/test';
 
+test('actual Equipment picker separates review and selection and preserves native-engine parity', async ({ page }) => {
+  await page.goto('/');
+  const original = await page.evaluate(() => Store());
+  const opener = page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]');
+  await opener.click();
+  const panel = page.locator('[data-remaked-picker-panel]');
+  const row = panel.locator('[data-remaked-search-row][data-value="2"]');
+  await row.locator('summary').click();
+  await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
+  expect(await page.evaluate(() => Store())).toBe(original);
+  await row.locator('button').click();
+  await expect(panel).toHaveCount(0);
+  await expect(opener).toBeFocused();
+  const selected = await page.evaluate(() => Store());
+  const expected = await page.evaluate(code => {
+    PandoraRemaked.adapter.load(code);
+    const select = document.getElementById('SelEquip_0_0');
+    select.value = '2'; select.dispatchEvent(new Event('change', { bubbles: true }));
+    return Store();
+  }, original);
+  expect(selected).toBe(expected);
+});
+
 test('item preview and shared build link work without mutating Legacy data', async ({ page, browser }) => {
   await page.goto('/');
   const before = await page.evaluate(() => ({ code: Store(), data: JSON.stringify(EquipData) }));

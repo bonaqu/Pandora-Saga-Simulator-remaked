@@ -2,6 +2,15 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.12 — Equipment selection and deliberate previews
+
+- Added characteristic cards to the actual Equipment item and Soul selection lists, not only Search. Each picker is locked to its character slot; activation calls the preserved Legacy selector handler. Gem/enhancement fields and existing socket state remain in Equipment. Reviewing candidates never inserts Souls or changes the build.
+- Pointer previews require 450 ms of dwell. Leaving the item, scrolling, wheel input, touch, closing or rerendering cancels pending previews; a stationary pointer does not reopen a card after scrolling. Keyboard review and the explicit Characteristics action do not require waiting. Pointer selection does not flash a focus preview.
+- Reflowed the enhanced Equipment rows to remove fixed-height overlap, including full-width mobile item/Soul controls and ordinary modifier fields. Corrected an off-by-one Modern slot-label projection.
+- Original engine selects, source arrays, formulas, build bytes and museum Legacy menus remain preserved; native fields stay available when the picker script is unavailable. The translation workbook is unchanged.
+- Fixed Modern load/evaluation rollback retaining effects from previously equipped items: the adapter now rebuilds the Legacy equipment-effect cache using its original Equip handler before recalculating. No formula is duplicated or changed.
+- Reflowed Equipment's bulk modifiers and reset action on phones. Reset is a native keyboard-operable button; bulk modifiers/reset also refresh the existing Legacy equipment-effect cache instead of leaving stale calculated bonuses.
+
 ## 2026.09.11 — Consistent controls, item previews and build links
 
 - Replaced two language panels with one EN/RU/JP/TW group and exactly one selected language. RU uses English game-source fallback until the user supplies verified translations; JP/TW keep native game data with the English Modern shell.

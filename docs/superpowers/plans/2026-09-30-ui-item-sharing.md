@@ -5,7 +5,11 @@ Do not alter preserved Legacy files or implement new calculation formulas.
 
 **Status:** Shipped as UI `2026.09.11` in PR #16 (`e0ee03d`), feature HEAD
 `54af919`, feature CI `36653977707`, production workflow/artifact `36654352147`.
-All gates passed. Immutable fingerprints/results: annotated `v2026.09.11`.
+The recorded UI11 release gates passed. Immutable fingerprints/results:
+annotated `v2026.09.11`. User feedback subsequently identified a scope gap:
+the previews exist in Search, not in the actual Equipment selection lists,
+and instant hover disrupts scrolling. The Equipment-picker follow-up is open;
+the earlier release evidence does not establish acceptance of this interaction.
 
 ## Acceptance
 

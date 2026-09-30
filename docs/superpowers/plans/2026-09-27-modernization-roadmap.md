@@ -146,6 +146,11 @@ caps must NOT restrict Modern; retain 55 levels, all 28 classes and saved builds
 
 ### Later project — Cloud save
 
+User follow-up after UI11: actual Equipment selection still needs characteristic
+cards and hover must not interfere with scrolling. This is tracked separately in
+`2026-09-30-equipment-picker-followup.md`; the UI11 publication record is historical
+evidence, not acceptance of this later-identified interaction gap.
+
 Not part of this roadmap's implementation plans. Requires a new design/spec after Phases 0–7 are stable.
 
 ---
