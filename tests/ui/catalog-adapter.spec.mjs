@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { compileRecord, draftFromSource, validateDraft } from '../../admin-api/src/catalog-model.mjs';
 import equipment from '../../data/generated/equipment.v1.json' with { type: 'json' };
+import character from '../../data/generated/character.v1.json' with { type: 'json' };
 
 const fingerprint = equipment.metadata.generated_from[0].sha256;
 function record(kind, category, index, effects, name) {
@@ -17,6 +18,46 @@ async function open(page) {
   await expect.poll(() => page.evaluate(() => Boolean(window.PandoraRemaked.catalog))).toBe(true);
 }
 const publicApi = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog';
+function classSnapshot(revision = 1) {
+  const source = character.records.find(item => item.id === 'job.0');
+  const identity = { id: source.id, kind: 'class', category: null, index: 0 };
+  const edit = draftFromSource(source, 'class'); edit.progression[0] += 100;
+  edit.names.en = 'Edited Warrior'; edit.names.ru = 'Изменённый воин';
+  return { ...snapshot([compileRecord(validateDraft(edit, identity), identity, source)], revision), characterSourceFingerprint: character.sourceFingerprint };
+}
+
+test('published class parameters change native LP, retain canonical lineage and round-trip pinned build data', async ({ page }) => {
+  await open(page);
+  const result = await page.evaluate(data => {
+    const api = window.PandoraRemaked;
+    const original = api.adapter.serialize(); const names = JSON.stringify(window.Name.Job);
+    const mods = JSON.stringify(window.Status.Mod); const lp = window.Status.LP; const mp = window.Status.MP;
+    api.catalog.applySnapshot(data);
+    const edited = { lp: window.Status.LP, mp: window.Status.MP, name: api.catalog.gameLabel('job.0'), payload: api.adapter.serialize() };
+    api.adapter.load(original);
+    const restored = { lp: window.Status.LP, mp: window.Status.MP, mods: JSON.stringify(window.Status.Mod), payload: api.adapter.serialize() };
+    api.adapter.load(edited.payload);
+    return { lp, mp, edited, restored, original, mods, namesUnchanged: JSON.stringify(window.Name.Job) === names, loadedLp: window.Status.LP };
+  }, classSnapshot());
+  expect(result.edited.lp).toBe(result.lp + 100); expect(result.edited.mp).toBe(result.mp);
+  expect(result.edited.name).toBe('Edited Warrior'); expect(result.edited.payload).toMatch(/^PS3:1:/);
+  expect(result.namesUnchanged).toBe(true); expect(result.restored).toEqual({ lp: result.lp, mp: result.mp, mods: result.mods, payload: result.original });
+  expect(result.loadedLp).toBe(result.lp + 100);
+});
+
+test('invalid class coefficients, source fingerprint and lineage fail before any character mutation', async ({ page }) => {
+  await open(page);
+  const result = await page.evaluate(data => {
+    const api = window.PandoraRemaked; const before = api.adapter.serialize(); const mods = JSON.stringify(window.Status.Mod);
+    const bad = [ { ...data, characterSourceFingerprint: 'wrong' },
+      { ...data, records: [{ ...data.records[0], progression: [98, 24, 0, 25, 10, 12] }] },
+      { ...data, records: [{ ...data.records[0], index: 28, id: 'job.28' }] },
+      { ...data, records: [{ ...data.records[0], progression: [98, 24, 20, 25, 10, Infinity] }] } ];
+    const rejected = bad.map(input => { try { api.catalog.applySnapshot(input); return false; } catch { return true; } });
+    return { rejected, before, after: api.adapter.serialize(), modsSame: mods === JSON.stringify(window.Status.Mod), revision: api.catalog.getRevision() };
+  }, classSnapshot());
+  expect(result.rejected).toEqual([true, true, true, true]); expect(result.after).toBe(result.before); expect(result.modsSame).toBe(true); expect(result.revision).toBe(0);
+});
 async function mockCatalog(context, versions, latest = 1, requests = []) {
   await context.route(publicApi + '**', async route => {
     const revision = new URL(route.request().url()).searchParams.get('revision');

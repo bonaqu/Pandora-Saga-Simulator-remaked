@@ -2,7 +2,7 @@
   'use strict';
   var host = document.getElementById('catalog-console');
   var status = document.getElementById('catalog-state');
-  var meta, getCsrf, expired, current, editor, listHost, listStatus, search, kind, page = 0;
+  var meta, getCsrf, expired, current, editor, listHost, listStatus, search, kind, newButton, page = 0;
   var generation = 0, pending = 0, dirty = false, catalogRevision = 0;
   var languages = [['en', 'English'], ['ru', 'Русский'], ['jp', '日本語'], ['tw', '繁體中文']];
   function node(tag, text, className) { var result = document.createElement(tag); if (text !== undefined) result.textContent = text; if (className) result.className = className; return result; }
@@ -68,6 +68,10 @@
     ['names', 'description', 'notes', 'acquisition', 'modifiers'].forEach(function (field) {
       editor.querySelectorAll('[data-field="' + field + '"][data-language]').forEach(function (input) { edit[field][input.dataset.language] = input.value; });
     });
+    if (edit.kind === 'class') {
+      edit.progression = edit.progression.map(function (_, index) { return Number(formValue('progression' + index)); });
+      return edit;
+    }
     if (edit.kind === 'equipment') { edit.category = Number(formValue('category')); edit.level = Number(formValue('level')); edit.sockets = Number(formValue('sockets')); }
     edit.disabled = editor.querySelector('[data-field="disabled"]').checked;
     edit.baseAttack = editor.querySelector('[data-field="baseAttack"]') && formValue('baseAttack') !== '' ? Number(formValue('baseAttack')) : null;
@@ -98,6 +102,20 @@
     editor.replaceChildren(); var edit = current.edit;
     editor.appendChild(node('h3', edit.id ? edit.names.en : 'Новая запись'));
     editor.appendChild(node('p', (edit.id || 'ID выдаст сервер') + ' · ' + (current.hasDraft ? 'ЧЕРНОВИК ' + current.draftVersion : current.published ? 'ОПУБЛИКОВАНО' : 'LEGACY SOURCE'), 'item-identity'));
+    if (edit.kind === 'class') {
+      multilingual('Название класса · English обязателен', 'names', edit.names, editor, false);
+      multilingual('Описание класса — текст, не формула', 'description', edit.description, editor, true);
+      var progression = node('fieldset', undefined, 'numeric-effects'); progression.appendChild(node('legend', 'LP / MP — параметры исходного движка'));
+      progression.appendChild(node('p', 'Первые два числа — базовые LP и MP. Остальные четыре — делители в исходной формуле: меньше делитель → больше рост. Это не прямая прибавка за уровень. Формулы Legacy не меняются.', 'help-text'));
+      var parameters = node('div', undefined, 'basic-fields');
+      ['Базовое LP', 'Базовое MP', 'Делитель роста LP от уровня', 'Делитель роста MP от уровня', 'Делитель роста LP от STA', 'Делитель роста MP от SPR'].forEach(function (label, index) {
+        var input = inputField(label, 'number', edit.progression[index], 'progression' + index, parameters, index < 2 ? 0 : 0.0001, 100000);
+        input.required = true; input.step = index < 2 ? '1' : 'any';
+      }); progression.appendChild(parameters); editor.appendChild(progression);
+      editor.appendChild(node('p', 'ID и родство класса сохраняются для совместимости с билдом. Лимиты веток и встроенные пассивки здесь пока не редактируются. Новый класс нельзя создать копированием названия — для него потребуется поддержка движка.', 'help-text'));
+      var classActions = node('div', undefined, 'editor-actions'); classActions.append(button('Сохранить черновик', saveDraft), button('Опубликовать', publish)); editor.appendChild(classActions);
+      editor.dataset.unsaved = dirty ? 'true' : 'false'; return;
+    }
     var basic = node('div', undefined, 'basic-fields'); editor.appendChild(basic);
     if (edit.kind === 'equipment') {
       var category = selectField('Тип', meta.categories.map(function (item) { return [item.legacy_id, item.name.en]; }), edit.category, 'category', basic);
@@ -156,6 +174,7 @@
     } catch (error) { if (thisGeneration === generation) report(error.message, true); }
   }
   function newItem() {
+    if (kind.value === 'class') { report('Для классов пока поддерживаются только существующие слоты и параметры LP / MP.'); return; }
     if (!canLeave()) return;
     current = { draftVersion: 0, catalogRevision, hasDraft: false, edit: { id: '', kind: kind.value, category: kind.value === 'equipment' ? 0 : null,
       names: { en: '', ru: '', jp: '', tw: '' }, description: {}, notes: {}, acquisition: {}, modifiers: {}, level: 1, sockets: 0,
@@ -181,10 +200,11 @@
     getCsrf = csrf; expired = onExpired; var thisGeneration = ++generation;
     try { meta = await api('meta'); if (thisGeneration !== generation) return;
       host.replaceChildren(); var controls = node('div', undefined, 'catalog-controls');
-      kind = node('select'); kind.setAttribute('aria-label', 'Каталог'); [['equipment', 'Экипировка / оружие'], ['soul', 'Souls / души']].forEach(function (entry) { var option = node('option', entry[1]); option.value = entry[0]; kind.appendChild(option); });
+      kind = node('select'); kind.setAttribute('aria-label', 'Каталог'); [['equipment', 'Экипировка / оружие'], ['soul', 'Souls / души'], ['class', 'Классы персонажей']].forEach(function (entry) { var option = node('option', entry[1]); option.value = entry[0]; kind.appendChild(option); });
       search = node('input'); search.type = 'search'; search.placeholder = 'Поиск по названию или ID'; search.setAttribute('aria-label', 'Поиск в каталоге');
-      var debounce; search.addEventListener('input', function () { clearTimeout(debounce); debounce = setTimeout(function () { page = 0; loadList(); }, 300); }); kind.addEventListener('change', function () { page = 0; loadList(); });
-      controls.append(kind, search, button('Новая запись', newItem), button('История / откат', revisions, 'secondary')); host.appendChild(controls);
+      var debounce; search.addEventListener('input', function () { clearTimeout(debounce); debounce = setTimeout(function () { page = 0; loadList(); }, 300); }); kind.addEventListener('change', function () { newButton.disabled = kind.value === 'class'; page = 0; loadList(); });
+      newButton = button('Новая запись', newItem);
+      controls.append(kind, search, newButton, button('История / откат', revisions, 'secondary')); host.appendChild(controls);
       var grid = node('div', undefined, 'catalog-grid'); var sidebar = node('section', undefined, 'catalog-sidebar'); sidebar.setAttribute('aria-label', 'Список записей');
       listStatus = node('p', undefined, 'help-text'); listHost = node('div'); sidebar.append(listStatus, listHost);
       editor = node('form', undefined, 'catalog-editor'); editor.addEventListener('submit', function (event) { event.preventDefault(); saveDraft(); }); editor.appendChild(node('p', 'Выберите существующую запись слева или нажмите «Новая запись».'));

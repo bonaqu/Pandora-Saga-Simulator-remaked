@@ -106,3 +106,33 @@ test('failed save preserves entered fields and logout clears the private editor 
   await expect(page.locator('#catalog-console')).toBeEmpty();
   expect(await page.evaluate(() => ({ local: localStorage.length, session: sessionStorage.length }))).toEqual({ local: 0, session: 0 });
 });
+
+test('class editor saves and publishes typed native progression, without pretending new class lineage is supported', async ({ page }, testInfo) => {
+  const { sqlite, errors } = await openConsole(page);
+  await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('class');
+  await expect(page.getByRole('button', { name: 'Новая запись', exact: true })).toBeDisabled();
+  await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill('job.0');
+  await page.locator('.catalog-entry').first().click();
+  await expect(page.locator('.catalog-editor')).toContainText('job.0');
+  await expect(page.getByRole('button', { name: 'Создать вариант', exact: true })).toHaveCount(0);
+  await page.locator('[data-field="names"][data-language="en"]').fill('Edited Warrior');
+  await page.locator('[data-field="progression0"]').fill('198');
+  await page.locator('[data-field="progression2"]').fill('0');
+  await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
+  expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n).toBe(0);
+  await page.locator('[data-field="progression2"]').fill('10');
+  await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(0);
+  page.on('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: 'Опубликовать', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Опубликована версия каталога 1');
+  const published = JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head').get().snapshot_json)[0];
+  expect(published.edit.progression[0]).toBe(198); expect(published.edit.progression[2]).toBe(10);
+  expect(published.identity.id).toBe('job.0');
+  await page.screenshot({ path: testInfo.outputPath('class-editor-desktop.png'), fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath('class-editor-mobile.png'), fullPage: true });
+  expect(errors).toEqual([]);
+});

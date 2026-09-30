@@ -36,11 +36,23 @@ const publish = (env, item) => call(env, 'publish', { id: item.identity.id, expe
 
 test('baseline is complete, searchable, read-only and never appears as a fabricated published override', async () => {
   const { env } = fixture();
-  const meta = await call(env, 'meta'); assert.equal(meta.sourceCount, 1304);
+  const meta = await call(env, 'meta'); assert.equal(meta.sourceCount, 1332);
   const equipment = await call(env, 'catalog?kind=equipment'); assert.equal(equipment.count, 1120); assert.equal(equipment.items.length, 40);
   const souls = await call(env, 'catalog?kind=soul'); assert.equal(souls.count, 184);
+  const classes = await call(env, 'catalog?kind=class'); assert.equal(classes.count, 28);
   const found = await call(env, 'catalog?kind=equipment&q=Knife'); assert.ok(found.items.some(item => item.id === 'equipment.6.2'));
   assert.deepEqual((await publicData(env)).records, []);
+});
+
+test('class drafts publish native coefficients, retain old revisions and cannot allocate invented classes', async () => {
+  const { env } = fixture(); const item = await detail(env, 'job.0');
+  item.edit.names.en = 'Updated Warrior'; item.edit.progression[0] += 100;
+  const saved = await save(env, item); await publish(env, saved);
+  const catalog = await publicData(env); assert.equal(catalog.records[0].progression[0], 198);
+  assert.ok(catalog.characterSourceFingerprint); assert.equal(catalog.records[0].kind, 'class');
+  assert.deepEqual((await publicData(env, 0)).records, []);
+  await assert.rejects(() => detail(env, 'job.28'), error => error.status === 404);
+  await assert.rejects(() => save(env, { edit: { ...item.edit, id: '' }, draftVersion: 0, catalogRevision: 1 }), error => error.status === 400);
 });
 
 test('draft edits are private until explicitly published and publishing is an immutable revision', async () => {

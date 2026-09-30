@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { CatalogError, draftFromSource, validateDraft, compileRecord, EFFECTS, EQUIPMENT_CATEGORIES } from './catalog-model.mjs';
-import { baselineById, baselineRecords, categories, compatibilityLabels, sourceFingerprint, sourceIdentity, firstNewIndex } from './catalog-baseline.mjs';
+import { baselineById, baselineRecords, categories, compatibilityLabels, sourceFingerprint, characterSourceFingerprint, sourceIdentity, firstNewIndex } from './catalog-baseline.mjs';
 import { jsonResponse } from './auth.mjs';
 
 const MAX_SNAPSHOT_BYTES = 900000;
@@ -63,7 +63,7 @@ export async function publicCatalog(request, env) {
       snapshot = { version: revision, entries: JSON.parse(row.snapshot_json) };
     }
   }
-  return jsonResponse({ ok: true, schemaVersion: 1, sourceFingerprint, revision: snapshot.version, records: snapshot.entries.map(compileEntry) });
+  return jsonResponse({ ok: true, schemaVersion: 1, sourceFingerprint, characterSourceFingerprint, revision: snapshot.version, records: snapshot.entries.map(compileEntry) });
 }
 
 async function detail(env, id) {
@@ -158,7 +158,7 @@ async function rollback(request, env, now) {
 async function list(request, env) {
   const url = new URL(request.url);
   const kind = url.searchParams.get('kind') || 'equipment';
-  if (!['equipment', 'soul'].includes(kind)) fail('Unknown catalog');
+  if (!['equipment', 'soul', 'class'].includes(kind)) fail('Unknown catalog');
   const q = (url.searchParams.get('q') || '').trim().toLowerCase(); if (q.length > 160) fail('Search too long');
   const pageText = url.searchParams.get('page') || '0'; if (!/^\d{1,5}$/.test(pageText)) fail('Invalid page');
   const page = Number(pageText);
@@ -172,14 +172,14 @@ async function list(request, env) {
     const source = baselineById.get(identity.id);
     const edit = draft?.is_dirty || (!edits.has(identity.id) && !source && draft) ? JSON.parse(draft.payload_json) : edits.get(identity.id) || draftFromSource(source, kind);
     if (q && !Object.values(edit.names).some(name => name.toLowerCase().includes(q)) && !identity.id.includes(q)) continue;
-    results.push({ id: identity.id, names: edit.names, category: identity.category, level: edit.level, sockets: edit.sockets, disabled: edit.disabled, draftVersion: draft?.is_dirty ? draft.version : 0, published: edits.has(identity.id), custom: identity.id.startsWith('modern.') });
+    results.push({ id: identity.id, names: edit.names, category: identity.category, level: edit.level, sockets: edit.sockets, progression: edit.progression, disabled: edit.disabled, draftVersion: draft?.is_dirty ? draft.version : 0, published: edits.has(identity.id), custom: identity.id.startsWith('modern.') });
   }
   return jsonResponse({ ok: true, catalogRevision: snapshot.version, count: results.length, page, pageSize: 40, items: results.slice(page * 40, (page + 1) * 40) });
 }
 
 export async function adminCatalog(request, env, now = Math.floor(Date.now() / 1000)) {
   const path = new URL(request.url).pathname;
-  if (path === '/api/admin/meta' && request.method === 'GET') return jsonResponse({ ok: true, effects: EFFECTS, categories: categories.filter(category => EQUIPMENT_CATEGORIES.includes(category.legacy_id)), compatibilityLabels, sourceFingerprint, sourceCount: baselineRecords.length });
+  if (path === '/api/admin/meta' && request.method === 'GET') return jsonResponse({ ok: true, effects: EFFECTS, categories: categories.filter(category => EQUIPMENT_CATEGORIES.includes(category.legacy_id)), compatibilityLabels, sourceFingerprint, characterSourceFingerprint, sourceCount: baselineRecords.length });
   if (path === '/api/admin/catalog' && request.method === 'GET') return list(request, env);
   if (path === '/api/admin/item' && request.method === 'GET') return jsonResponse(await detail(env, new URL(request.url).searchParams.get('id') || ''));
   if (path === '/api/admin/revisions' && request.method === 'GET') {

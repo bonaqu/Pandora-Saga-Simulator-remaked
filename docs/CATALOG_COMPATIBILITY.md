@@ -44,6 +44,13 @@ valid equipment during restoration.
 
 ## Required work before release
 
+- The existing 28 class slots now support typed multilingual labels and the
+  six native `Status.Mod` LP/MP coefficients in the local editor/adapter.
+  Their source fingerprint is checked separately from equipment data. Pinned
+  builds restore their class parameters; revision 0 restores all original
+  coefficients. No class lineage, skill caps or hardcoded passive is replaced.
+  New arbitrary classes are deliberately unavailable until the engine can
+  represent and serialize them correctly. This class increment is not deployed.
 - Classes, active skills, character passives and racial passives require typed
   schemas and engine capability tests, not merely translated descriptions.
 - Arbitrary scripts, HTML, SQL or game-effect expressions are not supported.

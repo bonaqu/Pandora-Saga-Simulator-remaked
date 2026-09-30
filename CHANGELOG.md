@@ -4,6 +4,11 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 
 ## Unreleased — Modern 3.00
 
+- Local administrator class editor supports all 28 retained class slots,
+  multilingual text and native LP/MP progression parameters. Typed source
+  fingerprint checks and pinned build revisions preserve old class calculations.
+  Class lineage, arbitrary new classes and skill/passive editors are still work
+  in progress; this increment has not been deployed.
 - Modern-only equipment/Soul catalog adapter uses the retained calculation
   engine, with immutable catalog revisions pinned in `PS3` saved/shared codes.
   Cached public revisions work offline; missing revisions protect existing

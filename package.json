@@ -2,7 +2,7 @@
   "name": "pandora-saga-simulator-remaked",
   "private": true,
   "scripts": {
-    "test:admin": "node --test tests/admin/auth.test.mjs tests/admin/worker.test.mjs tests/admin/wrangler-json.test.mjs tests/admin/catalog-model.test.mjs tests/admin/catalog.test.mjs",
+    "test:admin": "node --test tests/admin/auth.test.mjs tests/admin/worker.test.mjs tests/admin/wrangler-json.test.mjs tests/admin/catalog-model.test.mjs tests/admin/character-model.test.mjs tests/admin/catalog.test.mjs",
     "admin:check": "wrangler deploy --config admin-api/wrangler.jsonc --dry-run",
     "admin:dev": "wrangler dev --config admin-api/wrangler.jsonc --ip 127.0.0.1 --port 18788 --inspector-port 19230",
     "admin:migrate": "wrangler d1 migrations apply pandora-saga-simulator-remaked-admin-db --config admin-api/wrangler.jsonc --remote",
@@ -28,7 +28,7 @@
     "extract:terms": "node scripts/extract_legacy_terms.mjs",
     "test:translations": "node scripts/extract_legacy_terms.mjs --check && python scripts/translation_workbook.py",
     "extract:data": "node scripts/extract_legacy_data.mjs",
-    "test:data": "node scripts/extract_legacy_data.mjs --check",
+    "test:data": "node scripts/extract_legacy_data.mjs --check && node scripts/extract_character_metadata.mjs --check",
     "test:ui:ci": "playwright test tests/ui/modern-foundation.spec.mjs tests/ui/adapter.spec.mjs tests/ui/summary-adapter.spec.mjs tests/ui/compare-differential.spec.mjs tests/ui/compare-builds.spec.mjs tests/ui/tooltips.spec.mjs tests/ui/search-builds.spec.mjs tests/ui/build-store.spec.mjs tests/ui/build-manager.spec.mjs tests/ui/mobile-polish.spec.mjs tests/ui/pwa-ui.spec.mjs tests/ui/pwa-offline.spec.mjs tests/ui/localization.spec.mjs tests/ui/data-projections.spec.mjs tests/ui/legacy-codecs.spec.mjs tests/ui/game-term-display.spec.mjs tests/ui/release-accessibility.spec.mjs tests/ui/ui-consistency.spec.mjs tests/ui/build-share.spec.mjs tests/ui/item-preview.spec.mjs tests/ui/equipment-picker.spec.mjs tests/ui/calculator-readability.spec.mjs tests/ui/skill-allocation.spec.mjs tests/ui/calculator-code.spec.mjs",
     "test:ui:visual": "playwright test tests/ui/visual-capture.spec.mjs tests/ui/game-term-visual.spec.mjs"
   },

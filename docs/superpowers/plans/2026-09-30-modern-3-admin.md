@@ -106,3 +106,11 @@ were not printed or copied into the repository.
   verified authorized source catalog reads, desktop/mobile and logout. The
   entry script was locally injected on the production Pages origin, not
   shipped to Pages; public catalog remains revision 0 without test edits.
+- First class increment implemented locally: 28 source slots, four-language
+  labels/description and six typed native LP/MP progression parameters. Source
+  projection verifies 28 classes, 6 races and 18 racial passives; it does not
+  extract or copy formulas. Class lineage/new slots/caps remain unavailable.
+  38 backend checks and 15 catalog/admin browser checks passed, including native
+  LP delta, pinned-code restoration, invalid coefficients/fingerprint rejection,
+  private draft/publication and desktop/mobile UI. Not deployed to Worker/Pages.
+  The last committed IDDQD block also passed GitHub Feature CI and API verify.

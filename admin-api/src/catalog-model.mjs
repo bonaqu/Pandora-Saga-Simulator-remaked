@@ -53,6 +53,10 @@ function flags(value, count, label) {
 const texts = source => Object.fromEntries(LANGUAGES.map(language => [language, source?.[language] || '']));
 
 export function draftFromSource(source, kind) {
+  if (kind === 'class') {
+    check(source?.kind === 'class', 'Only the 28 existing class slots are supported');
+    return { id: source.id, kind, category: null, names: texts(source.name), description: texts(null), progression: [...source.progression] };
+  }
   return {
     id: source?.id || '', kind, category: kind === 'equipment' ? source?.legacy_category_id ?? 0 : null,
     names: texts(source?.name), description: texts(source?.option), notes: texts(source?.special_option),
@@ -66,6 +70,17 @@ export function draftFromSource(source, kind) {
 }
 
 export function validateDraft(input, identity) {
+  if (identity.kind === 'class') {
+    keys(input, ['id', 'kind', 'category', 'names', 'description', 'progression'], 'Class');
+    check(input.id === identity.id && input.kind === 'class' && input.category === null && identity.category === null && Number.isInteger(identity.index) && identity.index >= 0 && identity.index < 28 && input.id === 'job.' + identity.index, 'Class identity cannot be changed');
+    const names = textMap(input.names, 160, 'Names'); check(names.en.length > 0, 'English name is required');
+    check(Array.isArray(input.progression) && input.progression.length === 6, 'Class needs six engine progression parameters');
+    const progression = input.progression.map((value, index) => {
+      check(typeof value === 'number' && Number.isFinite(value) && value >= (index < 2 ? 0 : 0.0001) && value <= 100000 && (index >= 2 || Number.isInteger(value)), 'Invalid class progression parameter');
+      return value;
+    });
+    return { id: input.id, kind: 'class', category: null, names, description: textMap(input.description, 4000, 'Description'), progression };
+  }
   keys(input, fields, 'Item');
   check(input.id === identity.id && input.kind === identity.kind, 'Item identity cannot be changed');
   check(['equipment', 'soul'].includes(input.kind), 'Unknown item kind');
@@ -99,6 +114,10 @@ export function validateDraft(input, identity) {
 }
 
 export function compileRecord(edit, identity, source) {
+  if (identity.kind === 'class') {
+    check(source?.kind === 'class', 'New class mechanics require a separate engine capability');
+    return { id: identity.id, kind: 'class', category: null, index: identity.index, names: edit.names, description: edit.description, progression: [...edit.progression] };
+  }
   check(source || edit.effectMode === 'replace', 'New items need explicit effects');
   const weapon = edit.kind === 'equipment' && edit.category <= 13;
   let tokens = source?.calculation_code ? source.calculation_code.split('_') : [];
