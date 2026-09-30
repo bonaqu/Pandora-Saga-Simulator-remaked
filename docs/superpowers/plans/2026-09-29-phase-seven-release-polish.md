@@ -6,6 +6,14 @@
 
 ## Audit findings and remaining work
 
+**Verified completion:** UI `2026.09.11`, PR #16 (`e0ee03d`), feature CI
+`36653977707`, production workflow/artifact/live acceptance `36654352147` and
+annotated `v2026.09.11`. Final totals: 109 Chromium contracts (0 skipped/flaky/
+unexpected), 57 Python tests, 15 cross-browser checks, 19 visual captures.
+Real isolated desktop installation/standalone online/offline/uninstall passed;
+all 459 Legacy files byte-identical to UI10. Historical sequence below remains
+the work log, not outstanding implementation.
+
 - Existing Hybrid C hero, favicon, SVG PWA icons and repository cover remain unchanged. Real Chrome production manifest/installability diagnostics returned no errors. Added opaque 192/512px PNG exports and 180px Apple touch icon; the original vectors remain editable sources. Added a 1200×630 real-site OG preview and absolute share metadata; no generic fantasy replacement.
 - The header now opens the approved compact localized What's new panel, with full-changelog/report links and explicit Legacy/UI versions. Its 11 UI strings extend the workbook to 2,828 rows without changing any prior translator input.
 - Both player READMEs now include real production UI 2026.09.9 captures of equipment search, example comparison and mobile build management, with provenance and original game names. A repeatable capture script uses isolated browser storage. README reference/alt/SVG audits pass; all four new image surfaces were visually inspected.

@@ -10,6 +10,14 @@ The preceding keyboard/localization block shipped in PR #14 (`816e72f`), feature
 
 ## Final gates
 
+**Passed:** PR #16 (`e0ee03d90e5ba20ee83ce774a87c75bf3ff5f3ad`), feature HEAD
+`54af919c9c43d9925464771eef95d6f72a0cc730`, feature CI `36653977707`, Pages
+workflow `36654352147`, exact artifact/live acceptance. Annotated `v2026.09.11`
+exists and records fingerprints/results. All 459 Legacy files match UI10.
+Real isolated desktop PWA install, both routes standalone online/offline and
+uninstall also passed for production UI11. This closes Phases 0–7 and user
+UI/item/share requests, not a claim of current-server complete balance parity.
+
 - Exact Git archive static validation and original Legacy preservation manifest; no original `index.html`, `js/`, `css/`, `image/` or preservation-source edits.
 - 57 Python tests; deterministic 2,667 Legacy terms, 2,837 translation rows, 1,120 equipment, 184 Souls, 211 skills. All prior translator input is preserved; nine new interface translations were appended.
 - 109 Chromium contracts including Modern/Legacy differential, build round trips, storage corruption/quota behavior, localization, native dialogs, image decoding, item descriptions/socket rings/upgrades, fresh-browser sharing, clipboard denial and offline routes. A successful shared-character load must not hide an autosave quota warning.
@@ -20,7 +28,7 @@ The preceding keyboard/localization block shipped in PR #14 (`816e72f`), feature
 ## Honest limits
 
 - Browser accessibility role/name/focus evidence is not a full WCAG or manual screen-reader conformance claim. The inherited calculator is not completely semantically remediated.
-- A real isolated desktop Chromium installation of production UI 2026.09.10 passed standalone Modern and Legacy launches, both online and offline; it was then uninstalled without touching the user's browser/profile. UI 2026.09.11 repeats this production gate before its final tag. This is not physical iOS/Android device acceptance. The SVG/PNG/touch icon files are real, decode and have verified dimensions.
+- Real isolated desktop Chromium installations of production UI 2026.09.10 and UI 2026.09.11 passed standalone Modern and Legacy launches, both online and offline; they were then uninstalled without touching the user's browser/profile. This is not physical iOS/Android device acceptance. The SVG/PNG/touch icon files are real, decode and have verified dimensions.
 - Social metadata is verified from the actual public response; third-party messenger preview caches/refresh timing are not controlled by the project.
 - Named builds remain local to the current browser. Export important builds before clearing browser storage, or use Share build to send the current character to another browser. Anyone with the URL can read that build; this is not private/cloud storage.
 - Item previews show source descriptions, not calculated stat deltas. Native browser select popups stay unchanged; use Modern Equipment Search/Soul Search for hover/focus/touch details.
