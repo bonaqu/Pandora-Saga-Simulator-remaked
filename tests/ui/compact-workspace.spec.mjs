@@ -80,3 +80,13 @@ test('tablet-to-desktop transition preserves readable controls without clipping 
   }
   expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(before);
 });
+
+test('desktop step labels fit system-font fallbacks without wrapping a compact skill row', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 }); await page.goto('/');
+  for (const font of ['Arial, sans-serif', 'Verdana, sans-serif', 'Consolas, monospace']) {
+    await page.addStyleTag({ content: `.remaked-modern { --rm-font: ${font}; }` });
+    const row = page.locator('[data-remaked-skill-row="1"]');
+    const layout = await row.evaluate(node => ({ height: node.getBoundingClientRect().height, buttons: [...node.querySelectorAll('.remaked-skill-primary button')].map(button => ({ text: button.textContent, width: button.clientWidth, height: button.getBoundingClientRect().height, font: getComputedStyle(button).font })) }));
+    expect(layout.height, JSON.stringify({ font, ...layout })).toBeLessThanOrEqual(44);
+  }
+});

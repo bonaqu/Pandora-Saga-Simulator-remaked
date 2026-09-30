@@ -1334,6 +1334,9 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   .remaked-modern #body [data-remaked-skill-group] [id^="Skill_"] { text-align: end; }
   .remaked-modern #body [data-remaked-skill-caption] { position: absolute; width: 1px !important; height: 1px !important; overflow: hidden; clip-path: inset(50%); }
   .remaked-modern #body [data-remaked-skill-controls] .remaked-skill-primary { display: contents; }
+  /* +1 is wider in Linux system-font fallbacks. Keep the signed step on one
+     line with room inside its 28px target, not a platform-dependent tall row. */
+  .remaked-modern #body [data-remaked-skill-controls] .remaked-skill-primary button { white-space: nowrap; padding-inline: 2px; }
   .remaked-modern #body [data-remaked-skill-controls] .remaked-skill-bulk { grid-column: 1 / -1; }
   [data-remaked-skill-column-header] { margin-top: 8px; color: var(--rm-muted); font: 600 12px/1.4 var(--rm-font); text-align: center; }
 }
