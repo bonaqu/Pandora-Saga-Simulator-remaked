@@ -45,6 +45,8 @@ native selection/disclosure actions, not a fake listbox). It flips above/below
 the field, clamps to the viewport and does not dim or make the calculator inert.
 Outside click, Escape, anchor movement and focus leaving dismiss it. A second
 trigger click toggles closed. Search remains a separate modal discovery tool.
+Opening reveals the selected item within the list without moving focus to it,
+triggering a preview or scrolling the calculator; a last-page regression covers it.
 Repeated Characteristics text/triangles become a 44px named info action: hidden
 visually until row hover/focus on pointer desktops, always available on touch.
 Keyboard review and explicit read-only touch cards remain intact.

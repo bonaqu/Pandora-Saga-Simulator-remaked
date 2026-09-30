@@ -6,6 +6,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 
 - Replaced the large Equipment selection modal with a compact dropdown anchored to the original field. It opens below or above according to available space, leaves the calculator visible, supports filtering/arrows/Enter and dismisses on Escape, outside click, anchor scrolling or focus moving away. The preserved native engine remains the fallback.
 - Removed repeated Characteristics labels/arrows from Search and Equipment rows. A compact named information action remains for explicit review: shown on hover/focus on desktop, always available on touch. Viewing still never equips a candidate.
+- Opening a dropdown reveals the currently worn item, as a native select does, without opening its card or changing the character.
 
 - Fixed characteristic cards closing when keyboard focus automatically scrolls to an off-screen Equipment item. Keyboard review waits for that scroll to settle; manual wheel/touch input still cancels previews and never changes equipment.
 - Added the off-screen keyboard regression to Chromium, Firefox and WebKit checks, plus a desktop visual capture. Pointer previews retain their 450 ms dwell, scroll cancellation and separate explicit touch disclosure.

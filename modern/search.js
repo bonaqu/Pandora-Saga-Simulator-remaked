@@ -428,6 +428,13 @@
     query.addEventListener('input', render);
     render();
     query.focus({ preventScroll: true });
+    var selectedButton = results.querySelector('[data-selected="true"]');
+    if (selectedButton) {
+      // Match the useful native-select behavior: reveal the worn item without
+      // moving keyboard focus, opening a preview or scrolling the calculator.
+      var itemRect = selectedButton.getBoundingClientRect(), listRect = results.getBoundingClientRect();
+      results.scrollTop += itemRect.top - listRect.top - (results.clientHeight - itemRect.height) / 2;
+    }
     query.addEventListener('keydown', function (event) {
       if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
       var buttons = results.querySelectorAll('[data-remaked-search-result]');

@@ -41,6 +41,23 @@ test('Search and Equipment use compact labelled info controls without a second c
   }
 });
 
+test('opening Equipment keeps the currently worn item in view without opening or changing it', async ({ page }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => {
+    if (!PandoraRemaked.adapter.selectEquipment(0, '120011')) throw new Error('Cannot select last-page fixture');
+    return Store();
+  });
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
+  const row = page.locator('[data-remaked-picker-panel] [data-remaked-search-row][data-value="120011"]');
+  const itemBox = await row.locator('button').boundingBox();
+  const listBox = await page.locator('[data-remaked-picker-panel] [data-remaked-search-results]').boundingBox();
+  expect(itemBox.y).toBeGreaterThanOrEqual(listBox.y);
+  expect(itemBox.y + itemBox.height).toBeLessThanOrEqual(listBox.y + listBox.height);
+  await expect(row.locator('button')).toHaveAttribute('aria-pressed', 'true');
+  await expect(row.locator('details')).not.toHaveAttribute('open', '');
+  expect(await page.evaluate(() => Store())).toBe(before);
+});
+
 test('keyboard focus beyond the visible Equipment list keeps its card after automatic scroll; wheel cancels it', async ({ page }) => {
   await page.goto('/');
   const before = await page.evaluate(() => Store());
