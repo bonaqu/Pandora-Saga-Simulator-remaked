@@ -1,0 +1,56 @@
+name: Cloudflare Admin API
+
+on:
+  pull_request:
+    paths: ['admin-api/**', 'tests/admin/**', 'scripts/create_first_admin.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
+  push:
+    branches: [bonaqu_projects]
+    paths: ['admin-api/**', 'tests/admin/**', 'scripts/create_first_admin.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: admin-api-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run test:admin
+      - run: node --check scripts/create_first_admin.mjs
+      - run: npm run admin:check
+
+  deploy:
+    needs: verify
+    if: github.ref == 'refs/heads/bonaqu_projects' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: cloudflare-admin
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Apply additive D1 migrations
+        run: npm run admin:migrate
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy Worker while retaining its Cloudflare Secrets
+        run: npm run admin:deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Verify deployed health route
+        run: |
+          node --input-type=module -e 'const r = await fetch("https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/health"); const j = await r.json(); if (!r.ok || j.ok !== true || j.service !== "pandora-admin-api") throw new Error("Worker health failed"); console.log("Worker health passed");'

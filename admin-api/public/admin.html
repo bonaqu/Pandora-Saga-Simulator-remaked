@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Pandora Admin Terminal</title>
+  <link rel="stylesheet" href="/admin.css">
+  <script src="/admin.js" defer></script>
+</head>
+<body>
+  <main class="terminal">
+    <header class="terminal-header"><span>PANDORA FIELD CONSOLE</span><span>ADMIN / SECURE CHANNEL</span></header>
+    <section class="terminal-body" aria-labelledby="terminal-title">
+      <p class="bootline">IDDQD ACCEPTED</p>
+      <h1 id="terminal-title">GOD MODE REQUIRES AUTHENTICATION</h1>
+      <p id="auth-message" role="status" aria-live="polite">Sign in to manage the Modern catalog. Legacy 2.00 remains preserved.</p>
+      <form action="/api/auth/login" method="post" id="login-form">
+        <label for="username">LOGIN</label>
+        <input id="username" name="username" value="admin" autocomplete="username" required maxlength="64">
+        <label for="password">PASSWORD</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="512">
+        <button type="submit">AUTHENTICATE</button>
+      </form>
+      <section id="admin-workspace" hidden aria-label="Catalog management">
+        <div class="workspace-toolbar"><h2>CATALOG CONTROL</h2><button id="logout" type="button">LOGOUT</button></div>
+        <p>Secure administrator session established.</p>
+        <p id="catalog-state">Catalog editor is being integrated. No data has been changed.</p>
+      </section>
+    </section>
+    <footer>MODERN CATALOG / MUSEUM ENGINE 2.00</footer>
+  </main>
+</body>
+</html>
