@@ -54,6 +54,15 @@
       if (button.getAttribute('aria-label') !== name) button.setAttribute('aria-label', name);
       button.hidden = select.style.display === 'none';
       button.disabled = select.disabled;
+      if (Number(match[2]) === 0) {
+        var warning = slotRow.querySelector('[data-remaked-equipment-warning]');
+        var message = namespace.adapter.equipmentCalculationWarning(select.value);
+        if (message && !warning) {
+          warning = document.createElement('p'); warning.dataset.remakedEquipmentWarning = '';
+          warning.setAttribute('role', 'status'); fields.appendChild(warning);
+        }
+        if (warning) { if (warning.textContent !== message) warning.textContent = message; warning.hidden = !message; }
+      }
     });
     var gem = document.getElementById('SelGem');
     if (gem) {

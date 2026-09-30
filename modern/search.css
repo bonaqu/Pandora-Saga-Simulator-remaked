@@ -431,6 +431,7 @@
 /* Legacy equipment rows have fixed 16/18px heights. Let the enhanced controls
    define their own height rather than overlap the next slot or intercept clicks. */
 .remaked-modern #body [data-remaked-picker-section] { box-sizing: border-box; width: min(984px, calc(100vw - 48px)) !important; }
+.remaked-modern #body [data-remaked-picker-section] * { box-sizing: border-box; }
 .remaked-modern #body [data-remaked-picker-slot] { display: flex; width: 100% !important; float: none !important; gap: 6px; align-items: center; }
 .remaked-modern #body [data-remaked-picker-slot-label] { box-sizing: border-box; width: 64px !important; flex: 0 0 64px; padding: 6px 4px; color: #34452a; background: #e9f1dd; border: 0; box-shadow: none; text-align: left !important; font: 13px/1.4 var(--rm-font); overflow-wrap: anywhere; }
 .remaked-modern #body [data-remaked-picker-fields] { flex: 1; float: none !important; width: auto !important; height: auto !important; min-width: 0; padding: 4px; }
@@ -440,6 +441,7 @@
 .remaked-modern #body [data-remaked-picker-field] select { min-height: 36px; height: auto !important; }
 .remaked-modern #body [data-remaked-picker-section] > ul:not([data-remaked-picker-slot]) { display: flex; width: 100%; float: none; }
 .remaked-modern #body [data-remaked-picker-section] > ul:first-child .title { font: 600 13px/1.4 var(--rm-font); padding: 7px 4px; }
+.remaked-modern #body [data-remaked-picker-section] > ul:first-child .title { box-sizing: border-box; }
 .remaked-modern #body [data-remaked-picker-toolbar] { gap: 8px; align-items: center; flex-wrap: wrap; padding: 8px 4px; }
 .remaked-modern #body [data-remaked-picker-toolbar] > li { margin: 0 !important; height: auto !important; }
 .remaked-modern #body [data-remaked-picker-toolbar] select { min-height: 36px; height: auto !important; font: 13px/1.4 var(--rm-font); }
@@ -457,4 +459,20 @@
   .remaked-modern #body [data-remaked-picker-field="6"] { grid-column: 1 / -1; }
   .remaked-modern #body [data-remaked-picker-field] select { min-height: 44px; }
   .remaked-modern #body [data-remaked-picker-toolbar] select { min-height: 44px; }
+}
+.remaked-item-warning,
+.remaked-modern #body [data-remaked-equipment-warning] {
+  box-sizing: border-box;
+  float: none !important;
+  clear: both;
+  grid-column: 1 / -1;
+  width: 100% !important;
+  height: auto !important;
+  padding: 6px 8px !important;
+  color: #72420d;
+  background: #fff4d7;
+  border-left: 3px solid #ae812d;
+  font: 12px/1.5 var(--rm-font);
+  white-space: normal;
+  overflow-wrap: anywhere;
 }

@@ -308,6 +308,24 @@
   };
 
   namespace.adapter = adapter;
+  adapter.equipmentCalculationWarning = function (value) {
+    var row = window.EquipData[0]?.[42]?.[32];
+    return Number(value) === 420032 && row && row[0] === 'ウィースベルト' && row[7] === '0=1_-7'
+      ? 'Legacy data warning: unresolved marker -7. STA +1 is retained; the conditional Rex Naturalis trigger is not simulated. No MP penalty is assumed.' : '';
+  };
+  var retainedEquipCheck = window.EquipCheck;
+  window.EquipCheck = function () {
+    var row = window.EquipData[0]?.[42]?.[32];
+    if (!adapter.equipmentCalculationWarning(window.Status.Equip[11][0])) return retainedEquipCheck.apply(this, arguments);
+    var code = row[7];
+    // This exact malformed source marker has no stat/value separator and
+    // crashes the retained push into EquipOpt[-7]. Present only the confirmed
+    // STA data to that call, restore the original row even on errors, and make
+    // the unresolved effect visible. Never normalize arbitrary bad effects.
+    row[7] = '0=1';
+    try { return retainedEquipCheck.apply(this, arguments); }
+    finally { row[7] = code; }
+  };
   // Read-only descriptions, not reimplemented calculation rules. Numeric fields
   // retain canonical JP data exactly as the Legacy engine does.
   adapter.readItemDetails = function (kind, value, targetSlot) {
@@ -360,6 +378,7 @@
       equipped: equipped,
       equippedName: equipped ? text(window.EquipOption.apply(null, current)).replace(text(record[0]), function () { return overrideName || text(record[0]); }) : '',
       gem: equipped && Number(current[3]) > 0 ? text(window.Name.Gem[0][current[1]][language]) + ' · ' + text(window.Name.Gem[1][current[2]][language]) : '',
-      descriptions: descriptions };
+      descriptions: descriptions,
+      calculationWarning: kind === 'equipment' ? adapter.equipmentCalculationWarning(id) : '' };
   };
 })();
