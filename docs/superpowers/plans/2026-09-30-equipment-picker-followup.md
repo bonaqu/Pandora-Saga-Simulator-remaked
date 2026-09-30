@@ -36,6 +36,12 @@ not a new socket editor. Existing Soul insertion and upgrades must keep working.
   through two rendering frames and preserves that pending request across scroll
   events. Manual wheel/touch, blur, close and rerender still cancel it. A strict
   off-screen regression failed before the fix and passed afterward.
+- UI13's first feature CI passed, but production workflow `36662330016` blocked
+  deployment on the same keyboard contract in WebKit. Two frames are not a
+  guarantee that focus scrolling has finished. A deterministic late-scroll
+  regression now requires the focused keyboard card to remain open and be
+  repositioned; manual wheel/touch/scrollbar/Page-key intent still closes it.
+  No assertion was weakened and the failed deployment was not retried unchanged.
 
 ## Implementation boundaries
 

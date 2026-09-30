@@ -144,6 +144,7 @@
     active = { backdrop: backdrop, panel: panel, returnFocus: returnFocus, dropdown: dropdown, cancelPreviews: [], hoverPausedUntil: 0 };
     backdrop.addEventListener('cancel', function (event) { event.preventDefault(); closePanel(); });
     panel.addEventListener('keydown', function (event) {
+      if (event.key === 'PageDown' || event.key === 'PageUp') cancelPreviews(true);
       // Chromium/Firefox otherwise consume Escape to clear a type=search input
       // before the native dialog can cancel. Keep the established one-key close.
       if (event.key === 'Escape') {
@@ -161,6 +162,11 @@
       if (!event.target.closest('.remaked-item-description')) cancelPreviews(true);
     }, { passive: true });
     panel.addEventListener('touchstart', function () { cancelPreviews(true); }, { passive: true });
+    panel.addEventListener('pointerdown', function (event) {
+      // Scrollbar/empty-list presses are manual scrolling intent. Selection
+      // and disclosure actions handle their own state; do not toggle twice.
+      if (!event.target.closest('button, summary, .remaked-item-description')) cancelPreviews(true);
+    });
     if (dropdown) {
       returnFocus.setAttribute('aria-expanded', 'true');
       returnFocus.setAttribute('aria-controls', backdrop.id);
@@ -307,9 +313,23 @@
     function cancelHover() { window.clearTimeout(hoverTimer); hoverTimer = null; }
     function cancelFocusPreview() { window.cancelAnimationFrame(focusFrame); focusFrame = null; }
     var floating = window.matchMedia('(min-width: 701px) and (hover: hover)').matches && typeof description.showPopover === 'function';
+    function positionDescription() {
+      var rect = row.getBoundingClientRect(), width = description.getBoundingClientRect().width;
+      var left = rect.right + 8;
+      if (left + width > innerWidth - 12) left = rect.left - width - 8;
+      description.style.left = Math.max(12, Math.min(left, innerWidth - width - 12)) + 'px';
+      description.style.top = Math.max(12, Math.min(rect.top, innerHeight - description.getBoundingClientRect().height - 12)) + 'px';
+    }
     if (active) active.cancelPreviews.push(function (keepInline, keepKeyboardRequest) {
       cancelHover();
       if (!keepKeyboardRequest) cancelFocusPreview();
+      // Focus-driven scrolling is asynchronous in WebKit and can arrive after
+      // any fixed number of frames. Keep the active keyboard card, reposition
+      // it, and let explicit wheel/touch/scrollbar/Page keys cancel instead.
+      if (keepKeyboardRequest && keyboardInput && document.activeElement === button && details.open) {
+        if (floating && description.matches(':popover-open')) positionDescription();
+        return;
+      }
       // A deliberately expanded phone card is document content, not a hover
       // overlay. Keep it while reading/scrolling or tapping its summary closed.
       if (keepInline && !floating && pinned) return;
@@ -323,11 +343,7 @@
       if (!details.open) { description.hidePopover(); return; }
       row.closest('[data-remaked-search-results]').querySelectorAll('details[open]').forEach(function (other) { if (other !== details) other.open = false; });
       description.showPopover();
-      var rect = row.getBoundingClientRect(), width = description.getBoundingClientRect().width;
-      var left = rect.right + 8;
-      if (left + width > innerWidth - 12) left = rect.left - width - 8;
-      description.style.left = Math.max(12, Math.min(left, innerWidth - width - 12)) + 'px';
-      description.style.top = Math.max(12, Math.min(rect.top, innerHeight - description.getBoundingClientRect().height - 12)) + 'px';
+      positionDescription();
     });
     summary.addEventListener('click', function () { pinned = !details.open; });
     button.addEventListener('mouseenter', function () {

@@ -9,6 +9,9 @@ test('off-screen Equipment keyboard review survives automatic scroll but not whe
   await row.locator('button').focus();
   await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
   await page.waitForTimeout(150);
+  // WebKit can deliver focus-induced scrolling after the preview's render
+  // frames. Preserve keyboard review independent of that event's timing.
+  await page.evaluate(() => document.querySelector('[data-remaked-picker-panel] [data-remaked-search-results]').dispatchEvent(new Event('scroll', { bubbles: true })));
   await expect(row.locator('details')).toHaveAttribute('open', '');
   expect(await page.evaluate(() => Store())).toBe(before);
   await row.locator('button').hover();
