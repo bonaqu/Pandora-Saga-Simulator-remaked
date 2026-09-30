@@ -54,6 +54,8 @@ class BuildPagesTests(unittest.TestCase):
             (modern / "skill-controls.js").write_text("// native skills", encoding="utf-8")
             (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
             (modern / "catalog.js").write_text("// versioned public catalog", encoding="utf-8")
+            (modern / "admin-entry.js").write_text("// hidden entry", encoding="utf-8")
+            (modern / "admin-entry.css").write_text("/* terminal */", encoding="utf-8")
             (modern / "build-store.js").write_text("// build store", encoding="utf-8")
             (modern / "search.js").write_text("// search", encoding="utf-8")
             (modern / "equipment-picker.js").write_text("// equipment picker", encoding="utf-8")
@@ -159,6 +161,8 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/i18n.js",
                 "modern/adapter.js",
                 "modern/catalog.js",
+                "modern/admin-entry.js",
+                "modern/admin-entry.css",
                 "modern/calculator-controls.js",
                 "modern/skill-controls.js",
                 "modern/build-store.js",

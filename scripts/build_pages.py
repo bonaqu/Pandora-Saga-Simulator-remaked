@@ -28,6 +28,8 @@ REQUIRED_MODERN = (
     "modern/tooltips.css",
     "modern/mobile.css",
     "modern/pwa.css",
+    "modern/admin-entry.css",
+    "modern/admin-entry.js",
     "modern/favicon.svg",
     "modern/manifest.webmanifest",
     "modern/icon-192.svg",
@@ -97,6 +99,7 @@ HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <link rel="stylesheet" href="./modern/tooltips.css" />
 <link rel="stylesheet" href="./modern/mobile.css" />
 <link rel="stylesheet" href="./modern/pwa.css" />
+<link rel="stylesheet" href="./modern/admin-entry.css" />
 <!-- /REMAKED:HEAD -->'''
 
 BODY_INJECTION = f'''<!-- REMAKED:BODY -->
@@ -111,6 +114,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/adapter.js"></script>
 <script src="./modern/build-store.js"></script>
 <script src="./modern/catalog.js"></script>
+<script src="./modern/admin-entry.js"></script>
 <script src="./modern/search.js"></script>
 <script src="./modern/app-shell.js"></script>
 <script src="./modern/calculator-labels.js"></script>

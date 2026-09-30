@@ -1,5 +1,15 @@
 import { test, expect } from '@playwright/test';
 
+test('IDDQD login is a keyboard-accessible native modal with unchanged character state', async ({ page }) => {
+  await page.goto('/'); const before = await page.evaluate(() => Store());
+  await page.keyboard.type('IDDQD');
+  const dialog = page.locator('[data-remaked-admin-entry]');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('input[name="password"]')).toBeFocused();
+  expect(await page.evaluate(() => Store())).toBe(before);
+  await page.keyboard.press('Escape'); await expect(dialog).not.toBeVisible();
+});
+
 test('calculator code rejects invalid data, restores compressed data and riding works by keyboard', async ({ page }) => {
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 320, height: 900 }); await page.goto('/');

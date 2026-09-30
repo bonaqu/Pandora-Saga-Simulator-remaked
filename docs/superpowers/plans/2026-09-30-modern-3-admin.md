@@ -93,3 +93,16 @@ were not printed or copied into the repository.
   acceptance; these are not presented as completed mechanics.
 - PR24 is a draft. Main Pages production remains UI16. IDDQD public entry,
   expanded catalog acceptance and compact Modern 3.00 remain required work.
+- IDDQD entry is implemented locally: matching prefixes do not execute Legacy
+  Q/D shortcuts, editable fields/modifiers/repeats/composition are ignored,
+  native modal focus and password clearing are tested, reduced motion disables
+  the original one-shot CRT startup. Five Chromium checks and desktop/mobile
+  visual inspection passed. Authentication uses native HTTPS navigation to the
+  Worker first-party surface, not browser-stored bearer tokens.
+- Initial equipment/Soul CMS deployed on Worker version
+  `e1d50807-85d4-410d-aa10-c39065002ae6`, remote migration 0002 applied.
+  Ten auth/security checks passed again against the exact deployed version.
+  An additional real IDDQD-to-Worker check with blocked third-party cookies
+  verified authorized source catalog reads, desktop/mobile and logout. The
+  entry script was locally injected on the production Pages origin, not
+  shipped to Pages; public catalog remains revision 0 without test edits.

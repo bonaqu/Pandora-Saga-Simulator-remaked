@@ -20,6 +20,11 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   actually edited workbook and checks unchanged game data and serialized builds.
 - Administrator CMS, IDDQD auth and compact desktop redesign are in progress,
   not published features yet.
+- The Modern-only `IDDQD` entry now has an original green/beige DOS terminal,
+  reduced-motion support and an accessible login dialog. It ignores editable
+  fields and does not spend character points while typing the cheat code.
+  Passwords are submitted by native HTTPS navigation to the Worker, never
+  persisted in frontend storage. Public Pages publication is still pending.
 - Secured Worker authentication is deployed and production-tested separately
   from Pages. A Modern-only equipment/Soul editor now has validated multilingual
   fields, numeric effects, private drafts, atomic publication, immutable history,

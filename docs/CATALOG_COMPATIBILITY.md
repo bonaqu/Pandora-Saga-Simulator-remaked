@@ -52,5 +52,11 @@ valid equipment during restoration.
   Its historical crash and a transparent Modern-only compatibility treatment
   still need their own regression test. Do not interpret `-7` as an invented
   MP penalty or rewrite the museum data.
-- Remote migration 0002, CMS runtime acceptance and public release remain
-  pending; the live Worker currently serves the accepted auth foundation.
+- Remote migration 0002 and the initial equipment/Soul CMS are deployed on
+  Worker version `e1d50807-85d4-410d-aa10-c39065002ae6`. Production checks
+  confirmed first-party login from Pages with third-party cookies blocked,
+  authorized reads of all 1304 source records, public revision 0 (no test game
+  data published), desktop/mobile rendering and logout revocation. The new
+  IDDQD frontend was injected locally on the real Pages origin for this check;
+  it is not yet the deployed Pages artifact. Expanded CMS and public release
+  acceptance remain pending.
