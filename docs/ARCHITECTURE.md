@@ -107,6 +107,13 @@ budgets, reset/load and serialized state remain source-owned. Responsive
 containers and label/value pairs preserve every engine ID. If the enhancement
 is unavailable, original inputs and callbacks remain visible and usable.
 
+`skill-controls.js` requires that responsive calculator layout before adding
+taller native branch rows, so a missing layout module keeps the whole source
+canvas intact. All 240 skill actions delegate to retained source inputs.
+Full branch names are rendered through the existing game-term projection.
+Effect buttons retain original switching functions but remove hover-only
+activation in Modern; percentages, next-SPR hints and engine IDs remain intact.
+
 The original calculator logic and data are treated as the preservation core. Hosting glue, generated read-only projections, documentation, CI and validation live around that core.
 
 That separation makes it possible to modernize the project later without silently changing the preserved calculator.

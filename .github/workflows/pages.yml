@@ -115,6 +115,7 @@ jobs:
           node --check modern/search.js
           node --check modern/equipment-picker.js
           node --check modern/calculator-controls.js
+          node --check modern/skill-controls.js
           node --check modern/builds.js
           node --check modern/app-shell.js
           node --check modern/tooltips.js

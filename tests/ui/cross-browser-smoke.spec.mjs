@@ -1,5 +1,20 @@
 import { test, expect } from '@playwright/test';
 
+test('native skill steps, full branch names and explicit effects work on a phone', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 900 }); await page.goto('/');
+  await expect(page.locator('#TextSkill_9')).toHaveText('Assassination');
+  await page.locator('[data-remaked-step="remaked-level-up3"]').click();
+  const initial = await page.evaluate(() => Store());
+  const expected = await page.evaluate(() => { document.getElementById('remaked-skill-1-Adeptness-right1').click(); return Store(); });
+  await page.evaluate(code => PandoraRemaked.adapter.load(code), initial);
+  await page.locator('[data-remaked-skill-step="remaked-skill-1-Adeptness-right1"]').focus();
+  await page.keyboard.press('Space'); expect(await page.evaluate(() => Store())).toBe(expected);
+  await page.locator('[data-remaked-effect="1"]').focus(); await page.keyboard.press('Enter');
+  await expect(page.locator('#POTView')).toBeVisible();
+  expect(await page.evaluate(() => Store())).toBe(expected);
+  expect(await page.locator('#SkillSet').evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true);
+});
+
 test('native calculator steps retain callback parity and phone primary sections reflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = []; page.on('pageerror', error => errors.push(error.message));

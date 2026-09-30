@@ -1,4 +1,18 @@
-# Release acceptance — Calculator readability UI 2026.09.15
+# Release acceptance — Skill allocation UI 2026.09.16
+
+Scope: `superpowers/plans/2026-09-30-skill-allocation-ux.md`. Full branch names,
+source-delegating skill controls and deliberate effects switching. Acceptance
+requires feature CI, exact Pages artifact/live verification and isolated
+installed-PWA online/offline checks. Annotated **`v2026.09.16`** is created only
+after these gates pass and records exact runs and fingerprints.
+
+All 459 published Legacy files must remain byte-identical to UI15. All 2,837
+prior workbook rows and 139 Russian values must remain identical, with five
+new rows only. Physical phones, screen-reader acceptance and complete WoB
+balance parity are not asserted. Horse and other dense secondary source
+controls remain a separate usability follow-up.
+
+## Historical calculator readability — UI15
 
 UI15's scope is recorded in
 `superpowers/plans/2026-09-30-calculator-readability.md`. It corrects calculator

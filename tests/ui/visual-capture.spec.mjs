@@ -1,5 +1,16 @@
 import { test, expect } from '@playwright/test';
 
+for (const width of [320, 1440]) test(`capture native skills and effects at ${width}px`, async ({ page }, testInfo) => {
+  await page.setViewportSize({ width, height: 900 }); await page.goto('/');
+  await page.locator('#SkillSet').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath(`modern-skills-${width}.png`) });
+  await page.getByRole('button', { name: 'Larger steps', exact: true }).click();
+  await page.locator('[data-remaked-skill-row="1"]').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath(`modern-skills-expanded-${width}.png`) });
+  await page.locator('[data-remaked-calculator-effects]').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath(`modern-effects-${width}.png`) });
+});
+
 for (const width of [320, 1440]) test(`capture calculator controls and long translated identity at ${width}px`, async ({ page }, testInfo) => {
   await page.setViewportSize({ width, height: 900 });
   await page.goto('/');
