@@ -73,7 +73,8 @@ async function detail(env, id) {
   const published = snapshot.entries.find(entry => entry.identity.id === id);
   const edit = draft?.is_dirty || (!published && !source && draft) ? JSON.parse(draft.payload_json) : published?.edit || draftFromSource(source, identity.kind);
   edit.id = id; edit.category = identity.category;
-  return { ok: true, identity, edit, draftVersion: draft?.version || 0, hasDraft: Boolean(draft?.is_dirty), catalogRevision: snapshot.version, published: Boolean(published), sourceCode: source?.calculation_code || '', engineKey: source?.name.jp || 'Modern:' + id };
+  return { ok: true, identity, edit, draftVersion: draft?.version || 0, hasDraft: Boolean(draft?.is_dirty), catalogRevision: snapshot.version, published: Boolean(published), sourceCode: source?.calculation_code || '', engineKey: source?.name.jp || 'Modern:' + id,
+    nativeSkill: source?.prerequisite_code ? { prerequisites: source.prerequisites, equipmentRequirements: source.equipment_requirements, prerequisiteCode: source.prerequisite_code } : null };
 }
 
 async function saveDraft(request, env, now) {
@@ -158,7 +159,7 @@ async function rollback(request, env, now) {
 async function list(request, env) {
   const url = new URL(request.url);
   const kind = url.searchParams.get('kind') || 'equipment';
-  if (!['equipment', 'soul', 'class', 'racial'].includes(kind)) fail('Unknown catalog');
+  if (!['equipment', 'soul', 'class', 'racial', 'active', 'passive'].includes(kind)) fail('Unknown catalog');
   const q = (url.searchParams.get('q') || '').trim().toLowerCase(); if (q.length > 160) fail('Search too long');
   const pageText = url.searchParams.get('page') || '0'; if (!/^\d{1,5}$/.test(pageText)) fail('Invalid page');
   const page = Number(pageText);

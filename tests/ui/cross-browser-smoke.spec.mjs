@@ -2,6 +2,21 @@ import { test, expect } from '@playwright/test';
 import { compileRecord, draftFromSource, validateDraft } from '../../admin-api/src/catalog-model.mjs';
 import character from '../../data/generated/character.v1.json' with { type: 'json' };
 import equipment from '../../data/generated/equipment.v1.json' with { type: 'json' };
+import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
+
+test('learned passive bonus recalculates through native level callback with hidden Skill List in each engine', async ({ page }) => {
+  const original = skills.records.find(source => source.id === 'skill.0.1');
+  const source = { ...original, id: 'skill_entry.0.1', kind: 'passive' };
+  const identity = { id: source.id, kind: 'passive', category: 0, index: 1 }, edit = draftFromSource(source, 'passive'); edit.effects = [{ stat: 1, value: 5, unit: 'flat' }];
+  await page.goto('/');
+  const result = await page.evaluate(data => {
+    const api = window.PandoraRemaked; window.Flag[3] = 0; const original = api.adapter.serialize(); api.catalog.applySnapshot(data); const low = window.Status.STR[2];
+    window.StatusMove('Lev', 11); window.CalcSet('Lev'); const high = window.Status.STR[2]; const code = api.adapter.serialize();
+    api.adapter.load(original); const restored = window.Status.STR[2]; api.adapter.load(code);
+    return { low, high, restored, loaded: window.Status.STR[2], flag: window.Flag[3] };
+  }, { ok: true, schemaVersion: 1, sourceFingerprint: equipment.metadata.generated_from[0].sha256, characterSourceFingerprint: character.sourceFingerprint, revision: 1, records: [compileRecord(validateDraft(edit, identity), identity, source)] });
+  expect(result).toEqual({ low: 0, high: 5, restored: 0, loaded: 5, flag: 0 });
+});
 
 test('native class parameters and racial replacement survive pinned-code load in each browser engine', async ({ page }) => {
   await page.goto('/');

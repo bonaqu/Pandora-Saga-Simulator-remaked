@@ -125,3 +125,19 @@ were not printed or copied into the repository.
   results immediately; stale detail replies cannot replace a newer choice and
   saves freeze controls to prevent losing typing. Remaining active/class passive
   and compact 3.00 work is not declared complete.
+- Racial increment `c34ff0e` passed GitHub Feature CI and API verify. Local full
+  browser CI passed 159/159 with two workers after a concurrent heavy auth run
+  caused three 30-second timeouts; focused reruns passed with unchanged assertions
+  and time limits. No unrelated user processes were stopped.
+- Initial skill editor implemented locally for 178 active and 33 passive source
+  slots. Active MP/timing metadata projects into the native learned-skill view;
+  passive additional bonuses use retained learning checks, explicit equipment
+  requirements and native recalculation callbacks. Six focused simulation tests
+  and the private draft/publication workflow passed; desktop/mobile editor views
+  were inspected. Full browser CI (159), focused catalog/entry/skill tests (25),
+  private admin workflows (7), three-engine smoke tests (39), backend tests (42),
+  Python tests (62), preservation validation, deterministic data/translation
+  generation and Worker dry-run passed. GitHub CI is the next gate for this
+  increment. Native passive replacement/new slots remain unfinished.
+  Riding and effect-switch persistence is a known release gate because the
+  original CSV and current `PS3` envelope do not serialize these switches.

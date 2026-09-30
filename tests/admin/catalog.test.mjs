@@ -36,11 +36,13 @@ const publish = (env, item) => call(env, 'publish', { id: item.identity.id, expe
 
 test('baseline is complete, searchable, read-only and never appears as a fabricated published override', async () => {
   const { env } = fixture();
-  const meta = await call(env, 'meta'); assert.equal(meta.sourceCount, 1350);
+  const meta = await call(env, 'meta'); assert.equal(meta.sourceCount, 1561);
   const equipment = await call(env, 'catalog?kind=equipment'); assert.equal(equipment.count, 1120); assert.equal(equipment.items.length, 40);
   const souls = await call(env, 'catalog?kind=soul'); assert.equal(souls.count, 184);
   const classes = await call(env, 'catalog?kind=class'); assert.equal(classes.count, 28);
   const racial = await call(env, 'catalog?kind=racial'); assert.equal(racial.count, 18);
+  const active = await call(env, 'catalog?kind=active'); assert.equal(active.count, 178);
+  const passive = await call(env, 'catalog?kind=passive'); assert.equal(passive.count, 33);
   const found = await call(env, 'catalog?kind=equipment&q=Knife'); assert.ok(found.items.some(item => item.id === 'equipment.6.2'));
   assert.deepEqual((await publicData(env)).records, []);
 });

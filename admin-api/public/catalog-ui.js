@@ -28,6 +28,10 @@
     choices.forEach(function (choice) { var option = node('option', choice[1]); option.value = choice[0]; select.appendChild(option); });
     select.value = value; select.addEventListener('change', changing); wrap.appendChild(select); parent.appendChild(wrap); return select;
   }
+  function checkboxField(label, value, field, parent) {
+    var wrap = node('label', undefined, 'flag-label'), input = node('input'); input.type = 'checkbox'; input.checked = value; input.dataset.field = field;
+    input.addEventListener('change', changing); wrap.append(input, document.createTextNode(label)); parent.appendChild(wrap); return input;
+  }
   function multilingual(label, field, values, parent, multiline) {
     var section = node('fieldset', undefined, 'translation-fields'); section.appendChild(node('legend', label));
     languages.forEach(function (entry) {
@@ -77,6 +81,15 @@
       editor.querySelectorAll('.effect-row').forEach(function (row) { var inputs = row.querySelectorAll('select, input'); edit.effects.push({ stat: Number(inputs[0].value), value: Number(inputs[1].value), unit: inputs[2].value }); });
       return edit;
     }
+    if (edit.kind === 'active' || edit.kind === 'passive') {
+      if (edit.kind === 'active') ['mpCost', 'castSeconds', 'cooldownSeconds', 'durationSeconds'].forEach(function (field) { edit[field] = Number(formValue(field)); });
+      else {
+        edit.effects = []; editor.querySelectorAll('.effect-row').forEach(function (row) { var inputs = row.querySelectorAll('select, input'); edit.effects.push({ stat: Number(inputs[0].value), value: Number(inputs[1].value), unit: inputs[2].value }); });
+        edit.bonusRequirements.weaponCategories = []; editor.querySelectorAll('[data-weapon-category]').forEach(function (input) { if (input.checked) edit.bonusRequirements.weaponCategories.push(Number(input.dataset.weaponCategory)); });
+        ['shieldRequired', 'ridingRequired'].forEach(function (field) { edit.bonusRequirements[field] = editor.querySelector('[data-field="' + field + '"]').checked; });
+      }
+      return edit;
+    }
     if (edit.kind === 'equipment') { edit.category = Number(formValue('category')); edit.level = Number(formValue('level')); edit.sockets = Number(formValue('sockets')); }
     edit.disabled = editor.querySelector('[data-field="disabled"]').checked;
     edit.baseAttack = editor.querySelector('[data-field="baseAttack"]') && formValue('baseAttack') !== '' ? Number(formValue('baseAttack')) : null;
@@ -115,6 +128,32 @@
     editor.replaceChildren(); var edit = current.edit;
     editor.appendChild(node('h3', edit.id ? edit.names.en : 'Новая запись'));
     editor.appendChild(node('p', (edit.id || 'ID выдаст сервер') + ' · ' + (current.hasDraft ? 'ЧЕРНОВИК ' + current.draftVersion : current.published ? 'ОПУБЛИКОВАНО' : 'LEGACY SOURCE'), 'item-identity'));
+    if (edit.kind === 'active' || edit.kind === 'passive') {
+      multilingual('Название навыка · English обязателен', 'names', edit.names, editor, false);
+      multilingual('Описание — текст, не формула', 'description', edit.description, editor, true);
+      editor.appendChild(node('p', 'Исходное изучение: ' + current.nativeSkill.prerequisites.en + ' · снаряжение: ' + current.nativeSkill.equipmentRequirements.en, 'help-text'));
+      editor.appendChild(node('p', 'Тип и условия изучения пока сохраняются: встроенные эффекты Legacy зависят также от класса и уровня, а не только от списка навыков.', 'help-text'));
+      if (edit.kind === 'active') {
+        var timings = node('fieldset', undefined, 'numeric-effects'); timings.appendChild(node('legend', 'Данные активного навыка'));
+        var values = node('div', undefined, 'basic-fields');
+        [['mpCost', 'Стоимость MP'], ['castSeconds', 'Время применения, секунд'], ['cooldownSeconds', 'Перезарядка, секунд'], ['durationSeconds', 'Длительность, секунд']].forEach(function (field, index) {
+          var input = inputField(field[1], 'number', edit[field[0]], field[0], values, 0, index === 0 ? 100000 : 86400); input.step = index === 0 ? '1' : '.001'; input.required = true;
+        }); timings.appendChild(values); timings.appendChild(node('p', 'Эти значения отображаются в изученном навыке. Они не создают новую формулу урона или новую боевую симуляцию. Встроенные эффекты и переключатели баффов Legacy сохраняются.', 'help-text')); editor.appendChild(timings);
+      } else {
+        var bonuses = node('fieldset', undefined, 'numeric-effects'); bonuses.appendChild(node('legend', 'Дополнительные бонусы изученной пассивки'));
+        bonuses.appendChild(node('p', 'Бонус добавляется к исходной механике, не заменяет её. Изучение проверяет штатный движок, даже если список умений скрыт. Числа применяются только с указанным ниже снаряжением.', 'help-text'));
+        var bonusRows = node('div', undefined, 'effect-rows'); bonuses.appendChild(bonusRows); edit.effects.forEach(function (effect) { effectRow(effect, bonusRows); });
+        bonuses.appendChild(button('Добавить характеристику', function () { effectRow({ stat: 1, value: 0, unit: 'flat' }, bonusRows); changing(); }, 'secondary')); editor.appendChild(bonuses);
+        var requirements = node('fieldset', undefined, 'compatibility-fields'); requirements.appendChild(node('legend', 'Оружие для дополнительного бонуса · пусто = любое'));
+        [[-1, 'Без оружия']].concat(meta.categories.filter(function (entry) { return entry.legacy_id <= 13; }).map(function (entry) { return [entry.legacy_id, entry.name.en]; })).forEach(function (entry) {
+          var input = checkboxField(entry[1], edit.bonusRequirements.weaponCategories.indexOf(entry[0]) !== -1, 'bonusWeapon', requirements); input.dataset.weaponCategory = entry[0];
+        }); editor.appendChild(requirements);
+        checkboxField('Дополнительный бонус требует надетый щит', edit.bonusRequirements.shieldRequired, 'shieldRequired', editor);
+        checkboxField('Дополнительный бонус требует включённую верховую езду', edit.bonusRequirements.ridingRequired, 'ridingRequired', editor);
+      }
+      var skillActions = node('div', undefined, 'editor-actions'); skillActions.append(button('Сохранить черновик', saveDraft), button('Опубликовать', publish)); editor.appendChild(skillActions);
+      editor.dataset.unsaved = dirty ? 'true' : 'false'; return;
+    }
     if (edit.kind === 'racial') {
       var race = meta.compatibilityLabels.race.find(function (entry) { return entry.index === edit.category; });
       editor.appendChild(node('p', 'Раса: ' + race.label + ' · слот ' + (current.identity.index + 1), 'item-identity'));
@@ -205,7 +244,7 @@
     } catch (error) { if (thisGeneration === generation && sequence === pending) { listHost.removeAttribute('aria-busy'); listStatus.textContent = 'Список не загружен'; report(error.message, true); } }
   }
   function newItem() {
-    if (kind.value === 'class' || kind.value === 'racial') { report('Для этого каталога пока поддерживаются только существующие слоты.'); return; }
+    if (kind.value !== 'equipment' && kind.value !== 'soul') { report('Для этого каталога пока поддерживаются только существующие слоты.'); return; }
     if (!canLeave()) return;
     editorRequest++;
     current = { draftVersion: 0, catalogRevision, hasDraft: false, edit: { id: '', kind: kind.value, category: kind.value === 'equipment' ? 0 : null,
@@ -235,12 +274,12 @@
     getCsrf = csrf; expired = onExpired; var thisGeneration = ++generation;
     try { meta = await api('meta'); if (thisGeneration !== generation) return;
       host.replaceChildren(); var controls = node('div', undefined, 'catalog-controls');
-      kind = node('select'); kind.setAttribute('aria-label', 'Каталог'); [['equipment', 'Экипировка / оружие'], ['soul', 'Souls / души'], ['class', 'Классы персонажей'], ['racial', 'Расовые пассивки']].forEach(function (entry) { var option = node('option', entry[1]); option.value = entry[0]; kind.appendChild(option); });
+      kind = node('select'); kind.setAttribute('aria-label', 'Каталог'); [['equipment', 'Экипировка / оружие'], ['soul', 'Souls / души'], ['class', 'Классы персонажей'], ['racial', 'Расовые пассивки'], ['active', 'Активные навыки'], ['passive', 'Пассивные навыки']].forEach(function (entry) { var option = node('option', entry[1]); option.value = entry[0]; kind.appendChild(option); });
       search = node('input'); search.type = 'search'; search.placeholder = 'Поиск по названию или ID'; search.setAttribute('aria-label', 'Поиск в каталоге');
       search.addEventListener('input', function () {
         clearTimeout(searchTimer); pending++; listHost.replaceChildren(); listHost.setAttribute('aria-busy', 'true'); listStatus.textContent = 'Поиск…';
         searchTimer = setTimeout(function () { if (thisGeneration === generation) { page = 0; loadList(); } }, 300);
-      }); kind.addEventListener('change', function () { clearTimeout(searchTimer); newButton.disabled = kind.value === 'class' || kind.value === 'racial'; page = 0; loadList(); });
+      }); kind.addEventListener('change', function () { clearTimeout(searchTimer); newButton.disabled = kind.value !== 'equipment' && kind.value !== 'soul'; page = 0; loadList(); });
       newButton = button('Новая запись', newItem);
       controls.append(kind, search, newButton, button('История / откат', revisions, 'secondary')); host.appendChild(controls);
       var grid = node('div', undefined, 'catalog-grid'); var sidebar = node('section', undefined, 'catalog-sidebar'); sidebar.setAttribute('aria-label', 'Список записей');

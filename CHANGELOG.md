@@ -4,6 +4,12 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 
 ## Unreleased — Modern 3.00
 
+- Local active/passive editor covers all 211 retained skills: multilingual
+  text, active MP/timing metadata and additive passive bonuses gated by native
+  learning and typed weapon/shield/riding requirements. Hidden skill lists and
+  partial native callbacks do not leave bonus calculations stale. Prerequisite
+  code and built-in mechanics remain unchanged; arbitrary new skills, native
+  passive replacement and riding/effect-switch build persistence are not done.
 - Local racial-passive editor supports 18 retained slots with separate
   multilingual text and explicit preserve/add/replace numeric effects. Actual
   retained-engine results, revision restoration and exception-safe temporary

@@ -62,7 +62,22 @@ valid equipment during restoration.
   Empty replacement removes the native calculation effect. Other race/skill
   selections do not inherit the edited bonus; source revision 0 restores it.
   Unsupported combat actions are not created by a description or numeric bonus.
-  This increment is not deployed; active/class passive work remains required.
+  This increment is not deployed.
+- The local editor covers the 178 active and 33 passive source skills. Active
+  text, MP cost and cast/cooldown/duration values update the actual learned-skill
+  view, not a new combat simulation. Type and prerequisite code stay immutable.
+  Passive bonuses are additive: the retained `SkillList` checks whether the
+  character has learned the skill, independently of whether that view is open.
+  Typed weapon/shield/riding requirements gate those additional numbers. Native
+  `CalcSet` completes recalculation when a level, branch or riding change affects
+  a bonus; no learning or damage formula is copied into Modern. Source revision
+  0 restores the exact original skill tables. Native hardcoded class passives
+  cannot yet be replaced, and new skill/class slots are not supported.
+- The original CSV does not save riding or active-effect switches. The current
+  `PS3` envelope pins data but does not yet serialize those switches either.
+  A fresh recipient therefore defaults to unmounted/native effect settings.
+  Additional riding-dependent bonuses are verified locally, but full context
+  persistence must be implemented and tested before release.
 - Arbitrary scripts, HTML, SQL or game-effect expressions are not supported.
 - Combat mechanics absent from Legacy cannot be advertised as simulated.
 - Source `equipment.42.32` (Wyss Belt) has malformed effect code `0=1_-7`.

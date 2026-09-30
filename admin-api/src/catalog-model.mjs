@@ -65,6 +65,18 @@ function effects(input) {
 }
 
 export function draftFromSource(source, kind) {
+  if (kind === 'active' || kind === 'passive') {
+    check(source?.kind === kind, 'Only existing skill slots and native skill types are supported');
+    const edit = { id: source.id, kind, category: source.legacy_category_id, names: texts(source.name), description: texts(source.description) };
+    if (kind === 'active') Object.assign(edit, { mpCost: source.mp_cost, castSeconds: source.cast_seconds, cooldownSeconds: source.cooldown_seconds, durationSeconds: source.duration_seconds });
+    else {
+      const requirements = source.equipment_requirements.en;
+      check(['None', 'Sword, Knife', 'Shield', 'Crossbow', 'Fist'].includes(requirements), 'Unmapped native passive equipment requirements');
+      edit.effects = [];
+      edit.bonusRequirements = { weaponCategories: requirements === 'Sword, Knife' ? [0, 1, 6] : requirements === 'Crossbow' ? [9] : requirements === 'Fist' ? [7] : [], shieldRequired: requirements === 'Shield', ridingRequired: source.legacy_category_id === 24 };
+    }
+    return edit;
+  }
   if (kind === 'racial') {
     check(source?.kind === 'racial', 'Only existing racial passive slots are supported');
     return { id: source.id, kind, category: source.category, names: texts(source.name), description: texts(null), effectMode: 'preserve', effects: [] };
@@ -86,6 +98,27 @@ export function draftFromSource(source, kind) {
 }
 
 export function validateDraft(input, identity) {
+  if (identity.kind === 'active' || identity.kind === 'passive') {
+    const common = ['id', 'kind', 'category', 'names', 'description'];
+    keys(input, [...common, ...(identity.kind === 'active' ? ['mpCost', 'castSeconds', 'cooldownSeconds', 'durationSeconds'] : ['effects', 'bonusRequirements'])], 'Skill');
+    check(input.id === identity.id && input.kind === identity.kind && input.category === identity.category && Number.isInteger(identity.category) && identity.category >= 0 && identity.category < 25 && Number.isInteger(identity.index) && identity.index >= 0 && identity.index < 1000 && input.id === 'skill_entry.' + identity.category + '.' + identity.index, 'Skill identity/type cannot be changed');
+    const names = textMap(input.names, 160, 'Names'); check(names.en.length > 0, 'English name is required');
+    const result = { id: input.id, kind: identity.kind, category: identity.category, names, description: textMap(input.description, 4000, 'Description') };
+    if (identity.kind === 'active') {
+      result.mpCost = integer(input.mpCost, 0, 100000, 'MP cost');
+      for (const field of ['castSeconds', 'cooldownSeconds', 'durationSeconds']) {
+        const value = input[field]; check(typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 86400 && Number.isInteger(value * 1000), 'Timing must be bounded seconds with at most three decimals'); result[field] = value;
+      }
+    } else {
+      result.effects = effects(input.effects);
+      keys(input.bonusRequirements, ['weaponCategories', 'shieldRequired', 'ridingRequired'], 'Bonus requirements');
+      const categories = input.bonusRequirements.weaponCategories;
+      check(Array.isArray(categories) && categories.length <= 15 && new Set(categories).size === categories.length && categories.every(value => Number.isInteger(value) && value >= -1 && value <= 13), 'Invalid bonus weapon categories');
+      check(typeof input.bonusRequirements.shieldRequired === 'boolean' && typeof input.bonusRequirements.ridingRequired === 'boolean', 'Bonus requirements must be boolean');
+      result.bonusRequirements = { weaponCategories: [...categories], shieldRequired: input.bonusRequirements.shieldRequired, ridingRequired: input.bonusRequirements.ridingRequired };
+    }
+    return result;
+  }
   if (identity.kind === 'racial') {
     keys(input, ['id', 'kind', 'category', 'names', 'description', 'effectMode', 'effects'], 'Racial passive');
     check(input.id === identity.id && input.kind === 'racial' && input.category === identity.category && Number.isInteger(identity.category) && identity.category >= 0 && identity.category < 6 && Number.isInteger(identity.index) && identity.index >= 0 && identity.index < 3 && input.id === 'racial_skill.' + identity.category + '.' + identity.index, 'Racial passive identity cannot be changed');
@@ -129,6 +162,13 @@ export function validateDraft(input, identity) {
 }
 
 export function compileRecord(edit, identity, source) {
+  if (identity.kind === 'active' || identity.kind === 'passive') {
+    check(source?.kind === identity.kind, 'New skills and changed native skill types require a separate engine capability');
+    return { id: identity.id, kind: identity.kind, category: identity.category, index: identity.index, names: edit.names, description: edit.description,
+      active: source.is_active, prerequisiteCode: source.prerequisite_code, nativeEffectPolicy: 'retained-plus-bonus',
+      timing: identity.kind === 'active' ? [edit.mpCost, edit.castSeconds, edit.cooldownSeconds, edit.durationSeconds] : [source.mp_cost, source.cast_seconds, source.cooldown_seconds, source.duration_seconds],
+      effects: (edit.effects || []).map(effect => ({ ...effect })), bonusRequirements: edit.bonusRequirements ? { ...edit.bonusRequirements, weaponCategories: [...edit.bonusRequirements.weaponCategories] } : null };
+  }
   if (identity.kind === 'racial') {
     check(source?.kind === 'racial', 'New racial selection slots require a separate engine capability');
     return { id: identity.id, kind: 'racial', category: identity.category, index: identity.index, names: edit.names, description: edit.description, effectMode: edit.effectMode, effects: edit.effects.map(effect => ({ ...effect })) };

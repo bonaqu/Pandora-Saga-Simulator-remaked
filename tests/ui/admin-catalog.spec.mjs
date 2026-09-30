@@ -190,3 +190,32 @@ test('late item response cannot replace a newer selection, and saving freezes fi
   await expect(page.locator('[data-field="names"][data-language="en"]')).toHaveValue('Saved selection');
   expect(errors).toEqual([]);
 });
+
+test('active and passive editors expose distinct real fields and publish their own typed data', async ({ page }, testInfo) => {
+  const { sqlite, errors } = await openConsole(page);
+  await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('active');
+  await expect(page.getByRole('button', { name: 'Новая запись', exact: true })).toBeDisabled();
+  await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill('skill_entry.0.0');
+  await page.locator('.catalog-entry').first().click();
+  await expect(page.locator('.catalog-editor')).toContainText('Warrior Lv5');
+  await page.locator('[data-field="mpCost"]').fill('25'); await page.locator('[data-field="castSeconds"]').fill('1.25');
+  await expect(page.getByRole('button', { name: 'Добавить характеристику', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён'); page.on('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: 'Опубликовать', exact: true }).click(); await expect(page.locator('#catalog-state')).toContainText('Опубликована версия каталога 1');
+  await page.screenshot({ path: testInfo.outputPath('active-editor-desktop.png'), fullPage: true });
+  await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('passive');
+  await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill('skill_entry.1.6');
+  await page.locator('.catalog-entry').first().click();
+  await expect(page.locator('.catalog-editor')).toContainText('Sword, Knife');
+  await expect(page.locator('[data-field="mpCost"]')).toHaveCount(0);
+  await expect(page.locator('[data-weapon-category="0"]')).toBeChecked(); await expect(page.locator('[data-weapon-category="6"]')).toBeChecked();
+  await page.getByRole('button', { name: 'Добавить характеристику', exact: true }).click(); await page.getByRole('spinbutton', { name: 'Значение', exact: true }).fill('5');
+  await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click(); await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  await page.getByRole('button', { name: 'Опубликовать', exact: true }).click(); await expect(page.locator('#catalog-state')).toContainText('Опубликована версия каталога 2');
+  const entries = JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head').get().snapshot_json);
+  expect(entries[0].edit.mpCost).toBe(25); expect(entries[0].edit.castSeconds).toBe(1.25);
+  expect(entries[1].edit.effects).toEqual([{ stat: 1, value: 5, unit: 'flat' }]); expect(entries[1].edit.bonusRequirements.weaponCategories).toEqual([0, 1, 6]);
+  await page.setViewportSize({ width: 390, height: 844 }); expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath('passive-editor-mobile.png'), fullPage: true }); expect(errors).toEqual([]);
+});
