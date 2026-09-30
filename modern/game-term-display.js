@@ -126,6 +126,13 @@
           });
         });
       });
+      names.Skill.forEach(function (entry, index) {
+        var node = byId('TextSkill_' + index), full = entry[language + 1];
+        var expanded = Boolean(node?.closest('[data-remaked-skill-controls]'));
+        var heading = !expanded && language === 1 && [0, 6, 12, 17, 22].indexOf(index) === -1 ? shortSkill(full) : full;
+        if (!inactive || expanded) decorate(node, 'skill.' + index, heading, '', '', expanded);
+        if (!inactive) decorate(byId('TextFile_' + (index + 9)), 'skill.' + index, shortSkill(full));
+      });
       if (inactive) return;
       decorate(byId('StatusRace'), 'race.' + race, names.Race[race][language]);
       decorate(byId('StatusRSkill'), 'racial_skill.' + race + '.' + racialSkill, names.Race.Skill[race][racialSkill][language]);
@@ -142,12 +149,6 @@
         var prefix = names.Job.Sel[index][language];
         decorate(option, id, prefix + names.Job[index][language + 2], prefix);
         return null;
-      });
-      names.Skill.forEach(function (entry, index) {
-        var full = entry[language + 1];
-        var heading = language === 1 && [0, 6, 12, 17, 22].indexOf(index) === -1 ? shortSkill(full) : full;
-        decorate(byId('TextSkill_' + index), 'skill.' + index, heading);
-        decorate(byId('TextFile_' + (index + 9)), 'skill.' + index, shortSkill(full));
       });
       document.querySelectorAll('select[id^="SelEquip_"]').forEach(function (select) {
         var match = select.id.match(/^SelEquip_(\d+)_(\d+)$/);

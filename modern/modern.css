@@ -433,6 +433,180 @@ body.remaked-modern {
   min-width: 216px;
 }
 
+/* Progressive skill enhancement removes the fixed-width arrow matrix only
+   when its source-delegating controls are available. */
+.remaked-modern #body #SkillSet[data-remaked-skill-controls] {
+  overflow: visible;
+}
+.remaked-modern #body #SkillSet[data-remaked-skill-controls] > ul {
+  box-sizing: border-box;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--rm-border);
+}
+.remaked-modern #body [data-remaked-skill-controls] li {
+  box-sizing: border-box;
+  float: none !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0;
+  background: none;
+  color: var(--rm-text);
+  font-size: 13px;
+  line-height: 1.4;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.remaked-modern #body [data-remaked-skill-row] > [id^="TextSkill_"] {
+  grid-column: 1 / -1;
+  text-align: left !important;
+  font-weight: 600;
+}
+.remaked-modern #body [data-remaked-skill-row] > [hidden] {
+  display: none !important;
+}
+.remaked-modern #body [data-remaked-skill-group] > ul {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 3px;
+}
+.remaked-modern #body [data-remaked-skill-group] [id^="Skill_"] {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.remaked-modern #body [data-remaked-skill-caption] {
+  color: #46543b;
+  font-size: 12px;
+}
+.remaked-modern #body [data-remaked-skill-controls] :is(.remaked-skill-primary, .remaked-skill-bulk) {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+}
+.remaked-modern #body [data-remaked-skill-controls] .remaked-skill-indicator {
+  display: block;
+}
+.remaked-modern #body [data-remaked-skill-controls] .remaked-skill-indicator > ul {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  font-size: 12px;
+}
+.remaked-modern #body .remaked-skill-indicator > ul > li:first-child {
+  flex: 1;
+  min-width: 0;
+}
+.remaked-modern #body #remaked-potential-budget-label {
+  width: auto !important;
+  min-width: 35px;
+  padding-inline: 2px;
+}
+.remaked-modern #body [data-remaked-skill-controls]:not([data-remaked-skill-expanded="true"]) .remaked-skill-bulk {
+  display: none;
+}
+.remaked-modern #body #SkillSet[data-remaked-skill-controls] .remaked-skill-heading {
+  display: block;
+  padding: 6px;
+  background: #e8f1db;
+  border-radius: 4px;
+  border-bottom: 0;
+  margin-top: 8px;
+}
+.remaked-modern #body .remaked-skill-heading > li > ul {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.remaked-modern #body .remaked-skill-heading [id^="TextSkill_"] {
+  flex: 1;
+  font-weight: 700;
+}
+.remaked-skill-tools p {
+  margin: 5px 0;
+  color: #46543b;
+  font: 12px/1.5 var(--rm-font);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.remaked-modern #body [data-remaked-effect-tabs] {
+  box-sizing: border-box;
+  width: 100% !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: none;
+}
+.remaked-modern #body [data-remaked-effect-tabs] > ul {
+  display: flex;
+  gap: 4px;
+}
+.remaked-modern #body [data-remaked-effect-tabs] li {
+  flex: 1;
+  float: none;
+  width: auto !important;
+  margin: 0 !important;
+  border: 0;
+  background: none;
+}
+.remaked-modern #body [data-remaked-effect-tabs] .col_bg {
+  display: none;
+}
+.remaked-modern #body [data-remaked-calculator-effects]:has([data-remaked-effect-tabs]) {
+  overflow: visible;
+}
+.remaked-modern #body [data-remaked-calculator-effects]:has([data-remaked-effect-tabs]) > ul {
+  min-width: 0;
+  display: flow-root;
+}
+.remaked-modern #body :is(#SkillView, #POTView):has([data-remaked-effect-row]) {
+  width: 100%;
+}
+.remaked-modern #body [data-remaked-effect-row] {
+  clear: both;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 3px 6px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--rm-border);
+}
+.remaked-modern #body [data-remaked-effect-row] li {
+  float: none !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0;
+  background: none;
+  min-width: 0;
+  color: var(--rm-text);
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.remaked-modern #body [data-remaked-effect-row] > li:first-child {
+  text-align: left !important;
+}
+.remaked-modern #body [data-remaked-effect-row] > .input_gt > ul {
+  display: flex;
+  font-variant-numeric: tabular-nums;
+}
+.remaked-modern #body [data-remaked-effect-row] > li:not([id]):not(.input_gt) {
+  display: none;
+}
+.remaked-modern #body [data-remaked-calculator-effects]:has([data-remaked-effect-tabs]) #Msg {
+  position: static !important;
+  width: 100% !important;
+  margin-top: 6px;
+}
+
 .remaked-modern #body [data-remaked-calculator-identity],
 .remaked-modern #body [data-remaked-calculator-results] {
   display: grid;

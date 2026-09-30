@@ -168,5 +168,10 @@
   "builds.invalidShare": "Invalid share link; current build kept",
   "search.details": "Details",
   "search.sockets": "Soul sockets: {count}",
-  "search.itemSource": "Item descriptions from Legacy 2.00; not calculated build deltas."
+  "search.itemSource": "Item descriptions from Legacy 2.00; not calculated build deltas.",
+  "skills.adeptness": "Adeptness",
+  "skills.potential": "Potential",
+  "skills.largerSteps": "Larger steps",
+  "skills.help": "Adeptness uses Skill points. Potential uses its own point pool beside Level. Limits and costs follow the Legacy engine.",
+  "skills.indicator": "Legacy next-point indicator: "
 }

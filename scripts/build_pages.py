@@ -42,6 +42,7 @@ REQUIRED_MODERN = (
     "modern/game-term-display.js",
     "modern/calculator-labels.js",
     "modern/calculator-controls.js",
+    "modern/skill-controls.js",
     "modern/adapter.js",
     "modern/build-store.js",
     "modern/search.js",
@@ -118,6 +119,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/mobile.js"></script>
 <script src="./modern/equipment-picker.js"></script>
 <script src="./modern/calculator-controls.js"></script>
+<script src="./modern/skill-controls.js"></script>
 <script src="./modern/pwa.js"></script>
 <!-- /REMAKED:BODY -->'''
 

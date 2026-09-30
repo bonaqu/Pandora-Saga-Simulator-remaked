@@ -2,6 +2,14 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## 2026.09.16 — Native skill allocation and explicit effects
+
+- Full skill branch names replace four-letter abbreviations in the calculator. Approved workbook translations and original JP/EN/TW names remain display-only projections.
+- Native −1/+1 actions distinguish Adeptness and Potential; one Larger steps toggle reveals ±10/min/max. All 240 callbacks stay engine-owned, with the original bar/value/indicator IDs retained. The separate potential-point pool has a readable label instead of ???.
+- Effects switch deliberately by click, Enter or Space instead of pointer hover. Their values, percentage units and next-SPR hints wrap inside desktop/phone columns; source floats no longer squeeze an effect row to zero width.
+- Extended the same translation workbook by five UI rows while preserving all 2,837 prior rows and 139 Russian values. Added two ordinary Russian interface instructions; game-adjacent labels remain English until reviewed. The beginner guide now matches 2,842 rows.
+- Added exact callback-count/result parity for base and allocated states, keyboard, locale/load/reset/fallback and 320/390/768/1440px regression/visual checks. No engine formulas, museum source or build encoding changed.
+
 ## 2026.09.15 — Readable calculator and native character controls
 
 - Corrected inherited Japanese bitmap/monospace fonts on calculator list/table descendants. Modern uses its system font; the museum route is unchanged.
