@@ -305,6 +305,7 @@
     if (item.gem) description.appendChild(element('p', '', item.gem));
     if (item.classes.length) description.appendChild(element('p', 'remaked-item-classes', item.classes.join(' · ')));
     item.descriptions.forEach(function (text) { description.appendChild(element('p', '', text)); });
+    if (item.calculationWarning) description.appendChild(element('p', 'remaked-item-warning', item.calculationWarning));
     description.appendChild(translatedElement('small', '', 'search.itemSource', 'Item descriptions from Legacy 2.00; not calculated build deltas.'));
     details.appendChild(description); row.appendChild(details);
     var pinned = false;

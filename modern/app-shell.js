@@ -58,14 +58,6 @@
     syncLanguageButtons(header);
   }
 
-  function syncDensityButtons(header) {
-    var current = Number(getFlag(1, 1));
-    header.querySelectorAll('[data-remaked-density]').forEach(function (button) {
-      var active = Number(button.dataset.remakedDensity) === current;
-      button.setAttribute('aria-pressed', active ? 'true' : 'false');
-    });
-  }
-
   function syncNavButtons(header) {
     var current = Number(getFlag(2, 0));
     header.querySelectorAll('[data-remaked-tab]').forEach(function (button) {
@@ -201,7 +193,7 @@
     nav.className = 'remaked-nav';
     nav.dataset.remakedNav = '';
     localizeAttribute(nav, 'aria-label', 'shell.sections', 'Simulator sections');
-    defaultLabels.forEach(function (label, index) {
+    defaultLabels.slice(0, 5).forEach(function (label, index) {
       var button = makeButton(label, 'remaked-nav-button');
       button.dataset.remakedTab = String(index);
       button.setAttribute('aria-pressed', 'false');
@@ -212,29 +204,14 @@
       });
       nav.appendChild(button);
     });
+    var builds = document.createElement('div'); builds.className = 'remaked-build-actions';
+    builds.dataset.remakedBuildActions = ''; builds.setAttribute('role', 'group');
+    localizeAttribute(builds, 'aria-label', 'builds.button', 'Builds'); nav.appendChild(builds);
     navRow.appendChild(nav);
-
-    var density = document.createElement('div');
-    density.className = 'remaked-density';
-    localizeAttribute(density, 'aria-label', 'controls.displayDensity', 'Display density');
-    ['Heavy', 'Medium', 'Light'].forEach(function (label, index) {
-      var keys = ['controls.density.heavy', 'controls.density.medium', 'controls.density.light'];
-      var button = makeButton(label, 'remaked-density-button', keys[index]);
-      button.dataset.remakedDensity = String(index);
-      button.setAttribute('aria-pressed', 'false');
-      button.addEventListener('click', function () {
-        var legacyControl = document.getElementById('CSS_' + index);
-        if (legacyControl) legacyControl.click();
-        syncDensityButtons(header);
-      });
-      density.appendChild(button);
-    });
-    navRow.appendChild(density);
     header.appendChild(navRow);
 
     syncLanguageButtons(header);
     syncUiLocaleButtons(header);
-    syncDensityButtons(header);
     syncNavButtons(header);
     return header;
   }
@@ -330,7 +307,6 @@
       if (existingHeader) {
         syncLanguageButtons(existingHeader);
         syncUiLocaleButtons(existingHeader);
-        syncDensityButtons(existingHeader);
         syncNavButtons(existingHeader);
       }
       return existing;
@@ -340,6 +316,12 @@
     if (!legacyBody || !legacyBody.parentNode) return null;
     document.body.classList.add('remaked-modern');
     document.body.dataset.remakedMode = 'modern';
+    // No Modern LOG/FILE navigation. Keep source File()/DOM translation anchors
+    // for old browser data and the museum, but never offer duplicate managers.
+    window.Flag[4] = 0; window.Log = function () {};
+    ['Tab_5_1', 'Tab_6_1', 'SwitchUse_1'].forEach(function (id) {
+      var node = document.getElementById(id); if (node) { node.hidden = true; node.inert = true; }
+    });
     markLegacyToolbar();
 
     var shell = document.createElement('div');

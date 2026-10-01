@@ -6,6 +6,7 @@ import json
 import pathlib
 import re
 import zipfile
+from dataclasses import dataclass
 from xml.etree import ElementTree
 
 
@@ -19,6 +20,7 @@ HEADERS = (
     "日本語",
     "繁體中文",
     "Русский — заполнять здесь",
+    "English — редактировать здесь",
 )
 CATEGORY_NAMES = {
     "race": "Раса",
@@ -119,7 +121,16 @@ def read_rows(path: pathlib.Path) -> list[list[str]]:
         return rows
 
 
-def load_translation_catalogs(root: pathlib.Path) -> tuple[dict[str, str], dict[str, str], int]:
+@dataclass(frozen=True)
+class TranslationCatalogs:
+    ui_russian: dict[str, str]
+    game_russian: dict[str, str]
+    ui_english: dict[str, str]
+    game_english: dict[str, str]
+    total: int
+
+
+def load_editable_catalogs(root: pathlib.Path) -> TranslationCatalogs:
     localization = root / "localization"
     rows = read_rows(localization / "translations.xlsx")
     if not rows or tuple(rows[0]) != HEADERS:
@@ -148,6 +159,8 @@ def load_translation_catalogs(root: pathlib.Path) -> tuple[dict[str, str], dict[
 
     ui_russian: dict[str, str] = {}
     game_russian: dict[str, str] = {}
+    ui_english: dict[str, str] = {}
+    game_english: dict[str, str] = {}
     seen: set[str] = set()
     for index, row in enumerate(actual, start=2):
         identifier = row[1]
@@ -161,29 +174,43 @@ def load_translation_catalogs(root: pathlib.Path) -> tuple[dict[str, str], dict[
             raise ValueError(f"duplicate translation ID in row {index}: {identifier}")
         seen.add(identifier)
         russian = row[7] if row[7].strip() else ""
+        english_override = row[8] if row[8].strip() else ""
         if row[0] == "Интерфейс":
             if russian and sorted(PLACEHOLDER.findall(row[4])) != sorted(PLACEHOLDER.findall(russian)):
                 raise ValueError(f"translation placeholders do not match in row {index}: {identifier}")
             if russian:
                 ui_russian[identifier] = russian
+            if english_override:
+                if sorted(PLACEHOLDER.findall(row[4])) != sorted(PLACEHOLDER.findall(english_override)):
+                    raise ValueError(f"English translation placeholders do not match in row {index}: {identifier}")
+                ui_english[identifier] = english_override
         elif russian:
             game_russian[identifier] = russian.strip()
+        if row[0] == "Игра" and english_override:
+            game_english[identifier] = english_override.strip()
 
     missing = sorted(set(expected) - seen)
     if missing:
         raise ValueError("translation workbook is missing IDs: " + ", ".join(missing[:5]))
 
-    return ui_russian, game_russian, len(actual)
+    return TranslationCatalogs(ui_russian, game_russian, ui_english, game_english, len(actual))
+
+
+def load_translation_catalogs(root: pathlib.Path) -> tuple[dict[str, str], dict[str, str], int]:
+    """Retain the existing RU reader API for tools and older integration fixtures."""
+    catalogs = load_editable_catalogs(root)
+    return catalogs.ui_russian, catalogs.game_russian, catalogs.total
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=pathlib.Path, default=pathlib.Path.cwd())
     args = parser.parse_args()
-    ui_russian, game_russian, total = load_translation_catalogs(args.root.resolve())
+    catalogs = load_editable_catalogs(args.root.resolve())
     print(
-        f"Verified {total} translation rows: "
-        f"{len(ui_russian)} Russian UI strings and {len(game_russian)} approved Russian game terms."
+        f"Verified {catalogs.total} translation rows: "
+        f"{len(catalogs.ui_russian)} Russian UI strings and {len(catalogs.game_russian)} approved Russian game terms; "
+        f"{len(catalogs.ui_english)} English UI overrides and {len(catalogs.game_english)} English game overrides."
     )
     return 0
 

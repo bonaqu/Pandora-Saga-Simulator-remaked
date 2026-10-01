@@ -2,6 +2,111 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Unreleased — Modern 3.00
+
+- The release candidate identifies Modern UI as 3.00; the retained engine and
+  museum remain 2.00. The version label alone does not claim Pages acceptance.
+
+- Import, named builds and shared links ignore obsolete catalog responses after
+  newer editing/loading, Code edits or closing Builds. Deleted named records
+  cannot be resurrected by an in-flight request; stale feedback cannot steal focus.
+- Catalog revisions outside the nine-digit PS3 format fail before runtime mutation.
+  The administrator guide now maps all six editor kinds to their real simulation
+  effects and explicitly identifies unsupported mechanics.
+
+- Explicit current-build catalog adoption checks the live published head,
+  preflights worn items and occupied Soul slots, preserves C1 and named pins,
+  and cancels stale responses. Offline cache is never reported as the latest.
+  Quota failures preserve old saves; an unverified calculation rollback pauses
+  autosave and reports recovery honestly. This frontend feature is not on Pages.
+- Successful explicit code import, named load and catalog update detach an old
+  shared URL fragment so reload restores the new autosave, not the old link.
+  Failed imports keep the link, character and storage intact.
+- Compact desktop candidate puts attributes beside results, uses the working
+  area width and keeps branch names, Adeptness/Potential and their native actions
+  in aligned rows. The Hybrid C art remains; the desktop banner is shorter.
+  Phones retain 44px primary targets and visible Builds/Compare actions.
+- Modern header replaces FILE/LOG with one Builds/Compare group. Misleading
+  Heavy/Medium/Light controls and Modern log output are removed; museum controls
+  remain. Legacy FILE slots can be explicitly copied into named builds without
+  changing originals, character or autosave. Copies are atomic and idempotent;
+  malformed data and quota failures leave the original collections intact.
+- Modern handles the exact malformed Wyss Belt source marker `0=1_-7` without
+  crashing: STA +1 remains, and a visible warning states that the unresolved
+  conditional trigger is not simulated. No MP penalty is invented. The exact
+  source row is restored even when another calculation fails; real errors still
+  propagate. Legacy museum retains its source behavior.
+- Consolidated Modern code export/import/clear into Builds using the original
+  field and retained handlers. Plain source exports use the native compressed
+  codec; versioned/context-bearing exports retain the full PS3 payload. Code
+  validation stays visible when sharing, and clearing does not delete a build.
+- Fixed signed skill-step labels wrapping in wider system-font fallbacks;
+  desktop rows stay compact without reducing phone targets or test limits.
+- Equipment reset now sizes to its label instead of the inherited 120px width.
+  Wider fallback fonts stay compact; long translations wrap within the section.
+- These UI/recovery/guard changes are not published on Pages.
+- Modern build context C1 transfers riding, enabled effects, Honor, clan and
+  caster attributes to fresh shared recipients and offline reloads. Comparisons
+  restore the active context and storage afterward. Old CSV/compressed codes
+  retain compatibility and load with source defaults. Changing source language
+  no longer clears clan bonuses. These frontend changes are not on Pages yet.
+- The initial expanded CMS is deployed on Cloudflare: 28 class, 18 racial,
+  178 active and 33 passive entries, with authenticated read-only production
+  checks and desktop/mobile visual inspection. Public catalog remains revision 0;
+  no test game data published. This is not the completed Modern 3.00 release.
+- Local active/passive editor covers all 211 retained skills: multilingual
+  text, active MP/timing metadata and additive passive bonuses gated by native
+  learning and typed weapon/shield/riding requirements. Hidden skill lists and
+  partial native callbacks do not leave bonus calculations stale. Prerequisite
+  code and built-in mechanics remain unchanged; arbitrary new skills and native
+  passive replacement are not done. Context C1 persistence is verified locally.
+- Local racial-passive editor supports 18 retained slots with separate
+  multilingual text and explicit preserve/add/replace numeric effects. Actual
+  retained-engine results, revision restoration and exception-safe temporary
+  state are verified; native formulas and museum data remain unchanged.
+- Admin search no longer offers stale results while a query changes. Late item
+  responses cannot replace the current selection; saves temporarily freeze
+  fields so a successful response cannot discard subsequent typing.
+- Local administrator class editor supports all 28 retained class slots,
+  multilingual text and native LP/MP progression parameters. Typed source
+  fingerprint checks and pinned build revisions preserve old class calculations.
+  Class lineage and arbitrary new classes remain unfinished. The first existing
+  class/skill/passive editors are deployed on the Worker, not the Pages frontend.
+- Modern-only equipment/Soul catalog adapter uses the retained calculation
+  engine, with immutable catalog revisions pinned in `PS3` saved/shared codes.
+  Cached public revisions work offline; missing revisions protect existing
+  builds and autosaves. Original CSV/compressed imports stay supported.
+- Catalog switching checks Soul-slot and race/class compatibility before
+  rebuilding lists. Numeric IDs prevent a Legacy lexicographic weapon-reset
+  bug; stale asynchronous share requests cannot replace a newer selection.
+
+- English interface and game names can be overridden in column I of the same
+  translation workbook. Russian remains in H; preserved English/JP/TW source
+  columns and all prior Russian values remain intact. Empty overrides restore
+  the original; JP/TW names are not replaced by an English override.
+- Updated the beginner's upload/publish guide. Browser verification uses an
+  actually edited workbook and checks unchanged game data and serialized builds.
+- Administrator CMS, IDDQD auth and compact desktop redesign are in progress,
+  not published features yet.
+- The Modern-only `IDDQD` entry now has an original green/beige DOS terminal,
+  reduced-motion support and an accessible login dialog. It ignores editable
+  fields and does not spend character points while typing the cheat code.
+  Passwords are submitted by native HTTPS navigation to the Worker, never
+  persisted in frontend storage. Public Pages publication is still pending.
+- Secured Worker authentication is deployed and production-tested separately
+  from Pages. A Modern-only equipment/Soul editor now has validated multilingual
+  fields, numeric effects, private drafts, atomic publication, immutable history,
+  conflict protection and rollback. Equipment/Soul engine integration is now
+  verified locally. Expanded existing class/active/passive/racial editors have
+  since passed remote acceptance; additional mechanics remain in development.
+
+## 2026.09.17 — Safe calculator code and riding controls
+
+- Fixed Modern calculator Code Load accepting incomplete input and corrupting the current character before an exception. It now shares Build Manager's validated, rollback-capable import, accepts existing compressed/CSV codes, and does not touch Legacy File slots.
+- Native Create/Load/Delete and riding controls support Enter/Space and phone-size targets. Code input has a visible programmatic label, paste/Enter support, focused inline validation and success/autosave-failure feedback.
+- Riding and compressed code creation/clearing retain source callbacks; no game formula, source array, build format, museum file or translation-workbook cell changed. Skill min/max actions now share the existing translated min/max keys too.
+- Added invalid/non-default/rollback, compressed/CSV, storage-failure, callback, keyboard, locale, missing-module and desktop/mobile regression/visual checks. Publication acceptance is recorded only after full CI and exact production gates.
+
 ## 2026.09.16 — Native skill allocation and explicit effects
 
 - Full skill branch names replace four-letter abbreviations in the calculator. Approved workbook translations and original JP/EN/TW names remain display-only projections.

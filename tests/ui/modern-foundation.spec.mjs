@@ -2,6 +2,27 @@ import { test, expect } from '@playwright/test';
 
 const repoUrl = 'https://github.com/bonaqu/Pandora-Saga-Simulator-remaked';
 
+test('Modern 3.00 identifies the rework version without relabeling the museum engine', async ({ page }) => {
+  await page.goto('/');
+  expect(await page.evaluate(() => ({ ...PandoraRemakedVersion }))).toEqual({ legacyEngine: '2.00', ui: '3.00' });
+  expect(await page.evaluate(() => Ver)).toBe('2.00');
+  await expect(page.locator('[data-remaked-hero]')).toContainText('3.00');
+  await expect(page.locator('[data-remaked-hero]')).toContainText('2.00');
+  const sourceTitles = await page.evaluate(() => Name.Title.slice());
+  for (const language of ['EN', 'RU', 'JP', 'TW']) {
+    await page.locator('[data-remaked-language-panel]').getByRole('button', { name: language, exact: true }).click();
+    const expected = await page.evaluate(() => Name.Title[Number(Flag[0]) + 1] + ' 3.00');
+    await expect(page.locator('#Title')).toHaveText(expected);
+    expect(await page.evaluate(() => Name.Title.slice())).toEqual(sourceTitles);
+    expect(await page.evaluate(() => Ver)).toBe('2.00');
+  }
+  await page.goto('/legacy/');
+  expect(await page.evaluate(() => typeof window.PandoraRemakedVersion)).toBe('undefined');
+  expect(await page.evaluate(() => Ver)).toBe('2.00');
+  await expect(page.locator('#Title')).toContainText('2.00');
+  await expect(page).toHaveTitle('Pandora Saga Simulator');
+});
+
 async function openModern(page) {
   await page.goto('/');
   await expect(page.locator('[data-remaked-header]')).toBeVisible();
@@ -28,7 +49,8 @@ test('Modern shell exposes meaningful navigation and defaults to English', async
   await expect(header.locator('a[href*="awayfromkuma"]')).toHaveCount(0);
   await expect(header.locator('[data-remaked-language="1"]')).toHaveAttribute('aria-pressed', 'true');
   await expect(header.getByRole('button', { name: 'JOB', exact: true })).toBeVisible();
-  await expect(header.getByRole('button', { name: 'FILE', exact: true })).toBeVisible();
+  await expect(header.getByRole('button', { name: 'FILE', exact: true })).toHaveCount(0);
+  await expect(header.locator('[data-remaked-build-actions] [data-remaked-builds-open]')).toBeVisible();
 });
 
 test('Modern header includes the approved Hybrid C hero treatment', async ({ page }) => {
@@ -49,8 +71,9 @@ test('Modern header includes the approved Hybrid C hero treatment', async ({ pag
   expect(imageMetrics.height).toBeGreaterThanOrEqual(300);
   expect(imageMetrics.width / imageMetrics.height).toBeGreaterThanOrEqual(2.5);
   const metrics = await hero.evaluate((element) => ({ height: element.getBoundingClientRect().height }));
-  expect(metrics.height).toBeGreaterThanOrEqual(160);
-  expect(metrics.height).toBeLessThanOrEqual(210);
+  // Desktop now prioritizes the compact workspace; retain the same verified art.
+  expect(metrics.height).toBeGreaterThanOrEqual(80);
+  expect(metrics.height).toBeLessThanOrEqual(100);
 });
 
 test('Modern language controls drive the legacy language state', async ({ page }) => {

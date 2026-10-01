@@ -290,3 +290,38 @@
     width: 100%;
   }
 }
+.remaked-legacy-recovery { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rm-border); }
+.remaked-legacy-recovery[hidden] { display: none; }
+.remaked-legacy-recovery p { margin: 0 0 8px; color: var(--rm-muted); font: 12px/1.5 var(--rm-font); }
+
+/* The retained Code nodes live only in Builds. Reset source fixed dimensions
+   here, outside #body, without changing museum markup or copying its handlers. */
+.remaked-modern [data-remaked-build-code-workspace] :is(ul, li) {
+  box-sizing: border-box; float: none; width: auto; height: auto;
+  position: static; margin: 0; padding: 0; list-style: none;
+}
+.remaked-modern [data-remaked-build-code-workspace] [data-remaked-calculator-code] > li:first-child { display: none; }
+.remaked-modern [data-remaked-build-code-workspace] #InCode {
+  box-sizing: border-box; float: none; width: 100%; height: auto; min-height: 44px;
+  margin-bottom: 8px; padding: 9px; border: 1px solid #afc496; border-radius: 7px;
+  background: #fff; color: #2f3b29; font: 12px/1.5 ui-monospace, Consolas, monospace;
+}
+.remaked-modern [data-remaked-build-code-workspace] .remaked-build-code-actions {
+  display: flex; flex-wrap: wrap; gap: 7px;
+}
+.remaked-modern [data-remaked-build-code-workspace] [data-remaked-calculator-code-source] {
+  border: 0; background: transparent;
+}
+.remaked-modern [data-remaked-build-code-workspace] .remaked-build-button { min-height: 44px; }
+.remaked-modern [data-remaked-code-status]:empty { display: none; }
+.remaked-modern [data-remaked-code-status] {
+  width: 100% !important; margin-top: 8px !important;
+  color: #68765e; font: 12px/1.5 var(--rm-font); white-space: normal; overflow-wrap: anywhere;
+}
+.remaked-modern [data-remaked-code-status][data-state="error"] { color: #8e2921; }
+.remaked-modern [data-remaked-code-status][data-state="warning"] { color: #8b6025; }
+
+.remaked-build-catalog > p { margin: 0; font: 12px/1.5 var(--rm-font); overflow-wrap: anywhere; }
+.remaked-build-catalog > button { justify-self: start; min-height: 44px; line-height: 1.35; }
+.remaked-build-catalog > button:disabled { cursor: progress; opacity: .65; }
+.remaked-build-catalog [data-remaked-catalog-status]:empty { display: none; }

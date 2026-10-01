@@ -114,8 +114,51 @@ Full branch names are rendered through the existing game-term projection.
 Effect buttons retain original switching functions but remove hover-only
 activation in Modern; percentages, next-SPR hints and engine IDs remain intact.
 
+Riding and compressed Code export/clear use native buttons delegating once
+to retained source handlers. Modern moves the actual Code field and handlers
+into Build Manager, removing the second export/import interface. Modern replaces
+only the Code Load DOM callback with `builds.importPreparedPayload`. It validates/rolls back
+through the existing adapter and persists Modern autosave separately; it never
+calls `File('CodeLoad')` or reads/writes compressed Legacy File slots. Source
+label anchors remain available for the same translation workbook. Inline
+feedback, input validation/focus and explicit unavailable-import fallback do
+not change `File`, `Expand`, `Store`, codecs or museum behavior.
+Versioned/context-bearing codes export the complete `PS3` envelope instead of
+lossy compressed CSV. Plain source exports still use the exact native codec.
+Code errors remain described next to the field when other manager actions run;
+clearing the field does not delete named builds, FILE slots or character state.
+
 The original calculator logic and data are treated as the preservation core. Hosting glue, generated read-only projections, documentation, CI and validation live around that core.
 
 That separation makes it possible to modernize the project later without silently changing the preserved calculator.
 
 Three archived codec files (`base64.js`, `rawinflate.js`, `rawdeflate.js`) are CodeRepos Trac HTML snapshots containing their original source in numbered code tables. `scripts/recover_archived_javascript.py` extracts those source cells during Pages generation, decodes HTML entities and reverses Trac's non-breaking-space formatting. It rejects missing/incomplete tables. Repository snapshots and preservation hashes stay unchanged; published Modern and Legacy runtime copies receive the recovered original JavaScript. This is a transport recovery, with the existing compressed File format checked by browser round-trips.
+# Modern 3.00 work in progress
+
+The owner has authorized a separate Cloudflare Worker/D1 administrator catalog.
+Its plan is [Modern 3.00 and admin](superpowers/plans/2026-09-30-modern-3-admin.md).
+Worker auth and the initial six catalog editor kinds are deployed. The Pages
+consumer and Modern 3.00 release are not yet published. Museum Legacy 2.00 remains unchanged.
+The translation workbook now supports optional English display overrides in
+column I as well as Russian in H; A:G remain preserved source references.
+
+Catalog revisions are immutable public snapshots. Existing saved/shared builds
+keep their pin; explicit **Update current build** checks the live public head
+without an offline-head fallback. It projects and preflights current item,
+class/race compatibility and occupied Soul sockets before any runtime mutation.
+The revision changes through the same safe adapter load, retaining numeric CSV
+and C1 context. Named records are not rewritten. A stale request, changed link,
+closed manager, incompatible projection or protected unavailable autosave cannot
+replace the character. Calculation failure attempts the original revision/context
+restore; an unverified restore is surfaced and pauses autosave until recovery.
+Storage quota failure keeps the old save and explicitly reports unsaved state.
+Successful explicit adoption, code import or named load removes only an obsolete
+`#build=` fragment, so reload cannot override the new autosave with an old shared build.
+
+Every asynchronous build load also captures a monotonic intent, current payload
+and hash before fetching. New imports/loads, character input (including edits
+back to the original value), Code edits and closing Builds invalidate older
+intents. Pending named loads recheck that the record still exists and matches.
+Only a current intent can mutate runtime or saves. Stale completion/error UI
+cannot overwrite newer feedback or steal focus. Revision validation shares
+the serialized PS3 format's nine-digit upper bound.

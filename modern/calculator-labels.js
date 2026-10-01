@@ -59,7 +59,8 @@
       var source = document.querySelector(selector)?.getAttribute('title');
       if (!source) throw new Error('Missing calculator control title: ' + id);
       add('calculator.literal.' + id, 'index.html/create.js ' + selector, ['', source, ''],
-        [{ selector: selector, attribute: 'title', extraAttribute: 'alt', fallbackEnglish: true }]);
+        [{ selector: selector, attribute: 'title', extraAttribute: 'alt', fallbackEnglish: true },
+          { selector: 'input[type="image"][src$="/' + (index ? 'left3' : 'right3') + '.png"]', attribute: 'title', extraAttribute: 'alt', fallbackEnglish: true }]);
     });
     add('calculator.menu', 'Name.Menu', names.Menu, [{ selector: '#TextMenu' }]);
     names.Tab.forEach(function (entry, index) {

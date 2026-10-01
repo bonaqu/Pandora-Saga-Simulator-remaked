@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs/promises';
-import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { startStaticServer } from '../../scripts/lib/legacy-runtime.mjs';
+import { createPublishedFixture, publishedLocaleFingerprints } from './helpers/published-fixture.mjs';
 
 test('installed Modern and Legacy routes boot offline without changing the build', async ({ page, context }) => {
   await page.goto('/');
@@ -52,9 +52,9 @@ test('installed Modern and Legacy routes boot offline without changing the build
 });
 
 test('translation-only artifact update reaches an existing offline installation', async ({ page, context }) => {
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'pandora-translation-update-'));
-  const site = path.join(temporary, 'site');
-  await fs.cp(path.resolve('_site'), site, { recursive: true });
+  const originalLocales = await publishedLocaleFingerprints();
+  const fixture = await test.step('Copy isolated published artifact', () => createPublishedFixture(test.info()));
+  const site = fixture.site;
   const server = await startStaticServer(site);
   const url = `http://127.0.0.1:${server.address().port}/`;
   try {
@@ -75,6 +75,7 @@ test('translation-only artifact update reaches an existing offline installation'
       'import pathlib,sys; from scripts.build_pages import _materialize_service_worker; _materialize_service_worker(pathlib.Path.cwd(), pathlib.Path(sys.argv[1]))',
       site
     ]);
+    expect(await publishedLocaleFingerprints()).toEqual(originalLocales);
 
     await page.evaluate(async () => (await navigator.serviceWorker.getRegistration()).update());
     await expect(page.locator('[data-remaked-update-notice]')).toBeVisible();
@@ -91,6 +92,6 @@ test('translation-only artifact update reaches an existing offline installation'
     await context.setOffline(false);
     await page.goto('about:blank');
     await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
-    await fs.rm(temporary, { recursive: true, force: true });
+    await fixture.cleanup();
   }
 });

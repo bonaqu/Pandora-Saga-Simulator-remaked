@@ -820,10 +820,64 @@ body.remaked-modern {
 .remaked-modern #body [data-remaked-calculator-code] input {
   box-sizing: border-box;
   width: 100% !important;
+  min-height: 28px;
 }
 
 .remaked-modern #body [data-remaked-calculator-code-actions] > li {
   width: 100% !important;
+  height: auto !important;
+}
+
+.remaked-modern #body [data-remaked-calculator-code] > li {
+  height: auto !important;
+}
+
+.remaked-modern #body [data-remaked-calculator-code-buttons] {
+  position: static !important;
+  display: flex;
+  gap: 5px;
+  height: auto !important;
+  margin: 5px 0 0;
+}
+
+.remaked-modern #body [data-remaked-calculator-code-source] {
+  flex: 1;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0;
+  background: transparent;
+}
+
+.remaked-modern #body [data-remaked-code-status] {
+  width: 100%;
+  margin-top: 5px;
+  line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.remaked-modern #body [data-remaked-code-status]:empty { display: none; }
+.remaked-modern #body [data-remaked-code-status][data-state="error"] { color: #8e2921; }
+
+.remaked-modern #body [data-remaked-calculator-horse] {
+  width: 100% !important;
+  height: auto !important;
+  margin-top: 8px;
+}
+.remaked-modern #body [data-remaked-calculator-horse-container] { width: 100%; }
+.remaked-modern #body [data-remaked-calculator-horse] :is(td, ul, li) {
+  height: auto !important;
+  min-width: 0;
+}
+.remaked-modern #body [data-remaked-calculator-horse] tr:last-child ul { display: flex; }
+.remaked-modern #body [data-remaked-calculator-horse] tr:last-child li { flex: 1; width: auto !important; }
+.remaked-modern #body [data-remaked-calculator-horse] .input_gt { display: flex; align-items: center; justify-content: end; }
+.remaked-modern #body [data-remaked-calculator-horse] .input_gt > ul { display: contents; }
+.remaked-modern #body [data-remaked-calculator-horse] #Status_81 { width: auto !important; }
+
+@media (max-width: 620px) {
+  .remaked-modern #body [data-remaked-calculator-code] input { min-height: 44px; font-size: 16px; }
 }
 
 @media (max-width: 860px) {
@@ -1217,4 +1271,76 @@ dialog.remaked-modal::backdrop { background: transparent; }
 body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   outline: auto;
   outline-offset: 2px;
+}
+/* Desktop is a compact working calculator, not a stack of touch cards. The
+   source-delegating controls and phone-size targets remain unchanged. */
+.remaked-build-actions { display: flex; flex: 2 0 auto; border: 1px solid var(--rm-border-strong); border-radius: 7px; overflow: hidden; }
+.remaked-modern .remaked-build-actions .remaked-tool-button { flex: 1; border: 0; border-radius: 0; }
+.remaked-modern .remaked-build-actions .remaked-tool-button + .remaked-tool-button { border-inline-start: 1px solid var(--rm-border-strong); }
+.remaked-modern .remaked-build-actions .remaked-tool-button:focus-visible { outline: 2px solid var(--rm-accent-strong); outline-offset: -3px; }
+.remaked-modern #body :is(#Tab_5_1, #Tab_6_1, #SwitchUse_1)[hidden] { display: none !important; }
+[data-remaked-skill-column-header] { display: none; }
+.remaked-skill-tools-actions { display: flex; gap: 6px; align-items: start; }
+.remaked-skill-tools-actions > button { flex: 1; }
+.remaked-skill-help { position: relative; }
+.remaked-skill-help > summary { box-sizing: border-box; display: grid; place-items: center; list-style: none; min-width: 28px; min-height: 28px; border: 1px solid var(--rm-border); border-radius: 5px; background: var(--rm-surface); color: var(--rm-text); font: 700 13px/1.4 var(--rm-font); cursor: pointer; }
+.remaked-skill-help > summary::-webkit-details-marker { display: none; }
+.remaked-skill-help[open] > summary { background: var(--rm-accent-soft); }
+.remaked-skill-help > summary:focus-visible { outline: auto; outline-offset: 2px; }
+.remaked-skill-help > p { position: absolute; right: 0; top: 100%; z-index: 30; box-sizing: border-box; width: min(340px, calc(100vw - 64px)); padding: 10px; border: 1px solid var(--rm-border-strong); border-radius: 5px; background: var(--rm-surface); box-shadow: var(--rm-shadow); }
+@media (max-width: 620px) { .remaked-skill-help > summary { min-width: 44px; min-height: 44px; } }
+@media (max-width: 860px) {
+  .remaked-nav { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); overflow: visible; }
+  .remaked-nav-button { min-width: 0; padding-inline: 2px; font-size: 11px; }
+  .remaked-build-actions { grid-column: 1 / -1; min-width: 0; }
+}
+@media (min-width: 861px) {
+  .remaked-modern #body [data-remaked-calculator-main] { display: grid; grid-template-columns: minmax(0, 1fr) 310px; column-gap: 6px; }
+  .remaked-modern #body [data-remaked-calculator-main] > ul { grid-column: 1 / -1; }
+  .remaked-modern #body [data-remaked-calculator-main] > [data-remaked-calculator-code] { grid-column: 1; }
+  .remaked-modern #body [data-remaked-calculator-main] > [data-remaked-calculator-code-actions] { grid-column: 2; }
+  .remaked-modern #body [data-remaked-calculator-code-buttons] { margin-top: 0; }
+  .remaked-modern #body:has([data-remaked-calculator-main]) { width: 100%; }
+  .remaked-modern #body [data-remaked-calculator-columns] { align-items: start; }
+  .remaked-modern #body [data-remaked-calculator-settings] { padding-block: 4px; }
+  .remaked-modern #body [data-remaked-calculator-identity] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .remaked-modern #body [data-remaked-effect-row] { padding-block: 2px; }
+  .remaked-modern #body .main:has(#TextEquip_0) { width: 100% !important; box-sizing: border-box; }
+  .remaked-modern #body [data-remaked-calculator-attribute-results] {
+    display: grid; grid-template-columns: 144px minmax(0, 1fr); gap: 8px; align-items: start;
+  }
+  .remaked-modern #body [data-remaked-calculator-attributes] { grid-template-columns: 1fr; gap: 3px; padding-bottom: 0 !important; }
+  .remaked-modern #body [data-remaked-calculator-attribute] { position: relative; padding: 3px; }
+  .remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child { padding-inline-end: 22px; }
+  .remaked-modern #body [data-remaked-calculator-attribute] > ul:nth-child(2) { position: absolute; inset: 3px 3px auto auto; }
+  .remaked-modern #body [data-remaked-calculator-pair] > ul { padding-block: 2px; }
+  .remaked-hero { height: 88px; }
+  .remaked-hero-copy { padding: 12px 24px; }
+  .remaked-hero h1 { font-size: 36px; line-height: 1; letter-spacing: -.025em; }
+  .remaked-hero-eyebrow, .remaked-hero p { display: none; }
+  .remaked-hero-meta { margin-top: 6px; }
+  .remaked-hero-source { position: absolute; right: 12px; bottom: 6px; margin: 0; color: var(--rm-text); background: rgba(251, 253, 247, .9); padding: 2px 5px; border-radius: 3px; }
+  .remaked-modern #body #SkillSet[data-remaked-skill-controls] > ul:not(.remaked-skill-heading),
+  [data-remaked-skill-column-header] {
+    display: grid;
+    grid-template-columns: minmax(80px, 1.25fr) repeat(2, minmax(88px, 1fr));
+    gap: 6px;
+    align-items: center;
+  }
+  .remaked-modern #body #SkillSet[data-remaked-skill-controls] > ul:not(.remaked-skill-heading) { padding-block: 1px; }
+  .remaked-modern #body #SkillSet[data-remaked-skill-controls] .remaked-skill-heading { margin-top: 4px; padding: 4px 6px; }
+  .remaked-modern #body [data-remaked-skill-row] > [id^="TextSkill_"] { grid-column: auto; }
+  .remaked-modern #body [data-remaked-skill-group] > ul { grid-template-columns: minmax(20px, 1fr) 28px 28px; gap: 3px; align-items: center; }
+  .remaked-modern #body [data-remaked-skill-group] [id^="Skill_"] { text-align: end; }
+  .remaked-modern #body [data-remaked-skill-caption] { position: absolute; width: 1px !important; height: 1px !important; overflow: hidden; clip-path: inset(50%); }
+  .remaked-modern #body [data-remaked-skill-controls] .remaked-skill-primary { display: contents; }
+  /* +1 is wider in Linux system-font fallbacks. Keep the signed step on one
+     line with room inside its 28px target, not a platform-dependent tall row. */
+  .remaked-modern #body [data-remaked-skill-controls] .remaked-skill-primary button { white-space: nowrap; padding-inline: 2px; }
+  .remaked-modern #body [data-remaked-skill-controls] .remaked-skill-bulk { grid-column: 1 / -1; }
+  [data-remaked-skill-column-header] { margin-top: 8px; color: var(--rm-muted); font: 600 12px/1.4 var(--rm-font); text-align: center; }
+}
+@media (min-width: 861px) and (max-width: 1099px) {
+  .remaked-modern #body [data-remaked-calculator-columns] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .remaked-modern #body [data-remaked-calculator-character] { grid-column: 1 / -1; }
 }

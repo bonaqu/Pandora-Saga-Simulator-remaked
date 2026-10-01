@@ -54,8 +54,17 @@
         var show = this.getAttribute('aria-pressed') !== 'true';
         this.setAttribute('aria-pressed', String(show)); root.dataset.remakedSkillExpanded = String(show);
       });
-      var help = document.createElement('p'); i18n.bindText(help, 'skills.help');
-      tools.appendChild(toggle); tools.appendChild(help); root.prepend(tools);
+      var actions = document.createElement('div'); actions.className = 'remaked-skill-tools-actions';
+      var explanation = document.createElement('details'); explanation.className = 'remaked-skill-help';
+      var summary = document.createElement('summary'); summary.textContent = '?';
+      i18n.bindAttribute(summary, 'aria-label', 'skills.help'); explanation.appendChild(summary);
+      var help = document.createElement('p'); i18n.bindText(help, 'skills.help'); explanation.appendChild(help);
+      actions.appendChild(toggle); actions.appendChild(explanation); tools.appendChild(actions); root.prepend(tools);
+      var columns = document.createElement('div'); columns.dataset.remakedSkillColumnHeader = '';
+      columns.appendChild(document.createElement('span'));
+      ['skills.adeptness', 'skills.potential'].forEach(function (key) {
+        var caption = document.createElement('span'); i18n.bindText(caption, key); columns.appendChild(caption);
+      }); tools.appendChild(columns);
     }
     for (var index = 0; index < 25; index++) {
       var label = byId('TextSkill_' + index), row = label.closest('#SkillSet > ul');

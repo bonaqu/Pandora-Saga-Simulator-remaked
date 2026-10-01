@@ -12,12 +12,17 @@
   var managerOverlay = null;
   var managerStatus = null;
   var buildList = null;
+  var legacyRecovery = null;
   var buildNameInput = null;
   var buildCode = null;
   var shareUrl = null;
   var initialized = false;
   var suppressAutosave = false;
   var previousBodyOverflow = '';
+  var catalogRevision = null, catalogUpdate = null, catalogStatus = null;
+  var catalogRequest = 0, catalogBusy = false, catalogMessage = null;
+  var restorationFailed = false;
+  var loadRequest = 0;
 
   function t(key, values, fallback) {
     return i18n && typeof i18n.t === 'function' ? i18n.t(key, values) : fallback;
@@ -45,10 +50,132 @@
     return adapter.serialize();
   }
 
+  function beginLoadIntent() {
+    return { request: ++loadRequest, payload: currentPayload(), hash: location.hash };
+  }
+
+  function currentLoadIntent(intent, stillWanted) {
+    try {
+      return intent.request === loadRequest && intent.hash === location.hash && intent.payload === currentPayload() && (!stillWanted || stillWanted());
+    } catch { return false; }
+  }
+
+  function cancelledLoad(intent, stillWanted) {
+    return { ok: false, reason: 'cancelled', request: intent.request,
+      silent: intent.request !== loadRequest || Boolean(stillWanted && !stillWanted()) };
+  }
+
+  async function prepareLoad(candidate, stillWanted) {
+    var intent;
+    try { intent = beginLoadIntent(); }
+    catch (error) { return { ok: false, error: error }; }
+    try { if (namespace.catalog) await namespace.catalog.preparePayload(candidate); }
+    catch (error) {
+      return currentLoadIntent(intent, stillWanted) ? { ok: false, error: error, request: intent.request } : cancelledLoad(intent, stillWanted);
+    }
+    return currentLoadIntent(intent, stillWanted) ? { ok: true, request: intent.request } : cancelledLoad(intent, stillWanted);
+  }
+
+  function refreshCatalogControls() {
+    if (!catalogRevision) return;
+    var revision = namespace.catalog.getRevision();
+    catalogRevision.textContent = revision
+      ? t('builds.catalogRevision', { revision: revision }, 'Catalog revision: ' + revision)
+      : t('builds.catalogSource', null, 'Legacy source (revision 0)');
+    catalogUpdate.disabled = catalogBusy;
+    catalogUpdate.setAttribute('aria-busy', String(catalogBusy));
+    catalogUpdate.textContent = catalogBusy
+      ? t('builds.catalogChecking', null, 'Checking published catalog…')
+      : t('builds.catalogUpdate', null, 'Update current build');
+    catalogStatus.textContent = catalogMessage ? t(catalogMessage.key, catalogMessage.values, catalogMessage.fallback) : '';
+    catalogStatus.dataset.state = catalogMessage?.state || 'ready';
+  }
+
+  function setCatalogStatus(key, state, values, fallback) {
+    catalogMessage = { key: key, state: state, values: values, fallback: fallback };
+    refreshCatalogControls();
+  }
+
+  function detachLoadedShareLink() {
+    if (location.hash.indexOf('#build=') !== 0) return true;
+    try {
+      var url = new URL(location.href); url.hash = '';
+      history.replaceState(history.state, '', url.href);
+      shareRequest++; return true;
+    } catch { return false; }
+  }
+
+  async function updateCurrentCatalog() {
+    var catalog = namespace.catalog;
+    if (!catalog || catalogBusy) return { ok: false, reason: 'unavailable' };
+    if (restorationFailed) {
+      setCatalogStatus('builds.catalogRestorationFailed', 'error', null, 'Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.');
+      return { ok: false, reason: 'restore-failed' };
+    }
+    if (catalog.needsRecovery()) {
+      setCatalogStatus('builds.catalogProtected', 'warning', null, 'Restore or export the protected autosave first. It was not replaced.');
+      return { ok: false, reason: 'protected-save' };
+    }
+    var before;
+    try { before = currentPayload(); }
+    catch (error) {
+      setCatalogStatus('builds.serializeFailed', 'error', null, 'Current build could not be serialized.');
+      return { ok: false, error: error };
+    }
+    var request = ++catalogRequest, hash = location.hash, shared = shareRequest, loading = ++loadRequest;
+    catalogBusy = true; setCatalogStatus('builds.catalogChecking', 'ready', null, 'Checking published catalog…');
+    try {
+      var snapshot = await catalog.fetchSnapshot(null, { networkOnly: true });
+      if (request !== catalogRequest) return { ok: false, reason: 'cancelled' };
+      if (loading !== loadRequest || hash !== location.hash || shared !== shareRequest || before !== currentPayload() || catalog.needsRecovery()) {
+        setCatalogStatus('builds.catalogCancelled', 'warning', null, 'Update cancelled: the character or link changed. Try again for the current build.');
+        return { ok: false, reason: 'cancelled' };
+      }
+      if (snapshot.revision < catalog.getRevision()) throw new Error('Published head predates current revision');
+      if (snapshot.revision === catalog.getRevision()) {
+        setCatalogStatus('builds.catalogCurrent', 'success', null, 'This catalog is already current. No build or save was changed.');
+        return { ok: true, unchanged: true };
+      }
+      try { catalog.preflightSnapshot(snapshot); }
+      catch (error) {
+        setCatalogStatus('builds.catalogIncompatible', 'warning', null, 'Update incompatible with equipped items, Soul slots or class requirements. Current build and saves kept.');
+        return { ok: false, error: error };
+      }
+      var candidate = catalog.packPayload(catalog.unpackPayload(before).payload, snapshot.revision);
+      var loaded = loadPayloadSafely(candidate);
+      if (!loaded.ok) {
+        setCatalogStatus(loaded.restored ? 'builds.catalogCalculationFailed' : 'builds.catalogRestorationFailed', 'error', null,
+          loaded.restored ? 'Recalculation failed. The previous catalog, character and saves were restored.' : 'Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.');
+        return loaded;
+      }
+      clearScheduledAutosave();
+      var saved = persistLoadedPayload(loaded.payload);
+      var detached = detachLoadedShareLink();
+      if (shareUrl) { shareUrl.hidden = true; shareUrl.value = ''; }
+      setCatalogStatus(!saved.ok ? 'builds.catalogUnsaved' : !detached ? 'builds.catalogUrlWarning' : 'builds.catalogApplied',
+        saved.ok && detached ? 'success' : 'warning', { revision: snapshot.revision },
+        'Catalog ' + snapshot.revision + ' applied. Named builds keep their original revision.');
+      return { ok: true, payload: loaded.payload, autosaved: saved.ok, detached: detached };
+    } catch (error) {
+      if (request === catalogRequest) setCatalogStatus('builds.catalogUnavailable', 'warning', null, 'Could not check the published catalog. Current build and saves kept; try again online.');
+      return { ok: false, error: error };
+    } finally {
+      if (request === catalogRequest) { catalogBusy = false; refreshCatalogControls(); }
+    }
+  }
+
   function payloadLooksLikeCurrentCsv(payload, reference) {
     if (typeof payload !== 'string' || !payload.trim()) return false;
+    try {
+      if (namespace.catalog) {
+        payload = namespace.catalog.unpackPayload(payload).payload;
+        if (reference) reference = namespace.catalog.unpackPayload(reference).payload;
+      }
+    } catch { return false; }
     if (payload.indexOf(',') === -1) return null;
-    var expected = String(reference || currentPayload()).split(',').length;
+    var ref = reference || currentPayload();
+    if (namespace.catalog) ref = namespace.catalog.unpackPayload(ref).payload;
+    var expected = String(ref).split(',').length;
     var values = payload.split(',');
     if (values.length !== expected) return false;
     for (var index = 0; index < values.length; index += 1) {
@@ -63,6 +190,10 @@
       after = currentPayload();
     } catch (error) {
       return false;
+    }
+    if (namespace.catalog) {
+      try { before = namespace.catalog.unpackPayload(before).payload; after = namespace.catalog.unpackPayload(after).payload; }
+      catch { return false; }
     }
     var beforeParts = before.split(',');
     var afterParts = after.split(',');
@@ -80,9 +211,10 @@
     try {
       suppressAutosave = true;
       adapter.load(before);
+      if (currentPayload() !== before) throw new Error('Restored build differs from original');
+      return { ok: true };
     } catch (error) {
-      // If the legacy engine itself cannot restore a payload produced by Store(),
-      // there is nothing safer the Modern layer can do here.
+      return { ok: false, error: error };
     } finally {
       suppressAutosave = false;
     }
@@ -108,10 +240,17 @@
         throw new Error('Invalid Pandora Saga build code.');
       }
       var loaded = currentPayload();
+      restorationFailed = false;
+      catalogMessage = null;
+      if (namespace.catalog) namespace.catalog.clearRecovery();
+      refreshCatalogControls();
       return { ok: true, payload: loaded };
     } catch (error) {
-      rollback(before);
-      return { ok: false, error: error };
+      var restored = rollback(before);
+      restorationFailed = !restored.ok;
+      if (restorationFailed) setAutosaveStatus(t('builds.autosaveWarning', { code: 'restore-failed' }, 'Autosave paused: restore-failed'), 'warning');
+      refreshCatalogControls();
+      return { ok: false, error: error, restored: restored.ok, restorationError: restored.error };
     } finally {
       suppressAutosave = false;
     }
@@ -124,12 +263,17 @@
     }
   }
 
-  function loadSharedBuild() {
+  var shareRequest = 0;
+  async function loadSharedBuild() {
+    var request = ++shareRequest, hash = window.location.hash;
     if (window.location.hash.indexOf('#build=') !== 0) return false;
-    var payload;
+    var payload, intent;
     try {
+      intent = beginLoadIntent();
       if (window.location.hash.length > 20000) throw new Error('Share link too large');
       payload = decodeURIComponent(window.location.hash.slice(7));
+      if (namespace.catalog) await namespace.catalog.preparePayload(payload);
+      if (request !== shareRequest || hash !== window.location.hash || !currentLoadIntent(intent)) return false;
       // Links use plain numeric Legacy CSV, never untrusted compressed input.
       if (payloadLooksLikeCurrentCsv(payload) !== true) throw new Error('Invalid shared CSV');
       var loaded = loadPayloadSafely(payload);
@@ -142,6 +286,7 @@
       if (saved.ok) setAutosaveStatus(t('builds.sharedLoaded', null, 'Shared build loaded'), 'restored');
       return true;
     } catch (error) {
+      if (request !== shareRequest || hash !== window.location.hash || intent && !currentLoadIntent(intent)) return false;
       setAutosaveStatus(t('builds.invalidShare', null, 'Invalid share link; current build kept'), 'warning');
       return false;
     }
@@ -167,6 +312,14 @@
 
   function flushAutosave() {
     clearScheduledAutosave();
+    if (restorationFailed) {
+      setAutosaveStatus(t('builds.autosaveWarning', { code: 'restore-failed' }, 'Autosave paused: restore-failed'), 'warning');
+      return { ok: false, error: { code: 'restore-failed' } };
+    }
+    if (namespace.catalog?.needsRecovery()) {
+      setAutosaveStatus('Catalog unavailable; saved build kept. Autosave paused.', 'warning');
+      return { ok: false, error: { code: 'catalog-unavailable' } };
+    }
     if (!adapter || !store) {
       var unavailable = { ok: false, error: { code: 'unavailable', message: 'Autosave is unavailable.' } };
       setAutosaveStatus(t('builds.autosaveUnavailable', null, 'Autosave unavailable'), 'error');
@@ -216,6 +369,49 @@
     return { ok: true, record: written.record };
   }
 
+  // Shared by both Modern import surfaces. Never call File('CodeLoad'): it
+  // mutates before validation and also reads/writes unrelated Legacy slots.
+  function commitImportedPayload(candidate) {
+    var loaded = loadPayloadSafely(typeof candidate === 'string' ? candidate.trim() : candidate);
+    if (!loaded.ok) return loaded;
+    var saved = persistLoadedPayload(loaded.payload, t('builds.savedImported', null, 'Saved imported build'));
+    var detached = detachLoadedShareLink();
+    return { ok: true, payload: loaded.payload, autosaved: saved.ok, detached: detached };
+  }
+
+  function importPayload(candidate) {
+    loadRequest++;
+    return commitImportedPayload(candidate);
+  }
+
+  async function importPreparedPayload(candidate, stillWanted) {
+    candidate = typeof candidate === 'string' ? candidate.trim() : candidate;
+    var prepared = await prepareLoad(candidate, stillWanted);
+    if (!prepared.ok) return prepared;
+    var result = commitImportedPayload(candidate); result.request = prepared.request;
+    return result;
+  }
+
+  async function importCodeField(code, feedback) {
+    feedback = feedback || function (key, state, fallback) { setManagerStatus(t(key, null, fallback), state); };
+    var draft = code.value;
+    var result = await importPreparedPayload(draft, function () { return code.value === draft; });
+    if (result.reason === 'cancelled') {
+      if (!result.silent) feedback('builds.loadCancelled', 'warning', 'Loading cancelled. Current character and saved builds kept.');
+      return result;
+    }
+    if (code.value !== draft || result.request !== undefined && result.request !== loadRequest) return result;
+    if (!result.ok) {
+      code.setAttribute('aria-invalid', 'true');
+      feedback('builds.invalidCode', 'error', 'Invalid build code; current build was not changed.');
+      code.focus(); return result;
+    }
+    code.removeAttribute('aria-invalid');
+    feedback(!result.autosaved ? 'builds.importedNoAutosave' : !result.detached ? 'builds.urlWarning' : 'builds.imported',
+      result.autosaved && result.detached ? 'success' : 'warning', 'Build code imported.');
+    return result;
+  }
+
   function restoreAutosaveOnce() {
     if (!store || !adapter) {
       setAutosaveStatus(t('builds.autosaveUnavailable', null, 'Autosave unavailable'), 'error');
@@ -254,6 +450,10 @@
 
   function renderBuilds() {
     if (!buildList || !store) return;
+    if (legacyRecovery) {
+      var oldSlots = store.readLegacySlots();
+      legacyRecovery.hidden = oldSlots.ok && !oldSlots.slots.length;
+    }
     buildList.textContent = '';
     var listed = store.listBuilds();
     if (!listed.ok && listed.error && listed.error.code !== 'corrupt-entries') {
@@ -289,11 +489,20 @@
 
       var load = button('Load', null, 'builds.load');
       load.dataset.remakedBuildLoad = '';
-      load.addEventListener('click', function () {
+      load.addEventListener('click', async function () {
         var storedBuild = store.getBuild(build.id);
         if (!storedBuild) {
           setManagerStatus(t('builds.notFound', null, 'Build could not be found.'), 'error');
           renderBuilds();
+          return;
+        }
+        var prepared = await prepareLoad(storedBuild.payload, function () {
+          return load.isConnected && managerOverlay.open && store.getBuild(build.id)?.payload === storedBuild.payload;
+        });
+        if (!prepared.ok) {
+          if (prepared.reason === 'cancelled') {
+            if (!prepared.silent) setManagerStatus(t('builds.loadCancelled', null, 'Loading cancelled. Current character and saved builds kept.'), 'warning');
+          } else setManagerStatus(t('builds.loadUnavailable', null, 'Catalog revision unavailable; current character and saved builds kept.'), 'warning');
           return;
         }
         var loaded = loadPayloadSafely(storedBuild.payload);
@@ -302,9 +511,10 @@
           return;
         }
         var saved = persistLoadedPayload(loaded.payload, t('builds.savedLoaded', null, 'Saved loaded build'));
-        setManagerStatus(saved.ok
-          ? t('builds.loaded', { name: storedBuild.name }, 'Loaded “' + storedBuild.name + '”.')
-          : t('builds.loadedNoAutosave', null, 'Build loaded, but autosave is unavailable.'), saved.ok ? 'success' : 'warning');
+        var detached = detachLoadedShareLink();
+        setManagerStatus(!detached ? t('builds.urlWarning', null, 'Old shared link could not be cleared. Export a new link before reloading.') : saved.ok
+          ? t('builds.loaded', { name: store.getBuild(build.id).name }, 'Loaded “' + store.getBuild(build.id).name + '”.')
+          : t('builds.loadedNoAutosave', null, 'Build loaded, but autosave is unavailable.'), saved.ok && detached ? 'success' : 'warning');
       });
       row.appendChild(load);
 
@@ -355,6 +565,11 @@
 
   function closeManager() {
     if (!managerOverlay || managerOverlay.hidden) return;
+    loadRequest++;
+    var pending = catalogBusy;
+    catalogRequest++; catalogBusy = false;
+    if (pending) setCatalogStatus('builds.catalogCancelled', 'warning', null, 'Update cancelled: the character or link changed. Try again for the current build.');
+    else refreshCatalogControls();
     managerOverlay.close();
     managerOverlay.hidden = true;
     document.body.style.overflow = previousBodyOverflow;
@@ -367,6 +582,7 @@
     document.body.style.overflow = 'hidden';
     setManagerStatus('', 'ready');
     renderBuilds();
+    refreshCatalogControls();
     managerOverlay.showModal();
     if (buildNameInput) buildNameInput.focus();
   }
@@ -443,6 +659,24 @@
     buildList.className = 'remaked-build-list';
     buildList.dataset.remakedBuildList = '';
     savedSection.appendChild(buildList);
+    legacyRecovery = document.createElement('div');
+    legacyRecovery.className = 'remaked-legacy-recovery';
+    var recoveryNote = document.createElement('p');
+    if (i18n) i18n.bindText(recoveryNote, 'builds.legacyHelp');
+    else recoveryNote.textContent = 'Copy old FILE slots into named builds. Originals stay untouched; duplicate codes are skipped.';
+    legacyRecovery.appendChild(recoveryNote);
+    var recover = button('Copy Legacy FILE slots', null, 'builds.legacyImport');
+    recover.dataset.remakedImportLegacy = '';
+    recover.addEventListener('click', function () {
+      var result = store.importLegacySlots();
+      if (!result.ok) {
+        setManagerStatus(t('builds.legacyFailed', { code: result.error.code }, 'FILE recovery failed (' + result.error.code + '). Originals and current build were kept.'), 'error');
+        return;
+      }
+      renderBuilds();
+      setManagerStatus(t('builds.legacyCopied', { added: result.added, skipped: result.skipped }, 'Copied ' + result.added + ' builds; skipped ' + result.skipped + ' duplicates. Original FILE slots kept.'), 'success');
+    });
+    legacyRecovery.appendChild(recover); savedSection.appendChild(legacyRecovery);
     body.appendChild(savedSection);
 
     var codeSection = document.createElement('section');
@@ -452,48 +686,46 @@
     else codeTitle.textContent = 'Build code';
     codeSection.appendChild(codeTitle);
 
-    buildCode = document.createElement('textarea');
-    buildCode.className = 'remaked-build-code';
+    // Move the actual source field and handlers, not a second Code interface.
+    // TextSet and old File callbacks keep their original DOM/translation anchors;
+    // calculator-controls supplies safe keyboard actions at this one location.
+    buildCode = document.getElementById('InCode');
+    buildCode.addEventListener('input', function () { loadRequest++; });
+    var sourceField = buildCode.closest('li').parentElement;
+    var sourceActions = sourceField.nextElementSibling;
+    var workspace = document.createElement('div');
+    workspace.dataset.remakedBuildCodeWorkspace = '';
+    workspace.appendChild(sourceField); workspace.appendChild(sourceActions);
+    workspace.querySelectorAll('[style]').forEach(function (node) { node.removeAttribute('style'); });
+    buildCode.classList.add('remaked-build-input');
     buildCode.spellcheck = false;
+    // Fail safely even if calculator-controls does not load: the preserved
+    // click anchor must never fall back to unvalidated Modern CodeLoad.
+    sourceActions.querySelector('li[onclick="File(\'CodeLoad\');"]').onclick = function () { return importCodeField(buildCode); };
+    var sourceExport = sourceActions.querySelector('li[onclick*="Base64.toBase64"]');
+    var retainedExport = sourceExport.onclick;
+    sourceExport.dataset.remakedCompleteExport = '';
+    sourceExport.onclick = function (event) {
+      var prior = buildCode.value;
+      try {
+        var result = retainedExport.call(this, event);
+        var payload = currentPayload();
+        if (payload.indexOf('PS3:') === 0) buildCode.value = payload;
+        return result;
+      } catch (error) { buildCode.value = prior; throw error; }
+    };
     if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(buildCode, 'placeholder', 'builds.codePlaceholder');
     else buildCode.placeholder = 'Export the current build or paste a Pandora Saga Simulator code here.';
     buildCode.dataset.remakedBuildCode = '';
-    codeSection.appendChild(buildCode);
+    codeSection.appendChild(workspace);
 
-    var codeActions = document.createElement('div');
-    codeActions.className = 'remaked-build-code-actions';
-    var exportButton = button('Export current', null, 'builds.exportCurrent');
-    exportButton.dataset.remakedExportBuild = '';
-    exportButton.addEventListener('click', function () {
-      try {
-        buildCode.value = currentPayload();
-        setManagerStatus(t('builds.exported', null, 'Current build code exported.'), 'success');
-      } catch (error) {
-        setManagerStatus(t('builds.exportFailed', null, 'Current build could not be exported.'), 'error');
-      }
-    });
-    codeActions.appendChild(exportButton);
-
-    var importButton = button('Import code', 'remaked-build-button remaked-build-button-primary', 'builds.importCode');
-    importButton.dataset.remakedImportBuild = '';
-    importButton.addEventListener('click', function () {
-      var candidate = buildCode.value.trim();
-      var loaded = loadPayloadSafely(candidate);
-      if (!loaded.ok) {
-        setManagerStatus(t('builds.invalidCode', null, 'Invalid build code; current build was not changed.'), 'error');
-        return;
-      }
-      var saved = persistLoadedPayload(loaded.payload, t('builds.savedImported', null, 'Saved imported build'));
-      setManagerStatus(saved.ok
-        ? t('builds.imported', null, 'Build code imported.')
-        : t('builds.importedNoAutosave', null, 'Build imported, but autosave is unavailable.'), saved.ok ? 'success' : 'warning');
-    });
-    codeActions.appendChild(importButton);
+    var codeActions = sourceActions.querySelector('ul');
+    codeActions.classList.add('remaked-build-code-actions');
     var share = button('Share build', 'remaked-build-button', 'builds.share');
     share.dataset.remakedShareBuild = '';
     share.addEventListener('click', shareCurrentBuild);
-    codeActions.appendChild(share);
-    codeSection.appendChild(codeActions);
+    var shareAction = document.createElement('li'); shareAction.appendChild(share);
+    codeActions.appendChild(shareAction);
     shareUrl = document.createElement('input');
     shareUrl.type = 'url'; shareUrl.readOnly = true; shareUrl.hidden = true;
     shareUrl.className = 'remaked-build-input';
@@ -501,6 +733,29 @@
     if (i18n) i18n.bindAttribute(shareUrl, 'aria-label', 'builds.shareLink');
     codeSection.appendChild(shareUrl);
     body.appendChild(codeSection);
+
+    if (namespace.catalog) {
+      var catalogSection = document.createElement('section');
+      catalogSection.className = 'remaked-build-section remaked-build-catalog';
+      catalogRevision = document.createElement('h3');
+      catalogRevision.dataset.remakedCatalogRevision = '';
+      catalogSection.appendChild(catalogRevision);
+      var catalogHelp = document.createElement('p');
+      catalogHelp.id = 'remaked-catalog-update-help';
+      if (i18n) i18n.bindText(catalogHelp, 'builds.catalogHelp');
+      else catalogHelp.textContent = 'Updates only this character to the published catalog. Equipped items, Souls and effects are checked; named builds keep their original revision.';
+      catalogSection.appendChild(catalogHelp);
+      catalogUpdate = button('Update current build', null, 'builds.catalogUpdate');
+      catalogUpdate.dataset.remakedCatalogUpdate = '';
+      catalogUpdate.setAttribute('aria-describedby', catalogHelp.id);
+      catalogUpdate.addEventListener('click', updateCurrentCatalog);
+      catalogSection.appendChild(catalogUpdate);
+      catalogStatus = document.createElement('p');
+      catalogStatus.className = 'remaked-build-status'; catalogStatus.dataset.remakedCatalogStatus = '';
+      catalogStatus.setAttribute('role', 'status'); catalogSection.appendChild(catalogStatus);
+      body.appendChild(catalogSection); refreshCatalogControls();
+      window.addEventListener('pandora-remaked:localechange', refreshCatalogControls);
+    }
 
     managerStatus = document.createElement('p');
     managerStatus.className = 'remaked-build-status';
@@ -525,7 +780,7 @@
     var buildsButton = button('Builds', 'remaked-tool-button', 'builds.button');
     buildsButton.dataset.remakedBuildsOpen = '';
     buildsButton.addEventListener('click', openManager);
-    tools.appendChild(buildsButton);
+    (document.querySelector('[data-remaked-build-actions]') || tools).appendChild(buildsButton);
 
     autosaveStatus = document.createElement('span');
     autosaveStatus.className = 'remaked-autosave';
@@ -542,6 +797,7 @@
     var onChange = function (event) {
       if (suppressAutosave) return;
       if (!event.target || !legacyBody.contains(event.target)) return;
+      loadRequest++;
       scheduleAutosave();
     };
     legacyBody.addEventListener('change', onChange, true);
@@ -554,13 +810,20 @@
     if (!adapter || !store) return;
     createBuildTools();
     createManager();
-    restoreAutosaveOnce();
-    loadSharedBuild();
-    window.addEventListener('hashchange', loadSharedBuild);
-    bindLegacyChanges();
+    var legacy = document.getElementById('body');
+    suppressAutosave = true; if (legacy && namespace.catalog) legacy.inert = true;
+    var startupRequest = loadRequest;
+    Promise.resolve(namespace.catalog?.ready).then(async function () {
+      if (startupRequest === loadRequest) { restoreAutosaveOnce(); await loadSharedBuild(); }
+      window.addEventListener('hashchange', loadSharedBuild); bindLegacyChanges();
+    }).finally(function () { suppressAutosave = false; if (legacy) legacy.inert = false; });
   }
 
   namespace.builds = {
+    importPayload: importPayload,
+    importPreparedPayload: importPreparedPayload,
+    importCodeField: importCodeField,
+    updateCurrentCatalog: updateCurrentCatalog,
     scheduleAutosave: scheduleAutosave,
     flushAutosave: flushAutosave,
     openManager: openManager,

@@ -1,4 +1,162 @@
 import { test, expect } from '@playwright/test';
+import { compileRecord, draftFromSource, validateDraft } from '../../admin-api/src/catalog-model.mjs';
+import equipment from '../../data/generated/equipment.v1.json' with { type: 'json' };
+import character from '../../data/generated/character.v1.json' with { type: 'json' };
+import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
+
+test.describe('network-routed catalog contract', () => {
+  // page.route cannot replace a request intercepted by a service worker. This
+  // suite verifies the public-fetch/engine contract with a synthetic API; the
+  // offline snapshot and installed-PWA paths remain separately enabled/tested.
+  test.use({ serviceWorkers: 'block' });
+
+test('a newer import wins over a delayed catalog response in every engine', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('[data-remaked-autosave-status]')).not.toContainText('Autosave…');
+  const values = await page.evaluate(() => {
+    const original = PandoraRemaked.adapter.serialize(); StatusMove('Lev', 9); CalcSet('Lev');
+    const target = 'PS3:2:' + Store(); PandoraRemaked.adapter.load(original);
+    return { original, target };
+  });
+  let release, started;
+  const waiting = new Promise(resolve => { release = resolve; }); const requested = new Promise(resolve => { started = resolve; });
+  await page.route('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog**', async route => {
+    started(); await waiting;
+    await route.fulfill({ headers: { 'Access-Control-Allow-Origin': 'http://127.0.0.1:8000' },
+      json: { ok: true, schemaVersion: 1, sourceFingerprint: equipment.metadata.generated_from[0].sha256, revision: 2, records: [] } });
+  });
+  await page.evaluate(payload => {
+    window.delayedImport = PandoraRemaked.builds.importPreparedPayload(payload).then(result => ({ ok: result.ok, reason: result.reason }));
+  }, values.target);
+  await requested;
+  expect(await page.evaluate(payload => PandoraRemaked.builds.importPreparedPayload(payload), values.original)).toMatchObject({ ok: true });
+  const saved = await page.evaluate(() => JSON.stringify(localStorage)); release();
+  expect(await page.evaluate(() => window.delayedImport)).toEqual({ ok: false, reason: 'cancelled' });
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(values.original);
+  expect(await page.evaluate(() => JSON.stringify(localStorage))).toBe(saved);
+});
+test('explicit public catalog adoption retains effect context and old named pin in every engine', async ({ page }) => {
+  const source = character.records.find(item => item.id === 'job.0');
+  const identity = { id: source.id, kind: 'class', category: null, index: 0 };
+  const edit = draftFromSource(source, 'class'); edit.progression[0] += 100;
+  const snapshot = { ok: true, schemaVersion: 1, revision: 2,
+    sourceFingerprint: equipment.metadata.generated_from[0].sha256, characterSourceFingerprint: character.sourceFingerprint,
+    records: [compileRecord(validateDraft(edit, identity), identity, source)] };
+  // The real API returns its exact Pages origin. The local synthetic response
+  // must likewise include an exact test origin; WebKit enforces this CORS path.
+  await page.route('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog**', route => route.fulfill({
+    headers: { 'Access-Control-Allow-Origin': 'http://127.0.0.1:8000' }, json: snapshot
+  }));
+  await page.goto('/');
+  const before = await page.evaluate(() => {
+    document.getElementById('SwitchUse_4').click();
+    const api = PandoraRemaked, payload = api.adapter.serialize(); api.buildStore.saveBuild('Original pin', payload); api.builds.flushAutosave();
+    history.replaceState(null, '', '#build=' + encodeURIComponent(payload));
+    return { lp: Status.LP, raw: Store(), context: api.catalog.captureContext(), named: localStorage.getItem(api.buildStore.BUILDS_KEY) };
+  });
+  await page.locator('[data-remaked-builds-open]').click(); await page.locator('[data-remaked-catalog-update]').click();
+  await expect(page.locator('[data-remaked-catalog-update]')).toBeEnabled();
+  await expect(page.locator('[data-remaked-catalog-status]')).toContainText('Catalog 2 applied');
+  const after = await page.evaluate(() => ({ lp: Status.LP, raw: Store(), context: PandoraRemaked.catalog.captureContext(),
+    revision: PandoraRemaked.catalog.getRevision(), named: localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY), hash: location.hash }));
+  expect(after).toEqual({ ...before, lp: before.lp + 100, revision: 2, hash: '' });
+});
+});
+
+test('compact workspace keeps Builds visible on phones and Legacy FILE recovery unchanged in every engine', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 }); await page.goto('/');
+  for (const selector of ['[data-remaked-builds-open]', '[data-remaked-compare-open]']) {
+    const box = await page.locator(selector).boundingBox();
+    expect(box.x).toBeGreaterThanOrEqual(0); expect(box.x + box.width).toBeLessThanOrEqual(390);
+  }
+  const result = await page.evaluate(() => {
+    const store = window.PandoraRemaked.buildStore, payload = window.Store();
+    const raw = window.Base64.toBase64(window.RawDeflate.deflate(window.Base64.utob(payload)));
+    localStorage.setItem('file', raw);
+    const first = store.importLegacySlots(), second = store.importLegacySlots();
+    return { first, second, intact: localStorage.getItem('file') === raw && window.Store() === payload };
+  });
+  expect(result).toEqual({ first: { ok: true, added: 1, skipped: 0 }, second: { ok: true, added: 0, skipped: 1 }, intact: true });
+});
+
+test('complete effect context restores riding and clan data and survives source language change in every engine', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(() => {
+    const api = window.PandoraRemaked; const source = api.adapter.serialize();
+    document.getElementById('Buff_0_7').click(); document.getElementById('SwitchUse_4').click();
+    document.getElementById('SelBuffClan_10').selectedIndex = 3; window.CalcSet('ALL');
+    const payload = api.adapter.serialize(), summary = api.adapter.readCalculatedSummary(); api.adapter.load(source); api.adapter.load(payload);
+    document.getElementById('Lang_2').click();
+    return { payload, after: api.adapter.serialize(), summary, afterSummary: api.adapter.readCalculatedSummary(), horse: window.Flag[7], clan: document.getElementById('SelBuffClan_10').selectedIndex };
+  });
+  expect(result.payload).toMatch(/^PS3:0:C1:/); expect(result.after).toBe(result.payload); expect(result.afterSummary).toEqual(result.summary); expect(result.horse).toBe(1); expect(result.clan).toBe(3);
+});
+
+test('learned passive bonus recalculates through native level callback with hidden Skill List in each engine', async ({ page }) => {
+  const original = skills.records.find(source => source.id === 'skill.0.1');
+  const source = { ...original, id: 'skill_entry.0.1', kind: 'passive' };
+  const identity = { id: source.id, kind: 'passive', category: 0, index: 1 }, edit = draftFromSource(source, 'passive'); edit.effects = [{ stat: 1, value: 5, unit: 'flat' }];
+  await page.goto('/');
+  const result = await page.evaluate(data => {
+    const api = window.PandoraRemaked; window.Flag[3] = 0; const original = api.adapter.serialize(); api.catalog.applySnapshot(data); const low = window.Status.STR[2];
+    window.StatusMove('Lev', 11); window.CalcSet('Lev'); const high = window.Status.STR[2]; const code = api.adapter.serialize();
+    api.adapter.load(original); const restored = window.Status.STR[2]; api.adapter.load(code);
+    return { low, high, restored, loaded: window.Status.STR[2], flag: window.Flag[3] };
+  }, { ok: true, schemaVersion: 1, sourceFingerprint: equipment.metadata.generated_from[0].sha256, characterSourceFingerprint: character.sourceFingerprint, revision: 1, records: [compileRecord(validateDraft(edit, identity), identity, source)] });
+  expect(result).toEqual({ low: 0, high: 5, restored: 0, loaded: 5, flag: 0 });
+});
+
+test('native class parameters and racial replacement survive pinned-code load in each browser engine', async ({ page }) => {
+  await page.goto('/');
+  const records = ['job.0', 'racial_skill.0.2'].map(id => {
+    const source = character.records.find(record => record.id === id);
+    const identity = { id, kind: source.kind, category: source.category, index: source.index }; const edit = draftFromSource(source, source.kind);
+    if (source.kind === 'class') edit.progression[0] += 100;
+    else { edit.effectMode = 'replace'; edit.effects = [{ stat: 8, value: 20, unit: 'flat' }]; }
+    return compileRecord(validateDraft(edit, identity), identity, source);
+  });
+  const result = await page.evaluate(data => {
+    const api = window.PandoraRemaked; window.Status.Job[1] = 2; window.CalcSet('ALL');
+    const original = api.adapter.serialize(); const lp = window.Status.LP;
+    api.catalog.applySnapshot(data); const code = api.adapter.serialize(); const published = { lp: window.Status.LP, pot: window.Status.POT };
+    api.adapter.load(original); const source = { lp: window.Status.LP, pot: window.Status.POT };
+    api.adapter.load(code); return { lp, published, source, loaded: { lp: window.Status.LP, pot: window.Status.POT }, slot: window.Status.Job[1] };
+  }, { ok: true, schemaVersion: 1, sourceFingerprint: equipment.metadata.generated_from[0].sha256, characterSourceFingerprint: character.sourceFingerprint, revision: 1, records });
+  expect(result.published).toEqual({ lp: result.lp + 100, pot: 120 }); expect(result.source).toEqual({ lp: result.lp, pot: 115 }); expect(result.loaded).toEqual(result.published); expect(result.slot).toBe(2);
+});
+
+test('IDDQD login is a keyboard-accessible native modal with unchanged character state', async ({ page }) => {
+  await page.goto('/'); const before = await page.evaluate(() => Store());
+  await page.keyboard.type('IDDQD');
+  const dialog = page.locator('[data-remaked-admin-entry]');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('input[name="password"]')).toBeFocused();
+  expect(await page.evaluate(() => Store())).toBe(before);
+  await page.keyboard.press('Escape'); await expect(dialog).not.toBeVisible();
+});
+
+test('calculator code rejects invalid data, restores compressed data and riding works by keyboard', async ({ page }) => {
+  const errors = []; page.on('pageerror', error => errors.push(error.message));
+  await page.setViewportSize({ width: 320, height: 900 }); await page.goto('/');
+  await page.locator('[data-remaked-step="remaked-level-up3"]').click();
+  const before = await page.evaluate(() => { localStorage.file = 'legacy-sentinel'; return Store(); });
+  await page.locator('[data-remaked-builds-open]').click();
+  await page.locator('[data-remaked-code-action="create"]').focus(); await page.keyboard.press('Enter');
+  const code = await page.locator('#InCode').inputValue();
+  await page.locator('#InCode').fill('1,2,3'); await page.locator('#InCode').press('Enter');
+  expect(await page.evaluate(() => Store())).toBe(before);
+  await expect(page.locator('#InCode')).toHaveAttribute('aria-invalid', 'true');
+  await page.evaluate(() => document.getElementById('Text_9').parentElement.click());
+  await page.locator('#InCode').fill(code); await page.locator('#InCode').press('Enter');
+  expect(await page.evaluate(() => Store())).toBe(before);
+  expect(await page.evaluate(() => localStorage.file)).toBe('legacy-sentinel');
+  await page.keyboard.press('Escape');
+  const horse = page.locator('[data-remaked-calculator-action="Text_16"]');
+  await horse.focus(); await page.keyboard.press('Space');
+  await expect(horse).toHaveAttribute('aria-pressed', 'true');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect(errors).toEqual([]);
+});
 
 test('native skill steps, full branch names and explicit effects work on a phone', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 }); await page.goto('/');

@@ -53,6 +53,9 @@ class BuildPagesTests(unittest.TestCase):
             (modern / "calculator-controls.js").write_text("// native controls", encoding="utf-8")
             (modern / "skill-controls.js").write_text("// native skills", encoding="utf-8")
             (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
+            (modern / "catalog.js").write_text("// versioned public catalog", encoding="utf-8")
+            (modern / "admin-entry.js").write_text("// hidden entry", encoding="utf-8")
+            (modern / "admin-entry.css").write_text("/* terminal */", encoding="utf-8")
             (modern / "build-store.js").write_text("// build store", encoding="utf-8")
             (modern / "search.js").write_text("// search", encoding="utf-8")
             (modern / "equipment-picker.js").write_text("// equipment picker", encoding="utf-8")
@@ -157,6 +160,9 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/game-terms.js",
                 "modern/i18n.js",
                 "modern/adapter.js",
+                "modern/catalog.js",
+                "modern/admin-entry.js",
+                "modern/admin-entry.css",
                 "modern/calculator-controls.js",
                 "modern/skill-controls.js",
                 "modern/build-store.js",
@@ -176,6 +182,8 @@ class BuildPagesTests(unittest.TestCase):
             self.assertLess(html.index("modern/game-terms.js"), html.index("modern/i18n.js"))
             self.assertLess(html.index("modern/i18n.js"), html.index("modern/adapter.js"))
             self.assertLess(html.index("modern/adapter.js"), html.index("modern/build-store.js"))
+            self.assertLess(html.index("modern/build-store.js"), html.index("modern/catalog.js"))
+            self.assertLess(html.index("modern/catalog.js"), html.index("modern/search.js"))
             self.assertLess(html.index("modern/build-store.js"), html.index("modern/search.js"))
             self.assertLess(html.index("modern/search.js"), html.index("modern/app-shell.js"))
             self.assertLess(html.index("modern/app-shell.js"), html.index("modern/builds.js"))

@@ -10,7 +10,7 @@
   function byId(id) { return document.getElementById(id); }
 
   // Translate display leaves only. Source arrays, selected values and Legacy
-  // handlers are never replaced. Russian input is always literal text, not HTML.
+  // handlers are never replaced. Workbook input is always literal text, not HTML.
   function decorate(node, id, sourceHtml, prefixHtml, suffixHtml, alwaysSource) {
     if (!node) return;
     var translated = i18n.game(id, '');
@@ -83,7 +83,9 @@
       var job = Number(window.Status.Job[2]);
       var names = window.Name;
       if (!labels && namespace.calculatorLabels) labels = namespace.calculatorLabels.collect();
-      var inactive = !hasDecorated && !Object.keys((window.PandoraRemakedGameTerms || {})[i18n.getLocale()] || {}).length;
+      var gameCatalogs = window.PandoraRemakedGameTerms || {};
+      var inactive = !hasDecorated && !Object.keys(gameCatalogs[i18n.getLocale()] || {}).length
+        && !(language === 1 && Object.keys(gameCatalogs.en || {}).length) && !namespace.catalog?.hasOverrides();
       (labels || []).forEach(function (row) {
         row.targets.forEach(function (target) {
           if (inactive && !target.alwaysSource) return;

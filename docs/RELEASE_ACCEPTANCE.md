@@ -1,4 +1,57 @@
-# Release acceptance — Skill allocation UI 2026.09.16
+# Release acceptance — Modern 3.00 candidate
+
+Status: PR24 is a draft; Pages still publishes accepted UI16. No Modern 3.00
+acceptance tag or public frontend publication is claimed. The new approved
+scope is `superpowers/plans/2026-09-30-modern-3-admin.md`.
+
+The candidate includes editable EN/RU workbook, secure Worker/D1 administration,
+initial gear/Soul/class/active/passive/racial editors, version-pinned catalog
+and complete C1 build context, compact desktop controls, one Builds/Compare
+header group, consolidated Code operations, explicit Legacy FILE recovery and
+safe opt-in published-catalog adoption for the current character.
+The 459 preserved source files stay unchanged. All 2842 pre-extension workbook
+rows remain intact; twenty-three new bilingual UI rows bring the total to 2865.
+
+Worker version `c488e6d9-9403-4285-94e0-37b427a72888` is deployed and passed real
+first-party auth/security and read-only editor acceptance. Public revision is
+0; no test game data was published. Public frontend acceptance is still pending.
+
+Remaining gates:
+
+- Feature/API CI passed adoption commit `b2b5c82` in runs `36794954075` /
+  `36794954117`; main artifact has 180 expected, no skipped/flaky/unexpected.
+  The newer async-load review passed local main UI 180, related workflows 62,
+  Python 62 and cross-engine 51. Its GitHub verification is still required.
+  Real public GET with an active production service worker passed in all three
+  engines on UI16/revision 0, exact Pages CORS. This is not a deployed adoption UI.
+- Supported-capability/editor review is recorded in the administrator guide.
+  Runtime/heading now identify Modern 3.00 without changing museum `Ver` or
+  source title arrays; all four languages and the foundation/PWA/update group
+  passed 20 tests. The final CI selection contains 181 main browser contracts.
+- Squash merge, GitHub-token Worker deployment and exact Pages artifact/live
+  verification: all four languages, actual IDDQD login, fresh shared recipient,
+  desktop/mobile visual review and isolated installed/offline PWA.
+- Supersede PR23 only after its safe import behavior is present in the release.
+
+New arbitrary class/skill slots, native class-passive replacement, active combat
+damage simulation, physical phones and manual screen-reader conformance are
+not implemented or asserted. Numeric editor fields must affect the retained
+engine or be explicitly scoped to native skill metadata, never invented rules.
+
+## Superseded standalone candidate — Calculator code UI 2026.09.17
+
+Scope: `superpowers/plans/2026-09-30-calculator-code-safety.md`. Safe shared
+Modern import, native code/riding actions and existing min/max translation
+targets. Acceptance requires feature CI, exact Pages artifact/live verification
+and isolated installed-PWA online/offline checks. Annotated **`v2026.09.17`** is
+created only after these gates pass and records exact runs and fingerprints.
+
+All 459 published Legacy files and the entire workbook must remain identical
+to accepted UI16. Physical phones, screen-reader acceptance and complete WoB
+balance parity are not asserted. Unenhanced museum Code Load remains preserved;
+safe Modern import is an intentional boundary, not a Legacy source rewrite.
+
+## Historical skill allocation — UI16
 
 Scope: `superpowers/plans/2026-09-30-skill-allocation-ux.md`. Full branch names,
 source-delegating skill controls and deliberate effects switching. Acceptance

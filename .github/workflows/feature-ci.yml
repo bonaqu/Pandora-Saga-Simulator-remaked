@@ -29,6 +29,11 @@ jobs:
         with:
           python-version: '3.13'
 
+      - name: Set up project Node runtime
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
       - name: Generate preservation baseline when bootstrapping
         id: baseline
         shell: bash
@@ -57,6 +62,8 @@ jobs:
           node --check modern/version.js
           node --check modern/i18n.js
           node --check modern/adapter.js
+          node --check modern/catalog.js
+          node --check modern/admin-entry.js
           node --check modern/calculator-labels.js
           node --check modern/game-term-display.js
           node --check modern/build-store.js
@@ -99,6 +106,12 @@ jobs:
 
       - name: Verify deterministic Legacy terminology export
         run: npm run test:translations
+
+      - name: Verify admin editor with synthetic sessions only
+        run: npm run test:ui:admin
+
+      - name: Verify versioned catalog calculations and offline recipients
+        run: npm run test:ui -- tests/ui/catalog-adapter.spec.mjs tests/ui/catalog-adoption.spec.mjs tests/ui/build-load-races.spec.mjs tests/ui/skill-catalog.spec.mjs tests/ui/build-context.spec.mjs tests/ui/admin-entry.spec.mjs --project=chromium
 
       - name: Run Chromium Firefox and WebKit smoke tests
         run: npm run test:ui:cross-browser

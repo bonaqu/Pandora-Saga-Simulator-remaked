@@ -43,6 +43,13 @@ For Russian translations, upload the edited `localization/translations.xlsx` thr
 
 The deployment blocks publication when required files are missing or when the entry point still contains known FC2 runtime injection. It also rebuilds the equipment, Soul and skill projections from the live Legacy runtime and rejects stale JSON or source fingerprints.
 
+If an older Windows checkout fails the raw preservation manifest solely due
+to CRLF line endings, run `node scripts/repair_legacy_line_endings.mjs` first
+(read-only). Its opt-in `--repair --backup <absolute-directory-outside-Git>`
+restores only bytes whose CRLF-to-LF conversion exactly matches the existing
+SHA-256 manifest. It refuses real content differences and saves prior bytes.
+Do not regenerate the preservation manifest or weaken its assertions.
+
 The workflow also syntax-checks the core JavaScript files with Node.js and runs the complete browser contract suite before artifact upload.
 
 The generated Base64/DEFLATE files are syntax-checked after extraction from their archived CodeRepos HTML pages. Browser contracts also reject startup exceptions and verify the preserved compressed File save/load path on both routes.
