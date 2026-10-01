@@ -21,7 +21,7 @@ test('generated indexes map stable IDs back to the live Legacy runtime', async (
       schema_version: 1,
       projection_version: 'v1',
       legacy_engine: '2.00',
-      remaked_ui: '2026.09.17'
+      remaked_ui: '3.00'
     });
   }
 

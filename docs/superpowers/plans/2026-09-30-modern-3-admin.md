@@ -311,6 +311,8 @@ were not printed or copied into the repository.
 - Feature CI `36796818836` passed 181 main UI contracts, the related 62 and
   three-engine 51 checks, then correctly rejected generated projection metadata
   still labeled UI17. Local `npm run test:data` reproduced it. The штатный
-  extractor changed only `metadata.remaked_ui` in the three read-only projection
+  standard extractor changed only `metadata.remaked_ui` in the three read-only projection
   files; records and source fingerprints are untouched. Exact Python version
-  expectation is updated to 3.00. Full CI is rerun, not bypassed.
+  expectation is updated to 3.00. The focused browser projection check also
+  exposed its stale explicit UI17 expectation, now changed to exact 3.00 without
+  altering schema/source/count assertions. Full CI is rerun, not bypassed.
