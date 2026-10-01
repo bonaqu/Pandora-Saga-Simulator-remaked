@@ -9,6 +9,32 @@ test.describe('network-routed catalog contract', () => {
   // suite verifies the public-fetch/engine contract with a synthetic API; the
   // offline snapshot and installed-PWA paths remain separately enabled/tested.
   test.use({ serviceWorkers: 'block' });
+
+test('a newer import wins over a delayed catalog response in every engine', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('[data-remaked-autosave-status]')).not.toContainText('Autosave…');
+  const values = await page.evaluate(() => {
+    const original = PandoraRemaked.adapter.serialize(); StatusMove('Lev', 9); CalcSet('Lev');
+    const target = 'PS3:2:' + Store(); PandoraRemaked.adapter.load(original);
+    return { original, target };
+  });
+  let release, started;
+  const waiting = new Promise(resolve => { release = resolve; }); const requested = new Promise(resolve => { started = resolve; });
+  await page.route('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog**', async route => {
+    started(); await waiting;
+    await route.fulfill({ headers: { 'Access-Control-Allow-Origin': 'http://127.0.0.1:8000' },
+      json: { ok: true, schemaVersion: 1, sourceFingerprint: equipment.metadata.generated_from[0].sha256, revision: 2, records: [] } });
+  });
+  await page.evaluate(payload => {
+    window.delayedImport = PandoraRemaked.builds.importPreparedPayload(payload).then(result => ({ ok: result.ok, reason: result.reason }));
+  }, values.target);
+  await requested;
+  expect(await page.evaluate(payload => PandoraRemaked.builds.importPreparedPayload(payload), values.original)).toMatchObject({ ok: true });
+  const saved = await page.evaluate(() => JSON.stringify(localStorage)); release();
+  expect(await page.evaluate(() => window.delayedImport)).toEqual({ ok: false, reason: 'cancelled' });
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(values.original);
+  expect(await page.evaluate(() => JSON.stringify(localStorage))).toBe(saved);
+});
 test('explicit public catalog adoption retains effect context and old named pin in every engine', async ({ page }) => {
   const source = character.records.find(item => item.id === 'job.0');
   const identity = { id: source.id, kind: 'class', category: null, index: 0 };

@@ -111,7 +111,7 @@ jobs:
         run: npm run test:ui:admin
 
       - name: Verify versioned catalog calculations and offline recipients
-        run: npm run test:ui -- tests/ui/catalog-adapter.spec.mjs tests/ui/catalog-adoption.spec.mjs tests/ui/skill-catalog.spec.mjs tests/ui/build-context.spec.mjs tests/ui/admin-entry.spec.mjs --project=chromium
+        run: npm run test:ui -- tests/ui/catalog-adapter.spec.mjs tests/ui/catalog-adoption.spec.mjs tests/ui/build-load-races.spec.mjs tests/ui/skill-catalog.spec.mjs tests/ui/build-context.spec.mjs tests/ui/admin-entry.spec.mjs --project=chromium
 
       - name: Run Chromium Firefox and WebKit smoke tests
         run: npm run test:ui:cross-browser

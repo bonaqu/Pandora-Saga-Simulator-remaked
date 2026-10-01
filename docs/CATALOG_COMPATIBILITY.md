@@ -28,7 +28,21 @@ loaded revision can be used offline. If a required revision is unavailable and
 not cached, loading stops before changing the character. Named records remain
 intact; an unavailable autosave is protected from subsequent autosave writes
 until a compatible build is successfully loaded. A slow obsolete share request
-cannot replace a newer hash selection.
+cannot replace a newer hash selection. Explicit imports and named loads use the
+same intent boundary: a later load, changed character/link, edited Code field or
+closed manager cancels the pending operation before runtime/storage mutation.
+User editing increments the intent even if a value is then changed back.
+Deleting a named record cancels its pending load; stale feedback cannot steal
+focus or replace the newer action's message.
+
+Existing builds never adopt a new catalog silently. **Update current build**
+checks the live head, preflights equipped item/class/race and occupied Soul
+requirements, then restores the same CSV/C1 through the adapter with a new pin.
+An offline cached head is not presented as latest. Named records remain at their
+original revision. Incompatibility/failure preserves the current character and
+saves; failed native restoration is reported and blocks autosave until recovery.
+Successful explicit import/load/adoption detaches an obsolete `#build=` URL so
+reload cannot undo it. Quota failure keeps the old save and reports unsaved state.
 
 ## Stable IDs and limits
 
@@ -59,8 +73,9 @@ valid equipment during restoration.
   New arbitrary classes are deliberately unavailable until the engine can
   represent and serialize them correctly. The initial class editor is deployed
   on Worker, but its public Pages consumer is not released.
-- Classes, active skills, character passives and racial passives require typed
-  schemas and engine capability tests, not merely translated descriptions.
+- All six editor kinds have typed schemas and engine capability tests. Numeric
+  changes feed retained calculations or explicitly identified skill metadata;
+  descriptions are never treated as implemented mechanics.
 - The local editor now supports all 18 existing racial passive slots. `preserve`
   leaves native mechanics unchanged, `add` adds typed numeric options, and
   `replace` explicitly bypasses the selected native racial conditionals inside

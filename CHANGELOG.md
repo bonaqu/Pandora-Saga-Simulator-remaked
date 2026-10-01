@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — stale build-load protection
+
+- Import, named builds and shared links ignore obsolete catalog responses after
+  newer editing/loading, Code edits or closing Builds. Deleted named records
+  cannot be resurrected by an in-flight request; stale feedback cannot steal focus.
+- Catalog revisions outside the nine-digit PS3 format fail before runtime mutation.
+  The administrator guide now maps all six editor kinds to their real simulation
+  effects and explicitly identifies unsupported mechanics.
+
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
 ## Unreleased — Modern 3.00

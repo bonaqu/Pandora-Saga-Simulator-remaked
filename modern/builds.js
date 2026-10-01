@@ -22,6 +22,7 @@
   var catalogRevision = null, catalogUpdate = null, catalogStatus = null;
   var catalogRequest = 0, catalogBusy = false, catalogMessage = null;
   var restorationFailed = false;
+  var loadRequest = 0;
 
   function t(key, values, fallback) {
     return i18n && typeof i18n.t === 'function' ? i18n.t(key, values) : fallback;
@@ -47,6 +48,32 @@
 
   function currentPayload() {
     return adapter.serialize();
+  }
+
+  function beginLoadIntent() {
+    return { request: ++loadRequest, payload: currentPayload(), hash: location.hash };
+  }
+
+  function currentLoadIntent(intent, stillWanted) {
+    try {
+      return intent.request === loadRequest && intent.hash === location.hash && intent.payload === currentPayload() && (!stillWanted || stillWanted());
+    } catch { return false; }
+  }
+
+  function cancelledLoad(intent, stillWanted) {
+    return { ok: false, reason: 'cancelled', request: intent.request,
+      silent: intent.request !== loadRequest || Boolean(stillWanted && !stillWanted()) };
+  }
+
+  async function prepareLoad(candidate, stillWanted) {
+    var intent;
+    try { intent = beginLoadIntent(); }
+    catch (error) { return { ok: false, error: error }; }
+    try { if (namespace.catalog) await namespace.catalog.preparePayload(candidate); }
+    catch (error) {
+      return currentLoadIntent(intent, stillWanted) ? { ok: false, error: error, request: intent.request } : cancelledLoad(intent, stillWanted);
+    }
+    return currentLoadIntent(intent, stillWanted) ? { ok: true, request: intent.request } : cancelledLoad(intent, stillWanted);
   }
 
   function refreshCatalogControls() {
@@ -95,12 +122,12 @@
       setCatalogStatus('builds.serializeFailed', 'error', null, 'Current build could not be serialized.');
       return { ok: false, error: error };
     }
-    var request = ++catalogRequest, hash = location.hash, shared = shareRequest;
+    var request = ++catalogRequest, hash = location.hash, shared = shareRequest, loading = ++loadRequest;
     catalogBusy = true; setCatalogStatus('builds.catalogChecking', 'ready', null, 'Checking published catalog…');
     try {
       var snapshot = await catalog.fetchSnapshot(null, { networkOnly: true });
       if (request !== catalogRequest) return { ok: false, reason: 'cancelled' };
-      if (hash !== location.hash || shared !== shareRequest || before !== currentPayload() || catalog.needsRecovery()) {
+      if (loading !== loadRequest || hash !== location.hash || shared !== shareRequest || before !== currentPayload() || catalog.needsRecovery()) {
         setCatalogStatus('builds.catalogCancelled', 'warning', null, 'Update cancelled: the character or link changed. Try again for the current build.');
         return { ok: false, reason: 'cancelled' };
       }
@@ -240,12 +267,13 @@
   async function loadSharedBuild() {
     var request = ++shareRequest, hash = window.location.hash;
     if (window.location.hash.indexOf('#build=') !== 0) return false;
-    var payload;
+    var payload, intent;
     try {
+      intent = beginLoadIntent();
       if (window.location.hash.length > 20000) throw new Error('Share link too large');
       payload = decodeURIComponent(window.location.hash.slice(7));
       if (namespace.catalog) await namespace.catalog.preparePayload(payload);
-      if (request !== shareRequest || hash !== window.location.hash) return false;
+      if (request !== shareRequest || hash !== window.location.hash || !currentLoadIntent(intent)) return false;
       // Links use plain numeric Legacy CSV, never untrusted compressed input.
       if (payloadLooksLikeCurrentCsv(payload) !== true) throw new Error('Invalid shared CSV');
       var loaded = loadPayloadSafely(payload);
@@ -258,7 +286,7 @@
       if (saved.ok) setAutosaveStatus(t('builds.sharedLoaded', null, 'Shared build loaded'), 'restored');
       return true;
     } catch (error) {
-      if (request !== shareRequest || hash !== window.location.hash) return false;
+      if (request !== shareRequest || hash !== window.location.hash || intent && !currentLoadIntent(intent)) return false;
       setAutosaveStatus(t('builds.invalidShare', null, 'Invalid share link; current build kept'), 'warning');
       return false;
     }
@@ -343,7 +371,7 @@
 
   // Shared by both Modern import surfaces. Never call File('CodeLoad'): it
   // mutates before validation and also reads/writes unrelated Legacy slots.
-  function importPayload(candidate) {
+  function commitImportedPayload(candidate) {
     var loaded = loadPayloadSafely(typeof candidate === 'string' ? candidate.trim() : candidate);
     if (!loaded.ok) return loaded;
     var saved = persistLoadedPayload(loaded.payload, t('builds.savedImported', null, 'Saved imported build'));
@@ -351,15 +379,28 @@
     return { ok: true, payload: loaded.payload, autosaved: saved.ok, detached: detached };
   }
 
-  async function importPreparedPayload(candidate) {
-    try { if (namespace.catalog) await namespace.catalog.preparePayload(candidate); }
-    catch (error) { return { ok: false, error }; }
-    return importPayload(candidate);
+  function importPayload(candidate) {
+    loadRequest++;
+    return commitImportedPayload(candidate);
+  }
+
+  async function importPreparedPayload(candidate, stillWanted) {
+    candidate = typeof candidate === 'string' ? candidate.trim() : candidate;
+    var prepared = await prepareLoad(candidate, stillWanted);
+    if (!prepared.ok) return prepared;
+    var result = commitImportedPayload(candidate); result.request = prepared.request;
+    return result;
   }
 
   async function importCodeField(code, feedback) {
     feedback = feedback || function (key, state, fallback) { setManagerStatus(t(key, null, fallback), state); };
-    var result = await importPreparedPayload(code.value.trim());
+    var draft = code.value;
+    var result = await importPreparedPayload(draft, function () { return code.value === draft; });
+    if (result.reason === 'cancelled') {
+      if (!result.silent) feedback('builds.loadCancelled', 'warning', 'Loading cancelled. Current character and saved builds kept.');
+      return result;
+    }
+    if (code.value !== draft || result.request !== undefined && result.request !== loadRequest) return result;
     if (!result.ok) {
       code.setAttribute('aria-invalid', 'true');
       feedback('builds.invalidCode', 'error', 'Invalid build code; current build was not changed.');
@@ -455,8 +496,15 @@
           renderBuilds();
           return;
         }
-        try { if (namespace.catalog) await namespace.catalog.preparePayload(storedBuild.payload); }
-        catch { setManagerStatus('Catalog revision unavailable; your current and saved builds were kept.', 'warning'); return; }
+        var prepared = await prepareLoad(storedBuild.payload, function () {
+          return load.isConnected && managerOverlay.open && store.getBuild(build.id)?.payload === storedBuild.payload;
+        });
+        if (!prepared.ok) {
+          if (prepared.reason === 'cancelled') {
+            if (!prepared.silent) setManagerStatus(t('builds.loadCancelled', null, 'Loading cancelled. Current character and saved builds kept.'), 'warning');
+          } else setManagerStatus(t('builds.loadUnavailable', null, 'Catalog revision unavailable; current character and saved builds kept.'), 'warning');
+          return;
+        }
         var loaded = loadPayloadSafely(storedBuild.payload);
         if (!loaded.ok) {
           setManagerStatus(t('builds.invalid', null, 'Build is invalid and could not be loaded.'), 'error');
@@ -465,7 +513,7 @@
         var saved = persistLoadedPayload(loaded.payload, t('builds.savedLoaded', null, 'Saved loaded build'));
         var detached = detachLoadedShareLink();
         setManagerStatus(!detached ? t('builds.urlWarning', null, 'Old shared link could not be cleared. Export a new link before reloading.') : saved.ok
-          ? t('builds.loaded', { name: storedBuild.name }, 'Loaded “' + storedBuild.name + '”.')
+          ? t('builds.loaded', { name: store.getBuild(build.id).name }, 'Loaded “' + store.getBuild(build.id).name + '”.')
           : t('builds.loadedNoAutosave', null, 'Build loaded, but autosave is unavailable.'), saved.ok && detached ? 'success' : 'warning');
       });
       row.appendChild(load);
@@ -517,6 +565,7 @@
 
   function closeManager() {
     if (!managerOverlay || managerOverlay.hidden) return;
+    loadRequest++;
     var pending = catalogBusy;
     catalogRequest++; catalogBusy = false;
     if (pending) setCatalogStatus('builds.catalogCancelled', 'warning', null, 'Update cancelled: the character or link changed. Try again for the current build.');
@@ -641,6 +690,7 @@
     // TextSet and old File callbacks keep their original DOM/translation anchors;
     // calculator-controls supplies safe keyboard actions at this one location.
     buildCode = document.getElementById('InCode');
+    buildCode.addEventListener('input', function () { loadRequest++; });
     var sourceField = buildCode.closest('li').parentElement;
     var sourceActions = sourceField.nextElementSibling;
     var workspace = document.createElement('div');
@@ -747,6 +797,7 @@
     var onChange = function (event) {
       if (suppressAutosave) return;
       if (!event.target || !legacyBody.contains(event.target)) return;
+      loadRequest++;
       scheduleAutosave();
     };
     legacyBody.addEventListener('change', onChange, true);
@@ -761,8 +812,9 @@
     createManager();
     var legacy = document.getElementById('body');
     suppressAutosave = true; if (legacy && namespace.catalog) legacy.inert = true;
+    var startupRequest = loadRequest;
     Promise.resolve(namespace.catalog?.ready).then(async function () {
-      restoreAutosaveOnce(); await loadSharedBuild();
+      if (startupRequest === loadRequest) { restoreAutosaveOnce(); await loadSharedBuild(); }
       window.addEventListener('hashchange', loadSharedBuild); bindLegacyChanges();
     }).finally(function () { suppressAutosave = false; if (legacy) legacy.inert = false; });
   }

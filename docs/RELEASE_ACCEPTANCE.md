@@ -10,7 +10,7 @@ and complete C1 build context, compact desktop controls, one Builds/Compare
 header group, consolidated Code operations, explicit Legacy FILE recovery and
 safe opt-in published-catalog adoption for the current character.
 The 459 preserved source files stay unchanged. All 2842 pre-extension workbook
-rows remain intact; twenty-one new bilingual UI rows bring the total to 2863.
+rows remain intact; twenty-three new bilingual UI rows bring the total to 2865.
 
 Worker version `c488e6d9-9403-4285-94e0-37b427a72888` is deployed and passed real
 first-party auth/security and read-only editor acceptance. Public revision is
@@ -18,12 +18,14 @@ first-party auth/security and read-only editor acceptance. Public revision is
 
 Remaining gates:
 
-- Feature/API CI passed `bb54363`, including Linux font fallback layout;
-  the newer adoption increment passed local main UI 180, related workflows 50,
-  Python 62 and cross-engine 48. Its new GitHub verification is still required.
+- Feature/API CI passed adoption commit `b2b5c82` in runs `36794954075` /
+  `36794954117`; main artifact has 180 expected, no skipped/flaky/unexpected.
+  The newer async-load review passed local main UI 180, related workflows 62,
+  Python 62 and cross-engine 51. Its GitHub verification is still required.
   Real public GET with an active production service worker passed in all three
   engines on UI16/revision 0, exact Pages CORS. This is not a deployed adoption UI.
-- Final supported-capability/editor review, operational docs and version 3.00.
+- Supported-capability/editor review is recorded in the administrator guide;
+  final Modern 3.00 version/rendered/PWA validation is next.
 - Squash merge, GitHub-token Worker deployment and exact Pages artifact/live
   verification: all four languages, actual IDDQD login, fresh shared recipient,
   desktop/mobile visual review and isolated installed/offline PWA.

@@ -194,5 +194,7 @@
   "builds.catalogIncompatible": "Update incompatible with equipped items, Soul slots or class requirements. Current build and saves kept.",
   "builds.catalogCalculationFailed": "Recalculation failed. The previous catalog, character and saves were restored.",
   "builds.catalogRestorationFailed": "Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.",
-  "builds.urlWarning": "Build loaded, but the old shared link could not be cleared. Export a new code or link before reloading."
+  "builds.urlWarning": "Build loaded, but the old shared link could not be cleared. Export a new code or link before reloading.",
+  "builds.loadCancelled": "Loading cancelled. Current character and saved builds kept.",
+  "builds.loadUnavailable": "Catalog revision unavailable; current character and saved builds kept."
 }

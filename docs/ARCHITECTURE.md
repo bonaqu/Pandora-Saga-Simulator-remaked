@@ -154,3 +154,11 @@ restore; an unverified restore is surfaced and pauses autosave until recovery.
 Storage quota failure keeps the old save and explicitly reports unsaved state.
 Successful explicit adoption, code import or named load removes only an obsolete
 `#build=` fragment, so reload cannot override the new autosave with an old shared build.
+
+Every asynchronous build load also captures a monotonic intent, current payload
+and hash before fetching. New imports/loads, character input (including edits
+back to the original value), Code edits and closing Builds invalidate older
+intents. Pending named loads recheck that the record still exists and matches.
+Only a current intent can mutate runtime or saves. Stale completion/error UI
+cannot overwrite newer feedback or steal focus. Revision validation shares
+the serialized PS3 format's nine-digit upper bound.

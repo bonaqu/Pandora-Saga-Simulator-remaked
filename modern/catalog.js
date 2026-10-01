@@ -52,7 +52,7 @@
   function validate(snapshot) {
     captureBaseline();
     check(snapshot && snapshot.ok === true && snapshot.schemaVersion === 1 && snapshot.sourceFingerprint === SOURCE_FINGERPRINT, 'Catalog source/version mismatch');
-    check(Number.isSafeInteger(snapshot.revision) && snapshot.revision >= 0 && Array.isArray(snapshot.records) && snapshot.records.length <= 4000, 'Invalid catalog snapshot');
+    check(Number.isSafeInteger(snapshot.revision) && snapshot.revision >= 0 && snapshot.revision <= 999999999 && Array.isArray(snapshot.records) && snapshot.records.length <= 4000, 'Invalid catalog snapshot');
     check(snapshot.revision > 0 || snapshot.records.length === 0, 'Source revision must not contain overrides');
     var seen = Object.create(null);
     snapshot.records.forEach(function (record) {

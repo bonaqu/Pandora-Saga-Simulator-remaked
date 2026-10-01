@@ -270,3 +270,29 @@ were not printed or copied into the repository.
   inspected at desktop and 320px RU phone widths; the catalog action is a
   separate deliberate section, not another code/share interface. Feature and
   API GitHub verification of the new commit remains the next gate.
+
+## Final load/capability review, 2026-10-01
+
+- Adoption commit `b2b5c82` passed Feature CI `36794954075` and API verification
+  `36794954117`. Downloaded browser artifact confirms 180 expected and zero
+  unexpected/flaky/skipped; backend deployment is unchanged.
+- New RED cases reproduced delayed explicit/named loads overwriting a newer
+  character or import. A shared monotonic load intent now guards preparation,
+  payload/hash equality and field/record validity before any runtime/save write.
+  Editing back to the same value still invalidates the old intent. Closing
+  Builds, editing Code and deleting a pending named record cancel stale work;
+  stale feedback cannot steal focus or replace a newer message. Twelve new
+  cases passed. Snapshot validation also rejects pins beyond the PS3 format.
+- Full local main UI passed 180/180, no flaky/skipped/unexpected; catalog/context/
+  load/entry group passed 62; Python passed 62; three-engine smoke passed 51.
+  All 459 source files/static references verify and the production source diff
+  remains empty. No timeouts or assertions were weakened.
+- Workbook append preserved all preceding 2863 rows and EN/RU values. Current
+  table contains 2865 rows/164 RU UI labels; game RU and EN overrides remain zero.
+- Reviewed all six implemented editor schemas/UI/projections and their explicit
+  source/mechanic boundaries against the current tests. The administrator guide
+  now maps every kind to actual calculations versus skill-view metadata. New
+  class/skill slots, hardcoded class-passive replacement and active combat remain
+  honest limitations, not features implied by editable description fields.
+- Next: identify Modern as release 3.00, validate its rendered/PWA version and
+  final feature/API CI, then proceed through the authorized publication gates.
