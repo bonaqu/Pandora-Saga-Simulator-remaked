@@ -61,3 +61,11 @@ remain pending; candidate UI version is 3.01, Legacy engine remains 2.00.
 The version bump requires regenerating the three searchable projections. The
 reviewed diff changes only their `remaked_ui` stamp from 3.00 to 3.01; every
 record and source fingerprint remains identical.
+
+First full Linux CI (`36839869712`) passed 185 main contracts and correctly
+failed both stronger first-weapon checks at y=905.625. Its system-font metrics
+exposed insufficient width for native simulation-option labels. Aligning the
+budget column with the existing 186px attribute column gives these actions
+more width, without smaller text/targets or looser assertions. The default
+desktop test now also checks that the three native option labels fit one row.
+The full exact-head CI is rerun before publication.

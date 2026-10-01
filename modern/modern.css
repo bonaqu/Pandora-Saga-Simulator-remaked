@@ -1380,7 +1380,9 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   }
   .remaked-modern #body [data-remaked-calculator-results] [data-remaked-calculator-pair] > ul { padding-block: 1px; }
   .remaked-modern #body [data-remaked-calculator-settings] {
-    grid-template-columns: 210px minmax(0, 1fr);
+    /* Align level/budgets with attributes and leave enough width for native
+       option labels in Linux as well as Windows system-font metrics. */
+    grid-template-columns: 186px minmax(0, 1fr);
   }
   .remaked-modern #body [data-remaked-calculator-budget] {
     display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px;

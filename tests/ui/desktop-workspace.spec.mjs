@@ -12,6 +12,16 @@ for (const width of [1440, 1920]) test(`complete desktop workspace brings Equipm
   expect(equipment.y).toBeLessThanOrEqual(900);
   const weapon = await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').boundingBox();
   expect(weapon.y + weapon.height).toBeLessThanOrEqual(900);
+  const budget = await page.locator('[data-remaked-calculator-budget]').boundingBox();
+  const attributes = await page.locator('[data-remaked-calculator-attributes]').boundingBox();
+  expect(budget.width).toBe(attributes.width);
+  expect(budget.x).toBe(attributes.x);
+  for (const action of ['Text_3', 'Text_5', 'Text_6']) {
+    const lines = await page.locator(`[data-remaked-calculator-action="${action}"]`).evaluate(node => {
+      const range = document.createRange(); range.selectNodeContents(node); return range.getClientRects().length;
+    });
+    expect(lines, action + ' should fit without an accidental extra row').toBe(1);
+  }
   await expect(page.locator('[data-remaked-step]:visible')).toHaveCount(42);
   await expect(page.locator('[data-remaked-skill-step]:visible')).toHaveCount(80);
   const first = await page.locator('[data-remaked-skill-row="0"]').boundingBox();
