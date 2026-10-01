@@ -42,6 +42,8 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   validation stays visible when sharing, and clearing does not delete a build.
 - Fixed signed skill-step labels wrapping in wider system-font fallbacks;
   desktop rows stay compact without reducing phone targets or test limits.
+- Equipment reset now sizes to its label instead of the inherited 120px width.
+  Wider fallback fonts stay compact; long translations wrap within the section.
 - These UI/recovery/guard changes are not published on Pages.
 - Modern build context C1 transfers riding, enabled effects, Honor, clan and
   caster attributes to fresh shared recipients and offline reloads. Comparisons

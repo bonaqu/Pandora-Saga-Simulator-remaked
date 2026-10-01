@@ -444,9 +444,10 @@
 .remaked-modern #body [data-remaked-picker-section] > ul:first-child .title { box-sizing: border-box; }
 .remaked-modern #body [data-remaked-picker-toolbar] { gap: 8px; align-items: center; flex-wrap: wrap; padding: 8px 4px; }
 .remaked-modern #body [data-remaked-picker-toolbar] > li { margin: 0 !important; height: auto !important; }
+.remaked-modern #body [data-remaked-picker-toolbar] > li:has([data-remaked-equipment-reset]) { width: fit-content !important; min-width: 0; max-width: 100%; }
 .remaked-modern #body [data-remaked-picker-toolbar] select { min-height: 36px; height: auto !important; font: 13px/1.4 var(--rm-font); }
 .remaked-modern #body #Text_26[hidden] { display: none !important; }
-.remaked-equipment-picker[data-remaked-equipment-reset] { white-space: normal; padding-right: 9px; }
+.remaked-equipment-picker[data-remaked-equipment-reset] { white-space: normal; overflow-wrap: anywhere; padding-right: 9px; }
 .remaked-equipment-picker[data-remaked-equipment-reset]::after { content: none; }
 @media (max-width: 700px) {
   .remaked-modern #body [data-remaked-picker-slot] { display: grid; grid-template-columns: 1fr; gap: 0; }
