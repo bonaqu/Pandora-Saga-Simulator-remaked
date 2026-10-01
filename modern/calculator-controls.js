@@ -174,7 +174,12 @@
       mark(source, 'action-source');
       if (action === 16) {
         var horse = mark(source.closest('table'), 'horse');
-        mark(horse.parentElement, 'horse-container');
+        var horseContainer = mark(horse.parentElement, 'horse-container');
+        // Riding belongs with the existing simulation switches, not underneath
+        // six attribute cards. Move the original row once, retaining every node
+        // and native callback; no clone, new state or formula is introduced.
+        var horseRow = mark(horseContainer.parentElement, 'riding-row');
+        byId('Text_3').closest('[data-remaked-calculator-actions]').appendChild(horseRow);
       } else mark(source.parentElement.parentElement, 'actions');
       var button = document.createElement('button');
       button.type = 'button'; button.className = 'remaked-calculator-action';

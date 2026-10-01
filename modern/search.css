@@ -449,6 +449,18 @@
 .remaked-modern #body #Text_26[hidden] { display: none !important; }
 .remaked-equipment-picker[data-remaked-equipment-reset] { white-space: normal; overflow-wrap: anywhere; padding-right: 9px; }
 .remaked-equipment-picker[data-remaked-equipment-reset]::after { content: none; }
+@media (min-width: 1366px) {
+  .remaked-tools { padding-block: 4px; margin-bottom: 8px; }
+  /* One equipment header: title leading, global enchant/reset controls trailing.
+     The original rows stay intact; all worn-item selectors follow in full width. */
+  .remaked-modern #body [data-remaked-picker-section] {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .remaked-modern #body [data-remaked-picker-section] > ul:first-child { grid-column: 1; grid-row: 1; align-items: center; }
+  .remaked-modern #body [data-remaked-picker-section] > ul:first-child .title { text-align: start !important; }
+  .remaked-modern #body [data-remaked-picker-toolbar] { grid-column: 2; grid-row: 1; padding-block: 4px; justify-content: end; }
+  .remaked-modern #body [data-remaked-picker-slot] { grid-column: 1 / -1; }
+}
 @media (max-width: 700px) {
   .remaked-modern #body [data-remaked-picker-slot] { display: grid; grid-template-columns: 1fr; gap: 0; }
   .remaked-modern #body [data-remaked-picker-slot-label] { float: none !important; width: auto !important; text-align: left !important; font: 13px/1.4 var(--rm-font); padding: 6px 4px; }

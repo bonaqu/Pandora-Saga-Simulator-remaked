@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { assertWorkspaceFits } from './helpers/desktop-workspace.mjs';
 
 for (const width of [1440, 1920]) test(`complete desktop workspace brings Equipment into the first screen at ${width}px`, async ({ page }, testInfo) => {
   await page.setViewportSize({ width, height: 900 }); await page.goto('/');
@@ -9,6 +10,8 @@ for (const width of [1440, 1920]) test(`complete desktop workspace brings Equipm
   expect(character.height).toBeLessThanOrEqual(600);
   expect(skill.height).toBeLessThanOrEqual(550);
   expect(equipment.y).toBeLessThanOrEqual(900);
+  const weapon = await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').boundingBox();
+  expect(weapon.y + weapon.height).toBeLessThanOrEqual(900);
   await expect(page.locator('[data-remaked-step]:visible')).toHaveCount(42);
   await expect(page.locator('[data-remaked-skill-step]:visible')).toHaveCount(80);
   const first = await page.locator('[data-remaked-skill-row="0"]').boundingBox();
@@ -21,4 +24,65 @@ for (const width of [1440, 1920]) test(`complete desktop workspace brings Equipm
   }
   expect(await page.evaluate(() => ({ build: PandoraRemaked.adapter.serialize(), equipment: JSON.stringify(EquipData), souls: JSON.stringify(SoulData), skills: JSON.stringify(Skill) }))).toEqual(before);
   await page.screenshot({ path: testInfo.outputPath('desktop-workspace.png') });
+});
+
+test('all four languages and font fallbacks keep the complete desktop controls inside their columns', async ({ page }) => {
+  test.setTimeout(60000);
+  await page.goto('/');
+  const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
+  for (const [label, language] of [['EN', 1], ['RU', 1], ['JP', 0], ['TW', 2]]) {
+    await page.locator('[data-remaked-language-panel]').getByRole('button', { name: label, exact: true }).click();
+    expect(await page.evaluate(() => Flag[0])).toBe(language);
+    expect(await page.evaluate(() => PandoraRemaked.i18n.getLocale())).toBe(label === 'RU' ? 'ru' : 'en');
+    for (const font of ['Arial, sans-serif', 'Verdana, sans-serif', 'Consolas, monospace']) {
+      await page.addStyleTag({ content: `.remaked-modern { --rm-font: ${font}; }` });
+      for (const width of [1366, 1440, 1920, 2560]) {
+        await page.setViewportSize({ width, height: 900 });
+        await assertWorkspaceFits(page);
+      }
+    }
+  }
+  await page.locator('[data-remaked-ui-locale="en"]').click();
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(before);
+});
+
+test('long approved translations and larger steps grow naturally across the desktop boundary and zoom-equivalent widths', async ({ page }, testInfo) => {
+  test.setTimeout(60000);
+  await page.goto('/');
+  const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
+  await page.evaluate(() => {
+    Object.assign(PandoraRemakedGameTerms.ru, {
+      'race.0': 'Проверочное очень длинное название расы персонажа',
+      'calculator.text.16': 'Верховая езда персонажа',
+      'calculator.status.0': 'Проверочное длинное имя характеристики',
+      'skill.1': 'Проверочное очень длинное название ветки умений',
+      'skill.7': 'Проверочная очень длинная ветка стрелкового оружия',
+      'calculator.qualified_buff.5': 'Проверочные чары магической атаки персонажа'
+    });
+    PandoraRemaked.i18n.setLocale('ru');
+  });
+  await expect(page.locator('#TextSkill_1')).toHaveText('Проверочное очень длинное название ветки умений');
+  await page.locator('[data-remaked-skill-bulk]').click();
+  for (const width of [320, 390, 720, 768, 861, 1024, 1099, 1280, 1365, 1366, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    await assertWorkspaceFits(page, { expanded: true });
+  }
+  await page.locator('[data-remaked-skill-bulk]').click();
+  await page.setViewportSize({ width: 1366, height: 900 });
+  await assertWorkspaceFits(page);
+  await page.screenshot({ path: testInfo.outputPath('desktop-long-labels.png'), fullPage: true });
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(before);
+});
+
+test('random Legacy flavor does not replace or displace any Modern simulation fields; museum retains it', async ({ page }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  await expect(page.locator('#Msg')).toBeHidden();
+  const pairs = page.locator('#StatusView [data-remaked-calculator-pair]');
+  expect(await pairs.filter({ visible: true }).count()).toBe(await pairs.count());
+  await expect(page.locator('#SkillView')).toBeVisible();
+  expect(await page.evaluate(() => Store())).toBe(before);
+  await page.goto('/legacy/');
+  await expect(page.locator('#Msg')).toBeVisible();
+  expect(await page.evaluate(() => typeof Message)).toBe('function');
 });
