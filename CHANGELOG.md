@@ -2,10 +2,26 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
-## Unreleased — Modern 3.00
+## Unreleased — administrator login follow-up
 
-- The release candidate identifies Modern UI as 3.00; the retained engine and
-  museum remain 2.00. The version label alone does not claim Pages acceptance.
+- Direct Worker form sign-in keeps a same-origin request identity instead of
+  `no-referrer` converting its Origin to `null`. The server still rejects null,
+  missing and foreign origins; password/hash/pepper/session rules are unchanged.
+- Local IDDQD opens the first-party secure login without collecting credentials
+  on a disallowed preview origin. Native origin-denied submissions return to a
+  clear retry form instead of raw JSON. These corrections are not deployed yet.
+
+## Modern 3.00 — 2026-10-01
+
+- PR24 is published on Pages (run 36800046613) with Worker deployment
+  36800046623. Exact artifact/live checks, C1 fresh-recipient/offline sharing,
+  actual Pages IDDQD authentication and installed offline PWA passed.
+- A later user report exposed a distinct direct Worker-form sign-in failure.
+  Its root cause and pending correction are recorded above; initial Pages-entry
+  acceptance did not cover this native form. No acceptance tag is claimed yet.
+
+- The release identifies Modern UI as 3.00; the retained engine and
+  museum remain 2.00.
 
 - Import, named builds and shared links ignore obsolete catalog responses after
   newer editing/loading, Code edits or closing Builds. Deleted named records
@@ -18,11 +34,11 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   preflights worn items and occupied Soul slots, preserves C1 and named pins,
   and cancels stale responses. Offline cache is never reported as the latest.
   Quota failures preserve old saves; an unverified calculation rollback pauses
-  autosave and reports recovery honestly. This frontend feature is not on Pages.
+  autosave and reports recovery honestly.
 - Successful explicit code import, named load and catalog update detach an old
   shared URL fragment so reload restores the new autosave, not the old link.
   Failed imports keep the link, character and storage intact.
-- Compact desktop candidate puts attributes beside results, uses the working
+- Compact desktop workspace puts attributes beside results, uses the working
   area width and keeps branch names, Adeptness/Potential and their native actions
   in aligned rows. The Hybrid C art remains; the desktop banner is shorter.
   Phones retain 44px primary targets and visible Builds/Compare actions.
@@ -44,34 +60,35 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   desktop rows stay compact without reducing phone targets or test limits.
 - Equipment reset now sizes to its label instead of the inherited 120px width.
   Wider fallback fonts stay compact; long translations wrap within the section.
-- These UI/recovery/guard changes are not published on Pages.
 - Modern build context C1 transfers riding, enabled effects, Honor, clan and
   caster attributes to fresh shared recipients and offline reloads. Comparisons
   restore the active context and storage afterward. Old CSV/compressed codes
   retain compatibility and load with source defaults. Changing source language
-  no longer clears clan bonuses. These frontend changes are not on Pages yet.
+  no longer clears clan bonuses.
 - The initial expanded CMS is deployed on Cloudflare: 28 class, 18 racial,
   178 active and 33 passive entries, with authenticated read-only production
   checks and desktop/mobile visual inspection. Public catalog remains revision 0;
-  no test game data published. This is not the completed Modern 3.00 release.
-- Local active/passive editor covers all 211 retained skills: multilingual
+  no test game data published.
+- Initial active/passive editor covers all 211 retained skills: multilingual
   text, active MP/timing metadata and additive passive bonuses gated by native
   learning and typed weapon/shield/riding requirements. Hidden skill lists and
   partial native callbacks do not leave bonus calculations stale. Prerequisite
   code and built-in mechanics remain unchanged; arbitrary new skills and native
-  passive replacement are not done. Context C1 persistence is verified locally.
-- Local racial-passive editor supports 18 retained slots with separate
+  passive replacement are not done. Context C1 persistence passed fresh-recipient
+  and offline production checks.
+- Initial racial-passive editor supports 18 retained slots with separate
   multilingual text and explicit preserve/add/replace numeric effects. Actual
   retained-engine results, revision restoration and exception-safe temporary
   state are verified; native formulas and museum data remain unchanged.
 - Admin search no longer offers stale results while a query changes. Late item
   responses cannot replace the current selection; saves temporarily freeze
   fields so a successful response cannot discard subsequent typing.
-- Local administrator class editor supports all 28 retained class slots,
+- Initial administrator class editor supports all 28 retained class slots,
   multilingual text and native LP/MP progression parameters. Typed source
   fingerprint checks and pinned build revisions preserve old class calculations.
   Class lineage and arbitrary new classes remain unfinished. The first existing
-  class/skill/passive editors are deployed on the Worker, not the Pages frontend.
+  class/skill/passive editors are deployed on the Worker, with their revision-pinned
+  consumer published on Pages.
 - Modern-only equipment/Soul catalog adapter uses the retained calculation
   engine, with immutable catalog revisions pinned in `PS3` saved/shared codes.
   Cached public revisions work offline; missing revisions protect existing
@@ -86,18 +103,17 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   the original; JP/TW names are not replaced by an English override.
 - Updated the beginner's upload/publish guide. Browser verification uses an
   actually edited workbook and checks unchanged game data and serialized builds.
-- Administrator CMS, IDDQD auth and compact desktop redesign are in progress,
-  not published features yet.
 - The Modern-only `IDDQD` entry now has an original green/beige DOS terminal,
   reduced-motion support and an accessible login dialog. It ignores editable
   fields and does not spend character points while typing the cheat code.
   Passwords are submitted by native HTTPS navigation to the Worker, never
-  persisted in frontend storage. Public Pages publication is still pending.
+  persisted in frontend storage. The Pages entry passed deployed acceptance;
+  direct Worker-native form correction is tracked above.
 - Secured Worker authentication is deployed and production-tested separately
   from Pages. A Modern-only equipment/Soul editor now has validated multilingual
   fields, numeric effects, private drafts, atomic publication, immutable history,
   conflict protection and rollback. Equipment/Soul engine integration is now
-  verified locally. Expanded existing class/active/passive/racial editors have
+  published on Pages. Expanded existing class/active/passive/racial editors have
   since passed remote acceptance; additional mechanics remain in development.
 
 ## 2026.09.17 — Safe calculator code and riding controls

@@ -24,23 +24,32 @@
     var title = element('h2', '', 'GOD MODE REQUIRES AUTHENTICATION'); title.id = 'remaked-admin-title'; body.appendChild(title);
     var hint = element('p', 'remaked-admin-hint', 'Authentication opens the secure Cloudflare console. This code does not grant access.');
     hint.id = 'remaked-admin-hint'; body.appendChild(hint);
-    var form = element('form'); form.method = 'post'; form.action = ADMIN_ORIGIN + '/api/auth/login';
-    [['username', 'LOGIN', 'text', 'admin', 'username'], ['password', 'PASSWORD', 'password', '', 'current-password']].forEach(function (field) {
-      var label = element('label', '', field[1]); label.htmlFor = 'remaked-admin-' + field[0]; form.appendChild(label);
-      var input = element('input'); input.id = label.htmlFor; input.name = field[0]; input.type = field[2]; input.value = field[3];
-      input.autocomplete = field[4]; input.maxLength = field[0] === 'password' ? 512 : 64; input.required = true;
-      if (field[0] === 'password') input.autofocus = true;
-      form.appendChild(input);
-    });
-    var submit = element('button', 'remaked-admin-authenticate', 'AUTHENTICATE'); submit.type = 'submit'; form.appendChild(submit);
-    // Native HTTPS navigation makes the session first-party on Worker, even
-    // with third-party cookies blocked. Never fetch/persist the password here.
-    body.appendChild(form); dialog.appendChild(body);
+    var form = null;
+    if (window.location.origin !== 'https://bonaqu.github.io') {
+      hint.textContent = 'This is a local preview or a non-production site. Sign in on the secure console; do not enter credentials here.';
+      var secureLogin = element('a', 'remaked-admin-authenticate', 'OPEN SECURE LOGIN');
+      secureLogin.href = ADMIN_ORIGIN + '/admin'; secureLogin.rel = 'noreferrer'; secureLogin.setAttribute('autofocus', '');
+      body.appendChild(secureLogin);
+    } else {
+      form = element('form'); form.method = 'post'; form.action = ADMIN_ORIGIN + '/api/auth/login';
+      [['username', 'LOGIN', 'text', 'admin', 'username'], ['password', 'PASSWORD', 'password', '', 'current-password']].forEach(function (field) {
+        var label = element('label', '', field[1]); label.htmlFor = 'remaked-admin-' + field[0]; form.appendChild(label);
+        var input = element('input'); input.id = label.htmlFor; input.name = field[0]; input.type = field[2]; input.value = field[3];
+        input.autocomplete = field[4]; input.maxLength = field[0] === 'password' ? 512 : 64; input.required = true;
+        if (field[0] === 'password') input.autofocus = true;
+        form.appendChild(input);
+      });
+      var submit = element('button', 'remaked-admin-authenticate', 'AUTHENTICATE'); submit.type = 'submit'; form.appendChild(submit);
+      // Native HTTPS navigation makes the session first-party on Worker, even
+      // with third-party cookies blocked. Never fetch/persist the password here.
+      body.appendChild(form);
+    }
+    dialog.appendChild(body);
     dialog.appendChild(element('div', 'remaked-admin-terminal-footer', 'MODERN CATALOG / MUSEUM ENGINE 2.00'));
     dialog.addEventListener('cancel', function (event) { event.preventDefault(); close(); });
     dialog.addEventListener('click', function (event) { if (event.target === dialog) close(); });
     dialog.addEventListener('close', function () {
-      form.elements.password.value = ''; clear();
+      if (form) form.elements.password.value = ''; clear();
       if (opener?.isConnected && typeof opener.focus === 'function') opener.focus(); opener = null;
     });
     document.body.appendChild(dialog);

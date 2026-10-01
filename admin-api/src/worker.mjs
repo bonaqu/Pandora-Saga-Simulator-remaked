@@ -7,7 +7,10 @@ const PRIVATE_CSP = "default-src 'none'; script-src 'self'; style-src 'self'; co
 function secureResponse(response, request, env) {
   const headers = new Headers(response.headers);
   headers.set('X-Content-Type-Options', 'nosniff');
-  headers.set('Referrer-Policy', 'no-referrer');
+  // Native form navigation under no-referrer serializes Origin as "null",
+  // breaking our strict origin guard even on this Worker's own login page.
+  // Keep same-origin navigation identifiable; send no referrer across sites.
+  headers.set('Referrer-Policy', 'same-origin');
   headers.set('X-Frame-Options', 'DENY');
   headers.set('Content-Security-Policy', PRIVATE_CSP);
   headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
@@ -36,9 +39,9 @@ async function route(request, env) {
     const response = await login(request, env);
     // A native form POST is a top-level navigation. The HttpOnly session is
     // first-party on workers.dev; no third-party cookie dependency or JS bearer.
-    if (form && ['200', '401', '429'].includes(String(response.status))) {
+    if (form && ['200', '401', '403', '429'].includes(String(response.status))) {
       const headers = new Headers(response.headers);
-      headers.set('Location', env.ADMIN_ORIGIN + '/admin' + (response.status === 200 ? '' : response.status === 429 ? '?status=rate' : '?status=denied'));
+      headers.set('Location', env.ADMIN_ORIGIN + '/admin' + (response.status === 200 ? '' : response.status === 429 ? '?status=rate' : response.status === 403 ? '?status=origin' : '?status=denied'));
       return new Response(null, { status: 303, headers });
     }
     return response;

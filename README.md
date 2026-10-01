@@ -88,7 +88,11 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 
 Translations are maintained in one [Excel workbook](localization/translations.xlsx): H (yellow) is Russian, I (green) is an editable English override. The original source columns stay read-only. See the [step-by-step Russian guide](docs/LOCALIZATION_FOR_BEGINNERS.ru.md). Approved translations appear throughout the Modern calculator, lists, search and skill descriptions. Blank game fields retain the selected source language; Legacy Mode stays unchanged.
 
-The expanded workbook and Modern 3.00 are currently a draft branch, not a Pages release. Do not upload this branch's workbook alone to the old production code. After the matching code is merged, Pages validates and publishes workbook updates automatically.
+Modern 3.00 is published. Download the latest workbook from the default branch;
+Pages validates and publishes uploaded workbook updates automatically.
+The six-category Worker/D1 administrator catalog is described in the
+[Russian operations guide](docs/ADMIN_OPERATIONS.ru.md), including its supported
+mechanics and the direct-login follow-up. No player cloud-save service is implied.
 
 ## 🚧 What's coming next
 
@@ -110,7 +114,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Published Remaked UI:** 2026.09.16; Modern 3.00 is an unreleased candidate
+- **Published Remaked UI:** Modern 3.00
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 

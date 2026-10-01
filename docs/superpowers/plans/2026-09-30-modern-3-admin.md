@@ -2,7 +2,11 @@
 
 The owner explicitly approved this scope on 2026-09-30. It supersedes UI17's
 desktop layout direction, not its build-import safety fix. Branch:
-`codex/modern-3-admin`, based on `99930ce`. Production currently remains UI16.
+`codex/modern-3-admin`, based on `99930ce`. Production was UI16 at planning time.
+PR24 published the initial Modern 3.00 scope on 2026-10-01; the current release
+ledger is `docs/RELEASE_ACCEPTANCE.md`. Direct Worker-native login and the owner's
+new desktop compactness feedback are follow-up work, not a reason to repeat the
+completed blocks.
 
 ## Invariants
 

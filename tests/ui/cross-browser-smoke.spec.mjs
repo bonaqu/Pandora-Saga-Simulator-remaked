@@ -3,6 +3,34 @@ import { compileRecord, draftFromSource, validateDraft } from '../../admin-api/s
 import equipment from '../../data/generated/equipment.v1.json' with { type: 'json' };
 import character from '../../data/generated/character.v1.json' with { type: 'json' };
 import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
+import { adminOrigin, routeSyntheticWorker } from './helpers/admin-worker-fixture.mjs';
+
+test('Worker-owned native form preserves origin and completes the authorized session lifecycle in every engine', async ({ page }) => {
+  const { password, sqlite, loginRequests } = await routeSyntheticWorker(page);
+  try {
+    const document = await page.goto(adminOrigin + '/admin');
+    expect(document.headers()['referrer-policy']).toBe('same-origin');
+    await expect(page.locator('#login-form')).toBeVisible();
+    await expect(page.locator('#auth-message')).toHaveText('Enter your administrator credentials.');
+    await page.locator('#username').fill('admin');
+    await page.locator('#password').fill(password);
+    await page.getByRole('button', { name: 'AUTHENTICATE', exact: true }).click();
+    await expect.poll(() => loginRequests).toEqual([{ method: 'POST', origin: adminOrigin, status: 303, secureSession: true }]);
+    expect(sqlite.prepare('SELECT COUNT(*) AS n FROM admin_sessions').get().n).toBe(1);
+    expect((await page.context().cookies(adminOrigin)).filter(cookie => cookie.name === '__Host-pandora_admin').length).toBe(1);
+    await page.goto(adminOrigin + '/admin');
+    await expect(page.getByRole('heading', { name: 'GOD MODE ENABLED / WELCOME, ADMIN', exact: true })).toBeVisible();
+    await expect(page.locator('#password')).toHaveValue('');
+    await expect(page.locator('#catalog-state')).toContainText('Каталог загружен');
+    expect(await page.evaluate(() => JSON.stringify([localStorage, sessionStorage]))).toBe('[{},{}]');
+    await page.getByRole('button', { name: 'LOGOUT', exact: true }).click();
+    await expect(page.locator('#auth-message')).toHaveText('GOD MODE DISABLED');
+    expect(sqlite.prepare('SELECT COUNT(*) AS n FROM admin_sessions').get().n).toBe(0);
+    await page.reload();
+    await expect(page.locator('#login-form')).toBeVisible();
+    await expect(page.locator('#admin-workspace')).toBeHidden();
+  } finally { sqlite.close(); }
+});
 
 test.describe('network-routed catalog contract', () => {
   // page.route cannot replace a request intercepted by a service worker. This
@@ -125,12 +153,15 @@ test('native class parameters and racial replacement survive pinned-code load in
   expect(result.published).toEqual({ lp: result.lp + 100, pot: 120 }); expect(result.source).toEqual({ lp: result.lp, pot: 115 }); expect(result.loaded).toEqual(result.published); expect(result.slot).toBe(2);
 });
 
-test('IDDQD login is a keyboard-accessible native modal with unchanged character state', async ({ page }) => {
+test('local IDDQD entry is a keyboard-accessible secure-login handoff with unchanged character state', async ({ page }) => {
   await page.goto('/'); const before = await page.evaluate(() => Store());
   await page.keyboard.type('IDDQD');
   const dialog = page.locator('[data-remaked-admin-entry]');
   await expect(dialog).toBeVisible();
-  await expect(dialog.locator('input[name="password"]')).toBeFocused();
+  const link = dialog.getByRole('link', { name: 'OPEN SECURE LOGIN', exact: true });
+  await expect(link).toBeFocused();
+  await expect(link).toHaveAttribute('href', adminOrigin + '/admin');
+  await expect(dialog.locator('form, input')).toHaveCount(0);
   expect(await page.evaluate(() => Store())).toBe(before);
   await page.keyboard.press('Escape'); await expect(dialog).not.toBeVisible();
 });

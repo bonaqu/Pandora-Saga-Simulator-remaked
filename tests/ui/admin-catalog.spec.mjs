@@ -4,6 +4,25 @@ import { DatabaseSync } from 'node:sqlite';
 import { adminCatalog } from '../../admin-api/src/catalog.mjs';
 
 const admin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
+
+test('an origin-denied login explains the safe retry without showing or storing credentials', async ({ page }) => {
+  await page.route(admin + '/**', route => {
+    const path = new URL(route.request().url()).pathname;
+    if (path === '/api/session') return route.fulfill({ status: 401, json: { ok: false } });
+    const asset = path === '/admin' ? 'admin.html' : path.slice(1);
+    if (!['admin.html', 'admin.css', 'admin.js', 'catalog-ui.js'].includes(asset)) return route.fulfill({ status: 404 });
+    return route.fulfill({ contentType: asset.endsWith('.css') ? 'text/css' : asset.endsWith('.js') ? 'text/javascript' : 'text/html', body: fs.readFileSync(new URL('../../admin-api/public/' + asset, import.meta.url), 'utf8') });
+  });
+  await page.goto(admin + '/admin?status=origin');
+  await expect(page.locator('#auth-message')).toContainText('CHEAT FAILED / ACCESS DENIED');
+  await expect(page.locator('#auth-message')).toContainText('production simulator or this secure page');
+  await expect(page.locator('#auth-message')).toContainText('your password has not changed');
+  await expect(page.locator('#login-form')).toBeVisible();
+  await expect(page.locator('#admin-workspace')).toBeHidden();
+  await expect(page.locator('#password')).toHaveValue('');
+  expect(await page.evaluate(() => JSON.stringify([localStorage, sessionStorage]))).toBe('[{},{}]');
+});
+
 async function openConsole(page) {
   // Only synthetic in-memory sessions. Never read the real administrator's
   // credential file in trace-enabled repository tests.

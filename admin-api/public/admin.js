@@ -20,7 +20,7 @@
       var response = await fetch('/api/session', { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(10000) });
       if (!response.ok) {
         var state = new URLSearchParams(location.search).get('status');
-        showLogin(state === 'rate' ? 'CHEAT FAILED / ACCESS DENIED. Too many attempts. Try again later.' : state === 'denied' ? 'CHEAT FAILED / ACCESS DENIED' : 'Enter your administrator credentials.');
+        showLogin(state === 'rate' ? 'CHEAT FAILED / ACCESS DENIED. Too many attempts. Try again later.' : state === 'origin' ? 'CHEAT FAILED / ACCESS DENIED. Sign-in must start from the production simulator or this secure page. Try again here; your password has not changed.' : state === 'denied' ? 'CHEAT FAILED / ACCESS DENIED' : 'Enter your administrator credentials.');
         return;
       }
       var session = await response.json();
