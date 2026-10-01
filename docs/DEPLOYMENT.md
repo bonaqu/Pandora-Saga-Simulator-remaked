@@ -79,4 +79,14 @@ A custom domain is optional. GitHub Pages works without Cloudflare.
 
 If a custom domain is added later, Cloudflare can provide DNS, caching and optional security controls. That still does **not** require a database.
 
-Cloudflare D1/KV/Workers would only be relevant if future features require server-side persistence or APIs.
+Modern 3.00 uses an owner-approved Cloudflare Worker/D1 backend only for the
+administrator CMS. The public frontend remains on GitHub Pages; player builds
+are still local, not cloud saves. This does not move the site to Cloudflare.
+
+The `Cloudflare Admin API` workflow verifies the backend, applies additive D1
+migrations and deploys the existing Worker. It uses GitHub
+`secrets.CLOUDFLARE_API_TOKEN` and `vars.CLOUDFLARE_ACCOUNT_ID` in the
+`cloudflare-admin` environment. The `DB` binding and Cloudflare-only
+`AUTH_PEPPER` must be retained. Deployments never recreate the administrator
+or rotate the pepper. See [administrator operations](ADMIN_OPERATIONS.ru.md)
+for login, draft/publication, capability boundaries and recovery.

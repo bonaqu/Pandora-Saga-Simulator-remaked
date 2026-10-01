@@ -1,6 +1,7 @@
 # Modern catalog and saved builds
 
-Status: under development in PR24; not released on GitHub Pages.
+Status: the initial catalog consumer is published in Modern 3.00 through PR24.
+Further mechanics remain bounded by the capabilities documented below.
 
 The administrator publishes validated **data**, not code. The existing Legacy
 engine calculates the result. Original `js/`, the museum route and generated
@@ -66,17 +67,17 @@ valid equipment during restoration.
 ## Required work before release
 
 - The existing 28 class slots now support typed multilingual labels and the
-  six native `Status.Mod` LP/MP coefficients in the local editor/adapter.
+  six native `Status.Mod` LP/MP coefficients in the editor/adapter.
   Their source fingerprint is checked separately from equipment data. Pinned
   builds restore their class parameters; revision 0 restores all original
   coefficients. No class lineage, skill caps or hardcoded passive is replaced.
   New arbitrary classes are deliberately unavailable until the engine can
   represent and serialize them correctly. The initial class editor is deployed
-  on Worker, but its public Pages consumer is not released.
+  on Worker, with its revision-pinned consumer published on Pages.
 - All six editor kinds have typed schemas and engine capability tests. Numeric
   changes feed retained calculations or explicitly identified skill metadata;
   descriptions are never treated as implemented mechanics.
-- The local editor now supports all 18 existing racial passive slots. `preserve`
+- The editor now supports all 18 existing racial passive slots. `preserve`
   leaves native mechanics unchanged, `add` adds typed numeric options, and
   `replace` explicitly bypasses the selected native racial conditionals inside
   the retained `Calc` call. A temporary out-of-range selector and temporary
@@ -85,8 +86,8 @@ valid equipment during restoration.
   Empty replacement removes the native calculation effect. Other race/skill
   selections do not inherit the edited bonus; source revision 0 restores it.
   Unsupported combat actions are not created by a description or numeric bonus.
-  The editor is deployed on Worker; its Pages consumer is not released.
-- The local editor covers the 178 active and 33 passive source skills. Active
+  The editor is deployed on Worker; its consumer is published on Pages.
+- The editor covers the 178 active and 33 passive source skills. Active
   text, MP cost and cast/cooldown/duration values update the actual learned-skill
   view, not a new combat simulation. Type and prerequisite code stay immutable.
   Passive bonuses are additive: the retained `SkillList` checks whether the
@@ -96,12 +97,12 @@ valid equipment during restoration.
   a bonus; no learning or damage formula is copied into Modern. Source revision
   0 restores the exact original skill tables. Native hardcoded class passives
   cannot yet be replaced, and new skill/class slots are not supported. These
-  initial editors are deployed on Worker; their Pages consumer is not released.
+  initial editors are deployed on Worker; their consumer is published on Pages.
 - Context C1 restoration is locally verified with a fresh recipient, offline
   reload, a pinned riding-dependent passive, comparison state/storage restoration,
   invalid input rejection and all three browser engines. Source language changes
-  preserve clan levels instead of silently resetting them. Pages deployment
-  acceptance is still required.
+  preserve clan levels instead of silently resetting them. Fresh-recipient and
+  offline C1 checks also passed on the deployed Modern 3.00 Pages artifact.
 - Arbitrary scripts, HTML, SQL or game-effect expressions are not supported.
 - Combat mechanics absent from Legacy cannot be advertised as simulated.
 - Source `equipment.42.32` (Wyss Belt) has malformed effect code `0=1_-7`.
@@ -118,8 +119,12 @@ valid equipment during restoration.
   authorized reads of all 1304 source records, public revision 0 (no test game
   data published), desktop/mobile rendering and logout revocation. The new
   IDDQD frontend was injected locally on the real Pages origin for this check;
-  it is not yet the deployed Pages artifact. Expanded CMS and public release
-  acceptance remain pending. Expanded editors are now deployed on version
+  this was not deployed-frontend acceptance. Expanded editors subsequently deployed on version
   `c488e6d9-9403-4285-94e0-37b427a72888`: ten real auth/security checks and
   read-only authenticated reads of 1561 records passed, including the four new
   editors on desktop/mobile. Public revision remains 0; no test data published.
+- PR24 then published the Pages consumer (run `36800046613`) and Worker
+  `cae28ebe-2658-431e-8eb8-3786b316923c` (run `36800046623`). Actual deployed
+  Pages IDDQD entry, read-only editors, C1 and offline PWA passed. A later direct
+  Worker-native form failure is tracked separately in `RELEASE_ACCEPTANCE.md`;
+  it does not imply published game data or a completed balance migration.

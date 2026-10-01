@@ -170,8 +170,11 @@ still usability follow-ups, not proof of universal mobile accessibility.
 Cloudflare Worker/D1 administrator CMS (not player cloud saves), editable English
 workbook overrides, compact desktop UI and FILE/LOG consolidation. Current scope
 and remaining acceptance gates are in `2026-09-30-modern-3-admin.md`. Worker auth
-and initial editors are production-tested; Pages remains UI16. This does not
-declare the full new release complete or alter the museum engine.
+and initial editors, revision-pinned consumer and Modern 3.00 were published
+through PR24 on 2026-10-01. Direct Worker-native login is a subsequent regression
+follow-up, followed by the owner's additional desktop compactness review.
+Exact gates are recorded in `docs/RELEASE_ACCEPTANCE.md`; museum engine and
+player cloud-save scope stay unchanged.
 
 Not part of this roadmap's implementation plans. Requires a new design/spec after Phases 0–7 are stable.
 

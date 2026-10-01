@@ -41,9 +41,9 @@
 .remaked-admin-entry button { cursor: pointer; background: #40552d; padding: 8px 12px; }
 .remaked-admin-entry button:hover { background: #526936; }
 .remaked-admin-entry .remaked-admin-close { padding: 0; font-size: 24px; line-height: 1; }
-.remaked-admin-entry .remaked-admin-authenticate { margin-top: 8px; color: #172013; background: #b8cb88; font-weight: 700; }
+.remaked-admin-entry .remaked-admin-authenticate { box-sizing: border-box; display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; margin-top: 8px; padding: 8px 12px; border: 1px solid #87975d; border-radius: 2px; color: #172013; background: #b8cb88; font: inherit; font-weight: 700; text-decoration: none; }
 .remaked-admin-entry .remaked-admin-authenticate:hover { background: #cddd9f; }
-body.remaked-modern .remaked-admin-entry :is(input, button):focus-visible { outline: 2px solid #dfedb3; outline-offset: 3px; }
+body.remaked-modern .remaked-admin-entry :is(input, button, a[href]):focus-visible { outline: 2px solid #dfedb3; outline-offset: 3px; }
 @keyframes remaked-terminal-start {
   from { opacity: 0; transform: translateY(5px) scaleY(.96); }
   to { opacity: 1; transform: none; }

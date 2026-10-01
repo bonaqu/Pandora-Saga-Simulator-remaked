@@ -47,6 +47,19 @@ test('login disallows an attacker origin before any database access', async () =
   assert.equal(result.status, 403);
 });
 
+test('rejected native preview login returns to a safe retry form without granting a session or weakening JSON origin checks', async () => {
+  for (const requestOrigin of ['http://127.0.0.1:8000', 'https://evil.test', 'null']) {
+    const result = await worker.fetch(new Request(origin + '/api/auth/login', { method: 'POST', headers: { Origin: requestOrigin, 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'username=admin&password=synthetic-not-a-secret' }), env);
+    assert.equal(result.status, 303);
+    assert.equal(result.headers.get('Location'), origin + '/admin?status=origin');
+    assert.equal(result.headers.has('Set-Cookie'), false);
+    assert.equal(result.headers.has('Access-Control-Allow-Origin'), false);
+    assert.equal(result.headers.get('Cache-Control'), 'no-store');
+    const json = await worker.fetch(new Request(origin + '/api/auth/login', { method: 'POST', headers: { Origin: requestOrigin, 'Content-Type': 'application/json' }, body: '{}' }), env);
+    assert.equal(json.status, 403);
+  }
+});
+
 test('admin HTML has strict CSP, no framing, no cache and no secret-bearing error details', async () => {
   const result = await worker.fetch(new Request(origin + '/admin'), env);
   assert.equal(result.status, 200);
@@ -54,6 +67,7 @@ test('admin HTML has strict CSP, no framing, no cache and no secret-bearing erro
   assert.match(result.headers.get('Content-Security-Policy'), /frame-ancestors 'none'/);
   assert.ok(!result.headers.get('Content-Security-Policy').includes('unsafe-inline'));
   assert.equal(result.headers.get('X-Frame-Options'), 'DENY');
+  assert.equal(result.headers.get('Referrer-Policy'), 'same-origin');
   assert.equal(result.headers.get('Cache-Control'), 'no-store');
 });
 

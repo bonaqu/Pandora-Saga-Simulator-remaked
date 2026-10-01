@@ -64,13 +64,13 @@ Legacy JavaScript remains the sole calculation/data source of truth. The generat
 
 ### Translator input
 
-`localization/translations.xlsx` is the translator's only editable source. The Pages builder validates all 2,837 rows against `ui.en.json` and the machine-exported Legacy term index, then generates `modern/locales.js` and `modern/game-terms.js`. Its 170 UI strings, 1,617 core game terms, 259 calculator labels, 158 hints and 633 skill-detail fields share stable IDs. `modern/calculator-labels.js` provides the exporter and display adapter with one source-to-DOM map. `modern/game-term-display.js` decorates Modern native lists, selected names, inherited labels and skill popups after Legacy redraws and build loads. It writes approved input as literal text, preserves control values and existing help nodes, and restores source labels outside RU. It does not replace Legacy globals or calculation inputs; diagnostic Log output remains original.
+`localization/translations.xlsx` is the translator's editable display-text source. The Pages builder validates all 2,865 rows against `ui.en.json` and the machine-exported Legacy term index, then generates `modern/locales.js` and `modern/game-terms.js`. Its 198 UI strings, 1,617 core game terms, 259 calculator labels, 158 hints and 633 skill-detail fields share stable IDs. Column H supplies Russian; column I supplies optional English overrides. `modern/calculator-labels.js` provides the exporter and display adapter with one source-to-DOM map. `modern/game-term-display.js` decorates Modern native lists, selected names, inherited labels and skill popups after Legacy redraws and build loads. It writes approved input as literal text, preserves control values and existing help nodes, and falls back to source labels for blank cells. It does not replace Legacy globals or calculation inputs. Modern LOG is removed; museum output stays original. Published CMS names/descriptions are a separate revision-pinned data layer.
 
 The user's UI 2026.09.11 correction unifies the visible language control. EN selects source 1 and English UI; RU selects source 1 and Russian UI; JP/TW select source 0/2 and English UI. Internal i18n/Legacy APIs remain separate; stored UI-locale compatibility is retained. `adapter.readItemDetails` reads descriptions, socket count, class flags, literal base ATK/DEF and equipped customization from source arrays; `EquipOption` provides the existing enhanced name. Other candidates do not inherit current upgrades. Source descriptions and names are rendered as text, not executable HTML. Conditional formulas, final enhancement bonuses, client icons/prices/flavor absent from the source are not invented.
 
-Build sharing uses bounded numeric CSV in `#build=` through the existing safe-load adapter. Valid incoming links intentionally override local autosave; invalid links retain it. Clipboard denial exposes a manual copy input. This is not cloud storage, and anyone receiving the URL can read the character. Normal page navigation does not send URL fragments to the static host.
+Build sharing uses validated `#build=` payloads through the safe-load adapter. A Modern `PS3` envelope pins its catalog revision; `C1` carries riding, effects, Honor, clan and caster context. Old numeric CSV/compressed codes retain compatibility and load with source-default context. Valid incoming links intentionally override local autosave; invalid links retain it. Clipboard denial exposes a manual copy input. This is not cloud storage, and anyone receiving the URL can read the character. Normal page navigation does not send URL fragments to the static host.
 
-Modern search, build manager, compare and Updates use native modal dialogs. The browser makes background content inert; a shared boundary handler wraps Tab/Shift+Tab at the dialog's focusable ends. Closing returns focus to the opener. Escape dismisses a focused stat tooltip before its parent dialog. A first-focusable skip link moves to the calculator main landmark. These are tested DOM/keyboard contracts, not a claim of full screen-reader conformance.
+Modern search, build manager, compare and Updates use native modal dialogs. The browser makes background content inert; a shared boundary handler wraps Tab/Shift+Tab at the dialog's focusable ends. Equipment uses an anchored nonmodal dropdown instead; a delayed preview cancels on deliberate scrolling and review never equips an item. Closing returns focus to the opener. Escape dismisses a focused stat tooltip before its parent dialog. A first-focusable skip link moves to the calculator main landmark. These are tested DOM/keyboard contracts, not a claim of full screen-reader conformance.
 
 The service worker cache key includes a deterministic fingerprint of its precached files. Updating only workbook translations changes the generated catalogs and cache key, allowing the normal update notice to deliver them to existing offline installations.
 
@@ -133,12 +133,14 @@ The original calculator logic and data are treated as the preservation core. Hos
 That separation makes it possible to modernize the project later without silently changing the preserved calculator.
 
 Three archived codec files (`base64.js`, `rawinflate.js`, `rawdeflate.js`) are CodeRepos Trac HTML snapshots containing their original source in numbered code tables. `scripts/recover_archived_javascript.py` extracts those source cells during Pages generation, decodes HTML entities and reverses Trac's non-breaking-space formatting. It rejects missing/incomplete tables. Repository snapshots and preservation hashes stay unchanged; published Modern and Legacy runtime copies receive the recovered original JavaScript. This is a transport recovery, with the existing compressed File format checked by browser round-trips.
-# Modern 3.00 work in progress
+# Modern 3.00 and administrator catalog
 
 The owner has authorized a separate Cloudflare Worker/D1 administrator catalog.
 Its plan is [Modern 3.00 and admin](superpowers/plans/2026-09-30-modern-3-admin.md).
-Worker auth and the initial six catalog editor kinds are deployed. The Pages
-consumer and Modern 3.00 release are not yet published. Museum Legacy 2.00 remains unchanged.
+Worker auth, the initial six editor kinds and their Pages consumer are published
+through PR24. A subsequent direct Worker-native login regression is being corrected
+without changing the password or admitting null/foreign origins. Museum Legacy
+2.00 remains unchanged. See `RELEASE_ACCEPTANCE.md` for the exact gates.
 The translation workbook now supports optional English display overrides in
 column I as well as Russian in H; A:G remain preserved source references.
 

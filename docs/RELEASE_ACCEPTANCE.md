@@ -1,10 +1,11 @@
-# Release acceptance — Modern 3.00 candidate
+# Release acceptance — Modern 3.00
 
-Status: PR24 is a draft; Pages still publishes accepted UI16. No Modern 3.00
-acceptance tag or public frontend publication is claimed. The new approved
-scope is `superpowers/plans/2026-09-30-modern-3-admin.md`.
+Status: PR24 was squash-merged as `7b94428e86c1e187436039fd383089c16f2e9310`
+and published on Pages on 2026-10-01. The approved scope is
+`superpowers/plans/2026-09-30-modern-3-admin.md`. No acceptance tag is claimed
+until the subsequently reported direct Worker-native login gate passes.
 
-The candidate includes editable EN/RU workbook, secure Worker/D1 administration,
+The initial release includes editable EN/RU workbook, secure Worker/D1 administration,
 initial gear/Soul/class/active/passive/racial editors, version-pinned catalog
 and complete C1 build context, compact desktop controls, one Builds/Compare
 header group, consolidated Code operations, explicit Legacy FILE recovery and
@@ -12,26 +13,51 @@ safe opt-in published-catalog adoption for the current character.
 The 459 preserved source files stay unchanged. All 2842 pre-extension workbook
 rows remain intact; twenty-three new bilingual UI rows bring the total to 2865.
 
-Worker version `c488e6d9-9403-4285-94e0-37b427a72888` is deployed and passed real
-first-party auth/security and read-only editor acceptance. Public revision is
-0; no test game data was published. Public frontend acceptance is still pending.
+Feature head `9fe91fe4d4d31765192aba76e21d7bddf86628d4` passed Feature CI
+`36799272772` and API verification `36799272886`: 182 main browser contracts,
+62 related, 51 cross-engine, 28 visual, 62 Python and 42 backend tests. The
+main report has no skipped, flaky or unexpected results.
 
-Remaining gates:
+Published release evidence:
 
-- Feature/API CI passed adoption commit `b2b5c82` in runs `36794954075` /
-  `36794954117`; main artifact has 180 expected, no skipped/flaky/unexpected.
-  The newer async-load review passed local main UI 180, related workflows 62,
-  Python 62 and cross-engine 51. Its GitHub verification is still required.
-  Real public GET with an active production service worker passed in all three
-  engines on UI16/revision 0, exact Pages CORS. This is not a deployed adoption UI.
-- Supported-capability/editor review is recorded in the administrator guide.
-  Runtime/heading now identify Modern 3.00 without changing museum `Ver` or
-  source title arrays; all four languages and the foundation/PWA/update group
-  passed 20 tests. The final CI selection contains 181 main browser contracts.
-- Squash merge, GitHub-token Worker deployment and exact Pages artifact/live
-  verification: all four languages, actual IDDQD login, fresh shared recipient,
-  desktop/mobile visual review and isolated installed/offline PWA.
-- Supersede PR23 only after its safe import behavior is present in the release.
+- Pages run `36800046613`; GitHub-token Worker run `36800046623`, deployed
+  version `cae28ebe-2658-431e-8eb8-3786b316923c`. Real API security and actual
+  Pages IDDQD authentication with third-party cookies blocked passed; all 1561
+  records and the four expanded editor views were inspected read-only, and
+  logout revoked the session. Public revision remains 0; no test data published.
+- Exact Pages tar SHA-256:
+  `03e2e5e22d29cad497e75cca512aa729f6e2c81b3e7353dc57db2c960e6e3f72`.
+  All 459 preserved files and recovered museum runtime match the prior accepted
+  artifact; workbook SHA-256 is
+  `65a9334af29e1d614288ef692a1be8f982f75158f8e2f12cd24efda7f3fc8ce3`.
+  Thirteen live assets match the exact artifact. Cache:
+  `pandora-remaked-3.00-eabab34105cea48d`.
+- Public checks covered four languages, unchanged source arrays/build data,
+  Equipment delay/dropdown, 320px RU layout, live published head and a fresh C1
+  recipient with identical context/summary, plus offline Modern and museum boot.
+  Installed Chromium PWA ran Modern/Legacy online and offline in an isolated
+  profile. No user browser profiles or catalog data were changed.
+
+## Direct Worker-native login follow-up — not yet deployed
+
+The owner reported that `/admin` rejected the existing private-file password.
+An unmodified production browser reproduced `Referrer-Policy: no-referrer`,
+native form `Origin: null`, HTTP 403. The password was not the cause. Initial
+Pages-entry acceptance had missed this different native navigation path.
+
+The feature changes that policy to `same-origin`, keeps null/missing/foreign
+origins rejected, redirects denied native forms to an intelligible retry page,
+and sends localhost IDDQD to first-party login without collecting credentials.
+Password, hash, pepper, CORS and session restrictions are unchanged.
+Local checks passed 43 backend, 14 entry/editor and 54 cross-engine tests.
+The native regression uses actual Worker routing and SQLite; its explicit
+test-only redirect boundary does not substitute for real production navigation.
+
+Remaining gates: exact-head full CI, squash/deploy, then direct native login
+with the existing private-file password in all three engines without request
+interception, authorized read-only session/logout checks and exact Pages
+artifact/live verification. PR23 can then be marked superseded by PR24's safe
+import. The owner's additional desktop compactness review is the next block.
 
 New arbitrary class/skill slots, native class-passive replacement, active combat
 damage simulation, physical phones and manual screen-reader conformance are
