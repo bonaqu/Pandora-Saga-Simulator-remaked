@@ -24,8 +24,10 @@ Remaining gates:
   Python 62 and cross-engine 51. Its GitHub verification is still required.
   Real public GET with an active production service worker passed in all three
   engines on UI16/revision 0, exact Pages CORS. This is not a deployed adoption UI.
-- Supported-capability/editor review is recorded in the administrator guide;
-  final Modern 3.00 version/rendered/PWA validation is next.
+- Supported-capability/editor review is recorded in the administrator guide.
+  Runtime/heading now identify Modern 3.00 without changing museum `Ver` or
+  source title arrays; all four languages and the foundation/PWA/update group
+  passed 20 tests. The final CI selection contains 181 main browser contracts.
 - Squash merge, GitHub-token Worker deployment and exact Pages artifact/live
   verification: all four languages, actual IDDQD login, fresh shared recipient,
   desktop/mobile visual review and isolated installed/offline PWA.

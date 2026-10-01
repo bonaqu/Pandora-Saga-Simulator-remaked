@@ -296,3 +296,15 @@ were not printed or copied into the repository.
   honest limitations, not features implied by editable description fields.
 - Next: identify Modern as release 3.00, validate its rendered/PWA version and
   final feature/API CI, then proceed through the authorized publication gates.
+
+## Modern 3.00 release label, 2026-10-01
+
+- Modern runtime/UI now reports `3.00`. Its calculator heading projects that
+  version in every source language without changing `Ver` or `Name.Title`.
+  Museum runtime/heading remain `2.00`; the native browser title has always
+  been unversioned, so the test checks its actual title and `Ver` separately.
+- A rendered RED exposed the retained calculator heading still showing 2.00
+  after the header bump. The Modern-only presentation adapter fixes it after
+  source `TextSet`, including EN/RU/JP/TW switches; all source title values are
+  asserted unchanged. Foundation and installed/offline/update PWA group passed
+  20 tests. Full final feature/API CI and publication gates remain required.

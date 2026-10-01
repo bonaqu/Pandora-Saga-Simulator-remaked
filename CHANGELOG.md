@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased — stale build-load protection
+All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
+
+## Unreleased — Modern 3.00
+
+- The release candidate identifies Modern UI as 3.00; the retained engine and
+  museum remain 2.00. The version label alone does not claim Pages acceptance.
 
 - Import, named builds and shared links ignore obsolete catalog responses after
   newer editing/loading, Code edits or closing Builds. Deleted named records
@@ -8,10 +13,6 @@
 - Catalog revisions outside the nine-digit PS3 format fail before runtime mutation.
   The administrator guide now maps all six editor kinds to their real simulation
   effects and explicitly identifies unsupported mechanics.
-
-All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
-
-## Unreleased — Modern 3.00
 
 - Explicit current-build catalog adoption checks the live published head,
   preflights worn items and occupied Soul slots, preserves C1 and named pins,

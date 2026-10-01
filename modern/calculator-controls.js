@@ -197,6 +197,13 @@
   function refresh() {
     if (observer) observer.disconnect();
     try {
+      var title = byId('Title'), version = window.PandoraRemakedVersion?.ui;
+      if (title && version && window.Name?.Title) {
+        // Modern presentation only. Ver/Name.Title stay source-owned, and
+        // TextSet may rewrite this node whenever source language changes.
+        var heading = window.Name.Title[Number(window.Flag[0]) + 1] + ' ' + version;
+        if (title.textContent !== heading) title.textContent = heading;
+      }
       decorate();
       document.querySelectorAll('[data-remaked-step]').forEach(function (button) {
         var source = byId(button.dataset.remakedStep);
