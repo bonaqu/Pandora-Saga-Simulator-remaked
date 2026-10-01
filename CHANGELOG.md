@@ -2,6 +2,23 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Modern 3.01 — desktop workspace candidate, 2026-10-01
+
+- Wide PC screens use two complete skill columns and compact native character
+  settings/results. All twenty branches, both point modes and larger steps are
+  retained. Riding now belongs with simulation switches; Equipment has one
+  title/enchantment/reset header instead of a stacked toolbar.
+- Less desktop chrome and no duplicate calculator title or randomized Legacy
+  ASCII joke panel. Actual Pandora artwork, Hybrid C colors, readable values,
+  original callbacks and 44px phone actions remain. The museum is unchanged.
+- Default 1440×900 first weapon control ends around y=893 rather than appearing
+  below the first screen. New geometry, real four-language/font/long-label,
+  responsive boundary and three-engine riding tests guard the layout.
+- The administrator capability note now describes the released pinned catalog
+  correctly. No database, password, balance rule or translation workbook change.
+- Publication is pending full CI and exact production artifact/PWA acceptance;
+  see the release ledger and desktop follow-up plan.
+
 ## Modern 3.00 — direct administrator login correction, 2026-10-01
 
 - Direct Worker form sign-in keeps a same-origin request identity instead of

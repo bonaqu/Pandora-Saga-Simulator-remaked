@@ -1,4 +1,16 @@
-# Release acceptance — Modern 3.00
+# Release acceptance
+
+## Modern 3.01 — compact PC workspace candidate
+
+Scope: `superpowers/plans/2026-10-01-desktop-workspace.md`. Source engine/data,
+translation workbook and all security restrictions are unchanged. Wide PC
+presentation retains complete controls with two skill columns and compact
+character/settings/results; narrow layouts retain touch targets. Publication
+requires exact-head full CI, rendered PC/phone QA, Pages/Worker deployment,
+exact artifact/live/source/workbook checks, fresh shared recipient and isolated
+installed-PWA online/offline acceptance. These release gates remain pending.
+
+## Modern 3.00
 
 Status: PR24 was squash-merged as `7b94428e86c1e187436039fd383089c16f2e9310`
 and published on Pages on 2026-10-01. The approved scope is

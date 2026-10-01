@@ -171,8 +171,9 @@ Cloudflare Worker/D1 administrator CMS (not player cloud saves), editable Englis
 workbook overrides, compact desktop UI and FILE/LOG consolidation. Current scope
 and remaining acceptance gates are in `2026-09-30-modern-3-admin.md`. Worker auth
 and initial editors, revision-pinned consumer and Modern 3.00 were published
-through PR24 on 2026-10-01. Direct Worker-native login is a subsequent regression
-follow-up, followed by the owner's additional desktop compactness review.
+through PR24 on 2026-10-01. Direct Worker-native login was fixed and accepted in
+PR25. The owner's additional compact PC workspace is the Modern 3.01 candidate
+tracked in `2026-10-01-desktop-workspace.md`, with final publication gates pending.
 Exact gates are recorded in `docs/RELEASE_ACCEPTANCE.md`; museum engine and
 player cloud-save scope stay unchanged.
 
