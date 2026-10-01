@@ -69,3 +69,7 @@ budget column with the existing 186px attribute column gives these actions
 more width, without smaller text/targets or looser assertions. The default
 desktop test now also checks that the three native option labels fit one row.
 The full exact-head CI is rerun before publication.
+The second Linux run (`36841313501`) passed 186 main contracts including the
+1920px layout, but retained the 1440px height failure. The option columns now
+reserve proportionate width for the longer two value labels; the first-screen
+assertion includes actual label/font/row geometry if any platform still fails.
