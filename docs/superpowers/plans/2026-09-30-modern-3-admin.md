@@ -308,3 +308,9 @@ were not printed or copied into the repository.
   source `TextSet`, including EN/RU/JP/TW switches; all source title values are
   asserted unchanged. Foundation and installed/offline/update PWA group passed
   20 tests. Full final feature/API CI and publication gates remain required.
+- Feature CI `36796818836` passed 181 main UI contracts, the related 62 and
+  three-engine 51 checks, then correctly rejected generated projection metadata
+  still labeled UI17. Local `npm run test:data` reproduced it. The штатный
+  extractor changed only `metadata.remaked_ui` in the three read-only projection
+  files; records and source fingerprints are untouched. Exact Python version
+  expectation is updated to 3.00. Full CI is rerun, not bypassed.
