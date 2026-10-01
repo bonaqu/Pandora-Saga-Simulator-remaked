@@ -2,14 +2,17 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
-## Unreleased — administrator login follow-up
+## Modern 3.00 — direct administrator login correction, 2026-10-01
 
 - Direct Worker form sign-in keeps a same-origin request identity instead of
   `no-referrer` converting its Origin to `null`. The server still rejects null,
   missing and foreign origins; password/hash/pepper/session rules are unchanged.
 - Local IDDQD opens the first-party secure login without collecting credentials
   on a disallowed preview origin. Native origin-denied submissions return to a
-  clear retry form instead of raw JSON. These corrections are not deployed yet.
+  clear retry form instead of raw JSON. PR25 is published: Pages `36804053399`,
+  Worker `36804053403`. Actual direct login with the unchanged private-file
+  password, authorized catalog, logout and reload passed all three engines.
+  The Windows WebKit cookie-observer limitation is recorded in release acceptance.
 
 ## Modern 3.00 — 2026-10-01
 
@@ -17,8 +20,8 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   36800046623. Exact artifact/live checks, C1 fresh-recipient/offline sharing,
   actual Pages IDDQD authentication and installed offline PWA passed.
 - A later user report exposed a distinct direct Worker-form sign-in failure.
-  Its root cause and pending correction are recorded above; initial Pages-entry
-  acceptance did not cover this native form. No acceptance tag is claimed yet.
+  Its root cause and published correction are recorded above; initial Pages-entry
+  acceptance did not cover this native form.
 
 - The release identifies Modern UI as 3.00; the retained engine and
   museum remain 2.00.

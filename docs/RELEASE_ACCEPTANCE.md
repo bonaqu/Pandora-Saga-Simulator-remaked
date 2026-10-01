@@ -2,8 +2,9 @@
 
 Status: PR24 was squash-merged as `7b94428e86c1e187436039fd383089c16f2e9310`
 and published on Pages on 2026-10-01. The approved scope is
-`superpowers/plans/2026-09-30-modern-3-admin.md`. No acceptance tag is claimed
-until the subsequently reported direct Worker-native login gate passes.
+`superpowers/plans/2026-09-30-modern-3-admin.md`. The subsequently reported
+direct Worker-native login was corrected and verified in PR25; acceptance
+is recorded at the published PR25 merge, not the original incomplete gate.
 
 The initial release includes editable EN/RU workbook, secure Worker/D1 administration,
 initial gear/Soul/class/active/passive/racial editors, version-pinned catalog
@@ -38,14 +39,14 @@ Published release evidence:
   Installed Chromium PWA ran Modern/Legacy online and offline in an isolated
   profile. No user browser profiles or catalog data were changed.
 
-## Direct Worker-native login follow-up — not yet deployed
+## Direct Worker-native login follow-up — published and verified
 
 The owner reported that `/admin` rejected the existing private-file password.
 An unmodified production browser reproduced `Referrer-Policy: no-referrer`,
 native form `Origin: null`, HTTP 403. The password was not the cause. Initial
 Pages-entry acceptance had missed this different native navigation path.
 
-The feature changes that policy to `same-origin`, keeps null/missing/foreign
+The correction changes that policy to `same-origin`, keeps null/missing/foreign
 origins rejected, redirects denied native forms to an intelligible retry page,
 and sends localhost IDDQD to first-party login without collecting credentials.
 Password, hash, pepper, CORS and session restrictions are unchanged.
@@ -53,11 +54,37 @@ Local checks passed 43 backend, 14 entry/editor and 54 cross-engine tests.
 The native regression uses actual Worker routing and SQLite; its explicit
 test-only redirect boundary does not substitute for real production navigation.
 
-Remaining gates: exact-head full CI, squash/deploy, then direct native login
-with the existing private-file password in all three engines without request
-interception, authorized read-only session/logout checks and exact Pages
-artifact/live verification. PR23 can then be marked superseded by PR24's safe
-import. The owner's additional desktop compactness review is the next block.
+PR25 passed exact-head Feature CI `36803582316` and API verification
+`36803582405`, then squash-merged as `e589398a5d5895fdefd2186074d60d4e9257679c`.
+CI: 182 main (zero skipped/flaky/unexpected), 8 private editor, 63 related,
+54 cross-engine, 28 visual, 62 Python and 43 backend tests.
+Pages `36804053399` and Worker `36804053403` succeeded. Worker version:
+`e763688c-275c-447e-aa6e-6e58e29a04dc`.
+
+Actual direct `/admin` form navigation with the unchanged private-file password
+passed Chromium, Firefox and Windows WebKit, without routes, fabricated origin,
+cookie injection, tracing or filled-password artifacts: browser-generated own
+origin, real 303/authorized page, read-only 1561-record metadata, empty password,
+no client auth storage, logout revocation and logged-out reload. Ten additional
+real API/security checks and deployed Pages IDDQD with third-party cookies
+blocked passed; all six catalog kinds were read without publishing game data.
+
+The browser observer initially failed its Windows WebKit SameSite assertion.
+Upstream explicitly marks Lax/Strict cookie reporting there as an expected
+failure: [Playwright cookie tests](https://github.com/microsoft/playwright/blob/main/tests/library/browsercontext-cookies.spec.ts#L122).
+This port also omitted the native redirect Set-Cookie from its response API.
+Actual server `Secure; HttpOnly; SameSite=Lax` was independently observed in
+Chromium/Firefox; no server restriction was relaxed. WebKit functional login
+is not physical Safari cookie-policy acceptance.
+
+Updated exact artifact SHA-256:
+`f08d2a8de1eca14e9496d3f36f8e1f0d6853fd4f596851ec581481b6abd00a63`.
+459 preserved files/recovered runtime and workbook remain unchanged; thirteen
+live assets match. Cache: `pandora-remaked-3.00-ca3c7937912e201e`.
+Public four-language/state, dropdown delay, 320px RU, fresh C1 recipient/offline
+and isolated installed Modern/Legacy online/offline PWA gates passed again.
+The owner's additional desktop compactness block is now tracked in
+`superpowers/plans/2026-10-01-desktop-workspace.md`; no new UI release is claimed.
 
 New arbitrary class/skill slots, native class-passive replacement, active combat
 damage simulation, physical phones and manual screen-reader conformance are
