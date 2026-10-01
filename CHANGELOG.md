@@ -4,6 +4,14 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 
 ## Unreleased — Modern 3.00
 
+- Explicit current-build catalog adoption checks the live published head,
+  preflights worn items and occupied Soul slots, preserves C1 and named pins,
+  and cancels stale responses. Offline cache is never reported as the latest.
+  Quota failures preserve old saves; an unverified calculation rollback pauses
+  autosave and reports recovery honestly. This frontend feature is not on Pages.
+- Successful explicit code import, named load and catalog update detach an old
+  shared URL fragment so reload restores the new autosave, not the old link.
+  Failed imports keep the link, character and storage intact.
 - Compact desktop candidate puts attributes beside results, uses the working
   area width and keeps branch names, Adeptness/Potential and their native actions
   in aligned rows. The Hybrid C art remains; the desktop banner is shorter.

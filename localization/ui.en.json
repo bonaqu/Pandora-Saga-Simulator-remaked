@@ -178,5 +178,21 @@
   "builds.legacyImport": "Copy Legacy FILE slots",
   "builds.legacyHelp": "Copy old FILE slots into named builds. Originals stay untouched; duplicate codes are skipped.",
   "builds.legacyCopied": "Copied {added} builds; skipped {skipped} duplicates. Original FILE slots kept.",
-  "builds.legacyFailed": "FILE recovery failed ({code}). Originals and current build were kept."
+  "builds.legacyFailed": "FILE recovery failed ({code}). Originals and current build were kept.",
+  "builds.catalogSource": "Legacy source (revision 0)",
+  "builds.catalogRevision": "Catalog revision: {revision}",
+  "builds.catalogUpdate": "Update current build",
+  "builds.catalogHelp": "Updates only this character to the published catalog. Equipped items, Souls and effects are checked; named builds keep their original revision.",
+  "builds.catalogChecking": "Checking published catalog…",
+  "builds.catalogCurrent": "This catalog is already current. No build or save was changed.",
+  "builds.catalogApplied": "Catalog {revision} applied. Named builds keep their original revision.",
+  "builds.catalogUnsaved": "Catalog {revision} applied, but autosave failed. Export the current code before leaving; the old save was kept.",
+  "builds.catalogUrlWarning": "Catalog {revision} applied, but the old shared link could not be cleared. Export a new code or link before reloading.",
+  "builds.catalogUnavailable": "Could not check the published catalog. Current build and saves kept; try again online.",
+  "builds.catalogCancelled": "Update cancelled: the character or link changed. Try again for the current build.",
+  "builds.catalogProtected": "Restore or export the protected autosave first. It was not replaced.",
+  "builds.catalogIncompatible": "Update incompatible with equipped items, Soul slots or class requirements. Current build and saves kept.",
+  "builds.catalogCalculationFailed": "Recalculation failed. The previous catalog, character and saves were restored.",
+  "builds.catalogRestorationFailed": "Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.",
+  "builds.urlWarning": "Build loaded, but the old shared link could not be cleared. Export a new code or link before reloading."
 }

@@ -19,6 +19,9 @@
   var initialized = false;
   var suppressAutosave = false;
   var previousBodyOverflow = '';
+  var catalogRevision = null, catalogUpdate = null, catalogStatus = null;
+  var catalogRequest = 0, catalogBusy = false, catalogMessage = null;
+  var restorationFailed = false;
 
   function t(key, values, fallback) {
     return i18n && typeof i18n.t === 'function' ? i18n.t(key, values) : fallback;
@@ -44,6 +47,94 @@
 
   function currentPayload() {
     return adapter.serialize();
+  }
+
+  function refreshCatalogControls() {
+    if (!catalogRevision) return;
+    var revision = namespace.catalog.getRevision();
+    catalogRevision.textContent = revision
+      ? t('builds.catalogRevision', { revision: revision }, 'Catalog revision: ' + revision)
+      : t('builds.catalogSource', null, 'Legacy source (revision 0)');
+    catalogUpdate.disabled = catalogBusy;
+    catalogUpdate.setAttribute('aria-busy', String(catalogBusy));
+    catalogUpdate.textContent = catalogBusy
+      ? t('builds.catalogChecking', null, 'Checking published catalog…')
+      : t('builds.catalogUpdate', null, 'Update current build');
+    catalogStatus.textContent = catalogMessage ? t(catalogMessage.key, catalogMessage.values, catalogMessage.fallback) : '';
+    catalogStatus.dataset.state = catalogMessage?.state || 'ready';
+  }
+
+  function setCatalogStatus(key, state, values, fallback) {
+    catalogMessage = { key: key, state: state, values: values, fallback: fallback };
+    refreshCatalogControls();
+  }
+
+  function detachLoadedShareLink() {
+    if (location.hash.indexOf('#build=') !== 0) return true;
+    try {
+      var url = new URL(location.href); url.hash = '';
+      history.replaceState(history.state, '', url.href);
+      shareRequest++; return true;
+    } catch { return false; }
+  }
+
+  async function updateCurrentCatalog() {
+    var catalog = namespace.catalog;
+    if (!catalog || catalogBusy) return { ok: false, reason: 'unavailable' };
+    if (restorationFailed) {
+      setCatalogStatus('builds.catalogRestorationFailed', 'error', null, 'Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.');
+      return { ok: false, reason: 'restore-failed' };
+    }
+    if (catalog.needsRecovery()) {
+      setCatalogStatus('builds.catalogProtected', 'warning', null, 'Restore or export the protected autosave first. It was not replaced.');
+      return { ok: false, reason: 'protected-save' };
+    }
+    var before;
+    try { before = currentPayload(); }
+    catch (error) {
+      setCatalogStatus('builds.serializeFailed', 'error', null, 'Current build could not be serialized.');
+      return { ok: false, error: error };
+    }
+    var request = ++catalogRequest, hash = location.hash, shared = shareRequest;
+    catalogBusy = true; setCatalogStatus('builds.catalogChecking', 'ready', null, 'Checking published catalog…');
+    try {
+      var snapshot = await catalog.fetchSnapshot(null, { networkOnly: true });
+      if (request !== catalogRequest) return { ok: false, reason: 'cancelled' };
+      if (hash !== location.hash || shared !== shareRequest || before !== currentPayload() || catalog.needsRecovery()) {
+        setCatalogStatus('builds.catalogCancelled', 'warning', null, 'Update cancelled: the character or link changed. Try again for the current build.');
+        return { ok: false, reason: 'cancelled' };
+      }
+      if (snapshot.revision < catalog.getRevision()) throw new Error('Published head predates current revision');
+      if (snapshot.revision === catalog.getRevision()) {
+        setCatalogStatus('builds.catalogCurrent', 'success', null, 'This catalog is already current. No build or save was changed.');
+        return { ok: true, unchanged: true };
+      }
+      try { catalog.preflightSnapshot(snapshot); }
+      catch (error) {
+        setCatalogStatus('builds.catalogIncompatible', 'warning', null, 'Update incompatible with equipped items, Soul slots or class requirements. Current build and saves kept.');
+        return { ok: false, error: error };
+      }
+      var candidate = catalog.packPayload(catalog.unpackPayload(before).payload, snapshot.revision);
+      var loaded = loadPayloadSafely(candidate);
+      if (!loaded.ok) {
+        setCatalogStatus(loaded.restored ? 'builds.catalogCalculationFailed' : 'builds.catalogRestorationFailed', 'error', null,
+          loaded.restored ? 'Recalculation failed. The previous catalog, character and saves were restored.' : 'Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.');
+        return loaded;
+      }
+      clearScheduledAutosave();
+      var saved = persistLoadedPayload(loaded.payload);
+      var detached = detachLoadedShareLink();
+      if (shareUrl) { shareUrl.hidden = true; shareUrl.value = ''; }
+      setCatalogStatus(!saved.ok ? 'builds.catalogUnsaved' : !detached ? 'builds.catalogUrlWarning' : 'builds.catalogApplied',
+        saved.ok && detached ? 'success' : 'warning', { revision: snapshot.revision },
+        'Catalog ' + snapshot.revision + ' applied. Named builds keep their original revision.');
+      return { ok: true, payload: loaded.payload, autosaved: saved.ok, detached: detached };
+    } catch (error) {
+      if (request === catalogRequest) setCatalogStatus('builds.catalogUnavailable', 'warning', null, 'Could not check the published catalog. Current build and saves kept; try again online.');
+      return { ok: false, error: error };
+    } finally {
+      if (request === catalogRequest) { catalogBusy = false; refreshCatalogControls(); }
+    }
   }
 
   function payloadLooksLikeCurrentCsv(payload, reference) {
@@ -93,9 +184,10 @@
     try {
       suppressAutosave = true;
       adapter.load(before);
+      if (currentPayload() !== before) throw new Error('Restored build differs from original');
+      return { ok: true };
     } catch (error) {
-      // If the legacy engine itself cannot restore a payload produced by Store(),
-      // there is nothing safer the Modern layer can do here.
+      return { ok: false, error: error };
     } finally {
       suppressAutosave = false;
     }
@@ -121,11 +213,17 @@
         throw new Error('Invalid Pandora Saga build code.');
       }
       var loaded = currentPayload();
+      restorationFailed = false;
+      catalogMessage = null;
       if (namespace.catalog) namespace.catalog.clearRecovery();
+      refreshCatalogControls();
       return { ok: true, payload: loaded };
     } catch (error) {
-      rollback(before);
-      return { ok: false, error: error };
+      var restored = rollback(before);
+      restorationFailed = !restored.ok;
+      if (restorationFailed) setAutosaveStatus(t('builds.autosaveWarning', { code: 'restore-failed' }, 'Autosave paused: restore-failed'), 'warning');
+      refreshCatalogControls();
+      return { ok: false, error: error, restored: restored.ok, restorationError: restored.error };
     } finally {
       suppressAutosave = false;
     }
@@ -186,6 +284,10 @@
 
   function flushAutosave() {
     clearScheduledAutosave();
+    if (restorationFailed) {
+      setAutosaveStatus(t('builds.autosaveWarning', { code: 'restore-failed' }, 'Autosave paused: restore-failed'), 'warning');
+      return { ok: false, error: { code: 'restore-failed' } };
+    }
     if (namespace.catalog?.needsRecovery()) {
       setAutosaveStatus('Catalog unavailable; saved build kept. Autosave paused.', 'warning');
       return { ok: false, error: { code: 'catalog-unavailable' } };
@@ -245,7 +347,8 @@
     var loaded = loadPayloadSafely(typeof candidate === 'string' ? candidate.trim() : candidate);
     if (!loaded.ok) return loaded;
     var saved = persistLoadedPayload(loaded.payload, t('builds.savedImported', null, 'Saved imported build'));
-    return { ok: true, payload: loaded.payload, autosaved: saved.ok };
+    var detached = detachLoadedShareLink();
+    return { ok: true, payload: loaded.payload, autosaved: saved.ok, detached: detached };
   }
 
   async function importPreparedPayload(candidate) {
@@ -263,7 +366,8 @@
       code.focus(); return result;
     }
     code.removeAttribute('aria-invalid');
-    feedback(result.autosaved ? 'builds.imported' : 'builds.importedNoAutosave', result.autosaved ? 'success' : 'warning', 'Build code imported.');
+    feedback(!result.autosaved ? 'builds.importedNoAutosave' : !result.detached ? 'builds.urlWarning' : 'builds.imported',
+      result.autosaved && result.detached ? 'success' : 'warning', 'Build code imported.');
     return result;
   }
 
@@ -359,9 +463,10 @@
           return;
         }
         var saved = persistLoadedPayload(loaded.payload, t('builds.savedLoaded', null, 'Saved loaded build'));
-        setManagerStatus(saved.ok
+        var detached = detachLoadedShareLink();
+        setManagerStatus(!detached ? t('builds.urlWarning', null, 'Old shared link could not be cleared. Export a new link before reloading.') : saved.ok
           ? t('builds.loaded', { name: storedBuild.name }, 'Loaded “' + storedBuild.name + '”.')
-          : t('builds.loadedNoAutosave', null, 'Build loaded, but autosave is unavailable.'), saved.ok ? 'success' : 'warning');
+          : t('builds.loadedNoAutosave', null, 'Build loaded, but autosave is unavailable.'), saved.ok && detached ? 'success' : 'warning');
       });
       row.appendChild(load);
 
@@ -412,6 +517,10 @@
 
   function closeManager() {
     if (!managerOverlay || managerOverlay.hidden) return;
+    var pending = catalogBusy;
+    catalogRequest++; catalogBusy = false;
+    if (pending) setCatalogStatus('builds.catalogCancelled', 'warning', null, 'Update cancelled: the character or link changed. Try again for the current build.');
+    else refreshCatalogControls();
     managerOverlay.close();
     managerOverlay.hidden = true;
     document.body.style.overflow = previousBodyOverflow;
@@ -424,6 +533,7 @@
     document.body.style.overflow = 'hidden';
     setManagerStatus('', 'ready');
     renderBuilds();
+    refreshCatalogControls();
     managerOverlay.showModal();
     if (buildNameInput) buildNameInput.focus();
   }
@@ -574,6 +684,29 @@
     codeSection.appendChild(shareUrl);
     body.appendChild(codeSection);
 
+    if (namespace.catalog) {
+      var catalogSection = document.createElement('section');
+      catalogSection.className = 'remaked-build-section remaked-build-catalog';
+      catalogRevision = document.createElement('h3');
+      catalogRevision.dataset.remakedCatalogRevision = '';
+      catalogSection.appendChild(catalogRevision);
+      var catalogHelp = document.createElement('p');
+      catalogHelp.id = 'remaked-catalog-update-help';
+      if (i18n) i18n.bindText(catalogHelp, 'builds.catalogHelp');
+      else catalogHelp.textContent = 'Updates only this character to the published catalog. Equipped items, Souls and effects are checked; named builds keep their original revision.';
+      catalogSection.appendChild(catalogHelp);
+      catalogUpdate = button('Update current build', null, 'builds.catalogUpdate');
+      catalogUpdate.dataset.remakedCatalogUpdate = '';
+      catalogUpdate.setAttribute('aria-describedby', catalogHelp.id);
+      catalogUpdate.addEventListener('click', updateCurrentCatalog);
+      catalogSection.appendChild(catalogUpdate);
+      catalogStatus = document.createElement('p');
+      catalogStatus.className = 'remaked-build-status'; catalogStatus.dataset.remakedCatalogStatus = '';
+      catalogStatus.setAttribute('role', 'status'); catalogSection.appendChild(catalogStatus);
+      body.appendChild(catalogSection); refreshCatalogControls();
+      window.addEventListener('pandora-remaked:localechange', refreshCatalogControls);
+    }
+
     managerStatus = document.createElement('p');
     managerStatus.className = 'remaked-build-status';
     managerStatus.dataset.remakedBuildManagerStatus = '';
@@ -638,6 +771,7 @@
     importPayload: importPayload,
     importPreparedPayload: importPreparedPayload,
     importCodeField: importCodeField,
+    updateCurrentCatalog: updateCurrentCatalog,
     scheduleAutosave: scheduleAutosave,
     flushAutosave: flushAutosave,
     openManager: openManager,

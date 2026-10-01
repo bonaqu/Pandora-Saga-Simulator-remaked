@@ -186,7 +186,8 @@
         group[record.index] = row;
       }
     });
-    if (options.rebuild !== false) selectedStateExists(equipment, souls);
+    if (options.rebuild !== false || options.preflightOnly) selectedStateExists(equipment, souls);
+    if (options.preflightOnly) return snapshot.revision;
     // Source files and captured baseline arrays remain immutable. Only the
     // explicitly documented Modern runtime data projection is replaced.
     window.EquipData = equipment; window.SoulData = souls; window.Status.Mod = classMods; recordsByTerm = terms; revision = snapshot.revision;
@@ -266,13 +267,15 @@
     context.clan.forEach(function (value, index) { document.getElementById('SelBuffClan_' + index).selectedIndex = value; });
     context.caster.forEach(function (value, index) { document.getElementById('InBuff_' + index).value = String(value); });
   }
-  function packPayload(payload) {
+  function packPayload(payload, targetRevision) {
+    var pinned = targetRevision === undefined ? revision : targetRevision;
+    check(Number.isSafeInteger(pinned) && pinned >= 0 && pinned <= 999999999, 'Invalid catalog revision');
     var context = captureContext();
     if (JSON.stringify(context) !== JSON.stringify(defaultContext)) {
       var encoded = btoa(JSON.stringify(context)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-      return 'PS3:' + revision + ':C1:' + encoded + ':' + payload;
+      return 'PS3:' + pinned + ':C1:' + encoded + ':' + payload;
     }
-    return revision ? 'PS3:' + revision + ':' + payload : payload;
+    return pinned ? 'PS3:' + pinned + ':' + payload : payload;
   }
   function unpackPayload(payload) {
     check(typeof payload === 'string' && payload.length > 0 && payload.length <= 20000, 'Invalid build code');
@@ -309,7 +312,8 @@
       });
     } catch { /* Public cache failure cannot destroy the character or builds. */ }
   }
-  async function fetchSnapshot(requested) {
+  async function fetchSnapshot(requested, options) {
+    options = options || {};
     if (requested === 0) return sourceSnapshot();
     if (requested !== null && snapshots[requested]) return snapshots[requested];
     try {
@@ -319,6 +323,9 @@
       check(requested === null || snapshot.revision === requested, 'Catalog revision mismatch');
       snapshots[snapshot.revision] = snapshot; await remember(snapshot, requested === null); return snapshot;
     } catch (error) {
+      // An explicit update must check the actual public head. Cached pinned
+      // revisions still work offline, but cannot be advertised as the latest.
+      if (options.networkOnly) throw error;
       var target = requested;
       if (target === null) target = (await cached(-1))?.head;
       var offline = target === 0 ? sourceSnapshot() : target !== undefined ? await cached(target) : null;
@@ -352,6 +359,7 @@
     }
   }
   namespace.catalog = { applySnapshot, validateSnapshot: validate, refreshAvailability,
+    preflightSnapshot: function (snapshot) { return applySnapshot(snapshot, { preflightOnly: true }); },
     getRevision: function () { return revision; }, hasOverrides: function () { return Object.keys(recordsByTerm).length > 0; },
     gameLabel: function (term) {
       var detail = term.match(/^skill_detail\.(\d+)\.(\d+)\.3$/);

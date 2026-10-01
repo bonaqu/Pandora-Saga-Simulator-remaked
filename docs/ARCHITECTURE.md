@@ -137,6 +137,20 @@ Three archived codec files (`base64.js`, `rawinflate.js`, `rawdeflate.js`) are C
 
 The owner has authorized a separate Cloudflare Worker/D1 administrator catalog.
 Its plan is [Modern 3.00 and admin](superpowers/plans/2026-09-30-modern-3-admin.md).
-This is not yet a deployed feature. Museum Legacy 2.00 remains unchanged.
+Worker auth and the initial six catalog editor kinds are deployed. The Pages
+consumer and Modern 3.00 release are not yet published. Museum Legacy 2.00 remains unchanged.
 The translation workbook now supports optional English display overrides in
 column I as well as Russian in H; A:G remain preserved source references.
+
+Catalog revisions are immutable public snapshots. Existing saved/shared builds
+keep their pin; explicit **Update current build** checks the live public head
+without an offline-head fallback. It projects and preflights current item,
+class/race compatibility and occupied Soul sockets before any runtime mutation.
+The revision changes through the same safe adapter load, retaining numeric CSV
+and C1 context. Named records are not rewritten. A stale request, changed link,
+closed manager, incompatible projection or protected unavailable autosave cannot
+replace the character. Calculation failure attempts the original revision/context
+restore; an unverified restore is surfaced and pauses autosave until recovery.
+Storage quota failure keeps the old save and explicitly reports unsaved state.
+Successful explicit adoption, code import or named load removes only an obsolete
+`#build=` fragment, so reload cannot override the new autosave with an old shared build.

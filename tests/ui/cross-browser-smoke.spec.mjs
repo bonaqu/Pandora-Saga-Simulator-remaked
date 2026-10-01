@@ -1,4 +1,41 @@
 import { test, expect } from '@playwright/test';
+import { compileRecord, draftFromSource, validateDraft } from '../../admin-api/src/catalog-model.mjs';
+import equipment from '../../data/generated/equipment.v1.json' with { type: 'json' };
+import character from '../../data/generated/character.v1.json' with { type: 'json' };
+import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
+
+test.describe('network-routed catalog contract', () => {
+  // page.route cannot replace a request intercepted by a service worker. This
+  // suite verifies the public-fetch/engine contract with a synthetic API; the
+  // offline snapshot and installed-PWA paths remain separately enabled/tested.
+  test.use({ serviceWorkers: 'block' });
+test('explicit public catalog adoption retains effect context and old named pin in every engine', async ({ page }) => {
+  const source = character.records.find(item => item.id === 'job.0');
+  const identity = { id: source.id, kind: 'class', category: null, index: 0 };
+  const edit = draftFromSource(source, 'class'); edit.progression[0] += 100;
+  const snapshot = { ok: true, schemaVersion: 1, revision: 2,
+    sourceFingerprint: equipment.metadata.generated_from[0].sha256, characterSourceFingerprint: character.sourceFingerprint,
+    records: [compileRecord(validateDraft(edit, identity), identity, source)] };
+  // The real API returns its exact Pages origin. The local synthetic response
+  // must likewise include an exact test origin; WebKit enforces this CORS path.
+  await page.route('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog**', route => route.fulfill({
+    headers: { 'Access-Control-Allow-Origin': 'http://127.0.0.1:8000' }, json: snapshot
+  }));
+  await page.goto('/');
+  const before = await page.evaluate(() => {
+    document.getElementById('SwitchUse_4').click();
+    const api = PandoraRemaked, payload = api.adapter.serialize(); api.buildStore.saveBuild('Original pin', payload); api.builds.flushAutosave();
+    history.replaceState(null, '', '#build=' + encodeURIComponent(payload));
+    return { lp: Status.LP, raw: Store(), context: api.catalog.captureContext(), named: localStorage.getItem(api.buildStore.BUILDS_KEY) };
+  });
+  await page.locator('[data-remaked-builds-open]').click(); await page.locator('[data-remaked-catalog-update]').click();
+  await expect(page.locator('[data-remaked-catalog-update]')).toBeEnabled();
+  await expect(page.locator('[data-remaked-catalog-status]')).toContainText('Catalog 2 applied');
+  const after = await page.evaluate(() => ({ lp: Status.LP, raw: Store(), context: PandoraRemaked.catalog.captureContext(),
+    revision: PandoraRemaked.catalog.getRevision(), named: localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY), hash: location.hash }));
+  expect(after).toEqual({ ...before, lp: before.lp + 100, revision: 2, hash: '' });
+});
+});
 
 test('compact workspace keeps Builds visible on phones and Legacy FILE recovery unchanged in every engine', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 }); await page.goto('/');
@@ -28,10 +65,6 @@ test('complete effect context restores riding and clan data and survives source 
   });
   expect(result.payload).toMatch(/^PS3:0:C1:/); expect(result.after).toBe(result.payload); expect(result.afterSummary).toEqual(result.summary); expect(result.horse).toBe(1); expect(result.clan).toBe(3);
 });
-import { compileRecord, draftFromSource, validateDraft } from '../../admin-api/src/catalog-model.mjs';
-import character from '../../data/generated/character.v1.json' with { type: 'json' };
-import equipment from '../../data/generated/equipment.v1.json' with { type: 'json' };
-import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
 
 test('learned passive bonus recalculates through native level callback with hidden Skill List in each engine', async ({ page }) => {
   const original = skills.records.find(source => source.id === 'skill.0.1');

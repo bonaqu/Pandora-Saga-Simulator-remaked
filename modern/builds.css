@@ -320,3 +320,8 @@
 }
 .remaked-modern [data-remaked-code-status][data-state="error"] { color: #8e2921; }
 .remaked-modern [data-remaked-code-status][data-state="warning"] { color: #8b6025; }
+
+.remaked-build-catalog > p { margin: 0; font: 12px/1.5 var(--rm-font); overflow-wrap: anywhere; }
+.remaked-build-catalog > button { justify-self: start; min-height: 44px; line-height: 1.35; }
+.remaked-build-catalog > button:disabled { cursor: progress; opacity: .65; }
+.remaked-build-catalog [data-remaked-catalog-status]:empty { display: none; }

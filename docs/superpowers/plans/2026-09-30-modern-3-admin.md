@@ -218,3 +218,55 @@ were not printed or copied into the repository.
   for these frontend-only edits.
 - Next release block is explicit public-catalog adoption for existing builds,
   without silently changing their pinned revision or losing unavailable saves.
+
+## Catalog adoption increment, 2026-10-01
+
+- `bb54363` passed GitHub Feature CI `36779196230` (180 main contracts,
+  zero unexpected/flaky/skipped) and API verification `36779196238`.
+  Pages remains accepted UI16; backend remains the previously verified version.
+- Added a deliberate current-build update in Builds, showing the active pin.
+  It checks the live public head, never promotes an offline cached head to
+  "latest", preflights class/race equipment flags and occupied Soul sockets
+  without mutation, and loads through the retained adapter with full C1.
+  Named pins are untouched. Closing the manager or changing the character/link
+  cancels an in-flight response. Protected unavailable autosave blocks adoption.
+- A transient native failure restores catalog, context, displayed calculation
+  and storage. A persistent failure previously claimed success despite failed
+  rollback; its RED test now passes with honest error and paused autosave until
+  successful recovery. Quota failure preserves the old save and reports the
+  current adopted character as unsaved.
+- A second RED found that successful explicit import retained an obsolete
+  `#build=` URL and reload could undo the import. Adoption/import/named loading
+  now detach only this fragment after success; invalid import leaves it intact.
+- All 18 adoption/sharing/recovery scenarios passed, including a fresh recipient
+  and cached offline reload. The related catalog/class/racial/passive/context/
+  IDDQD group passed 50 tests. Python passed 62 after updating exact workbook
+  row/table/docs counts for the newly appended labels, without weakening checks.
+  Desktop and 320px RU manager images were inspected. Workbook now has 2863
+  rows/162 RU UI labels; every preceding row/EN/RU value was preserved.
+- Full local UI exposed a Windows test-artifact preparation timeout before any
+  browser context existed. Instrumented trace measured copying 960 published
+  files at 24.75s and real workbook compilation at 9.60s. The fixture now lives
+  on the existing test-output volume, reuses read-only static files by bounded
+  hard links (copy fallback), and independently copies all three generated locale/
+  worker files. New SHA checks prove the shared site's generated files unchanged.
+  Browser assertions and the 30s limit remain intact. Full main UI then passed
+  180/180, zero unexpected/flaky/skipped; real edited-workbook and PWA-update
+  scenarios took 21.89s and 14.20s. No frontend release is claimed.
+- WebKit's new API smoke hit the real backend instead of its page-route mock
+  because a service worker intercepted the request; the trace showed the correct
+  production CORS rejection of localhost. The synthetic network contract is now
+  scoped to a blocked-worker context as documented by Playwright; offline/PWA
+  tests remain enabled. Read-only production-origin/public-API verification with
+  active workers then passed in Chromium, Firefox and WebKit: public GET 200,
+  exact `https://bonaqu.github.io` ACAO, UI16/revision 0. No auth/data writes.
+  All 48 cross-engine smoke tests passed. The read-only verifier polls from Node
+  because the museum's `Set` data object shadows a native constructor used by
+  Playwright's main-world wait helper. Production CORS was not weakened.
+- Next: final capability/async-load review, version 3.00 and complete release
+  gates from the block above. Arbitrary new class/skill mechanics remain explicitly
+  unsupported rather than silently emulated by text edits.
+- Final local visual capture passed 28 scenarios. Current Builds layout was
+  inspected at desktop and 320px RU phone widths; the catalog action is a
+  separate deliberate section, not another code/share interface. Feature and
+  API GitHub verification of the new commit remains the next gate.

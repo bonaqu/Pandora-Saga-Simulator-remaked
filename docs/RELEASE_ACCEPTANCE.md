@@ -7,9 +7,10 @@ scope is `superpowers/plans/2026-09-30-modern-3-admin.md`.
 The candidate includes editable EN/RU workbook, secure Worker/D1 administration,
 initial gear/Soul/class/active/passive/racial editors, version-pinned catalog
 and complete C1 build context, compact desktop controls, one Builds/Compare
-header group, consolidated Code operations and explicit Legacy FILE recovery.
+header group, consolidated Code operations, explicit Legacy FILE recovery and
+safe opt-in published-catalog adoption for the current character.
 The 459 preserved source files stay unchanged. All 2842 pre-extension workbook
-rows remain intact; five new bilingual UI rows bring the total to 2847.
+rows remain intact; twenty-one new bilingual UI rows bring the total to 2863.
 
 Worker version `c488e6d9-9403-4285-94e0-37b427a72888` is deployed and passed real
 first-party auth/security and read-only editor acceptance. Public revision is
@@ -17,9 +18,11 @@ first-party auth/security and read-only editor acceptance. Public revision is
 
 Remaining gates:
 
-- Latest feature CI and API verification, including Linux font fallback layout.
-- Explicit safe adoption of a published catalog for existing pinned builds;
-  no automatic replacement of their data or protected unavailable autosave.
+- Feature/API CI passed `bb54363`, including Linux font fallback layout;
+  the newer adoption increment passed local main UI 180, related workflows 50,
+  Python 62 and cross-engine 48. Its new GitHub verification is still required.
+  Real public GET with an active production service worker passed in all three
+  engines on UI16/revision 0, exact Pages CORS. This is not a deployed adoption UI.
 - Final supported-capability/editor review, operational docs and version 3.00.
 - Squash merge, GitHub-token Worker deployment and exact Pages artifact/live
   verification: all four languages, actual IDDQD login, fresh shared recipient,
