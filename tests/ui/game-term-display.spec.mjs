@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs/promises';
-import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { startStaticServer } from '../../scripts/lib/legacy-runtime.mjs';
+import { createPublishedFixture, publishedLocaleFingerprints } from './helpers/published-fixture.mjs';
 
 async function immutableState(page) {
   return page.evaluate(() => {
@@ -108,17 +108,18 @@ test('translated skill descriptions and units leave their numeric values unchang
 });
 
 test('an actual edited workbook publishes calculator labels and names together', async ({ browser }) => {
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'pandora-workbook-display-'));
-  const source = path.join(temporary, 'source');
-  const site = path.join(temporary, 'site');
-  let server, context;
+  const sourceLocales = await publishedLocaleFingerprints();
+  let fixture, server, context;
   try {
-    await fs.cp(path.resolve('_site'), site, { recursive: true });
-    await fs.mkdir(path.join(source, 'localization'), { recursive: true });
-    for (const file of ['translations.xlsx', 'ui.en.json', 'game-terms.ru.json']) {
-      await fs.copyFile(path.resolve('localization', file), path.join(source, 'localization', file));
-    }
-    execFileSync('python', ['-c', [
+    fixture = await test.step('Copy isolated published artifact', () => createPublishedFixture(test.info()));
+    const source = path.join(fixture.directory, 'source'), site = fixture.site;
+    await test.step('Copy source workbook', async () => {
+      await fs.mkdir(path.join(source, 'localization'), { recursive: true });
+      for (const file of ['translations.xlsx', 'ui.en.json', 'game-terms.ru.json']) {
+        await fs.copyFile(path.resolve('localization', file), path.join(source, 'localization', file));
+      }
+    });
+    await test.step('Compile edited workbook and service worker', async () => execFileSync('python', ['-c', [
       'import pathlib, sys',
       'sys.path.insert(0, str(pathlib.Path.cwd() / "tests"))',
       'from test_translation_workbook import set_russian_cell, set_translation_cell',
@@ -136,7 +137,8 @@ test('an actual edited workbook publishes calculator labels and names together',
       '_materialize_locales(root, site, catalogs.ui_russian, catalogs.ui_english)',
       '_materialize_game_terms(site, catalogs.game_russian, catalogs.game_english)',
       '_materialize_service_worker(pathlib.Path.cwd(), site)'
-    ].join('\n'), source, site], { cwd: process.cwd(), stdio: 'pipe' });
+    ].join('\n'), source, site], { cwd: process.cwd(), stdio: 'pipe' }));
+    expect(await publishedLocaleFingerprints()).toEqual(sourceLocales);
     server = await startStaticServer(site);
     context = await browser.newContext();
     const page = await context.newPage();
@@ -168,8 +170,7 @@ test('an actual edited workbook publishes calculator labels and names together',
   } finally {
     await context?.close();
     if (server) await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
-    if (!path.resolve(temporary).startsWith(path.resolve(os.tmpdir(), 'pandora-workbook-display-'))) throw new Error('Unsafe test cleanup path');
-    await fs.rm(temporary, { recursive: true, force: true });
+    await fixture?.cleanup();
   }
 });
 
