@@ -16,7 +16,19 @@ for (const width of [1440, 1920]) test(`complete desktop workspace brings Equipm
     const rect = node.getBoundingClientRect(), range = document.createRange(); range.selectNodeContents(node);
     return { id, label: node.textContent, width: rect.width, height: rect.height, lines: range.getClientRects().length, font: getComputedStyle(node).font };
   }));
-  expect(weapon.y + weapon.height, JSON.stringify({ character, skill, weapon, optionGeometry })).toBeLessThanOrEqual(900);
+  const fieldGeometry = await page.evaluate(() => {
+    function inspect(node) {
+      const rect = node.getBoundingClientRect(), css = getComputedStyle(node);
+      return { id: node.id || node.dataset.remakedCalculatorPair || node.tagName, text: node.textContent.trim().replace(/\s+/g, ' '), y: rect.y, height: rect.height, width: rect.width, font: css.font, rows: css.gridTemplateRows };
+    }
+    return {
+      sections: [...document.querySelectorAll('[data-remaked-calculator-identity], [data-remaked-calculator-settings], [data-remaked-calculator-budget], [data-remaked-calculator-actions], [data-remaked-calculator-attributes], #StatusView, [data-remaked-calculator-horse]')].map(inspect),
+      resultRows: [...document.querySelectorAll('#StatusView [data-remaked-calculator-pair]')].map(inspect).sort((a, b) => b.height - a.height).slice(0, 8),
+      attributes: [...document.querySelectorAll('[data-remaked-calculator-attribute]')].map(inspect)
+    };
+  });
+  await page.screenshot({ path: testInfo.outputPath('desktop-workspace.png') });
+  expect(weapon.y + weapon.height, JSON.stringify({ character, skill, weapon, optionGeometry, fieldGeometry })).toBeLessThanOrEqual(900);
   const budget = await page.locator('[data-remaked-calculator-budget]').boundingBox();
   const attributes = await page.locator('[data-remaked-calculator-attributes]').boundingBox();
   expect(budget.width).toBe(attributes.width);

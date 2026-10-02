@@ -153,6 +153,9 @@ jobs:
       - name: Install Playwright browser engines
         run: npx playwright install --with-deps chromium firefox webkit
 
+      - name: Run complete desktop workspace contract
+        run: npm run test:ui:desktop
+
       - name: Run shipped browser contract tests
         run: npm run test:ui:ci
 

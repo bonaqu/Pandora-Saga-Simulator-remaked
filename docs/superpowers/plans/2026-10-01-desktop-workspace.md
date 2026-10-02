@@ -73,3 +73,10 @@ The second Linux run (`36841313501`) passed 186 main contracts including the
 1920px layout, but retained the 1440px height failure. The option columns now
 reserve proportionate width for the longer two value labels; the first-screen
 assertion includes actual label/font/row geometry if any platform still fails.
+The third Linux run (`36842193278`) again passed 186 main contracts. Its
+diagnostics disprove the option-label hypothesis at 1440px: all three actions
+are 28px tall and one line, yet the character is 515.625px versus Windows
+503.25px. No further CSS adjustment is made without field-level evidence.
+The five workspace tests now run as an early, nonduplicated gate in Feature CI
+and Pages; failure screenshots and detailed geometry are retained. The main
+182 contracts still run unchanged after that gate. CI assertions remain strict.
