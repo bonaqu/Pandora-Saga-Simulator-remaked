@@ -27,7 +27,7 @@ async function openConsole(page) {
   // Only synthetic in-memory sessions. Never read the real administrator's
   // credential file in trace-enabled repository tests.
   const sqlite = new DatabaseSync(':memory:');
-  sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/0002_catalog.sql', import.meta.url), 'utf8'));
+  for (const name of ['0002_catalog.sql', '0003_skill_variants.sql']) sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
   const DB = { prepare(sql) {
     let values = [];
     return { bind(...params) { values = params; return this; },
@@ -61,6 +61,49 @@ async function openConsole(page) {
   await expect(page.locator('#catalog-state')).toContainText('Каталог загружен');
   return { sqlite, errors };
 }
+
+for (const kind of ['active', 'passive']) test(`administrator creates a distinct ${kind} variant from a source skill with private save and explicit publish`, async ({ page }, testInfo) => {
+  const { sqlite, errors } = await openConsole(page);
+  const sourceId = kind === 'active' ? 'skill_entry.0.0' : 'skill_entry.0.1';
+  await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption(kind);
+  await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill(sourceId);
+  await page.locator('.catalog-entry').first().click();
+  await expect(page.locator('.catalog-editor .item-identity').first()).toContainText(sourceId);
+  const original = await page.locator('.catalog-editor [data-field="names"][data-language="en"]').inputValue();
+  await page.getByRole('button', { name: 'Создать новый навык по этому шаблону', exact: true }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('.catalog-editor [data-skill-template]')).toContainText(sourceId);
+  await expect(page.locator('#catalog-state')).toContainText('Исходный навык не изменён');
+  await page.locator('.catalog-editor [data-field="names"][data-language="en"]').fill('New <img src=x> variant');
+  await page.locator('.catalog-editor [data-field="names"][data-language="ru"]').fill('Новый вариант');
+  if (kind === 'active') await page.locator('[data-field="mpCost"]').fill('25');
+  else {
+    await page.getByRole('button', { name: 'Добавить характеристику', exact: true }).click();
+    await page.getByRole('spinbutton', { name: 'Значение', exact: true }).fill('5');
+  }
+  await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  const row = sqlite.prepare('SELECT * FROM catalog_skill_allocations').get();
+  expect(row.template_id).toBe(sourceId); expect(row.id).not.toBe(sourceId);
+  expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(0);
+  expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts WHERE id = ?').get(sourceId).n).toBe(0);
+  await expect(page.locator('.catalog-editor h3')).toHaveText('New <img src=x> variant');
+  expect(await page.locator('.catalog-editor h3 img').count()).toBe(0);
+  page.on('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: 'Опубликовать', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Опубликована версия каталога 1');
+  const entry = JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head').get().snapshot_json)[0];
+  expect(entry.identity.templateId).toBe(sourceId); expect(entry.identity.id).toBe(row.id);
+  expect(entry.edit.names.en).toBe('New <img src=x> variant');
+  await page.screenshot({ path: testInfo.outputPath('skill-variant-' + kind + '-desktop.png'), fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath('skill-variant-' + kind + '-mobile.png'), fullPage: true });
+  await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill(sourceId);
+  await page.locator('.catalog-entry').first().click();
+  await expect(page.locator('.catalog-editor [data-field="names"][data-language="en"]')).toHaveValue(original);
+  expect(errors).toEqual([]);
+});
 
 test('admin edits actual source item, saves private draft, publishes and restores a revision', async ({ page }) => {
   const { sqlite, errors } = await openConsole(page);

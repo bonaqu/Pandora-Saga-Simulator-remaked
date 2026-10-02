@@ -54,8 +54,19 @@ The initial creation contract reproduced `Unsupported item type` (RED). The
 typed backend now creates variants in a new additive identity table, not sparse
 source arrays. Tests cover private drafts, literal data, immutable template/type,
 unique IDs, 256-variant transactional capacity, concurrent publication,
-source preservation, publish/rollback and old pins. Adapter/view and editor
-gates remain pending; this is not yet a releasable end-to-end capability.
+source preservation, publish/rollback and old pins. All 49 backend tests and
+Wrangler dry-run passed. The public codec now validates these identities,
+retains source arrays/order, exposes literal metadata and uses the original
+template's learning result for additive passives. Fifty related browser tests
+passed, including fresh C1 recipient and cached offline reload. Ten private
+editor tests passed: source-template duplication, keyboard activation, private
+save/explicit publish, literal text, unchanged source and PC/phone screenshots.
+
+The actual public skill cards/view, further class/branch/exception and
+three-engine contracts, beginner guide, final full CI and all publication gates
+remain pending; this is not yet a releasable end-to-end capability. Existing
+workbook captions can be reused where their meaning matches; any genuinely
+new public wording must also remain editable through the workbook.
 Public production remains the accepted 3.01 release until all gates pass.
 Later blocks still include typed new learning rules, new class representation,
 racial selection additions and native class-passive replacement when their

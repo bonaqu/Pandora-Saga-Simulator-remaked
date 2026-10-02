@@ -127,12 +127,16 @@
   function renderEditor() {
     editor.replaceChildren(); var edit = current.edit;
     editor.appendChild(node('h3', edit.id ? edit.names.en : 'Новая запись'));
-    editor.appendChild(node('p', (edit.id || 'ID выдаст сервер') + ' · ' + (current.hasDraft ? 'ЧЕРНОВИК ' + current.draftVersion : current.published ? 'ОПУБЛИКОВАНО' : 'LEGACY SOURCE'), 'item-identity'));
+    editor.appendChild(node('p', (edit.id || 'ID выдаст сервер') + ' · ' + (current.hasDraft ? 'ЧЕРНОВИК ' + current.draftVersion : current.published ? 'ОПУБЛИКОВАНО' : edit.id ? 'LEGACY SOURCE' : 'НОВАЯ НЕСОХРАНЁННАЯ ЗАПИСЬ'), 'item-identity'));
     if (edit.kind === 'active' || edit.kind === 'passive') {
       multilingual('Название навыка · English обязателен', 'names', edit.names, editor, false);
       multilingual('Описание — текст, не формула', 'description', edit.description, editor, true);
       editor.appendChild(node('p', 'Исходное изучение: ' + current.nativeSkill.prerequisites.en + ' · снаряжение: ' + current.nativeSkill.equipmentRequirements.en, 'help-text'));
-      editor.appendChild(node('p', 'Тип и условия изучения пока сохраняются: встроенные эффекты Legacy зависят также от класса и уровня, а не только от списка навыков.', 'help-text'));
+      if (edit.templateId) {
+        var template = node('p', 'Шаблон изучения: ' + (current.nativeSkill.templateName?.en || '') + ' · ' + edit.templateId, 'help-text');
+        template.dataset.skillTemplate = ''; editor.appendChild(template);
+        editor.appendChild(node('p', 'Это отдельный новый навык. Исходный навык не изменяется. Тип и условия изучения наследуются от шаблона; его встроенные эффекты не копируются и не удваиваются. Для пассивки действуют только явно указанные дополнительные числа.', 'help-text'));
+      } else editor.appendChild(node('p', 'Тип и условия изучения пока сохраняются: встроенные эффекты Legacy зависят также от класса и уровня, а не только от списка навыков.', 'help-text'));
       if (edit.kind === 'active') {
         var timings = node('fieldset', undefined, 'numeric-effects'); timings.appendChild(node('legend', 'Данные активного навыка'));
         var values = node('div', undefined, 'basic-fields');
@@ -151,7 +155,9 @@
         checkboxField('Дополнительный бонус требует надетый щит', edit.bonusRequirements.shieldRequired, 'shieldRequired', editor);
         checkboxField('Дополнительный бонус требует включённую верховую езду', edit.bonusRequirements.ridingRequired, 'ridingRequired', editor);
       }
-      var skillActions = node('div', undefined, 'editor-actions'); skillActions.append(button('Сохранить черновик', saveDraft), button('Опубликовать', publish)); editor.appendChild(skillActions);
+      var skillActions = node('div', undefined, 'editor-actions'); skillActions.append(button('Сохранить черновик', saveDraft), button('Опубликовать', publish));
+      if (edit.id) skillActions.append(button('Создать новый навык по этому шаблону', duplicateSkill, 'secondary'));
+      editor.appendChild(skillActions);
       editor.dataset.unsaved = dirty ? 'true' : 'false'; return;
     }
     if (edit.kind === 'racial') {
@@ -251,6 +257,19 @@
       names: { en: '', ru: '', jp: '', tw: '' }, description: {}, notes: {}, acquisition: {}, modifiers: {}, level: 1, sockets: 0,
       races: Array(6).fill(1), classes: Array(28).fill(1), slots: Array(8).fill(1), baseAttack: kind.value === 'equipment' ? 0 : null,
       effectMode: 'replace', effects: [], disabled: false } }; dirty = false; renderEditor();
+  }
+  function duplicateSkill() {
+    if (!current || !['active', 'passive'].includes(current.edit.kind) || !editor.reportValidity()) return;
+    var source = current, edit = collect();
+    edit.templateId = source.identity.templateId || source.identity.id; edit.id = '';
+    editorRequest++;
+    current = { identity: { id: '', kind: edit.kind, category: edit.category, index: source.identity.index, templateId: edit.templateId },
+      draftVersion: 0, catalogRevision: source.catalogRevision, hasDraft: false, published: false, edit: edit, nativeSkill: source.nativeSkill };
+    // Preserve the current fields as a new unsaved entry, including any typing.
+    // No request, source edit, allocation or publication occurs on duplication.
+    dirty = true; renderEditor();
+    editor.querySelector('[data-field="names"][data-language="en"]').focus();
+    report('Исходный навык не изменён. Укажите название нового навыка, сохраните черновик, затем опубликуйте его отдельно.');
   }
   async function revisions() {
     if (!canLeave()) return;

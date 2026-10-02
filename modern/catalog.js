@@ -10,7 +10,7 @@
   var effectIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 42, 49, 50, 51, 52, 60, 62, 65, 69, 70, 71, 72, 73, 74, 76, 77, 79, 138, 139, 140, 141, 142, 143, 144, 145, 148, 149, 150, 151, 153, 154, 155, 156, 157, 158, 159, 160, 161];
   var percentEffectIds = [6, 7, 49, 52, 62, 65];
   var baselineEquipment, baselineSouls, baselineClassMods, baselineSkills, revision = 0, recordsByTerm = Object.create(null);
-  var passiveRecords = [], learnedKey = '', learnedEntries = [];
+  var passiveRecords = [], variantRecords = [], learnedKey = '', learnedEntries = [], potentialEntries = [];
   var snapshots = Object.create(null), recovery = false;
   var PUBLIC_API = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog';
   var databasePromise;
@@ -36,7 +36,7 @@
   function sourceRow(record) {
     return record.kind === 'equipment' ? baselineEquipment[0][record.category][record.index] : baselineSouls[0][record.index];
   }
-  function termFor(record) { return record.kind === 'active' || record.kind === 'passive' ? 'skill_entry.' + record.category + '.' + record.index : record.kind === 'racial' ? 'racial_skill.' + record.category + '.' + record.index : record.kind === 'class' ? 'job.' + record.index : record.kind === 'equipment' ? 'equipment.' + record.category + '.' + record.index : 'soul.' + record.index; }
+  function termFor(record) { return (record.kind === 'active' || record.kind === 'passive') && record.templateId ? record.id : record.kind === 'active' || record.kind === 'passive' ? 'skill_entry.' + record.category + '.' + record.index : record.kind === 'racial' ? 'racial_skill.' + record.category + '.' + record.index : record.kind === 'class' ? 'job.' + record.index : record.kind === 'equipment' ? 'equipment.' + record.category + '.' + record.index : 'soul.' + record.index; }
   function textMap(value, limit) {
     check(value && typeof value === 'object' && !Array.isArray(value), 'Invalid catalog text');
     Object.keys(value).forEach(function (language) { check(['en', 'ru', 'jp', 'tw'].indexOf(language) !== -1 && typeof value[language] === 'string' && value[language].length <= limit, 'Invalid catalog text'); });
@@ -54,15 +54,21 @@
     check(snapshot && snapshot.ok === true && snapshot.schemaVersion === 1 && snapshot.sourceFingerprint === SOURCE_FINGERPRINT, 'Catalog source/version mismatch');
     check(Number.isSafeInteger(snapshot.revision) && snapshot.revision >= 0 && snapshot.revision <= 999999999 && Array.isArray(snapshot.records) && snapshot.records.length <= 4000, 'Invalid catalog snapshot');
     check(snapshot.revision > 0 || snapshot.records.length === 0, 'Source revision must not contain overrides');
-    var seen = Object.create(null);
+    var seen = Object.create(null), variants = 0;
     snapshot.records.forEach(function (record) {
       check(record && ['equipment', 'soul', 'class', 'racial', 'active', 'passive'].indexOf(record.kind) !== -1 && typeof record.id === 'string', 'Invalid item identity');
       if (record.kind === 'active' || record.kind === 'passive') {
         check(snapshot.characterSourceFingerprint === CHARACTER_SOURCE_FINGERPRINT, 'Skill source/version mismatch');
         check(Number.isInteger(record.category) && record.category >= 0 && record.category < 25 && Number.isInteger(record.index) && record.index >= 0 && record.id === termFor(record), 'Invalid skill identity');
+        var variant = Object.prototype.hasOwnProperty.call(record, 'templateId');
+        if (variant) {
+          check(++variants <= 256 && record.templateId === 'skill_entry.' + record.category + '.' + record.index && new RegExp('^modern\\.' + record.kind + '\\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$').test(record.id), 'Invalid skill variant identity/template');
+        }
         var skill = baselineSkills[0][record.category][record.index];
-        check(skill && record.active === Boolean(skill[4]) && record.kind === (record.active ? 'active' : 'passive') && record.prerequisiteCode === skill[9] && record.nativeEffectPolicy === 'retained-plus-bonus', 'Skill mechanics/source mismatch');
-        check(Object.keys(record).every(function (key) { return ['id', 'kind', 'category', 'index', 'names', 'description', 'active', 'prerequisiteCode', 'nativeEffectPolicy', 'timing', 'effects', 'bonusRequirements'].indexOf(key) !== -1; }), 'Unsupported skill field');
+        check(skill && record.active === Boolean(skill[4]) && record.kind === (record.active ? 'active' : 'passive') && record.prerequisiteCode === skill[9] && record.nativeEffectPolicy === (variant ? 'template-gate-only' : 'retained-plus-bonus'), 'Skill mechanics/source mismatch');
+        var skillFields = ['id', 'kind', 'category', 'index', 'names', 'description', 'active', 'prerequisiteCode', 'nativeEffectPolicy', 'timing', 'effects', 'bonusRequirements'];
+        if (variant) skillFields.push('templateId');
+        check(Object.keys(record).every(function (key) { return skillFields.indexOf(key) !== -1; }), 'Unsupported skill field');
         check(!seen[record.id], 'Duplicate skill identity'); seen[record.id] = true;
         textMap(record.names, 160); textMap(record.description, 4000); check(Boolean(record.names.en?.trim()), 'English skill name required');
         check(Array.isArray(record.timing) && record.timing.length === 4 && record.timing.every(function (value, index) { return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= (index === 0 ? 100000 : 86400) && (index === 0 ? Number.isInteger(value) : Number.isInteger(value * 1000)); }), 'Invalid skill timing');
@@ -160,10 +166,19 @@
     validate(snapshot); snapshot = structuredClone(snapshot); options = options || {};
     var equipment = cloneEquipment(baselineEquipment), souls = cloneSouls(baselineSouls), terms = Object.create(null);
     var classMods = baselineClassMods.map(function (row) { return row.slice(); });
-    var skills = cloneSkills(baselineSkills), passives = [];
+    var skills = cloneSkills(baselineSkills), passives = [], additions = [];
     snapshot.records.forEach(function (record) {
       terms[termFor(record)] = record;
       if (record.kind === 'active' || record.kind === 'passive') {
+        // Variants inherit a source learning gate, not its intrinsic mechanics
+        // or array slot. Never append/reorder source rows: SkillList's temporary
+        // compound prerequisite state is order-dependent. This also avoids
+        // sparse indexes, reused IDs and accidental original-skill renaming.
+        if (record.templateId) {
+          additions.push(record);
+          if (record.kind === 'passive' && record.effects.length) passives.push(record);
+          return;
+        }
         for (var language = 0; language < 3; language++) {
           var row = skills[language][record.category][record.index];
           if (language > 0) row[0] = escaped(record.names[languages[language]] || record.names.en);
@@ -192,7 +207,8 @@
     // explicitly documented Modern runtime data projection is replaced.
     window.EquipData = equipment; window.SoulData = souls; window.Status.Mod = classMods; recordsByTerm = terms; revision = snapshot.revision;
     for (var language = 0; language < 3; language++) window.Skill[language] = skills[language];
-    passiveRecords = passives; learnedKey = ''; learnedEntries = [];
+    passiveRecords = passives; variantRecords = additions.sort(function (a, b) { return a.id.localeCompare(b.id); });
+    learnedKey = ''; learnedEntries = []; potentialEntries = [];
     snapshots[revision] = structuredClone(snapshot);
     if (options.rebuild !== false) {
       window.Status.Equip.forEach(function (state) { state[0] = Number(state[0]); });
@@ -359,6 +375,14 @@
     }
   }
   namespace.catalog = { applySnapshot, validateSnapshot: validate, refreshAvailability,
+    variantSkills: function () {
+      if (!variantRecords.length) return [];
+      nativeLearnedEntries();
+      return variantRecords.map(function (record) {
+        var key = record.category + '_' + record.index;
+        return Object.assign(structuredClone(record), { learned: learnedEntries.indexOf(key) !== -1, potential: potentialEntries.indexOf(key) !== -1 });
+      });
+    },
     preflightSnapshot: function (snapshot) { return applySnapshot(snapshot, { preflightOnly: true }); },
     getRevision: function () { return revision; }, hasOverrides: function () { return Object.keys(recordsByTerm).length > 0; },
     gameLabel: function (term) {
@@ -380,7 +404,7 @@
     try {
       for (var category = 0; category < window.Name.Skill.length; category++) window.SkillList('Potential', category);
       window.SkillList('Adeptness', 0);
-      learnedEntries = window.Learn[0].slice(); learnedKey = key; return learnedEntries;
+      learnedEntries = window.Learn[0].slice(); potentialEntries = window.Learn[1].slice(); learnedKey = key; return learnedEntries;
     } finally { window.Learn = originalLearn; window.Flag[3] = originalFlag; }
   }
   function passiveEffects() {
