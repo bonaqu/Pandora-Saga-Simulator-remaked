@@ -98,7 +98,29 @@ jobs:
       - name: Install Playwright browser engines
         run: npx playwright install --with-deps chromium firefox webkit
 
+      # Keep the platform-sensitive workspace gate early and separate, not
+      # duplicated in the long main suite. Its failure evidence survives.
+      - name: Run complete desktop workspace contract
+        id: workspace_contract
+        shell: bash
+        run: |
+          mkdir -p .ci-artifacts
+          npm run test:ui:desktop -- --reporter=json > .ci-artifacts/workspace-report.json
+
+      - name: Upload desktop workspace evidence
+        if: ${{ always() && steps.workspace_contract.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: feature-desktop-workspace
+          path: |
+            .ci-artifacts/workspace-report.json
+            test-results/desktop-workspace-*/desktop-workspace.png
+            test-results/desktop-workspace-*/test-failed-*.png
+          if-no-files-found: error
+          retention-days: 1
+
       - name: Run shipped browser contract tests
+        id: browser_contract
         shell: bash
         run: |
           mkdir -p .ci-artifacts
@@ -126,7 +148,7 @@ jobs:
         run: npm run test:data
 
       - name: Upload browser contract report
-        if: always()
+        if: ${{ always() && steps.browser_contract.outcome != 'skipped' }}
         uses: actions/upload-artifact@v4
         with:
           name: feature-browser-report

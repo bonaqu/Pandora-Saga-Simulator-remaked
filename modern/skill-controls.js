@@ -64,6 +64,13 @@
       columns.appendChild(document.createElement('span'));
       ['skills.adeptness', 'skills.potential'].forEach(function (key) {
         var caption = document.createElement('span'); i18n.bindText(caption, key); columns.appendChild(caption);
+      });
+      // A wide desktop workspace has two native branch columns. Repeat only
+      // their presentation headings; source rows, callbacks and tab order stay
+      // untouched. These cells are hidden in the single-column/mobile layout.
+      ['', 'skills.adeptness', 'skills.potential'].forEach(function (key) {
+        var caption = document.createElement('span'); caption.dataset.remakedSkillColumnCopy = '';
+        if (key) i18n.bindText(caption, key); columns.appendChild(caption);
       }); tools.appendChild(columns);
     }
     for (var index = 0; index < 25; index++) {

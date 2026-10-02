@@ -88,7 +88,8 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 
 Translations are maintained in one [Excel workbook](localization/translations.xlsx): H (yellow) is Russian, I (green) is an editable English override. The original source columns stay read-only. See the [step-by-step Russian guide](docs/LOCALIZATION_FOR_BEGINNERS.ru.md). Approved translations appear throughout the Modern calculator, lists, search and skill descriptions. Blank game fields retain the selected source language; Legacy Mode stays unchanged.
 
-Modern 3.00 is published. Download the latest workbook from the default branch;
+Modern 3.01 refines the PC workspace; the 3.00 translation and catalog features
+remain. Download the latest workbook from the default branch;
 Pages validates and publishes uploaded workbook updates automatically.
 The six-category Worker/D1 administrator catalog is described in the
 [Russian operations guide](docs/ADMIN_OPERATIONS.ru.md), including its supported
@@ -99,9 +100,11 @@ mechanics and the direct-login follow-up. No player cloud-save service is implie
 The modernization roadmap includes:
 
 - user-verified Russian game terminology;
-- secure catalog administration for equipment, Souls, classes and character skills;
-- compact desktop workflow and non-destructive Legacy FILE recovery;
-- final visual, accessibility and cross-browser polish.
+- broader class/skill mechanics beyond the existing bounded catalog editors;
+- continued visual, accessibility and cross-browser polish.
+
+The six-category catalog, non-destructive Legacy FILE recovery and compact PC
+workspace are already implemented. See the release ledger for acceptance gates.
 
 See [CHANGELOG.md](CHANGELOG.md) for released changes and current progress.
 
@@ -114,7 +117,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Published Remaked UI:** Modern 3.00
+- **Remaked UI:** Modern 3.01 (publication gates in the release ledger)
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 

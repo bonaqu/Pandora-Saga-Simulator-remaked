@@ -138,7 +138,7 @@ Three archived codec files (`base64.js`, `rawinflate.js`, `rawdeflate.js`) are C
 The owner has authorized a separate Cloudflare Worker/D1 administrator catalog.
 Its plan is [Modern 3.00 and admin](superpowers/plans/2026-09-30-modern-3-admin.md).
 Worker auth, the initial six editor kinds and their Pages consumer are published
-through PR24. A subsequent direct Worker-native login regression is being corrected
+through PR24. A subsequent direct Worker-native login regression was corrected in PR25
 without changing the password or admitting null/foreign origins. Museum Legacy
 2.00 remains unchanged. See `RELEASE_ACCEPTANCE.md` for the exact gates.
 The translation workbook now supports optional English display overrides in

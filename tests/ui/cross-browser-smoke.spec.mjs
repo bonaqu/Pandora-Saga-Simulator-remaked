@@ -4,6 +4,35 @@ import equipment from '../../data/generated/equipment.v1.json' with { type: 'jso
 import character from '../../data/generated/character.v1.json' with { type: 'json' };
 import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
 import { adminOrigin, routeSyntheticWorker } from './helpers/admin-worker-fixture.mjs';
+import { assertWorkspaceFits } from './helpers/desktop-workspace.mjs';
+
+test('wide workspace and original riding controls remain complete across responsive transitions in every engine', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 }); await page.goto('/');
+  const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
+  await assertWorkspaceFits(page);
+  const weapon = await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').boundingBox();
+  expect(weapon.y + weapon.height).toBeLessThanOrEqual(900);
+  await page.locator('[data-remaked-skill-bulk]').click();
+  await assertWorkspaceFits(page, { expanded: true });
+  await page.locator('[data-remaked-skill-bulk]').click();
+  for (const width of [1365, 1366, 390, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    await assertWorkspaceFits(page);
+  }
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(before);
+  const expected = await page.evaluate(() => {
+    document.getElementById('SwitchUse_4').click();
+    const summary = PandoraRemaked.adapter.readCalculatedSummary();
+    document.getElementById('SwitchUse_4').click();
+    window.__horseCalls = 0; const original = CalcSet;
+    window.CalcSet = function (...args) { if (args[0] === 'Horse') window.__horseCalls++; return original.apply(this, args); };
+    return summary;
+  });
+  await page.locator('[data-remaked-calculator-action="Text_16"]').focus();
+  await page.keyboard.press('Space');
+  expect(await page.evaluate(() => PandoraRemaked.adapter.readCalculatedSummary())).toEqual(expected);
+  expect(await page.evaluate(() => window.__horseCalls)).toBe(1);
+});
 
 test('Worker-owned native form preserves origin and completes the authorized session lifecycle in every engine', async ({ page }) => {
   const { password, sqlite, loginRequests } = await routeSyntheticWorker(page);
