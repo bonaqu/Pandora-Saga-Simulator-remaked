@@ -54,13 +54,20 @@ The initial creation contract reproduced `Unsupported item type` (RED). The
 typed backend now creates variants in a new additive identity table, not sparse
 source arrays. Tests cover private drafts, literal data, immutable template/type,
 unique IDs, 256-variant transactional capacity, concurrent publication,
-source preservation, publish/rollback and old pins. All 49 backend tests and
+source preservation, publish/rollback and old pins. All 50 backend tests and
 Wrangler dry-run passed. The public codec now validates these identities,
 retains source arrays/order, exposes literal metadata and uses the original
 template's learning result for additive passives. Fifty related browser tests
 passed, including fresh C1 recipient and cached offline reload. Ten private
 editor tests passed: source-template duplication, keyboard activation, private
 save/explicit publish, literal text, unchanged source and PC/phone screenshots.
+
+An additional RED regression found that integer multiplication-based precision
+guards rejected valid `0.29` effects and `1.005` second timings because of binary
+floating-point representation. Both server and public codec now compare the
+original value with its declared decimal representation, without rounding
+submitted values or admitting excess precision. All 50 backend and 45 focused
+adapter/adoption/skill browser tests passed after this repair.
 
 The actual public skill cards/view, further class/branch/exception and
 three-engine contracts, beginner guide, final full CI and all publication gates

@@ -16,6 +16,25 @@ function variant(sourceId, change = () => {}, number = 1) {
 const snapshot = (records, revision = 1) => ({ ok: true, schemaVersion: 1, sourceFingerprint: equipment.metadata.generated_from[0].sha256,
   characterSourceFingerprint: character.sourceFingerprint, revision, records });
 
+test('two-decimal effects and three-decimal timings survive public validation without rounding or accepting excess precision', async ({ page }) => {
+  // Construct valid wire records independently: the browser's precision guard
+  // must be tested even while the server guard is still RED.
+  const passive = variant('skill.0.1'), active = variant('skill.0.0');
+  passive.effects = [{ stat: 1, value: 0.29, unit: 'flat' }]; active.timing[1] = 1.005;
+  await page.goto('/');
+  const result = await page.evaluate(data => {
+    const api = PandoraRemaked; StatusMove('Lev', 11); CalcSet('Lev'); api.catalog.applySnapshot(data);
+    const strength = Status.STR[2], timing = api.catalog.variantSkills().find(row => row.active).timing[1];
+    const before = api.adapter.serialize(), tables = JSON.stringify(Skill);
+    const badEffect = structuredClone(data); badEffect.records[0].effects[0].value = 0.2901;
+    const badTiming = structuredClone(data); badTiming.records[1].timing[1] = 1.0051;
+    const rejected = [badEffect, badTiming].map(input => { try { api.catalog.applySnapshot(input); return false; } catch { return true; } });
+    return { strength, timing, rejected, unchanged: api.adapter.serialize() === before && JSON.stringify(Skill) === tables };
+  }, snapshot([passive, active]));
+  expect(result.strength).toBe(0.29); expect(result.timing).toBe(1.005);
+  expect(result.rejected).toEqual([true, true]); expect(result.unchanged).toBe(true);
+});
+
 test('new passive learns through its original native template with the list closed and never mutates source ordering or doubles intrinsic mechanics', async ({ page }) => {
   await page.goto('/');
   const result = await page.evaluate(data => {

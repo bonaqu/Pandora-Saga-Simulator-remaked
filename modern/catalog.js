@@ -46,7 +46,7 @@
     effects.forEach(function (effect) {
       check(effect && Object.keys(effect).every(function (key) { return ['stat', 'unit', 'value'].indexOf(key) !== -1; }) && effectIds.indexOf(effect.stat) !== -1 && !stats[effect.stat], 'Unsupported or duplicate effect'); stats[effect.stat] = true;
       check(effect.unit === 'flat' || effect.unit === 'percent' && percentEffectIds.indexOf(effect.stat) !== -1, 'Unsupported effect unit');
-      check(typeof effect.value === 'number' && Number.isFinite(effect.value) && Math.abs(effect.value) <= 10000 && Number.isInteger(effect.value * 100), 'Invalid effect value');
+      check(typeof effect.value === 'number' && Number.isFinite(effect.value) && Math.abs(effect.value) <= 10000 && Number(effect.value.toFixed(2)) === effect.value, 'Invalid effect value');
     });
   }
   function validate(snapshot) {
@@ -71,7 +71,7 @@
         check(Object.keys(record).every(function (key) { return skillFields.indexOf(key) !== -1; }), 'Unsupported skill field');
         check(!seen[record.id], 'Duplicate skill identity'); seen[record.id] = true;
         textMap(record.names, 160); textMap(record.description, 4000); check(Boolean(record.names.en?.trim()), 'English skill name required');
-        check(Array.isArray(record.timing) && record.timing.length === 4 && record.timing.every(function (value, index) { return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= (index === 0 ? 100000 : 86400) && (index === 0 ? Number.isInteger(value) : Number.isInteger(value * 1000)); }), 'Invalid skill timing');
+        check(Array.isArray(record.timing) && record.timing.length === 4 && record.timing.every(function (value, index) { return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= (index === 0 ? 100000 : 86400) && (index === 0 ? Number.isInteger(value) : Number(value.toFixed(3)) === value); }), 'Invalid skill timing');
         typedEffects(record.effects);
         if (record.active) check(record.effects.length === 0 && record.bonusRequirements === null, 'Active combat extensions are not supported');
         else {

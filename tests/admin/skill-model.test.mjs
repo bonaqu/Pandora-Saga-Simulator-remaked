@@ -33,3 +33,13 @@ test('passive bonuses are additional typed effects with explicit equipment/ridin
   assert.deepEqual(changed.effects, edit.effects); assert.equal(changed.nativeEffectPolicy, 'retained-plus-bonus');
   for (const invalid of [{ ...edit, effectMode: 'replace' }, { ...edit, bonusRequirements: { ...edit.bonusRequirements, weaponCategories: [14] } }, { ...edit, bonusRequirements: { ...edit.bonusRequirements, weaponCategories: [0, 0] } }, { ...edit, bonusRequirements: { ...edit.bonusRequirements, shieldRequired: 1 } }]) assert.throws(() => validateDraft(invalid, id));
 });
+
+test('decimal editor values validate their declared precision, not unreliable binary multiplication', () => {
+  const passive = projected(skills.records.find(record => record.id === 'skill.0.1'));
+  const edit = draftFromSource(passive, 'passive'); edit.effects = [{ stat: 1, value: 0.29, unit: 'flat' }];
+  assert.equal(compileRecord(validateDraft(edit, identity(passive)), identity(passive), passive).effects[0].value, 0.29);
+  for (const value of [0.2901, 0.29000000000000004, Infinity, NaN]) assert.throws(() => validateDraft({ ...edit, effects: [{ stat: 1, value, unit: 'flat' }] }, identity(passive)));
+  const active = projected(skills.records[0]), timing = draftFromSource(active, 'active'); timing.castSeconds = 1.005;
+  assert.equal(validateDraft(timing, identity(active)).castSeconds, 1.005);
+  assert.throws(() => validateDraft({ ...timing, castSeconds: 1.0051 }, identity(active)));
+});

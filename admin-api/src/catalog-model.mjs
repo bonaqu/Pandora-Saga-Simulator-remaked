@@ -59,7 +59,7 @@ function effects(input) {
     const definition = effectById.get(effect.stat);
     check(definition && definition.units.includes(effect.unit), 'Unsupported effect or unit');
     check(!seen.has(effect.stat), 'Duplicate stat'); seen.add(effect.stat);
-    check(typeof effect.value === 'number' && Number.isFinite(effect.value) && Math.abs(effect.value) <= 10000 && Number.isInteger(effect.value * 100), 'Effect must be a bounded number with at most two decimals');
+    check(typeof effect.value === 'number' && Number.isFinite(effect.value) && Math.abs(effect.value) <= 10000 && Number(effect.value.toFixed(2)) === effect.value, 'Effect must be a bounded number with at most two decimals');
     return { stat: effect.stat, value: effect.value, unit: effect.unit };
   });
 }
@@ -112,7 +112,7 @@ export function validateDraft(input, identity) {
     if (identity.kind === 'active') {
       result.mpCost = integer(input.mpCost, 0, 100000, 'MP cost');
       for (const field of ['castSeconds', 'cooldownSeconds', 'durationSeconds']) {
-        const value = input[field]; check(typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 86400 && Number.isInteger(value * 1000), 'Timing must be bounded seconds with at most three decimals'); result[field] = value;
+        const value = input[field]; check(typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 86400 && Number(value.toFixed(3)) === value, 'Timing must be bounded seconds with at most three decimals'); result[field] = value;
       }
     } else {
       result.effects = effects(input.effects);
