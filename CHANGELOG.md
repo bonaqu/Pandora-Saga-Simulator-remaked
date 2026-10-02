@@ -2,7 +2,7 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
-## Modern 3.01 — desktop workspace candidate, 2026-10-01
+## Modern 3.01 — compact desktop workspace, 2026-10-03
 
 - Wide PC screens use two complete skill columns and compact native character
   settings/results. All twenty branches, both point modes and larger steps are
@@ -16,8 +16,10 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   responsive boundary and three-engine riding tests guard the layout.
 - The administrator capability note now describes the released pinned catalog
   correctly. No database, password, balance rule or translation workbook change.
-- Publication is pending full CI and exact production artifact/PWA acceptance;
-  see the release ledger and desktop follow-up plan.
+- PR26 is published: Pages `37075816244`, Worker `37075816303`. Full CI,
+  exact artifact/live checks, fresh shared recipient, four-language/320px RU,
+  installed online/offline PWA and unchanged-password direct login passed.
+  Release tag: `v3.01`. See the release ledger for evidence and limitations.
 
 ## Modern 3.00 — direct administrator login correction, 2026-10-01
 
