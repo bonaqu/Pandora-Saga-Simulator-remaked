@@ -99,6 +99,31 @@ test('new equipment/Souls get stable unique IDs without modifying source or leak
   assert.equal((await publicData(env)).records[0].engineKey, 'Modern:' + created[0].identity.id);
 });
 
+test('new active/passive variants inherit a source template without replacing its identity or exposing a private draft', async () => {
+  const { env } = fixture();
+  const active = await detail(env, 'skill_entry.0.0');
+  const passive = await detail(env, 'skill_entry.0.1');
+  const created = [];
+  for (const item of [active, passive]) {
+    const edit = { ...item.edit, id: '', templateId: item.identity.id,
+      names: { ...item.edit.names, en: 'New ' + item.identity.kind + ' variant' } };
+    if (item.identity.kind === 'passive') edit.effects = [{ stat: 1, value: 5, unit: 'flat' }];
+    created.push(await save(env, { edit, draftVersion: 0, catalogRevision: 0 }));
+  }
+  assert.equal(created[0].status, 201); assert.equal(created[1].status, 201);
+  assert.notEqual(created[0].identity.id, active.identity.id);
+  assert.notEqual(created[1].identity.id, passive.identity.id);
+  assert.notEqual(created[0].identity.id, created[1].identity.id);
+  assert.equal(created[0].edit.templateId, active.identity.id);
+  assert.equal(created[1].edit.templateId, passive.identity.id);
+  assert.deepEqual((await publicData(env)).records, []);
+  assert.equal((await detail(env, active.identity.id)).edit.names.en, active.edit.names.en);
+  assert.equal((await detail(env, passive.identity.id)).edit.names.en, passive.edit.names.en);
+  await publish(env, created[0]);
+  assert.equal((await publicData(env)).records[0].templateId, active.identity.id);
+  assert.deepEqual((await publicData(env, 0)).records, []);
+});
+
 test('rollback creates a new revision while old recipient revisions, allocated IDs and unsaved drafts survive', async () => {
   const { env, sqlite } = fixture();
   let item = await detail(env); item.edit.names.en = 'Revision one'; item = await save(env, item); await publish(env, item);
