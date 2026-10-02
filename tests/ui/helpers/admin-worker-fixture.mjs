@@ -13,7 +13,7 @@ export async function routeSyntheticWorker(page) {
   const pepper = randomBytes(32).toString('base64url');
   const record = await createPasswordRecord(password, pepper);
   const sqlite = new DatabaseSync(':memory:');
-  for (const name of ['0001_auth.sql', '0002_catalog.sql']) sqlite.exec(fs.readFileSync(new URL('../../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
+  for (const name of ['0001_auth.sql', '0002_catalog.sql', '0003_skill_variants.sql']) sqlite.exec(fs.readFileSync(new URL('../../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
   sqlite.prepare('INSERT INTO admins (id, username, algorithm, password_salt, password_hash, created_at) VALUES (1,?,?,?,?,?)').run('admin', record.algorithm, record.salt, record.hash, 1000);
   const DB = {
     prepare(sql) {

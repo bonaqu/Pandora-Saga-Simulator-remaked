@@ -50,7 +50,12 @@ Branch: `codex/admin-skill-creation`, from published PR26.
    Pages/Worker publication, actual artifact/PWA/auth read-only acceptance and
    beginner guide/changelog updates before claiming this capability released.
 
-The initial creation contract is intentionally RED in this feature branch.
+The initial creation contract reproduced `Unsupported item type` (RED). The
+typed backend now creates variants in a new additive identity table, not sparse
+source arrays. Tests cover private drafts, literal data, immutable template/type,
+unique IDs, 256-variant transactional capacity, concurrent publication,
+source preservation, publish/rollback and old pins. Adapter/view and editor
+gates remain pending; this is not yet a releasable end-to-end capability.
 Public production remains the accepted 3.01 release until all gates pass.
 Later blocks still include typed new learning rules, new class representation,
 racial selection additions and native class-passive replacement when their

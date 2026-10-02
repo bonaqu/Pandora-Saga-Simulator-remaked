@@ -7,12 +7,16 @@ const MAX_SNAPSHOT_BYTES = 900000;
 const encoder = new TextEncoder();
 const fail = (message, status = 400) => { throw new CatalogError(message, status); };
 const normalizeIdentity = row => ({ id: row.id, kind: row.kind, category: row.kind === 'soul' ? null : row.category, index: row.item_index });
+const normalizeSkillIdentity = row => ({ ...normalizeIdentity(row), templateId: row.template_id });
+const sourceFor = identity => baselineById.get(identity.templateId || identity.id);
 async function identityFor(env, id) {
   const source = baselineById.get(id);
   if (source) return sourceIdentity(source);
   const row = await env.DB.prepare('SELECT id, kind, category, item_index FROM catalog_allocations WHERE id = ?').bind(id).first();
-  if (!row) fail('Item not found', 404);
-  return normalizeIdentity(row);
+  if (row) return normalizeIdentity(row);
+  const skill = await env.DB.prepare('SELECT id, kind, category, item_index, template_id FROM catalog_skill_allocations WHERE id = ?').bind(id).first();
+  if (skill) return normalizeSkillIdentity(skill);
+  fail('Item not found', 404);
 }
 async function head(env) {
   const row = await env.DB.prepare('SELECT version, snapshot_json FROM catalog_head WHERE id = ?').bind(1).first();
@@ -21,7 +25,7 @@ async function head(env) {
 }
 async function draftRow(env, id) { return env.DB.prepare('SELECT payload_json, version, is_dirty, updated_at FROM catalog_drafts WHERE id = ?').bind(id).first(); }
 function compileEntry(entry) {
-  return compileRecord(validateDraft(entry.edit, entry.identity), entry.identity, baselineById.get(entry.identity.id));
+  return compileRecord(validateDraft(entry.edit, entry.identity), entry.identity, sourceFor(entry.identity));
 }
 function version(value, label) {
   if (!Number.isSafeInteger(value) || value < 0) fail(label + ' must be a non-negative integer');
@@ -68,10 +72,10 @@ export async function publicCatalog(request, env) {
 
 async function detail(env, id) {
   const identity = await identityFor(env, id);
-  const source = baselineById.get(id);
+  const source = sourceFor(identity);
   const [snapshot, draft] = await Promise.all([head(env), draftRow(env, id)]);
   const published = snapshot.entries.find(entry => entry.identity.id === id);
-  const edit = draft?.is_dirty || (!published && !source && draft) ? JSON.parse(draft.payload_json) : published?.edit || draftFromSource(source, identity.kind);
+  const edit = draft?.is_dirty || (!published && (!source || identity.templateId) && draft) ? JSON.parse(draft.payload_json) : published?.edit || draftFromSource(source, identity.kind);
   edit.id = id; edit.category = identity.category;
   return { ok: true, identity, edit, draftVersion: draft?.version || 0, hasDraft: Boolean(draft?.is_dirty), catalogRevision: snapshot.version, published: Boolean(published), sourceCode: source?.calculation_code || '', engineKey: source?.name.jp || 'Modern:' + id,
     nativeSkill: source?.prerequisite_code ? { prerequisites: source.prerequisites, equipmentRequirements: source.equipment_requirements, prerequisiteCode: source.prerequisite_code } : null };
@@ -86,6 +90,22 @@ async function saveDraft(request, env, now) {
   if (input.edit?.id === '') {
     if (expected !== 0) fail('New draft version must be zero');
     const kind = input.edit.kind; const category = input.edit.category;
+    if (kind === 'active' || kind === 'passive') {
+      const template = baselineById.get(input.edit.templateId);
+      if (!template || template.kind !== kind || template.legacy_category_id !== category) fail('Choose an existing source skill of the same type and branch');
+      const id = 'modern.' + kind + '.' + randomUUID();
+      identity = { id, kind, category, index: template.legacy_entry_index, templateId: template.id };
+      const edit = validateDraft({ ...input.edit, id }, identity); compileRecord(edit, identity, template);
+      const allocated = await env.DB.batch([
+        env.DB.prepare('INSERT INTO catalog_skill_allocations (id, kind, category, item_index, template_id, created_at) SELECT ?, ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND version = ?) AND (SELECT COUNT(*) FROM catalog_skill_allocations) < 256').bind(id, kind, category, identity.index, template.id, now, expectedCatalog),
+        env.DB.prepare('INSERT INTO catalog_drafts (id, payload_json, version, updated_at) SELECT ?, ?, 1, ? WHERE EXISTS (SELECT 1 FROM catalog_skill_allocations WHERE id = ?)').bind(id, JSON.stringify(edit), now, id)
+      ]);
+      if (allocated[0].meta.changes !== 1) {
+        if ((await head(env)).version !== expectedCatalog) fail('Catalog changed in another tab; reload before saving', 409);
+        fail('Skill variants reached their safe capacity (256 additions)', 413);
+      }
+      return jsonResponse(await detail(env, id), 201);
+    }
     if (!(kind === 'soul' ? category === null : kind === 'equipment' && EQUIPMENT_CATEGORIES.includes(category))) fail('Unsupported item type');
     const id = 'modern.' + kind + '.' + randomUUID();
     identity = { id, kind, category, index: firstNewIndex(kind, category) };
@@ -105,7 +125,7 @@ async function saveDraft(request, env, now) {
   }
   identity = await identityFor(env, input.edit?.id || '');
   const edit = validateDraft(input.edit, identity);
-  compileRecord(edit, identity, baselineById.get(identity.id));
+  compileRecord(edit, identity, sourceFor(identity));
   const result = expected === 0
     ? await env.DB.prepare('INSERT INTO catalog_drafts (id, payload_json, version, updated_at) SELECT ?, ?, 1, ? WHERE EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND version = ?) ON CONFLICT DO NOTHING').bind(identity.id, JSON.stringify(edit), now, expectedCatalog).run()
     : await env.DB.prepare('UPDATE catalog_drafts SET payload_json = ?, version = version + 1, is_dirty = 1, updated_at = ? WHERE id = ? AND version = ? AND EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND version = ?)').bind(JSON.stringify(edit), now, identity.id, expected, expectedCatalog).run();
@@ -163,17 +183,19 @@ async function list(request, env) {
   const q = (url.searchParams.get('q') || '').trim().toLowerCase(); if (q.length > 160) fail('Search too long');
   const pageText = url.searchParams.get('page') || '0'; if (!/^\d{1,5}$/.test(pageText)) fail('Invalid page');
   const page = Number(pageText);
-  const [snapshot, allocations, drafts] = await Promise.all([head(env), env.DB.prepare('SELECT id, kind, category, item_index FROM catalog_allocations WHERE kind = ? ORDER BY category, item_index').bind(kind).all(), env.DB.prepare('SELECT id, payload_json, version, is_dirty FROM catalog_drafts').all()]);
+  const skillKind = kind === 'active' || kind === 'passive';
+  const allocationQuery = skillKind ? 'SELECT id, kind, category, item_index, template_id FROM catalog_skill_allocations WHERE kind = ? ORDER BY category, item_index, id' : 'SELECT id, kind, category, item_index FROM catalog_allocations WHERE kind = ? ORDER BY category, item_index';
+  const [snapshot, allocations, drafts] = await Promise.all([head(env), env.DB.prepare(allocationQuery).bind(kind).all(), env.DB.prepare('SELECT id, payload_json, version, is_dirty FROM catalog_drafts').all()]);
   const edits = new Map(snapshot.entries.map(entry => [entry.identity.id, entry.edit]));
   const draftMap = new Map(drafts.results.map(row => [row.id, row]));
-  const identities = baselineRecords.filter(source => sourceIdentity(source).kind === kind).map(sourceIdentity).concat(allocations.results.map(normalizeIdentity));
+  const identities = baselineRecords.filter(source => sourceIdentity(source).kind === kind).map(sourceIdentity).concat(allocations.results.map(skillKind ? normalizeSkillIdentity : normalizeIdentity));
   const results = [];
   for (const identity of identities) {
     const draft = draftMap.get(identity.id);
-    const source = baselineById.get(identity.id);
-    const edit = draft?.is_dirty || (!edits.has(identity.id) && !source && draft) ? JSON.parse(draft.payload_json) : edits.get(identity.id) || draftFromSource(source, kind);
+    const source = sourceFor(identity);
+    const edit = draft?.is_dirty || (!edits.has(identity.id) && (!source || identity.templateId) && draft) ? JSON.parse(draft.payload_json) : edits.get(identity.id) || draftFromSource(source, kind);
     if (q && !Object.values(edit.names).some(name => name.toLowerCase().includes(q)) && !identity.id.includes(q)) continue;
-    results.push({ id: identity.id, names: edit.names, category: identity.category, level: edit.level, sockets: edit.sockets, progression: edit.progression, disabled: edit.disabled, draftVersion: draft?.is_dirty ? draft.version : 0, published: edits.has(identity.id), custom: identity.id.startsWith('modern.') });
+    results.push({ id: identity.id, names: edit.names, category: identity.category, ...(identity.templateId ? { templateId: identity.templateId } : {}), level: edit.level, sockets: edit.sockets, progression: edit.progression, disabled: edit.disabled, draftVersion: draft?.is_dirty ? draft.version : 0, published: edits.has(identity.id), custom: identity.id.startsWith('modern.') });
   }
   return jsonResponse({ ok: true, catalogRevision: snapshot.version, count: results.length, page, pageSize: 40, items: results.slice(page * 40, (page + 1) * 40) });
 }

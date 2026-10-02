@@ -8,7 +8,7 @@ import { draftFromSource } from '../../admin-api/src/catalog-model.mjs';
 const origin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
 function fixture() {
   const sqlite = new DatabaseSync(':memory:');
-  sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/0002_catalog.sql', import.meta.url), 'utf8'));
+  for (const name of ['0002_catalog.sql', '0003_skill_variants.sql']) sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
   const DB = { prepare(sql) {
     let params = [];
     return {
@@ -121,7 +121,100 @@ test('new active/passive variants inherit a source template without replacing it
   assert.equal((await detail(env, passive.identity.id)).edit.names.en, passive.edit.names.en);
   await publish(env, created[0]);
   assert.equal((await publicData(env)).records[0].templateId, active.identity.id);
+  const passiveNow = await detail(env, created[1].identity.id);
+  await publish(env, passiveNow);
+  const records = (await publicData(env)).records;
+  assert.equal(records.length, 2);
+  assert.equal(records[1].templateId, passive.identity.id);
+  assert.equal(records[1].nativeEffectPolicy, 'template-gate-only');
+  assert.deepEqual(records[1].effects, [{ stat: 1, value: 5, unit: 'flat' }]);
   assert.deepEqual((await publicData(env, 0)).records, []);
+});
+
+test('variant source/type/branch and opaque identity are immutable; forged templates and executable fields fail closed', async () => {
+  const { env, sqlite } = fixture(); const source = await detail(env, 'skill_entry.0.0');
+  const edit = { ...source.edit, id: '', templateId: source.identity.id };
+  for (const invalid of [
+    { ...edit, templateId: 'skill_entry.0.1' },
+    { ...edit, templateId: 'unknown' }, { ...edit, category: 1 },
+    { ...edit, prerequisiteCode: 'J=27=1' }, { ...edit, calculationCode: 'eval(1)' }
+  ]) await assert.rejects(() => save(env, { edit: invalid, draftVersion: 0, catalogRevision: 0 }), error => error.status === 400);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_skill_allocations').get().n, 0);
+  const item = await save(env, { edit, draftVersion: 0, catalogRevision: 0 });
+  for (const invalid of [
+    { ...item.edit, templateId: 'skill_entry.0.2' },
+    { ...item.edit, kind: 'passive' }, { ...item.edit, category: 1 },
+    { ...item.edit, prerequisiteCode: 'S=1=0' }
+  ]) await assert.rejects(() => save(env, { ...item, edit: invalid }), error => error.status === 400);
+  await assert.rejects(() => save(env, { edit: { ...edit, templateId: item.identity.id }, draftVersion: 0, catalogRevision: 0 }), error => error.status === 400);
+  assert.equal((await detail(env, item.identity.id)).draftVersion, 1);
+});
+
+test('variant publish/rollback retains older pins, allocated identities and unpublished drafts without overwriting the source', async () => {
+  const { env, sqlite } = fixture(); const source = await detail(env, 'skill_entry.0.0');
+  let item = await save(env, { edit: { ...source.edit, id: '', templateId: source.identity.id }, draftVersion: 0, catalogRevision: 0 });
+  const id = item.identity.id;
+  await publish(env, item);
+  item = await detail(env, id); item.edit.names.en = 'Private second name';
+  const draft = await save(env, item);
+  await call(env, 'rollback', { revision: 0, expectedCatalogRevision: 1 });
+  assert.deepEqual((await publicData(env)).records, []);
+  assert.equal((await publicData(env, 1)).records[0].id, id);
+  assert.equal((await publicData(env, 1)).records[0].names.en, source.edit.names.en);
+  const retained = await detail(env, id);
+  assert.equal(retained.identity.templateId, source.identity.id);
+  assert.equal(retained.edit.names.en, 'Private second name');
+  await assert.rejects(() => publish(env, draft), error => error.status === 409);
+  await publish(env, retained);
+  assert.equal((await publicData(env)).records[0].id, id);
+  assert.equal((await detail(env, source.identity.id)).edit.names.en, source.edit.names.en);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_skill_allocations').get().n, 1);
+  const listed = await call(env, 'catalog?kind=active&q=Private');
+  assert.equal(listed.items[0].id, id); assert.equal(listed.items[0].custom, true);
+  assert.equal(listed.items[0].templateId, source.identity.id);
+});
+
+test('variant allocation rechecks the catalog in its transaction and leaves no orphan on a concurrent publication', async () => {
+  const { env, sqlite } = fixture(); const source = await detail(env, 'skill_entry.0.0');
+  const batch = env.DB.batch.bind(env.DB);
+  env.DB.batch = async statements => {
+    sqlite.prepare('UPDATE catalog_head SET version = 1 WHERE id = 1').run();
+    return batch(statements);
+  };
+  await assert.rejects(() => save(env, { edit: { ...source.edit, id: '', templateId: source.identity.id }, draftVersion: 0, catalogRevision: 0 }), error => error.status === 409);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_skill_allocations').get().n, 0);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n, 0);
+});
+
+test('variant capacity is global and transactional, independent of source template and publication order', async () => {
+  const { env, sqlite } = fixture(); const active = await detail(env, 'skill_entry.0.0');
+  const passive = await detail(env, 'skill_entry.0.1');
+  const ids = new Set();
+  for (let index = 0; index < 256; index++) {
+    const source = index % 2 ? active : passive;
+    const item = await save(env, { edit: { ...source.edit, id: '', templateId: source.identity.id }, draftVersion: 0, catalogRevision: 0 });
+    ids.add(item.identity.id);
+  }
+  assert.equal(ids.size, 256);
+  await assert.rejects(() => save(env, { edit: { ...active.edit, id: '', templateId: active.identity.id }, draftVersion: 0, catalogRevision: 0 }), error => error.status === 413);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_skill_allocations').get().n, 256);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n, 256);
+  assert.deepEqual((await publicData(env)).records, []);
+});
+
+test('additive skill migration leaves existing auth, drafts, encoded allocations and immutable catalog rows intact', () => {
+  const sqlite = new DatabaseSync(':memory:');
+  for (const name of ['0001_auth.sql', '0002_catalog.sql']) sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
+  // Deliberately non-authenticating fixture bytes, with the real schema shape.
+  sqlite.prepare('INSERT INTO admins (id, username, algorithm, password_salt, password_hash, created_at) VALUES (1,?,?,?,?,?)').run('admin', 'scrypt-n16384-r8-p5-v1', 's'.repeat(43), 'h'.repeat(43), 1000);
+  sqlite.prepare('INSERT INTO catalog_allocations VALUES (?,?,?,?,?)').run('modern.soul.fixture', 'soul', -1, 185, 1000);
+  sqlite.prepare('INSERT INTO catalog_drafts (id,payload_json,version,updated_at) VALUES (?,?,?,?)').run('modern.soul.fixture', '{}', 7, 1000);
+  sqlite.prepare('INSERT INTO catalog_revisions VALUES (?,?,?,?)').run(1, '[]', 1000, 'fixture');
+  const tables = ['admins', 'catalog_allocations', 'catalog_drafts', 'catalog_head', 'catalog_revisions'];
+  const before = tables.map(name => sqlite.prepare('SELECT * FROM ' + name).all());
+  sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/0003_skill_variants.sql', import.meta.url), 'utf8'));
+  assert.deepEqual(tables.map(name => sqlite.prepare('SELECT * FROM ' + name).all()), before);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_skill_allocations').get().n, 0);
 });
 
 test('rollback creates a new revision while old recipient revisions, allocated IDs and unsaved drafts survive', async () => {
