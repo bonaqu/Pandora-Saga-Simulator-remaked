@@ -80,3 +80,12 @@ are 28px tall and one line, yet the character is 515.625px versus Windows
 The five workspace tests now run as an early, nonduplicated gate in Feature CI
 and Pages; failure screenshots and detailed geometry are retained. The main
 182 contracts still run unchanged after that gate. CI assertions remain strict.
+
+The early Linux report/screenshot (`37074110874`) isolates the actual remaining
+cause: settings are 137.375px versus Windows 125px, with second action row
+42.375px versus 28px. `Status reset` wraps in the 93px first column. Identity,
+all six 52px attribute cards and the 348.859375px result panel are identical;
+the riding row is 2px shorter on Linux. Allocate 0.8/1.1/1.1 fractions for both
+rows and require all six default captions to occupy one line. This corrects
+the disproven first-row-only hypothesis without hiding content, shrinking
+targets/fonts, changing the engine or weakening geometry requirements.
