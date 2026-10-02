@@ -172,8 +172,10 @@ workbook overrides, compact desktop UI and FILE/LOG consolidation. Current scope
 and remaining acceptance gates are in `2026-09-30-modern-3-admin.md`. Worker auth
 and initial editors, revision-pinned consumer and Modern 3.00 were published
 through PR24 on 2026-10-01. Direct Worker-native login was fixed and accepted in
-PR25. The owner's additional compact PC workspace is the Modern 3.01 candidate
-tracked in `2026-10-01-desktop-workspace.md`, with final publication gates pending.
+PR25. The owner's additional compact PC workspace is published as Modern 3.01
+through PR26, tag `v3.01`; Pages `37075816244` and Worker `37075816303` passed.
+The desktop plan and release ledger record full CI, exact artifact/live checks,
+unchanged source/workbook, shared recipient, installed offline PWA and real login.
 Exact gates are recorded in `docs/RELEASE_ACCEPTANCE.md`; museum engine and
 player cloud-save scope stay unchanged.
 

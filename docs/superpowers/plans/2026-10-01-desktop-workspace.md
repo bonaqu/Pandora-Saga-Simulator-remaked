@@ -53,8 +53,8 @@ The existing Hybrid C hero contract caught an over-short banner; its approved
 80–100px desktop bound is retained. No existing regression was weakened.
 
 Local checks: 31 related calculator/workspace tests, five new workspace tests
-and the new three-engine layout/riding contract passed. New tests are included
-in the main CI list and cover real EN/RU/JP/TW controls, three font fallbacks,
+and the new three-engine layout/riding contract passed. New tests run as an early
+nonduplicated CI gate and cover real EN/RU/JP/TW controls, three font fallbacks,
 all twenty branches, 80/240 actions, long names, narrow/zoom-equivalent widths
 and the 1365/1366 boundary. Final complete CI, visual and production gates
 remain pending; candidate UI version is 3.01, Legacy engine remains 2.00.
@@ -89,3 +89,16 @@ the riding row is 2px shorter on Linux. Allocate 0.8/1.1/1.1 fractions for both
 rows and require all six default captions to occupy one line. This corrects
 the disproven first-row-only hypothesis without hiding content, shrinking
 targets/fonts, changing the engine or weakening geometry requirements.
+
+## Completed publication
+
+Exact feature head `c6c8403` passed Feature CI `37075143411` and API verification
+`37075143351`: five workspace, 182 main (no skipped/flaky/unexpected), eight
+editor, 63 related, 57 cross-engine, 28 visual, 62 Python and 43 backend tests.
+Actual Linux PC screenshots and rendered PC/phone views were reviewed.
+PR26 merged as `8c5def5`; Pages `37075816244` and Worker `37075816303` passed.
+The exact artifact/live bytes, all preserved sources, unchanged workbook,
+production four-language/default-workspace/320px/dropdown checks, fresh C1
+recipient/offline, isolated installed Modern/Legacy online/offline PWA and
+actual unchanged-password direct login passed. Tag `v3.01` follows acceptance.
+See `docs/RELEASE_ACCEPTANCE.md` for hashes, Worker UUID and remaining limits.

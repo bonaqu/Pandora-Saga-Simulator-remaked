@@ -1,14 +1,52 @@
 # Release acceptance
 
-## Modern 3.01 — compact PC workspace candidate
+## Modern 3.01 — compact PC workspace, published and verified
 
 Scope: `superpowers/plans/2026-10-01-desktop-workspace.md`. Source engine/data,
 translation workbook and all security restrictions are unchanged. Wide PC
 presentation retains complete controls with two skill columns and compact
-character/settings/results; narrow layouts retain touch targets. Publication
-requires exact-head full CI, rendered PC/phone QA, Pages/Worker deployment,
-exact artifact/live/source/workbook checks, fresh shared recipient and isolated
-installed-PWA online/offline acceptance. These release gates remain pending.
+character/settings/results; narrow layouts retain touch targets. PR26 was
+squash-merged as `8c5def5d53a62030fb09cdb7f337d9bfd9508bee` and published on
+2026-10-03 Moscow time (2026-10-02 UTC). Annotated tag `v3.01` was pushed only
+after the following gates passed:
+
+- Exact feature head `c6c8403578022e4127c04e2da76fd2ea6f9768ff`: Feature CI
+  `37075143411`, API verification `37075143351`. Five early workspace and 182
+  main contracts have zero skipped/flaky/unexpected results. Also passed:
+  eight private editor, 63 related, 57 cross-engine, 28 rendered visual,
+  62 Python and 43 backend tests. Both Linux default workspace screenshots and
+  PC/phone QA were inspected; controls and assertions were not reduced.
+- Pages `37075816244` and Worker `37075816303` succeeded at that exact merge.
+  Worker version: `0644546a-050a-40ae-ab93-078ca1d95335`.
+- Exact Pages tar SHA-256:
+  `22309b0a5ea700826d012cf14d3b8d57ef94ec009102b5889dee0865ade3363d`.
+  Seventeen live files match the artifact, including all three source-data
+  projections. All 459 museum files and the recovered retained runtime match
+  the previous accepted artifact. Workbook SHA-256 remains
+  `65a9334af29e1d614288ef692a1be8f982f75158f8e2f12cd24efda7f3fc8ce3`.
+  Private archives, admin sources and credentials are absent from the artifact.
+  Cache: `pandora-remaked-3.01-ab36e6d566f0ee74`.
+- Actual production passed four-language/source-state checks, complete default
+  desktop character/skills and first-screen weapon, no duplicate FILE/LOG/import,
+  anchored Equipment picker with delayed characteristics, 320px RU layout and
+  live revision 0 adoption without mutation. A clean recipient restores exact
+  C1 context/calculation from the shared URL and after cached offline reload;
+  the museum boots as engine 2.00. No page runtime exceptions were observed.
+- Actual installed Chromium PWA, using only a temporary isolated profile,
+  launches Modern 3.01 and museum 2.00 online/offline with identical source
+  build data. The verification app was uninstalled; user profiles were untouched.
+- Direct native `/admin` navigation, the unchanged private-file password,
+  authorized read of 1561 records, logout revocation and logged-out reload
+  passed again in Chromium, Firefox and Windows WebKit on the deployed Worker.
+  No routes, fabricated Origin, injected auth cookies, credential traces or
+  filled-password screenshots. Public game revision remains 0; no test drafts
+  or game data were published. The prior Windows WebKit cookie-observer
+  limitation still applies; physical Safari is not asserted.
+
+The layout is a complete PC refinement, not a claim that every UI issue is
+gone. Long labels may grow naturally, and physical phones/manual screen-reader
+conformance remain unverified. New skill/class mechanics are the next catalog
+block; they were not included in this release.
 
 ## Modern 3.00
 
@@ -95,8 +133,8 @@ Updated exact artifact SHA-256:
 live assets match. Cache: `pandora-remaked-3.00-ca3c7937912e201e`.
 Public four-language/state, dropdown delay, 320px RU, fresh C1 recipient/offline
 and isolated installed Modern/Legacy online/offline PWA gates passed again.
-The owner's additional desktop compactness block is now tracked in
-`superpowers/plans/2026-10-01-desktop-workspace.md`; no new UI release is claimed.
+The owner's additional desktop compactness block was subsequently published
+and verified as Modern 3.01, recorded at the top of this ledger.
 
 New arbitrary class/skill slots, native class-passive replacement, active combat
 damage simulation, physical phones and manual screen-reader conformance are
