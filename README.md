@@ -117,7 +117,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** Modern 3.01 (publication gates in the release ledger)
+- **Remaked UI:** Modern 3.01 (published; verification in the release ledger)
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 
