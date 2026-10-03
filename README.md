@@ -98,7 +98,7 @@ The [new-skill beginner guide](docs/ADMIN_NEW_SKILLS.ru.md) explains template
 learning, explicit passive bonuses, private drafts and publishing limitations.
 The [step-by-step editing guide](docs/ADMIN_EDITING_FOR_BEGINNERS.ru.md) explains
 current values, server previews, numerical effects, translations and safe publication.
-Modern 3.04 is published: compact Hybrid C sections, floating JOB/SKILL,
+Modern 3.05 is published: compact Hybrid C sections, floating JOB/SKILL/ATTACK/DEFENSE/BUFF,
 field-specific numeric feedback, aligned BUFF controls and PC/phone discovery.
 Bounded level/attributes, touch-stable Equipment, equal-row filtering and
 current-vs-preview editing remain intact. The release ledger records exact
@@ -128,7 +128,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** Modern 3.04 (published; verification in the release ledger)
+- **Remaked UI:** Modern 3.05 (published; verification in the release ledger)
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 

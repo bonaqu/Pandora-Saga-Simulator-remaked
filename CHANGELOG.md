@@ -2,7 +2,7 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
-## Modern 3.05 — all five floating inspectors, release candidate
+## Modern 3.05 — all five floating inspectors, 2026-10-04
 
 - JOB, SKILL, ATTACK, DEFENSE and BUFF now use the same non-modal popup behavior.
   Opening a panel no longer pushes the calculator down. Repeat-tab, Escape
@@ -14,6 +14,9 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - No changes to Legacy, racial values, catalog revisions or translations in
   this UI-only correction. Current racial/server data, supplied banner and
   character-editor follow-ups remain in the durable task queue.
+- PR35 is published and accepted: 429 browser, 64 Python and 53 backend checks,
+  exact Pages/live bytes and unchanged museum, live PC/touch interactions,
+  all five panels in the installed online/offline app, and real Worker login/logout.
 
 ## Modern 3.04 — Hybrid C composition, 2026-10-03
 

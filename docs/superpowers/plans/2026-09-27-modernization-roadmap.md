@@ -215,6 +215,13 @@ level 55, without duplicates or museum edits. Myrine's newly specified +5% is
 not part of the older revision-2 acceptance. Custom learning/new classes remain
 in the queue; the expanded request does not cancel that unfinished work.
 
+The owner's later clarification that all five inspectors must float is accepted
+as Modern 3.05, PR35 (`03233ce`, tag `v3.05`): ATTACK/DEFENSE/BUFF now share the
+JOB/SKILL popup mechanism. 429 browser/64 Python/53 backend checks, exact live
+Pages artifact and all-five installed online/offline interactions passed;
+Pages `37153804413`, Worker `37153804418`. See the release ledger and durable queue.
+This UI-only fix does not publish the corrected 18-racial dataset or Myrine +5%.
+
 Not part of this roadmap's implementation plans. Requires a new design/spec after Phases 0–7 are stable.
 
 ---
