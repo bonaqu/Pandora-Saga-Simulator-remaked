@@ -179,13 +179,17 @@ unchanged source/workbook, shared recipient, installed offline PWA and real logi
 Exact gates are recorded in `docs/RELEASE_ACCEPTANCE.md`; museum engine and
 player cloud-save scope stay unchanged.
 
-**Next approved block, not yet published:** Modern 3.02 candidate on draft PR28
+**Next approved block, published:** Modern 3.02 in PR28 (`6af7bc5`)
 adds source-template active/passive variants with stable IDs, native learning
 gates, conditional typed bonuses, non-overlapping keyboard skill details and
 ten editable workbook captions. See `2026-10-03-skill-catalog-additions.md` and
-the Russian beginner guide `docs/ADMIN_NEW_SKILLS.ru.md`. Final CI and actual
-production artifact/auth/PWA gates still precede release. New classes, custom
-learning rules and new combat mechanics remain separate unfinished work.
+the Russian beginner guide `docs/ADMIN_NEW_SKILLS.ru.md`. Feature CI `37082164957`,
+API `37082164962`, Pages `37083172767` and Worker `37083172764` passed. The exact
+artifact, live bytes, installed/offline PWA, shared recipient and real direct /
+Pages-entry authentication were accepted without publishing sample game data.
+New classes, custom learning rules and new combat mechanics remain unfinished.
+The next native custom-learning investigation is recorded in
+`2026-10-03-custom-skill-learning.md`; it is not yet an implemented capability.
 
 Not part of this roadmap's implementation plans. Requires a new design/spec after Phases 0–7 are stable.
 

@@ -87,12 +87,23 @@ normalization retained every original row/style/pane/filter and transferred only
 the authored additions. All 2866 old rows and RU/EN overrides compare exactly;
 the existing filter extends through the new rows. Workbook validation passed.
 
-Modern 3.02 is a release candidate on draft PR28. Beginner guide, final full CI
-and all production migration/publication/artifact/auth/PWA gates remain pending;
-this is not yet a released end-to-end capability.
+Modern 3.02 is published through PR28 (`6af7bc5294c1d5691ea88e309f783e7453ccbabe`).
+Exact feature head `8a1bcf2657c6536e2853530a0f00526869cf5444` passed Feature CI
+`37082164957` and API `37082164962`: 63 Python, 50 backend, 5 workspace, 182 main,
+10 editor, 74 catalog/context, 60 cross-engine and 28 visual checks. All JSON
+reports have zero skipped/flaky/unexpected results. Pages `37083172767`, Worker
+`37083172764` and additive migration 0003 passed. The actual artifact, 17 live
+files, unchanged museum/runtime, workbook, fresh/offline C1 recipient, installed
+PWA and unchanged-password direct three-engine login were accepted. Actual
+Pages IDDQD login with blocked third-party cookies and all four deployed editor
+views/creation controls also passed, without production game-data writes.
+The operations guide's stale pre-Pages paragraphs were corrected. Canonical Git
+bytes, not Windows CRLF checkout conversions, were used for Worker asset hashes.
+The preserved global Set prevents main-world Playwright polling; isolated
+locator checks retain exact assertions. No native source change was made.
 The variant-specific comparison and explicit adoption contracts additionally
 verify unchanged native tables, C1, named pins and current autosave/reload.
-Public production remains the accepted 3.01 release until all gates pass.
+Public production is now the accepted 3.02 release.
 Later blocks still include typed new learning rules, new class representation,
 racial selection additions and native class-passive replacement when their
 serialization and retained-engine behavior are demonstrated. A template-based
