@@ -131,7 +131,6 @@
     copy.appendChild(title);
     copy.appendChild(meta);
     copy.appendChild(subtitle);
-    copy.appendChild(source);
 
     var art = document.createElement('div');
     art.className = 'remaked-hero-art';
@@ -143,6 +142,7 @@
     image.loading = 'eager';
     image.decoding = 'async';
     art.appendChild(image);
+    art.appendChild(source);
 
     hero.appendChild(copy);
     hero.appendChild(art);

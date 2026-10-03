@@ -101,10 +101,16 @@ test('public skill additions are explicit keyboard details with literal names, t
     variant('skill.0.1', edit => { edit.names.en = 'Field recovery'; edit.effects = [{ stat: 1, value: 0.29, unit: 'flat' }]; edit.bonusRequirements.shieldRequired = true; }, 2)];
   const original = await page.evaluate(data => { const original = PandoraRemaked.adapter.serialize(); PandoraRemaked.catalog.applySnapshot(data); return original; }, snapshot(records));
   await page.locator('[data-remaked-tab="1"]').click();
-  await expect(page.locator('#remaked-skill-list-row')).toBeVisible();
-  const geometry = await page.evaluate(() => ({ list: document.getElementById('remaked-skill-list-row').getBoundingClientRect().top,
-    columns: document.querySelector('[data-remaked-calculator-columns]').getBoundingClientRect().bottom }));
-  expect(geometry.list).toBeGreaterThanOrEqual(geometry.columns);
+  const panel = page.locator('[data-remaked-native-panel="1"]');
+  await expect(panel).toBeVisible();
+  await expect(panel.locator('[data-remaked-catalog-skills]')).toBeVisible();
+  await expect(page.locator('#remaked-skill-list-row')).toHaveCount(0);
+  const geometry = await panel.evaluate(node => {
+    const box = node.getBoundingClientRect(), columns = document.querySelector('[data-remaked-calculator-columns]').getBoundingClientRect();
+    return { height: box.height, bottom: box.bottom, columnsTop: columns.top };
+  });
+  expect(geometry.height).toBeLessThanOrEqual(560);
+  expect(geometry.bottom).toBeLessThanOrEqual(geometry.columnsTop);
   const active = page.locator('[data-remaked-skill-variant="' + records[0].id + '"]');
   await expect(active.locator('summary')).toContainText('Not learned');
   await active.locator('summary').focus(); await page.keyboard.press('Enter');
@@ -137,7 +143,7 @@ test('public skill additions are explicit keyboard details with literal names, t
   await expect(page.locator('[data-remaked-catalog-skills]')).toBeHidden();
   await expect(page.locator('[data-remaked-skill-variant]')).toHaveCount(0);
   await page.locator('[data-remaked-tab="1"]').click();
-  await expect(page.locator('#remaked-skill-list-row')).toBeHidden();
+  await expect(panel).toBeHidden();
 });
 
 test('two-decimal effects and three-decimal timings survive public validation without rounding or accepting excess precision', async ({ page }) => {

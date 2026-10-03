@@ -39,7 +39,8 @@ test('full names, keyboard steps and panel-wide larger steps preserve build stat
   await expect(page.locator('[data-remaked-skill-step]:visible')).toHaveCount(240);
   expect(await page.evaluate(() => Store())).toBe(before);
   await page.getByRole('button', { name: 'Larger steps', exact: true }).click();
-  await page.locator('[data-remaked-step="remaked-level-up3"]').click();
+  await page.locator('[data-remaked-number="Lev"]').fill('55');
+  await page.locator('[data-remaked-number="Lev"]').press('Enter');
   const initial = await page.evaluate(() => Store());
   const action = page.locator('[data-remaked-skill-step="remaked-skill-1-Adeptness-right1"]');
   await action.focus(); await page.keyboard.press('Space');
@@ -106,7 +107,8 @@ test('locale, approved long names, reset/load and repeat enhancement preserve so
   await page.locator('[data-remaked-language="1"]').click();
   await expect(page.locator('#TextSkill_9')).toHaveText('Assassination');
   expect(await page.evaluate(() => Store())).toBe(before);
-  await page.locator('[data-remaked-step="remaked-level-up3"]').click();
+  await page.locator('[data-remaked-number="Lev"]').fill('55');
+  await page.locator('[data-remaked-number="Lev"]').press('Enter');
   await page.locator('[data-remaked-skill-step="remaked-skill-1-Adeptness-right1"]').click();
   const saved = await page.evaluate(() => Store());
   await page.locator('[data-remaked-calculator-action="Text_8"]').click();

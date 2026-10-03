@@ -19,6 +19,11 @@ button:hover { background: #d3dfa9; }
 button:disabled { cursor: not-allowed; opacity: .65; }
 :focus-visible { outline: 2px solid #e8dfa5; outline-offset: 3px; }
 .workspace-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 28px 0 18px; border-top: 1px solid var(--border); padding-top: 18px; }
+.capability-note { font: 13px/1.5 system-ui, sans-serif; margin: 12px 0; }
+.capability-note summary { color: var(--green); cursor: pointer; padding: 6px 0; }
+.editor-guide { display: inline-block; color: #e8dfa5; font: 13px/1.5 system-ui, sans-serif; padding: 6px 0; }
+body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
+.terminal:has(#admin-workspace:not([hidden])) .workspace-toolbar { margin-top: 16px; }
 .denied { color: #ffcf9b; }
 .catalog-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .catalog-controls input { flex: 1 1 180px; min-width: 0; }
@@ -28,6 +33,19 @@ button:disabled { cursor: not-allowed; opacity: .65; }
 .catalog-entry-meta { display: block; font-size: 11px; font-weight: normal; margin-top: 5px; }
 .catalog-editor { min-width: 0; }
 .catalog-editor h3 { color: var(--green); overflow-wrap: anywhere; }
+.catalog-editor h4 { margin: 0 0 10px; font: 600 13px/1.4 system-ui, sans-serif; color: var(--green); }
+.editor-workflow { padding: 12px; border-left: 3px solid var(--green); background: #182016; font: 13px/1.55 system-ui, sans-serif; }
+.record-review { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 10px; }
+.record-panel { border: 1px solid var(--border); padding: 12px; min-width: 0; overflow-wrap: anywhere; font: 13px/1.5 system-ui, sans-serif; }
+.record-name { font: 600 14px/1.4 system-ui, sans-serif; margin: 6px 0; }
+.record-description { font: 13px/1.5 system-ui, sans-serif; margin: 8px 0; white-space: pre-line; }
+.record-values { padding-left: 18px; margin: 10px 0 0; }
+.record-values li { margin: 4px 0; }
+.extra-languages { grid-column: 1 / -1; }
+.extra-languages summary { cursor: pointer; color: #c6cdbb; padding: 8px 0; font: 12px/1.4 system-ui, sans-serif; }
+.optional-description > summary { cursor: pointer; padding: 12px 0; color: var(--green); font: 13px/1.5 system-ui, sans-serif; }
+.catalog-entry[aria-current="true"] { outline: 2px solid #e8dfa5; outline-offset: -3px; }
+.catalog-editor .editor-field, .help-text, .flag-label, .catalog-editor legend { font-family: system-ui, sans-serif; }
 .catalog-editor fieldset { border: 1px solid var(--border); padding: 14px; margin: 18px 0; min-width: 0; }
 .catalog-editor legend { color: var(--green); font-size: 13px; padding: 0 6px; }
 .basic-fields, .translation-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
@@ -45,6 +63,7 @@ button:disabled { cursor: not-allowed; opacity: .65; }
 .pagination, .revision-row { display: flex; gap: 8px; justify-content: space-between; margin: 14px 0; align-items: center; }
 .revision-row { border-bottom: 1px solid var(--border); padding: 10px 0; font-size: 12px; }
 @media (max-width: 850px) { .catalog-grid { grid-template-columns: 1fr; } .catalog-sidebar { position: static; max-height: 320px; border-bottom: 1px solid var(--border); } }
+@media (max-width: 600px) { .record-review { grid-template-columns: 1fr; } .extra-languages summary { min-height: 44px; display: flex; align-items: center; } }
 @media (max-width: 600px) { .basic-fields, .translation-fields { grid-template-columns: 1fr; } .effect-row { grid-template-columns: minmax(0, 1fr) 90px; } .catalog-controls { flex-direction: column; } .catalog-controls input { flex-basis: auto; } .flag-label { min-height: 44px; } .revision-row { flex-wrap: wrap; } }
 @media (max-width: 600px) { body { padding: 20px 10px; } .terminal-body { padding: 18px; } .terminal-header { flex-direction: column; } input, button, select { min-height: 44px; font-size: 16px; } }
 @media (prefers-reduced-motion: no-preference) { .bootline { animation: boot 360ms ease-out both; } @keyframes boot { from { opacity: .3; transform: translateY(2px); } to { opacity: 1; transform: none; } } }

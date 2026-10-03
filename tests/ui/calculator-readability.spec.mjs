@@ -31,30 +31,22 @@ test('Modern calculator descendants use the UI font, without changing museum typ
   await expect(page.locator('[data-remaked-step]')).toHaveCount(0);
 });
 
-test('native level and attribute buttons execute retained callbacks exactly once, including boundaries', async ({ page }) => {
+test('numeric level and attribute controls execute retained callbacks exactly once', async ({ page }) => {
   await page.goto('/');
-  const inputs = await page.evaluate(() => [...document.querySelectorAll('[data-remaked-step]')].map(button => button.dataset.remakedStep));
-  expect(inputs.length).toBe(42);
-  for (const id of inputs) {
-    const initial = await page.evaluate(() => Store());
-    const expected = await page.evaluate(({ id, initial }) => {
-      document.getElementById(id).click();
-      const result = Store(); PandoraRemaked.adapter.load(initial); return result;
-    }, { id, initial });
-    const button = page.locator(`[data-remaked-step="${id}"]`);
-    await button.focus();
-    await page.keyboard.press('Space');
-    expect(await page.evaluate(() => Store()), id).toBe(expected);
-    await page.evaluate(code => PandoraRemaked.adapter.load(code), initial);
-  }
-  await page.locator('[data-remaked-step="remaked-level-up3"]').click();
+  await page.evaluate(() => {
+    const original = StatusMove; window.inputCalls = [];
+    window.StatusMove = function (...args) { inputCalls.push(args); return original.apply(this, args); };
+  });
+  const level = page.locator('[data-remaked-number="Lev"]');
+  await level.fill('55'); await level.press('Enter');
   await expect(page.locator('#StatusLev')).toHaveText('55');
-  // Exercise available attribute budget too, not just a level-one no-op.
-  const initial = await page.evaluate(() => Store());
-  const expected = await page.evaluate(() => { document.getElementById('remaked-attribute-STR-up3').click(); return Store(); });
-  await page.evaluate(code => PandoraRemaked.adapter.load(code), initial);
-  await page.locator('[data-remaked-step="remaked-attribute-STR-up3"]').click();
-  expect(await page.evaluate(() => Store())).toBe(expected);
+  expect(await page.evaluate(() => inputCalls)).toEqual([['Lev', 54]]);
+  for (const key of ['STA', 'STR', 'AGI', 'DEX', 'SPR', 'INT']) {
+    const input = page.locator(`[data-remaked-number="${key}"]`), value = Number(await input.inputValue());
+    await page.evaluate(() => { inputCalls.length = 0; });
+    await input.fill(String(value + 1)); await input.press('Enter'); await input.press('Tab');
+    expect(await page.evaluate(() => inputCalls)).toEqual([['Status', key, 1]]);
+  }
 });
 
 for (const width of [320, 390, 768, 1440]) test(`primary calculator sections and native targets fit at ${width}px`, async ({ page }) => {
@@ -65,7 +57,8 @@ for (const width of [320, 390, 768, 1440]) test(`primary calculator sections and
     expect(box.x, selector).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width, selector).toBeLessThanOrEqual(width);
   }
-  const targets = await page.evaluate(() => [...document.querySelectorAll('[data-remaked-step]')].map(node => {
+  await expect(page.locator('[data-remaked-number]:visible')).toHaveCount(7);
+  const targets = await page.evaluate(() => [...document.querySelectorAll('[data-remaked-number]')].map(node => {
     const box = node.getBoundingClientRect(); return { x: box.x, right: box.right, width: box.width, height: box.height };
   }));
   for (const target of targets) {
@@ -87,14 +80,16 @@ test('locale refresh, reset/load and repeat enhancement preserve source nodes an
   await page.goto('/');
   const before = await page.evaluate(() => Store());
   await page.evaluate(() => { PandoraRemaked.calculatorControls.refresh(); PandoraRemaked.calculatorControls.refresh(); });
-  await expect(page.locator('[data-remaked-step]')).toHaveCount(42);
+  await expect(page.locator('[data-remaked-number]')).toHaveCount(7);
   expect(await page.evaluate(() => Store())).toBe(before);
   await page.locator('[data-remaked-language="0"]').click();
-  await expect(page.locator('[data-remaked-step="remaked-attribute-STR-up1"]')).toHaveAccessibleName('筋力 +1');
+  await expect(page.locator('[data-remaked-number="STR"]')).toHaveAccessibleName('筋力');
   await page.locator('[data-remaked-language="1"]').click();
-  await expect(page.locator('[data-remaked-step="remaked-attribute-STR-up1"]')).toHaveAccessibleName('STR +1');
-  await page.locator('[data-remaked-step="remaked-level-up3"]').click();
-  await page.locator('[data-remaked-step="remaked-attribute-STR-up1"]').click();
+  await expect(page.locator('[data-remaked-number="STR"]')).toHaveAccessibleName('STR');
+  await page.locator('[data-remaked-number="Lev"]').fill('55');
+  await page.locator('[data-remaked-number="Lev"]').press('Enter');
+  const strength = page.locator('[data-remaked-number="STR"]');
+  await strength.fill(String(Number(await strength.inputValue()) + 1)); await strength.press('Enter');
   const after = await page.evaluate(() => Store());
   await page.locator('[data-remaked-calculator-action="Text_7"]').click();
   await page.evaluate(code => PandoraRemaked.adapter.load(code), after);

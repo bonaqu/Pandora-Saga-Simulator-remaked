@@ -1,4 +1,16 @@
 import { test, expect } from '@playwright/test';
+
+test('native recovery data aliases are temporary and safe in each browser engine', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(() => {
+    Flag[2] = 4; const original = EquipOpt; EquipOpt = []; Calc('MPRec');
+    const base = Number(document.getElementById('Status_13').textContent);
+    EquipOpt[15] = ['1']; const fixture = EquipOpt; Calc('MPRec');
+    const output = { base, value: Number(document.getElementById('Status_13').textContent), identity: EquipOpt === fixture, alias: Object.hasOwn(EquipOpt, '13,15') };
+    EquipOpt = original; return output;
+  });
+  expect(result.value).toBe(result.base + 1); expect(result.identity).toBe(true); expect(result.alias).toBe(false);
+});
 import { compileRecord, draftFromSource, validateDraft } from '../../admin-api/src/catalog-model.mjs';
 import equipment from '../../data/generated/equipment.v1.json' with { type: 'json' };
 import character from '../../data/generated/character.v1.json' with { type: 'json' };
@@ -227,7 +239,8 @@ test('local IDDQD entry is a keyboard-accessible secure-login handoff with uncha
 test('calculator code rejects invalid data, restores compressed data and riding works by keyboard', async ({ page }) => {
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 320, height: 900 }); await page.goto('/');
-  await page.locator('[data-remaked-step="remaked-level-up3"]').click();
+  await page.locator('[data-remaked-number="Lev"]').fill('55');
+  await page.locator('[data-remaked-number="Lev"]').press('Enter');
   const before = await page.evaluate(() => { localStorage.file = 'legacy-sentinel'; return Store(); });
   await page.locator('[data-remaked-builds-open]').click();
   await page.locator('[data-remaked-code-action="create"]').focus(); await page.keyboard.press('Enter');
@@ -250,7 +263,8 @@ test('calculator code rejects invalid data, restores compressed data and riding 
 test('native skill steps, full branch names and explicit effects work on a phone', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 }); await page.goto('/');
   await expect(page.locator('#TextSkill_9')).toHaveText('Assassination');
-  await page.locator('[data-remaked-step="remaked-level-up3"]').click();
+  await page.locator('[data-remaked-number="Lev"]').fill('55');
+  await page.locator('[data-remaked-number="Lev"]').press('Enter');
   const initial = await page.evaluate(() => Store());
   const expected = await page.evaluate(() => { document.getElementById('remaked-skill-1-Adeptness-right1').click(); return Store(); });
   await page.evaluate(code => PandoraRemaked.adapter.load(code), initial);
@@ -262,17 +276,19 @@ test('native skill steps, full branch names and explicit effects work on a phone
   expect(await page.locator('#SkillSet').evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true);
 });
 
-test('native calculator steps retain callback parity and phone primary sections reflow', async ({ page }) => {
+test('native numeric calculator retains callback parity and phone primary sections reflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
-  const button = page.locator('[data-remaked-step="remaked-level-up3"]');
-  await button.focus(); await page.keyboard.press('Space');
+  const level = page.locator('[data-remaked-number="Lev"]');
+  await level.fill('55'); await level.press('Enter');
   await expect(page.locator('#StatusLev')).toHaveText('55');
   const before = await page.evaluate(() => Store());
-  const expected = await page.evaluate(() => { document.getElementById('remaked-attribute-STR-up1').click(); return Store(); });
+  const expected = await page.evaluate(() => { StatusMove('Status', 'STR', 1); CalcSet('STR'); return Store(); });
   await page.evaluate(code => PandoraRemaked.adapter.load(code), before);
-  await page.locator('[data-remaked-step="remaked-attribute-STR-up1"]').click();
+  const strength = page.locator('[data-remaked-number="STR"]');
+  expect(await page.evaluate(() => document.querySelector('[data-remaked-number="STR"]').value)).toBe(String(await page.evaluate(() => Status.STR[0] + Status.STR[1])));
+  await strength.fill(String(Number(await strength.inputValue()) + 1)); await strength.press('Enter');
   expect(await page.evaluate(() => Store())).toBe(expected);
   const bounds = await page.locator('#SkillSet').boundingBox();
   expect(bounds.x + bounds.width).toBeLessThanOrEqual(390);

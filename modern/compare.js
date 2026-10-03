@@ -18,6 +18,25 @@
   var opener = null;
   var previousBodyOverflow = '';
   var initialized = false;
+  var differencesOnly = null, identicalState = null;
+
+  function identicalFields(a, b) {
+    if (!a || !b || (a.unit || '') !== (b.unit || '')) return false;
+    if (finiteNumber(a.value) && finiteNumber(b.value)) return a.value === b.value;
+    // Two unavailable values match only when their exact rendered source
+    // representation matches. Never turn missing data into numeric zero.
+    return a.value === b.value && a.display === b.display;
+  }
+
+  function filterRows() {
+    if (!tableBody || !differencesOnly) return;
+    var rows = Array.from(tableBody.children), visible = 0;
+    rows.forEach(function (row) {
+      row.hidden = differencesOnly.checked && row.dataset.equal === 'true';
+      if (!row.hidden) visible++;
+    });
+    identicalState.hidden = table.hidden || !rows.length || !differencesOnly.checked || visible > 0;
+  }
 
   function t(key, values, fallback) {
     return i18n && typeof i18n.t === 'function' ? i18n.t(key, values) : fallback;
@@ -114,6 +133,8 @@
     if (table) table.hidden = !visible;
     if (metaA) metaA.hidden = !visible;
     if (metaB) metaB.hidden = !visible;
+    if (differencesOnly) differencesOnly.disabled = !visible;
+    filterRows();
   }
 
   function metadataText(build, projection) {
@@ -144,6 +165,7 @@
       var row = document.createElement('tr');
       row.dataset.remakedCompareRow = '';
       row.dataset.statKey = fieldA.key;
+      row.dataset.equal = String(identicalFields(fieldA, fieldB));
 
       var label = document.createElement('th');
       label.scope = 'row';
@@ -170,6 +192,7 @@
 
       tableBody.appendChild(row);
     }
+    filterRows();
   }
 
   async function evaluateSelection() {
@@ -316,6 +339,20 @@
     controls.appendChild(refresh);
     body.appendChild(controls);
 
+    var filter = document.createElement('label'); filter.className = 'remaked-compare-filter';
+    differencesOnly = document.createElement('input'); differencesOnly.type = 'checkbox';
+    differencesOnly.dataset.remakedCompareDifferences = '';
+    var filterText = document.createElement('span');
+    if (i18n) i18n.bindText(filterText, 'compare.hideIdentical');
+    else filterText.textContent = 'Hide identical stats';
+    filter.appendChild(differencesOnly); filter.appendChild(filterText); body.appendChild(filter);
+    differencesOnly.addEventListener('change', filterRows);
+    identicalState = document.createElement('p'); identicalState.dataset.remakedCompareIdentical = '';
+    identicalState.setAttribute('role', 'status'); identicalState.hidden = true;
+    if (i18n) i18n.bindText(identicalState, 'compare.allIdentical');
+    else identicalState.textContent = 'All displayed stats are identical.';
+    body.appendChild(identicalState);
+
     emptyState = document.createElement('div');
     emptyState.className = 'remaked-compare-empty';
     emptyState.dataset.remakedCompareEmpty = '';
@@ -399,7 +436,8 @@
     open: open,
     close: close,
     refresh: refreshChoices,
-    computeDelta: computeDelta
+    computeDelta: computeDelta,
+    identicalFields: identicalFields
   };
 
   window.addEventListener('pandora-remaked:localechange', function () {

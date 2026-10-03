@@ -18,7 +18,8 @@
       catalogSection.setAttribute('aria-labelledby', 'remaked-catalog-skills-title');
       var title = document.createElement('h3'); title.id = 'remaked-catalog-skills-title';
       i18n.bindText(title, 'skills.catalog'); catalogSection.appendChild(title);
-      byId('LearnView').closest('.sub_win').appendChild(catalogSection);
+      var skillCard = byId('LearnView').closest('.sub_win');
+      (skillCard.querySelector('.remaked-native-panel-content') || skillCard).appendChild(catalogSection);
     }
     catalogSection.hidden = !records.length;
     var ids = records.map(function (record) { return record.id; });
@@ -110,11 +111,11 @@
     var root = byId('SkillSet');
     if (!root || !i18n || !root.closest('[data-remaked-calculator-main]')) return;
     var skillPanel = byId('Tab_1_1'), skillRow = byId('remaked-skill-list-row');
-    if (!skillRow) {
+    if (!skillRow && !skillPanel.hasAttribute('data-remaked-native-panel')) {
       skillRow = document.createElement('ul'); skillRow.id = 'remaked-skill-list-row';
       root.parentElement.after(skillRow); skillRow.appendChild(skillPanel);
     }
-    skillRow.hidden = skillPanel.style.display === 'none';
+    if (skillRow) skillRow.hidden = skillPanel.style.display === 'none';
     if (!root.hasAttribute('data-remaked-skill-controls')) {
       root.setAttribute('data-remaked-skill-controls', '');
       var potentialLabel = byId('StatusUnP_0').closest('.input_gt').previousElementSibling;

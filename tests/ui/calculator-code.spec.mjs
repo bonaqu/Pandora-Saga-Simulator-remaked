@@ -129,11 +129,18 @@ for (const width of [320, 390, 768, 1440]) test(`riding and calculator code targ
     const value = node.querySelector('#Status_81');
     const unit = document.createRange(); unit.selectNode(value.parentElement.parentElement.lastChild);
     return { height: node.getBoundingClientRect().height, difference: Math.abs(unit.getBoundingClientRect().top - value.getBoundingClientRect().top),
-      buttonWidth: node.querySelector('button').getBoundingClientRect().width, width: node.getBoundingClientRect().width };
+      button: (() => { const b = node.querySelector('button').getBoundingClientRect(); return { x: b.x, y: b.y, width: b.width }; })(),
+      value: (() => { const b = value.closest('td').getBoundingClientRect(); return { x: b.x, y: b.y, width: b.width }; })(),
+      width: node.getBoundingClientRect().width };
   });
   expect(riding.height).toBeLessThan(100);
   expect(riding.difference).toBeLessThan(1);
-  expect(riding.buttonWidth).toBeGreaterThanOrEqual(riding.width - 4);
+  if (width >= 1366) {
+    // The compact PC control and value now share a row, not two full rows.
+    expect(riding.button.width).toBeCloseTo((riding.width - 4) / 2, 0);
+    expect(riding.button.y).toBe(riding.value.y);
+    expect(riding.button.x + riding.button.width).toBeLessThanOrEqual(riding.value.x);
+  } else expect(riding.button.width).toBeGreaterThanOrEqual(riding.width - 4);
   const horse = await page.locator('[data-remaked-calculator-action="Text_16"]').boundingBox();
   expect(horse.height).toBeGreaterThanOrEqual(width <= 620 ? 44 : 28);
   expect(horse.x).toBeGreaterThanOrEqual(0); expect(horse.x + horse.width).toBeLessThanOrEqual(width);

@@ -43,6 +43,40 @@ async function choosePair(page, ids) {
   await page.locator('[data-remaked-compare-b]').selectOption(ids.b.id);
 }
 
+test('differences-only filters identical numeric and unavailable rows without modifying any build', async ({ page }) => {
+  const builds = await seedBuilds(page);
+  await page.locator('[data-remaked-compare-open]').click(); await choosePair(page, builds);
+  const rows = page.locator('[data-remaked-compare-row]');
+  await expect(rows.first()).toBeVisible();
+  const all = await rows.count();
+  const unchanged = await page.locator('[data-remaked-compare-row][data-equal="true"]').count();
+  expect(unchanged).toBeGreaterThan(0); expect(unchanged).toBeLessThan(all);
+  await page.getByRole('checkbox', { name: 'Hide identical stats' }).check();
+  await expect(rows.locator(':scope:visible')).toHaveCount(all - unchanged);
+  await page.getByRole('checkbox', { name: 'Hide identical stats' }).uncheck();
+  await expect(rows.locator(':scope:visible')).toHaveCount(all);
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(builds.active);
+  await page.locator('[data-remaked-compare-a]').selectOption(builds.a.id);
+  const twin = await page.evaluate(payload => PandoraRemaked.buildStore.saveBuild('Twin', payload).build, builds.a.payload);
+  await page.locator('[data-remaked-compare-refresh]').click();
+  await page.locator('[data-remaked-compare-b]').selectOption(twin.id);
+  await page.getByRole('checkbox', { name: 'Hide identical stats' }).check();
+  await expect(page.locator('[data-remaked-compare-identical]')).toHaveText('All displayed stats are identical.');
+  await expect(rows.locator(':scope:visible')).toHaveCount(0);
+});
+
+test('equal-row filtering never equates missing values, zero or incompatible units', async ({ page }) => {
+  await openModern(page);
+  const actual = await page.evaluate(() => {
+    const equal = PandoraRemaked.compare.identicalFields;
+    return [equal({ value: null, display: '---', unit: '%' }, { value: 0, display: '0', unit: '%' }),
+      equal({ value: 5, display: '5', unit: '' }, { value: 5, display: '5', unit: '%' }),
+      equal({ value: null, display: '---', unit: '' }, { value: null, display: '---', unit: '' }),
+      equal({ value: null, display: '---', unit: '' }, { value: null, display: '', unit: '' })];
+  });
+  expect(actual).toEqual([false, false, true, false]);
+});
+
 test('Compare Builds tool opens from Modern tools and lists named builds', async ({ page }) => {
   const builds = await seedBuilds(page);
   const trigger = page.locator('[data-remaked-compare-open]');

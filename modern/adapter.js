@@ -204,6 +204,10 @@
       if (namespace.gameTermDisplay) namespace.gameTermDisplay.refresh();
       if (namespace.equipmentPicker) namespace.equipmentPicker.refresh();
       if (namespace.catalog) namespace.catalog.refreshAvailability();
+      // Input values must match the newly loaded build synchronously. Waiting
+      // for a DOM observer exposes the previous build for one frame, and a
+      // focused draft would otherwise survive a deliberate build replacement.
+      if (namespace.calculatorControls) namespace.calculatorControls.refresh({ resetInputs: true });
     },
 
     readCalculatedSummary: readCalculatedSummary,
@@ -308,10 +312,26 @@
   };
 
   namespace.adapter = adapter;
+  var retainedCalc = window.Calc;
+  window.Calc = function (name) {
+    if (name !== 'LPRec' && name !== 'MPRec') return retainedCalc.apply(this, arguments);
+    var original = window.EquipOpt, keys = name === 'LPRec' ? ['12', '14'] : ['13', '15'], active;
+    // The retained loop selects EquipOpt[tmp[0][i]], then mistakenly reads
+    // EquipOpt[tmp[0]][j] (the array coerces to "12,14" / "13,15"). Supply
+    // that alias from the array the SAME loop just selected. Do not reimplement
+    // its recovery formula or interpret unknown effects. Sitting recovery stays
+    // explicitly unimplemented, exactly as in the source renderer.
+    window.EquipOpt = new Proxy(original, { get: function (target, key, receiver) {
+      if (keys.indexOf(key) !== -1) active = Reflect.get(target, key, receiver);
+      return key === keys.join(',') ? active : Reflect.get(target, key, receiver);
+    } });
+    try { return retainedCalc.apply(this, arguments); }
+    finally { window.EquipOpt = original; }
+  };
   adapter.equipmentCalculationWarning = function (value) {
     var row = window.EquipData[0]?.[42]?.[32];
-    return Number(value) === 420032 && row && row[0] === 'ウィースベルト' && row[7] === '0=1_-7'
-      ? 'Legacy data warning: unresolved marker -7. STA +1 is retained; the conditional Rex Naturalis trigger is not simulated. No MP penalty is assumed.' : '';
+    return Number(value) === 420032 && row && row[0] === 'ウィースベルト' && row[7].split('_').indexOf('-7') !== -1
+      ? 'Legacy data warning: unresolved marker -7. Confirmed numeric bonuses are retained; the conditional Rex Naturalis trigger is not simulated. No MP penalty is assumed.' : '';
   };
   var retainedEquipCheck = window.EquipCheck;
   window.EquipCheck = function () {
@@ -320,9 +340,11 @@
     var code = row[7];
     // This exact malformed source marker has no stat/value separator and
     // crashes the retained push into EquipOpt[-7]. Present only the confirmed
-    // STA data to that call, restore the original row even on errors, and make
-    // the unresolved effect visible. Never normalize arbitrary bad effects.
-    row[7] = '0=1';
+    // numeric data to that call, including validated admin overrides, restore
+    // the exact row even on errors and make the unresolved effect visible.
+    // This is restricted to the original item's identity and exact marker;
+    // never normalize arbitrary unknown effects or invent an MP penalty.
+    row[7] = code.split('_').filter(function (token) { return token !== '-7'; }).join('_');
     try { return retainedEquipCheck.apply(this, arguments); }
     finally { row[7] = code; }
   };

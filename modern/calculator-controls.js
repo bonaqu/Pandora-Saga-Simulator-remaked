@@ -6,6 +6,82 @@
   function byId(id) { return document.getElementById(id); }
   function mark(node, name) { if (node) node.setAttribute('data-remaked-calculator-' + name, ''); return node; }
 
+  function decorateInspectorContents() {
+    ['ATK', 'RES'].forEach(function (kind) {
+      var view = byId(kind + 'View'); if (!view) return;
+      view.querySelectorAll('[id^="Text' + kind + '_"]').forEach(function (label) {
+        if (label.closest('[data-remaked-inspector-stat]')) return;
+        var value = label.nextElementSibling; if (!value || !value.classList.contains('input_gt')) return;
+        var pair = document.createElement('li'); pair.dataset.remakedInspectorStat = ''; pair.setAttribute('role', 'group'); pair.setAttribute('aria-labelledby', label.id);
+        var content = document.createElement('ul'); label.before(pair); content.append(label, value); pair.appendChild(content);
+      });
+      view.querySelectorAll(':scope > ul > li:not([data-remaked-inspector-stat])').forEach(function (spacer) { if (!spacer.textContent.trim()) spacer.hidden = true; });
+    });
+    var buffs = byId('BUFFView'); if (!buffs) return;
+    if (!buffs.querySelector('[data-remaked-buff-column]')) {
+      // Source create.js nests five columns inside several width:100% list
+      // wrappers. Move the actual columns, not those wrappers, into one grid.
+      var columns = [0, 1, 2].map(function (index) { return byId('InBuff_' + index).parentElement.parentElement.parentElement; });
+      columns.push(byId('Text_24').parentElement.parentElement, byId('Text_25').parentElement.parentElement);
+      var list = document.createElement('ul'), heading = byId('Text_20');
+      heading.hidden = true; list.appendChild(heading);
+      columns.forEach(function (column) { column.dataset.remakedBuffColumn = ''; list.appendChild(column); });
+      buffs.replaceChildren(list);
+      columns.forEach(function (column) {
+        column.querySelectorAll('li').forEach(function (item) { if (!item.textContent.trim() && !item.querySelector('input, select, button')) item.hidden = true; });
+      });
+    }
+    buffs.querySelectorAll('[id^="Buff_"], [id^="BuffHonor_"]').forEach(function (source) {
+      if (!source.onclick) return;
+      var key = source.id.replace('Buff_', '').replace('BuffHonor_', 'Honor_'), button = source.querySelector(':scope > button');
+      if (!button) {
+        button = document.createElement('button'); button.type = 'button'; button.dataset.remakedBuff = key;
+        // The click bubbles once to the retained LI callback. Language changes
+        // rewrite its original TextBuff node, not the button or the callback.
+        while (source.firstChild) button.appendChild(source.firstChild);
+        source.appendChild(button);
+      }
+      var enabled = key.indexOf('Honor_') === 0 ? Number(window.Flag.Honor) === Number(key.slice(6)) : Boolean(window.Flag[key]);
+      button.setAttribute('aria-pressed', String(enabled));
+    });
+  }
+
+  function refreshPanels() {
+    var main = document.querySelector('[data-remaked-calculator-main]'), row = byId('remaked-native-panels');
+    if (!main) return;
+    if (!row) { row = document.createElement('ul'); row.id = 'remaked-native-panels'; main.prepend(row); }
+    var anyExpanded = false;
+    for (var tab = 0; tab < 5; tab++) {
+      var panel = byId('Tab_' + tab + '_1'), opener = document.querySelector('[data-remaked-tab="' + tab + '"]');
+      if (!panel || !opener) continue;
+      var card = panel.querySelector('.sub_win');
+      if (!panel.hasAttribute('data-remaked-native-panel')) {
+        row.appendChild(panel);
+        panel.dataset.remakedNativePanel = String(tab); panel.setAttribute('role', 'region');
+        var mobileBar = card.querySelector(':scope > .remaked-mobile-card-bar'); if (mobileBar) mobileBar.remove();
+        card.style.setProperty('--rm-native-panel-width', card.style.width);
+        var bar = document.createElement('div'); bar.className = 'remaked-native-panel-bar';
+        var title = document.createElement('strong'); title.id = 'remaked-native-panel-title-' + tab;
+        panel.setAttribute('aria-labelledby', title.id);
+        var close = document.createElement('button'); close.type = 'button'; close.textContent = '×'; close.dataset.remakedPanelClose = String(tab);
+        close.addEventListener('click', function () {
+          var index = this.dataset.remakedPanelClose, source = byId('Tab_' + index + '_0');
+          if (Number(window.Flag[2]) === Number(index) + 1) source.click();
+          document.querySelector('[data-remaked-tab="' + index + '"]').focus({ preventScroll: true }); refresh();
+        });
+        var content = card.firstElementChild; content.classList.add('remaked-native-panel-content');
+        bar.append(title, close); card.insertBefore(bar, content);
+      }
+      var label = opener.textContent, expanded = Number(window.Flag[2]) === tab + 1;
+      var heading = byId('remaked-native-panel-title-' + tab); if (heading.textContent !== label) heading.textContent = label;
+      panel.querySelector('[data-remaked-panel-close]').setAttribute('aria-label', (namespace.i18n ? namespace.i18n.t('mobile.collapse') : 'Collapse section') + ': ' + label);
+      opener.setAttribute('aria-controls', panel.id); opener.setAttribute('aria-expanded', String(expanded)); panel.hidden = !expanded;
+      anyExpanded = anyExpanded || expanded;
+    }
+    row.hidden = !anyExpanded;
+    decorateInspectorContents();
+  }
+
   function codeStatus(key, state, fallback) {
     var status = byId('remaked-code-status');
     if (namespace.i18n) namespace.i18n.bindText(status, key);
@@ -92,24 +168,46 @@
     });
   }
 
-  function stepButtons(inputs, label, target, prefix) {
-    Array.prototype.forEach.call(inputs, function (source) {
-      if (source.dataset.remakedStepSource) return;
-      var stem = source.src.match(/\/(up|down)[123]\.png$/)[0].slice(1, -4);
-      source.id = 'remaked-' + prefix + '-' + stem;
-      source.dataset.remakedStepSource = label.id;
-      var button = document.createElement('button');
-      button.type = 'button'; button.className = 'remaked-calculator-step';
-      button.dataset.remakedStep = source.id;
-      button.addEventListener('click', function (event) {
-        event.stopPropagation();
-        // Delegate to the retained callback: budgets, limits and recalculation
-        // stay in the engine, including min/max. Never evaluate copied code.
-        source.click(); refresh();
-      });
-      target.appendChild(button);
-      source.hidden = true;
+  function numberControl(key, label, source, host) {
+    var input = document.createElement('input');
+    input.type = 'number'; input.inputMode = 'numeric'; input.step = '1'; input.required = true;
+    input.className = 'remaked-calculator-number'; input.dataset.remakedNumber = key;
+    input.setAttribute('aria-labelledby', label.id);
+    input.setAttribute('aria-describedby', 'remaked-number-status');
+    host.appendChild(input);
+    var total = document.createElement('output');
+    total.dataset.remakedNumberTotal = key; host.appendChild(total);
+    function current() { return key === 'Lev' ? window.Status.Lev[0] : window.Status[key][0] + window.Status[key][1]; }
+    function cancel() { input.value = current(); input.removeAttribute('aria-invalid'); refresh(); }
+    function commit() {
+      var message = byId('remaked-number-status');
+      if (!input.checkValidity() || !Number.isInteger(input.valueAsNumber)) {
+        input.setAttribute('aria-invalid', 'true');
+        if (namespace.i18n) namespace.i18n.bindText(message, 'calculator.inputInvalid');
+        return;
+      }
+      var requested = input.valueAsNumber, delta = requested - current();
+      if (delta) {
+        if (key === 'Lev') window.StatusMove('Lev', delta);
+        else window.StatusMove('Status', key, delta);
+        window.CalcSet(key);
+      }
+      input.value = current(); input.removeAttribute('aria-invalid');
+      if (namespace.i18n && current() !== requested) namespace.i18n.bindText(message, 'calculator.inputBudget');
+      else { delete message.dataset.remakedI18n; message.textContent = ''; }
+      refresh();
+    }
+    input.addEventListener('blur', function () { if (input.value !== String(current())) commit(); });
+    input.addEventListener('keydown', function (event) {
+      // Keep the retained global calculator hotkeys out of editable controls.
+      event.stopPropagation();
+      if (event.key === 'Enter') { event.preventDefault(); commit(); }
+      if (event.key === 'Escape') { event.preventDefault(); cancel(); }
     });
+    input.addEventListener('keypress', function (event) { event.stopPropagation(); });
+    input._remakedValue = current;
+    source.dataset.remakedNumberSource = key;
+    return input;
   }
 
   function pairRows(root, labelSelector) {
@@ -143,10 +241,10 @@
         var start = index * 4;
         for (var part = 0; part < 4; part++) card.appendChild(originalRows[start + part]);
         var label = card.querySelector('[id^="Text_"]');
-        var actions = mark(document.createElement('div'), 'steps');
-        card.appendChild(actions);
-        var code = card.querySelector('[id^="Status"][id$="_0"]').id.slice(6, -2);
-        stepButtons(card.querySelectorAll('input[type="image"]'), label, actions, 'attribute-' + code);
+        var source = card.querySelector('[id^="Status"][id$="_0"]');
+        var code = source.id.slice(6, -2);
+        source.parentElement.hidden = true;
+        numberControl(code, label, source, source.parentElement.parentElement);
         card.querySelector('input[type="image"]').closest('li').parentElement.parentElement.hidden = true;
         status.appendChild(card);
       }
@@ -160,12 +258,17 @@
       mark(levelRow, 'level');
       var levelLabel = levelRow.firstElementChild;
       levelLabel.id = 'remaked-level-label';
-      var actions = mark(document.createElement('li'), 'steps');
-      levelRow.appendChild(actions);
-      stepButtons(levelRow.querySelectorAll('input[type="image"]'), levelLabel, actions, 'level');
+      level.parentElement.hidden = true;
+      numberControl('Lev', levelLabel, level, level.parentElement.parentElement);
       levelRow.querySelector('input[type="image"]').closest('li').parentElement.parentElement.hidden = true;
       mark(levelRow.parentElement, 'budget');
       mark(levelRow.parentElement.parentElement, 'settings');
+    }
+
+    if (!byId('remaked-number-status')) {
+      var numberStatus = document.createElement('p'); numberStatus.id = 'remaked-number-status';
+      numberStatus.setAttribute('role', 'status');
+      character.querySelector('[data-remaked-calculator-settings]').after(numberStatus);
     }
 
     [3, 4, 5, 6, 7, 8, 9, 16].forEach(function (action) {
@@ -199,7 +302,7 @@
     codeActions(code);
   }
 
-  function refresh() {
+  function refresh(options) {
     if (observer) observer.disconnect();
     try {
       var title = byId('Title'), version = window.PandoraRemakedVersion?.ui;
@@ -210,6 +313,21 @@
         if (title.textContent !== heading) title.textContent = heading;
       }
       decorate();
+      refreshPanels();
+      document.querySelectorAll('[data-remaked-number]').forEach(function (input) {
+        var key = input.dataset.remakedNumber;
+        input.min = key === 'Lev' ? '1' : String(window.Status[key][0]);
+        input.max = String(key === 'Lev' ? window.MaxLv : window.MaxSt);
+        // A refresh while typing must never erase an unfinished edit. External
+        // An explicit build load replaces the edit too, even if this input
+        // still has focus. Ordinary calculation/language refreshes do not.
+        if (options?.resetInputs || document.activeElement !== input) input.value = input._remakedValue();
+        if (namespace.i18n) input.title = namespace.i18n.t(key === 'Lev' ? 'calculator.levelInputHelp' : 'calculator.attributeInputHelp');
+        var total = input.nextElementSibling, source = document.querySelector('[data-remaked-number-source="' + key + '"]');
+        total.hidden = key === 'Lev' || window.Status[key][2] === 0;
+        total.textContent = '→ ' + source.textContent.trim();
+        if (namespace.i18n) total.title = namespace.i18n.t('calculator.totalWithBonuses');
+      });
       document.querySelectorAll('[data-remaked-step]').forEach(function (button) {
         var source = byId(button.dataset.remakedStep);
         var label = byId(source.dataset.remakedStepSource).textContent.trim();

@@ -9,6 +9,22 @@ const fail = (message, status = 400) => { throw new CatalogError(message, status
 const normalizeIdentity = row => ({ id: row.id, kind: row.kind, category: row.kind === 'soul' ? null : row.category, index: row.item_index });
 const normalizeSkillIdentity = row => ({ ...normalizeIdentity(row), templateId: row.template_id });
 const sourceFor = identity => baselineById.get(identity.templateId || identity.id);
+// Read-only annotations of the retained js/calc.js branches, NOT formulas or
+// editable bonuses. Absence means the engine does not model that game mechanic.
+const racialReference = {
+  'racial_skill.0.0': 'Legacy не рассчитывает бонус: условие оружия в Fighting Spirit недостижимо. Игровой эффект здесь не подтверждён.',
+  'racial_skill.0.1': 'Сопротивление физическим негативным эффектам +15 процентных пунктов.',
+  'racial_skill.0.2': 'Эффективность зелий +15 процентных пунктов.',
+  'racial_skill.1.0': 'Стоимость MP −15 процентных пунктов.',
+  'racial_skill.1.1': 'Дальность: эффект помечен в Legacy как нереализованный (0).',
+  'racial_skill.1.2': 'Сопротивление чарам +20 процентных пунктов.',
+  'racial_skill.2.1': 'Dwarf Spirit помечен в Legacy как нереализованный (0).',
+  'racial_skill.3.0': 'Шанс критического удара +2 процентных пункта.',
+  'racial_skill.3.2': 'Уклонение +2.',
+  'racial_skill.4.0': 'Получаемый физический урон −10%. В исходном Legacy также ошибочно добавляется +2 пункта шанса крита. Modern-коррекция −2 пункта убирает только эту ошибку.',
+  'racial_skill.4.1': 'Legacy не рассчитывает бонус: условие оружия в Strong Arm недостижимо. Игровой эффект здесь не подтверждён.',
+  'racial_skill.5.0': 'Получаемый магический урон −10%. В исходном Legacy также ошибочно добавляется +2 пункта шанса крита. Modern-коррекция −2 пункта убирает только эту ошибку.'
+};
 async function identityFor(env, id) {
   const source = baselineById.get(id);
   if (source) return sourceIdentity(source);
@@ -77,8 +93,20 @@ async function detail(env, id) {
   const published = snapshot.entries.find(entry => entry.identity.id === id);
   const edit = draft?.is_dirty || (!published && (!source || identity.templateId) && draft) ? JSON.parse(draft.payload_json) : published?.edit || draftFromSource(source, identity.kind);
   edit.id = id; edit.category = identity.category;
-  return { ok: true, identity, edit, draftVersion: draft?.version || 0, hasDraft: Boolean(draft?.is_dirty), catalogRevision: snapshot.version, published: Boolean(published), sourceCode: source?.calculation_code || '', engineKey: source?.name.jp || 'Modern:' + id,
+  const currentRecord = published ? compileEntry(published) : source && !identity.templateId ? compileRecord(draftFromSource(source, identity.kind), identity, source) : null;
+  return { ok: true, identity, edit, currentRecord, nativeMechanics: identity.kind === 'racial' ? racialReference[id] || 'Эта расовая механика не моделируется в исходном калькуляторе. Описание из игры не создаёт числовой эффект автоматически.' : null,
+    draftVersion: draft?.version || 0, hasDraft: Boolean(draft?.is_dirty), catalogRevision: snapshot.version, published: Boolean(published), sourceCode: source?.calculation_code || '', engineKey: source?.name.jp || 'Modern:' + id,
     nativeSkill: source?.prerequisite_code ? { templateName: source.name, prerequisites: source.prerequisites, equipmentRequirements: source.equipment_requirements, prerequisiteCode: source.prerequisite_code } : null };
+}
+
+async function preview(request, env) {
+  const input = await body(request); schema(input, ['edit', 'expectedCatalogRevision']);
+  const expected = version(input.expectedCatalogRevision, 'Catalog revision');
+  if ((await head(env)).version !== expected) fail('Catalog changed in another tab; reload before previewing', 409);
+  if (!input.edit?.id) fail('Сначала сохраните новую запись как черновик; сайт при этом не меняется');
+  const identity = await identityFor(env, input.edit.id);
+  const record = compileRecord(validateDraft(input.edit, identity), identity, sourceFor(identity));
+  return jsonResponse({ ok: true, record, catalogRevision: expected });
 }
 
 async function saveDraft(request, env, now) {
@@ -210,6 +238,7 @@ export async function adminCatalog(request, env, now = Math.floor(Date.now() / 1
     return jsonResponse({ ok: true, revisions: rows.results, catalogRevision: (await head(env)).version });
   }
   if (path === '/api/admin/draft' && request.method === 'POST') return saveDraft(request, env, now);
+  if (path === '/api/admin/preview' && request.method === 'POST') return preview(request, env);
   if (path === '/api/admin/publish' && request.method === 'POST') return publish(request, env, now);
   if (path === '/api/admin/rollback' && request.method === 'POST') return rollback(request, env, now);
   return jsonResponse({ ok: false, message: 'Unknown admin operation' }, 404);

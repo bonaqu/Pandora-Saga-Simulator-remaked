@@ -39,7 +39,7 @@ for (const width of [1440, 1920]) test(`complete desktop workspace brings Equipm
     });
     expect(lines, action + ' should fit without an accidental extra row').toBe(1);
   }
-  await expect(page.locator('[data-remaked-step]:visible')).toHaveCount(42);
+  await expect(page.locator('[data-remaked-number]:visible')).toHaveCount(7);
   await expect(page.locator('[data-remaked-skill-step]:visible')).toHaveCount(80);
   const first = await page.locator('[data-remaked-skill-row="0"]').boundingBox();
   const second = await page.locator('[data-remaked-skill-row="6"]').boundingBox();
@@ -71,6 +71,26 @@ test('all four languages and font fallbacks keep the complete desktop controls i
   }
   await page.locator('[data-remaked-ui-locale="en"]').click();
   expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(before);
+});
+
+test('common English skill names stay whole in the compact PC columns with a larger font fallback', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 }); await page.goto('/');
+  await page.addStyleTag({ content: '#body #SkillSet[data-remaked-skill-controls] [id^="TextSkill_"], #body #SkillSet[data-remaked-skill-controls] [id^="TextSkill_"] * { font: 600 14px/1.4 Arial, sans-serif !important; }' });
+  for (const id of ['TextSkill_9', 'TextSkill_13', 'TextSkill_24']) {
+    const metrics = await page.locator('#' + id).evaluate(node => {
+      // A Range containing an inline help span returns both its box and its
+      // text box. Count distinct rendered TEXT lines, not nested element boxes.
+      const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT), tops = [];
+      for (let text = walker.nextNode(); text; text = walker.nextNode()) {
+        const range = document.createRange(); range.selectNodeContents(text);
+        for (const rect of range.getClientRects()) if (!tops.some(top => Math.abs(top - rect.top) < 1)) tops.push(rect.top);
+      }
+      return { text: node.textContent, width: node.getBoundingClientRect().width, font: getComputedStyle(node).font, size: getComputedStyle(node).fontSize, lines: tops.length };
+    });
+    expect(metrics.lines, id + ' ' + JSON.stringify(metrics)).toBe(1);
+    expect(metrics.size).toBe('14px'); expect(metrics.font).toContain('Arial');
+  }
+  await assertWorkspaceFits(page);
 });
 
 test('long approved translations and larger steps grow naturally across the desktop boundary and zoom-equivalent widths', async ({ page }, testInfo) => {
