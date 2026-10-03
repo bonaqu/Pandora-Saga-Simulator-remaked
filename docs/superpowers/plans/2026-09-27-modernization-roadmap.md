@@ -191,6 +191,12 @@ New classes, custom learning rules and new combat mechanics remain unfinished.
 The next native custom-learning investigation is recorded in
 `2026-10-03-custom-skill-learning.md`; it is not yet an implemented capability.
 
+**User-prioritized follow-up in progress:** Before custom learning, finish
+Modern 3.03 compact numeric inputs, bounded source inspectors, touch Equipment,
+equal-row comparison, approved racial corrections and current-vs-preview admin
+editing. Plan: `2026-10-03-compact-inputs-and-review.md`. The UI release must pass
+full CI, real artifact/Worker and catalog publication acceptance before advancing.
+
 Not part of this roadmap's implementation plans. Requires a new design/spec after Phases 0–7 are stable.
 
 ---

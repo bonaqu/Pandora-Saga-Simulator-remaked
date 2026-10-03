@@ -2,6 +2,32 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Modern 3.03 — compact controls and understandable editing, release candidate
+
+- Level and all six attributes use seven bounded editable fields, native point
+  allocation, Enter/blur confirmation and Escape cancellation instead of 42
+  step buttons. Level 55, attribute caps and equipment totals remain native.
+- Full original Pandora header art, inline bounded JOB/SKILL/ATTACK/DEFENSE/BUFF
+  inspectors, readable stat pairs and keyboard-operable buff controls reduce
+  overlap and desktop clutter. Equipment stays an anchored selection list;
+  touch opening survives viewport/keyboard resizing. Compare can hide equal rows.
+- Private editors show current published characteristics beside a server-validated
+  preview, numerical controls before translations, optional JP/TW fields and an
+  explicit edit/check/save/publish sequence. Failed checks and cancelled section
+  changes preserve unsaved fields. A new Russian beginner editing guide explains
+  supported mechanics and limitations without treating descriptions as formulas.
+- Modern adapters correct the retained recovery-array typo exposed by Silver
+  Wand and keep the existing explicit Waist Belt warning. Museum files and
+  formulas are unchanged. Full catalog differential coverage rejects any new
+  exception and tests these two known source failures independently.
+- Approved versioned racial corrections cancel erroneous +2 critical rate for
+  Enkidu Stone Skin and Lapin Magic Resistance while retaining native damage
+  protection and Myrine's correct bonus. Their production publication is a
+  separate acceptance gate; existing pinned builds remain reproducible.
+- Seven workbook captions extend the table to 2,882 rows / 215 UI captions;
+  existing Russian/English overrides and styles are preserved. Full CI, deployment
+  and live artifact acceptance are required before this candidate is released.
+
 ## Modern 3.02 — native-gated skill additions, 2026-10-03
 
 - New active/passive catalog entries can inherit a real skill's immutable native

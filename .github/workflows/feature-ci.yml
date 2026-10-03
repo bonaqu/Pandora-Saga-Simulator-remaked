@@ -129,6 +129,9 @@ jobs:
       - name: Verify deterministic Legacy terminology export
         run: npm run test:translations
 
+      - name: Audit every selectable source catalog record against the museum
+        run: npm run test:ui:catalog-audit
+
       - name: Verify admin editor with synthetic sessions only
         run: npm run test:ui:admin
 

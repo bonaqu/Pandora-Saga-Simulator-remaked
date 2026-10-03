@@ -96,6 +96,10 @@ The six-category Worker/D1 administrator catalog is described in the
 mechanics and the direct-login follow-up. No player cloud-save service is implied.
 The [new-skill beginner guide](docs/ADMIN_NEW_SKILLS.ru.md) explains template
 learning, explicit passive bonuses, private drafts and publishing limitations.
+The [step-by-step editing guide](docs/ADMIN_EDITING_FOR_BEGINNERS.ru.md) explains
+current values, server previews, numerical effects, translations and safe publication.
+Modern 3.03 compact controls and editor improvements are under release validation;
+the published release remains 3.02 until the production artifact gate passes.
 
 ## 🚧 What's coming next
 
