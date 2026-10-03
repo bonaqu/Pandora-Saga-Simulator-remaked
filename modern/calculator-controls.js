@@ -99,17 +99,15 @@
       if (!panel.hasAttribute('data-remaked-native-panel')) {
         row.appendChild(panel);
         panel.dataset.remakedNativePanel = String(tab);
-        panel.setAttribute('role', tab < 2 ? 'dialog' : 'region');
-        if (tab < 2) {
-          panel.dataset.remakedFloatingPanel = '';
-          panel.setAttribute('aria-modal', 'false');
-          panel.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape' && !event.defaultPrevented) {
-              event.preventDefault(); event.stopPropagation();
-              this.querySelector('[data-remaked-panel-close]').click();
-            }
-          });
-        }
+        panel.setAttribute('role', 'dialog');
+        panel.dataset.remakedFloatingPanel = '';
+        panel.setAttribute('aria-modal', 'false');
+        panel.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape' && !event.defaultPrevented) {
+            event.preventDefault(); event.stopPropagation();
+            this.querySelector('[data-remaked-panel-close]').click();
+          }
+        });
         var mobileBar = card.querySelector(':scope > .remaked-mobile-card-bar'); if (mobileBar) mobileBar.remove();
         card.style.setProperty('--rm-native-panel-width', card.style.width);
         panel.style.setProperty('--rm-native-panel-width', tab === 0 ? '400px' : card.style.width);
@@ -124,7 +122,7 @@
         });
         var content = card.firstElementChild; content.classList.add('remaked-native-panel-content');
         bar.append(title, close); card.insertBefore(bar, content);
-        if (tab < 2) opener.addEventListener('keydown', function (event) {
+        opener.addEventListener('keydown', function (event) {
           if (event.key === 'Escape' && this.getAttribute('aria-expanded') === 'true') {
             event.preventDefault(); event.stopPropagation();
             byId(this.getAttribute('aria-controls')).querySelector('[data-remaked-panel-close]').click();
@@ -135,7 +133,7 @@
       var heading = byId('remaked-native-panel-title-' + tab); if (heading.textContent !== label) heading.textContent = label;
       panel.querySelector('[data-remaked-panel-close]').setAttribute('aria-label', (namespace.i18n ? namespace.i18n.t('mobile.collapse') : 'Collapse section') + ': ' + label);
       opener.setAttribute('aria-controls', panel.id); opener.setAttribute('aria-expanded', String(expanded)); panel.hidden = !expanded;
-      if (expanded && tab < 2) positionFloatingPanel(panel);
+      if (expanded) positionFloatingPanel(panel);
       anyExpanded = anyExpanded || expanded;
     }
     row.hidden = !anyExpanded;

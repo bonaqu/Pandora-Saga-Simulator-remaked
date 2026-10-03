@@ -689,8 +689,9 @@ body.remaked-modern {
   padding: 8px 0;
 }
 
-/* Native inspectors retain their IDs, selects and callbacks, but no longer
-   float over coordinates from the museum's fixed-width calculator. */
+/* All five inspectors retain their source IDs, selects and callbacks. Modern
+   places their floating surfaces against the current viewport, not museum
+   coordinates, and never inserts an open inspector into the workbench flow. */
 .remaked-modern #body [data-remaked-calculator-overlays] {
   position: relative !important;
   float: none;

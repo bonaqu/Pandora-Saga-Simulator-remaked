@@ -3,6 +3,6 @@
 
   window.PandoraRemakedVersion = Object.freeze({
     legacyEngine: '2.00',
-    ui: '3.04'
+    ui: '3.05'
   });
 })();
