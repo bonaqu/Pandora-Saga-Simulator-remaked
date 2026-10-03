@@ -1443,14 +1443,15 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   .remaked-modern #body #SkillSet[data-remaked-skill-controls] > ul:not(.remaked-skill-heading),
   [data-remaked-skill-column-header] {
     display: grid;
-    grid-template-columns: minmax(104px, 1.25fr) repeat(2, minmax(82px, 1fr));
+    grid-template-columns: minmax(108px, 1.25fr) repeat(2, minmax(80px, 1fr));
     gap: 4px;
     align-items: center;
   }
   .remaked-modern #body #SkillSet[data-remaked-skill-controls] > ul:not(.remaked-skill-heading) { padding-block: 1px; }
   .remaked-modern #body #SkillSet[data-remaked-skill-controls] .remaked-skill-heading { margin-top: 4px; padding: 4px 6px; }
   .remaked-modern #body [data-remaked-skill-row] > [id^="TextSkill_"] { grid-column: auto; }
-  .remaked-modern #body [data-remaked-skill-group] > ul { grid-template-columns: minmax(20px, 1fr) 28px 28px; gap: 3px; align-items: center; }
+  /* 20px value + two 28px targets + two 2px gaps fit the 80px track exactly. */
+  .remaked-modern #body [data-remaked-skill-group] > ul { grid-template-columns: minmax(20px, 1fr) 28px 28px; gap: 2px; align-items: center; }
   .remaked-modern #body [data-remaked-skill-group] [id^="Skill_"] { text-align: end; }
   .remaked-modern #body [data-remaked-skill-caption] { position: absolute; width: 1px !important; height: 1px !important; overflow: hidden; clip-path: inset(50%); }
   .remaked-modern #body [data-remaked-skill-controls] .remaked-skill-primary { display: contents; }
@@ -1545,7 +1546,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   }
   .remaked-skill-tools { grid-column: 1 / -1; grid-row: 1; }
   [data-remaked-skill-column-header] {
-    grid-template-columns: repeat(2, minmax(104px, 1.25fr) minmax(82px, 1fr) minmax(82px, 1fr));
+    grid-template-columns: repeat(2, minmax(108px, 1.25fr) minmax(80px, 1fr) minmax(80px, 1fr));
   }
   [data-remaked-skill-column-copy] { display: block; }
   .remaked-modern #body #SkillSet > [data-remaked-skill-row="0"] { grid-column: 1; grid-row: 2; }

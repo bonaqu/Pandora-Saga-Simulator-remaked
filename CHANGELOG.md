@@ -16,14 +16,17 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   explicit edit/check/save/publish sequence. Failed checks and cancelled section
   changes preserve unsaved fields. A new Russian beginner editing guide explains
   supported mechanics and limitations without treating descriptions as formulas.
+- A delayed initial session check no longer clears a password already entered
+  into the native admin form. Desktop skill-name layout is checked with both the
+  actual platform font and a larger explicit fallback.
 - Modern adapters correct the retained recovery-array typo exposed by Silver
   Wand and keep the existing explicit Waist Belt warning. Museum files and
   formulas are unchanged. Full catalog differential coverage rejects any new
   exception and tests these two known source failures independently.
 - Approved versioned racial corrections cancel erroneous +2 critical rate for
   Enkidu Stone Skin and Lapin Magic Resistance while retaining native damage
-  protection and Myrine's correct bonus. Their production publication is a
-  separate acceptance gate; existing pinned builds remain reproducible.
+  protection and Myrine's correct bonus. Production catalog revision 2 contains
+  only these two corrections; revision 0 remains immutable for pinned builds.
 - Seven workbook captions extend the table to 2,882 rows / 215 UI captions;
   existing Russian/English overrides and styles are preserved. Full CI, deployment
   and live artifact acceptance are required before this candidate is released.
