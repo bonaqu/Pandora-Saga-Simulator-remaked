@@ -59,7 +59,7 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
 .compatibility-fields { display: flex; flex-wrap: wrap; gap: 8px 12px; }
 .flag-label { display: flex; align-items: center; gap: 6px; font-size: 12px; line-height: 1.4; }
 .flag-label input { min-height: 0; width: 16px; height: 16px; accent-color: #b6d495; }
-.editor-actions { position: sticky; bottom: 0; display: flex; flex-wrap: wrap; gap: 8px; background: #20291c; border-top: 1px solid var(--border); padding: 12px 0; z-index: 1; }
+.editor-actions { display: flex; flex-wrap: wrap; gap: 8px; background: #20291c; border-top: 1px solid var(--border); padding: 12px 0; }
 .pagination, .revision-row { display: flex; gap: 8px; justify-content: space-between; margin: 14px 0; align-items: center; }
 .revision-row { border-bottom: 1px solid var(--border); padding: 10px 0; font-size: 12px; }
 @media (max-width: 850px) { .catalog-grid { grid-template-columns: 1fr; } .catalog-sidebar { position: static; max-height: 320px; border-bottom: 1px solid var(--border); } }

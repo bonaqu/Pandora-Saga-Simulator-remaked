@@ -89,9 +89,17 @@ test('editor shows live values and a private server preview before explicit save
   await page.getByRole('button', { name: 'Опубликовать', exact: true }).click();
   await expect(page.locator('#catalog-state')).toContainText('Опубликована версия каталога 1');
   await expect(live).toContainText('Сила (СИЛ / STR): +8');
+  const footerFits = async () => page.locator('.catalog-editor').evaluate(form => {
+    const actions = form.querySelector('.editor-actions'), previous = actions.previousElementSibling;
+    return { positioned: getComputedStyle(actions).position, gap: actions.getBoundingClientRect().top - previous.getBoundingClientRect().bottom };
+  });
+  expect(await footerFits()).toMatchObject({ positioned: 'static' });
+  expect((await footerFits()).gap).toBeGreaterThanOrEqual(0);
   await page.screenshot({ path: testInfo.outputPath('current-and-preview-desktop.png'), fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect(await footerFits()).toMatchObject({ positioned: 'static' });
+  expect((await footerFits()).gap).toBeGreaterThanOrEqual(0);
   await page.screenshot({ path: testInfo.outputPath('current-and-preview-mobile.png'), fullPage: true });
   expect(errors).toEqual([]);
 });
