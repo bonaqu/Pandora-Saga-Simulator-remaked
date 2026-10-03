@@ -45,6 +45,7 @@ REQUIRED_MODERN = (
     "modern/calculator-labels.js",
     "modern/calculator-controls.js",
     "modern/skill-controls.js",
+    "modern/skill-tooltips.js",
     "modern/adapter.js",
     "modern/catalog.js",
     "modern/build-store.js",
@@ -126,6 +127,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/equipment-picker.js"></script>
 <script src="./modern/calculator-controls.js"></script>
 <script src="./modern/skill-controls.js"></script>
+<script src="./modern/skill-tooltips.js"></script>
 <script src="./modern/pwa.js"></script>
 <!-- /REMAKED:BODY -->'''
 

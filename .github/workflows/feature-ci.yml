@@ -71,6 +71,7 @@ jobs:
           node --check modern/equipment-picker.js
           node --check modern/calculator-controls.js
           node --check modern/skill-controls.js
+          node --check modern/skill-tooltips.js
           node --check modern/builds.js
           node --check modern/app-shell.js
           node --check modern/tooltips.js
@@ -137,6 +138,7 @@ jobs:
             .ci-artifacts/browser-report.json
             test-results/panel-workspace-*/**/*.png
             test-results/compact-inputs-*/**/*.png
+            test-results/skill-tooltips-*/**/*.png
           if-no-files-found: error
           retention-days: 1
 

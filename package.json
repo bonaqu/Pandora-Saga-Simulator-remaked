@@ -17,7 +17,7 @@
     "test:ui:summary": "playwright test tests/ui/summary-adapter.spec.mjs",
     "test:ui:differential": "playwright test tests/ui/compare-differential.spec.mjs",
     "test:ui:compare": "playwright test tests/ui/compare-builds.spec.mjs",
-    "test:ui:tooltips": "playwright test tests/ui/tooltips.spec.mjs",
+    "test:ui:tooltips": "playwright test tests/ui/tooltips.spec.mjs tests/ui/skill-tooltips.spec.mjs",
     "test:ui:search-builds": "playwright test tests/ui/search-builds.spec.mjs",
     "test:ui:build-store": "playwright test tests/ui/build-store.spec.mjs",
     "test:ui:build-manager": "playwright test tests/ui/build-manager.spec.mjs",
@@ -32,7 +32,7 @@
     "test:translations": "node scripts/extract_legacy_terms.mjs --check && python scripts/translation_workbook.py",
     "extract:data": "node scripts/extract_legacy_data.mjs",
     "test:data": "node scripts/extract_legacy_data.mjs --check && node scripts/extract_character_metadata.mjs --check",
-    "test:ui:ci": "playwright test tests/ui/modern-foundation.spec.mjs tests/ui/adapter.spec.mjs tests/ui/summary-adapter.spec.mjs tests/ui/compare-differential.spec.mjs tests/ui/compare-builds.spec.mjs tests/ui/tooltips.spec.mjs tests/ui/search-builds.spec.mjs tests/ui/build-store.spec.mjs tests/ui/build-manager.spec.mjs tests/ui/mobile-polish.spec.mjs tests/ui/pwa-ui.spec.mjs tests/ui/pwa-offline.spec.mjs tests/ui/localization.spec.mjs tests/ui/data-projections.spec.mjs tests/ui/legacy-codecs.spec.mjs tests/ui/game-term-display.spec.mjs tests/ui/release-accessibility.spec.mjs tests/ui/ui-consistency.spec.mjs tests/ui/build-share.spec.mjs tests/ui/item-preview.spec.mjs tests/ui/equipment-picker.spec.mjs tests/ui/calculator-readability.spec.mjs tests/ui/skill-allocation.spec.mjs tests/ui/calculator-code.spec.mjs tests/ui/equipment-compatibility.spec.mjs tests/ui/compact-workspace.spec.mjs tests/ui/legacy-build-recovery.spec.mjs tests/ui/build-code-workspace.spec.mjs tests/ui/compact-inputs.spec.mjs tests/ui/panel-workspace.spec.mjs tests/ui/native-recovery.spec.mjs tests/ui/racial-corrections.spec.mjs",
+    "test:ui:ci": "playwright test tests/ui/modern-foundation.spec.mjs tests/ui/adapter.spec.mjs tests/ui/summary-adapter.spec.mjs tests/ui/compare-differential.spec.mjs tests/ui/compare-builds.spec.mjs tests/ui/tooltips.spec.mjs tests/ui/search-builds.spec.mjs tests/ui/build-store.spec.mjs tests/ui/build-manager.spec.mjs tests/ui/mobile-polish.spec.mjs tests/ui/pwa-ui.spec.mjs tests/ui/pwa-offline.spec.mjs tests/ui/localization.spec.mjs tests/ui/data-projections.spec.mjs tests/ui/legacy-codecs.spec.mjs tests/ui/game-term-display.spec.mjs tests/ui/release-accessibility.spec.mjs tests/ui/ui-consistency.spec.mjs tests/ui/build-share.spec.mjs tests/ui/item-preview.spec.mjs tests/ui/equipment-picker.spec.mjs tests/ui/calculator-readability.spec.mjs tests/ui/skill-allocation.spec.mjs tests/ui/calculator-code.spec.mjs tests/ui/equipment-compatibility.spec.mjs tests/ui/compact-workspace.spec.mjs tests/ui/legacy-build-recovery.spec.mjs tests/ui/build-code-workspace.spec.mjs tests/ui/compact-inputs.spec.mjs tests/ui/panel-workspace.spec.mjs tests/ui/native-recovery.spec.mjs tests/ui/racial-corrections.spec.mjs tests/ui/skill-tooltips.spec.mjs",
     "test:ui:visual": "playwright test tests/ui/visual-capture.spec.mjs tests/ui/game-term-visual.spec.mjs"
   },
   "devDependencies": {
