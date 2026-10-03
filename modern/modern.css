@@ -378,6 +378,7 @@ body.remaked-modern {
   box-sizing: border-box;
   width: 100% !important;
 }
+.remaked-modern #body [data-remaked-calculator-main] > ul:has(#Title) { display: none; }
 
 .remaked-modern #body [data-remaked-calculator-main] > ul {
   width: 100%;
@@ -727,6 +728,36 @@ body.remaked-modern {
   display: flow-root; float: none; max-height: min(60vh, 560px); overflow: auto;
   overscroll-behavior: contain; width: 100%;
 }
+.remaked-modern #body [data-remaked-floating-panel]:not([hidden]) {
+  position: fixed; z-index: 25; top: var(--rm-popup-top); left: var(--rm-popup-left);
+  box-sizing: border-box; width: min(calc(100vw - 24px), var(--rm-native-panel-width));
+  padding: 0; filter: drop-shadow(0 8px 18px rgba(41, 53, 35, .22));
+}
+.remaked-modern #body [data-remaked-floating-panel] .sub_win {
+  width: 100% !important; background: #fbfdf7;
+}
+.remaked-modern #body [data-remaked-floating-panel] .remaked-native-panel-content {
+  max-height: min(560px, calc(100dvh - var(--rm-popup-top) - 64px));
+}
+.remaked-modern #body [data-remaked-job-content] { width: 100% !important; box-sizing: border-box; }
+.remaked-modern #body [data-remaked-job-layout] { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.remaked-modern #body [data-remaked-job-layout] :is(li, ul) {
+  float: none; width: 100% !important; height: auto !important; min-width: 0;
+}
+.remaked-modern #body [data-remaked-job-layout] .head {
+  box-sizing: border-box; padding: 4px; line-height: 1.4; font-weight: 600;
+  background: var(--rm-surface-2) !important; color: var(--rm-text) !important;
+}
+.remaked-modern #body [data-remaked-job-layout] select {
+  box-sizing: border-box; width: 100% !important; height: auto !important;
+  border: 1px solid var(--rm-border); border-radius: 4px; font: 13px/1.4 var(--rm-font);
+}
+.remaked-modern #body [data-remaked-skill-list-prompt] {
+  box-sizing: border-box; width: 100%; min-width: 0; padding: 8px;
+  font: 13px/1.5 var(--rm-font); color: var(--rm-text); white-space: normal; overflow-wrap: anywhere;
+}
+.remaked-modern #body [data-remaked-skill-list-prompt] p { margin: 0 0 8px; white-space: normal; overflow-wrap: anywhere; }
+.remaked-modern #body [data-remaked-floating-panel] #LearnView { width: 100% !important; box-sizing: border-box; }
 .remaked-modern #body :is(#ATKView, #RESView) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; box-sizing: border-box; width: 100% !important; }
 .remaked-modern #body #RESView { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .remaked-modern #body :is(#ATKView, #RESView) > ul { display: contents; }
@@ -751,12 +782,30 @@ body.remaked-modern {
 .remaked-modern #body [data-remaked-buff] :is(div, span) { color: inherit !important; background: transparent !important; border: 0; font: inherit; white-space: normal; }
 .remaked-modern #body [data-remaked-buff] .help { text-decoration: none; }
 .remaked-modern #body [data-remaked-buff-column] select { box-sizing: border-box; width: 100%; min-width: 0; min-height: 26px; font: 12px/1.4 var(--rm-font); }
+.remaked-modern #body [data-remaked-buff-parameter] {
+  display: flex !important; align-items: stretch; gap: 6px; box-sizing: border-box;
+}
+.remaked-modern #body [data-remaked-buff-parameter] > li {
+  box-sizing: border-box; float: none; margin: 0 !important; width: auto !important; height: auto !important;
+}
+.remaked-modern #body [data-remaked-buff-parameter] > .input_lt {
+  flex: 1; min-width: 0; min-height: 28px; display: flex; align-items: center;
+  padding: 3px 0; font: 600 12px/1.4 var(--rm-font); text-align: start !important;
+  border: 0; white-space: normal; overflow-wrap: anywhere;
+}
+.remaked-modern #body [data-remaked-buff-parameter] > .input_lt .help { font: inherit; }
+.remaked-modern #body [data-remaked-buff-parameter] > li:has(input) { display: flex; flex: 0 0 58px; }
+.remaked-modern #body [data-remaked-buff-parameter] input {
+  height: auto !important; min-height: 28px; border: 1px solid var(--rm-border); border-radius: 4px;
+  padding: 3px 4px; background: #fff; font: 600 13px/1.4 var(--rm-font);
+}
 @media (max-width: 620px) {
   .remaked-modern #body [data-remaked-panel-close] { min-width: 44px; min-height: 44px; }
   .remaked-modern #body :is(#ATKView, #RESView, #BUFFView) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .remaked-modern #body [data-remaked-buff] { min-height: 44px; }
   .remaked-modern #body [data-remaked-buff-column] select { min-height: 44px; font-size: 16px; }
   .remaked-modern #body [data-remaked-buff-column] input { min-height: 44px; font-size: 16px; }
+  .remaked-modern #body [data-remaked-buff-parameter] > .input_lt { min-height: 44px; }
 }
 @media (max-width: 360px) { .remaked-modern #body :is(#ATKView, #RESView, #BUFFView) { grid-template-columns: 1fr; } }
 
@@ -1520,11 +1569,11 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     grid-template-columns: 142px minmax(0, 1fr);
   }
   .remaked-modern #body [data-remaked-calculator-budget] {
-    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px;
+    display: grid; grid-template-columns: minmax(0, 1fr); gap: 3px;
   }
   .remaked-modern #body [data-remaked-calculator-level] { grid-column: 1 / -1; }
   .remaked-modern #body [data-remaked-calculator-budget] > ul:not([data-remaked-calculator-level]) {
-    display: grid; grid-template-columns: 1fr; gap: 2px;
+    display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 2px;
   }
   .remaked-modern #body [data-remaked-calculator-budget] > ul:not([data-remaked-calculator-level]) > li {
     float: none; width: auto !important; margin: 0; height: auto !important;
@@ -1578,4 +1627,61 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     grid-template-columns: minmax(0, 1fr) auto auto auto; column-gap: 4px;
   }
   .remaked-modern #body [data-remaked-effect-row] > li:empty { display: none; }
+}
+
+/* Hybrid C composition: separate editable character/skill controls from quiet
+   calculated text. These are presentation groups, not another set of state. */
+.remaked-modern #body [data-remaked-calculator-main] {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.remaked-modern #body [data-remaked-calculator-columns] { padding-top: 0; gap: 12px; }
+.remaked-modern #body [data-remaked-calculator-main] > ul > :is(.line1, .line2) { display: none; }
+.remaked-modern #body :is([data-remaked-calculator-character], #SkillSet, [data-remaked-calculator-effects]) {
+  border: 1px solid var(--rm-border);
+  border-radius: 7px;
+  background: var(--rm-surface);
+  padding: 6px !important;
+}
+.remaked-modern #body .remaked-workbench-title {
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0 0 6px;
+  padding: 3px 6px;
+  background: var(--rm-surface-2);
+  color: var(--rm-text);
+  font: 700 14px/1.5 var(--rm-font);
+  text-align: start;
+  letter-spacing: normal;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.remaked-modern #body :is(#Status, #StatusView) > .remaked-workbench-title {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  margin-bottom: 2px;
+  padding-inline: 4px;
+}
+.remaked-skill-tools-actions { align-items: start; }
+.remaked-modern #body .remaked-skill-tools-actions > .remaked-workbench-title { flex: 1; margin-bottom: 0; }
+.remaked-skill-tools-actions > button { flex: 0 1 auto; width: auto; padding-inline: 8px; }
+.remaked-modern #body #StatusView [data-remaked-calculator-pair] {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  border-bottom: 1px solid #e2e9d8;
+}
+.remaked-modern #body #StatusView [data-remaked-calculator-pair] .input_gt { font-weight: 600; }
+.remaked-modern #body [data-remaked-calculator-identity] [data-remaked-calculator-pair] { background: #fff; }
+@media (min-width: 1366px) {
+  .remaked-modern #body [data-remaked-calculator-columns] { grid-template-columns: minmax(0, 1fr) 582px 232px; }
+}
+@media (min-width: 861px) {
+  /* Faint landscape extends the existing approved art across the banner;
+     the primary, complete composition remains uncropped on the right. */
+  .remaked-hero {
+    background: linear-gradient(90deg, #f6f3df 0%, rgba(240,244,223,.96) 33%, rgba(240,244,223,.7) 59%, #e5edcf 78%), url('./pandora-hero.webp') left 40% / 240% auto no-repeat;
+  }
+  .remaked-hero-art::after { background: linear-gradient(90deg, #e5edcf, transparent 12%); }
 }

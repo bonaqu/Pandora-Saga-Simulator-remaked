@@ -116,6 +116,8 @@ jobs:
             .ci-artifacts/workspace-report.json
             test-results/desktop-workspace-*/desktop-workspace.png
             test-results/desktop-workspace-*/test-failed-*.png
+            test-results/hybrid-composition-*/hybrid-*.png
+            test-results/hybrid-composition-*/test-failed-*.png
           if-no-files-found: error
           retention-days: 1
 
@@ -125,6 +127,18 @@ jobs:
         run: |
           mkdir -p .ci-artifacts
           npm run test:ui:ci -- --reporter=json > .ci-artifacts/browser-report.json
+
+      - name: Upload native panel and input visual evidence
+        if: ${{ always() && steps.browser_contract.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: feature-native-panels
+          path: |
+            .ci-artifacts/browser-report.json
+            test-results/panel-workspace-*/**/*.png
+            test-results/compact-inputs-*/**/*.png
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Verify deterministic Legacy terminology export
         run: npm run test:translations

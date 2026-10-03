@@ -199,8 +199,10 @@ editing. Plan: `2026-10-03-compact-inputs-and-review.md`. PR30 and PR31, tag
 `37129818509`; exact artifact/live files, unchanged museum, real six-editor
 previews, native login on a slow connection, sharing and installed offline PWA
 passed. Catalog revision 2 contains only the approved two racial corrections;
-old revision 0 remains reproducible. Continue the bounded custom-learning block,
-not a second implementation of already completed UI work.
+old revision 0 remains reproducible. The owner's subsequent Hybrid C example
+prioritizes composition refinement before custom learning; its differences from
+the broad PC workbench and remaining release gates are recorded in
+`2026-10-03-hybrid-c-composition.md`. Do not repeat the completed 3.03 mechanics.
 
 Not part of this roadmap's implementation plans. Requires a new design/spec after Phases 0–7 are stable.
 

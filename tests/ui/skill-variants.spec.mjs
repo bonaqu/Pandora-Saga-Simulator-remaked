@@ -100,6 +100,7 @@ test('public skill additions are explicit keyboard details with literal names, t
   const records = [variant('skill.0.0', edit => { edit.names.en = 'Field Provoke'; edit.names.ru = 'Полевой вызов'; edit.description.ru = '<img src=x onerror=alert(1)>'; edit.castSeconds = 1.005; }),
     variant('skill.0.1', edit => { edit.names.en = 'Field recovery'; edit.effects = [{ stat: 1, value: 0.29, unit: 'flat' }]; edit.bonusRequirements.shieldRequired = true; }, 2)];
   const original = await page.evaluate(data => { const original = PandoraRemaked.adapter.serialize(); PandoraRemaked.catalog.applySnapshot(data); return original; }, snapshot(records));
+  const restingTop = await page.locator('[data-remaked-calculator-columns]').evaluate(node => node.getBoundingClientRect().top);
   await page.locator('[data-remaked-tab="1"]').click();
   const panel = page.locator('[data-remaked-native-panel="1"]');
   await expect(panel).toBeVisible();
@@ -107,10 +108,12 @@ test('public skill additions are explicit keyboard details with literal names, t
   await expect(page.locator('#remaked-skill-list-row')).toHaveCount(0);
   const geometry = await panel.evaluate(node => {
     const box = node.getBoundingClientRect(), columns = document.querySelector('[data-remaked-calculator-columns]').getBoundingClientRect();
-    return { height: box.height, bottom: box.bottom, columnsTop: columns.top };
+    return { height: box.height, bottom: box.bottom, columnsTop: columns.top, position: getComputedStyle(node).position, viewport: innerHeight };
   });
   expect(geometry.height).toBeLessThanOrEqual(560);
-  expect(geometry.bottom).toBeLessThanOrEqual(geometry.columnsTop);
+  expect(geometry.columnsTop).toBe(restingTop);
+  expect(geometry.position).toBe('fixed');
+  expect(geometry.bottom).toBeLessThanOrEqual(geometry.viewport);
   const active = page.locator('[data-remaked-skill-variant="' + records[0].id + '"]');
   await expect(active.locator('summary')).toContainText('Not learned');
   await active.locator('summary').focus(); await page.keyboard.press('Enter');

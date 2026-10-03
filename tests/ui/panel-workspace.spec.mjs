@@ -1,5 +1,33 @@
 import { test, expect } from '@playwright/test';
 
+test('JOB retains two readable selection columns; disabled SKILL explains and enables the native list', async ({ page }, testInfo) => {
+  await page.goto('/'); const before = await page.evaluate(() => Store());
+  await page.locator('[data-remaked-tab="0"]').click();
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const race = await page.locator('#SelRace').boundingBox(), job = await page.locator('#SelJob').boundingBox();
+    const card = await page.locator('[data-remaked-native-panel="0"] .sub_win').boundingBox();
+    expect(job.x).toBeGreaterThanOrEqual(race.x + race.width);
+    expect(Math.abs(race.y - job.y)).toBeLessThanOrEqual(1);
+    expect(job.x + job.width).toBeGreaterThanOrEqual(card.x + card.width - 10);
+    expect(await page.locator('#SelJob').evaluate(node => node.clientHeight >= node.scrollHeight || node.size > 1)).toBe(true);
+  }
+  expect(await page.evaluate(() => Store())).toBe(before);
+  await page.locator('[data-remaked-tab="1"]').click();
+  const prompt = page.locator('[data-remaked-skill-list-prompt]'); await expect(prompt).toBeVisible();
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const textBounds = await prompt.locator('p').evaluate(node => ({ width: node.clientWidth, scroll: node.scrollWidth }));
+    expect(textBounds.scroll).toBeLessThanOrEqual(textBounds.width + 1);
+    const panelBounds = await page.locator('[data-remaked-native-panel="1"]').boundingBox(), promptBounds = await prompt.boundingBox();
+    expect(promptBounds.x + promptBounds.width).toBeLessThanOrEqual(panelBounds.x + panelBounds.width);
+  }
+  await prompt.getByRole('button').click(); await expect(prompt).toBeHidden();
+  expect(await page.evaluate(() => Flag[3])).toBe(1);
+  await expect(page.locator('#LearnView [id^="LearnSkillIcon_"]').first()).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath('enabled-skill-popup-1440.png') });
+});
+
 test('attack labels have readable contrast and all five buff columns use actual desktop space', async ({ page }) => {
   await page.goto('/'); await page.locator('[data-remaked-tab="2"]').click();
   const colors = await page.locator('[data-remaked-inspector-stat] .input_lt').first().evaluate(node => {
@@ -19,12 +47,16 @@ test('attack labels have readable contrast and all five buff columns use actual 
   expect(boxes.every(box => box.width > 80)).toBe(true);
 });
 
-test('five native inspectors are compact inline regions, close by keyboard and never cover the calculator', async ({ page }, testInfo) => {
+test('JOB and SKILL float without shifting the workbench; other inspectors remain compact inline regions', async ({ page }, testInfo) => {
   test.setTimeout(90000); await page.goto('/');
   await page.evaluate(() => { StatusMove('Lev', 54); CalcSet('Lev'); });
   const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
   for (const width of [320, 390, 768, 1366, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
+    // Capture the resting workbench only after its responsive toolbar move.
+    // Otherwise the 54px phone toolbar can move between the before/after reads.
+    await expect.poll(() => page.evaluate(() => Boolean(document.querySelector('[data-remaked-tools]').closest('[data-remaked-picker-section]')))).toBe(width > 860);
+    const restingCharacter = await page.locator('[data-remaked-calculator-character]').boundingBox();
     for (const tab of [0, 1, 2, 3, 4]) {
       const opener = page.locator('[data-remaked-tab="' + tab + '"]'); await opener.click();
       const panel = page.locator('[data-remaked-native-panel="' + tab + '"]');
@@ -38,7 +70,25 @@ test('five native inspectors are compact inline regions, close by keyboard and n
           result.push({ tag: parent.tagName, id: parent.id, class: parent.className, style: parent.getAttribute('style'), y: rect.y, height: rect.height, display: css.display, float: css.float, position: css.position });
         } return result;
       });
-      expect(character.y, JSON.stringify({ width, tab, bounds, character, flow })).toBeGreaterThanOrEqual(bounds.y + bounds.height - 1);
+      if (tab < 2) {
+        await expect(panel).toHaveAttribute('role', 'dialog');
+        expect(character.y).toBe(restingCharacter.y);
+        expect(await panel.evaluate(node => getComputedStyle(node).position)).toBe('fixed');
+        const surface = await panel.locator('.sub_win').evaluate(node => {
+          const css = getComputedStyle(node), channels = css.backgroundColor.match(/[\d.]+/g).map(Number);
+          return { alpha: channels.length === 4 ? channels[3] : 1, opacity: Number(css.opacity) };
+        });
+        expect(surface.alpha, 'Popup content must not mix with the calculator underneath').toBe(1);
+        expect(surface.opacity).toBe(1);
+        expect(bounds.y).toBeGreaterThanOrEqual(0); expect(bounds.y + bounds.height).toBeLessThanOrEqual(900);
+        await opener.click(); await expect(panel).toBeHidden();
+        await opener.click(); await expect(panel).toBeVisible();
+        await panel.locator('[data-remaked-panel-close]').focus(); await page.keyboard.press('Escape');
+        await expect(panel).toBeHidden(); await expect(opener).toBeFocused();
+        await opener.click(); await expect(panel).toBeVisible();
+      } else {
+        expect(character.y, JSON.stringify({ width, tab, bounds, character, flow })).toBeGreaterThanOrEqual(bounds.y + bounds.height - 1);
+      }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
       if (width === 1440 || width === 390) await page.screenshot({ path: testInfo.outputPath('panel-' + tab + '-' + width + '.png') });
       await panel.locator('[data-remaked-panel-close]').focus(); await page.keyboard.press('Enter');
@@ -46,6 +96,31 @@ test('five native inspectors are compact inline regions, close by keyboard and n
     }
   }
   expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(before);
+});
+
+test('buff parameter labels and fields share row height and alignment across languages and widths', async ({ page }, testInfo) => {
+  await page.goto('/'); await page.locator('[data-remaked-tab="4"]').click();
+  const before = await page.evaluate(() => Store());
+  for (const language of ['EN', 'RU', 'JP', 'TW']) {
+    await page.getByRole('button', { name: language, exact: true }).click();
+    for (const width of [320, 390, 1440, 1920]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const index of [0, 1, 2]) {
+        // Responsive discovery moves asynchronously between PC and phone.
+        // Measure the pair in one layout, not on opposite sides of that move.
+        const { label, input } = await page.evaluate(index => {
+          const bounds = node => { const rect = node.getBoundingClientRect(); return { y: rect.y, height: rect.height }; };
+          return { label: bounds(document.getElementById('Text_' + (21 + index))), input: bounds(document.getElementById('InBuff_' + index)) };
+        }, index);
+        expect(Math.abs(label.height - input.height), JSON.stringify({ width, language, index, label, input })).toBeLessThanOrEqual(1);
+        expect(Math.abs(label.y - input.y), JSON.stringify({ width, language, index, label, input })).toBeLessThanOrEqual(1);
+        expect(input.height).toBeGreaterThanOrEqual(width <= 620 ? 44 : 28);
+        await expect(page.locator('#InBuff_' + index)).toHaveAccessibleName(await page.locator('#Text_' + (21 + index)).innerText());
+      }
+      if (language === 'EN' && (width === 390 || width === 1440)) await page.screenshot({ path: testInfo.outputPath('buff-alignment-' + width + '.png') });
+    }
+  }
+  expect(await page.evaluate(() => Store())).toBe(before);
 });
 
 test('native buff controls activate once by keyboard and keep their source labels through language changes', async ({ page }) => {

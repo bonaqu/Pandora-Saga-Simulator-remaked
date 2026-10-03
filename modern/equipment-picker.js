@@ -1,7 +1,20 @@
 (function () {
   'use strict';
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
-  var timer = null;
+  var timer = null, discoveryAnchor = null;
+  function positionDiscovery(section) {
+    var tools = document.querySelector('[data-remaked-tools]');
+    if (!tools) return;
+    if (!discoveryAnchor) {
+      discoveryAnchor = document.createComment('Modern discovery tools home'); tools.before(discoveryAnchor);
+    }
+    if (window.matchMedia('(min-width: 861px)').matches) {
+      if (tools.closest('[data-remaked-picker-section]')) return;
+      var holder = section.querySelector('[data-remaked-picker-discovery]');
+      if (!holder) { holder = document.createElement('li'); holder.dataset.remakedPickerDiscovery = ''; section.firstElementChild.appendChild(holder); }
+      holder.appendChild(tools);
+    } else if (tools.closest('[data-remaked-picker-section]')) discoveryAnchor.after(tools);
+  }
   function refresh() {
     var labels = {};
     namespace.adapter.listEquipmentTargets().forEach(function (target) { labels[target.slotIndex] = target.label; });
@@ -16,7 +29,12 @@
       slotRow.dataset.remakedPickerSlot = '';
       slotRow.firstElementChild.dataset.remakedPickerSlotLabel = '';
       var section = slotRow.closest('.main');
-      if (section) section.dataset.remakedPickerSection = '';
+      if (section) {
+        section.dataset.remakedPickerSection = '';
+        // The same controls belong beside Equipment on PC and above the long
+        // calculator on phones. Move nodes, preserving callbacks/autosave.
+        positionDiscovery(section);
+      }
       var match = select.id.match(/^SelEquip_(\d+)_(0|[4-6])$/);
       if (!match) return;
       var button = select._remakedPicker;
@@ -47,7 +65,9 @@
         select.hidden = true;
       }
       var option = select.options[select.selectedIndex];
-      var text = option ? option.textContent.trim() : '—';
+      // Native category placeholders start with +-----. Retain the exact source
+      // option/value for the engine; display only its meaningful category name.
+      var text = option ? option.textContent.trim().replace(/^\+-----\s*/, '') : '—';
       if (button.textContent !== text) button.textContent = text;
       var label = labels[Number(match[1])] || '';
       var name = label + (Number(match[2]) ? ' · Soul ' + (Number(match[2]) - 3) : '') + ': ' + text;
@@ -107,6 +127,7 @@
     });
     body.addEventListener('change', schedule, true);
     body.addEventListener('input', schedule, true);
+    window.addEventListener('resize', schedule);
     window.addEventListener('pandora-remaked:localechange', refresh);
   }
   namespace.equipmentPicker = { refresh: refresh };
