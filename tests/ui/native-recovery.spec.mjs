@@ -1,4 +1,24 @@
 import { test, expect } from '@playwright/test';
+import { baselineById, sourceIdentity, sourceFingerprint, characterSourceFingerprint } from '../../admin-api/src/catalog-baseline.mjs';
+import { draftFromSource, validateDraft, compileRecord } from '../../admin-api/src/catalog-model.mjs';
+
+test('editing known Waist Belt bonuses preserves the unresolved warning, exact override code and load parity', async ({ page }) => {
+  const source = baselineById.get('equipment.42.32'), identity = sourceIdentity(source), edit = draftFromSource(source, 'equipment');
+  edit.effectMode = 'patch'; edit.effects = [{ stat: 0, value: 3, unit: 'flat' }, { stat: 1, value: 5, unit: 'flat' }];
+  const record = compileRecord(validateDraft(edit, identity), identity, source);
+  await page.goto('/'); const errors = []; page.on('pageerror', error => errors.push(error.message));
+  const result = await page.evaluate(data => {
+    const api = PandoraRemaked, original = api.adapter.serialize(); api.catalog.applySnapshot(data);
+    StatusMove('Lev', 54); CalcSet('Lev'); api.adapter.selectEquipment(11, 420032); CalcSet('ALL');
+    const saved = api.adapter.serialize(); api.adapter.load(saved);
+    const value = { stamina: Status.STA[2], strength: Status.STR[2], code: EquipData[0][42][32][7],
+      warning: api.adapter.equipmentCalculationWarning(420032), roundTrip: api.adapter.serialize() === saved };
+    api.adapter.load(original); value.sourceCode = EquipData[0][42][32][7]; return value;
+  }, { ok: true, schemaVersion: 1, revision: 1, sourceFingerprint, characterSourceFingerprint, records: [record] });
+  expect(result.stamina).toBe(3); expect(result.strength).toBe(5); expect(result.code).toBe(record.calculationCode);
+  expect(result.warning).toContain('unresolved marker -7'); expect(result.roundTrip).toBe(true);
+  expect(result.sourceCode).toBe('0=1_-7'); expect(errors).toEqual([]);
+});
 
 test('the native recovery loops consume the correct option array without changing formulas or leaving an alias behind', async ({ page }) => {
   await page.goto('/');

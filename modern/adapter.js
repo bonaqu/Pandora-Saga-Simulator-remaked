@@ -330,8 +330,8 @@
   };
   adapter.equipmentCalculationWarning = function (value) {
     var row = window.EquipData[0]?.[42]?.[32];
-    return Number(value) === 420032 && row && row[0] === 'ウィースベルト' && row[7] === '0=1_-7'
-      ? 'Legacy data warning: unresolved marker -7. STA +1 is retained; the conditional Rex Naturalis trigger is not simulated. No MP penalty is assumed.' : '';
+    return Number(value) === 420032 && row && row[0] === 'ウィースベルト' && row[7].split('_').indexOf('-7') !== -1
+      ? 'Legacy data warning: unresolved marker -7. Confirmed numeric bonuses are retained; the conditional Rex Naturalis trigger is not simulated. No MP penalty is assumed.' : '';
   };
   var retainedEquipCheck = window.EquipCheck;
   window.EquipCheck = function () {
@@ -340,9 +340,11 @@
     var code = row[7];
     // This exact malformed source marker has no stat/value separator and
     // crashes the retained push into EquipOpt[-7]. Present only the confirmed
-    // STA data to that call, restore the original row even on errors, and make
-    // the unresolved effect visible. Never normalize arbitrary bad effects.
-    row[7] = '0=1';
+    // numeric data to that call, including validated admin overrides, restore
+    // the exact row even on errors and make the unresolved effect visible.
+    // This is restricted to the original item's identity and exact marker;
+    // never normalize arbitrary unknown effects or invent an MP penalty.
+    row[7] = code.split('_').filter(function (token) { return token !== '-7'; }).join('_');
     try { return retainedEquipCheck.apply(this, arguments); }
     finally { row[7] = code; }
   };
