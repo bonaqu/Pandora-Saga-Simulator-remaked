@@ -34,6 +34,33 @@ const detail = (env, id = 'equipment.0.1') => call(env, 'item?id=' + id);
 const save = (env, item) => call(env, 'draft', { edit: item.edit, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
 const publish = (env, item) => call(env, 'publish', { id: item.identity.id, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
 
+test('editor reads actual public values separately from a private draft and previews without writes', async () => {
+  const { env, sqlite } = fixture(); const item = await detail(env);
+  assert.equal(item.currentRecord.calculationCode, '18=W5');
+  item.edit.effectMode = 'patch'; item.edit.effects = [{ stat: 1, value: 7, unit: 'flat' }];
+  const previewInput = { edit: item.edit, expectedCatalogRevision: item.catalogRevision };
+  const preview = await call(env, 'preview', previewInput);
+  assert.equal(preview.record.calculationCode, '18=W5_1=7');
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n, 0);
+  assert.equal((await publicData(env)).revision, 0);
+  const saved = await save(env, item); const read = await detail(env);
+  assert.equal(read.currentRecord.calculationCode, '18=W5');
+  assert.deepEqual(read.edit.effects, item.edit.effects);
+  await publish(env, saved);
+  assert.equal((await detail(env)).currentRecord.calculationCode, '18=W5_1=7');
+  await assert.rejects(() => call(env, 'preview', previewInput), error => error.status === 409);
+  await assert.rejects(() => call(env, 'preview', { ...previewInput, expectedCatalogRevision: 1, edit: { ...item.edit, effects: [{ stat: 99999, value: 2, unit: 'flat' }] } }), error => error.status === 400);
+});
+
+test('racial and passive current references explain retained mechanics, not fabricated editable effects', async () => {
+  const { env } = fixture(); const racial = await detail(env, 'racial_skill.4.0');
+  assert.deepEqual(racial.currentRecord.effects, []);
+  assert.match(racial.nativeMechanics, /−10%/); assert.match(racial.nativeMechanics, /\+2/);
+  const passive = await detail(env, 'skill_entry.0.1');
+  assert.equal(passive.currentRecord.nativeEffectPolicy, 'retained-plus-bonus');
+  assert.ok(passive.currentRecord.description.en);
+});
+
 test('baseline is complete, searchable, read-only and never appears as a fabricated published override', async () => {
   const { env } = fixture();
   const meta = await call(env, 'meta'); assert.equal(meta.sourceCount, 1561);

@@ -62,6 +62,71 @@ async function openConsole(page) {
   return { sqlite, errors };
 }
 
+test('editor shows live values and a private server preview before explicit save and publication', async ({ page }, testInfo) => {
+  const { sqlite, errors } = await openConsole(page);
+  await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill('equipment.0.1');
+  await page.locator('.catalog-entry').first().click();
+  const live = page.locator('[data-current-record]'), preview = page.locator('[data-preview-record]');
+  await expect(live).toContainText('Базовая атака оружия: 5');
+  await expect(page.locator('[data-editor-workflow]')).toContainText('Черновик');
+  await expect(page.locator('[data-field="names"][data-language="jp"]')).toBeHidden();
+  const japanese = await page.locator('[data-field="names"][data-language="jp"]').inputValue();
+  await page.getByRole('button', { name: 'Добавить характеристику', exact: true }).click();
+  await page.getByRole('spinbutton', { name: 'Значение', exact: true }).fill('7');
+  await page.getByRole('button', { name: 'Проверить изменения', exact: true }).click();
+  await expect(preview).toContainText('Сила (СИЛ / STR): +7');
+  await expect(live).not.toContainText('Сила');
+  expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n).toBe(0);
+  expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(0);
+  await page.getByRole('spinbutton', { name: 'Значение', exact: true }).fill('8');
+  await expect(preview).toContainText('Изменения ещё не проверены');
+  await expect(preview).not.toContainText('+7');
+  await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  await expect(live).toContainText('Базовая атака оружия: 5');
+  await expect(page.locator('[data-field="names"][data-language="jp"]')).toHaveValue(japanese);
+  page.on('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: 'Опубликовать', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Опубликована версия каталога 1');
+  await expect(live).toContainText('Сила (СИЛ / STR): +8');
+  await page.screenshot({ path: testInfo.outputPath('current-and-preview-desktop.png'), fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath('current-and-preview-mobile.png'), fullPage: true });
+  expect(errors).toEqual([]);
+});
+
+test('racial and skill editors expose current descriptions, numbers and calculation limits', async ({ page }) => {
+  const { errors } = await openConsole(page);
+  for (const [kind, id, text] of [['racial', 'racial_skill.4.0', 'Получаемый физический урон −10%'], ['active', 'skill_entry.0.0', 'Стоимость MP'], ['passive', 'skill_entry.0.1', 'Исходная механика']]) {
+    await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption(kind);
+    await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill(id);
+    await page.locator('.catalog-entry').first().click();
+    await expect(page.locator('[data-current-record]')).toContainText(text);
+    await expect(page.getByRole('button', { name: 'Проверить изменения', exact: true })).toBeVisible();
+  }
+  expect(errors).toEqual([]);
+});
+
+test('cancelling a catalog switch and a failed preview preserve unsaved fields and the selected record', async ({ page }) => {
+  const { sqlite, errors } = await openConsole(page);
+  const entry = page.locator('.catalog-entry').first(); await entry.click();
+  await expect(entry).toHaveAttribute('aria-current', 'true');
+  const name = page.locator('[data-field="names"][data-language="en"]'); await name.fill('My unsaved sword');
+  page.on('dialog', dialog => dialog.dismiss());
+  await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('racial');
+  await expect(page.getByRole('combobox', { name: 'Каталог', exact: true })).toHaveValue('equipment');
+  await expect(name).toHaveValue('My unsaved sword');
+  await page.route(admin + '/api/admin/preview', route => route.fulfill({ status: 409, json: { ok: false, message: 'Catalog changed in another tab; reload before previewing' } }));
+  await page.getByRole('button', { name: 'Проверить изменения', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Catalog changed');
+  await expect(page.locator('#catalog-console')).not.toHaveAttribute('inert', '');
+  await expect(name).toHaveValue('My unsaved sword');
+  await expect(page.locator('[data-preview-record]')).not.toContainText('Проверено сервером');
+  expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n).toBe(0);
+  expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(0); expect(errors).toEqual([]);
+});
+
 for (const kind of ['active', 'passive']) test(`administrator creates a distinct ${kind} variant from a source skill with private save and explicit publish`, async ({ page }, testInfo) => {
   const { sqlite, errors } = await openConsole(page);
   const sourceId = kind === 'active' ? 'skill_entry.0.0' : 'skill_entry.0.1';

@@ -25,7 +25,7 @@ test('Worker-owned admin URL does not conflict with Assets HTML canonical redire
 
 test('every private route rejects missing sessions, independent of hidden UI', async () => {
   for (const method of ['GET', 'POST', 'PUT', 'DELETE']) {
-    for (const path of ['/api/session', '/api/admin/items', '/api/admin/publish', '/api/admin/unknown']) {
+    for (const path of ['/api/session', '/api/admin/items', '/api/admin/publish', '/api/admin/preview', '/api/admin/unknown']) {
       const result = await worker.fetch(new Request(origin + path, { method }), env);
       assert.equal(result.status, 401);
       assert.equal(result.headers.get('Cache-Control'), 'no-store');

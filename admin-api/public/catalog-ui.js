@@ -3,7 +3,7 @@
   var host = document.getElementById('catalog-console');
   var status = document.getElementById('catalog-state');
   var meta, getCsrf, expired, current, editor, listHost, listStatus, search, kind, newButton, page = 0;
-  var generation = 0, pending = 0, editorRequest = 0, searchTimer, dirty = false, catalogRevision = 0;
+  var generation = 0, pending = 0, editorRequest = 0, searchTimer, dirty = false, catalogRevision = 0, selectedKind = 'equipment';
   var languages = [['en', 'English'], ['ru', 'Русский'], ['jp', '日本語'], ['tw', '繁體中文']];
   function node(tag, text, className) { var result = document.createElement(tag); if (text !== undefined) result.textContent = text; if (className) result.className = className; return result; }
   function button(text, action, className) { var result = node('button', text, className); result.type = 'button'; result.addEventListener('click', action); return result; }
@@ -16,7 +16,13 @@
     if (!response.ok || result.ok !== true) throw new Error(result.message || 'Server request failed');
     return result;
   }
-  function changing() { dirty = true; if (editor) editor.dataset.unsaved = 'true'; }
+  function changing() {
+    dirty = true; if (editor) {
+      editor.dataset.unsaved = 'true';
+      var preview = editor.querySelector('[data-preview-record]');
+      if (preview) preview.replaceChildren(node('h4', 'После публикации'), node('p', 'Изменения ещё не проверены. Нажмите «Проверить изменения».', 'help-text'));
+    }
+  }
   function canLeave() { return !dirty || window.confirm('Есть несохранённые изменения. Перейти без сохранения?'); }
   function inputField(label, type, value, field, parent, min, max) {
     var wrap = node('label', label, 'editor-field'); var input = node('input'); input.type = type; input.value = value; input.dataset.field = field;
@@ -34,14 +40,90 @@
   }
   function multilingual(label, field, values, parent, multiline) {
     var section = node('fieldset', undefined, 'translation-fields'); section.appendChild(node('legend', label));
+    var extra = node('details', undefined, 'extra-languages'); extra.appendChild(node('summary', 'Японский и китайский переводы'));
+    var extraFields = node('div', undefined, 'basic-fields'); extra.appendChild(extraFields);
     languages.forEach(function (entry) {
       var wrap = node('label', entry[1], 'editor-field'); var input = node(multiline ? 'textarea' : 'input');
       if (!multiline) input.type = 'text'; else input.rows = 3;
       input.value = values[entry[0]] || ''; input.maxLength = multiline ? 4000 : 160;
       input.dataset.field = field; input.dataset.language = entry[0];
       if (field === 'names' && entry[0] === 'en') input.required = true;
-      input.addEventListener('input', changing); wrap.appendChild(input); section.appendChild(wrap);
-    }); parent.appendChild(section);
+      input.addEventListener('input', changing); wrap.appendChild(input); (entry[0] === 'en' || entry[0] === 'ru' ? section : extraFields).appendChild(wrap);
+    }); section.appendChild(extra); parent.appendChild(section);
+  }
+  var effectNames = {
+    0: 'Выносливость (ВЫН / STA)', 1: 'Сила (СИЛ / STR)', 2: 'Проворство (ПРВ / AGI)', 3: 'Ловкость (ЛВК / DEX)', 4: 'Сила духа (СД / SPR)', 5: 'Интеллект (ИНТ / INT)',
+    6: 'Здоровье (LP)', 7: 'Мана (MP)', 8: 'Эффективность зелий', 42: 'Магическая атака', 49: 'Защита',
+    52: 'Физический урон', 60: 'Магический урон', 62: 'Точность', 65: 'Уклонение', 69: 'Шанс критического удара',
+    70: 'Сопротивление криту', 71: 'Критический урон', 73: 'Скорость атаки', 74: 'Скорость движения', 76: 'Стоимость MP', 77: 'Скорость применения', 79: 'Перезарядка'
+  };
+  function effectLabel(id) { var definition = meta.effects.find(function (entry) { return entry.id === Number(id); }); return effectNames[id] || definition?.label || 'Условный эффект Legacy #' + id; }
+  function effectText(id, value, unit) {
+    var definition = meta.effects.find(function (entry) { return entry.id === Number(id); });
+    var number = Number(value), suffix = unit === 'percent' ? '% от базы' : definition && (definition.label.includes('percentage points') || Number(id) >= 138) ? ' п.п.' : '';
+    return effectLabel(id) + ': ' + (Number.isFinite(number) ? (number > 0 ? '+' : '') + number : value) + (suffix ? ' ' + suffix : '');
+  }
+  function recordView(record, target, title) {
+    target.replaceChildren(node('h4', title));
+    if (!record) { target.appendChild(node('p', 'Запись ещё не опубликована и на сайте не используется.', 'help-text')); return; }
+    target.appendChild(node('p', record.names.ru || record.names.en, 'record-name'));
+    var description = record.description.ru || record.description.en;
+    if (description) target.appendChild(node('p', description, 'record-description'));
+    var values = node('ul', undefined, 'record-values');
+    if (record.kind === 'equipment') values.appendChild(node('li', 'Уровень: ' + record.level + ' · Слоты душ: ' + record.sockets));
+    if (record.kind === 'soul' && !record.compatibility.includes(1)) values.appendChild(node('li', 'Нет допустимого слота для вставки. Эта душа не предлагается для экипировки, пока не заданы ограничения.'));
+    if (record.calculationCode !== undefined) {
+      record.calculationCode.split('_').filter(Boolean).forEach(function (token) {
+        var pair = token.split('='), value = pair.slice(1).join('=');
+        values.appendChild(node('li', pair[0] === '18' && /^W\d+$/.test(value) ? 'Базовая атака оружия: ' + value.slice(1) : effectText(pair[0], value.endsWith('%') ? value.slice(0, -1) : value, value.endsWith('%') ? 'percent' : 'flat')));
+      });
+      if (!record.calculationCode) values.appendChild(node('li', 'Числовых бонусов в расчётной строке нет.'));
+    }
+    if (record.kind === 'active') ['Стоимость MP', 'Время применения, с', 'Перезарядка, с', 'Длительность, с'].forEach(function (label, index) { values.appendChild(node('li', label + ': ' + record.timing[index])); });
+    if (record.kind === 'class') ['Базовое LP', 'Базовое MP', 'Делитель роста LP от уровня', 'Делитель роста MP от уровня', 'Делитель роста LP от STA', 'Делитель роста MP от SPR'].forEach(function (label, index) { values.appendChild(node('li', label + ': ' + record.progression[index])); });
+    if (record.kind === 'racial') {
+      values.appendChild(node('li', record.effectMode === 'replace' ? 'Исходная механика отключена. Действуют только числа ниже.' : 'Исходная механика: ' + current.nativeMechanics));
+    }
+    if (record.kind === 'passive') values.appendChild(node('li', record.templateId ? 'Новый навык: встроенный эффект шаблона не копируется.' : 'Исходная механика сохраняется. Описание — справка; эффект зависит от изучения, класса и снаряжения.'));
+    (record.effects || []).forEach(function (effect) { values.appendChild(node('li', effectText(effect.stat, effect.value, effect.unit))); });
+    if ((record.kind === 'racial' || record.kind === 'passive') && !record.effects.length) values.appendChild(node('li', 'Дополнительных числовых бонусов нет. Это не означает отсутствие исходного эффекта.'));
+    target.appendChild(values);
+  }
+  async function checkChanges() {
+    if (!editor.reportValidity()) return;
+    var thisGeneration = generation, selection = current, preview = editor.querySelector('[data-preview-record]');
+    host.inert = true; host.setAttribute('aria-busy', 'true');
+    try {
+      var result = await api('preview', { edit: collect(), expectedCatalogRevision: current.catalogRevision });
+      if (thisGeneration !== generation || current !== selection) return;
+      recordView(result.record, preview, 'После публикации');
+      preview.appendChild(node('p', 'Проверено сервером. Это ещё не сохранено и не опубликовано. Здесь показаны данные записи, а не результат полного билда.', 'help-text'));
+      report('Изменения проверены. Чтобы применить: сохраните черновик → опубликуйте.');
+    } catch (error) { if (thisGeneration === generation && current === selection) report(error.message + ' Ваши поля не удалены.', true); }
+    finally { if (thisGeneration === generation) { host.inert = false; host.removeAttribute('aria-busy'); } }
+  }
+  function review() {
+    var workflow = node('p', '1. Измените поля → 2. Проверьте изменения → 3. Сохраните черновик → 4. Опубликуйте. Черновик виден только вам; публикация меняет Modern, но не музей Legacy и не старые версии билдов.', 'editor-workflow');
+    workflow.dataset.editorWorkflow = ''; editor.appendChild(workflow);
+    var panels = node('div', undefined, 'record-review');
+    var live = node('section', undefined, 'record-panel'), preview = node('section', undefined, 'record-panel');
+    live.dataset.currentRecord = ''; preview.dataset.previewRecord = ''; preview.setAttribute('aria-live', 'polite');
+    recordView(current.currentRecord, live, 'Сейчас на сайте · версия ' + current.catalogRevision);
+    preview.append(node('h4', 'После публикации'), node('p', 'Изменения ещё не проверены. Нажмите «Проверить изменения».', 'help-text'));
+    panels.append(live, preview); editor.append(panels, button('Проверить изменения', checkChanges, 'secondary'));
+    editor.appendChild(node('h4', 'Редактируемые поля'));
+  }
+  function finishEditor() {
+    // Put the calculation controls before the optional translated prose.
+    var calculations = editor.querySelector('.numeric-effects'), translations = editor.querySelector('.translation-fields');
+    if (calculations && translations) editor.insertBefore(calculations, translations);
+    var optional = Array.from(editor.querySelectorAll('.translation-fields')).filter(function (section) { return section.querySelector('[data-field="notes"], [data-field="acquisition"]'); });
+    if (optional.length) {
+      var details = node('details', undefined, 'optional-description'); details.appendChild(node('summary', 'Особые эффекты и где получить · только описание'));
+      editor.insertBefore(details, optional[0]); optional.forEach(function (section) { details.appendChild(section); });
+    }
+    var actions = editor.querySelector('.editor-actions'); if (actions) editor.appendChild(actions);
+    editor.dataset.unsaved = dirty ? 'true' : 'false';
   }
   function compatibility(label, field, values, labels, parent) {
     var group = node('fieldset', undefined, 'compatibility-fields'); group.appendChild(node('legend', label));
@@ -53,13 +135,13 @@
   function effectRow(effect, parent) {
     var row = node('div', undefined, 'effect-row');
     var stat = node('select'); stat.setAttribute('aria-label', 'Характеристика');
-    meta.effects.forEach(function (definition) { var option = node('option', definition.label); option.value = definition.id; stat.appendChild(option); });
+    meta.effects.forEach(function (definition) { var option = node('option', effectLabel(definition.id)); option.value = definition.id; stat.appendChild(option); });
     stat.value = effect.stat; var value = node('input'); value.type = 'number'; value.step = '.01'; value.min = '-10000'; value.max = '10000'; value.value = effect.value; value.required = true; value.setAttribute('aria-label', 'Значение');
     var unit = node('select'); unit.setAttribute('aria-label', 'Единица');
     function units() {
       var previous = unit.value || effect.unit; unit.replaceChildren();
       var definition = meta.effects.find(function (definition) { return definition.id === Number(stat.value); });
-      definition.units.forEach(function (name) { var option = node('option', name === 'percent' ? '% от базы' : 'Число / процентные пункты'); option.value = name; unit.appendChild(option); });
+      definition.units.forEach(function (name) { var option = node('option', name === 'percent' ? '% от базы' : definition.label.includes('percentage points') || definition.id >= 138 ? 'Процентные пункты (2 = +2%)' : 'Число (5 = +5)'); option.value = name; unit.appendChild(option); });
       if (definition.units.indexOf(previous) !== -1) unit.value = previous;
     }
     units(); stat.addEventListener('change', function () { units(); changing(); }); value.addEventListener('input', changing); unit.addEventListener('change', changing);
@@ -128,6 +210,7 @@
     editor.replaceChildren(); var edit = current.edit;
     editor.appendChild(node('h3', edit.id ? edit.names.en : 'Новая запись'));
     editor.appendChild(node('p', (edit.id || 'ID выдаст сервер') + ' · ' + (current.hasDraft ? 'ЧЕРНОВИК ' + current.draftVersion : current.published ? 'ОПУБЛИКОВАНО' : edit.id ? 'LEGACY SOURCE' : 'НОВАЯ НЕСОХРАНЁННАЯ ЗАПИСЬ'), 'item-identity'));
+    review();
     if (edit.kind === 'active' || edit.kind === 'passive') {
       multilingual('Название навыка · English обязателен', 'names', edit.names, editor, false);
       multilingual('Описание — текст, не формула', 'description', edit.description, editor, true);
@@ -160,7 +243,7 @@
       var skillActions = node('div', undefined, 'editor-actions'); skillActions.append(button('Сохранить черновик', saveDraft), button('Опубликовать', publish));
       if (edit.id) skillActions.append(button('Создать новый навык по этому шаблону', duplicateSkill, 'secondary'));
       editor.appendChild(skillActions);
-      editor.dataset.unsaved = dirty ? 'true' : 'false'; return;
+      finishEditor(); return;
     }
     if (edit.kind === 'racial') {
       var race = meta.compatibilityLabels.race.find(function (entry) { return entry.index === edit.category; });
@@ -173,7 +256,7 @@
       var racialRows = node('div', undefined, 'effect-rows'); racialEffects.appendChild(racialRows); edit.effects.forEach(function (effect) { effectRow(effect, racialRows); });
       racialEffects.appendChild(button('Добавить характеристику', function () { effectRow({ stat: 1, value: 0, unit: 'flat' }, racialRows); var mode = editor.querySelector('[data-field="effectMode"]'); if (mode.value === 'preserve') mode.value = 'add'; changing(); }, 'secondary')); editor.appendChild(racialEffects);
       var racialActions = node('div', undefined, 'editor-actions'); racialActions.append(button('Сохранить черновик', saveDraft), button('Опубликовать', publish)); editor.appendChild(racialActions);
-      editor.dataset.unsaved = dirty ? 'true' : 'false'; return;
+      finishEditor(); return;
     }
     if (edit.kind === 'class') {
       multilingual('Название класса · English обязателен', 'names', edit.names, editor, false);
@@ -187,7 +270,7 @@
       }); progression.appendChild(parameters); editor.appendChild(progression);
       editor.appendChild(node('p', 'ID и родство класса сохраняются для совместимости с билдом. Лимиты веток и встроенные пассивки здесь пока не редактируются. Новый класс нельзя создать копированием названия — для него потребуется поддержка движка.', 'help-text'));
       var classActions = node('div', undefined, 'editor-actions'); classActions.append(button('Сохранить черновик', saveDraft), button('Опубликовать', publish)); editor.appendChild(classActions);
-      editor.dataset.unsaved = dirty ? 'true' : 'false'; return;
+      finishEditor(); return;
     }
     var basic = node('div', undefined, 'basic-fields'); editor.appendChild(basic);
     if (edit.kind === 'equipment') {
@@ -212,18 +295,12 @@
     var rows = node('div', undefined, 'effect-rows'); effects.appendChild(rows);
     edit.effects.forEach(function (effect) { effectRow(effect, rows); });
     effects.appendChild(button('Добавить характеристику', function () { effectRow({ stat: 1, value: 0, unit: 'flat' }, rows); var mode = editor.querySelector('[data-field="effectMode"]'); if (mode.value === 'preserve') mode.value = 'patch'; changing(); }, 'secondary'));
-    var sourceEffects = node('ul', undefined, 'source-effects');
-    (current.sourceCode || '').split('_').filter(Boolean).forEach(function (token) {
-      var pair = token.split('='); var definition = meta.effects.find(function (effect) { return effect.id === Number(pair[0]); });
-      sourceEffects.appendChild(node('li', pair[0] === '18' && /^W/.test(pair[1]) ? 'Базовая атака оружия: ' + pair[1].slice(1) : (definition ? definition.label : 'Legacy effect ' + pair[0]) + ': ' + pair[1]));
-    });
-    effects.appendChild(node('p', 'Исходные расчётные бонусы (сохраняются в режиме «Изменить», кроме явно заменённых):', 'help-text'));
-    effects.appendChild(sourceEffects); editor.appendChild(effects);
+    editor.appendChild(effects);
     if (edit.kind === 'equipment') { compatibility('Разрешённые расы', 'races', edit.races, meta.compatibilityLabels.race, editor); compatibility('Разрешённые классы', 'classes', edit.classes, meta.compatibilityLabels.job, editor); }
     else compatibility('Куда вставляется Soul', 'slots', edit.slots, ['Weapon', 'Shield', 'Head', 'Torso', 'Arms', 'Legs', 'Boots', 'Cloak'].map(function (label, index) { return { label, index }; }), editor);
     var actions = node('div', undefined, 'editor-actions');
     actions.append(button('Сохранить черновик', saveDraft), button('Опубликовать', publish), button('Создать вариант', function () { if (!canLeave()) return; var copy = structuredClone(current.edit); copy.id = ''; copy.effectMode = 'replace'; current = { edit: copy, draftVersion: 0, catalogRevision, hasDraft: false }; dirty = true; renderEditor(); report('Новый вариант получит отдельный ID. Перед сохранением явно задайте его числовые эффекты.'); }, 'secondary'));
-    editor.appendChild(actions); editor.dataset.unsaved = dirty ? 'true' : 'false';
+    editor.appendChild(actions); finishEditor();
   }
   async function openItem(id) {
     if (!canLeave()) return;
@@ -231,7 +308,9 @@
     current = null; dirty = false; editor.replaceChildren(node('p', 'Загрузка ' + id + '…'));
     try {
       var result = await api('item?id=' + encodeURIComponent(id)); if (thisGeneration !== generation || sequence !== editorRequest) return;
-      current = result; renderEditor(); report('Выбрано: ' + current.edit.names.en + '. Изменения пока не опубликованы.');
+      current = result; renderEditor();
+      listHost.querySelectorAll('.catalog-entry').forEach(function (entry) { if (entry.dataset.recordId === id) entry.setAttribute('aria-current', 'true'); else entry.removeAttribute('aria-current'); });
+      report('Выбрано: ' + current.edit.names.en + '. Изменения пока не опубликованы.');
     } catch (error) { if (thisGeneration === generation && sequence === editorRequest) report(error.message, true); }
   }
   async function loadList() {
@@ -244,7 +323,10 @@
       listStatus.textContent = 'Версия ' + catalogRevision + ' · ' + result.count + ' записей · страница ' + (page + 1);
       result.items.forEach(function (item) {
         var select = button(item.names.ru || item.names.en, function () { openItem(item.id); }, 'catalog-entry');
-        select.appendChild(node('span', (item.draftVersion ? 'DRAFT · ' : '') + item.names.en + (kind.value === 'equipment' ? ' · Lv ' + item.level + ' · ○ ' + item.sockets : ''), 'catalog-entry-meta')); listHost.appendChild(select);
+        select.dataset.recordId = item.id;
+        if (current?.edit.id === item.id) select.setAttribute('aria-current', 'true');
+        var race = kind.value === 'racial' && meta.compatibilityLabels.race.find(function (entry) { return entry.index === item.category; });
+        select.appendChild(node('span', (item.draftVersion ? 'Черновик · ' : '') + item.names.en + (race ? ' · ' + race.label : '') + (kind.value === 'equipment' ? ' · Lv ' + item.level + ' · ○ ' + item.sockets : ''), 'catalog-entry-meta')); listHost.appendChild(select);
       });
       if (!result.items.length) listHost.appendChild(node('p', 'Ничего не найдено.'));
       var pagination = node('div', undefined, 'pagination'); var back = button('← Назад', function () { page--; loadList(); }, 'secondary'); back.disabled = page === 0;
@@ -300,7 +382,12 @@
       search.addEventListener('input', function () {
         clearTimeout(searchTimer); pending++; listHost.replaceChildren(); listHost.setAttribute('aria-busy', 'true'); listStatus.textContent = 'Поиск…';
         searchTimer = setTimeout(function () { if (thisGeneration === generation) { page = 0; loadList(); } }, 300);
-      }); kind.addEventListener('change', function () { clearTimeout(searchTimer); newButton.disabled = kind.value !== 'equipment' && kind.value !== 'soul'; page = 0; loadList(); });
+      }); selectedKind = kind.value; kind.addEventListener('change', function () {
+        if (!canLeave()) { kind.value = selectedKind; return; }
+        selectedKind = kind.value; clearTimeout(searchTimer); editorRequest++; current = null; dirty = false;
+        editor.replaceChildren(node('p', 'Выберите запись в списке. Здесь будут её текущие характеристики и поля для редактирования.'));
+        newButton.disabled = kind.value !== 'equipment' && kind.value !== 'soul'; page = 0; loadList();
+      });
       newButton = button('Новая запись', newItem);
       controls.append(kind, search, newButton, button('История / откат', revisions, 'secondary')); host.appendChild(controls);
       var grid = node('div', undefined, 'catalog-grid'); var sidebar = node('section', undefined, 'catalog-sidebar'); sidebar.setAttribute('aria-label', 'Список записей');
