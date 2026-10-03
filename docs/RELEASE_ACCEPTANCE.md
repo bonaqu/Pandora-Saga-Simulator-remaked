@@ -1,5 +1,53 @@
 # Release acceptance
 
+## Modern 3.02 — native-gated skill additions, published and verified
+
+Scope: `superpowers/plans/2026-10-03-skill-catalog-additions.md`. PR28 was
+squash-merged as `6af7bc5294c1d5691ea88e309f783e7453ccbabe` on 2026-10-03.
+New source-template active/passive identities, declared conditional bonuses,
+private editor duplication and non-overlapping keyboard details are released.
+Original intrinsic mechanics are not copied into new passives. Custom learning,
+new classes and new combat damage remain unfinished separate blocks.
+
+- Exact feature HEAD `8a1bcf2657c6536e2853530a0f00526869cf5444`: Feature CI
+  `37082164957`, API `37082164962`. Passed: 63 Python, 50 backend, 5 workspace,
+  182 main browser, 10 private editor, 74 catalog/context, 60 three-engine smoke
+  and 28 visual checks. Workspace/main/catalog JSON reports contain zero skipped,
+  flaky or unexpected results. Linux and Windows PC/320/390 views were reviewed.
+- Pages `37083172767` and Worker `37083172764` succeeded at that merge. Additive
+  migration `0003_skill_variants.sql` passed without rebuilding existing tables.
+  Worker UUID: `3d1b1713-6491-4cd6-9379-2285bf1898cd`.
+- Exact Pages tar SHA-256:
+  `6de4d6a7efc327808e2bffccbe9c46f286042d1ed70727f46b1a0316895ae138`.
+  Seventeen live files match this artifact. All 459 museum files and retained
+  runtime files remain byte-identical to the previously accepted source.
+  Workbook SHA-256: `c03e73cc4db2a8be9a461814a0f70043331fe40dff969ea1530382cb28d539d5`.
+  All 2866 prior workbook rows, translations and styles are preserved; ten new
+  captions extend the existing table. Cache: `pandora-remaked-3.02-937fcb3781195554`.
+- Actual production passed four languages with unchanged source state, full
+  compact desktop controls/first-screen weapon, the Skill List below the entire
+  calculator, anchored delayed Equipment cards, no duplicate FILE/LOG/import,
+  320px RU, nonmutating current revision adoption and zero runtime exceptions.
+  A clean shared-link recipient restores exact C1 state/calculation, also offline.
+- A real Chromium PWA in a temporary isolated profile launched Modern 3.02 and
+  museum 2.00 online/offline. It was uninstalled; user profiles were untouched.
+- Direct native Worker login with the unchanged private-file password, real
+  authorization/catalog read, logout revocation and logged-out reload passed
+  Chromium, Firefox and Windows WebKit. Actual Pages IDDQD entry also passed
+  with third-party cookies blocked, including read-only PC/phone editors and
+  the real active/passive creation controls. Four Worker assets match canonical
+  Git blobs exactly; Windows checkout CRLF conversion is not a deploy difference.
+  No credential trace, filled-password screenshot, auth-token storage, sample
+  game draft or publication was created. Public game revision remains 0.
+
+Limits: 256 additional skills total, immutable source-template learning/type,
+active text/MP/timing metadata rather than combat actions. All variant creation,
+calculation, comparison, adoption, rollback and pinned/offline tests use isolated
+fixtures rather than fabricated production balance records. Windows WebKit's
+cookie-observer limitation still applies; physical Safari/phones and manual
+screen-reader conformance are not asserted. The preserved global Set also
+requires isolated locator polling in Playwright; the source was not rewritten.
+
 ## Modern 3.01 — compact PC workspace, published and verified
 
 Scope: `superpowers/plans/2026-10-01-desktop-workspace.md`. Source engine/data,

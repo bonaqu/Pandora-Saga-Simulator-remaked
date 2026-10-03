@@ -2,7 +2,7 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
-## Modern 3.02 — release candidate, not published
+## Modern 3.02 — native-gated skill additions, 2026-10-03
 
 - New active/passive catalog entries can inherit a real skill's immutable native
   learning gate without overwriting its identity or changing source array order.
@@ -18,8 +18,11 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   second timings; extra precision, non-finite values and invalid fields still fail.
 - Ten new UI captions are editable in the existing RU/EN translation workbook;
   all 2866 previous rows, user overrides, source cells and native styling remain.
-- This block is on draft PR28, not production. Final CI, migration/deployment and
-  actual production artifact/auth/PWA acceptance are still required.
+- PR28 is published: Pages `37083172767`, Worker `37083172764`; additive D1
+  migration 0003 passed. Full CI, exact artifact/live bytes, fresh/offline shared
+  recipient, installed PWA and real unchanged-password authentication passed.
+  No sample game records were published. Custom learning rules, new classes and
+  new combat mechanics remain unfinished; see the release ledger and guides.
 
 ## Modern 3.01 — compact desktop workspace, 2026-10-03
 
