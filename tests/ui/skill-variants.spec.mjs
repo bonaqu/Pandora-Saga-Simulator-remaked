@@ -1,20 +1,103 @@
 import { test, expect } from '@playwright/test';
-import { compileRecord, draftFromSource, validateDraft } from '../../admin-api/src/catalog-model.mjs';
 import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
-import character from '../../data/generated/character.v1.json' with { type: 'json' };
-import equipment from '../../data/generated/equipment.v1.json' with { type: 'json' };
+import { variant, snapshot } from './helpers/skill-variants.mjs';
 
-function variant(sourceId, change = () => {}, number = 1) {
-  const original = skills.records.find(row => row.id === sourceId);
-  const source = { ...original, id: sourceId.replace('skill.', 'skill_entry.'), kind: original.is_active ? 'active' : 'passive' };
-  const identity = { id: 'modern.' + source.kind + '.00000000-0000-4000-8000-' + String(number).padStart(12, '0'),
-    kind: source.kind, category: source.legacy_category_id, index: source.legacy_entry_index, templateId: source.id };
-  const edit = { ...draftFromSource(source, source.kind), id: identity.id, templateId: source.id };
-  edit.names.en = 'New ' + source.name.en; change(edit);
-  return compileRecord(validateDraft(edit, identity), identity, source);
-}
-const snapshot = (records, revision = 1) => ({ ok: true, schemaVersion: 1, sourceFingerprint: equipment.metadata.generated_from[0].sha256,
-  characterSourceFingerprint: character.sourceFingerprint, revision, records });
+test('all 211 variant learning results match retained source ordering across 28 classes, levels and branch allocation with the view closed', async ({ page }) => {
+  test.setTimeout(90000); await page.goto('/');
+  const data = snapshot(skills.records.map((row, index) => variant(row.id, () => {}, index + 1)));
+  const result = await page.evaluate(data => {
+    const api = PandoraRemaked, tables = JSON.stringify(Skill); api.catalog.applySnapshot(data);
+    const mismatches = [];
+    for (let job = 0; job < 28; job++) for (const level of [1, 55]) {
+      document.getElementById('SelJob').selectedIndex = job; document.getElementById('SelJob').onchange();
+      StatusMove('Lev', level - Status.Lev[0]); CalcSet('Lev');
+      for (const allocated of [false, true]) {
+        if (allocated) {
+          document.getElementById('remaked-skill-4-Potential-right3').click();
+          document.getElementById('remaked-skill-4-Adeptness-right3').click();
+          document.getElementById('remaked-skill-15-Potential-right3').click();
+          document.getElementById('remaked-skill-15-Adeptness-right3').click();
+        }
+        const oldLearn = Learn, oldFlag = Flag[3]; let learned, potential;
+        try {
+          Learn = [[], [], [], []]; Flag[3] = 1;
+          // Exact retained CalcSet('Job') traversal, not the adapter's traversal.
+          for (let category = 0; category < Name.Skill.length; category++) {
+            SkillList('Potential', category); SkillList('Adeptness', category);
+          }
+          learned = Learn[0].slice(); potential = Learn[1].slice();
+        } finally { Learn = oldLearn; Flag[3] = oldFlag; }
+        for (const row of api.catalog.variantSkills()) {
+          const key = row.category + '_' + row.index;
+          if (row.learned !== learned.includes(key) || row.potential !== potential.includes(key)) mismatches.push({ job, level, allocated, id: row.id });
+        }
+      }
+    }
+    return { mismatches, tableUnchanged: tables === JSON.stringify(Skill), classes: Skill.P.length, count: api.catalog.variantSkills().length };
+  }, data);
+  expect(result.mismatches).toEqual([]); expect(result.tableUnchanged).toBe(true); expect(result.classes).toBe(28); expect(result.count).toBe(211);
+});
+
+test('a native learning exception restores the original Learn, flags, option cache and permits recovery without stale bonuses', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(data => {
+    const api = PandoraRemaked; api.catalog.applySnapshot(data);
+    const oldLearn = Learn, oldFlag = Flag[3], oldOptions = EquipOpt, tables = JSON.stringify(Skill), native = SkillList;
+    let message; StatusMove('Lev', 11);
+    try {
+      SkillList = function () { throw new Error('native learning sentinel'); };
+      try { api.catalog.variantSkills(); } catch (error) { message = error.message; }
+    } finally { SkillList = native; }
+    const restored = Learn === oldLearn && Flag[3] === oldFlag && EquipOpt === oldOptions && JSON.stringify(Skill) === tables;
+    CalcSet('Lev'); return { message, restored, strength: Status.STR[2], learned: api.catalog.variantSkills()[0].learned };
+  }, snapshot([variant('skill.0.1', edit => { edit.effects = [{ stat: 1, value: 5, unit: 'flat' }]; })]));
+  expect(result.message).toBe('native learning sentinel'); expect(result.restored).toBe(true); expect(result.strength).toBe(5); expect(result.learned).toBe(true);
+});
+
+test('public skill additions are explicit keyboard details with literal names, timings, template and bonus state; source restore removes them', async ({ page }, testInfo) => {
+  await page.goto('/');
+  const records = [variant('skill.0.0', edit => { edit.names.en = 'Field Provoke'; edit.names.ru = 'Полевой вызов'; edit.description.ru = '<img src=x onerror=alert(1)>'; edit.castSeconds = 1.005; }),
+    variant('skill.0.1', edit => { edit.names.en = 'Field recovery'; edit.effects = [{ stat: 1, value: 0.29, unit: 'flat' }]; edit.bonusRequirements.shieldRequired = true; }, 2)];
+  const original = await page.evaluate(data => { const original = PandoraRemaked.adapter.serialize(); PandoraRemaked.catalog.applySnapshot(data); return original; }, snapshot(records));
+  await page.locator('[data-remaked-tab="1"]').click();
+  await expect(page.locator('#remaked-skill-list-row')).toBeVisible();
+  const geometry = await page.evaluate(() => ({ list: document.getElementById('remaked-skill-list-row').getBoundingClientRect().top,
+    columns: document.querySelector('[data-remaked-calculator-columns]').getBoundingClientRect().bottom }));
+  expect(geometry.list).toBeGreaterThanOrEqual(geometry.columns);
+  const active = page.locator('[data-remaked-skill-variant="' + records[0].id + '"]');
+  await expect(active.locator('summary')).toContainText('Not learned');
+  await active.locator('summary').focus(); await page.keyboard.press('Enter');
+  await expect(active).toHaveAttribute('open', '');
+  await expect(active.locator('[data-remaked-variant-timing="1"]')).toContainText('1.005');
+  await expect(active).toContainText('Learning template: Provoke');
+  await expect(active).toContainText('does not simulate their damage');
+  await page.evaluate(() => { StatusMove('Lev', 11); CalcSet('Lev'); });
+  await expect(active.locator('summary')).toContainText('Learned');
+  const passive = page.locator('[data-remaked-skill-variant="' + records[1].id + '"]');
+  await passive.locator('summary').click();
+  await expect(passive.locator('[data-remaked-variant-bonus]')).toHaveText('Passive bonus inactive');
+  await expect(passive.locator('[data-remaked-variant-requirements]')).toHaveText('Bonus requirements: Shield');
+  await page.evaluate(() => PandoraRemaked.adapter.selectEquipment(1, 200001));
+  await expect(passive.locator('[data-remaked-variant-bonus]')).toHaveText('Passive bonus applied');
+  await page.evaluate(() => PandoraRemaked.i18n.setLocale('ru'));
+  await expect(active.locator('summary')).toContainText('Полевой вызов');
+  await expect(active.locator('[data-remaked-variant-description]')).toHaveText('<img src=x onerror=alert(1)>');
+  await expect(active.locator('img')).toHaveCount(0);
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect(active.locator('summary')).toBeVisible();
+    const metrics = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth,
+      cards: [...document.querySelectorAll('[data-remaked-skill-variant]')].map(node => ({ width: node.clientWidth, scroll: node.scrollWidth })) }));
+    expect(metrics.document).toBeLessThanOrEqual(metrics.viewport);
+    for (const card of metrics.cards) expect(card.scroll).toBeLessThanOrEqual(card.width);
+    await page.screenshot({ path: testInfo.outputPath('skill-additions-' + width + '.png'), fullPage: true });
+  }
+  await page.evaluate(code => PandoraRemaked.adapter.load(code), original);
+  await expect(page.locator('[data-remaked-catalog-skills]')).toBeHidden();
+  await expect(page.locator('[data-remaked-skill-variant]')).toHaveCount(0);
+  await page.locator('[data-remaked-tab="1"]').click();
+  await expect(page.locator('#remaked-skill-list-row')).toBeHidden();
+});
 
 test('two-decimal effects and three-decimal timings survive public validation without rounding or accepting excess precision', async ({ page }) => {
   // Construct valid wire records independently: the browser's precision guard

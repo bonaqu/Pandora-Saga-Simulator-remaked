@@ -2,6 +2,25 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Modern 3.02 — release candidate, not published
+
+- New active/passive catalog entries can inherit a real skill's immutable native
+  learning gate without overwriting its identity or changing source array order.
+  Additional passives use declared typed bonuses, not a copy of a template's
+  intrinsic mechanics. Active MP/timing/text remain metadata, not combat damage.
+- Private source-template duplication, distinct stable IDs, explicit save and
+  publish, additive D1 allocation migration, stale-tab protection and immutable
+  rollback keep existing source records and pinned/shared/offline builds intact.
+- Additional skill details use keyboard/touch activation, localized literal
+  text, exact decimals and visible bonus requirements/status. The Skill List now
+  opens below the calculator workspace instead of overlapping the character.
+- Correct decimal validation no longer rejects valid `0.29` bonuses or `1.005`
+  second timings; extra precision, non-finite values and invalid fields still fail.
+- Ten new UI captions are editable in the existing RU/EN translation workbook;
+  all 2866 previous rows, user overrides, source cells and native styling remain.
+- This block is on draft PR28, not production. Final CI, migration/deployment and
+  actual production artifact/auth/PWA acceptance are still required.
+
 ## Modern 3.01 — compact desktop workspace, 2026-10-03
 
 - Wide PC screens use two complete skill columns and compact native character

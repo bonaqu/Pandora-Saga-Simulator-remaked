@@ -145,7 +145,9 @@
         }); timings.appendChild(values); timings.appendChild(node('p', 'Эти значения отображаются в изученном навыке. Они не создают новую формулу урона или новую боевую симуляцию. Встроенные эффекты и переключатели баффов Legacy сохраняются.', 'help-text')); editor.appendChild(timings);
       } else {
         var bonuses = node('fieldset', undefined, 'numeric-effects'); bonuses.appendChild(node('legend', 'Дополнительные бонусы изученной пассивки'));
-        bonuses.appendChild(node('p', 'Бонус добавляется к исходной механике, не заменяет её. Изучение проверяет штатный движок, даже если список умений скрыт. Числа применяются только с указанным ниже снаряжением.', 'help-text'));
+        bonuses.appendChild(node('p', edit.templateId
+          ? 'У нового навыка действуют только числа ниже: встроенный эффект шаблона не копируется. Штатный движок проверяет изучение по шаблону, даже если список умений скрыт. Затем проверяются условия снаряжения и езды.'
+          : 'Бонус добавляется к исходной механике, не заменяет её. Изучение проверяет штатный движок, даже если список умений скрыт. Числа применяются только с указанным ниже снаряжением.', 'help-text'));
         var bonusRows = node('div', undefined, 'effect-rows'); bonuses.appendChild(bonusRows); edit.effects.forEach(function (effect) { effectRow(effect, bonusRows); });
         bonuses.appendChild(button('Добавить характеристику', function () { effectRow({ stat: 1, value: 0, unit: 'flat' }, bonusRows); changing(); }, 'secondary')); editor.appendChild(bonuses);
         var requirements = node('fieldset', undefined, 'compatibility-fields'); requirements.appendChild(node('legend', 'Оружие для дополнительного бонуса · пусто = любое'));

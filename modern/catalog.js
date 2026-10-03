@@ -380,7 +380,8 @@
       nativeLearnedEntries();
       return variantRecords.map(function (record) {
         var key = record.category + '_' + record.index;
-        return Object.assign(structuredClone(record), { learned: learnedEntries.indexOf(key) !== -1, potential: potentialEntries.indexOf(key) !== -1 });
+        return Object.assign(structuredClone(record), { learned: learnedEntries.indexOf(key) !== -1, potential: potentialEntries.indexOf(key) !== -1,
+          bonusApplied: record.kind === 'passive' && record.effects.length > 0 && passiveEligible(record, learnedEntries) });
       });
     },
     preflightSnapshot: function (snapshot) { return applySnapshot(snapshot, { preflightOnly: true }); },
@@ -407,14 +408,17 @@
       learnedEntries = window.Learn[0].slice(); potentialEntries = window.Learn[1].slice(); learnedKey = key; return learnedEntries;
     } finally { window.Learn = originalLearn; window.Flag[3] = originalFlag; }
   }
+  function passiveEligible(record, learned) {
+    var weaponId = Number(window.Status.Equip[0][0]), category = weaponId % 10000 ? Math.floor(weaponId / 10000) : -1;
+    var shieldId = Number(window.Status.Equip[1][0]), required = record.bonusRequirements;
+    return learned.indexOf(record.category + '_' + record.index) !== -1 && (!required.weaponCategories.length || required.weaponCategories.indexOf(category) !== -1) &&
+      (!required.shieldRequired || Math.floor(shieldId / 10000) === 20 && shieldId % 10000 > 0) && (!required.ridingRequired || Boolean(window.Flag[7]));
+  }
   function passiveEffects() {
     if (!passiveRecords.length) return [];
     var learned = nativeLearnedEntries(), result = [];
-    var weaponId = Number(window.Status.Equip[0][0]), category = weaponId % 10000 ? Math.floor(weaponId / 10000) : -1;
-    var shieldId = Number(window.Status.Equip[1][0]);
     passiveRecords.forEach(function (record) {
-      var required = record.bonusRequirements;
-      if (learned.indexOf(record.category + '_' + record.index) === -1 || required.weaponCategories.length && required.weaponCategories.indexOf(category) === -1 || required.shieldRequired && !(Math.floor(shieldId / 10000) === 20 && shieldId % 10000 > 0) || required.ridingRequired && !window.Flag[7]) return;
+      if (!passiveEligible(record, learned)) return;
       result.push.apply(result, record.effects);
     });
     return result;

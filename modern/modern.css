@@ -1206,6 +1206,40 @@ body.remaked-modern {
   overflow-wrap: anywhere;
 }
 
+/* Catalog additions belong to the native Skill List panel, not a second modal.
+   Deliberate native details work on keyboard/touch without instant hover noise. */
+.remaked-modern #body #remaked-skill-list-row[hidden] { display: none !important; }
+.remaked-modern #body #remaked-skill-list-row,
+.remaked-modern #body #remaked-skill-list-row #Tab_1_1,
+.remaked-modern #body #remaked-skill-list-row #Tab_1_1 > ul,
+.remaked-modern #body #remaked-skill-list-row .sub_win {
+  display: block; float: none !important; position: static !important;
+  width: 100% !important; height: auto !important; box-sizing: border-box;
+}
+.remaked-modern #body #remaked-skill-list-row #LearnView { width: 100% !important; display: flow-root; box-sizing: border-box; }
+.remaked-modern #body [data-remaked-catalog-skills] {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px;
+  clear: both; width: 100%; box-sizing: border-box;
+  padding: 8px; color: #30412b; background: #f6f8ef;
+}
+.remaked-modern #body [data-remaked-catalog-skills][hidden] { display: none !important; }
+.remaked-modern #body [data-remaked-catalog-skills] h3 { grid-column: 1 / -1; margin: 0 0 6px; font: inherit; font-weight: 700; }
+.remaked-modern #body [data-remaked-skill-variant] { border-top: 1px solid #c3d5ac; overflow-wrap: anywhere; }
+.remaked-modern #body [data-remaked-skill-variant] summary {
+  display: list-item; cursor: pointer; padding: 7px 2px; line-height: 1.5;
+}
+.remaked-modern #body [data-remaked-skill-variant] summary span { margin-left: 8px; color: #556449; font-weight: 400; }
+.remaked-modern #body [data-remaked-skill-variant] summary:focus-visible { outline: 2px solid #50792d; outline-offset: 2px; }
+.remaked-modern #body [data-remaked-skill-variant] > div { padding: 0 4px 8px; white-space: normal; }
+.remaked-modern #body [data-remaked-skill-variant] p { margin: 5px 0; line-height: 1.5; white-space: pre-line; }
+.remaked-modern #body [data-remaked-skill-variant] dl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 10px; margin: 6px 0; }
+.remaked-modern #body [data-remaked-skill-variant] :is(dt, dd) { margin: 0; }
+.remaked-modern #body [data-remaked-variant-bonus] { font-weight: 700; }
+@media (max-width: 620px) {
+  .remaked-modern #body [data-remaked-catalog-skills] { grid-template-columns: minmax(0, 1fr); }
+  .remaked-modern #body [data-remaked-skill-variant] summary { min-height: 44px; box-sizing: border-box; }
+}
+
 /* Native modal semantics keep background controls out of the keyboard and
    accessibility tree. Preserve the established full-viewport overlay design. */
 dialog.remaked-modal {

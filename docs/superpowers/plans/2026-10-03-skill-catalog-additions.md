@@ -69,11 +69,27 @@ original value with its declared decimal representation, without rounding
 submitted values or admitting excess precision. All 50 backend and 45 focused
 adapter/adoption/skill browser tests passed after this repair.
 
-The actual public skill cards/view, further class/branch/exception and
-three-engine contracts, beginner guide, final full CI and all publication gates
-remain pending; this is not yet a releasable end-to-end capability. Existing
-workbook captions can be reused where their meaning matches; any genuinely
-new public wording must also remain editable through the workbook.
+The public skill details now expose literal multilingual names/descriptions,
+MP/timings, source learning template and actual conditional passive bonus state.
+They open deliberately via native keyboard/touch details. Visual QA found the
+old absolute-positioned Skill panel overlapped the character; its original node
+now lives below the complete calculator workspace, with native callbacks/IDs
+retained. Open details and focused summaries survive recalculation/language
+changes. All 211 variant gates were compared with the actual source-order
+results across 28 classes, low/high levels and branch allocation. A native
+learning exception restores Learn/Flag/option cache and permits recovery.
+Nine focused variant tests and the new contract in Chromium/Firefox/Windows
+WebKit passed. PC/320/390 screenshots were inspected; no physical-device claim.
+
+Ten genuinely new captions were added through the bundled spreadsheet authoring
+tool. Its exporter altered the table's appearance; a scope-preserving package
+normalization retained every original row/style/pane/filter and transferred only
+the authored additions. All 2866 old rows and RU/EN overrides compare exactly;
+the existing filter extends through the new rows. Workbook validation passed.
+
+Modern 3.02 is a release candidate on draft PR28. Beginner guide, final full CI
+and all production migration/publication/artifact/auth/PWA gates remain pending;
+this is not yet a released end-to-end capability.
 Public production remains the accepted 3.01 release until all gates pass.
 Later blocks still include typed new learning rules, new class representation,
 racial selection additions and native class-passive replacement when their
