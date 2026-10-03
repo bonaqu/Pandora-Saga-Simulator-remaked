@@ -733,7 +733,9 @@ body.remaked-modern {
   box-sizing: border-box; width: min(calc(100vw - 24px), var(--rm-native-panel-width));
   padding: 0; filter: drop-shadow(0 8px 18px rgba(41, 53, 35, .22));
 }
-.remaked-modern #body [data-remaked-floating-panel] .sub_win { width: 100% !important; }
+.remaked-modern #body [data-remaked-floating-panel] .sub_win {
+  width: 100% !important; background: #fbfdf7;
+}
 .remaked-modern #body [data-remaked-floating-panel] .remaked-native-panel-content {
   max-height: min(560px, calc(100dvh - var(--rm-popup-top) - 64px));
 }
@@ -1567,11 +1569,11 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     grid-template-columns: 142px minmax(0, 1fr);
   }
   .remaked-modern #body [data-remaked-calculator-budget] {
-    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px;
+    display: grid; grid-template-columns: minmax(0, 1fr); gap: 3px;
   }
   .remaked-modern #body [data-remaked-calculator-level] { grid-column: 1 / -1; }
   .remaked-modern #body [data-remaked-calculator-budget] > ul:not([data-remaked-calculator-level]) {
-    display: grid; grid-template-columns: 1fr; gap: 2px;
+    display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 2px;
   }
   .remaked-modern #body [data-remaked-calculator-budget] > ul:not([data-remaked-calculator-level]) > li {
     float: none; width: auto !important; margin: 0; height: auto !important;

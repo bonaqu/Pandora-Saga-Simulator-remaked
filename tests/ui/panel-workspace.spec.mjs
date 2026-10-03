@@ -53,6 +53,9 @@ test('JOB and SKILL float without shifting the workbench; other inspectors remai
   const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
   for (const width of [320, 390, 768, 1366, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
+    // Capture the resting workbench only after its responsive toolbar move.
+    // Otherwise the 54px phone toolbar can move between the before/after reads.
+    await expect.poll(() => page.evaluate(() => Boolean(document.querySelector('[data-remaked-tools]').closest('[data-remaked-picker-section]')))).toBe(width > 860);
     const restingCharacter = await page.locator('[data-remaked-calculator-character]').boundingBox();
     for (const tab of [0, 1, 2, 3, 4]) {
       const opener = page.locator('[data-remaked-tab="' + tab + '"]'); await opener.click();
@@ -71,6 +74,12 @@ test('JOB and SKILL float without shifting the workbench; other inspectors remai
         await expect(panel).toHaveAttribute('role', 'dialog');
         expect(character.y).toBe(restingCharacter.y);
         expect(await panel.evaluate(node => getComputedStyle(node).position)).toBe('fixed');
+        const surface = await panel.locator('.sub_win').evaluate(node => {
+          const css = getComputedStyle(node), channels = css.backgroundColor.match(/[\d.]+/g).map(Number);
+          return { alpha: channels.length === 4 ? channels[3] : 1, opacity: Number(css.opacity) };
+        });
+        expect(surface.alpha, 'Popup content must not mix with the calculator underneath').toBe(1);
+        expect(surface.opacity).toBe(1);
         expect(bounds.y).toBeGreaterThanOrEqual(0); expect(bounds.y + bounds.height).toBeLessThanOrEqual(900);
         await opener.click(); await expect(panel).toBeHidden();
         await opener.click(); await expect(panel).toBeVisible();
@@ -97,10 +106,14 @@ test('buff parameter labels and fields share row height and alignment across lan
     for (const width of [320, 390, 1440, 1920]) {
       await page.setViewportSize({ width, height: 900 });
       for (const index of [0, 1, 2]) {
-        const label = await page.locator('#Text_' + (21 + index)).boundingBox();
-        const input = await page.locator('#InBuff_' + index).boundingBox();
+        // Responsive discovery moves asynchronously between PC and phone.
+        // Measure the pair in one layout, not on opposite sides of that move.
+        const { label, input } = await page.evaluate(index => {
+          const bounds = node => { const rect = node.getBoundingClientRect(); return { y: rect.y, height: rect.height }; };
+          return { label: bounds(document.getElementById('Text_' + (21 + index))), input: bounds(document.getElementById('InBuff_' + index)) };
+        }, index);
         expect(Math.abs(label.height - input.height), JSON.stringify({ width, language, index, label, input })).toBeLessThanOrEqual(1);
-        expect(Math.abs(label.y - input.y)).toBeLessThanOrEqual(1);
+        expect(Math.abs(label.y - input.y), JSON.stringify({ width, language, index, label, input })).toBeLessThanOrEqual(1);
         expect(input.height).toBeGreaterThanOrEqual(width <= 620 ? 44 : 28);
         await expect(page.locator('#InBuff_' + index)).toHaveAccessibleName(await page.locator('#Text_' + (21 + index)).innerText());
       }

@@ -16,6 +16,11 @@ for (const width of [1440, 1920]) test(`Hybrid workbench has distinct, aligned s
   await expect(page.locator('#StatusView').getByRole('heading', { name: 'Calculated stats', exact: true })).toBeVisible();
   await expect(page.locator('#Status').getByRole('heading', { name: 'Base stats', exact: true })).toBeVisible();
   await assertWorkspaceFits(page);
+  await page.evaluate(() => { StatusMove('Lev', 54); CalcSet('Lev'); });
+  const budgetOverflow = await page.evaluate(() => [...document.querySelectorAll('[data-remaked-calculator-budget] > ul:not([data-remaked-calculator-level]) > li')]
+    .filter(node => node.scrollWidth > node.clientWidth + 1).map(node => node.textContent));
+  expect(budgetOverflow, 'All budget labels and complete level-55 fractions must be readable').toEqual([]);
+  await page.evaluate(code => PandoraRemaked.adapter.load(code), before.code);
   const weapon = await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').boundingBox();
   expect(weapon.y + weapon.height).toBeLessThanOrEqual(900);
   const empty = page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]');

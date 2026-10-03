@@ -70,6 +70,15 @@ New requests extend this queue; they do not discard unfinished work.
 - [x] RED: actual Linux CI screenshots exposed clipped phone SKILL prompt and RU
   Base stats heading; new scroll-width bounds reproduce both inherited nowrap defects.
 - [x] GREEN: natural wrapping passes local PC/phone bounds and populated-panel checks.
+- [x] RED/GREEN: screenshot review exposed a transparent native popup surface;
+  JOB/SKILL now have opaque cream backgrounds so underlying calculator text cannot
+  interfere. Explicit alpha/opacity assertions cover both popups at six widths.
+- [x] RED/GREEN: the PC Potential budget caption was clipped by equal narrow
+  columns. Three short label/value rows preserve full level-55 budgets, normal
+  font size and the unchanged first-screen weapon/600px Character bounds.
+- [x] Responsive test measurements now wait for the existing toolbar relocation
+  before capturing resting geometry and read BUFF pairs atomically. This removes
+  the observed 54px before/after measurement race without changing alignment bounds.
   Renewed full CI/visual evidence after this final CSS fix is still required.
 - [ ] Full browser/CI, source catalog differential and visual acceptance.
 - [ ] Squash PR, Pages/Worker deploy and exact production artifact acceptance.
