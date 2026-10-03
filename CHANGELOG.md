@@ -2,7 +2,7 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
-## Modern 3.04 — Hybrid C composition (release candidate)
+## Modern 3.04 — Hybrid C composition, 2026-10-03
 
 - Distinct Character, Skills and Effects sections, Base stats and Calculated
   stats headings, and quiet unboxed results make the PC workbench easier to scan.
@@ -18,12 +18,18 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   fractional/empty input and insufficient points, and clears on Escape or build load.
 - JOB and SKILL are non-modal floating panels again, with repeat-tab, close-button
   and Escape dismissal. JOB retains two selection columns; disabled SKILL explains
-  the native switch instead of presenting an unexplained empty panel.
+  the native switch instead of presenting an unexplained empty panel. Opaque
+  surfaces and natural text wrapping prevent background interference and clipping.
+- PC point budgets use three short label/value rows; complete level-55 counters
+  and Potential stay readable without shrinking the font or hiding controls.
 - BUFF parameter labels and fields share the same row height across all languages
   and phone/PC widths; original inputs and calculation callbacks are retained.
 - Eleven EN/RU captions extend the owner's translation workbook to 2,893
   rows / 226 UI captions, preserving all earlier values and native formatting.
-- Production acceptance is pending; see the Hybrid C composition plan.
+- PR33 is published and accepted: 426 browser, 64 Python and 53 backend checks;
+  exact Pages/live bytes, unchanged museum, real native and IDDQD login, six
+  read-only editor previews, sharing and installed/offline PWA passed. Tag
+  `v3.04` marks accepted code; evidence is in `docs/RELEASE_ACCEPTANCE.md`.
 
 ## Modern 3.03 — compact controls and understandable editing, 2026-10-03
 

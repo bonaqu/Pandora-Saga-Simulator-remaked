@@ -46,9 +46,12 @@ New requests extend this queue; they do not discard unfinished work.
    popups and BUFF row alignment together. Current implementation/acceptance block.
 2. Full source/native/catalog regression, phone/desktop visual QA, PR/CI, production
    Pages/Worker artifacts and installed/offline checks. Do not release merely on code.
-3. Typed custom skill learning from `2026-10-03-custom-skill-learning.md` after UI
-   acceptance; preserve approved admin clarity, localization workbook and source rules.
-4. Reconcile remaining approved roadmap work against actual merged state, then
+3. The owner's later corrected current-data request prioritizes all 18 RU/EN
+   racial passives/current skills and supplied banner/author credit. Preserve level
+   55, future skills, IDs and museum files; do not create duplicate source skills.
+4. Typed custom skill learning from `2026-10-03-custom-skill-learning.md` remains
+   queued after current-data alignment; preserve admin clarity and workbook rules.
+5. Reconcile remaining approved roadmap work against actual merged state, then
    continue the first unfinished authorized item without repeating completed phases.
 
 ## Verification / release gates
@@ -80,8 +83,20 @@ New requests extend this queue; they do not discard unfinished work.
   before capturing resting geometry and read BUFF pairs atomically. This removes
   the observed 54px before/after measurement race without changing alignment bounds.
   Renewed full CI/visual evidence after this final CSS fix is still required.
-- [ ] Full browser/CI, source catalog differential and visual acceptance.
-- [ ] Squash PR, Pages/Worker deploy and exact production artifact acceptance.
+- [x] Full browser/CI, source catalog differential and visual acceptance:
+  final HEAD `172e15b177978b4e5852e95545c79d0c973382b5`, Feature CI
+  `37137877994` and API verification `37137878003`; 426 browser, 64 Python and
+  53 backend checks passed. Workspace/main/catalog reports have no skipped,
+  flaky or unexpected results. PR33 squash: `f4cd755664ce1c7156295f8631283ef45e7f8235`.
+- [x] Squash PR, Pages/Worker deploy and exact production artifact acceptance:
+  Pages `37138983439`, Worker `37138983447`; all 22 live-file hashes, 459 museum
+  files and retained runtime match their accepted artifacts. Real four-language,
+  input/popup/BUFF/phone/share/offline checks and installed PWA passed. Real native
+  login (including delayed initial session) and deployed IDDQD/six-editor previews
+  passed without publishing sample data. Exact evidence is in the release ledger.
 
-Candidate, not yet a production acceptance claim. The next functional block is
-still `2026-10-03-custom-skill-learning.md`, after these UI gates pass.
+Modern 3.04 is accepted. Browser-plugin interaction was unavailable; rendered
+QA used the repository's Playwright setup and actual production URLs. Physical
+phones and manual screen-reader conformance are not claimed. The owner's later
+corrected current-data request changes the next priority, not completed UI work.
+The durable order and remaining custom-learning scope are in `docs/TASK_QUEUE.ru.md`.

@@ -1,5 +1,61 @@
 # Release acceptance
 
+## Modern 3.04 — Hybrid C composition, published and verified
+
+PR33 was squash-merged as `f4cd755664ce1c7156295f8631283ef45e7f8235` on
+2026-10-03. Scope: `2026-10-03-hybrid-c-composition.md`. Compact Character /
+Skills / Effects, floating JOB/SKILL, personalized input feedback, aligned BUFF
+rows and responsive discovery retain all seven inputs, 80 native primary skill
+controls, native results and first-screen Equipment. Source formulas/data are unchanged.
+
+- Final feature HEAD `172e15b177978b4e5852e95545c79d0c973382b5`: Feature CI
+  `37137877994`, API `37137878003`. Passed 64 Python, 53 backend, 12 desktop,
+  203 main browser, 31 catalog-wide, 15 private editor, 74 catalog/context,
+  63 three-engine and 28 visual checks: 426 browser checks in total.
+  Workspace/main/catalog JSON reports contain zero skipped/flaky/unexpected results.
+- RED/GREEN exposed inherited nowrap clipping phone SKILL/RU headings,
+  transparent native popup surfaces and the narrow PC Potential budget caption.
+  Natural wrapping, opaque cream surfaces and short label/value budget rows
+  fix the causes. Responsive measurements wait for the same-node toolbar move
+  and read BUFF pairs atomically; alignment/height/first-screen bounds were not relaxed.
+- Pages `37138983439` and Worker `37138983447` succeeded. Exact Pages tar SHA-256:
+  `2c8608541c466800abea714af48c10d943ee68b48782e95545a64218e3b11df5`.
+  All 22 checked live files match that artifact; all 459 museum files and retained
+  runtime are byte-identical to the previous accepted preservation artifact.
+  No private archive/admin source/credentials were published.
+  Cache: `pandora-remaked-3.04-7d8d84bcbec9c15c`.
+- Workbook SHA-256:
+  `9a0b1308dcfe5fa1c6e49779a470cdaa1ac3fc40cb5535674bea12eb44ae5969`.
+  Eleven append-only EN/RU captions extend 2,882 data rows to 2,893 / 226 UI
+  captions. Previous values, owner overrides, source cells and native formatting
+  are preserved. Table range: A1:I2894. RU H / editable English I remain supported.
+- Actual production passed four-language/source invariance, native allocation
+  and synchronous load, all five inspectors, JOB/SKILL repeat-close/Escape and
+  opaque/wrapped phone panels, all seven personalized EN/RU maximum errors,
+  BUFF alignment, touch selection across keyboard-equivalent viewport resize,
+  delayed characteristics and 320px RU. No duplicate FILE/LOG/import or runtime
+  exceptions. Fresh C1 shared recipients restore exact calculation and context,
+  including cached offline reload; nonmutating current-catalog adoption passed.
+- An isolated real Chromium PWA launched Modern 3.04 and museum 2.00 online and
+  offline, then was uninstalled. User profiles were untouched. Production desktop,
+  first-screen phone, phone popup and BUFF screenshots were inspected.
+- Worker UUID `4e06924a-af5e-4cb5-a881-7618c5633da5`: all four deployed assets
+  match canonical Git blobs. Real unchanged-private-password Chromium login
+  with 1,200 ms initial-session latency, authorized read, logout and logged-out
+  reload passed. Actual Pages IDDQD entry passed with third-party cookies blocked;
+  all six current-record displays and server previews passed on PC/phone with
+  exact before/after item state unchanged. No draft/publication, credential logs,
+  filled-password screenshots, traces, HAR or video were produced by acceptance.
+
+Limits: production catalog is still revision 2 (only the earlier two racial
+corrections). The owner's later exact current-server dataset, including Myrine
++5%, is new unfinished work, not covered by the prior +2 acceptance. Custom
+learning, new classes, replacement of hardcoded class passives and active combat
+remain unfinished. Future levels/skills stay available; physical phones/Safari
+and manual screen-reader conformance are not claimed. Browser-plugin interaction
+was unavailable, so rendered checks used the project's Playwright setup and real
+URLs. Only existing free Worker/D1/Pages were used; no R2/card/paid service was added.
+
 ## Modern 3.03 — compact controls and clearer editing, published and verified
 
 Scope: `superpowers/plans/2026-10-03-compact-inputs-and-review.md`. PR30

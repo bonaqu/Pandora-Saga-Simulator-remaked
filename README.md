@@ -89,7 +89,7 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 Translations are maintained in one [Excel workbook](localization/translations.xlsx): H (yellow) is Russian, I (green) is an editable English override. The original source columns stay read-only. See the [step-by-step Russian guide](docs/LOCALIZATION_FOR_BEGINNERS.ru.md). Approved translations appear throughout the Modern calculator, lists, search and skill descriptions. Blank game fields retain the selected source language; Legacy Mode stays unchanged.
 
 Modern 3.02 adds active/passive skill variants through native learning templates
-and keyboard/touch details below the compact PC workspace. Download the latest workbook from the default branch;
+and keyboard/touch details in the native SKILL panel. Download the latest workbook from the default branch;
 Pages validates and publishes uploaded workbook updates automatically.
 The six-category Worker/D1 administrator catalog is described in the
 [Russian operations guide](docs/ADMIN_OPERATIONS.ru.md), including its supported
@@ -98,9 +98,11 @@ The [new-skill beginner guide](docs/ADMIN_NEW_SKILLS.ru.md) explains template
 learning, explicit passive bonuses, private drafts and publishing limitations.
 The [step-by-step editing guide](docs/ADMIN_EDITING_FOR_BEGINNERS.ru.md) explains
 current values, server previews, numerical effects, translations and safe publication.
-Modern 3.03 is published: bounded editable level/attributes, compact source
-inspectors, touch-stable Equipment, equal-row filtering and clearer current-vs-preview
-editing. The release ledger records production artifact and authentication checks.
+Modern 3.04 is published: compact Hybrid C sections, floating JOB/SKILL,
+field-specific numeric feedback, aligned BUFF controls and PC/phone discovery.
+Bounded level/attributes, touch-stable Equipment, equal-row filtering and
+current-vs-preview editing remain intact. The release ledger records exact
+production artifact, authentication and installed/offline checks.
 
 ## 🚧 What's coming next
 
@@ -114,6 +116,8 @@ The six-category catalog, non-destructive Legacy FILE recovery and compact PC
 workspace are already implemented. See the release ledger for acceptance gates.
 
 See [CHANGELOG.md](CHANGELOG.md) for released changes and current progress.
+The [Russian task queue](docs/TASK_QUEUE.ru.md) distinguishes shipped work from
+current-server data alignment, custom learning and new-class work still unfinished.
 
 ## 🐛 Report a problem
 
@@ -124,7 +128,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** Modern 3.03 (published; verification in the release ledger)
+- **Remaked UI:** Modern 3.04 (published; verification in the release ledger)
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 
