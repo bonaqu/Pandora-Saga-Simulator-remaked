@@ -1579,3 +1579,59 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   }
   .remaked-modern #body [data-remaked-effect-row] > li:empty { display: none; }
 }
+
+/* Hybrid C composition: separate editable character/skill controls from quiet
+   calculated text. These are presentation groups, not another set of state. */
+.remaked-modern #body [data-remaked-calculator-main] {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.remaked-modern #body [data-remaked-calculator-columns] { padding-top: 0; gap: 12px; }
+.remaked-modern #body [data-remaked-calculator-main] > ul > :is(.line1, .line2) { display: none; }
+.remaked-modern #body :is([data-remaked-calculator-character], #SkillSet, [data-remaked-calculator-effects]) {
+  border: 1px solid var(--rm-border);
+  border-radius: 7px;
+  background: var(--rm-surface);
+  padding: 6px !important;
+}
+.remaked-modern #body .remaked-workbench-title {
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0 0 6px;
+  padding: 3px 6px;
+  background: var(--rm-surface-2);
+  color: var(--rm-text);
+  font: 700 14px/1.5 var(--rm-font);
+  text-align: start;
+  letter-spacing: normal;
+  overflow-wrap: anywhere;
+}
+.remaked-modern #body :is(#Status, #StatusView) > .remaked-workbench-title {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  margin-bottom: 2px;
+  padding-inline: 4px;
+}
+.remaked-skill-tools-actions { align-items: start; }
+.remaked-modern #body .remaked-skill-tools-actions > .remaked-workbench-title { flex: 1; margin-bottom: 0; }
+.remaked-skill-tools-actions > button { flex: 0 1 auto; width: auto; padding-inline: 8px; }
+.remaked-modern #body #StatusView [data-remaked-calculator-pair] {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  border-bottom: 1px solid #e2e9d8;
+}
+.remaked-modern #body #StatusView [data-remaked-calculator-pair] .input_gt { font-weight: 600; }
+.remaked-modern #body [data-remaked-calculator-identity] [data-remaked-calculator-pair] { background: #fff; }
+@media (min-width: 1366px) {
+  .remaked-modern #body [data-remaked-calculator-columns] { grid-template-columns: minmax(0, 1fr) 582px 232px; }
+}
+@media (min-width: 861px) {
+  /* Faint landscape extends the existing approved art across the banner;
+     the primary, complete composition remains uncropped on the right. */
+  .remaked-hero {
+    background: linear-gradient(90deg, #f6f3df 0%, rgba(240,244,223,.96) 33%, rgba(240,244,223,.7) 59%, #e5edcf 78%), url('./pandora-hero.webp') left 40% / 240% auto no-repeat;
+  }
+  .remaked-hero-art::after { background: linear-gradient(90deg, #e5edcf, transparent 12%); }
+}

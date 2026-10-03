@@ -129,6 +129,10 @@
         this.setAttribute('aria-pressed', String(show)); root.dataset.remakedSkillExpanded = String(show);
       });
       var actions = document.createElement('div'); actions.className = 'remaked-skill-tools-actions';
+      var title = document.createElement('h2'); title.id = 'remaked-workbench-skills-title';
+      title.className = 'remaked-workbench-title'; title.dataset.remakedWorkbenchTitle = 'skills';
+      i18n.bindText(title, 'workbench.skills'); actions.appendChild(title);
+      root.setAttribute('role', 'group'); root.setAttribute('aria-labelledby', title.id);
       var explanation = document.createElement('details'); explanation.className = 'remaked-skill-help';
       var summary = document.createElement('summary'); summary.textContent = '?';
       i18n.bindAttribute(summary, 'aria-label', 'skills.help'); explanation.appendChild(summary);

@@ -5,6 +5,15 @@
   var observer, timer;
   function byId(id) { return document.getElementById(id); }
   function mark(node, name) { if (node) node.setAttribute('data-remaked-calculator-' + name, ''); return node; }
+  function sectionTitle(root, name, key, level) {
+    var id = 'remaked-workbench-' + name + '-title';
+    if (byId(id) || !namespace.i18n) return;
+    var title = document.createElement(level === 3 ? 'h3' : 'h2');
+    title.id = id; title.className = 'remaked-workbench-title';
+    if (level !== 3) title.dataset.remakedWorkbenchTitle = name;
+    namespace.i18n.bindText(title, key); root.prepend(title);
+    root.setAttribute('role', 'group'); root.setAttribute('aria-labelledby', id);
+  }
 
   function decorateInspectorContents() {
     ['ATK', 'RES'].forEach(function (kind) {
@@ -230,8 +239,11 @@
     var character = mark(columns.firstElementChild, 'character');
     mark(columns.lastElementChild, 'effects');
     mark(main.querySelector(':scope > ul > li[style="position:absolute;"]'), 'overlays');
-    mark(character.firstElementChild, 'identity');
-    pairRows(character.firstElementChild, '[id^="Text_"]');
+    // The presentation heading is not a source identity row. Reuse the marked
+    // original node on every refresh, including after a language/build change.
+    var identity = character.querySelector('[data-remaked-calculator-identity]') || character.firstElementChild;
+    mark(identity, 'identity');
+    pairRows(identity, '[id^="Text_"]');
 
     if (!status.hasAttribute('data-remaked-calculator-attributes')) {
       mark(status, 'attributes');
@@ -296,6 +308,10 @@
 
     mark(byId('StatusView'), 'results');
     pairRows(byId('StatusView'), '[id^="TextStatus_"]');
+    sectionTitle(character, 'character', 'workbench.character');
+    sectionTitle(columns.lastElementChild, 'effects', 'workbench.effects');
+    sectionTitle(status, 'base', 'workbench.baseStats', 3);
+    sectionTitle(byId('StatusView'), 'results', 'workbench.results', 3);
     var code = byId('InCode');
     mark(code.closest('li').parentElement, 'code');
     mark(code.closest('li').parentElement.nextElementSibling, 'code-actions');

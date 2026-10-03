@@ -489,3 +489,30 @@
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+.remaked-modern #body [data-remaked-picker-section] > ul:first-child { align-items: center; gap: 8px; flex-wrap: wrap; }
+.remaked-modern #body #TextEquip_0 { width: auto !important; flex: 0 0 auto; background: transparent; font-weight: 700; }
+.remaked-modern #body [data-remaked-picker-discovery] { float: none; width: auto !important; min-width: 0; flex: 1; }
+.remaked-modern #body [data-remaked-picker-discovery] .remaked-tools {
+  box-sizing: border-box; margin: 0; padding: 4px; border: 0; border-radius: 0;
+  box-shadow: none; background: transparent; flex-wrap: wrap; overflow: visible; gap: 6px;
+}
+.remaked-modern #body [data-remaked-picker-discovery] .remaked-tools-label { display: none; }
+.remaked-modern #body [data-remaked-picker-discovery] .remaked-tool-button { flex: 0 1 auto; }
+.remaked-modern #body [data-remaked-picker-toolbar] > li:empty { display: none; }
+@media (min-width: 861px) {
+  /* PC rows keep native modifiers and all Soul fields, with one shared target
+     height. Touch layouts continue to use 44px controls below 701px. */
+  .remaked-equipment-picker { min-height: 30px; padding-block: 4px; }
+  .remaked-modern #body [data-remaked-picker-discovery] .remaked-tool-button {
+    min-height: 36px; padding: 7px 9px; font-size: 12px; line-height: 1.5; font-weight: 600;
+  }
+  .remaked-equipment-picker[data-remaked-equipment-reset] { min-height: 36px; font-size: 12px; line-height: 1.5; font-weight: 600; }
+  .remaked-modern #body [data-remaked-picker-fields] { padding-block: 2px; }
+  .remaked-modern #body [data-remaked-picker-field] select,
+  .remaked-modern #body [data-remaked-picker-toolbar] select { min-height: 30px; font: 13px/1.4 var(--rm-font); }
+  .remaked-modern #body [data-remaked-picker-toolbar] select { min-height: 36px; }
+  .remaked-modern #body [data-remaked-picker-slot-label] { background: transparent; font-weight: 600; }
+  .remaked-modern #body [data-remaked-picker-slot] { background: #fbfdf7; border-bottom: 1px solid #e2e9d8; }
+  .remaked-modern #body [data-remaked-picker-slot]:nth-of-type(even) { background: #f3f7ed; }
+}

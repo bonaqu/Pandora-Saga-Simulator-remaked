@@ -322,10 +322,28 @@ test('picker values, labels and socket visibility follow load, source-language a
     await expect(opener).toBeVisible();
     const expected = await page.evaluate(id => {
       const node = document.getElementById(id);
-      return node.options[node.selectedIndex].textContent.trim();
+      // Modern removes only the category's decorative prefix, never a real
+      // name or enhancement. Native options/values stay source-owned below.
+      return node.options[node.selectedIndex].textContent.trim().replace(/^\+-----\s*/, '');
     }, target.selectId);
     await expect(opener).toHaveText(expected);
   }
+});
+
+test('clean category captions retain native options and do not strip a real leading enhancement', async ({ page }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  const opener = page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]');
+  const raw = await page.evaluate(() => document.getElementById('SelEquip_0_0').selectedOptions[0].textContent);
+  expect(raw.trim()).toBe('+----- 1H Sword');
+  await expect(opener).toHaveText('1H Sword');
+  // Disposable DOM label, not a catalog publication or source formula change.
+  await page.evaluate(() => { document.getElementById('SelEquip_0_0').selectedOptions[0].textContent = '+4 Knife'; PandoraRemaked.equipmentPicker.refresh(); });
+  await expect(opener).toHaveText('+4 Knife');
+  expect(await page.evaluate(() => Store())).toBe(before);
+  await page.evaluate(raw => { document.getElementById('SelEquip_0_0').selectedOptions[0].textContent = raw; PandoraRemaked.equipmentPicker.refresh(); }, raw);
+  await expect(opener).toHaveText('1H Sword');
+  expect(await page.evaluate(() => document.getElementById('SelEquip_0_0').selectedOptions[0].textContent)).toBe(raw);
 });
 
 test('without the enhancement script the original Equipment fields stay usable', async ({ page }) => {

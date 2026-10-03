@@ -16,7 +16,16 @@
       slotRow.dataset.remakedPickerSlot = '';
       slotRow.firstElementChild.dataset.remakedPickerSlotLabel = '';
       var section = slotRow.closest('.main');
-      if (section) section.dataset.remakedPickerSection = '';
+      if (section) {
+        section.dataset.remakedPickerSection = '';
+        var tools = document.querySelector('[data-remaked-tools]');
+        if (tools && !tools.closest('[data-remaked-picker-section]')) {
+          // Discovery belongs beside Equipment. Move the existing controls,
+          // including their callbacks and autosave status; never duplicate them.
+          var holder = document.createElement('li'); holder.dataset.remakedPickerDiscovery = '';
+          section.firstElementChild.appendChild(holder); holder.appendChild(tools);
+        }
+      }
       var match = select.id.match(/^SelEquip_(\d+)_(0|[4-6])$/);
       if (!match) return;
       var button = select._remakedPicker;
@@ -47,7 +56,9 @@
         select.hidden = true;
       }
       var option = select.options[select.selectedIndex];
-      var text = option ? option.textContent.trim() : '—';
+      // Native category placeholders start with +-----. Retain the exact source
+      // option/value for the engine; display only its meaningful category name.
+      var text = option ? option.textContent.trim().replace(/^\+-----\s*/, '') : '—';
       if (button.textContent !== text) button.textContent = text;
       var label = labels[Number(match[1])] || '';
       var name = label + (Number(match[2]) ? ' · Soul ' + (Number(match[2]) - 3) : '') + ': ' + text;
