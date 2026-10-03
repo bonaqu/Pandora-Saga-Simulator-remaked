@@ -73,6 +73,16 @@ test('all four languages and font fallbacks keep the complete desktop controls i
   expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(before);
 });
 
+test('common English skill names stay whole in the compact PC columns with a larger font fallback', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 }); await page.goto('/');
+  await page.addStyleTag({ content: '#SkillSet [id^="TextSkill_"] { font: 600 14px/1.4 Arial, sans-serif; }' });
+  for (const id of ['TextSkill_9', 'TextSkill_13', 'TextSkill_24']) {
+    const lines = await page.locator('#' + id).evaluate(node => { const range = document.createRange(); range.selectNodeContents(node); return range.getClientRects().length; });
+    expect(lines, id).toBe(1);
+  }
+  await assertWorkspaceFits(page);
+});
+
 test('long approved translations and larger steps grow naturally across the desktop boundary and zoom-equivalent widths', async ({ page }, testInfo) => {
   test.setTimeout(60000);
   await page.goto('/');
