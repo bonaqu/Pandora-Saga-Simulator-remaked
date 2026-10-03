@@ -78,7 +78,7 @@ retained. Open details and focused summaries survive recalculation/language
 changes. All 211 variant gates were compared with the actual source-order
 results across 28 classes, low/high levels and branch allocation. A native
 learning exception restores Learn/Flag/option cache and permits recovery.
-Nine focused variant tests and the new contract in Chromium/Firefox/Windows
+Eleven focused variant tests and the new contract in Chromium/Firefox/Windows
 WebKit passed. PC/320/390 screenshots were inspected; no physical-device claim.
 
 Ten genuinely new captions were added through the bundled spreadsheet authoring
@@ -90,6 +90,8 @@ the existing filter extends through the new rows. Workbook validation passed.
 Modern 3.02 is a release candidate on draft PR28. Beginner guide, final full CI
 and all production migration/publication/artifact/auth/PWA gates remain pending;
 this is not yet a released end-to-end capability.
+The variant-specific comparison and explicit adoption contracts additionally
+verify unchanged native tables, C1, named pins and current autosave/reload.
 Public production remains the accepted 3.01 release until all gates pass.
 Later blocks still include typed new learning rules, new class representation,
 racial selection additions and native class-passive replacement when their

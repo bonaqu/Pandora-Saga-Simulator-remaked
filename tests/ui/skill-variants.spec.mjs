@@ -2,6 +2,47 @@ import { test, expect } from '@playwright/test';
 import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
 import { variant, snapshot } from './helpers/skill-variants.mjs';
 
+test('comparison evaluates each distinct skill revision and restores active catalog, C1 context, native tables and saved builds', async ({ page }) => {
+  await page.goto('/');
+  const one = variant('skill.0.1', edit => { edit.effects = [{ stat: 6, value: 5, unit: 'flat' }]; edit.bonusRequirements.ridingRequired = true; });
+  const two = structuredClone(one); two.effects[0].value = 9;
+  const result = await page.evaluate(({ first, second }) => {
+    const api = PandoraRemaked; StatusMove('Lev', 54); CalcSet('Lev'); document.getElementById('SwitchUse_4').click();
+    const original = api.adapter.serialize(), nativeTables = JSON.stringify(Skill);
+    api.catalog.applySnapshot(first); const a = api.adapter.serialize(), lpA = Status.LP;
+    const namedA = api.buildStore.saveBuild('Variant old pin', a);
+    api.catalog.applySnapshot(second); const b = api.adapter.serialize(), lpB = Status.LP;
+    const namedB = api.buildStore.saveBuild('Variant new pin', b); api.builds.flushAutosave();
+    const before = { payload: b, context: api.catalog.captureContext(), summary: api.adapter.readCalculatedSummary(), tables: JSON.stringify(Skill), storage: JSON.stringify(localStorage) };
+    for (const code of [original, a, b]) api.adapter.evaluateBuild(code);
+    const after = { payload: api.adapter.serialize(), context: api.catalog.captureContext(), summary: api.adapter.readCalculatedSummary(), tables: JSON.stringify(Skill), storage: JSON.stringify(localStorage) };
+    return { before, after, nativeUnchanged: nativeTables === JSON.stringify(Skill), lpA, lpB, a: namedA.build.id, b: namedB.build.id };
+  }, { first: snapshot([one]), second: snapshot([two], 2) });
+  expect(result.after).toEqual(result.before); expect(result.nativeUnchanged).toBe(true); expect(result.lpB - result.lpA).toBe(4);
+  await page.locator('[data-remaked-compare-open]').click();
+  await page.locator('[data-remaked-compare-a]').selectOption(result.a); await page.locator('[data-remaked-compare-b]').selectOption(result.b);
+  await expect(page.locator('[data-remaked-compare-row][data-stat-key="lp"] [data-remaked-delta]')).toHaveText('+4');
+  expect(await page.evaluate(() => ({ payload: PandoraRemaked.adapter.serialize(), context: PandoraRemaked.catalog.captureContext(), summary: PandoraRemaked.adapter.readCalculatedSummary(), tables: JSON.stringify(Skill), storage: JSON.stringify(localStorage) }))).toEqual(result.before);
+});
+
+test('explicit adoption adds a learned variant and updates only current autosave while source tables, C1 and named pins survive reload', async ({ page }) => {
+  const data = snapshot([variant('skill.0.1', edit => { edit.effects = [{ stat: 6, value: 5, unit: 'flat' }]; edit.bonusRequirements.ridingRequired = true; })]);
+  await page.route('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog**', route => route.fulfill({ json: data }));
+  await page.goto('/');
+  const before = await page.evaluate(() => {
+    const api = PandoraRemaked; StatusMove('Lev', 54); CalcSet('Lev'); document.getElementById('SwitchUse_4').click();
+    const payload = api.adapter.serialize(); api.buildStore.saveBuild('Keep source skill pin', payload); api.builds.flushAutosave();
+    return { lp: Status.LP, context: api.catalog.captureContext(), tables: JSON.stringify(Skill), named: localStorage.getItem(api.buildStore.BUILDS_KEY) };
+  });
+  await page.locator('[data-remaked-builds-open]').click(); await page.locator('[data-remaked-catalog-update]').click();
+  await expect(page.locator('[data-remaked-catalog-status]')).toContainText('Catalog 1 applied');
+  const after = await page.evaluate(() => ({ payload: PandoraRemaked.adapter.serialize(), lp: Status.LP, context: PandoraRemaked.catalog.captureContext(), tables: JSON.stringify(Skill), named: localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY) }));
+  expect(after.payload).toMatch(/^PS3:1:C1:/); expect(after.lp).toBe(before.lp + 5); expect(after.context).toEqual(before.context);
+  expect(after.tables).toBe(before.tables); expect(after.named).toBe(before.named);
+  await page.reload(); await expect(page.locator('[data-remaked-autosave-status]')).toContainText('Restored autosave');
+  expect(await page.evaluate(() => ({ payload: PandoraRemaked.adapter.serialize(), lp: Status.LP }))).toEqual({ payload: after.payload, lp: after.lp });
+});
+
 test('all 211 variant learning results match retained source ordering across 28 classes, levels and branch allocation with the view closed', async ({ page }) => {
   test.setTimeout(90000); await page.goto('/');
   const data = snapshot(skills.records.map((row, index) => variant(row.id, () => {}, index + 1)));
