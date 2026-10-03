@@ -8,14 +8,21 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   stats headings, and quiet unboxed results make the PC workbench easier to scan.
   All seven numeric inputs, 80 primary skill controls and native results remain
   visible; the first weapon row still fits a 1440/1920 × 900 first screen.
-- Equipment/Soul Search and autosave sit beside Equipment, instead of a separate
-  strip above the calculator. Compact 30px PC rows retain 44px phone targets,
+- Equipment/Soul Search and autosave sit beside Equipment on PC, and remain
+  above the long calculator on phones. Compact 30px PC rows retain 44px phone targets,
   aligned global controls, native enhancements and anchored item selection.
 - The original complete Pandora fan art remains visible with a restrained
   landscape backdrop. The example's level 120, LOG/FILE and narrow proportions
   are not copied. Museum engine, game data, formulas and saved builds are unchanged.
-- Five EN/RU section captions extend the owner's translation workbook to 2,887
-  rows / 220 UI captions, preserving all earlier values and native formatting.
+- Numeric feedback names its field and actual maximum/minimum, distinguishes
+  fractional/empty input and insufficient points, and clears on Escape or build load.
+- JOB and SKILL are non-modal floating panels again, with repeat-tab, close-button
+  and Escape dismissal. JOB retains two selection columns; disabled SKILL explains
+  the native switch instead of presenting an unexplained empty panel.
+- BUFF parameter labels and fields share the same row height across all languages
+  and phone/PC widths; original inputs and calculation callbacks are retained.
+- Eleven EN/RU captions extend the owner's translation workbook to 2,893
+  rows / 226 UI captions, preserving all earlier values and native formatting.
 - Production acceptance is pending; see the Hybrid C composition plan.
 
 ## Modern 3.03 — compact controls and understandable editing, 2026-10-03

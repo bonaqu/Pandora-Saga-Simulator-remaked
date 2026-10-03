@@ -50,7 +50,7 @@ test('summary follows intentional Legacy state changes without adding extra muta
   expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(after.payload);
 });
 
-test('inline calculator panels close and reopen by keyboard without changing the build', async ({ page }) => {
+test('floating calculator panels close and reopen by keyboard without changing the build', async ({ page }) => {
   await openMobile(page);
   // LOG is intentionally removed in Modern; test a real calculator card instead.
   await page.locator('[data-remaked-nav]').getByRole('button', { name: 'JOB', exact: true }).click();

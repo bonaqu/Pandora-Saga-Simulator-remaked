@@ -32,7 +32,11 @@ test('catalog variants keep keyboard details, decimal effects, literal RU/JP/TW 
   const card = page.locator('[data-remaked-skill-variant]'); await expect(card).toHaveCount(1);
   await card.locator('summary').focus(); await page.keyboard.press('Enter'); await expect(card).toHaveAttribute('open', '');
   await expect(card.locator('[data-remaked-variant-bonus]')).toHaveText('Passive bonus inactive');
+  await page.locator('[data-remaked-tab="1"]').click();
+  await expect(page.locator('[data-remaked-native-panel="1"]')).toBeHidden();
   await page.locator('[data-remaked-calculator-action="Text_16"]').click();
+  await page.locator('[data-remaked-tab="1"]').click();
+  await expect(card).toHaveAttribute('open', '');
   await expect(card.locator('[data-remaked-variant-bonus]')).toHaveText('Passive bonus applied');
   expect(await page.evaluate(() => Status.STR[2])).toBe(0.29);
   for (const [language, label] of [['ru', 'Новая пассивка'], ['jp', '新しい回復'], ['tw', '新恢復']]) {

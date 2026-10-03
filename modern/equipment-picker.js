@@ -1,7 +1,20 @@
 (function () {
   'use strict';
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
-  var timer = null;
+  var timer = null, discoveryAnchor = null;
+  function positionDiscovery(section) {
+    var tools = document.querySelector('[data-remaked-tools]');
+    if (!tools) return;
+    if (!discoveryAnchor) {
+      discoveryAnchor = document.createComment('Modern discovery tools home'); tools.before(discoveryAnchor);
+    }
+    if (window.matchMedia('(min-width: 861px)').matches) {
+      if (tools.closest('[data-remaked-picker-section]')) return;
+      var holder = section.querySelector('[data-remaked-picker-discovery]');
+      if (!holder) { holder = document.createElement('li'); holder.dataset.remakedPickerDiscovery = ''; section.firstElementChild.appendChild(holder); }
+      holder.appendChild(tools);
+    } else if (tools.closest('[data-remaked-picker-section]')) discoveryAnchor.after(tools);
+  }
   function refresh() {
     var labels = {};
     namespace.adapter.listEquipmentTargets().forEach(function (target) { labels[target.slotIndex] = target.label; });
@@ -18,13 +31,9 @@
       var section = slotRow.closest('.main');
       if (section) {
         section.dataset.remakedPickerSection = '';
-        var tools = document.querySelector('[data-remaked-tools]');
-        if (tools && !tools.closest('[data-remaked-picker-section]')) {
-          // Discovery belongs beside Equipment. Move the existing controls,
-          // including their callbacks and autosave status; never duplicate them.
-          var holder = document.createElement('li'); holder.dataset.remakedPickerDiscovery = '';
-          section.firstElementChild.appendChild(holder); holder.appendChild(tools);
-        }
+        // The same controls belong beside Equipment on PC and above the long
+        // calculator on phones. Move nodes, preserving callbacks/autosave.
+        positionDiscovery(section);
       }
       var match = select.id.match(/^SelEquip_(\d+)_(0|[4-6])$/);
       if (!match) return;
@@ -118,6 +127,7 @@
     });
     body.addEventListener('change', schedule, true);
     body.addEventListener('input', schedule, true);
+    window.addEventListener('resize', schedule);
     window.addEventListener('pandora-remaked:localechange', refresh);
   }
   namespace.equipmentPicker = { refresh: refresh };

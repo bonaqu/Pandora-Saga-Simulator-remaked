@@ -2,7 +2,7 @@
   'use strict';
 
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
-  var observer, timer;
+  var observer, timer, numberFeedback;
   function byId(id) { return document.getElementById(id); }
   function mark(node, name) { if (node) node.setAttribute('data-remaked-calculator-' + name, ''); return node; }
   function sectionTitle(root, name, key, level) {
@@ -16,6 +16,33 @@
   }
 
   function decorateInspectorContents() {
+    var jobContent = byId('InRace')?.closest('.col_bg2');
+    if (jobContent && !jobContent.querySelector('[data-remaked-job-layout]')) {
+      var raceColumn = byId('InRace').parentElement.parentElement;
+      var jobRow = byId('InJob').parentElement, jobHeading = jobRow.previousElementSibling.lastElementChild;
+      var columns = document.createElement('ul'); columns.dataset.remakedJobLayout = '';
+      jobContent.dataset.remakedJobContent = '';
+      var jobColumn = document.createElement('li'), headingRow = document.createElement('ul');
+      headingRow.appendChild(jobHeading); jobColumn.append(headingRow, jobRow);
+      columns.append(raceColumn, jobColumn); jobContent.replaceChildren(columns);
+    }
+    var skillCard = byId('LearnView')?.closest('.sub_win');
+    if (skillCard && !skillCard.querySelector('[data-remaked-skill-list-prompt]')) {
+      var prompt = document.createElement('section'); prompt.dataset.remakedSkillListPrompt = '';
+      var hint = document.createElement('p'); namespace.i18n.bindText(hint, 'skills.listDisabled');
+      var enable = document.createElement('button'); enable.type = 'button'; enable.className = 'remaked-calculator-action';
+      enable.addEventListener('click', function () {
+        if (!window.Flag[3]) byId('Text_3').parentElement.click();
+        refresh();
+      });
+      prompt.append(hint, enable); skillCard.querySelector('.remaked-native-panel-content').prepend(prompt);
+    }
+    if (skillCard) {
+      var skillPrompt = skillCard.querySelector('[data-remaked-skill-list-prompt]');
+      skillPrompt.hidden = Boolean(window.Flag[3]);
+      var enableButton = skillPrompt.querySelector('button'), sourceLabel = byId('Text_3').textContent;
+      if (enableButton.textContent !== sourceLabel) enableButton.textContent = sourceLabel;
+    }
     ['ATK', 'RES'].forEach(function (kind) {
       var view = byId(kind + 'View'); if (!view) return;
       view.querySelectorAll('[id^="Text' + kind + '_"]').forEach(function (label) {
@@ -40,6 +67,11 @@
         column.querySelectorAll('li').forEach(function (item) { if (!item.textContent.trim() && !item.querySelector('input, select, button')) item.hidden = true; });
       });
     }
+    [0, 1, 2].forEach(function (index) {
+      var input = byId('InBuff_' + index), label = byId('Text_' + (21 + index));
+      input.parentElement.parentElement.dataset.remakedBuffParameter = '';
+      input.setAttribute('aria-labelledby', label.id);
+    });
     buffs.querySelectorAll('[id^="Buff_"], [id^="BuffHonor_"]').forEach(function (source) {
       if (!source.onclick) return;
       var key = source.id.replace('Buff_', '').replace('BuffHonor_', 'Honor_'), button = source.querySelector(':scope > button');
@@ -66,9 +98,21 @@
       var card = panel.querySelector('.sub_win');
       if (!panel.hasAttribute('data-remaked-native-panel')) {
         row.appendChild(panel);
-        panel.dataset.remakedNativePanel = String(tab); panel.setAttribute('role', 'region');
+        panel.dataset.remakedNativePanel = String(tab);
+        panel.setAttribute('role', tab < 2 ? 'dialog' : 'region');
+        if (tab < 2) {
+          panel.dataset.remakedFloatingPanel = '';
+          panel.setAttribute('aria-modal', 'false');
+          panel.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && !event.defaultPrevented) {
+              event.preventDefault(); event.stopPropagation();
+              this.querySelector('[data-remaked-panel-close]').click();
+            }
+          });
+        }
         var mobileBar = card.querySelector(':scope > .remaked-mobile-card-bar'); if (mobileBar) mobileBar.remove();
         card.style.setProperty('--rm-native-panel-width', card.style.width);
+        panel.style.setProperty('--rm-native-panel-width', tab === 0 ? '400px' : card.style.width);
         var bar = document.createElement('div'); bar.className = 'remaked-native-panel-bar';
         var title = document.createElement('strong'); title.id = 'remaked-native-panel-title-' + tab;
         panel.setAttribute('aria-labelledby', title.id);
@@ -80,15 +124,29 @@
         });
         var content = card.firstElementChild; content.classList.add('remaked-native-panel-content');
         bar.append(title, close); card.insertBefore(bar, content);
+        if (tab < 2) opener.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape' && this.getAttribute('aria-expanded') === 'true') {
+            event.preventDefault(); event.stopPropagation();
+            byId(this.getAttribute('aria-controls')).querySelector('[data-remaked-panel-close]').click();
+          }
+        });
       }
       var label = opener.textContent, expanded = Number(window.Flag[2]) === tab + 1;
       var heading = byId('remaked-native-panel-title-' + tab); if (heading.textContent !== label) heading.textContent = label;
       panel.querySelector('[data-remaked-panel-close]').setAttribute('aria-label', (namespace.i18n ? namespace.i18n.t('mobile.collapse') : 'Collapse section') + ': ' + label);
       opener.setAttribute('aria-controls', panel.id); opener.setAttribute('aria-expanded', String(expanded)); panel.hidden = !expanded;
+      if (expanded && tab < 2) positionFloatingPanel(panel);
       anyExpanded = anyExpanded || expanded;
     }
     row.hidden = !anyExpanded;
     decorateInspectorContents();
+  }
+
+  function positionFloatingPanel(panel) {
+    var header = document.querySelector('[data-remaked-header]').getBoundingClientRect();
+    var top = Math.min(Math.max(8, header.bottom + 6), Math.max(8, window.innerHeight - 180));
+    panel.style.setProperty('--rm-popup-top', top + 'px');
+    panel.style.setProperty('--rm-popup-left', Math.max(8, header.left) + 'px');
   }
 
   function codeStatus(key, state, fallback) {
@@ -177,6 +235,41 @@
     });
   }
 
+  function clearNumberFeedback() {
+    numberFeedback = null;
+    var message = byId('remaked-number-status');
+    if (!message) return;
+    delete message.dataset.remakedI18n; delete message.dataset.remakedI18nValues;
+    if (message.textContent) message.textContent = '';
+  }
+
+  function numberIssue(input) {
+    if (input.validity.badInput) return 'wholeNumber';
+    if (input.value === '') return 'required';
+    if (input.valueAsNumber > Number(input.max)) return 'maximum';
+    if (input.valueAsNumber < Number(input.min)) return 'minimum';
+    if (!input.checkValidity() || !Number.isInteger(input.valueAsNumber)) return 'wholeNumber';
+    return null;
+  }
+
+  function refreshNumberFeedback() {
+    if (!numberFeedback || !namespace.i18n) return;
+    var input = numberFeedback.input, kind = numberFeedback.kind;
+    if (kind !== 'budget') {
+      kind = numberIssue(input);
+      if (!kind) { input.removeAttribute('aria-invalid'); clearNumberFeedback(); return; }
+    }
+    var label = byId(input.getAttribute('aria-labelledby'));
+    var values = { field: label.textContent.trim(), min: input.min, max: input.max, value: input._remakedValue() };
+    var key = kind === 'budget' ? 'calculator.inputBudgetForField' : 'calculator.input' + kind.charAt(0).toUpperCase() + kind.slice(1);
+    var message = byId('remaked-number-status');
+    // Avoid a self-triggering MutationObserver loop. Rebind only if the
+    // current field, race minimum, language or editable translation changed.
+    if (message.dataset.remakedI18n !== key || message.dataset.remakedI18nValues !== JSON.stringify(values) || message.textContent !== namespace.i18n.t(key, values)) {
+      namespace.i18n.bindText(message, key, values);
+    }
+  }
+
   function numberControl(key, label, source, host) {
     var input = document.createElement('input');
     input.type = 'number'; input.inputMode = 'numeric'; input.step = '1'; input.required = true;
@@ -187,12 +280,16 @@
     var total = document.createElement('output');
     total.dataset.remakedNumberTotal = key; host.appendChild(total);
     function current() { return key === 'Lev' ? window.Status.Lev[0] : window.Status[key][0] + window.Status[key][1]; }
-    function cancel() { input.value = current(); input.removeAttribute('aria-invalid'); refresh(); }
+    function cancel() {
+      input.value = current(); input.removeAttribute('aria-invalid');
+      if (numberFeedback?.input === input) clearNumberFeedback();
+      refresh();
+    }
     function commit() {
-      var message = byId('remaked-number-status');
-      if (!input.checkValidity() || !Number.isInteger(input.valueAsNumber)) {
+      var issue = numberIssue(input);
+      if (issue) {
         input.setAttribute('aria-invalid', 'true');
-        if (namespace.i18n) namespace.i18n.bindText(message, 'calculator.inputInvalid');
+        numberFeedback = { input: input, kind: issue }; refreshNumberFeedback();
         return;
       }
       var requested = input.valueAsNumber, delta = requested - current();
@@ -202,10 +299,14 @@
         window.CalcSet(key);
       }
       input.value = current(); input.removeAttribute('aria-invalid');
-      if (namespace.i18n && current() !== requested) namespace.i18n.bindText(message, 'calculator.inputBudget');
-      else { delete message.dataset.remakedI18n; message.textContent = ''; }
+      if (current() !== requested) numberFeedback = { input: input, kind: 'budget' };
+      else clearNumberFeedback();
       refresh();
     }
+    input.addEventListener('input', function () {
+      input.removeAttribute('aria-invalid');
+      if (numberFeedback?.input === input) clearNumberFeedback();
+    });
     input.addEventListener('blur', function () { if (input.value !== String(current())) commit(); });
     input.addEventListener('keydown', function (event) {
       // Keep the retained global calculator hotkeys out of editable controls.
@@ -330,6 +431,7 @@
       }
       decorate();
       refreshPanels();
+      if (options?.resetInputs) clearNumberFeedback();
       document.querySelectorAll('[data-remaked-number]').forEach(function (input) {
         var key = input.dataset.remakedNumber;
         input.min = key === 'Lev' ? '1' : String(window.Status[key][0]);
@@ -337,7 +439,8 @@
         // A refresh while typing must never erase an unfinished edit. External
         // An explicit build load replaces the edit too, even if this input
         // still has focus. Ordinary calculation/language refreshes do not.
-        if (options?.resetInputs || document.activeElement !== input) input.value = input._remakedValue();
+        if (options?.resetInputs) { input.value = input._remakedValue(); input.removeAttribute('aria-invalid'); }
+        else if (document.activeElement !== input && !input.hasAttribute('aria-invalid')) input.value = input._remakedValue();
         if (namespace.i18n) input.title = namespace.i18n.t(key === 'Lev' ? 'calculator.levelInputHelp' : 'calculator.attributeInputHelp');
         var total = input.nextElementSibling, source = document.querySelector('[data-remaked-number-source="' + key + '"]');
         total.hidden = key === 'Lev' || window.Status[key][2] === 0;
@@ -364,6 +467,7 @@
         var text = namespace.i18n ? namespace.i18n.game('calculator.literal.' + (action === 'load' ? 'code_load' : action), '') || namespace.i18n.t(key) : source;
         if (button.textContent !== text) button.textContent = text;
       });
+      refreshNumberFeedback();
     } finally {
       if (observer) observer.observe(byId('body'), { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['class', 'title', 'disabled'] });
     }
@@ -375,6 +479,7 @@
   function init() {
     if (!byId('body')) return;
     observer = new MutationObserver(schedule); refresh();
+    window.addEventListener('resize', schedule);
   }
   namespace.calculatorControls = { refresh: refresh };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });

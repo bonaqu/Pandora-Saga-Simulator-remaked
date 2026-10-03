@@ -65,3 +65,27 @@ test('compact composition retains phone-size input and equipment targets across 
   await page.goto('/legacy/');
   await expect(page.locator('[data-remaked-workbench-title]')).toHaveCount(0);
 });
+
+test('discovery returns above the calculator on phones without cloning controls or losing their actions', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 }); await page.goto('/');
+  const before = await page.evaluate(() => {
+    window.discoveryNodes = [...document.querySelectorAll('[data-remaked-tools] button')]; return Store();
+  });
+  for (const width of [390, 1440, 320, 1920, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect.poll(() => page.evaluate(() => !!document.querySelector('[data-remaked-tools]').closest('[data-remaked-picker-section]'))).toBe(width >= 861);
+    await expect(page.locator('[data-remaked-tools]')).toHaveCount(1);
+    expect(await page.evaluate(() => discoveryNodes.every((node, index) => node === document.querySelectorAll('[data-remaked-tools] button')[index]))).toBe(true);
+    if (width < 861) {
+      const tools = await page.locator('[data-remaked-tools]').boundingBox();
+      const character = await page.locator('[data-remaked-calculator-character]').boundingBox();
+      expect(tools.y + tools.height).toBeLessThanOrEqual(character.y);
+      await expect(page.locator('#Title')).toBeHidden();
+    }
+  }
+  await page.locator('[data-remaked-equipment-search]').click();
+  await expect(page.locator('[data-remaked-search-panel]')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('[data-remaked-equipment-search]')).toBeFocused();
+  expect(await page.evaluate(() => Store())).toBe(before);
+});

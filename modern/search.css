@@ -499,7 +499,9 @@
 }
 .remaked-modern #body [data-remaked-picker-discovery] .remaked-tools-label { display: none; }
 .remaked-modern #body [data-remaked-picker-discovery] .remaked-tool-button { flex: 0 1 auto; }
+.remaked-modern #body [data-remaked-picker-discovery]:empty { display: none; }
 .remaked-modern #body [data-remaked-picker-toolbar] > li:empty { display: none; }
+@media (max-width: 860px) { .remaked-tools { flex-wrap: wrap; overflow: visible; } }
 @media (min-width: 861px) {
   /* PC rows keep native modifiers and all Soul fields, with one shared target
      height. Touch layouts continue to use 44px controls below 701px. */

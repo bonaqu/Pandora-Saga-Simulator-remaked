@@ -1,5 +1,80 @@
 import { test, expect } from '@playwright/test';
 
+test('numeric feedback names each field and its actual limit; cancel clears it without changing the build', async ({ page }, testInfo) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  const status = page.locator('#remaked-number-status');
+  for (const locale of ['en', 'ru']) {
+    await page.locator(`[data-remaked-ui-locale="${locale}"]`).click();
+    for (const key of ['Lev', 'STA', 'STR', 'AGI', 'DEX', 'SPR', 'INT']) {
+      const input = page.locator(`[data-remaked-number="${key}"]`);
+      const field = await input.evaluate(node => document.getElementById(node.getAttribute('aria-labelledby')).textContent.trim());
+      const max = await input.getAttribute('max'), min = await input.getAttribute('min');
+      for (const [value, expected] of [
+        [String(Number(max) + 1), locale === 'ru' ? `Максимальное значение поля «${field}» — ${max}. Esc отменяет ввод.` : `${field}: maximum ${max}. Esc cancels your edit.`],
+        [String(Number(min) - 1), locale === 'ru' ? `Минимальное значение поля «${field}» — ${min}. Esc отменяет ввод.` : `${field}: minimum ${min}. Esc cancels your edit.`],
+        [String(Number(min) + 0.5), locale === 'ru' ? `Для поля «${field}» введите целое число от ${min} до ${max}. Esc отменяет ввод.` : `${field}: enter a whole number from ${min} to ${max}. Esc cancels your edit.`],
+        ['', locale === 'ru' ? `Заполните поле «${field}»: целое число от ${min} до ${max}. Esc отменяет ввод.` : `${field}: enter a value from ${min} to ${max}. Esc cancels your edit.`]
+      ]) {
+        await input.fill(value); await input.press('Enter');
+        await expect(status).toHaveText(expected); await expect(input).toHaveAttribute('aria-invalid', 'true');
+        if (key === 'Lev' && value === '56') await page.locator('[data-remaked-calculator-character]').screenshot({ path: testInfo.outputPath('numeric-limit-' + locale + '.png') });
+        expect(await page.evaluate(() => Store())).toBe(before);
+        await input.press('Escape');
+        await expect(status).toBeEmpty(); await expect(input).not.toHaveAttribute('aria-invalid');
+      }
+    }
+  }
+});
+
+test('invalid edits survive blur and feedback follows language changes; loading a build clears stale errors', async ({ page }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  const input = page.locator('[data-remaked-number="Lev"]'), status = page.locator('#remaked-number-status');
+  await input.fill('56'); await input.press('Enter'); await input.press('Tab');
+  await expect(input).toHaveValue('56'); await expect(status).toContainText('maximum 55');
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+  await expect(status).toContainText('Максимальное значение поля'); await expect(status).toContainText('55');
+  expect(await page.evaluate(() => Store())).toBe(before);
+  await page.evaluate(code => PandoraRemaked.adapter.load(code), before);
+  await expect(input).toHaveValue('1'); await expect(status).toBeEmpty(); await expect(input).not.toHaveAttribute('aria-invalid');
+});
+
+test('insufficient points report the named field and exact native allocation, and race minima stay source-owned', async ({ page }) => {
+  await page.goto('/');
+  const input = page.locator('[data-remaked-number="STA"]'), status = page.locator('#remaked-number-status');
+  for (const locale of ['en', 'ru']) {
+    await page.locator(`[data-remaked-ui-locale="${locale}"]`).click();
+    const before = await page.evaluate(() => Store());
+    const expected = await page.evaluate(() => {
+      StatusMove('Status', 'STA', 99 - Status.STA[0] - Status.STA[1]); CalcSet('STA');
+      return { code: Store(), value: Status.STA[0] + Status.STA[1] };
+    });
+    await page.evaluate(code => PandoraRemaked.adapter.load(code), before);
+    await input.fill('99'); await input.press('Enter');
+    const field = await input.evaluate(node => document.getElementById(node.getAttribute('aria-labelledby')).textContent.trim());
+    await expect(status).toHaveText(locale === 'ru'
+      ? `Для поля «${field}» не хватает очков характеристик. Применено значение: ${expected.value}.`
+      : `${field}: not enough attribute points. Applied value: ${expected.value}.`);
+    expect(await page.evaluate(() => Store())).toBe(expected.code); await expect(input).toHaveValue(String(expected.value));
+    await input.press('Escape'); await expect(status).toBeEmpty();
+    await page.evaluate(code => PandoraRemaked.adapter.load(code), before);
+  }
+  await page.locator('[data-remaked-tab="0"]').click();
+  for (let race = 0; race < 6; race++) {
+    await page.locator('#SelRace').selectOption({ index: race });
+    const minimum = await page.evaluate(() => String(Status.STA[0]));
+    await expect(input).toHaveAttribute('min', minimum);
+    const before = await page.evaluate(() => Store());
+    await page.locator('[data-remaked-tab="0"]').click();
+    await input.fill(String(Number(minimum) - 1)); await input.press('Enter');
+    await expect(status).toContainText('— ' + minimum + '.');
+    expect(await page.evaluate(() => Store())).toBe(before);
+    await input.press('Escape');
+    await page.locator('[data-remaked-tab="0"]').click();
+  }
+});
+
 test('seven bounded numeric controls delegate allocation and limits to the retained engine', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('[data-remaked-number]')).toHaveCount(7);
