@@ -75,6 +75,10 @@
     if (record.calculationCode !== undefined) {
       record.calculationCode.split('_').filter(Boolean).forEach(function (token) {
         var pair = token.split('='), value = pair.slice(1).join('=');
+        if (!/^\d+=(?:[+-]?\d+(?:\.\d+)?%?|W\d+)$/.test(token)) {
+          values.appendChild(node('li', 'Исходный маркер: ' + token + '. Числовой эффект не подтверждён.'));
+          return;
+        }
         values.appendChild(node('li', pair[0] === '18' && /^W\d+$/.test(value) ? 'Базовая атака оружия: ' + value.slice(1) : effectText(pair[0], value.endsWith('%') ? value.slice(0, -1) : value, value.endsWith('%') ? 'percent' : 'flat')));
       });
       if (!record.calculationCode) values.appendChild(node('li', 'Числовых бонусов в расчётной строке нет.'));

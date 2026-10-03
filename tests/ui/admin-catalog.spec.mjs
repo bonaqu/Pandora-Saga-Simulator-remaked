@@ -116,6 +116,17 @@ test('racial and skill editors expose current descriptions, numbers and calculat
   expect(errors).toEqual([]);
 });
 
+test('current characteristics show the unresolved Waist Belt marker as a warning, never a fabricated zero bonus', async ({ page }) => {
+  const { errors } = await openConsole(page);
+  await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill('equipment.42.32');
+  await page.locator('.catalog-entry').first().click();
+  const live = page.locator('[data-current-record]');
+  await expect(live).toContainText('Выносливость (ВЫН / STA): +1');
+  await expect(live).toContainText('Исходный маркер: -7. Числовой эффект не подтверждён.');
+  await expect(live).not.toContainText('Legacy #-7: 0');
+  expect(errors).toEqual([]);
+});
+
 test('cancelling a catalog switch and a failed preview preserve unsaved fields and the selected record', async ({ page }) => {
   const { sqlite, errors } = await openConsole(page);
   const entry = page.locator('.catalog-entry').first(); await entry.click();
