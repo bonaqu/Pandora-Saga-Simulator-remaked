@@ -15,6 +15,13 @@ test('JOB retains two readable selection columns; disabled SKILL explains and en
   expect(await page.evaluate(() => Store())).toBe(before);
   await page.locator('[data-remaked-tab="1"]').click();
   const prompt = page.locator('[data-remaked-skill-list-prompt]'); await expect(prompt).toBeVisible();
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const textBounds = await prompt.locator('p').evaluate(node => ({ width: node.clientWidth, scroll: node.scrollWidth }));
+    expect(textBounds.scroll).toBeLessThanOrEqual(textBounds.width + 1);
+    const panelBounds = await page.locator('[data-remaked-native-panel="1"]').boundingBox(), promptBounds = await prompt.boundingBox();
+    expect(promptBounds.x + promptBounds.width).toBeLessThanOrEqual(panelBounds.x + panelBounds.width);
+  }
   await prompt.getByRole('button').click(); await expect(prompt).toBeHidden();
   expect(await page.evaluate(() => Flag[3])).toBe(1);
   await expect(page.locator('#LearnView [id^="LearnSkillIcon_"]').first()).toBeVisible();

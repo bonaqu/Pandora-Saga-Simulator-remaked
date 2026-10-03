@@ -750,8 +750,11 @@ body.remaked-modern {
   box-sizing: border-box; width: 100% !important; height: auto !important;
   border: 1px solid var(--rm-border); border-radius: 4px; font: 13px/1.4 var(--rm-font);
 }
-.remaked-modern #body [data-remaked-skill-list-prompt] { padding: 8px; font: 13px/1.5 var(--rm-font); color: var(--rm-text); }
-.remaked-modern #body [data-remaked-skill-list-prompt] p { margin: 0 0 8px; }
+.remaked-modern #body [data-remaked-skill-list-prompt] {
+  box-sizing: border-box; width: 100%; min-width: 0; padding: 8px;
+  font: 13px/1.5 var(--rm-font); color: var(--rm-text); white-space: normal; overflow-wrap: anywhere;
+}
+.remaked-modern #body [data-remaked-skill-list-prompt] p { margin: 0 0 8px; white-space: normal; overflow-wrap: anywhere; }
 .remaked-modern #body [data-remaked-floating-panel] #LearnView { width: 100% !important; box-sizing: border-box; }
 .remaked-modern #body :is(#ATKView, #RESView) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; box-sizing: border-box; width: 100% !important; }
 .remaked-modern #body #RESView { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1649,6 +1652,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   font: 700 14px/1.5 var(--rm-font);
   text-align: start;
   letter-spacing: normal;
+  white-space: normal;
   overflow-wrap: anywhere;
 }
 .remaked-modern #body :is(#Status, #StatusView) > .remaked-workbench-title {

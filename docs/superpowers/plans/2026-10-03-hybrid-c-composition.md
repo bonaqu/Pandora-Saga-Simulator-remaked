@@ -67,6 +67,10 @@ New requests extend this queue; they do not discard unfinished work.
   The previous inline-only Skill assertion was replaced with explicit fixed-panel,
   unchanged-workbench and viewport bounds per the owner's new popup requirement.
   No numeric, source, eligibility or rendering assertions were relaxed.
+- [x] RED: actual Linux CI screenshots exposed clipped phone SKILL prompt and RU
+  Base stats heading; new scroll-width bounds reproduce both inherited nowrap defects.
+- [x] GREEN: natural wrapping passes local PC/phone bounds and populated-panel checks.
+  Renewed full CI/visual evidence after this final CSS fix is still required.
 - [ ] Full browser/CI, source catalog differential and visual acceptance.
 - [ ] Squash PR, Pages/Worker deploy and exact production artifact acceptance.
 

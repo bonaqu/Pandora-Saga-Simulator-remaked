@@ -40,6 +40,11 @@ test('section labels translate, refresh once, and never become source identity r
   await page.goto('/');
   const before = await page.evaluate(() => Store());
   await page.locator('[data-remaked-ui-locale="ru"]').click();
+  for (const width of [320, 390, 768, 1366, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    const overflow = await page.evaluate(() => [...document.querySelectorAll('.remaked-workbench-title')].filter(node => node.scrollWidth > node.clientWidth + 1).map(node => node.textContent));
+    expect(overflow).toEqual([]);
+  }
   await expect(page.getByRole('heading', { name: 'Персонаж', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Умения', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Результаты расчёта', exact: true })).toBeVisible();
