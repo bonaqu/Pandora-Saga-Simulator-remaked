@@ -5,6 +5,27 @@ import { adminCatalog } from '../../admin-api/src/catalog.mjs';
 
 const admin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
 
+test('a late initial session check preserves credentials already entered into the native login form', async ({ page }) => {
+  let releaseSession;
+  const sessionGate = new Promise(resolve => { releaseSession = resolve; });
+  await page.route(admin + '/**', async route => {
+    const path = new URL(route.request().url()).pathname;
+    if (path === '/api/session') {
+      await sessionGate;
+      return route.fulfill({ status: 401, json: { ok: false } });
+    }
+    const asset = path === '/admin' ? 'admin.html' : path.slice(1);
+    if (!['admin.html', 'admin.css', 'admin.js', 'catalog-ui.js'].includes(asset)) return route.fulfill({ status: 404 });
+    return route.fulfill({ contentType: asset.endsWith('.css') ? 'text/css' : asset.endsWith('.js') ? 'text/javascript' : 'text/html', body: fs.readFileSync(new URL('../../admin-api/public/' + asset, import.meta.url), 'utf8') });
+  });
+  await page.goto(admin + '/admin');
+  await page.locator('#password').fill('synthetic-not-a-real-password');
+  releaseSession();
+  await expect(page.locator('#auth-message')).toHaveText('Enter your administrator credentials.');
+  await expect(page.locator('#password')).toHaveValue('synthetic-not-a-real-password');
+  expect(await page.evaluate(() => JSON.stringify([localStorage, sessionStorage]))).toBe('[{},{}]');
+});
+
 test('an origin-denied login explains the safe retry without showing or storing credentials', async ({ page }) => {
   await page.route(admin + '/**', route => {
     const path = new URL(route.request().url()).pathname;

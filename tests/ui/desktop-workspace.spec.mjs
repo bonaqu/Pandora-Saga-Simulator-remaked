@@ -73,9 +73,9 @@ test('all four languages and font fallbacks keep the complete desktop controls i
   expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(before);
 });
 
-test('common English skill names stay whole in the compact PC columns with a larger font fallback', async ({ page }) => {
+for (const largerFallback of [false, true]) test(`common English skill names stay whole in the compact PC columns with ${largerFallback ? 'a larger Arial fallback' : 'the actual default font'}`, async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 }); await page.goto('/');
-  await page.addStyleTag({ content: '#body #SkillSet[data-remaked-skill-controls] [id^="TextSkill_"], #body #SkillSet[data-remaked-skill-controls] [id^="TextSkill_"] * { font: 600 14px/1.4 Arial, sans-serif !important; }' });
+  if (largerFallback) await page.addStyleTag({ content: '#body #SkillSet[data-remaked-skill-controls] [id^="TextSkill_"], #body #SkillSet[data-remaked-skill-controls] [id^="TextSkill_"] * { font: 600 14px/1.4 Arial, sans-serif !important; }' });
   for (const id of ['TextSkill_9', 'TextSkill_13', 'TextSkill_24']) {
     const metrics = await page.locator('#' + id).evaluate(node => {
       // A Range containing an inline help span returns both its box and its
@@ -88,7 +88,8 @@ test('common English skill names stay whole in the compact PC columns with a lar
       return { text: node.textContent, width: node.getBoundingClientRect().width, font: getComputedStyle(node).font, size: getComputedStyle(node).fontSize, lines: tops.length };
     });
     expect(metrics.lines, id + ' ' + JSON.stringify(metrics)).toBe(1);
-    expect(metrics.size).toBe('14px'); expect(metrics.font).toContain('Arial');
+    expect(metrics.size).toBe(largerFallback ? '14px' : '13px');
+    if (largerFallback) expect(metrics.font).toContain('Arial');
   }
   await assertWorkspaceFits(page);
 });

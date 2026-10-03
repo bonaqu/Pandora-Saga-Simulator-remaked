@@ -9,11 +9,14 @@
   // The actual server session is an HttpOnly cookie, inaccessible to this JS.
   var csrf = null;
   function showLogin(text) {
+    // Clear credentials when leaving an authenticated workspace, not when the
+    // initial asynchronous session check catches up with an already typed form.
+    var leavingWorkspace = !workspace.hidden;
     if (window.PandoraCatalogConsole) window.PandoraCatalogConsole.clear();
     csrf = null; form.hidden = false; workspace.hidden = true;
     title.textContent = 'GOD MODE REQUIRES AUTHENTICATION';
     message.textContent = text; message.classList.toggle('denied', text.indexOf('DENIED') !== -1);
-    document.getElementById('password').value = '';
+    if (leavingWorkspace) document.getElementById('password').value = '';
   }
   async function loadSession() {
     try {
