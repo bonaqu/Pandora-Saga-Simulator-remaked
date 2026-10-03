@@ -77,8 +77,11 @@ test('common English skill names stay whole in the compact PC columns with a lar
   await page.setViewportSize({ width: 1440, height: 900 }); await page.goto('/');
   await page.addStyleTag({ content: '#SkillSet [id^="TextSkill_"] { font: 600 14px/1.4 Arial, sans-serif; }' });
   for (const id of ['TextSkill_9', 'TextSkill_13', 'TextSkill_24']) {
-    const lines = await page.locator('#' + id).evaluate(node => { const range = document.createRange(); range.selectNodeContents(node); return range.getClientRects().length; });
-    expect(lines, id).toBe(1);
+    const metrics = await page.locator('#' + id).evaluate(node => {
+      const range = document.createRange(); range.selectNodeContents(node);
+      return { text: node.textContent, width: node.getBoundingClientRect().width, font: getComputedStyle(node).font, lines: range.getClientRects().length };
+    });
+    expect(metrics.lines, id + ' ' + JSON.stringify(metrics)).toBe(1);
   }
   await assertWorkspaceFits(page);
 });
