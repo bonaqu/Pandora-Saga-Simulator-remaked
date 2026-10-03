@@ -2,6 +2,19 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Modern 3.05 — all five floating inspectors, release candidate
+
+- JOB, SKILL, ATTACK, DEFENSE and BUFF now use the same non-modal popup behavior.
+  Opening a panel no longer pushes the calculator down. Repeat-tab, Escape
+  (inside the panel or on its opener) and the close button dismiss it; changing
+  tabs leaves only one panel open and restores the source tab state.
+- Opaque surfaces, viewport-bounded width/height and internal scrolling retain
+  the original fields, selectors, buff handlers and build calculations on PC
+  and phones. Scroll and short-screen resize are covered in three browser engines.
+- No changes to Legacy, racial values, catalog revisions or translations in
+  this UI-only correction. Current racial/server data, supplied banner and
+  character-editor follow-ups remain in the durable task queue.
+
 ## Modern 3.04 — Hybrid C composition, 2026-10-03
 
 - Distinct Character, Skills and Effects sections, Base stats and Calculated

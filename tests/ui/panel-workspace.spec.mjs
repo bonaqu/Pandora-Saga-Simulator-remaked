@@ -47,7 +47,7 @@ test('attack labels have readable contrast and all five buff columns use actual 
   expect(boxes.every(box => box.width > 80)).toBe(true);
 });
 
-test('JOB and SKILL float without shifting the workbench; other inspectors remain compact inline regions', async ({ page }, testInfo) => {
+test('all five inspectors float without shifting the workbench and close by tab, Escape and close button', async ({ page }, testInfo) => {
   test.setTimeout(90000); await page.goto('/');
   await page.evaluate(() => { StatusMove('Lev', 54); CalcSet('Lev'); });
   const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
@@ -64,31 +64,24 @@ test('JOB and SKILL float without shifting the workbench; other inspectors remai
       const bounds = await panel.boundingBox(), character = await page.locator('[data-remaked-calculator-character]').boundingBox();
       expect(bounds.x).toBeGreaterThanOrEqual(0); expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
       expect(bounds.height).toBeLessThanOrEqual(650);
-      const flow = await panel.evaluate(node => {
-        var result = []; for (var parent = node; parent && parent.id !== 'body'; parent = parent.parentElement) {
-          var css = getComputedStyle(parent), rect = parent.getBoundingClientRect();
-          result.push({ tag: parent.tagName, id: parent.id, class: parent.className, style: parent.getAttribute('style'), y: rect.y, height: rect.height, display: css.display, float: css.float, position: css.position });
-        } return result;
+      await expect(panel).toHaveAttribute('role', 'dialog');
+      await expect(panel).toHaveAttribute('aria-modal', 'false');
+      expect(character.y).toBe(restingCharacter.y);
+      expect(await panel.evaluate(node => getComputedStyle(node).position)).toBe('fixed');
+      const surface = await panel.locator('.sub_win').evaluate(node => {
+        const css = getComputedStyle(node), channels = css.backgroundColor.match(/[\d.]+/g).map(Number);
+        return { alpha: channels.length === 4 ? channels[3] : 1, opacity: Number(css.opacity) };
       });
-      if (tab < 2) {
-        await expect(panel).toHaveAttribute('role', 'dialog');
-        expect(character.y).toBe(restingCharacter.y);
-        expect(await panel.evaluate(node => getComputedStyle(node).position)).toBe('fixed');
-        const surface = await panel.locator('.sub_win').evaluate(node => {
-          const css = getComputedStyle(node), channels = css.backgroundColor.match(/[\d.]+/g).map(Number);
-          return { alpha: channels.length === 4 ? channels[3] : 1, opacity: Number(css.opacity) };
-        });
-        expect(surface.alpha, 'Popup content must not mix with the calculator underneath').toBe(1);
-        expect(surface.opacity).toBe(1);
-        expect(bounds.y).toBeGreaterThanOrEqual(0); expect(bounds.y + bounds.height).toBeLessThanOrEqual(900);
-        await opener.click(); await expect(panel).toBeHidden();
-        await opener.click(); await expect(panel).toBeVisible();
-        await panel.locator('[data-remaked-panel-close]').focus(); await page.keyboard.press('Escape');
-        await expect(panel).toBeHidden(); await expect(opener).toBeFocused();
-        await opener.click(); await expect(panel).toBeVisible();
-      } else {
-        expect(character.y, JSON.stringify({ width, tab, bounds, character, flow })).toBeGreaterThanOrEqual(bounds.y + bounds.height - 1);
-      }
+      expect(surface.alpha, 'Popup content must not mix with the calculator underneath').toBe(1);
+      expect(surface.opacity).toBe(1);
+      expect(bounds.y).toBeGreaterThanOrEqual(0); expect(bounds.y + bounds.height).toBeLessThanOrEqual(900);
+      await opener.click(); await expect(panel).toBeHidden();
+      await opener.click(); await expect(panel).toBeVisible();
+      await opener.press('Escape'); await expect(panel).toBeHidden(); await expect(opener).toBeFocused();
+      await opener.click(); await expect(panel).toBeVisible();
+      await panel.locator('[data-remaked-panel-close]').focus(); await page.keyboard.press('Escape');
+      await expect(panel).toBeHidden(); await expect(opener).toBeFocused();
+      await opener.click(); await expect(panel).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
       if (width === 1440 || width === 390) await page.screenshot({ path: testInfo.outputPath('panel-' + tab + '-' + width + '.png') });
       await panel.locator('[data-remaked-panel-close]').focus(); await page.keyboard.press('Enter');

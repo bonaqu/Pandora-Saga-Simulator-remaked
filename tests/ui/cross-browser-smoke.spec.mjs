@@ -19,6 +19,45 @@ import { adminOrigin, routeSyntheticWorker } from './helpers/admin-worker-fixtur
 import { assertWorkspaceFits } from './helpers/desktop-workspace.mjs';
 import { variant, snapshot } from './helpers/skill-variants.mjs';
 
+test('every inspector switches, floats and closes without changing the build, even after scroll or short-screen resize', async ({ page }) => {
+  const errors = []; page.on('pageerror', error => errors.push(error.message));
+  await page.setViewportSize({ width: 1440, height: 900 }); await page.goto('/');
+  const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.getByRole('button', { name: 'RU', exact: true }).click();
+    for (const tab of [0, 1, 2, 3, 4]) {
+      const opener = page.locator('[data-remaked-tab="' + tab + '"]');
+      const panel = page.locator('[data-remaked-native-panel="' + tab + '"]');
+      await opener.click(); await expect(panel).toBeVisible();
+      await expect(page.locator('[data-remaked-native-panel]:visible')).toHaveCount(1);
+      await expect(panel).toHaveAttribute('role', 'dialog');
+      expect(await panel.evaluate(node => getComputedStyle(node).position)).toBe('fixed');
+      const next = (tab + 1) % 5;
+      await page.locator('[data-remaked-tab="' + next + '"]').click();
+      await expect(panel).toBeHidden(); await expect(opener).toHaveAttribute('aria-expanded', 'false');
+      await page.locator('[data-remaked-tab="' + next + '"]').click();
+      await expect(page.locator('[data-remaked-native-panel]:visible')).toHaveCount(0);
+      await opener.click(); await opener.press('Escape'); await expect(panel).toBeHidden();
+      await opener.click();
+      // A popup remains reachable when its opener scrolls out of view and the
+      // viewport gets shorter; the source panel itself must not change state.
+      await page.evaluate(() => scrollTo(0, 500));
+      await page.setViewportSize({ width, height: 568 });
+      await expect(panel).toBeVisible();
+      const bounds = await panel.boundingBox();
+      expect(bounds.x).toBeGreaterThanOrEqual(0); expect(bounds.y).toBeGreaterThanOrEqual(0);
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+      expect(bounds.y + bounds.height).toBeLessThanOrEqual(568);
+      await panel.locator('[data-remaked-panel-close]').press('Escape'); await expect(panel).toBeHidden();
+      await expect(opener).toBeFocused();
+      await page.setViewportSize({ width, height: 900 }); await page.evaluate(() => scrollTo(0, 0));
+    }
+  }
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(before);
+  expect(errors).toEqual([]);
+});
+
 test('catalog variants keep keyboard details, decimal effects, literal RU/JP/TW text and native source restoration in every engine', async ({ page }) => {
   await page.goto('/');
   const errors = []; page.on('pageerror', error => errors.push(error.message));
