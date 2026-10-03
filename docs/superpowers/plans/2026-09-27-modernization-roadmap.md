@@ -204,6 +204,17 @@ prioritizes composition refinement before custom learning; its differences from
 the broad PC workbench and remaining release gates are recorded in
 `2026-10-03-hybrid-c-composition.md`. Do not repeat the completed 3.03 mechanics.
 
+**Hybrid C follow-up, published and accepted:** Modern 3.04, PR33
+(`f4cd755`), final Feature CI `37137877994`, API `37137878003`, Pages
+`37138983439`, Worker `37138983447`. Compact sections, native floating JOB/SKILL,
+field-specific feedback, aligned BUFF rows and responsive discovery passed full
+CI and exact production/installed-offline/auth acceptance. See the release ledger.
+The owner's corrected 2026-10-03 current-data request is the next priority:
+all 18 RU/EN racial passives and current skills, retaining all future skills and
+level 55, without duplicates or museum edits. Myrine's newly specified +5% is
+not part of the older revision-2 acceptance. Custom learning/new classes remain
+in the queue; the expanded request does not cancel that unfinished work.
+
 Not part of this roadmap's implementation plans. Requires a new design/spec after Phases 0–7 are stable.
 
 ---
