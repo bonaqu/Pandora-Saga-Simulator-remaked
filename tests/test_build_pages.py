@@ -52,6 +52,7 @@ class BuildPagesTests(unittest.TestCase):
             (modern / "calculator-labels.js").write_text("// label sources", encoding="utf-8")
             (modern / "calculator-controls.js").write_text("// native controls", encoding="utf-8")
             (modern / "skill-controls.js").write_text("// native skills", encoding="utf-8")
+            (modern / "skill-tooltips.js").write_text("// skill tooltip surface", encoding="utf-8")
             (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
             (modern / "catalog.js").write_text("// versioned public catalog", encoding="utf-8")
             (modern / "admin-entry.js").write_text("// hidden entry", encoding="utf-8")

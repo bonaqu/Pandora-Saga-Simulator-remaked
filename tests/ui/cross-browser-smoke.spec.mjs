@@ -1,5 +1,30 @@
 import { test, expect } from '@playwright/test';
 
+test('skill descriptions paint above the scroll panel and dismiss cleanly in each engine', async ({ page }) => {
+  const errors = []; page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/');
+  await page.evaluate(() => { Flag[3] = 1; StatusMove('Lev', 54); CalcSet('Lev'); Status.Job[2] = 2; CalcSet('Job'); });
+  const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
+  await page.locator('[data-remaked-tab="1"]').click();
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 568 });
+    const icon = page.locator('#LearnSkillIcon_0_15'), tip = page.locator('#LearnSkill_0_15');
+    await icon.focus(); await expect(tip).toBeVisible();
+    const bounds = await tip.evaluate(node => {
+      const r = node.getBoundingClientRect(), hit = document.elementFromPoint(r.right - 12, r.bottom - 12);
+      return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, painted: node.contains(hit) || node === hit };
+    });
+    expect(bounds.painted).toBe(true); expect(bounds.left).toBeGreaterThanOrEqual(8); expect(bounds.top).toBeGreaterThanOrEqual(8);
+    expect(bounds.right).toBeLessThanOrEqual(width - 7); expect(bounds.bottom).toBeLessThanOrEqual(561);
+    await tip.click(); await expect(tip).toBeVisible();
+    await page.keyboard.press('Escape'); await expect(tip).toBeHidden(); await expect(icon).toBeFocused();
+    await icon.press('Enter'); await expect(tip).toBeVisible();
+    await page.locator('[data-remaked-tab="2"]').click(); await expect(tip).toBeHidden();
+    await page.locator('[data-remaked-tab="1"]').click();
+  }
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(before); expect(errors).toEqual([]);
+});
+
 test('native recovery data aliases are temporary and safe in each browser engine', async ({ page }) => {
   await page.goto('/');
   const result = await page.evaluate(() => {

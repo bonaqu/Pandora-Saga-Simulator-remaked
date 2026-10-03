@@ -2,6 +2,16 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Modern 3.06 — skill descriptions, not yet published
+
+- Skill descriptions escape the scrolling SKILL panel and use an opaque,
+  viewport-bounded surface. Complete long descriptions remain scrollable.
+- Delayed mouse hover, keyboard focus/Enter/Space/Escape and touch toggling;
+  panel switching, source redraw and scrolling clean up the open description.
+- Same native text, numbers and calculation state; Legacy and game data unchanged.
+- Local focused/related and three-engine checks pass. Publication acceptance is
+  still pending; the remaining current-data/editor/banner tasks stay queued.
+
 ## Modern 3.05 — all five floating inspectors, 2026-10-04
 
 - JOB, SKILL, ATTACK, DEFENSE and BUFF now use the same non-modal popup behavior.
