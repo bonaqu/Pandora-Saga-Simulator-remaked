@@ -5,6 +5,35 @@ import character from '../../data/generated/character.v1.json' with { type: 'jso
 import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
 import { adminOrigin, routeSyntheticWorker } from './helpers/admin-worker-fixture.mjs';
 import { assertWorkspaceFits } from './helpers/desktop-workspace.mjs';
+import { variant, snapshot } from './helpers/skill-variants.mjs';
+
+test('catalog variants keep keyboard details, decimal effects, literal RU/JP/TW text and native source restoration in every engine', async ({ page }) => {
+  await page.goto('/');
+  const errors = []; page.on('pageerror', error => errors.push(error.message));
+  const data = snapshot([variant('skill.0.1', edit => {
+    edit.effects = [{ stat: 1, value: 0.29, unit: 'flat' }];
+    edit.names = { en: 'New recovery', ru: 'Новая пассивка', jp: '新しい回復', tw: '新恢復' };
+    edit.description.ru = '<img src=x onerror=alert(1)>'; edit.bonusRequirements.ridingRequired = true;
+  })]);
+  const source = await page.evaluate(data => { const source = PandoraRemaked.adapter.serialize(); StatusMove('Lev', 11); CalcSet('Lev'); PandoraRemaked.catalog.applySnapshot(data); return source; }, data);
+  await page.locator('[data-remaked-tab="1"]').click();
+  const card = page.locator('[data-remaked-skill-variant]'); await expect(card).toHaveCount(1);
+  await card.locator('summary').focus(); await page.keyboard.press('Enter'); await expect(card).toHaveAttribute('open', '');
+  await expect(card.locator('[data-remaked-variant-bonus]')).toHaveText('Passive bonus inactive');
+  await page.locator('[data-remaked-calculator-action="Text_16"]').click();
+  await expect(card.locator('[data-remaked-variant-bonus]')).toHaveText('Passive bonus applied');
+  expect(await page.evaluate(() => Status.STR[2])).toBe(0.29);
+  for (const [language, label] of [['ru', 'Новая пассивка'], ['jp', '新しい回復'], ['tw', '新恢復']]) {
+    await page.getByRole('button', { name: language.toUpperCase(), exact: true }).click();
+    await expect(card.locator('summary strong')).toHaveText(label);
+    if (language === 'ru') { await expect(card.locator('[data-remaked-variant-description]')).toHaveText('<img src=x onerror=alert(1)>'); await expect(card.locator('img')).toHaveCount(0); }
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.evaluate(code => PandoraRemaked.adapter.load(code), source);
+  await expect(card).toHaveCount(0); expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(source);
+  expect(errors).toEqual([]);
+});
 
 test('wide workspace and original riding controls remain complete across responsive transitions in every engine', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 }); await page.goto('/');

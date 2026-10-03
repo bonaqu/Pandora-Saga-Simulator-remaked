@@ -1,9 +1,76 @@
 (function () {
   'use strict';
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
-  var i18n = namespace.i18n, observer, timer;
+  var i18n = namespace.i18n, observer, timer, catalogKey = '', catalogSection;
   function byId(id) { return document.getElementById(id); }
   function text(node, value) { if (node.textContent !== value) node.textContent = value; }
+
+  function plain(value) { return namespace.calculatorLabels.plain(value); }
+  function game(key, source) { return i18n.game(key, plain(source)); }
+  function catalogSkills() {
+    if (!namespace.catalog || !byId('LearnView')) return;
+    var records = namespace.catalog.variantSkills(), language = Number(window.Flag[0]);
+    var key = i18n.getLocale() + ':' + language + ':' + namespace.catalog.getRevision() + ':' + JSON.stringify(records);
+    if (key === catalogKey) return;
+    catalogKey = key;
+    if (!catalogSection) {
+      catalogSection = document.createElement('section'); catalogSection.dataset.remakedCatalogSkills = '';
+      catalogSection.setAttribute('aria-labelledby', 'remaked-catalog-skills-title');
+      var title = document.createElement('h3'); title.id = 'remaked-catalog-skills-title';
+      i18n.bindText(title, 'skills.catalog'); catalogSection.appendChild(title);
+      byId('LearnView').closest('.sub_win').appendChild(catalogSection);
+    }
+    catalogSection.hidden = !records.length;
+    var ids = records.map(function (record) { return record.id; });
+    catalogSection.querySelectorAll('[data-remaked-skill-variant]').forEach(function (card) { if (ids.indexOf(card.dataset.remakedSkillVariant) === -1) card.remove(); });
+    var labels = namespace.calculatorLabels.collect();
+    records.forEach(function (record) {
+      var card = Array.from(catalogSection.querySelectorAll('[data-remaked-skill-variant]')).find(function (node) { return node.dataset.remakedSkillVariant === record.id; });
+      if (!card) {
+        card = document.createElement('details'); card.dataset.remakedSkillVariant = record.id;
+        var summary = document.createElement('summary'); summary.appendChild(document.createElement('strong')); summary.appendChild(document.createElement('span'));
+        card.appendChild(summary); card.appendChild(document.createElement('div')); catalogSection.appendChild(card);
+      }
+      text(card.querySelector('summary strong'), namespace.catalog.gameLabel(record.id));
+      text(card.querySelector('summary span'), i18n.t(record.learned ? 'skills.learned' : 'skills.notLearned'));
+      card.dataset.learned = String(record.learned);
+      var body = card.lastElementChild; body.replaceChildren();
+      function paragraph(value, attribute) {
+        var node = document.createElement('p'); node.textContent = value;
+        if (attribute) node.setAttribute(attribute, ''); body.appendChild(node); return node;
+      }
+      var source = window.Skill[language][record.category][record.index], term = 'skill_detail.' + record.category + '.' + record.index;
+      paragraph(i18n.t('skills.template', { name: game(record.templateId, source[0]) }));
+      paragraph(game('calculator.learn.6', window.Name.Learn[6][language]) + ': ' + game(term + '.1', source[1]));
+      if (record.active) {
+        paragraph(game('calculator.learn.7', window.Name.Learn[7][language]) + ': ' + game(term + '.2', source[2]));
+        var timings = document.createElement('dl'); body.appendChild(timings);
+        [1, 2, 3, 5].forEach(function (caption, index) {
+          var label = document.createElement('dt'); label.textContent = game('calculator.learn.' + caption, window.Name.Learn[caption][language]);
+          var value = document.createElement('dd'); value.dataset.remakedVariantTiming = String(index);
+          value.textContent = String(record.timing[index]) + (index ? ' ' + game('calculator.learn.4', window.Name.Learn[4][language]) : '');
+          timings.appendChild(label); timings.appendChild(value);
+        });
+        paragraph(i18n.t('skills.metadataOnly'));
+      } else {
+        paragraph(i18n.t(record.bonusApplied ? 'skills.bonusApplied' : 'skills.bonusInactive'), 'data-remaked-variant-bonus');
+        var weapons = record.bonusRequirements.weaponCategories.map(function (category) {
+          return category === -1 ? i18n.t('skills.unarmed') : game('equipment_category.' + category, window.EquipData[language][category][0][0]).replace(/^[+\-\s]+/, '');
+        });
+        var requirements = weapons.length ? [weapons.join(' / ')] : [];
+        if (record.bonusRequirements.shieldRequired) requirements.push(game('equipment_category.20', window.EquipData[language][20][0][0]).replace(/^[+\-\s]+/, ''));
+        if (record.bonusRequirements.ridingRequired) requirements.push(i18n.t('skills.ridingRequired'));
+        if (requirements.length) paragraph(i18n.t('skills.bonusRequirements') + ': ' + requirements.join(' · '), 'data-remaked-variant-requirements');
+        record.effects.forEach(function (effect) {
+          var sourceName = window.Name.Option[effect.stat][language + 3];
+          var known = labels.find(function (row) { return row.category !== 'skill_detail' && plain(row.values[language]) === plain(sourceName); });
+          paragraph((known ? game(known.id, sourceName) : plain(sourceName)) + ': ' + (effect.value >= 0 ? '+' : '') + effect.value + (effect.unit === 'percent' ? '%' : ''));
+        });
+      }
+      var descriptionLanguage = i18n.getLocale() === 'ru' ? 'ru' : ['jp', 'en', 'tw'][language];
+      paragraph(record.description[descriptionLanguage] || record.description.en || '', 'data-remaked-variant-description');
+    });
+  }
 
   function group(row, index, mode, value) {
     var holder = document.createElement('li'); holder.dataset.remakedSkillGroup = mode;
@@ -42,6 +109,12 @@
   function decorate() {
     var root = byId('SkillSet');
     if (!root || !i18n || !root.closest('[data-remaked-calculator-main]')) return;
+    var skillPanel = byId('Tab_1_1'), skillRow = byId('remaked-skill-list-row');
+    if (!skillRow) {
+      skillRow = document.createElement('ul'); skillRow.id = 'remaked-skill-list-row';
+      root.parentElement.after(skillRow); skillRow.appendChild(skillPanel);
+    }
+    skillRow.hidden = skillPanel.style.display === 'none';
     if (!root.hasAttribute('data-remaked-skill-controls')) {
       root.setAttribute('data-remaked-skill-controls', '');
       var potentialLabel = byId('StatusUnP_0').closest('.input_gt').previousElementSibling;
@@ -113,6 +186,7 @@
     try {
       decorate();
       if (namespace.gameTermDisplay) namespace.gameTermDisplay.refresh();
+      catalogSkills();
       document.querySelectorAll('[data-remaked-skill-caption]').forEach(function (caption) {
         var mode = caption.dataset.remakedSkillCaption;
         text(caption, i18n.t('skills.' + mode.toLowerCase()));

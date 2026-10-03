@@ -59,7 +59,7 @@ function effects(input) {
     const definition = effectById.get(effect.stat);
     check(definition && definition.units.includes(effect.unit), 'Unsupported effect or unit');
     check(!seen.has(effect.stat), 'Duplicate stat'); seen.add(effect.stat);
-    check(typeof effect.value === 'number' && Number.isFinite(effect.value) && Math.abs(effect.value) <= 10000 && Number.isInteger(effect.value * 100), 'Effect must be a bounded number with at most two decimals');
+    check(typeof effect.value === 'number' && Number.isFinite(effect.value) && Math.abs(effect.value) <= 10000 && Number(effect.value.toFixed(2)) === effect.value, 'Effect must be a bounded number with at most two decimals');
     return { stat: effect.stat, value: effect.value, unit: effect.unit };
   });
 }
@@ -99,15 +99,20 @@ export function draftFromSource(source, kind) {
 
 export function validateDraft(input, identity) {
   if (identity.kind === 'active' || identity.kind === 'passive') {
-    const common = ['id', 'kind', 'category', 'names', 'description'];
+    const variant = Boolean(identity.templateId);
+    const common = ['id', 'kind', 'category', 'names', 'description', ...(variant ? ['templateId'] : [])];
     keys(input, [...common, ...(identity.kind === 'active' ? ['mpCost', 'castSeconds', 'cooldownSeconds', 'durationSeconds'] : ['effects', 'bonusRequirements'])], 'Skill');
-    check(input.id === identity.id && input.kind === identity.kind && input.category === identity.category && Number.isInteger(identity.category) && identity.category >= 0 && identity.category < 25 && Number.isInteger(identity.index) && identity.index >= 0 && identity.index < 1000 && input.id === 'skill_entry.' + identity.category + '.' + identity.index, 'Skill identity/type cannot be changed');
+    check(input.id === identity.id && input.kind === identity.kind && input.category === identity.category && Number.isInteger(identity.category) && identity.category >= 0 && identity.category < 25 && Number.isInteger(identity.index) && identity.index >= 0 && identity.index < 1000, 'Skill identity/type cannot be changed');
+    if (variant) {
+      check(input.templateId === identity.templateId && identity.templateId === 'skill_entry.' + identity.category + '.' + identity.index && new RegExp('^modern\\.' + identity.kind + '\\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$').test(input.id), 'Skill variant template/identity cannot be changed');
+    } else check(input.id === 'skill_entry.' + identity.category + '.' + identity.index, 'Skill identity/type cannot be changed');
     const names = textMap(input.names, 160, 'Names'); check(names.en.length > 0, 'English name is required');
     const result = { id: input.id, kind: identity.kind, category: identity.category, names, description: textMap(input.description, 4000, 'Description') };
+    if (variant) result.templateId = identity.templateId;
     if (identity.kind === 'active') {
       result.mpCost = integer(input.mpCost, 0, 100000, 'MP cost');
       for (const field of ['castSeconds', 'cooldownSeconds', 'durationSeconds']) {
-        const value = input[field]; check(typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 86400 && Number.isInteger(value * 1000), 'Timing must be bounded seconds with at most three decimals'); result[field] = value;
+        const value = input[field]; check(typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 86400 && Number(value.toFixed(3)) === value, 'Timing must be bounded seconds with at most three decimals'); result[field] = value;
       }
     } else {
       result.effects = effects(input.effects);
@@ -163,9 +168,10 @@ export function validateDraft(input, identity) {
 
 export function compileRecord(edit, identity, source) {
   if (identity.kind === 'active' || identity.kind === 'passive') {
-    check(source?.kind === identity.kind, 'New skills and changed native skill types require a separate engine capability');
+    check(source?.kind === identity.kind && source.id === (identity.templateId || identity.id), 'Skill must retain its source type and learning template');
     return { id: identity.id, kind: identity.kind, category: identity.category, index: identity.index, names: edit.names, description: edit.description,
-      active: source.is_active, prerequisiteCode: source.prerequisite_code, nativeEffectPolicy: 'retained-plus-bonus',
+      ...(identity.templateId ? { templateId: identity.templateId } : {}),
+      active: source.is_active, prerequisiteCode: source.prerequisite_code, nativeEffectPolicy: identity.templateId ? 'template-gate-only' : 'retained-plus-bonus',
       timing: identity.kind === 'active' ? [edit.mpCost, edit.castSeconds, edit.cooldownSeconds, edit.durationSeconds] : [source.mp_cost, source.cast_seconds, source.cooldown_seconds, source.duration_seconds],
       effects: (edit.effects || []).map(effect => ({ ...effect })), bonusRequirements: edit.bonusRequirements ? { ...edit.bonusRequirements, weaponCategories: [...edit.bonusRequirements.weaponCategories] } : null };
   }

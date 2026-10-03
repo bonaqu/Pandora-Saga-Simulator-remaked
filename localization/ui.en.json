@@ -196,5 +196,15 @@
   "builds.catalogRestorationFailed": "Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.",
   "builds.urlWarning": "Build loaded, but the old shared link could not be cleared. Export a new code or link before reloading.",
   "builds.loadCancelled": "Loading cancelled. Current character and saved builds kept.",
-  "builds.loadUnavailable": "Catalog revision unavailable; current character and saved builds kept."
+  "builds.loadUnavailable": "Catalog revision unavailable; current character and saved builds kept.",
+  "skills.catalog": "Additional catalog skills",
+  "skills.template": "Learning template: {name}",
+  "skills.learned": "Learned",
+  "skills.notLearned": "Not learned",
+  "skills.bonusApplied": "Passive bonus applied",
+  "skills.bonusInactive": "Passive bonus inactive",
+  "skills.metadataOnly": "Active skills show MP, timing and description. This calculator does not simulate their damage or combat actions.",
+  "skills.bonusRequirements": "Bonus requirements",
+  "skills.unarmed": "No weapon equipped",
+  "skills.ridingRequired": "Riding enabled"
 }
