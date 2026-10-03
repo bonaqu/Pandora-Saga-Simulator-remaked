@@ -39,7 +39,7 @@ for (const width of [1440, 1920]) test(`complete desktop workspace brings Equipm
     });
     expect(lines, action + ' should fit without an accidental extra row').toBe(1);
   }
-  await expect(page.locator('[data-remaked-step]:visible')).toHaveCount(42);
+  await expect(page.locator('[data-remaked-number]:visible')).toHaveCount(7);
   await expect(page.locator('[data-remaked-skill-step]:visible')).toHaveCount(80);
   const first = await page.locator('[data-remaked-skill-row="0"]').boundingBox();
   const second = await page.locator('[data-remaked-skill-row="6"]').boundingBox();

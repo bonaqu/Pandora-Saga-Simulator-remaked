@@ -1,0 +1,78 @@
+import { test, expect } from '@playwright/test';
+
+test('attack labels have readable contrast and all five buff columns use actual desktop space', async ({ page }) => {
+  await page.goto('/'); await page.locator('[data-remaked-tab="2"]').click();
+  const colors = await page.locator('[data-remaked-inspector-stat] .input_lt').first().evaluate(node => {
+    const rgb = color => color.match(/\d+/g).slice(0, 3).map(value => { const n = Number(value) / 255; return n <= .04045 ? n / 12.92 : ((n + .055) / 1.055) ** 2.4; });
+    const luminance = values => values[0] * .2126 + values[1] * .7152 + values[2] * .0722;
+    const foreground = luminance(rgb(getComputedStyle(node).color)), background = luminance(rgb(getComputedStyle(node.closest('[data-remaked-inspector-stat]').firstElementChild).backgroundColor));
+    return (Math.max(foreground, background) + .05) / (Math.min(foreground, background) + .05);
+  });
+  expect(colors).toBeGreaterThanOrEqual(4.5);
+  await page.locator('[data-remaked-tab="4"]').click();
+  const columns = page.locator('[data-remaked-buff-column]'); await expect(columns).toHaveCount(5);
+  const boxes = await page.evaluate(() => Array.from(document.querySelectorAll('[data-remaked-buff-column]')).map(node => { const rect = node.getBoundingClientRect(); return { x: rect.x, y: rect.y, right: rect.right, width: rect.width }; }));
+  for (let index = 1; index < boxes.length; index++) {
+    expect(boxes[index].x).toBeGreaterThanOrEqual(boxes[index - 1].right);
+    expect(Math.abs(boxes[index].y - boxes[0].y)).toBeLessThanOrEqual(2);
+  }
+  expect(boxes.every(box => box.width > 80)).toBe(true);
+});
+
+test('five native inspectors are compact inline regions, close by keyboard and never cover the calculator', async ({ page }, testInfo) => {
+  test.setTimeout(90000); await page.goto('/');
+  await page.evaluate(() => { StatusMove('Lev', 54); CalcSet('Lev'); });
+  const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
+  for (const width of [320, 390, 768, 1366, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const tab of [0, 1, 2, 3, 4]) {
+      const opener = page.locator('[data-remaked-tab="' + tab + '"]'); await opener.click();
+      const panel = page.locator('[data-remaked-native-panel="' + tab + '"]');
+      await expect(panel).toBeVisible(); await expect(opener).toHaveAttribute('aria-expanded', 'true');
+      const bounds = await panel.boundingBox(), character = await page.locator('[data-remaked-calculator-character]').boundingBox();
+      expect(bounds.x).toBeGreaterThanOrEqual(0); expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+      expect(bounds.height).toBeLessThanOrEqual(650);
+      const flow = await panel.evaluate(node => {
+        var result = []; for (var parent = node; parent && parent.id !== 'body'; parent = parent.parentElement) {
+          var css = getComputedStyle(parent), rect = parent.getBoundingClientRect();
+          result.push({ tag: parent.tagName, id: parent.id, class: parent.className, style: parent.getAttribute('style'), y: rect.y, height: rect.height, display: css.display, float: css.float, position: css.position });
+        } return result;
+      });
+      expect(character.y, JSON.stringify({ width, tab, bounds, character, flow })).toBeGreaterThanOrEqual(bounds.y + bounds.height - 1);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      if (width === 1440 || width === 390) await page.screenshot({ path: testInfo.outputPath('panel-' + tab + '-' + width + '.png') });
+      await panel.locator('[data-remaked-panel-close]').focus(); await page.keyboard.press('Enter');
+      await expect(panel).toBeHidden(); await expect(opener).toBeFocused(); await expect(opener).toHaveAttribute('aria-expanded', 'false');
+    }
+  }
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(before);
+});
+
+test('native buff controls activate once by keyboard and keep their source labels through language changes', async ({ page }) => {
+  await page.goto('/'); await page.locator('[data-remaked-tab="4"]').click();
+  const action = page.locator('[data-remaked-buff="0_7"]');
+  await expect(action).toHaveAttribute('aria-pressed', 'false');
+  const original = await page.evaluate(() => { document.getElementById('Buff_0_7').click(); var expected = Status.ATK; document.getElementById('Buff_0_7').click(); return expected; });
+  await action.focus(); await page.keyboard.press('Enter');
+  await expect(action).toHaveAttribute('aria-pressed', 'true'); expect(await page.evaluate(() => Status.ATK)).toEqual(original);
+  for (const language of ['JP', 'TW', 'EN', 'RU']) {
+    await page.getByRole('button', { name: language, exact: true }).click(); await expect(action).toBeVisible(); await expect(action).toHaveAttribute('aria-pressed', 'true');
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  const box = await action.boundingBox(); expect(box.height).toBeGreaterThanOrEqual(44); expect(box.width).toBeGreaterThanOrEqual(44);
+});
+
+test('Builds and Compare remain bounded native modal dialogs with a reachable close action', async ({ page }, testInfo) => {
+  await page.goto('/'); const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const [opener, overlay] of [['[data-remaked-builds-open]', '[data-remaked-build-manager]'], ['[data-remaked-compare-open]', '[data-remaked-compare]']]) {
+      await page.locator(opener).click(); const dialog = page.locator(overlay); await expect(dialog).toBeVisible();
+      const box = await dialog.boundingBox(); expect(box.x).toBeGreaterThanOrEqual(0); expect(box.y).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(width + 1); expect(box.y + box.height).toBeLessThanOrEqual(845);
+      if (width === 1440 || width === 390) await page.screenshot({ path: testInfo.outputPath((overlay.includes('compare') ? 'compare' : 'builds') + '-' + width + '.png') });
+      await page.keyboard.press('Escape'); await expect(dialog).toBeHidden(); await expect(page.locator(opener)).toBeFocused();
+    }
+  }
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(before);
+});

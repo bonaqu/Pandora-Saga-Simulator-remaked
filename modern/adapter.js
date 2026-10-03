@@ -204,6 +204,10 @@
       if (namespace.gameTermDisplay) namespace.gameTermDisplay.refresh();
       if (namespace.equipmentPicker) namespace.equipmentPicker.refresh();
       if (namespace.catalog) namespace.catalog.refreshAvailability();
+      // Input values must match the newly loaded build synchronously. Waiting
+      // for a DOM observer exposes the previous build for one frame, and a
+      // focused draft would otherwise survive a deliberate build replacement.
+      if (namespace.calculatorControls) namespace.calculatorControls.refresh({ resetInputs: true });
     },
 
     readCalculatedSummary: readCalculatedSummary,
@@ -308,6 +312,22 @@
   };
 
   namespace.adapter = adapter;
+  var retainedCalc = window.Calc;
+  window.Calc = function (name) {
+    if (name !== 'LPRec' && name !== 'MPRec') return retainedCalc.apply(this, arguments);
+    var original = window.EquipOpt, keys = name === 'LPRec' ? ['12', '14'] : ['13', '15'], active;
+    // The retained loop selects EquipOpt[tmp[0][i]], then mistakenly reads
+    // EquipOpt[tmp[0]][j] (the array coerces to "12,14" / "13,15"). Supply
+    // that alias from the array the SAME loop just selected. Do not reimplement
+    // its recovery formula or interpret unknown effects. Sitting recovery stays
+    // explicitly unimplemented, exactly as in the source renderer.
+    window.EquipOpt = new Proxy(original, { get: function (target, key, receiver) {
+      if (keys.indexOf(key) !== -1) active = Reflect.get(target, key, receiver);
+      return key === keys.join(',') ? active : Reflect.get(target, key, receiver);
+    } });
+    try { return retainedCalc.apply(this, arguments); }
+    finally { window.EquipOpt = original; }
+  };
   adapter.equipmentCalculationWarning = function (value) {
     var row = window.EquipData[0]?.[42]?.[32];
     return Number(value) === 420032 && row && row[0] === 'ウィースベルト' && row[7] === '0=1_-7'

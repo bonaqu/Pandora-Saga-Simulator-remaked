@@ -50,25 +50,28 @@ test('summary follows intentional Legacy state changes without adding extra muta
   expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(after.payload);
 });
 
-test('collapsible Legacy cards are keyboard-focusable and presentation-only', async ({ page }) => {
+test('inline calculator panels close and reopen by keyboard without changing the build', async ({ page }) => {
   await openMobile(page);
   // LOG is intentionally removed in Modern; test a real calculator card instead.
   await page.locator('[data-remaked-nav]').getByRole('button', { name: 'JOB', exact: true }).click();
-  const toggle = page.locator('[data-remaked-collapse-toggle]:visible').first();
+  const opener = page.locator('[data-remaked-tab="0"]');
+  const panel = page.locator('[data-remaked-native-panel="0"]');
+  const toggle = panel.locator('[data-remaked-panel-close="0"]');
   await expect(toggle).toBeVisible();
-  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(opener).toHaveAttribute('aria-expanded', 'true');
   const before = await page.evaluate(() => window.PandoraRemaked.adapter.serialize());
 
   await toggle.focus();
   await expect(toggle).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-  const card = toggle.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " sub_win ")][1]');
-  await expect(card).toHaveAttribute('data-remaked-collapsed', 'true');
+  await expect(opener).toHaveAttribute('aria-expanded', 'false');
+  await expect(panel).toBeHidden();
+  await expect(opener).toBeFocused();
   expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(before);
 
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await page.keyboard.press('Enter');
+  await expect(opener).toHaveAttribute('aria-expanded', 'true');
+  await expect(panel).toBeVisible();
   expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(before);
 });
 

@@ -2,16 +2,16 @@ import { test, expect } from '@playwright/test';
 
 const repoUrl = 'https://github.com/bonaqu/Pandora-Saga-Simulator-remaked';
 
-test('Modern 3.02 identifies the rework version without relabeling the museum engine', async ({ page }) => {
+test('Modern 3.03 identifies the rework version without relabeling the museum engine', async ({ page }) => {
   await page.goto('/');
-  expect(await page.evaluate(() => ({ ...PandoraRemakedVersion }))).toEqual({ legacyEngine: '2.00', ui: '3.02' });
+  expect(await page.evaluate(() => ({ ...PandoraRemakedVersion }))).toEqual({ legacyEngine: '2.00', ui: '3.03' });
   expect(await page.evaluate(() => Ver)).toBe('2.00');
-  await expect(page.locator('[data-remaked-hero]')).toContainText('3.02');
+  await expect(page.locator('[data-remaked-hero]')).toContainText('3.03');
   await expect(page.locator('[data-remaked-hero]')).toContainText('2.00');
   const sourceTitles = await page.evaluate(() => Name.Title.slice());
   for (const language of ['EN', 'RU', 'JP', 'TW']) {
     await page.locator('[data-remaked-language-panel]').getByRole('button', { name: language, exact: true }).click();
-    const expected = await page.evaluate(() => Name.Title[Number(Flag[0]) + 1] + ' 3.02');
+    const expected = await page.evaluate(() => Name.Title[Number(Flag[0]) + 1] + ' 3.03');
     await expect(page.locator('#Title')).toHaveText(expected);
     expect(await page.evaluate(() => Name.Title.slice())).toEqual(sourceTitles);
     expect(await page.evaluate(() => Ver)).toBe('2.00');

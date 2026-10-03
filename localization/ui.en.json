@@ -206,5 +206,12 @@
   "skills.metadataOnly": "Active skills show MP, timing and description. This calculator does not simulate their damage or combat actions.",
   "skills.bonusRequirements": "Bonus requirements",
   "skills.unarmed": "No weapon equipped",
-  "skills.ridingRequired": "Riding enabled"
+  "skills.ridingRequired": "Riding enabled",
+  "calculator.inputInvalid": "Enter a whole number within this field’s limits. Esc cancels your edit.",
+  "calculator.inputBudget": "Not enough attribute points. The field shows the value the engine could allocate.",
+  "calculator.levelInputHelp": "Level 1–55. Press Enter or leave the field to apply; Esc cancels.",
+  "calculator.attributeInputHelp": "Base attribute before equipment bonuses. Race minimum, maximum 99 and available points apply. Enter applies; Esc cancels.",
+  "calculator.totalWithBonuses": "Total including equipment and other bonuses",
+  "compare.hideIdentical": "Hide identical stats",
+  "compare.allIdentical": "All displayed stats are identical."
 }

@@ -178,29 +178,42 @@
         // is already reflected in rect; only a subsequent anchor move dismisses.
         if (!backdrop.contains(event.target) && rect && Math.abs(returnFocus.getBoundingClientRect().top - rect.top) > 1 && active && active.backdrop === backdrop) closePanel({ restoreFocus: false });
       }
-      function resize() { if (active && active.backdrop === backdrop) closePanel(); }
+      function position() {
+        if (!active || active.backdrop !== backdrop) return;
+        rect = returnFocus.getBoundingClientRect();
+        var viewport = window.visualViewport;
+        var top = viewport ? viewport.offsetTop : 0;
+        var bottom = top + (viewport ? viewport.height : innerHeight);
+        var width = Math.min(420, Math.max(320, rect.width), innerWidth - 16);
+        var below = bottom - rect.bottom - 8, above = rect.top - top - 8;
+        var useBelow = below >= 240 || below >= above;
+        var height = Math.min(420, Math.max(120, useBelow ? below : above));
+        backdrop.style.width = width + 'px';
+        backdrop.style.left = Math.max(8, Math.min(rect.left, innerWidth - width - 8)) + 'px';
+        backdrop.style.setProperty('--rm-dropdown-height', height + 'px');
+        backdrop.style.top = 'auto'; backdrop.style.bottom = 'auto';
+        if (useBelow) backdrop.style.top = Math.max(top + 8, rect.bottom + 4) + 'px';
+        else backdrop.style.bottom = (innerHeight - rect.top + 4) + 'px';
+      }
+      // A phone's keyboard/address bar changes the viewport. It is not a
+      // dismissal request: reposition the same list, retaining focus/query.
+      function resize() { position(); }
       function outsideFocus(event) {
         if (event.target !== returnFocus && !backdrop.contains(event.target) && active && active.backdrop === backdrop) closePanel({ restoreFocus: false });
       }
       document.addEventListener('scroll', outsideScroll, true);
       document.addEventListener('focusin', outsideFocus);
       window.addEventListener('resize', resize);
+      if (window.visualViewport) window.visualViewport.addEventListener('resize', resize);
       active.cleanup = function () {
         document.removeEventListener('scroll', outsideScroll, true);
         document.removeEventListener('focusin', outsideFocus);
         window.removeEventListener('resize', resize);
+        if (window.visualViewport) window.visualViewport.removeEventListener('resize', resize);
       };
       backdrop.showPopover();
-      var rect = returnFocus.getBoundingClientRect();
-      var width = Math.min(420, Math.max(320, rect.width), innerWidth - 16);
-      var below = innerHeight - rect.bottom - 8, above = rect.top - 8;
-      var useBelow = below >= 240 || below >= above;
-      var height = Math.min(420, Math.max(120, useBelow ? below : above));
-      backdrop.style.width = width + 'px';
-      backdrop.style.left = Math.max(8, Math.min(rect.left, innerWidth - width - 8)) + 'px';
-      backdrop.style.setProperty('--rm-dropdown-height', height + 'px');
-      if (useBelow) backdrop.style.top = (rect.bottom + 4) + 'px';
-      else backdrop.style.bottom = (innerHeight - rect.top + 4) + 'px';
+      var rect;
+      position();
     } else backdrop.showModal();
     return { backdrop: backdrop, panel: panel, body: body };
   }
@@ -449,7 +462,9 @@
     active.render = render;
     query.addEventListener('input', render);
     render();
-    query.focus({ preventScroll: true });
+    // Touch users first want to pick an item, not open a software keyboard.
+    // Search remains directly tappable; keyboard users retain immediate focus.
+    if (keyboardInput || window.matchMedia('(pointer: fine)').matches) query.focus({ preventScroll: true });
     var selectedButton = results.querySelector('[data-selected="true"]');
     if (selectedButton) {
       // Match the useful native-select behavior: reveal the worn item without

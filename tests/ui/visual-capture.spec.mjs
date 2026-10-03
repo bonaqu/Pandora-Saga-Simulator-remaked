@@ -31,8 +31,9 @@ for (const width of [320, 1440]) test(`capture calculator controls and long tran
     'calculator.status.0': 'Проверочное длинное имя характеристики'
   }));
   await page.locator('[data-remaked-ui-locale="ru"]').click();
-  await page.locator('[data-remaked-step="remaked-level-up3"]').click();
-  await page.locator('[data-remaked-step="remaked-attribute-STR-up1"]').focus();
+  await page.locator('[data-remaked-number="Lev"]').fill('55');
+  await page.locator('[data-remaked-number="Lev"]').press('Enter');
+  await page.locator('[data-remaked-number="STR"]').focus();
   await page.locator('[data-remaked-calculator-character]').screenshot({ path: testInfo.outputPath(`modern-calculator-controls-${width}.png`) });
 });
 
@@ -195,10 +196,11 @@ async function captureMobileEquipment(page, testInfo) {
 async function captureMobileCollapsedCard(page, testInfo) {
   await openModern(page, mobile);
   await page.locator('[data-remaked-nav]').getByRole('button', { name: 'JOB', exact: true }).click();
-  const toggle = page.locator('[data-remaked-collapse-toggle]:visible').first();
+  const toggle = page.locator('[data-remaked-panel-close="0"]');
   await expect(toggle).toBeVisible();
   await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('[data-remaked-tab="0"]')).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('[data-remaked-native-panel="0"]')).toBeHidden();
   await page.screenshot({ path: testInfo.outputPath('modern-mobile-collapsed-card.png'), fullPage: false });
 }
 

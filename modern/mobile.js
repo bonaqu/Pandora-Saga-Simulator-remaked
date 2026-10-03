@@ -159,6 +159,7 @@
     var cards = document.querySelectorAll('#body .sub_win');
     for (var index = 0; index < cards.length; index += 1) {
       var card = cards[index];
+      if (card.closest('[data-remaked-native-panel]')) continue;
       var head = firstLegacyHead(card);
       if (!head) continue;
       createMobileCardBar(card, head);
