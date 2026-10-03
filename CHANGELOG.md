@@ -2,6 +2,22 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Modern 3.04 — Hybrid C composition (release candidate)
+
+- Distinct Character, Skills and Effects sections, Base stats and Calculated
+  stats headings, and quiet unboxed results make the PC workbench easier to scan.
+  All seven numeric inputs, 80 primary skill controls and native results remain
+  visible; the first weapon row still fits a 1440/1920 × 900 first screen.
+- Equipment/Soul Search and autosave sit beside Equipment, instead of a separate
+  strip above the calculator. Compact 30px PC rows retain 44px phone targets,
+  aligned global controls, native enhancements and anchored item selection.
+- The original complete Pandora fan art remains visible with a restrained
+  landscape backdrop. The example's level 120, LOG/FILE and narrow proportions
+  are not copied. Museum engine, game data, formulas and saved builds are unchanged.
+- Five EN/RU section captions extend the owner's translation workbook to 2,887
+  rows / 220 UI captions, preserving all earlier values and native formatting.
+- Production acceptance is pending; see the Hybrid C composition plan.
+
 ## Modern 3.03 — compact controls and understandable editing, 2026-10-03
 
 - Level and all six attributes use seven bounded editable fields, native point
