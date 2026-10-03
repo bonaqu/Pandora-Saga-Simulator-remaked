@@ -2,7 +2,7 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
-## Modern 3.03 — compact controls and understandable editing, release candidate
+## Modern 3.03 — compact controls and understandable editing, 2026-10-03
 
 - Level and all six attributes use seven bounded editable fields, native point
   allocation, Enter/blur confirmation and Escape cancellation instead of 42
@@ -28,8 +28,11 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   protection and Myrine's correct bonus. Production catalog revision 2 contains
   only these two corrections; revision 0 remains immutable for pinned builds.
 - Seven workbook captions extend the table to 2,882 rows / 215 UI captions;
-  existing Russian/English overrides and styles are preserved. Full CI, deployment
-  and live artifact acceptance are required before this candidate is released.
+  existing Russian/English overrides and styles are preserved.
+- PR30 and PR31 are published. Final feature CI `37128992142`, Pages
+  `37129818426` and Worker `37129818509` passed. Exact artifact/live files,
+  unchanged museum, shared/offline recipients, installed PWA and real native
+  login with the unchanged password passed; tag `v3.03` marks the accepted code.
 
 ## Modern 3.02 — native-gated skill additions, 2026-10-03
 

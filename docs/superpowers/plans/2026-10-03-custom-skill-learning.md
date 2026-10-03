@@ -26,6 +26,16 @@ character mechanics. This block continues that request, not a new approval gate.
 
 ## Intended bounded next step
 
+The 3.03 follow-up inspection reconfirmed the parser boundary in
+`js/simulator.js:SkillList`: a single class gate includes native ancestry, while
+a paired class/branch gate uses the exact current class. Evaluate typed class,
+level and branch gates independently through isolated native probes, then
+combine their boolean results. Do not let a second requirement silently change
+the meaning of a previously selected class. Potential and learned eligibility
+must remain distinct; equipment-derived skill bonuses participate in both the
+native checks and the cache key. This is implementation guidance, not a shipped
+editor capability.
+
 Allow additional variants, not source skills, to opt into typed custom learning
 requirements. Preserve template learning as the default for all existing data.
 Use canonical class/branch IDs and bounded levels/points; do not accept raw

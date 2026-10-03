@@ -1,5 +1,76 @@
 # Release acceptance
 
+## Modern 3.03 — compact controls and clearer editing, published and verified
+
+Scope: `superpowers/plans/2026-10-03-compact-inputs-and-review.md`. PR30
+(`b55a0400f48a888cf8e23dcda25a6698f87bb444`) and PR31
+(`311ad4123e6144b6b15c2774a4d09ebcf4fd0aaf`) were squash-merged on 2026-10-03.
+Annotated `v3.03` points to the latter accepted code, not an unverified candidate.
+
+- Final feature HEAD `7a94dfea29616082f4a3ac8c850a10ed99d3119b`: Feature CI
+  `37128992142`, API verification `37128992137`. Passed: 63 Python, 53 backend,
+  7 desktop workspace, 197 main browser, 15 private editor, 74 catalog/context,
+  63 three-engine smoke, 31 catalog-wide and 28 rendered visual checks.
+  Workspace/main/catalog JSON reports contain zero skipped/flaky/unexpected
+  results. The earlier full local run passed 413; two added follow-up contracts
+  and the related 85- and 16-test groups passed before final remote CI.
+- Source-wide differential checks cover all 1,560 available records in valid
+  native contexts: 1,120 gear, 183 eligible souls, 28 classes, 18 racial selections
+  and 211 actually learned skills. Stigmata Soul has no permitted source slot and
+  is reported unavailable, not assigned invented compatibility. These are not
+  all combinations or proof of Weapons of Balance's complete current balance.
+- Silver Wand's recovery-array lookup and Waist Belt's unresolved `-7` marker
+  are explicit Modern adapter fixes. Edited Waist Belt keeps confirmed numeric
+  bonuses and warns about the unmodeled conditional effect; no MP penalty is
+  guessed. Native caches/source rows restore in finally, including exceptions.
+  Original calculator formulas and museum files are unchanged.
+- Final Pages `37129818426` and Worker `37129818509` succeeded at PR31. Exact
+  Pages tar SHA-256:
+  `7b693136c4db09a676e2955e62eb6a52b11760d54745f1e8373d7484abfadc9c`.
+  All 22 checked live files match that artifact. All 459 museum files and the
+  retained runtime are byte-identical to the earlier accepted preservation
+  artifact. Private archives/admin sources/credentials are absent.
+  Cache: `pandora-remaked-3.03-bb3b5a673ecfdea6`.
+- Workbook SHA-256:
+  `12318ef0d4d381f1ef2e927b5329554e1a37e8c7d333977bd16c431e43f14921`.
+  All previous 2,875 rows and translator input/styles are preserved; seven UI
+  captions extend the table to 2,882 rows / 215 UI captions. Editable RU and EN
+  overrides remain separate from source cells and game calculation data.
+- Real final production passed four-language/source invariance, seven bounded
+  numeric controls/native allocation, synchronous focused-field load, first-screen
+  weapon, all five bounded inline inspectors, touch Equipment across viewport
+  resize, delayed anchored characteristics, 320px RU, no duplicate FILE/LOG and
+  nonmutating current-catalog adoption. A fresh C1 shared recipient restores
+  exact calculation/state, also after cached offline reload. No runtime exceptions.
+- A real isolated Chromium PWA launched Modern 3.03 and museum 2.00 online and
+  offline after the final deployment, then was uninstalled. User profiles and
+  installed apps were not touched; this is not physical-phone acceptance.
+- Worker UUID `234042bc-0b8e-45a6-b244-91ad391fc69e`: all four deployed assets
+  match canonical Git blobs. Real unchanged-private-password login, authorized
+  1,561-record catalog, logout revocation and logged-out reload passed Chromium,
+  Firefox and Windows WebKit. Chromium also entered the password before a real
+  delayed initial session response at 1,200 ms simulated network latency: no
+  erasure, successful native redirect. No request routing or cookie injection.
+- Actual production Pages IDDQD entry passed with third-party cookies blocked.
+  All six current-record displays and server previews worked on PC/390px;
+  exact before/after item state proves no draft/publication was created by those
+  checks. Passwords, session cookies and tokens were not logged; no credential
+  traces, HAR, video or filled-password screenshots were captured.
+- Owner-approved production catalog revision 2 contains only the Stone Skin and
+  Magic Resistance corrections. All 18 real racial selections match revision 0
+  except those two -2 critical adjustments; native -10 physical/magic protection
+  and Myrine's bonus remain intact. An old C1 link remains pinned to revision 0
+  until the explicit Update current build action. Real Compare hides/reveals
+  exactly equal rows without changing the active build. No fabricated balance
+  records or sample variants were published.
+
+Limits: custom learning rules, new classes, replacement of hardcoded class
+passives and active combat damage are not shipped. Unknown source effects are
+identified rather than presented as zero. Windows WebKit's existing cookie
+observer limitation is documented in 3.02; physical Safari/phones and manual
+screen-reader conformance remain unverified. Only existing free Worker/D1 and
+GitHub Pages were used; no R2, card requirement or paid service was added.
+
 ## Modern 3.02 — native-gated skill additions, published and verified
 
 Scope: `superpowers/plans/2026-10-03-skill-catalog-additions.md`. PR28 was

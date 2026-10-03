@@ -191,11 +191,16 @@ New classes, custom learning rules and new combat mechanics remain unfinished.
 The next native custom-learning investigation is recorded in
 `2026-10-03-custom-skill-learning.md`; it is not yet an implemented capability.
 
-**User-prioritized follow-up in progress:** Before custom learning, finish
+**User-prioritized follow-up, published and accepted:** Before custom learning, finish
 Modern 3.03 compact numeric inputs, bounded source inspectors, touch Equipment,
 equal-row comparison, approved racial corrections and current-vs-preview admin
-editing. Plan: `2026-10-03-compact-inputs-and-review.md`. The UI release must pass
-full CI, real artifact/Worker and catalog publication acceptance before advancing.
+editing. Plan: `2026-10-03-compact-inputs-and-review.md`. PR30 and PR31, tag
+`v3.03`: final feature CI `37128992142`, Pages `37129818426`, Worker
+`37129818509`; exact artifact/live files, unchanged museum, real six-editor
+previews, native login on a slow connection, sharing and installed offline PWA
+passed. Catalog revision 2 contains only the approved two racial corrections;
+old revision 0 remains reproducible. Continue the bounded custom-learning block,
+not a second implementation of already completed UI work.
 
 Not part of this roadmap's implementation plans. Requires a new design/spec after Phases 0–7 are stable.
 

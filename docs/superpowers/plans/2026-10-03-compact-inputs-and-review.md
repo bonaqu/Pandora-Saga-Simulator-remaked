@@ -27,3 +27,13 @@ Review actual desktop/mobile captures. Ship through a feature PR and squash;
 verify exact Pages artifact, offline/PWA and actual Worker authentication.
 Numerical audit covers each source catalogue entry in a valid native context,
 not a claim to test every possible combination or undocumented server formula.
+
+## Delivered, 2026-10-03
+
+PR30 and PR31 are published and accepted, tag `v3.03`. Final feature CI
+`37128992142`, Pages `37129818426` and Worker `37129818509` passed. See
+`docs/RELEASE_ACCEPTANCE.md` for exact commits, artifacts, workbook preservation,
+1,560-record source audit, live six-editor preview checks, unchanged-password
+slow-session login and installed/offline acceptance. Public revision 2 contains
+only the two approved racial corrections; old revision 0 remains immutable.
+Continue custom learning as the next bounded block, with its existing plan.

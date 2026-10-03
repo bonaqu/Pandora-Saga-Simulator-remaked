@@ -98,8 +98,9 @@ The [new-skill beginner guide](docs/ADMIN_NEW_SKILLS.ru.md) explains template
 learning, explicit passive bonuses, private drafts and publishing limitations.
 The [step-by-step editing guide](docs/ADMIN_EDITING_FOR_BEGINNERS.ru.md) explains
 current values, server previews, numerical effects, translations and safe publication.
-Modern 3.03 compact controls and editor improvements are under release validation;
-the published release remains 3.02 until the production artifact gate passes.
+Modern 3.03 is published: bounded editable level/attributes, compact source
+inspectors, touch-stable Equipment, equal-row filtering and clearer current-vs-preview
+editing. The release ledger records production artifact and authentication checks.
 
 ## 🚧 What's coming next
 
@@ -123,7 +124,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** Modern 3.02 (published; verification in the release ledger)
+- **Remaked UI:** Modern 3.03 (published; verification in the release ledger)
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 
