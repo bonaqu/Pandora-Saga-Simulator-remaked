@@ -1,0 +1,82 @@
+name: "✨ Предложение функции / Feature request"
+description: "Предложить новую функцию или улучшение / Suggest a new feature or improvement"
+title: "[FEATURE] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ✨ Предложение функции / Feature request
+
+        Расскажите, что стоит добавить или улучшить в Pandora Saga Simulator.
+        Tell us what should be added or improved in Pandora Saga Simulator.
+
+  - type: dropdown
+    id: report_language
+    attributes:
+      label: "Язык сообщения / Report language"
+      options:
+        - "Русский / Russian"
+        - "English / Английский"
+        - "Русский + English / Both"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: feature_type
+    attributes:
+      label: "Тип предложения / Request type"
+      options:
+        - "Новая функция / New feature"
+        - "Улучшение существующей функции / Improve existing feature"
+        - "Удобство использования / Usability"
+        - "Расчёты и механики / Calculations and mechanics"
+        - "Импорт / экспорт / Import / export"
+        - "Локализация / Localization"
+        - "Мобильная версия / Mobile experience"
+        - "Другое / Other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Какую проблему это решает? / What problem does this solve?"
+      description: "Опишите текущую неудобную ситуацию. / Describe the current pain point."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: "Предлагаемое решение / Proposed solution"
+      description: "Как вы представляете новую функцию? / How should the feature work?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: "Пример использования / Example use case"
+      placeholder: "Что пользователь делает и какой получает результат? / What does the user do and what result do they get?"
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Альтернативы / Alternatives"
+      description: "Есть ли более простой вариант или временный обходной путь? / Is there a simpler alternative or workaround?"
+
+  - type: textarea
+    id: references
+    attributes:
+      label: "Референсы / References"
+      description: "Скриншоты, ссылки или примеры из других калькуляторов/игр. / Screenshots, links, or examples from other calculators/games."
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: "Проверка / Checklist"
+      options:
+        - label: "Я проверил(а), что похожего предложения ещё нет. / I checked that a similar request does not already exist."
+          required: true
