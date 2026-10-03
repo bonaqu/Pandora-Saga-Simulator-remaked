@@ -32,9 +32,17 @@ accepted 3.04 composition, not a new calculator or a cancellation of data work.
 
 ## Remaining gates
 
-- [ ] Feature CI and source-state regression suite.
-- [ ] PR/merge, exact Pages artifact, live PC/touch and installed offline app.
-- [ ] Record acceptance in the release ledger and durable queue.
+- [x] Feature CI and source-state regression suite: 429 browser/64 Python/53 backend.
+- [x] PR35/merge, exact Pages artifact, live PC/touch and installed offline app.
+- [x] Record acceptance in the release ledger and durable queue.
+
+Accepted 2026-10-04 (Europe/Moscow); runtime `03233ce`, tag `v3.05`.
+Feature CI `37152907424`; Pages `37153804413`; API `37153804418`.
+Live acceptance had one helper timing failure: BUFF was measured before display.
+Waiting for visible fields and reading each pair atomically corrected the helper,
+not the runtime; minimum height and 1px alignment assertions remain strict.
+The final live checks passed with zero errors. Full evidence is in
+[RELEASE_ACCEPTANCE.md](../../RELEASE_ACCEPTANCE.md).
 
 The corrected 18-racial dataset, current RU/EN skills, banner/author credit,
 independent skill-learning requirements and new-class support remain queued in

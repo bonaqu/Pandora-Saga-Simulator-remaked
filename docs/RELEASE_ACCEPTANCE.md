@@ -1,5 +1,60 @@
 # Release acceptance
 
+## Modern 3.05 — all five floating inspectors, published and verified
+
+PR35 was squash-merged as `03233ce0881f0ac5799a42540b5c0577ed1004ec` and
+accepted on 2026-10-04 (Europe/Moscow). Scope:
+`superpowers/plans/2026-10-03-all-inspector-popups.md`. JOB/SKILL were examples:
+ATTACK/DEFENSE/BUFF now also use the same opaque non-modal floating surface,
+without shifting the workbench. Source fields, callbacks and formulas remain.
+
+- Final feature HEAD `dbd34c969ea63032f9ff4d937329f7777895495c`: Feature CI
+  `37152907424`, API `37152907467`. Passed 64 Python, 53 backend, 12 desktop,
+  203 main browser, 31 catalog-wide, 15 private editor, 74 catalog/context,
+  66 three-engine and 28 visual checks: 429 browser checks total. The three
+  workspace/main/catalog JSON reports have zero skipped/flaky/unexpected results.
+- The strengthened panel contract first failed on ATTACK's `role="region"`.
+  The cause was the Modern `tab < 2` gate. Removed only that scope restriction;
+  existing positioning, source tab callbacks and dismissal are reused for all five.
+  Repeat-tab, Escape on the opener/in the panel, close-button focus restoration,
+  one-open-panel switching, scrolling and 568px-height resize pass across engines.
+  The full panel contract covers widths 320/390/768/1366/1440/1920.
+- Pages `37153804413` and Worker `37153804418` succeeded. Pages tar SHA-256:
+  `dc57c44454c882311ad4061bbdbee43a2535d5733ecbf6893f1bfefe0288effe`.
+  All 22 checked live files match that artifact; all 459 museum files and retained
+  runtime match the accepted preservation artifact byte-for-byte. Private archive,
+  admin source and credentials are absent. Cache:
+  `pandora-remaked-3.05-5fa3989b510d57f6`. Workbook remains unchanged at SHA-256
+  `9a0b1308dcfe5fa1c6e49779a470cdaa1ac3fc40cb5535674bea12eb44ae5969`.
+- Actual production passed all five PC/touch popups, repeat-close/Escape, opaque
+  bounded surfaces, unchanged source build, four languages, seven bounded numeric
+  controls/max messages, BUFF alignment, touch Equipment resize, delayed details,
+  320px RU and exact C1 fresh/offline recipients. Final live script: 14 checks,
+  zero runtime errors, no injection. The first live helper measured BUFF before
+  its scheduled display and received a null rectangle. Waiting for visible panel
+  and inputs and measuring pairs atomically fixed the helper; its >=28px height
+  and <=1px alignment requirements remain strict. No runtime change was needed.
+- Isolated installed Chromium launched Modern 3.05 and museum 2.00 online/offline.
+  All five Modern tabs were exercised in both states; builds stayed unchanged.
+  Eight checks, zero errors, own test installation removed, user profiles untouched.
+  Actual public desktop BUFF and phone DEFENSE screenshots were inspected.
+- Worker UUID `4eb12ea3-4cf4-490e-a1ff-18d8223d354c`: actual unchanged-private-
+  password Chromium login, authorized catalog read, logout and logged-out reload
+  passed, including slow initial-session loading. Secure/HttpOnly/SameSite=Lax
+  cookie attributes passed. No credentials, tokens, traces or filled-password
+  screenshots were emitted. No draft/game-data publication was performed.
+- Annotated `v3.05` points to the accepted runtime squash commit above.
+  PR34's documentation-only deployment `37152705635` was also byte-verified as
+  unchanged UI 3.04 before this publication; it is not a separate runtime release.
+
+Limits: catalog remains revision 2, containing only the earlier two racial
+corrections. The owner's corrected full 18-passive dataset (including Myrine +5%),
+current RU/EN skill mapping, supplied banner/author link and character-editor
+follow-ups remain unfinished in TASK_QUEUE.ru.md. Maximum remains 55; future
+skills are retained. No claim of physical-phone/Safari/manual screen-reader
+acceptance. Browser-plugin/skill absent: used the project Playwright workflow.
+Only existing free Pages/Worker/D1; no R2/card/paid resources were introduced.
+
 ## Modern 3.04 — Hybrid C composition, published and verified
 
 PR33 was squash-merged as `f4cd755664ce1c7156295f8631283ef45e7f8235` on
