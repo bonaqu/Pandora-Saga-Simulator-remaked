@@ -15,24 +15,11 @@ body:
         Если проблема относится именно к формулам, интерфейсу или данным/переводу, лучше выбрать соответствующий шаблон.
         If the problem is specifically about formulas, UI, or data/translation, please use the dedicated form.
 
-  - type: dropdown
-    id: report_language
-    attributes:
-      label: "Язык сообщения / Report language"
-      options:
-        - "Русский / Russian"
-        - "English / Английский"
-        - "Русский + English / Both"
-    validations:
-      required: true
-
   - type: input
     id: browser
     attributes:
       label: "Браузер и версия / Browser and version"
       placeholder: "Chrome 152 / Firefox / Edge / etc."
-    validations:
-      required: true
 
   - type: dropdown
     id: simulator_language
@@ -104,6 +91,4 @@ body:
       label: "Проверка / Checklist"
       options:
         - label: "Я проверил(а), что такой Issue ещё не создан. / I checked that this issue has not already been reported."
-          required: true
-        - label: "Я воспроизвёл(а) проблему на актуальной версии GitHub Pages. / I reproduced the problem on the current GitHub Pages version."
           required: true
