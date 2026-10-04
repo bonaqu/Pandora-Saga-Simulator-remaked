@@ -30,17 +30,16 @@ test('Modern consolidates Builds and Compare in one header group without LOG FIL
   }
 });
 
-test('desktop skill rows keep both point modes and primary native actions compact without shrinking phone targets', async ({ page }, testInfo) => {
+test('desktop skill rows keep direct Adeptness input and read-only Potential compact without shrinking phone targets', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 }); await page.goto('/');
   const row = page.locator('[data-remaked-skill-row="1"]');
   const desktop = await row.boundingBox(); expect(desktop.height).toBeLessThanOrEqual(44);
   await expect(row.locator('[data-remaked-skill-group]')).toHaveCount(2);
-  await expect(row.locator('.remaked-skill-primary button')).toHaveCount(4);
+  await expect(row.locator('[data-remaked-skill-number="1"]')).toHaveCount(1);
+  await expect(row.locator('[data-remaked-skill-group="Potential"] button, [data-remaked-skill-group="Potential"] input')).toHaveCount(0);
   await page.setViewportSize({ width: 390, height: 844 });
-  const controls = row.locator('.remaked-skill-primary button');
-  for (let index = 0; index < await controls.count(); index++) {
-    const box = await controls.nth(index).boundingBox(); expect(box.width).toBeGreaterThanOrEqual(44); expect(box.height).toBeGreaterThanOrEqual(44);
-  }
+  const control = row.locator('[data-remaked-skill-number="1"]');
+  const box = await control.boundingBox(); expect(box.width).toBeGreaterThanOrEqual(44); expect(box.height).toBeGreaterThanOrEqual(44);
   await page.screenshot({ path: testInfo.outputPath('workspace-mobile-header.png') });
   await row.scrollIntoViewIfNeeded();
   await page.screenshot({ path: testInfo.outputPath('workspace-mobile-skills.png') });
@@ -55,15 +54,12 @@ test('desktop character controls and results do not push equipment behind a tall
   expect(equipment.y).toBeLessThanOrEqual(1200);
 });
 
-test('skill allocation explanation opens deliberately by keyboard and does not alter the build', async ({ page }) => {
+test('skill allocation render exposes no obsolete Potential controls and does not alter the build', async ({ page }) => {
   await page.goto('/');
   const before = await page.evaluate(() => window.PandoraRemaked.adapter.serialize());
-  const help = page.locator('.remaked-skill-help');
-  await expect(help.locator('p')).toBeHidden();
-  await help.locator('summary').focus(); await page.keyboard.press('Enter');
-  await expect(help.locator('p')).toBeVisible();
-  await expect(help.locator('p')).toContainText('Adeptness');
-  await page.keyboard.press('Enter'); await expect(help.locator('p')).toBeHidden();
+  await expect(page.locator('[data-remaked-skill-number]')).toHaveCount(20);
+  await expect(page.locator('[data-remaked-skill-group="Potential"] button, [data-remaked-skill-group="Potential"] input')).toHaveCount(0);
+  await expect(page.locator('.remaked-skill-help, [data-remaked-skill-bulk]')).toHaveCount(0);
   expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(before);
 });
 
@@ -81,12 +77,17 @@ test('tablet-to-desktop transition preserves readable controls without clipping 
   expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(before);
 });
 
-test('desktop step labels fit system-font fallbacks without wrapping a compact skill row', async ({ page }) => {
+test('direct skill numbers fit system-font fallbacks without wrapping a compact skill row', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 }); await page.goto('/');
   for (const font of ['Arial, sans-serif', 'Verdana, sans-serif', 'Consolas, monospace']) {
     await page.addStyleTag({ content: `.remaked-modern { --rm-font: ${font}; }` });
     const row = page.locator('[data-remaked-skill-row="1"]');
-    const layout = await row.evaluate(node => ({ height: node.getBoundingClientRect().height, buttons: [...node.querySelectorAll('.remaked-skill-primary button')].map(button => ({ text: button.textContent, width: button.clientWidth, height: button.getBoundingClientRect().height, font: getComputedStyle(button).font })) }));
+    const layout = await row.evaluate(node => {
+      const input = node.querySelector('[data-remaked-skill-number]');
+      return { height: node.getBoundingClientRect().height, input: { width: input.clientWidth, height: input.getBoundingClientRect().height, font: getComputedStyle(input).font } };
+    });
     expect(layout.height, JSON.stringify({ font, ...layout })).toBeLessThanOrEqual(44);
+    expect(layout.input.width).toBeGreaterThanOrEqual(28);
+    expect(layout.input.height).toBeGreaterThanOrEqual(28);
   }
 });
