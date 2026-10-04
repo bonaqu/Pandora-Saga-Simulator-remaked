@@ -13,17 +13,6 @@ body:
         Tell us what should be added or improved in Pandora Saga Simulator.
 
   - type: dropdown
-    id: report_language
-    attributes:
-      label: "Язык сообщения / Report language"
-      options:
-        - "Русский / Russian"
-        - "English / Английский"
-        - "Русский + English / Both"
-    validations:
-      required: true
-
-  - type: dropdown
     id: feature_type
     attributes:
       label: "Тип предложения / Request type"
@@ -60,12 +49,6 @@ body:
     attributes:
       label: "Пример использования / Example use case"
       placeholder: "Что пользователь делает и какой получает результат? / What does the user do and what result do they get?"
-
-  - type: textarea
-    id: alternatives
-    attributes:
-      label: "Альтернативы / Alternatives"
-      description: "Есть ли более простой вариант или временный обходной путь? / Is there a simpler alternative or workaround?"
 
   - type: textarea
     id: references
