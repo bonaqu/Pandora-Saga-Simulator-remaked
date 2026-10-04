@@ -1929,8 +1929,11 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   [data-remaked-skill-column-header] > span:nth-child(5),
   [data-remaked-skill-column-header] > span:nth-child(6) {
     box-sizing: border-box;
-    width: var(--rm-compact-number-width);
+    /* Give the label 2px more breathing room than the 52px number field,
+       then shift it 1px so both boxes keep the exact same visual center. */
+    width: calc(var(--rm-compact-number-width) + 2px);
     justify-self: end;
+    transform: translateX(1px);
     text-align: center;
     font-size: 11px;
     white-space: nowrap;
