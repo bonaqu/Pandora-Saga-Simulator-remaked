@@ -9,10 +9,12 @@
   // Typed option IDs/units are a data protocol, not copied game formulas.
   var effectIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 18, 42, 49, 50, 51, 52, 60, 62, 65, 69, 70, 71, 72, 73, 74, 76, 77, 79, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 153, 154, 155, 156, 157, 158, 159, 160, 161];
   var percentEffectIds = [6, 7, 18, 49, 52, 62, 65];
+  effectIds.push(21, 81);
   var baselineEquipment, baselineSouls, baselineClassMods, baselineSkills, revision = 0, recordsByTerm = Object.create(null);
   var passiveRecords = [], variantRecords = [], learningRecords = [], customLearningStates = Object.create(null);
   var learnedKey = '', learnedEntries = [], potentialEntries = [], learningProbeDepth = 0;
   var snapshots = Object.create(null), recovery = false;
+  var nativePassiveDefinitions = window.PandoraRemakedNativePassives || {};
   var PUBLIC_API = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog';
   var databasePromise;
   function check(condition, message) { if (!condition) throw new Error(message); }
@@ -84,11 +86,12 @@
           check(++variants <= 256 && record.templateId === 'skill_entry.' + record.category + '.' + record.index && new RegExp('^modern\\.' + record.kind + '\\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$').test(record.id), 'Invalid skill variant identity/template');
         }
         var skill = baselineSkills[0][record.category][record.index];
-        check(skill && record.active === Boolean(skill[4]) && record.kind === (record.active ? 'active' : 'passive') && record.prerequisiteCode === skill[9] && record.nativeEffectPolicy === (variant ? 'template-gate-only' : 'retained-plus-bonus'), 'Skill mechanics/source mismatch');
-        var skillFields = ['id', 'kind', 'category', 'index', 'names', 'description', 'active', 'prerequisiteCode', 'nativeEffectPolicy', 'timing', 'effects', 'bonusRequirements', 'learningRequirements'];
+        check(skill && record.active === Boolean(skill[4]) && record.kind === (record.active ? 'active' : 'passive') && record.prerequisiteCode === skill[9] && record.nativeEffectPolicy === (variant ? 'template-gate-only' : record.intrinsicEffectMode === 'replace' ? 'typed-replacement' : 'retained-plus-bonus'), 'Skill mechanics/source mismatch');
+        var skillFields = ['id', 'kind', 'category', 'index', 'names', 'description', 'active', 'prerequisiteCode', 'nativeEffectPolicy', 'timing', 'effects', 'bonusRequirements', 'learningRequirements', 'intrinsicEffectMode'];
         if (variant) skillFields.push('templateId');
         check(Object.keys(record).every(function (key) { return skillFields.indexOf(key) !== -1; }), 'Unsupported skill field');
         if (Object.prototype.hasOwnProperty.call(record, 'learningRequirements')) validateLearning(record.learningRequirements);
+        if (Object.prototype.hasOwnProperty.call(record, 'intrinsicEffectMode')) check(!variant && record.kind === 'passive' && Object.prototype.hasOwnProperty.call(nativePassiveDefinitions, record.id) && ['add', 'replace'].indexOf(record.intrinsicEffectMode) !== -1, 'Unsupported intrinsic passive mode or identity');
         check(!seen[record.id], 'Duplicate skill identity'); seen[record.id] = true;
         textMap(record.names, 160); textMap(record.description, 4000); check(Boolean(record.names.en?.trim()), 'English skill name required');
         check(Array.isArray(record.timing) && record.timing.length === 4 && record.timing.every(function (value, index) { return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= (index === 0 ? 100000 : 86400) && (index === 0 ? Number.isInteger(value) : Number(value.toFixed(3)) === value); }), 'Invalid skill timing');
@@ -243,7 +246,7 @@
     window.EquipData = equipment; window.SoulData = souls; window.Status.Mod = classMods; recordsByTerm = terms; revision = snapshot.revision;
     for (var language = 0; language < 3; language++) window.Skill[language] = skills[language];
     passiveRecords = passives; variantRecords = additions.sort(function (a, b) { return a.id.localeCompare(b.id); });
-    learningRecords = snapshot.records.filter(function (record) { return (record.kind === 'active' || record.kind === 'passive') && record.learningRequirements; });
+    learningRecords = snapshot.records.filter(function (record) { return (record.kind === 'active' || record.kind === 'passive') && (record.learningRequirements || record.intrinsicEffectMode === 'replace'); });
     learnedKey = ''; learnedEntries = []; potentialEntries = []; customLearningStates = Object.create(null);
     snapshots[revision] = structuredClone(snapshot);
     if (options.rebuild !== false) {
@@ -442,6 +445,7 @@
       return { name: textFor(term, 'names'), description: textFor(term, 'description'), calculationNotes: textFor(term, 'calculationNotes') };
     },
     learningText: learningText,
+    nativePassiveEnabled: function (id) { return recordsByTerm[id]?.intrinsicEffectMode !== 'replace'; },
     gameLabel: function (term) {
       var detail = term.match(/^skill_detail\.(\d+)\.(\d+)\.(1|3)$/);
       if (!detail) return textFor(term, 'names');
@@ -465,7 +469,10 @@
       window.SkillList('Adeptness', 0);
       var learned = window.Learn[0].slice(), potential = window.Learn[1].slice(), states = Object.create(null);
       learningRecords.forEach(function (record) {
-        var state = customEligibility(record.learningRequirements); states[record.id] = state;
+        // An opted-in native replacement must not inherit temporary gate state
+        // from a preceding SkillList row (notably the paired Jousting entries).
+        // Old additive records still use the unchanged retained learned set.
+        var state = record.learningRequirements ? customEligibility(record.learningRequirements) : nativeGate(record.prerequisiteCode); states[record.id] = state;
         if (!record.templateId) {
           var id = record.category + '_' + record.index;
           learned = learned.filter(function (value) { return value !== id; });
@@ -530,7 +537,7 @@
     return result;
   };
   function passiveEligible(record, learned) {
-    return (record.learningRequirements ? customLearningStates[record.id].learned : learned.indexOf(record.category + '_' + record.index) !== -1) && equipmentEligible(record.bonusRequirements);
+    return (record.learningRequirements || record.intrinsicEffectMode === 'replace' ? customLearningStates[record.id].learned : learned.indexOf(record.category + '_' + record.index) !== -1) && equipmentEligible(record.bonusRequirements);
   }
   function equipmentEligible(required) {
     if (!required) return true;

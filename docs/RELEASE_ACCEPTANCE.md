@@ -1,5 +1,84 @@
 # Release acceptance
 
+## Modern 3.09 — native passive replacement, candidate
+
+Local candidate only. Production remains accepted 3.08/catalog 22 until the
+feature checks, merge, actual deployment and live acceptance below are recorded.
+No production catalog record, draft, password or session secret was changed.
+
+- 14 mapped intrinsic contributions use exact-count build anchors and original
+  formula expressions. Python reverses all patches to the original calc source;
+  source drift aborts before a partial write. The museum source is untouched.
+- Focused Chromium verifies real Brewer/Empower, shield, Hawkeye/Shifty,
+  SPR/Scholar, Light/Dark gear, three heal formulas and all four riding hooks.
+  It also verifies empty replacement, repeated calculations, source restoration,
+  custom level/class gates, old/current pins, comparison, fresh and offline loads.
+- A real Paladin Jousting regression exposed native temporary gate leakage.
+  Opted-in replacement uses isolated source learning; icons/learned state and
+  bonus agree, including removal below level 45. Old additive pins are unchanged.
+- Grouped local gate: 28 Chromium tests (native passive, skill catalog, version
+  and generated projections), 28 Node model/catalog tests and 28 focused Python
+  build/projection/hook tests passed. A separate editor test covers real server
+  preview, private draft, deliberate publish and duplicate isolation using local
+  synthetic sessions only. Latest desktop 1440×900 and phone-sized 390×844
+  screenshots were inspected: bounded controls, readable mode, no clipped help.
+  Page identity, meaningful editor content, console/page errors and interaction
+  assertions passed. Browser plugin unavailable: existing Playwright used.
+- Wrangler dry-run passed with only existing D1/asset/version bindings. New
+  registry input participates in the Worker workflow; no schema migration,
+  new service, paid resource or automatic admin seed is introduced.
+- Synthetic test values are not current-server balance and will not be published.
+  Full class-variant/timing/type/combat reconciliation remains in the queue.
+
+## Modern 3.08 — custom learning and elemental thresholds, published and verified
+
+Accepted on 2026-10-04 after PR40 merged as
+`b316b9694d63acd53d74bde201da7e4b532939a4`. This completes custom-learning
+support, not the entire current-server class-skill/effect reconciliation.
+
+- Exact feature `3c59e702d655ba6b46eea9fa38f3334523da5fb1`: Feature CI
+  `37193932717` and Worker verification `37193932636` passed. Feature and squash
+  trees both equal `5f6363fc1fc2f9a66c49406ad0ed1f0ce528619c`.
+- Pages `37194562509` and Worker `37194562510` passed. The exact downloaded
+  Pages tar SHA-256 is `ba7f26c66cbb87d77075adad20282aa61d69bc96f79d407cc674203e63b48f01`.
+  All 459 Legacy artifact files match accepted 3.07; thirteen selected live
+  files match the new artifact, including changed runtime, generated labels,
+  workbook, skill projection, service worker and three Legacy files.
+  Cache: `pandora-remaked-3.08-6066bbb72c78edfa`. Workbook SHA-256:
+  `2b8c8e3751d1674b46cb437e2d0807b6274635b06c0866e2bdd254bb35497942`.
+  Deployed Worker: `2e0833f3-b96d-4210-8195-d0b6bcec03c4`; frontend/private
+  editor assets match the committed source after CRLF normalization.
+- Only reviewed existing identities `skill_entry.18.9` and `skill_entry.18.10`
+  were explicitly previewed/drafted/published through authenticated versioned
+  APIs: head 20→21→22. Fresh official RU/EN text, Elemental 35/41 requirements,
+  all-28 class flags and MP/cast/cooldown were checked before any write. Existing
+  drafts or conflicting edits would stop publication. All unrelated records,
+  including eighteen racial definitions, and immutable revisions 20/2 survived.
+  No sample skills, password resets, new secrets or resources were introduced.
+- Actual public Warlock level 55 uses native potential 90 and legally allocated
+  learned points 33/34/35/40/41. Learned pools and colored icons agree with
+  Ice ≥35 and Lightning ≥41. The same build pinned to revision 20 retains both
+  at 33; switching back restores revision 22, character context and native codes.
+  These checks do not forge lower class potentials or claim combat simulation.
+- Actual EN/RU tooltips, contents outside the scrolling SKILL panel, viewport
+  bounds and desktop/mobile screenshots passed at 1440×900 and 390×844. Initial
+  desktop capture raced image loading; a focused asset check decoded all 52
+  actual skill-icon backgrounds and recaptured the page, with zero page errors
+  or console errors/warnings; URL/title identity also matches the actual site.
+- Fresh actual shared recipient and cached offline reload preserve exact build
+  payload, C1 riding context, revision, calculated summary and custom gates.
+  Actual first-party password-file login and logout pass. Published current
+  conditions 35/41 appear in the private editor on desktop and mobile-sized
+  viewports; non-GET admin record requests were blocked and none occurred.
+  Zero page errors. No redundant full racial/PWA installation acceptance was run.
+
+Evidence outside Git under `D:\CODEX\Tasks\pandora-admin-runtime`:
+`elemental-308-publication.json`, `elemental-308-live/evidence.json`, reviewed
+public/private screenshots and `elemental-308-pages-37194562509/artifact-evidence.json`.
+Physical Android/iOS and all remaining class variants/intrinsic passive formulas
+are not accepted by this release. Native formulas remain unchanged; maximum 55
+and all future skills are retained.
+
 ## Modern 3.07 — current racial data, published and verified
 
 PR39 was squash-merged as `800821b9f8ef6d7d8651831966ff0c86d4bd00a4` and

@@ -35,6 +35,25 @@ const detail = (env, id = 'equipment.0.1') => call(env, 'item?id=' + id);
 const save = (env, item) => call(env, 'draft', { edit: item.edit, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
 const publish = (env, item) => call(env, 'publish', { id: item.identity.id, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
 
+test('intrinsic replacement is draft-first, visible in preview/current metadata and reversible without changing previous pins', async () => {
+  const { env } = fixture(), item = await detail(env, 'skill_entry.6.0');
+  assert.deepEqual(item.nativeSkill.intrinsicEffect.stats, [62]);
+  const untouched = await publicData(env);
+  item.edit.intrinsicEffectMode = 'replace'; item.edit.effects = [{ stat: 62, value: 3, unit: 'flat' }];
+  const preview = await call(env, 'preview', { edit: item.edit, expectedCatalogRevision: 0 });
+  assert.equal(preview.record.nativeEffectPolicy, 'typed-replacement');
+  await save(env, item); assert.deepEqual(await publicData(env), untouched);
+  const pending = await detail(env, item.edit.id); await publish(env, pending);
+  const first = await publicData(env, 1), current = await detail(env, item.edit.id);
+  assert.equal(current.currentRecord.intrinsicEffectMode, 'replace');
+  delete current.edit.intrinsicEffectMode; current.edit.effects = [];
+  await publish(env, await save(env, current));
+  assert.equal(Object.hasOwn((await publicData(env)).records[0], 'intrinsicEffectMode'), false);
+  assert.deepEqual(await publicData(env, 1), first);
+  await call(env, 'rollback', { revision: 1, expectedCatalogRevision: 2 });
+  assert.deepEqual((await publicData(env)).records, first.records);
+});
+
 test('custom learning survives draft, preview, publication, historical reads and rollback without mutating the native template', async () => {
   const { env } = fixture(); const item = await detail(env, 'skill_entry.18.9');
   const nativeCode = item.currentRecord.prerequisiteCode;

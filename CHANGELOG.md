@@ -2,7 +2,22 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
-## Modern 3.08 — custom skill learning (release candidate)
+## Modern 3.09 — native passive replacement (release candidate)
+
+- Fourteen identified source passives can explicitly replace their intrinsic
+  contribution instead of stacking new numbers on top. Empty replacement
+  disables that contribution. Old records without the mode keep their behavior.
+- The editor separates add/replace, explains native numbers and dependencies,
+  and shows current values, private draft and server preview separately.
+  Unsupported native effects are labelled add-only; no arbitrary formulas.
+- Replacement learning is isolated from a preceding native row, fixing a real
+  Paladin Jousting gate leak. Visible learned state and numeric bonus agree.
+- Modern-only build guards preserve the original formulas and stop on source
+  drift. Museum files, source ordering, old pins and maximum level 55 stay intact.
+- This is editing support, not a claim that all current server skills have been
+  reconciled. No synthetic test passive is published to the production catalog.
+
+## Modern 3.08 — custom skill learning, 2026-10-04
 
 - The private skill editor can keep original learning or explicitly set classes,
   exact/advanced-class scope, minimum level and required branch points. Current
@@ -13,12 +28,14 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Original source ordering, formulas and old catalog pins stay intact. Loading
   another build rebuilds derived learned lists instead of retaining stale icons.
 - Read-only reconciliation covers the current source's 28 classes and 232 rows;
-  future skills stay. Confirmed Resist Ice/Lightning corrections (35/41 points,
-  current RU/EN names/descriptions) are prepared on their two existing identities.
-  They are not automatically seeded or published by deploying code. Remaining
+  future skills stay. Resist Ice/Lightning corrections (35/41 points and current
+  RU/EN names/descriptions) are published on their two existing identities in
+  catalog revision 22; historical revisions 20 and 2 remain immutable. They were
+  deliberately published after deployment, not automatically seeded. Remaining
   variants, intrinsic passives and combat effects are not claimed verified.
-- Local grouped editor/learning/pin/offline checks passed. Release CI and actual
-  production acceptance remain pending; this heading is not a release claim.
+- Release CI, exact deployed artifact, actual private-editor login, real skill
+  allocation, old/current build pins and fresh/offline recipients passed.
+  Desktop and mobile-sized published UI were reviewed; maximum level stays 55.
 
 ## Modern 3.07 — current racial data, 2026-10-04
 

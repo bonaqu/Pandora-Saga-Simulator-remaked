@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "definitions": {
+    "skill_entry.0.1": {"stats": [8], "noteRu": "Встроенный вклад: +10 процентных пунктов к эффекту зелий за каждые полные 10 суммарных очков Melee. Работает с уровня 12 у семейства Warrior. Это формула сохранённого движка, не подтверждение текущего серверного значения."},
+    "skill_entry.0.3": {"stats": [21], "noteRu": "Встроенный вклад в урон оружием: +1 процентный пункт и ещё +1 за каждые полные 10 суммарных очков Melee, у Gladiator и его дальнейших профессий. Это формула сохранённого движка."},
+    "skill_entry.5.1": {"stats": [145], "noteRu": "Встроенный вклад Paladin со щитом: сопротивляемость магии +1 за каждые полные 2 суммарных очка Defend. Без щита этот вклад равен нулю."},
+    "skill_entry.6.0": {"stats": [62], "noteRu": "Встроенная точность: +10 и округлённое вниз значение (вложенные очки Technique + бонусные очки Technique / 10). Скобки соответствуют сохранённому движку; это не подтверждение текущей серверной формулы."},
+    "skill_entry.6.1": {"stats": [65], "noteRu": "Встроенное уклонение: +10 и округлённое вниз значение (вложенные очки Technique + бонусные очки Technique / 10). Скобки соответствуют сохранённому движку; это не подтверждение текущей серверной формулы."},
+    "skill_entry.12.1": {"stats": [4], "noteRu": "Встроенный SPR: +1 и ещё +1 за каждые полные 10 суммарных очков Grace, у Priest и его дальнейших профессий."},
+    "skill_entry.12.2": {"stats": [141, 142, 145], "noteRu": "Встроенный вклад в сопротивляемость яду, чарам и магии: +2 и ещё +1 за каждые полные 50 суммарных очков Grace, за каждую надетую вещь с Light-улучшением от +1. Без таких вещей вклад равен нулю."},
+    "skill_entry.13.3": {"stats": [], "noteRu": "Исходная пассивка отдельно усиливает формулы First Aid, Heal и Healing Aura. Замена отключает именно эти усиления; дополнительные числа не создают новую формулу лечения."},
+    "skill_entry.17.0": {"stats": [42], "noteRu": "Встроенная магическая атака: +10 и ещё +1 за каждые полные 10 суммарных очков Magic, у Wizard и его дальнейших профессий."},
+    "skill_entry.17.1": {"stats": [138, 139, 140], "noteRu": "Встроенный вклад в сопротивляемость огню, льду и молниям: +2 и ещё +1 за каждые полные 50 суммарных очков Magic, за каждую надетую вещь с Dark-улучшением от +1. Без таких вещей вклад равен нулю."},
+    "skill_entry.24.0": {"stats": [18, 62, 65, 73, 77, 79, 81], "noteRu": "Встроенный Jousting Dragoon: базовое раскрытие статов верхом 50 вместо обычных 10. Замена переводит вклад в атаке, точности, уклонении, скоростях и показателе раскрытия на обычную основу 10; очки езды, экипировка и другие бонусы сохраняются."},
+    "skill_entry.24.1": {"stats": [18, 62, 65, 73, 77, 79, 81], "noteRu": "Встроенный Jousting Paladin: базовое раскрытие статов верхом 50 вместо обычных 10. Замена переводит вклад в атаке, точности, уклонении, скоростях и показателе раскрытия на обычную основу 10; очки езды, экипировка и другие бонусы сохраняются."},
+    "skill_entry.24.2": {"stats": [18, 62, 65, 73, 77, 79, 81], "noteRu": "Встроенный Horse Archer: базовое раскрытие статов верхом 30 вместо обычных 10. Замена переводит вклад в атаке, точности, уклонении, скоростях и показателе раскрытия на обычную основу 10; очки езды, экипировка и другие бонусы сохраняются."},
+    "skill_entry.24.3": {"stats": [18, 62, 65, 73, 77, 79, 81], "noteRu": "Встроенный Median Riding: базовое раскрытие статов верхом 40 вместо обычных 10. Замена переводит вклад в атаке, точности, уклонении, скоростях и показателе раскрытия на обычную основу 10; очки езды, экипировка и другие бонусы сохраняются."}
+  },
+  "hooks": [
+    {"source": "(Status['Lev'][0] >= 12 && Status['Job'][2] >= 0 && Status['Job'][2] <= 6)", "expression": "(PandoraNativePassiveEnabled('skill_entry.0.1') && Status['Lev'][0] >= 12 && Status['Job'][2] >= 0 && Status['Job'][2] <= 6)", "count": 1},
+    {"source": "(Status['Job'][2] >= 1 && Status['Job'][2] <= 3)", "expression": "(PandoraNativePassiveEnabled('skill_entry.0.3') && Status['Job'][2] >= 1 && Status['Job'][2] <= 3)", "count": 1},
+    {"source": "(Status['Job'][2] == 6 && Status['Equip'][1][0] % 10000 >= 1)", "expression": "(PandoraNativePassiveEnabled('skill_entry.5.1') && Status['Job'][2] == 6 && Status['Equip'][1][0] % 10000 >= 1)", "count": 1},
+    {"source": "(Status['Job'][2] >= 8 && Status['Job'][2] <= 10)", "expression": "(PandoraNativePassiveEnabled('skill_entry.6.0') && Status['Job'][2] >= 8 && Status['Job'][2] <= 10)", "count": 1},
+    {"source": "(Status['Job'][2] >= 11 && Status['Job'][2] <= 13)", "expression": "(PandoraNativePassiveEnabled('skill_entry.6.1') && Status['Job'][2] >= 11 && Status['Job'][2] <= 13)", "count": 1},
+    {"source": "(Status['Job'][2] >= 15 && Status['Job'][2] <= 17)", "expression": "(PandoraNativePassiveEnabled('skill_entry.12.1') && Status['Job'][2] >= 15 && Status['Job'][2] <= 17)", "count": 1},
+    {"source": "(Status['Job'][2] >= 18 && Status['Job'][2] <= 20)", "expression": "(PandoraNativePassiveEnabled('skill_entry.12.2') && Status['Job'][2] >= 18 && Status['Job'][2] <= 20)", "count": 1},
+    {"source": "(Status['Job'][2] == 16 && Status['Lev'][0] >= 50)", "expression": "(PandoraNativePassiveEnabled('skill_entry.13.3') && Status['Job'][2] == 16 && Status['Lev'][0] >= 50)", "count": 3},
+    {"source": "(Status['Job'][2] >= 22 && Status['Job'][2] <= 24)", "expression": "(PandoraNativePassiveEnabled('skill_entry.17.0') && Status['Job'][2] >= 22 && Status['Job'][2] <= 24)", "count": 1},
+    {"source": "(Status['Job'][2] >= 25 && Status['Job'][2] <= 27)", "expression": "(PandoraNativePassiveEnabled('skill_entry.17.1') && Status['Job'][2] >= 25 && Status['Job'][2] <= 27)", "count": 1},
+    {"source": "(Status['Job'][2] == 3 || Status['Job'][2] == 6)", "expression": "((Status['Job'][2] == 3 && PandoraNativePassiveEnabled('skill_entry.24.0')) || (Status['Job'][2] == 6 && PandoraNativePassiveEnabled('skill_entry.24.1')))", "count": 7},
+    {"source": "else if (Status['Job'][2] == 10)", "expression": "else if (Status['Job'][2] == 10 && PandoraNativePassiveEnabled('skill_entry.24.2'))", "count": 7},
+    {"source": "else if (Status['Job'][2] == 27)", "expression": "else if (Status['Job'][2] == 27 && PandoraNativePassiveEnabled('skill_entry.24.3'))", "count": 7}
+  ]
+}

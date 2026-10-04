@@ -1,6 +1,6 @@
 # Custom skill learning — next authorized investigation
 
-Status: implemented locally on 4 October; not published or production-accepted.
+Status: published and production-accepted in Modern 3.08 / PR40 on 4 October.
 The owner requested a useful editor for new skills and wider
 character mechanics. This block continues that request, not a new approval gate.
 
@@ -98,5 +98,7 @@ Do not publish invented game balance to production as an acceptance shortcut.
   elemental fixture and 140-state runtime test also passed separately. Changed
   smoke scenario passed Chromium/WebKit; Firefox hit a context-close protocol
   error after assertions and passed a focused standalone rerun. No assertions
-  weakened. Full release CI and production acceptance remain pending. No test
+  weakened. Full release CI and production acceptance subsequently passed in
+  3.08/PR40: real Warlock allocation, immutable old pins, current editor,
+  shared/offline C1 recipients and exact deployed artifacts. No test
   skills or invented balance were published to the working D1 catalog.
