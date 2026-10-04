@@ -268,6 +268,58 @@
     }
   }
 
+  function refreshBudgetWarning() {
+    if (!window.Status) return;
+    var definitions = [
+      { key: 'StP', id: 'StatusStP_0' },
+      { key: 'SkP', id: 'StatusSkP_0' },
+      { key: 'UnP', id: 'StatusUnP_0' }
+    ];
+    var deficits = [];
+    definitions.forEach(function (definition) {
+      var value = byId(definition.id);
+      if (!value) return;
+      var row = value.closest('.input_gt')?.parentElement;
+      var remaining = Number(window.Status[definition.key]?.[0]);
+      var deficit = Number.isFinite(remaining) && remaining < 0;
+      row?.toggleAttribute('data-remaked-budget-deficit', deficit);
+      if (deficit) {
+        var label = row?.querySelector('.input_lt')?.textContent.trim() || definition.key;
+        deficits.push({ row: row, label: label, value: remaining });
+      } else if (row) {
+        row.removeAttribute('aria-describedby');
+        row.removeAttribute('title');
+      }
+    });
+
+    var warning = byId('remaked-budget-warning');
+    if (!warning) {
+      warning = document.createElement('p');
+      warning.id = 'remaked-budget-warning';
+      warning.setAttribute('role', 'status');
+      warning.setAttribute('aria-live', 'polite');
+      var numberStatus = byId('remaked-number-status');
+      if (numberStatus) numberStatus.after(warning);
+      else document.querySelector('[data-remaked-calculator-settings]')?.after(warning);
+    }
+    if (!deficits.length) {
+      warning.textContent = '';
+      return;
+    }
+
+    var russian = namespace.i18n?.getLocale() === 'ru';
+    var details = deficits.map(function (entry) { return entry.label + ' ' + entry.value; }).join(' · ');
+    var message = (russian
+      ? 'Текущее распределение превышает доступные очки: '
+      : 'Current allocation exceeds the available points: ') + details + '.';
+    warning.textContent = message;
+    deficits.forEach(function (entry) {
+      if (!entry.row) return;
+      entry.row.setAttribute('aria-describedby', warning.id);
+      entry.row.title = message;
+    });
+  }
+
   function numberControl(key, label, source, host) {
     var input = document.createElement('input');
     input.type = 'number'; input.inputMode = 'numeric'; input.step = '1'; input.required = true;
@@ -292,9 +344,18 @@
       }
       var requested = input.valueAsNumber, delta = requested - current();
       if (delta) {
-        if (key === 'Lev') window.StatusMove('Lev', delta);
-        else window.StatusMove('Status', key, delta);
-        window.CalcSet(key);
+        if (key === 'Lev') {
+          window.StatusMove('Lev', delta);
+          // Level gates both native passives and skill availability. The
+          // retained Lev-only pass skips skill-effect values such as Heal, so
+          // use the complete calculation pass in Modern after a level edit.
+          window.CalcSet('ALL');
+          if (window.Flag[3] && namespace.skillControls?.rebuildLearningList)
+            namespace.skillControls.rebuildLearningList();
+        } else {
+          window.StatusMove('Status', key, delta);
+          window.CalcSet(key);
+        }
       }
       input.value = current(); input.removeAttribute('aria-invalid');
       if (current() !== requested) numberFeedback = { input: input, kind: 'budget' };
@@ -400,7 +461,13 @@
       button.dataset.remakedCalculatorAction = text.id;
       button.addEventListener('click', function (event) {
         event.stopPropagation();
-        byId(this.dataset.remakedCalculatorAction).parentElement.click(); refresh();
+        var actionId = this.dataset.remakedCalculatorAction;
+        byId(actionId).parentElement.click();
+        // The retained toggle appends to derived Learn arrays. Rebuilding from
+        // current state on enable prevents a stale all-gray skill panel.
+        if (actionId === 'Text_3' && window.Flag[3] && namespace.skillControls?.rebuildLearningList)
+          namespace.skillControls.rebuildLearningList();
+        refresh();
       });
       source.appendChild(button); text.hidden = true;
     });
@@ -466,6 +533,7 @@
         if (button.textContent !== text) button.textContent = text;
       });
       refreshNumberFeedback();
+      refreshBudgetWarning();
     } finally {
       if (observer) observer.observe(byId('body'), { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['class', 'title', 'disabled'] });
     }
