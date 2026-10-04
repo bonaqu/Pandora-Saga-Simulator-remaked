@@ -1844,7 +1844,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
    but trim unused horizontal space without assuming every skill is two-digit:
    the recovered skill table includes requirements up to 102. */
 .remaked-modern {
-  --rm-compact-number-width: 54px;
+  --rm-compact-number-width: 52px;
 }
 .remaked-modern #body [data-remaked-calculator-attribute] {
   position: relative;
@@ -1929,7 +1929,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   [data-remaked-skill-column-header] > span:nth-child(5),
   [data-remaked-skill-column-header] > span:nth-child(6) {
     box-sizing: border-box;
-    width: calc(var(--rm-compact-number-width) - 4px);
+    width: var(--rm-compact-number-width);
     justify-self: end;
     text-align: center;
     font-size: 11px;
