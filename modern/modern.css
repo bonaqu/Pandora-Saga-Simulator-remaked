@@ -1863,7 +1863,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
 .remaked-modern #body [data-remaked-calculator-attribute] > ul:nth-of-type(2) {
   position: absolute;
   inset-block: 0;
-  right: 2px;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1912,7 +1912,6 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  line-height: 1;
 }
 
 /* Headings follow the actual right-aligned value tracks, not the center of the
@@ -1930,7 +1929,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   [data-remaked-skill-column-header] > span:nth-child(5),
   [data-remaked-skill-column-header] > span:nth-child(6) {
     box-sizing: border-box;
-    width: var(--rm-compact-number-width);
+    width: calc(var(--rm-compact-number-width) - 4px);
     justify-self: end;
     text-align: center;
     font-size: 11px;
