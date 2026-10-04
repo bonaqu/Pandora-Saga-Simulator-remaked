@@ -6,16 +6,16 @@ export const LANGUAGES = ['en', 'ru', 'jp', 'tw'];
 export const EQUIPMENT_CATEGORIES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 20, 30, 31, 32, 33, 34, 35, 40, 41, 42, 43];
 export const EFFECTS = [
   [0, 'STA', FLAT], [1, 'STR', FLAT], [2, 'AGI', FLAT], [3, 'DEX', FLAT], [4, 'SPR', FLAT], [5, 'INT', FLAT],
-  [6, 'LP', BOTH], [7, 'MP', BOTH], [8, 'Potion effectiveness (percentage points)', FLAT], [42, 'Magic attack (percentage points)', FLAT], [49, 'Defense', BOTH],
+  [6, 'LP', BOTH], [7, 'MP', BOTH], [8, 'Potion effectiveness (percentage points)', FLAT], [10, 'MP recovery speed bonus (percentage points)', FLAT], [18, 'Physical attack', BOTH], [42, 'Magic attack (percentage points)', FLAT], [49, 'Defense', BOTH],
   [50, 'Front damage resistance', FLAT], [51, 'Back damage resistance', FLAT], [52, 'Physical damage resistance', BOTH],
   [60, 'Magic damage resistance (percentage points)', FLAT], [62, 'Accuracy', BOTH], [65, 'Dodge', BOTH],
-  [69, 'Critical chance (percentage points)', FLAT], [70, 'Critical resistance (percentage points)', FLAT],
-  [71, 'Critical damage (percentage points)', FLAT], [72, 'Critical damage resistance (percentage points)', FLAT],
+  [69, 'Critical chance (percentage points)', FLAT], [70, 'Incoming critical chance (percentage points)', FLAT],
+  [71, 'Critical damage (percentage points)', FLAT], [72, 'Critical damage taken (percentage points)', FLAT],
   [73, 'Attack speed (percentage points)', FLAT], [74, 'Movement speed (percentage points)', FLAT],
   [76, 'MP cost (percentage points)', FLAT], [77, 'Casting speed (percentage points)', FLAT], [79, 'Cooldown (percentage points)', FLAT],
   [138, 'Fire resistance', FLAT], [139, 'Ice resistance', FLAT], [140, 'Lightning resistance', FLAT],
   [141, 'Poison resistance', FLAT], [142, 'Charm resistance', FLAT], [143, 'Light resistance', FLAT],
-  [144, 'Dark resistance', FLAT], [145, 'Magic resistance', FLAT], [148, 'Burn resistance', FLAT],
+  [144, 'Dark resistance', FLAT], [145, 'Magic resistance', FLAT], [146, 'Physical abnormal status resistance', FLAT], [147, 'Mental abnormal status resistance', FLAT], [148, 'Burn resistance', FLAT],
   [149, 'Stun resistance', FLAT], [150, 'Freeze resistance', FLAT], [151, 'Knockdown resistance', FLAT],
   [153, 'Knockback resistance', FLAT], [154, 'Bleeding resistance', FLAT], [155, 'Immobile resistance', FLAT],
   [156, 'Sleep resistance', FLAT], [157, 'Confusion resistance', FLAT], [158, 'Silence resistance', FLAT],
@@ -52,13 +52,14 @@ function flags(value, count, label) {
 }
 const texts = source => Object.fromEntries(LANGUAGES.map(language => [language, source?.[language] || '']));
 function effects(input) {
-  check(Array.isArray(input) && input.length <= EFFECTS.length, 'Too many effects');
+  check(Array.isArray(input) && input.length <= EFFECTS.reduce((count, effect) => count + effect.units.length, 0), 'Too many effects');
   const seen = new Set();
   return input.map(effect => {
     keys(effect, ['stat', 'value', 'unit'], 'Effect');
     const definition = effectById.get(effect.stat);
     check(definition && definition.units.includes(effect.unit), 'Unsupported effect or unit');
-    check(!seen.has(effect.stat), 'Duplicate stat'); seen.add(effect.stat);
+    const pair = effect.stat + ':' + effect.unit;
+    check(!seen.has(pair), 'Duplicate stat/unit'); seen.add(pair);
     check(typeof effect.value === 'number' && Number.isFinite(effect.value) && Math.abs(effect.value) <= 10000 && Number(effect.value.toFixed(2)) === effect.value, 'Effect must be a bounded number with at most two decimals');
     return { stat: effect.stat, value: effect.value, unit: effect.unit };
   });
@@ -125,12 +126,21 @@ export function validateDraft(input, identity) {
     return result;
   }
   if (identity.kind === 'racial') {
-    keys(input, ['id', 'kind', 'category', 'names', 'description', 'effectMode', 'effects'], 'Racial passive');
+    keys(input, ['id', 'kind', 'category', 'names', 'description', 'effectMode', 'effects', 'bonusRequirements', 'calculationNotes'], 'Racial passive');
     check(input.id === identity.id && input.kind === 'racial' && input.category === identity.category && Number.isInteger(identity.category) && identity.category >= 0 && identity.category < 6 && Number.isInteger(identity.index) && identity.index >= 0 && identity.index < 3 && input.id === 'racial_skill.' + identity.category + '.' + identity.index, 'Racial passive identity cannot be changed');
     const names = textMap(input.names, 160, 'Names'); check(names.en.length > 0, 'English name is required');
     check(['preserve', 'add', 'replace'].includes(input.effectMode), 'Unknown racial effect mode');
     const typed = effects(input.effects); check(input.effectMode !== 'preserve' || typed.length === 0, 'Preserve mode must not discard submitted effects');
-    return { id: input.id, kind: 'racial', category: identity.category, names, description: textMap(input.description, 4000, 'Description'), effectMode: input.effectMode, effects: typed };
+    const result = { id: input.id, kind: 'racial', category: identity.category, names, description: textMap(input.description, 4000, 'Description'), effectMode: input.effectMode, effects: typed };
+    if (input.bonusRequirements !== undefined) {
+      keys(input.bonusRequirements, ['weaponCategories', 'shieldRequired', 'ridingRequired'], 'Bonus requirements');
+      const required = input.bonusRequirements, categories = required.weaponCategories;
+      check(Array.isArray(categories) && categories.length <= 15 && new Set(categories).size === categories.length && categories.every(value => Number.isInteger(value) && value >= -1 && value <= 13), 'Invalid racial weapon categories');
+      check(typeof required.shieldRequired === 'boolean' && typeof required.ridingRequired === 'boolean', 'Bonus requirements must be boolean');
+      result.bonusRequirements = { ...required, weaponCategories: [...categories] };
+    }
+    if (input.calculationNotes !== undefined) result.calculationNotes = textMap(input.calculationNotes, 1600, 'Calculation notes');
+    return result;
   }
   if (identity.kind === 'class') {
     keys(input, ['id', 'kind', 'category', 'names', 'description', 'progression'], 'Class');
@@ -177,7 +187,9 @@ export function compileRecord(edit, identity, source) {
   }
   if (identity.kind === 'racial') {
     check(source?.kind === 'racial', 'New racial selection slots require a separate engine capability');
-    return { id: identity.id, kind: 'racial', category: identity.category, index: identity.index, names: edit.names, description: edit.description, effectMode: edit.effectMode, effects: edit.effects.map(effect => ({ ...effect })) };
+    return { id: identity.id, kind: 'racial', category: identity.category, index: identity.index, names: edit.names, description: edit.description, effectMode: edit.effectMode, effects: edit.effects.map(effect => ({ ...effect })),
+      ...(edit.bonusRequirements ? { bonusRequirements: { ...edit.bonusRequirements, weaponCategories: [...edit.bonusRequirements.weaponCategories] } } : {}),
+      ...(edit.calculationNotes ? { calculationNotes: { ...edit.calculationNotes } } : {}) };
   }
   if (identity.kind === 'class') {
     check(source?.kind === 'class', 'New class mechanics require a separate engine capability');

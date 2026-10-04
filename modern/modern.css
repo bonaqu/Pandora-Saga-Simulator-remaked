@@ -1700,6 +1700,9 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   background: transparent;
   border-bottom: 1px solid #e2e9d8;
 }
+.remaked-modern #body .remaked-racial-description { box-sizing: border-box; float: none; clear: both; width: 100%; height: auto; grid-column: 1 / -1; padding: 7px 9px; border-top: 1px solid #b5ca93; font: 12px/1.45 var(--rm-font); white-space: normal; overflow-wrap: anywhere; }
+.remaked-racial-description p { margin: 4px 0 0; }
+.remaked-racial-description p:last-child:not([hidden]) { color: #665019; }
 .remaked-modern #body #StatusView [data-remaked-calculator-pair] .input_gt { font-weight: 600; }
 .remaked-modern #body [data-remaked-calculator-identity] [data-remaked-calculator-pair] { background: #fff; }
 @media (min-width: 1366px) {

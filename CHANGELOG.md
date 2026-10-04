@@ -2,15 +2,31 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
-## Modern 3.06 — skill descriptions, not yet published
+## Modern 3.07 — current racial data, in preparation
+
+- All 18 current racial records have verified RU/EN names/descriptions and typed
+  effects. Myrine gains +5 critical chance; Stone Skin and Magic Resistance
+  change only incoming physical/magic damage, never critical chance.
+- Separate flat ATK +10 and general ATK +12%, weapon-specific conditions and
+  independent critical chance/resistance/damage fields; old pinned revisions
+  retain their original calculations. Maximum level remains 55.
+- Racial editor shows current values, weapon conditions and server preview;
+  JOB shows the selected description and explicit unsupported combat/range limits.
+- Workbook H/I contains current names for six races and 18 passives; protected
+  source columns, other translations and the museum remain unchanged.
+- Public catalog publication and release acceptance are still pending. Deploying
+  code does not automatically seed or overwrite an administrator's records.
+
+## Modern 3.06 — complete skill descriptions, 2026-10-04
 
 - Skill descriptions escape the scrolling SKILL panel and use an opaque,
   viewport-bounded surface. Complete long descriptions remain scrollable.
 - Delayed mouse hover, keyboard focus/Enter/Space/Escape and touch toggling;
   panel switching, source redraw and scrolling clean up the open description.
 - Same native text, numbers and calculation state; Legacy and game data unchanged.
-- Local focused/related and three-engine checks pass. Publication acceptance is
-  still pending; the remaining current-data/editor/banner tasks stay queued.
+- Feature and deployment CI pass. Exact published files and actual public
+  PC/touch/offline descriptions are verified; current-data/editor/banner tasks
+  remain queued separately. See the release ledger for evidence and limits.
 
 ## Modern 3.05 — all five floating inspectors, 2026-10-04
 
