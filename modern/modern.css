@@ -1735,6 +1735,9 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
    workbench. Keep the compact retained Status/Skill/Potential row height and
    shrink Level to match it instead of making the three budget rows taller. */
 @media (min-width: 621px) {
+  .remaked-modern #body [data-remaked-calculator-budget] {
+    gap: 0 !important;
+  }
   .remaked-modern #body [data-remaked-calculator-budget] > ul {
     display: grid;
     grid-template-columns: 58px minmax(0, 1fr);
@@ -1746,7 +1749,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     box-sizing: border-box;
     float: none !important;
     width: auto !important;
-    height: 22px !important;
+    height: 28px !important;
     min-width: 0;
     margin: 0 !important;
   }
@@ -1763,8 +1766,8 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   }
   .remaked-modern #body [data-remaked-calculator-level] .remaked-calculator-number {
     width: 100%;
-    height: 22px;
-    min-height: 22px;
+    height: 28px;
+    min-height: 28px;
     padding-block: 1px;
   }
 }
