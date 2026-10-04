@@ -53,6 +53,47 @@ for (const width of [1440, 1920]) test(`complete desktop workspace brings Equipm
   await page.screenshot({ path: testInfo.outputPath('desktop-workspace.png') });
 });
 
+test('base-stat inputs stay on one x-axis and derived totals never shift the field', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+
+  const inputX = async () => page.evaluate(() => Object.fromEntries(
+    ['STA', 'STR', 'AGI', 'DEX', 'SPR', 'INT'].map(key => {
+      const rect = document.querySelector(`[data-remaked-number="${key}"]`).getBoundingClientRect();
+      return [key, rect.x];
+    })
+  ));
+
+  const before = await inputX();
+  expect(new Set(Object.values(before).map(value => Math.round(value))).size).toBe(1);
+
+  const sprBefore = before.SPR;
+  await page.evaluate(() => {
+    const total = document.querySelector('[data-remaked-number-total="SPR"]');
+    total.hidden = false;
+    total.textContent = '→ 54';
+  });
+
+  const after = await inputX();
+  expect(new Set(Object.values(after).map(value => Math.round(value))).size).toBe(1);
+  expect(after.SPR).toBeCloseTo(sprBefore, 5);
+
+  const spr = await page.locator('[data-remaked-number="SPR"]').boundingBox();
+  const total = await page.locator('[data-remaked-number-total="SPR"]').boundingBox();
+  expect(total.x).toBeGreaterThanOrEqual(spr.x + spr.width);
+
+  const inset = await page.evaluate(() => {
+    const level = document.getElementById('remaked-level-label');
+    const status = document.getElementById('StatusStP_0').closest('.input_gt').previousElementSibling;
+    return {
+      level: getComputedStyle(level).paddingLeft,
+      status: getComputedStyle(status).paddingLeft
+    };
+  });
+  expect(inset.level).toBe(inset.status);
+  expect(inset.level).not.toBe('0px');
+});
+
 test('all four languages and font fallbacks keep the complete desktop controls inside their columns', async ({ page }) => {
   test.setTimeout(60000);
   await page.goto('/');
