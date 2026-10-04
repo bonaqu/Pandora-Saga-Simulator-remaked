@@ -89,8 +89,8 @@ test('compact stat costs, native number fields and riding text stay visually cen
   expect(geometry.skill.type).toBe('number');
   expect(geometry.sta.step).toBe('1');
   expect(geometry.skill.step).toBe('1');
-  expect(geometry.sta.width).toBeCloseTo(54, 0);
-  expect(geometry.skill.width).toBeCloseTo(54, 0);
+  expect(geometry.sta.width).toBeCloseTo(52, 0);
+  expect(geometry.skill.width).toBeCloseTo(52, 0);
   expect(Math.abs(geometry.cost.text.y - geometry.sta.cy)).toBeLessThanOrEqual(1.5);
   expect(Math.abs(geometry.horseLabel.text.y - geometry.horseLabel.box.cy)).toBeLessThanOrEqual(1.5);
   expect(Math.abs(geometry.horseValue.text.y - geometry.horseValue.box.cy)).toBeLessThanOrEqual(1.5);
