@@ -119,15 +119,58 @@
     });
   }
 
+  function probeLearningState(category, index) {
+    var rows = window.Skill?.[0]?.[category], row = rows?.[index];
+    if (!row) return { potential: false, learned: false };
+
+    // The retained SkillList reuses one temporary prerequisite array while it
+    // walks many entries. After a two-condition skill, a following one-condition
+    // skill can inherit the stale second condition and stay gray. Probe one row
+    // at a time through the retained engine instead of reimplementing its
+    // class-lineage and branch-requirement rules.
+    var originalRows = window.Skill[0][0], originalLearn = window.Learn;
+    var originalFlag = window.Flag[3];
+    window.Skill[0][0] = [row];
+    window.Learn = [[], [], [], []];
+    window.Flag[3] = 1;
+    try {
+      window.SkillList('Potential', 0);
+      var potential = window.Learn[1].indexOf('0_0') !== -1;
+      window.SkillList('Adeptness', 0);
+      return {
+        potential: potential,
+        learned: window.Learn[0].indexOf('0_0') !== -1
+      };
+    } finally {
+      window.Skill[0][0] = originalRows;
+      window.Learn = originalLearn;
+      window.Flag[3] = originalFlag;
+    }
+  }
+
   function rebuildLearningList() {
     if (!window.Flag[3]) return;
-    // Learn is derived UI state. Rebuild every prerequisite pool from the
-    // current class/level/branches so an unrelated catalog projection cannot
-    // leave a native icon stale after a direct branch edit or skill-list toggle.
-    window.Learn = [[], [], [], []];
-    for (var category = 0; category < window.Name.Skill.length; category++)
-      window.SkillList('Potential', category);
-    window.SkillList('Adeptness', 0);
+    var potential = [], learned = [];
+
+    // Rebuild every visible native entry independently. This keeps Legacy 2.00
+    // source files untouched while avoiding cross-entry temporary-state leakage
+    // in its batch SkillList walk.
+    for (var category = 0; category < window.Name.Skill.length; category++) {
+      var rows = window.Skill?.[0]?.[category] || [];
+      for (var index = 0; index < rows.length; index++) {
+        var state = probeLearningState(category, index);
+        var key = category + '_' + index;
+        if (state.potential) potential.push(key);
+        if (state.learned) learned.push(key);
+      }
+    }
+
+    window.Learn = [
+      learned,
+      potential,
+      potential.map(function (key) { return key.split('_'); }),
+      learned.map(function (key) { return key.split('_'); })
+    ];
     window.SkillList('Create');
     window.SkillList('Color');
     syncLearningColors();
