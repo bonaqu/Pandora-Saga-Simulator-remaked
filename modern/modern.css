@@ -1729,3 +1729,57 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   width: 58px;
   justify-self: end;
 }
+
+
+/* Character point budgets share one compact geometry. Level used to keep the
+   Legacy 35px label width, which made it visibly shorter than Status/Skill/
+   Potential in the Modern workbench. */
+.remaked-modern #body [data-remaked-calculator-budget] > ul {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+}
+.remaked-modern #body [data-remaked-calculator-budget] > ul > li {
+  float: none !important;
+  width: auto !important;
+  min-width: 0;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.remaked-modern #body [data-remaked-calculator-level] {
+  grid-column: auto;
+}
+.remaked-modern #body [data-remaked-calculator-level] > li:nth-child(2) {
+  display: flex;
+  align-items: center;
+}
+.remaked-modern #body [data-remaked-calculator-level] .remaked-calculator-number {
+  width: 100%;
+}
+
+/* A level decrease may leave a previously valid allocation over budget.
+   Keep the values intact, but make the invalid budget impossible to miss. */
+.remaked-modern #body [data-remaked-budget-deficit] {
+  border-radius: 3px;
+  background: #fff3f3;
+}
+.remaked-modern #body [data-remaked-budget-deficit] :is(.input_lt, .input_gt) {
+  color: #8c2828 !important;
+  font-weight: 700;
+}
+.remaked-modern #body [data-remaked-budget-deficit] .input_lt {
+  background: #f4dede !important;
+}
+#remaked-budget-warning {
+  margin: 2px 0 5px;
+  padding: 2px 6px;
+  border-left: 2px solid #a13030;
+  color: #8c2828;
+  font-size: 11px;
+  line-height: 1.35;
+}
+#remaked-budget-warning:empty {
+  display: none;
+}
