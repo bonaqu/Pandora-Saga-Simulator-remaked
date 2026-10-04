@@ -70,6 +70,60 @@ function learningRequirements(input) {
   });
   return { classIds: [...classIds], classScope: input.classScope, minimumLevel, branches };
 }
+// Canonical retained class ancestry, independently verified by the reference
+// audit. Profile precedence is domain inclusion, never array order or an ID.
+const CLASS_PARENTS = [null, 0, 1, 1, 0, 4, 4, null, 7, 8, 8, 7, 11, 11,
+  null, 14, 15, 15, 14, 18, 18, null, 21, 22, 22, 21, 25, 25];
+function profileDomain(required) {
+  const selected = required.classIds.map(id => Number(id.slice(4)));
+  const classes = CLASS_PARENTS.map((_, index) => index).filter(index => {
+    if (!selected.length || selected.includes(index)) return true;
+    if (required.classScope === 'exact') return false;
+    for (let parent = CLASS_PARENTS[index]; parent !== null; parent = CLASS_PARENTS[parent])
+      if (selected.includes(parent)) return true;
+    return false;
+  });
+  return { classes, level: required.minimumLevel,
+    branches: Object.fromEntries(required.branches.map(gate => [gate.branchId, gate.minimumPoints])) };
+}
+function containsProfile(outer, inner) {
+  return inner.classes.every(id => outer.classes.includes(id)) && inner.level >= outer.level &&
+    Object.entries(outer.branches).every(([id, minimum]) => (inner.branches[id] || 0) >= minimum);
+}
+function skillTiming(input, result) {
+  result.mpCost = integer(input.mpCost, 0, 100000, 'MP cost');
+  for (const field of ['castSeconds', 'cooldownSeconds', 'durationSeconds']) {
+    const value = input[field];
+    check(typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 86400 && Number(value.toFixed(3)) === value,
+      'Timing must be bounded seconds with at most three decimals');
+    result[field] = value;
+  }
+}
+function skillProfiles(input) {
+  check(Array.isArray(input) && input.length >= 1 && input.length <= 8, 'Skill requires 1–8 conditional profiles');
+  const ids = new Set();
+  const profiles = input.map(profile => {
+    keys(profile, ['id', 'names', 'description', 'learningRequirements', 'mpCost', 'castSeconds', 'cooldownSeconds', 'durationSeconds'], 'Skill profile');
+    check(typeof profile.id === 'string' && /^[a-z][a-z0-9._-]{0,63}$/.test(profile.id) && !ids.has(profile.id), 'Invalid or duplicate profile identity');
+    ids.add(profile.id);
+    const names = textMap(profile.names, 160, 'Profile names'); check(names.en.length > 0, 'English profile name is required');
+    const result = { id: profile.id, names, description: textMap(profile.description, 4000, 'Profile description'),
+      learningRequirements: learningRequirements(profile.learningRequirements) };
+    skillTiming(profile, result);
+    return result;
+  });
+  check(JSON.stringify(profiles).length <= 32000, 'Conditional profile data is too large');
+  const domains = profiles.map(profile => profileDomain(profile.learningRequirements));
+  for (let left = 0; left < domains.length; left++) for (let right = left + 1; right < domains.length; right++) {
+    const a = domains[left], b = domains[right];
+    if (!a.classes.some(id => b.classes.includes(id))) continue;
+    // These conditions are lower bounds, so intersecting class sets always
+    // admit an overlapping state. Equal/incomparable selectors are ambiguous.
+    const aContainsB = containsProfile(a, b), bContainsA = containsProfile(b, a);
+    check(aContainsB !== bContainsA, 'Conditional profile learning domains overlap ambiguously');
+  }
+  return profiles;
+}
 const texts = source => Object.fromEntries(LANGUAGES.map(language => [language, source?.[language] || '']));
 function effects(input) {
   check(Array.isArray(input) && input.length <= EFFECTS.reduce((count, effect) => count + effect.units.length, 0), 'Too many effects');
@@ -121,7 +175,7 @@ export function draftFromSource(source, kind) {
 export function validateDraft(input, identity) {
   if (identity.kind === 'active' || identity.kind === 'passive') {
     const variant = Boolean(identity.templateId);
-    const common = ['id', 'kind', 'category', 'names', 'description', 'learningRequirements', ...(variant ? ['templateId'] : [])];
+    const common = ['id', 'kind', 'category', 'names', 'description', 'learningRequirements', ...(!variant && identity.kind === 'active' ? ['profiles'] : []), ...(variant ? ['templateId'] : [])];
     keys(input, [...common, ...(identity.kind === 'active' ? ['mpCost', 'castSeconds', 'cooldownSeconds', 'durationSeconds'] : ['effects', 'bonusRequirements', 'intrinsicEffectMode'])], 'Skill');
     check(input.id === identity.id && input.kind === identity.kind && input.category === identity.category && Number.isInteger(identity.category) && identity.category >= 0 && identity.category < 25 && Number.isInteger(identity.index) && identity.index >= 0 && identity.index < 1000, 'Skill identity/type cannot be changed');
     if (variant) {
@@ -132,10 +186,8 @@ export function validateDraft(input, identity) {
     if (input.learningRequirements !== undefined) result.learningRequirements = learningRequirements(input.learningRequirements);
     if (variant) result.templateId = identity.templateId;
     if (identity.kind === 'active') {
-      result.mpCost = integer(input.mpCost, 0, 100000, 'MP cost');
-      for (const field of ['castSeconds', 'cooldownSeconds', 'durationSeconds']) {
-        const value = input[field]; check(typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 86400 && Number(value.toFixed(3)) === value, 'Timing must be bounded seconds with at most three decimals'); result[field] = value;
-      }
+      skillTiming(input, result);
+      if (input.profiles !== undefined) result.profiles = skillProfiles(input.profiles);
     } else {
       if (input.intrinsicEffectMode !== undefined) {
         check(!variant && Object.hasOwn(NATIVE_PASSIVES, identity.id) && ['add', 'replace'].includes(input.intrinsicEffectMode), 'Unsupported intrinsic passive mode or identity');
@@ -204,10 +256,15 @@ export function validateDraft(input, identity) {
 export function compileRecord(edit, identity, source) {
   if (identity.kind === 'active' || identity.kind === 'passive') {
     check(source?.kind === identity.kind && source.id === (identity.templateId || identity.id), 'Skill must retain its source type and learning template');
+    check(edit.profiles === undefined || (identity.kind === 'active' && !identity.templateId), 'Conditional profiles require an existing active skill');
     return { id: identity.id, kind: identity.kind, category: identity.category, index: identity.index, names: edit.names, description: edit.description,
       ...(identity.templateId ? { templateId: identity.templateId } : {}),
       ...(edit.learningRequirements ? { learningRequirements: learningRequirements(edit.learningRequirements) } : {}),
       ...(edit.intrinsicEffectMode !== undefined ? { intrinsicEffectMode: edit.intrinsicEffectMode } : {}),
+      ...(edit.profiles !== undefined ? { profiles: skillProfiles(edit.profiles).map(profile => ({
+        id: profile.id, names: profile.names, description: profile.description, learningRequirements: profile.learningRequirements,
+        timing: [profile.mpCost, profile.castSeconds, profile.cooldownSeconds, profile.durationSeconds]
+      })) } : {}),
       active: source.is_active, prerequisiteCode: source.prerequisite_code, nativeEffectPolicy: identity.templateId ? 'template-gate-only' : edit.intrinsicEffectMode === 'replace' ? 'typed-replacement' : 'retained-plus-bonus',
       timing: identity.kind === 'active' ? [edit.mpCost, edit.castSeconds, edit.cooldownSeconds, edit.durationSeconds] : [source.mp_cost, source.cast_seconds, source.cooldown_seconds, source.duration_seconds],
       effects: (edit.effects || []).map(effect => ({ ...effect })), bonusRequirements: edit.bonusRequirements ? { ...edit.bonusRequirements, weaponCategories: [...edit.bonusRequirements.weaponCategories] } : null };

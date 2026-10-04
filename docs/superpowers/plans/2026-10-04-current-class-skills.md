@@ -2,10 +2,11 @@
 
 Status: identity/definition audit and custom-learning support shipped in accepted
 3.08, PR40. Two reviewed elemental source records are published in revision 22.
-Class variants, intrinsic passive replacement and complete balance remain
-unfinished. Continues queue item 4; see the 3.08 release acceptance ledger.
+Intrinsic passive replacement shipped and passed live acceptance in 3.09, PR41.
+Class variants and complete balance remain unfinished. Continues queue item 4;
+see the 3.08/3.09 release acceptance ledgers.
 
-## Local candidate 3.09: explicit native passive replacement
+## Accepted 3.09: explicit native passive replacement
 
 Fourteen identified native contributions are guarded only in Modern's generated
 calc.js; the source and museum remain unchanged. The strict build helper checks
@@ -29,9 +30,9 @@ Focused Chromium checks cover all 14 actual contributions, revision-zero
 restoration, all three heal outputs, four separate riding identities, level and
 class changes, comparison restoration and fresh/offline recipients. Editor
 preview/draft/publish and duplicate isolation use synthetic local sessions only.
-Release CI/deployment/live acceptance are still pending; no server balance record
-has been published by this support change. Remaining variants/timing/type changes
-listed below remain unfinished.
+Release CI, Pages/Worker deployment and actual production acceptance passed.
+No server balance record has been published by this support change. Remaining
+variants/timing/type changes listed below remain unfinished.
 
 ## Reference and preservation
 
@@ -156,3 +157,94 @@ Actual publication moved 20→22 without changing unrelated records or historic
 allocated learned points 33/34/35/40/41; icons/learned pools match current gates,
 old pin 20 keeps both at 33. Fresh/offline C1 recipients, actual editor login and
 PC/mobile screenshots passed. Complete class reconciliation is still open.
+
+## Conditional-profile prerequisite audit, 4 October
+
+The next read-only audit now compares the actual eligible domains of each source
+variant, not its array order, numerical source ID or prerequisite upgrade link.
+Expanded class sets, minimum character level and all branch thresholds define
+the domain. Disjoint classes are safe to distinguish; overlapping domains must
+be strictly nested. Equal or incomparable domains require manual resolution.
+This is prerequisite evidence only: `mechanicsVerified` remains false.
+
+The unchanged official snapshot hashes were freshly verified. Of 18 retained
+identities with source variants, 17 groups have disjoint/nested candidate domains.
+Minstrel's Song has two different definitions with identical class/level/Hymn 8
+conditions. Its upgrade link is not evidence of which character should use which
+definition. Do not implement an implicit "last row wins" rule for it.
+
+Examples: Blocking retains `skill.5.3` with a general Defend 8 profile and separate
+General/Paladin level 45 profiles; Toxify retains `skill.8.1` with Alchemy 12/61
+profiles. Existing native identities, source order and future level-50 profiles
+remain intact. The audit does not create duplicate skill slots or change balance.
+
+Implementation boundary for the next step:
+
+1. Typed, bounded conditional profiles belong to the existing skill record;
+   profile IDs are not new native skill IDs. Start with proven active text,
+   MP/cast/cooldown and learning definitions. Unknown duration and effect-array
+   coefficients stay unknown, rather than becoming guessed combat formulas.
+2. No profiles means the exact previous payload and behavior. Source references
+   identify provenance, not priority. Reject ambiguous equal/incomparable selectors
+   before draft/publication; selection must be independent of profile array order.
+3. Reuse isolated native learning evaluation, real class ancestry and actual branch
+   points. Changing class/level/points/catalog or loading a pinned build must
+   invalidate the selection and restore the previous projection completely.
+4. Text/timing, tooltip and learned icon must reflect the same selected profile.
+   The editor should expose a compact profile selector and current/preview values,
+   not append many giant cards or require the administrator to edit raw JSON.
+5. Verify selector mathematics cheaply in pure tests, then test actual projection,
+   switching, pinned builds and one rendered editor path in Chromium. Broaden
+   browser checks only for changed platform behavior or final release acceptance.
+
+Current focused audit tests: ten pass, including nested/disjoint Blocking,
+branch ranks, identical Minstrel gates, incomparable conditions, unchanged inputs,
+28 class identities and all 211 retained skills. This does not accept a runtime
+profile editor or all current-server skill mechanics: those remain unfinished.
+Outside evidence: `current-class-profile-selector-audit.json` under the existing
+`D:\CODEX\Tasks\pandora-admin-runtime` directory.
+
+Backend and frontend implementation are local, not deployed: an optional bounded
+`profiles` field for existing active records holds typed localized text, timing
+and learning requirements. It rejects ambiguous domains (including equivalence
+between descendant scope and an explicit family), malformed IDs/timing, raw
+effects/code, passive/new-variant identities, over eight profiles and oversized
+data. Absent profiles preserve the old compiled payload. The twelve model tests
+and one focused synthetic API integration test pass: preview remains private,
+publication creates one native record with no allocation, old revision/rollback
+and an unpublished draft survive. Runtime projection selects the most specific
+learned profile through isolated native gates; text/timing and eligibility agree.
+The editor keeps one selected form, independent base/profile fields, explicit
+conditions and a current/preview comparison. A real event-reentrancy bug found
+in rendered QA is fixed: removing focused old inputs cannot overwrite the newly
+selected profile. Removing all profiles restores the main-record fallback; it
+does not change published data until explicit publication.
+
+One grouped Chromium run passed 46 related editor/learning/native-passive/catalog
+scenarios in 35 seconds. It includes PC/mobile, comparison, old pins and fresh/
+offline recipients. A further focused source-data test passed 222 boundary parser
+states for all 17 reviewed existing active identities (37 source definitions),
+with literal RU/EN text/timing and exact revision-zero source restoration. These
+synthetic boundary states do not prove legal spendable builds or combat parity.
+Six focused profile scenarios additionally pass after adding transactional
+rollback on an interrupted native probe; all 88 backend tests pass. Worker
+dry-run succeeds using the existing DB/Assets/version bindings, with no migration,
+secret/auth change, new infrastructure or production write. Candidate UI version
+is 3.10; generated catalogs change only their version metadata, not source data.
+
+Fresh source fetch changed hashes to skills
+`dd49933fc3412986bc6cf379392cc2ed9924c69e18ff3eca1e0c06a9df2b88c4`
+and English `b5bdd1304b91baff52718a8c5145518044199eb105bdf3ff28751601df3e4c29`;
+classes are unchanged. The 17 profile groups are unchanged. Other learnable rows
+changed: Triple/Quadruple Stab range 300→0 and Arrow Storm 213603002 MP 15→32,
+cooldown 5→10. These are fresh reference findings, not automatic simulator edits.
+The previous hashes above describe the historical snapshot, not the live source.
+
+`data/current-active-profiles.v1.json` captures only reviewed RU/EN names,
+descriptions, explicit learning and MP/cast/cooldown. Its factory creates private
+candidate edits, never imports/publishes automatically or allocates native IDs.
+Native duration and combat stay unchanged. Minstrel's Song is explicitly excluded
+because its identical selectors cannot distinguish two definitions safely.
+Before production publication, review the retained buff/combat limits, preserve
+unrelated current records and drafts, then validate the actual deployed runtime.
+Source reconciliation and complete gameplay balance remain open.

@@ -12,6 +12,7 @@
   effectIds.push(21, 81);
   var baselineEquipment, baselineSouls, baselineClassMods, baselineSkills, revision = 0, recordsByTerm = Object.create(null);
   var passiveRecords = [], variantRecords = [], learningRecords = [], customLearningStates = Object.create(null);
+  var profileRecords = [], selectedProfiles = Object.create(null);
   var learnedKey = '', learnedEntries = [], potentialEntries = [], learningProbeDepth = 0;
   var snapshots = Object.create(null), recovery = false;
   var nativePassiveDefinitions = window.PandoraRemakedNativePassives || {};
@@ -70,6 +71,47 @@
       seen[gate.branchId] = true;
     });
   }
+  var profileParents = [null, 0, 1, 1, 0, 4, 4, null, 7, 8, 8, 7, 11, 11,
+    null, 14, 15, 15, 14, 18, 18, null, 21, 22, 22, 21, 25, 25];
+  function profileDomain(required) {
+    var selected = required.classIds.map(function (id) { return Number(id.slice(4)); });
+    var classes = profileParents.map(function (_, index) { return index; }).filter(function (index) {
+      if (!selected.length || selected.indexOf(index) !== -1) return true;
+      if (required.classScope === 'exact') return false;
+      for (var parent = profileParents[index]; parent !== null; parent = profileParents[parent])
+        if (selected.indexOf(parent) !== -1) return true;
+      return false;
+    });
+    return { classes: classes, level: required.minimumLevel,
+      branches: Object.fromEntries(required.branches.map(function (gate) { return [gate.branchId, gate.minimumPoints]; })) };
+  }
+  function containsProfile(outer, inner) {
+    return inner.classes.every(function (id) { return outer.classes.indexOf(id) !== -1; }) && inner.level >= outer.level &&
+      Object.keys(outer.branches).every(function (id) { return (inner.branches[id] || 0) >= outer.branches[id]; });
+  }
+  function validateProfiles(record) {
+    check(record.active && !record.templateId && Array.isArray(record.profiles) && record.profiles.length >= 1 && record.profiles.length <= 8 &&
+      JSON.stringify(record.profiles).length <= 32000, 'Invalid conditional skill profiles');
+    var ids = Object.create(null), domains = record.profiles.map(function (profile) {
+      check(profile && !Array.isArray(profile) && Object.keys(profile).every(function (key) {
+        return ['id', 'names', 'description', 'learningRequirements', 'timing'].indexOf(key) !== -1;
+      }), 'Unsupported skill profile field');
+      check(typeof profile.id === 'string' && /^[a-z][a-z0-9._-]{0,63}$/.test(profile.id) && !ids[profile.id], 'Invalid or duplicate profile identity');
+      ids[profile.id] = true;
+      textMap(profile.names, 160); textMap(profile.description, 4000); check(Boolean(profile.names.en?.trim()), 'English profile name required');
+      validateLearning(profile.learningRequirements);
+      check(Array.isArray(profile.timing) && profile.timing.length === 4 && profile.timing.every(function (value, index) {
+        return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= (index === 0 ? 100000 : 86400) &&
+          (index === 0 ? Number.isInteger(value) : Number(value.toFixed(3)) === value);
+      }), 'Invalid profile timing');
+      return profileDomain(profile.learningRequirements);
+    });
+    for (var left = 0; left < domains.length; left++) for (var right = left + 1; right < domains.length; right++) {
+      var a = domains[left], b = domains[right];
+      if (!a.classes.some(function (id) { return b.classes.indexOf(id) !== -1; })) continue;
+      check(containsProfile(a, b) !== containsProfile(b, a), 'Conditional profile learning domains overlap ambiguously');
+    }
+  }
   function validate(snapshot) {
     captureBaseline();
     check(snapshot && snapshot.ok === true && snapshot.schemaVersion === 1 && snapshot.sourceFingerprint === SOURCE_FINGERPRINT, 'Catalog source/version mismatch');
@@ -88,9 +130,11 @@
         var skill = baselineSkills[0][record.category][record.index];
         check(skill && record.active === Boolean(skill[4]) && record.kind === (record.active ? 'active' : 'passive') && record.prerequisiteCode === skill[9] && record.nativeEffectPolicy === (variant ? 'template-gate-only' : record.intrinsicEffectMode === 'replace' ? 'typed-replacement' : 'retained-plus-bonus'), 'Skill mechanics/source mismatch');
         var skillFields = ['id', 'kind', 'category', 'index', 'names', 'description', 'active', 'prerequisiteCode', 'nativeEffectPolicy', 'timing', 'effects', 'bonusRequirements', 'learningRequirements', 'intrinsicEffectMode'];
+        if (!variant && record.active) skillFields.push('profiles');
         if (variant) skillFields.push('templateId');
         check(Object.keys(record).every(function (key) { return skillFields.indexOf(key) !== -1; }), 'Unsupported skill field');
         if (Object.prototype.hasOwnProperty.call(record, 'learningRequirements')) validateLearning(record.learningRequirements);
+        if (Object.prototype.hasOwnProperty.call(record, 'profiles')) validateProfiles(record);
         if (Object.prototype.hasOwnProperty.call(record, 'intrinsicEffectMode')) check(!variant && record.kind === 'passive' && Object.prototype.hasOwnProperty.call(nativePassiveDefinitions, record.id) && ['add', 'replace'].indexOf(record.intrinsicEffectMode) !== -1, 'Unsupported intrinsic passive mode or identity');
         check(!seen[record.id], 'Duplicate skill identity'); seen[record.id] = true;
         textMap(record.names, 160); textMap(record.description, 4000); check(Boolean(record.names.en?.trim()), 'English skill name required');
@@ -208,12 +252,7 @@
           if (record.kind === 'passive' && record.effects.length) passives.push(record);
           return;
         }
-        for (var language = 0; language < 3; language++) {
-          var row = skills[language][record.category][record.index];
-          if (language > 0) row[0] = escaped(record.names[languages[language]] || record.names.en);
-          row[3] = escaped(record.description[languages[language]] || record.description.en);
-          for (var timing = 0; timing < 4; timing++) row[5 + timing] = record.timing[timing];
-        }
+        projectSkill(record, record, skills);
         if (record.kind === 'passive' && record.effects.length) passives.push(record);
         return;
       }
@@ -246,7 +285,9 @@
     window.EquipData = equipment; window.SoulData = souls; window.Status.Mod = classMods; recordsByTerm = terms; revision = snapshot.revision;
     for (var language = 0; language < 3; language++) window.Skill[language] = skills[language];
     passiveRecords = passives; variantRecords = additions.sort(function (a, b) { return a.id.localeCompare(b.id); });
-    learningRecords = snapshot.records.filter(function (record) { return (record.kind === 'active' || record.kind === 'passive') && (record.learningRequirements || record.intrinsicEffectMode === 'replace'); });
+    profileRecords = snapshot.records.filter(function (record) { return Boolean(record.profiles); });
+    selectedProfiles = Object.create(null);
+    learningRecords = snapshot.records.filter(function (record) { return (record.kind === 'active' || record.kind === 'passive') && (record.learningRequirements || record.profiles || record.intrinsicEffectMode === 'replace'); });
     learnedKey = ''; learnedEntries = []; potentialEntries = []; customLearningStates = Object.create(null);
     snapshots[revision] = structuredClone(snapshot);
     if (options.rebuild !== false) {
@@ -262,6 +303,7 @@
   }
   function textFor(term, field) {
     var record = recordsByTerm[term]; if (!record) return '';
+    if (record.profiles) { nativeLearnedEntries(); record = selectedProfiles[record.id] || record; }
     var language = namespace.i18n?.getLocale() === 'ru' ? 'ru' : languages[Number(window.Flag[0])];
     return record[field]?.[language] || record[field]?.en || '';
   }
@@ -450,6 +492,7 @@
       var detail = term.match(/^skill_detail\.(\d+)\.(\d+)\.(1|3)$/);
       if (!detail) return textFor(term, 'names');
       var id = 'skill_entry.' + detail[1] + '.' + detail[2], record = recordsByTerm[id];
+      if (record?.profiles) { nativeLearnedEntries(); record = selectedProfiles[id] || record; }
       return detail[3] === '3' ? textFor(id, 'description') : record?.learningRequirements ? learningText(record.learningRequirements) : '';
     },
     item: function (kind, value) { var id = Number(value); return recordsByTerm[kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id] || null; },
@@ -463,8 +506,16 @@
     var key = window.Status.Job[2] + ':' + window.Status.Lev[0] + ':' + window.Status.Skill.toString();
     if (key === learnedKey) return learnedEntries;
     var originalLearn = window.Learn, originalFlag = window.Flag[3];
+    var originalProfiles = selectedProfiles, originalProfileRows = [];
+    profileRecords.forEach(function (record) {
+      for (var language = 0; language < 3; language++) {
+        var row = window.Skill[language][record.category][record.index];
+        originalProfileRows.push({ row: row, values: row.slice() });
+      }
+    });
     window.Learn = [[], [], [], []]; window.Flag[3] = 1; learningProbeDepth++;
     try {
+      projectProfiles();
       for (var category = 0; category < window.Name.Skill.length; category++) window.SkillList('Potential', category);
       window.SkillList('Adeptness', 0);
       var learned = window.Learn[0].slice(), potential = window.Learn[1].slice(), states = Object.create(null);
@@ -472,7 +523,8 @@
         // An opted-in native replacement must not inherit temporary gate state
         // from a preceding SkillList row (notably the paired Jousting entries).
         // Old additive records still use the unchanged retained learned set.
-        var state = record.learningRequirements ? customEligibility(record.learningRequirements) : nativeGate(record.prerequisiteCode); states[record.id] = state;
+        var effective = selectedProfiles[record.id] || record;
+        var state = effective.learningRequirements ? customEligibility(effective.learningRequirements) : nativeGate(record.prerequisiteCode); states[record.id] = state;
         if (!record.templateId) {
           var id = record.category + '_' + record.index;
           learned = learned.filter(function (value) { return value !== id; });
@@ -482,7 +534,38 @@
         }
       });
       learnedEntries = learned; potentialEntries = potential; customLearningStates = states; learnedKey = key; return learnedEntries;
+    } catch (error) {
+      // Projection is transactional too: an interrupted native probe must not
+      // leave half of the skills on the new class/rank and half on the old one.
+      selectedProfiles = originalProfiles;
+      originalProfileRows.forEach(function (saved) {
+        saved.row.length = saved.values.length;
+        for (var index = 0; index < saved.values.length; index++) saved.row[index] = saved.values[index];
+      });
+      throw error;
     } finally { window.Learn = originalLearn; window.Flag[3] = originalFlag; learningProbeDepth--; }
+  }
+  function projectSkill(identity, values, skills) {
+    for (var language = 0; language < 3; language++) {
+      var row = skills[language][identity.category][identity.index];
+      // Retain the original Japanese engine key and immutable prerequisite code.
+      if (language > 0) row[0] = escaped(values.names[languages[language]] || values.names.en);
+      row[3] = escaped(values.description[languages[language]] || values.description.en);
+      for (var timing = 0; timing < 4; timing++) row[5 + timing] = values.timing[timing];
+    }
+  }
+  function projectProfiles() {
+    selectedProfiles = Object.create(null);
+    profileRecords.forEach(function (record) {
+      var selected, domain;
+      record.profiles.forEach(function (profile) {
+        if (!customEligibility(profile.learningRequirements).learned) return;
+        var candidate = profileDomain(profile.learningRequirements);
+        if (!selected || containsProfile(domain, candidate)) { selected = profile; domain = candidate; }
+      });
+      if (selected) selectedProfiles[record.id] = selected;
+      projectSkill(record, selected || record, window.Skill);
+    });
   }
   function nativeGate(code) {
     var originalRows = window.Skill[0][0], originalLearn = window.Learn, originalFlag = window.Flag[3];
@@ -547,6 +630,9 @@
       (!required.shieldRequired || Math.floor(shieldId / 10000) === 20 && shieldId % 10000 > 0) && (!required.ridingRequired || Boolean(window.Flag[7]));
   }
   function passiveEffects() {
+    // Profile text/timing must stay current even with no numeric passive edit
+    // and with the visible Skill List closed.
+    if (profileRecords.length) nativeLearnedEntries();
     if (!passiveRecords.length) return [];
     var learned = nativeLearnedEntries(), result = [];
     passiveRecords.forEach(function (record) {

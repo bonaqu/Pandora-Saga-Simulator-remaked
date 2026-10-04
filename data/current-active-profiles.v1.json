@@ -1,0 +1,1194 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04T14:55:55.757Z",
+  "sourceHashes": [
+    {
+      "file": "skills.json",
+      "url": "https://pandorasaga-os.com/gamedata/skills.json",
+      "sha256": "dd49933fc3412986bc6cf379392cc2ed9924c69e18ff3eca1e0c06a9df2b88c4"
+    },
+    {
+      "file": "strings.en.json",
+      "url": "https://pandorasaga-os.com/gamedata/strings.en.json",
+      "sha256": "b5bdd1304b91baff52718a8c5145518044199eb105bdf3ff28751601df3e4c29"
+    },
+    {
+      "file": "classes.json",
+      "url": "https://pandorasaga-os.com/gamedata/classes.json",
+      "sha256": "9f658767c76b650aaadcec3eb4bed1a32fca2f8a2c23c3ec56cb685c59a20b27"
+    }
+  ],
+  "scope": "Localized names/descriptions, learning and MP/cast/cooldown only. Native duration/combat retained, not current combat parity. No automatic import or publication.",
+  "unresolved": [
+    {
+      "id": "skill_entry.16.0",
+      "sourceIds": [
+        340001001,
+        340001004
+      ],
+      "reason": "Identical selectors; no priority inferred from source IDs or upgrade links."
+    }
+  ],
+  "records": [
+    {
+      "id": "skill_entry.5.3",
+      "nativeName": "Blocking",
+      "prerequisiteCode": "S=5=8",
+      "baseSourceId": 168001001,
+      "rows": [
+        {
+          "sourceId": 168001001,
+          "names": {
+            "ru": "Блокирование",
+            "en": "Blocking"
+          },
+          "description": {
+            "ru": "Позволяет быстро подставить щит, чтобы существенно уменьшить физический урон от атаки.",
+            "en": "Quickly raises your shield, greatly reducing the amount of physical damage you take."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.5",
+                "minimumPoints": 8
+              }
+            ]
+          },
+          "timing": [
+            5,
+            0,
+            2
+          ]
+        },
+        {
+          "sourceId": 168001003,
+          "names": {
+            "ru": "Блокирование",
+            "en": "Blocking"
+          },
+          "description": {
+            "ru": "Позволяет быстро подставить щит, чтобы существенно уменьшить физический урон от атаки.",
+            "en": "Quickly raises your shield, greatly reducing the amount of physical damage you take."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.5"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 45,
+            "branches": [
+              {
+                "branchId": "skill_category.5",
+                "minimumPoints": 8
+              }
+            ]
+          },
+          "timing": [
+            5,
+            0,
+            2
+          ]
+        },
+        {
+          "sourceId": 168001004,
+          "names": {
+            "ru": "Блокирование",
+            "en": "Blocking"
+          },
+          "description": {
+            "ru": "Позволяет быстро подставить щит, чтобы существенно уменьшить физический урон от атаки.",
+            "en": "Quickly raises your shield, greatly reducing the amount of physical damage you take."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.6"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 45,
+            "branches": [
+              {
+                "branchId": "skill_category.5",
+                "minimumPoints": 8
+              }
+            ]
+          },
+          "timing": [
+            5,
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.5.8",
+      "nativeName": "Defensive March",
+      "prerequisiteCode": "S=5=41",
+      "baseSourceId": 168002001,
+      "rows": [
+        {
+          "sourceId": 168002001,
+          "names": {
+            "ru": "Защита в движении",
+            "en": "Defensive March"
+          },
+          "description": {
+            "ru": "Позволяет продвигаться вперед, блокируя удары щитом.",
+            "en": "Allows you to move while your shield is raised."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.5",
+                "minimumPoints": 41
+              }
+            ]
+          },
+          "timing": [
+            10,
+            0,
+            5
+          ]
+        },
+        {
+          "sourceId": 168002002,
+          "names": {
+            "ru": "Защита в движении",
+            "en": "Defensive March"
+          },
+          "description": {
+            "ru": "Позволяет продвигаться вперед, блокируя удары щитом.",
+            "en": "Allows you to move while your shield is raised."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.5"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 45,
+            "branches": [
+              {
+                "branchId": "skill_category.5",
+                "minimumPoints": 41
+              }
+            ]
+          },
+          "timing": [
+            10,
+            0,
+            5
+          ]
+        },
+        {
+          "sourceId": 168002003,
+          "names": {
+            "ru": "Защита в движении",
+            "en": "Defensive March"
+          },
+          "description": {
+            "ru": "Позволяет продвигаться вперед, блокируя удары щитом.",
+            "en": "Allows you to move while your shield is raised."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.6"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 45,
+            "branches": [
+              {
+                "branchId": "skill_category.5",
+                "minimumPoints": 41
+              }
+            ]
+          },
+          "timing": [
+            10,
+            0,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.8.1",
+      "nativeName": "Toxify",
+      "prerequisiteCode": "S=8=12",
+      "baseSourceId": 220001001,
+      "rows": [
+        {
+          "sourceId": 220001001,
+          "names": {
+            "ru": "Яд",
+            "en": "Toxify"
+          },
+          "description": {
+            "ru": "Отравляет оружие игрока с помощью ядовитого зелья.",
+            "en": "Consumes a Venom to coat your weapons."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.8",
+                "minimumPoints": 12
+              }
+            ]
+          },
+          "timing": [
+            15,
+            2,
+            10
+          ]
+        },
+        {
+          "sourceId": 220001003,
+          "names": {
+            "ru": "Яд",
+            "en": "Toxify"
+          },
+          "description": {
+            "ru": "Отравляет оружие игрока с помощью ядовитого зелья.",
+            "en": "Consumes a Venom to coat your weapons."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.8",
+                "minimumPoints": 61
+              }
+            ]
+          },
+          "timing": [
+            15,
+            2,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.9.1",
+      "nativeName": "Cloak",
+      "prerequisiteCode": "J=11=20",
+      "baseSourceId": 230002001,
+      "rows": [
+        {
+          "sourceId": 230002001,
+          "names": {
+            "ru": "Маскировка",
+            "en": "Cloaking"
+          },
+          "description": {
+            "ru": "Игрок становится невидимым и может передвигаться, оставаясь незамеченным.",
+            "en": "Enables you to enter a Hiding state that allows movement."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.11",
+              "job.12",
+              "job.13"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 20,
+            "branches": []
+          },
+          "timing": [
+            45,
+            2,
+            30
+          ]
+        },
+        {
+          "sourceId": 230002004,
+          "names": {
+            "ru": "Маскировка",
+            "en": "Cloaking"
+          },
+          "description": {
+            "ru": "Игрок становится невидимым и может передвигаться, оставаясь незамеченным.",
+            "en": "Enables you to enter a Hiding state that allows movement."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.12"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 45,
+            "branches": []
+          },
+          "timing": [
+            45,
+            2,
+            30
+          ]
+        },
+        {
+          "sourceId": 230002005,
+          "names": {
+            "ru": "Маскировка",
+            "en": "Cloaking"
+          },
+          "description": {
+            "ru": "Игрок становится невидимым и может передвигаться, оставаясь незамеченным.",
+            "en": "Enables you to enter a Hiding state that allows movement."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.13"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 45,
+            "branches": []
+          },
+          "timing": [
+            45,
+            2,
+            30
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.13.5",
+      "nativeName": "First Aid",
+      "prerequisiteCode": "S=13=8",
+      "baseSourceId": 310001001,
+      "rows": [
+        {
+          "sourceId": 310001001,
+          "names": {
+            "ru": "Первая помощь",
+            "en": "First Aid"
+          },
+          "description": {
+            "ru": "Быстро восстанавливает небольшое количество ОЗ цели.",
+            "en": "Quickly heals a little bit of your target's LP."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.13",
+                "minimumPoints": 8
+              }
+            ]
+          },
+          "timing": [
+            28,
+            1,
+            4
+          ]
+        },
+        {
+          "sourceId": 310001002,
+          "names": {
+            "ru": "Первая помощь",
+            "en": "First Aid"
+          },
+          "description": {
+            "ru": "Быстро восстанавливает небольшое количество ОЗ цели.",
+            "en": "Quickly heals a little bit of your target's LP."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.16"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 50,
+            "branches": [
+              {
+                "branchId": "skill_category.13",
+                "minimumPoints": 8
+              }
+            ]
+          },
+          "timing": [
+            28,
+            0,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.13.0",
+      "nativeName": "Heal",
+      "prerequisiteCode": "J=14=18",
+      "baseSourceId": 310004001,
+      "rows": [
+        {
+          "sourceId": 310004001,
+          "names": {
+            "ru": "Лечение",
+            "en": "Heal"
+          },
+          "description": {
+            "ru": "Целительная магия, восстанавливающая некоторое количество ОЗ.",
+            "en": "Restores your target's LP using healing magic."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.14",
+              "job.15",
+              "job.16",
+              "job.17",
+              "job.18",
+              "job.19",
+              "job.20"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 18,
+            "branches": []
+          },
+          "timing": [
+            62,
+            2,
+            3
+          ]
+        },
+        {
+          "sourceId": 310004002,
+          "names": {
+            "ru": "Лечение",
+            "en": "Heal"
+          },
+          "description": {
+            "ru": "Целительная магия, восстанавливающая некоторое количество ОЗ.",
+            "en": "Restores your target's LP using healing magic."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.16"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 50,
+            "branches": []
+          },
+          "timing": [
+            62,
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.13.10",
+      "nativeName": "Healing Aura",
+      "prerequisiteCode": "S=13=54",
+      "baseSourceId": 310021001,
+      "rows": [
+        {
+          "sourceId": 310021001,
+          "names": {
+            "ru": "Массовое исцеление",
+            "en": "Healing Aura"
+          },
+          "description": {
+            "ru": "Восстанавливает ОЗ всех игроков в группе.",
+            "en": "Restores LP for all party members."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.13",
+                "minimumPoints": 54
+              }
+            ]
+          },
+          "timing": [
+            256,
+            1,
+            30
+          ]
+        },
+        {
+          "sourceId": 310021002,
+          "names": {
+            "ru": "Массовое исцеление",
+            "en": "Healing Aura"
+          },
+          "description": {
+            "ru": "Восстанавливает ОЗ всех игроков в группе.",
+            "en": "Restores LP for all party members."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.16"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 50,
+            "branches": [
+              {
+                "branchId": "skill_category.13",
+                "minimumPoints": 54
+              }
+            ]
+          },
+          "timing": [
+            256,
+            1,
+            30
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.19.4",
+      "nativeName": "Soul Blight",
+      "prerequisiteCode": "S=19=8",
+      "baseSourceId": 420001001,
+      "rows": [
+        {
+          "sourceId": 420001001,
+          "names": {
+            "ru": "Озарение",
+            "en": "Soul Bright"
+          },
+          "description": {
+            "ru": "Местность вокруг игрока освещается, все невидимое становится видимым.",
+            "en": "Illuminates the area around you and removes the Hiding state from your enemies."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.19",
+                "minimumPoints": 8
+              }
+            ]
+          },
+          "timing": [
+            14,
+            1,
+            7
+          ]
+        },
+        {
+          "sourceId": 420001002,
+          "names": {
+            "ru": "Озарение",
+            "en": "Soul Bright"
+          },
+          "description": {
+            "ru": "Местность вокруг игрока освещается, все невидимое становится видимым.",
+            "en": "Illuminates the area around you and removes the Hiding state from your enemies."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.24"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 50,
+            "branches": [
+              {
+                "branchId": "skill_category.19",
+                "minimumPoints": 8
+              }
+            ]
+          },
+          "timing": [
+            14,
+            1,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.19.5",
+      "nativeName": "Mana Shield",
+      "prerequisiteCode": "S=19=21",
+      "baseSourceId": 420002001,
+      "rows": [
+        {
+          "sourceId": 420002001,
+          "names": {
+            "ru": "Магический щит",
+            "en": "Mana Shield"
+          },
+          "description": {
+            "ru": "Снижается физический урон, вместо ОЗ за урон снимается ОМ.",
+            "en": "Causes you to lose MP every time an enemy strikes, but reduces the amount of physical damage taken."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.19",
+                "minimumPoints": 21
+              }
+            ]
+          },
+          "timing": [
+            24,
+            3,
+            10
+          ]
+        },
+        {
+          "sourceId": 420002002,
+          "names": {
+            "ru": "Магический щит",
+            "en": "Mana Shield"
+          },
+          "description": {
+            "ru": "Снижается физический урон, вместо ОЗ за урон снимается ОМ.",
+            "en": "Causes you to lose MP every time an enemy strikes, but reduces the amount of physical damage taken."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.24"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 50,
+            "branches": [
+              {
+                "branchId": "skill_category.19",
+                "minimumPoints": 21
+              }
+            ]
+          },
+          "timing": [
+            24,
+            3,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.19.6",
+      "nativeName": "Clear Mind",
+      "prerequisiteCode": "S=19=31",
+      "baseSourceId": 420004001,
+      "rows": [
+        {
+          "sourceId": 420004001,
+          "names": {
+            "ru": "По следам ветра",
+            "en": "Clear Mind"
+          },
+          "description": {
+            "ru": "Тело игрока окутывает ветряной плащ, сильно понижающий вероятность прервать применение умения.",
+            "en": "Wraps your body in wind, making it harder for others to stop your casting."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.19",
+                "minimumPoints": 31
+              }
+            ]
+          },
+          "timing": [
+            59,
+            5,
+            1.5
+          ]
+        },
+        {
+          "sourceId": 420004002,
+          "names": {
+            "ru": "По следам ветра",
+            "en": "Clear Mind"
+          },
+          "description": {
+            "ru": "Тело игрока окутывает ветряной плащ, сильно понижающий вероятность прервать применение умения.",
+            "en": "Wraps your body in wind, making it harder for others to stop your casting."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.24"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 50,
+            "branches": [
+              {
+                "branchId": "skill_category.19",
+                "minimumPoints": 31
+              }
+            ]
+          },
+          "timing": [
+            59,
+            5,
+            1.5
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.19.7",
+      "nativeName": "Psychic Blade",
+      "prerequisiteCode": "S=19=41",
+      "baseSourceId": 420005001,
+      "rows": [
+        {
+          "sourceId": 420005001,
+          "names": {
+            "ru": "Летящее лезвие",
+            "en": "Psychic Blade"
+          },
+          "description": {
+            "ru": "Энергетический клинок, поражающий противника. Урон зависит от защиты цели.",
+            "en": "Sends a psychic wave of energy at your target. The amount of damage inflicted is dependent on their Defense."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.19",
+                "minimumPoints": 41
+              }
+            ]
+          },
+          "timing": [
+            39,
+            3.5,
+            10
+          ]
+        },
+        {
+          "sourceId": 420005002,
+          "names": {
+            "ru": "Летящее лезвие",
+            "en": "Psychic Blade"
+          },
+          "description": {
+            "ru": "Энергетический клинок, поражающий противника. Урон зависит от защиты цели.",
+            "en": "Sends a psychic wave of energy at your target. The amount of damage inflicted is dependent on their Defense."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.24"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 50,
+            "branches": [
+              {
+                "branchId": "skill_category.19",
+                "minimumPoints": 41
+              }
+            ]
+          },
+          "timing": [
+            39,
+            3.5,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.19.8",
+      "nativeName": "Blockade",
+      "prerequisiteCode": "S=19=50",
+      "baseSourceId": 420006001,
+      "rows": [
+        {
+          "sourceId": 420006001,
+          "names": {
+            "ru": "Непреодолимая стена",
+            "en": "Blockade"
+          },
+          "description": {
+            "ru": "Огромная стена, которую не может преодолеть ни один игрок.",
+            "en": "Creates an impermeable wall that no player can pass through."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.19",
+                "minimumPoints": 50
+              }
+            ]
+          },
+          "timing": [
+            79,
+            5,
+            120
+          ]
+        },
+        {
+          "sourceId": 420006002,
+          "names": {
+            "ru": "Непреодолимая стена",
+            "en": "Blockade"
+          },
+          "description": {
+            "ru": "Огромная стена, которую не может преодолеть ни один игрок.",
+            "en": "Creates an impermeable wall that no player can pass through."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.24"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 50,
+            "branches": [
+              {
+                "branchId": "skill_category.19",
+                "minimumPoints": 50
+              }
+            ]
+          },
+          "timing": [
+            79,
+            5,
+            20
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.20.4",
+      "nativeName": "Blood Drain",
+      "prerequisiteCode": "S=20=21",
+      "baseSourceId": 430001001,
+      "rows": [
+        {
+          "sourceId": 430001001,
+          "names": {
+            "ru": "Кража жизни",
+            "en": "Blood Drain"
+          },
+          "description": {
+            "ru": "Перекачивает ОЗ из цели в игрока.",
+            "en": "Draws out your opponent's LP and makes it your own."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.20",
+                "minimumPoints": 21
+              }
+            ]
+          },
+          "timing": [
+            32,
+            1,
+            10
+          ]
+        },
+        {
+          "sourceId": 430001003,
+          "names": {
+            "ru": "Кража жизни",
+            "en": "Blood Drain"
+          },
+          "description": {
+            "ru": "Перекачивает ОЗ из цели в игрока.",
+            "en": "Draws out your opponent's LP and makes it your own."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.27"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 45,
+            "branches": [
+              {
+                "branchId": "skill_category.20",
+                "minimumPoints": 21
+              }
+            ]
+          },
+          "timing": [
+            50,
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.20.2",
+      "nativeName": "Infect",
+      "prerequisiteCode": "S=20=8",
+      "baseSourceId": 430052001,
+      "rows": [
+        {
+          "sourceId": 430052001,
+          "names": {
+            "ru": "Ядовитый удар",
+            "en": "Infect"
+          },
+          "description": {
+            "ru": "Отравляет организм жертвы ядом.",
+            "en": "Injects venom into your opponent, inflicting the Poison effect upon them."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.20",
+                "minimumPoints": 8
+              }
+            ]
+          },
+          "timing": [
+            12,
+            2,
+            5
+          ]
+        },
+        {
+          "sourceId": 430052002,
+          "names": {
+            "ru": "Ядовитый удар",
+            "en": "Infect"
+          },
+          "description": {
+            "ru": "Отравляет организм жертвы ядом.",
+            "en": "Injects venom into your opponent, inflicting the Poison effect upon them."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.27"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 45,
+            "branches": [
+              {
+                "branchId": "skill_category.20",
+                "minimumPoints": 8
+              }
+            ]
+          },
+          "timing": [
+            12,
+            2,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.20.5",
+      "nativeName": "Mind Venom",
+      "prerequisiteCode": "S=20=26",
+      "baseSourceId": 430053001,
+      "rows": [
+        {
+          "sourceId": 430053001,
+          "names": {
+            "ru": "Гниение",
+            "en": "Mind Venom"
+          },
+          "description": {
+            "ru": "Вызывает гниение, мешающее восстановлению ОЗ и ОМ и постепенно снижающее количество жизни.",
+            "en": "Injects poison into your opponent via a small wound, inflicting the Addle effect on them."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.20",
+                "minimumPoints": 26
+              }
+            ]
+          },
+          "timing": [
+            33,
+            2.5,
+            10
+          ]
+        },
+        {
+          "sourceId": 430053003,
+          "names": {
+            "ru": "Гниение",
+            "en": "Mind Venom"
+          },
+          "description": {
+            "ru": "Вызывает гниение, мешающее восстановлению ОЗ и ОМ и постепенно снижающее количество жизни.",
+            "en": "Injects poison into your opponent via a small wound, inflicting the Addle effect on them."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.27"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 45,
+            "branches": [
+              {
+                "branchId": "skill_category.20",
+                "minimumPoints": 26
+              }
+            ]
+          },
+          "timing": [
+            33,
+            2.5,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.20.6",
+      "nativeName": "Dispel",
+      "prerequisiteCode": "S=20=33",
+      "baseSourceId": 440002001,
+      "rows": [
+        {
+          "sourceId": 440002001,
+          "names": {
+            "ru": "Рассеивание",
+            "en": "Dispel"
+          },
+          "description": {
+            "ru": "Снимает с цели положительные магические эффекты.",
+            "en": "Removes one of your target's positive status effects."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.20",
+                "minimumPoints": 33
+              }
+            ]
+          },
+          "timing": [
+            26,
+            1,
+            15
+          ]
+        },
+        {
+          "sourceId": 440002002,
+          "names": {
+            "ru": "Рассеивание",
+            "en": "Dispel"
+          },
+          "description": {
+            "ru": "Снимает с цели положительные магические эффекты.",
+            "en": "Removes one of your target's positive status effects."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.27"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 45,
+            "branches": [
+              {
+                "branchId": "skill_category.20",
+                "minimumPoints": 33
+              }
+            ]
+          },
+          "timing": [
+            26,
+            1,
+            15
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skill_entry.20.8",
+      "nativeName": "Undermine",
+      "prerequisiteCode": "S=20=41",
+      "baseSourceId": 440004001,
+      "rows": [
+        {
+          "sourceId": 440004001,
+          "names": {
+            "ru": "Эфирная вспышка",
+            "en": "Undermine"
+          },
+          "description": {
+            "ru": "Увеличивает урон, наносимый цели следующей атакой.",
+            "en": "Increases the amount of damage your target takes from the next successful attack."
+          },
+          "learningRequirements": {
+            "classIds": [],
+            "classScope": "exact",
+            "minimumLevel": 1,
+            "branches": [
+              {
+                "branchId": "skill_category.20",
+                "minimumPoints": 41
+              }
+            ]
+          },
+          "timing": [
+            23,
+            0.5,
+            10
+          ]
+        },
+        {
+          "sourceId": 440004002,
+          "names": {
+            "ru": "Эфирная вспышка",
+            "en": "Undermine"
+          },
+          "description": {
+            "ru": "Увеличивает урон, наносимый цели следующей атакой.",
+            "en": "Increases the amount of damage your target takes from the next successful attack."
+          },
+          "learningRequirements": {
+            "classIds": [
+              "job.27"
+            ],
+            "classScope": "exact",
+            "minimumLevel": 45,
+            "branches": [
+              {
+                "branchId": "skill_category.20",
+                "minimumPoints": 41
+              }
+            ]
+          },
+          "timing": [
+            23,
+            0.5,
+            10
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -159,7 +159,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p .ci-artifacts
-          npm run test:ui -- tests/ui/catalog-adapter.spec.mjs tests/ui/catalog-adoption.spec.mjs tests/ui/build-load-races.spec.mjs tests/ui/skill-catalog.spec.mjs tests/ui/skill-variants.spec.mjs tests/ui/custom-skill-learning.spec.mjs tests/ui/native-passive-effects.spec.mjs tests/ui/build-context.spec.mjs tests/ui/admin-entry.spec.mjs --project=chromium --reporter=json > .ci-artifacts/catalog-report.json
+          npm run test:ui -- tests/ui/catalog-adapter.spec.mjs tests/ui/catalog-adoption.spec.mjs tests/ui/build-load-races.spec.mjs tests/ui/skill-catalog.spec.mjs tests/ui/skill-variants.spec.mjs tests/ui/custom-skill-learning.spec.mjs tests/ui/skill-profiles.spec.mjs tests/ui/native-passive-effects.spec.mjs tests/ui/build-context.spec.mjs tests/ui/admin-entry.spec.mjs --project=chromium --reporter=json > .ci-artifacts/catalog-report.json
 
       # Capture the populated skill view before the next Playwright batch
       # clears test-results. All catalog sessions and records here are synthetic.

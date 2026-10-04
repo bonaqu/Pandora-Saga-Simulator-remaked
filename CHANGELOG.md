@@ -2,7 +2,24 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
-## Modern 3.09 — native passive replacement (release candidate)
+## Modern 3.10 — conditional active-skill profiles, candidate
+
+- Existing active skills can have bounded class/level/branch variants without
+  duplicate skill slots. The most specific learned variant supplies the same
+  localized text, MP and timing to the learned view and tooltip. Old pins keep
+  their original projections; interrupted probes restore state transactionally.
+- The private editor shows one selected form, clear conditions and current/
+  preview values. Base fields and other variants stay independent; ambiguous
+  conditions are rejected before publication. Deleting a variant is draft-first.
+- An offline reviewed dataset contains 17 existing identities / 37 definitions,
+  including future level-50 variants. Minstrel's Song remains unresolved. This
+  is not automatic publication or a claim of verified new combat formulas;
+  native duration/effects remain explicitly retained.
+- Modern drops only the obsolete hidden FC2 hosting counter. Legacy is untouched.
+- Local validation uses one risk-related Chromium group, not three full browser
+  suites. Production deployment/data publication and live acceptance are pending.
+
+## Modern 3.09 — native passive replacement, 2026-10-04
 
 - Fourteen identified source passives can explicitly replace their intrinsic
   contribution instead of stacking new numbers on top. Empty replacement

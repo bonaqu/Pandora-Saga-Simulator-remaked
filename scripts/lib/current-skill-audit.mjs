@@ -1,4 +1,5 @@
 // Reference reconciliation only: no draft creation, publication or formula import.
+import { analyzeProfileSelectors } from './current-skill-profile-selectors.mjs';
 export const CLASS_IDS = Object.freeze([
   'WARRIOR', 'GLADIATOR', 'JUGGERNAUT', 'DRAGOON', 'KNIGHT', 'GENERAL', 'PALADIN',
   'SCOUT', 'ARCHER', 'SNIPER', 'PREDATOR', 'AGENT', 'ASSASSIN', 'DISTURBANCE',
@@ -134,6 +135,8 @@ export function auditCurrentSkills({ skills, english, classes }, nativeSkills, n
   const variantGroups = [...groups].filter(([, variants]) => variants.length > 1).map(([simulatorId, variants]) => ({
     simulatorId, sourceIds: variants.map(row => row.sourceId),
     distinctDefinitions: new Set(variants.map(row => JSON.stringify({ text: row.text, current: row.current }))).size,
+    selectorAnalysis: analyzeProfileSelectors(variants.map(row => ({ sourceId: row.sourceId,
+      learningDefinition: row.comparisons.find(candidate => candidate.simulatorId === simulatorId).learningDefinition.current }))),
     policy: 'Do not collapse differing source variants into one published record' }));
   const matched = new Set(groups.keys());
   return { policy: 'Read-only audit; candidates and matching definitions are not runtime/mechanics acceptance',

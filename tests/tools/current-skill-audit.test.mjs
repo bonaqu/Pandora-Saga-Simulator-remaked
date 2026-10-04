@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import nativeSkills from '../../data/generated/skills.v1.json' with { type: 'json' };
 import nativeCharacters from '../../data/generated/character.v1.json' with { type: 'json' };
 import { auditCurrentSkills, CLASS_IDS, nativeLearningDefinition } from '../../scripts/lib/current-skill-audit.mjs';
+import { analyzeProfileSelectors } from '../../scripts/lib/current-skill-profile-selectors.mjs';
 const parents = [null, 0, 1, 1, 0, 4, 4, null, 7, 8, 8, 7, 11, 11, null, 14, 15, 15, 14, 18, 18, null, 21, 22, 22, 21, 25, 25];
 const classes = Object.fromEntries(CLASS_IDS.map((key, i) => [key, { parent: parents[i] == null ? null : CLASS_IDS[parents[i]], name: key }]));
 const nativeClasses = nativeCharacters.records.filter(row => row.kind === 'class');
@@ -17,6 +18,41 @@ const audit = (rows, strings, classRows = classes) => auditCurrentSkills({
   english: { classes: englishClasses, skills: strings }, classes: classRows
 }, nativeSkills.records, nativeClasses);
 const en = name => ({ n: name, d: 'fixture EN' });
+
+test('source profile domains distinguish class-specific and nested upgrades, without array-order priority or approval of effects', () => {
+  const profile = (sourceId, classes, level, branches = []) => ({ sourceId, learningDefinition: { classes, level, branches } });
+  const candidates = [profile(1, CLASS_IDS, 0, [{ branch: 'defense', amount: 8 }]),
+    profile(3, ['GENERAL'], 45, [{ branch: 'defense', amount: 8 }]), profile(4, ['PALADIN'], 45, [{ branch: 'defense', amount: 8 }])];
+  const before = JSON.stringify(candidates), result = analyzeProfileSelectors(candidates);
+  assert.equal(result.status, 'disjoint-or-nested-candidates'); assert.equal(result.mechanicsVerified, false);
+  assert.deepEqual(result.pairs.map(pair => pair.relation), ['nested-conditions', 'nested-conditions', 'disjoint-classes']);
+  assert.equal(JSON.stringify(candidates), before);
+  const branches = analyzeProfileSelectors([profile(1, CLASS_IDS, 0, [{ branch: 'alchemy', amount: 12 }]),
+    profile(3, CLASS_IDS, 0, [{ branch: 'alchemy', amount: 61 }])]);
+  assert.equal(branches.pairs[0].relation, 'nested-conditions');
+  for (const rows of [candidates, candidates.slice().reverse()]) assert.equal(analyzeProfileSelectors(rows).status, result.status);
+});
+
+test('identical and incomparable profile conditions require manual resolution, including a same-gate upgrade link', () => {
+  const profile = (sourceId, branches) => ({ sourceId, learningDefinition: { classes: CLASS_IDS, level: 1, branches } });
+  const same = analyzeProfileSelectors([profile(340001001, [{ branch: 'hymn', amount: 8 }]), profile(340001004, [{ branch: 'hymn', amount: 8 }])]);
+  assert.equal(same.status, 'manual-resolution-required'); assert.equal(same.pairs[0].relation, 'identical-conditions');
+  const incomparable = analyzeProfileSelectors([profile(1, [{ branch: 'alchemy', amount: 12 }]), profile(2, [{ branch: 'hymn', amount: 8 }])]);
+  assert.equal(incomparable.status, 'manual-resolution-required'); assert.equal(incomparable.pairs[0].relation, 'incomparable-conditions');
+  assert.throws(() => analyzeProfileSelectors([]));
+  assert.throws(() => analyzeProfileSelectors([profile(1, [{ branch: 'hymn', amount: 0 }]), profile(2, [])]));
+});
+
+test('audited class variants include domain evidence rather than silently selecting one current source row', () => {
+  const report = audit([row(168001001, { charLevel: 0, classes: all, reqs: [{ branch: 'defense', amount: 8 }] }),
+    row(168001003, { charLevel: 45, classes: { GENERAL: 1 }, reqs: [{ branch: 'defense', amount: 8 }] }),
+    row(168001004, { charLevel: 45, classes: { PALADIN: 1 }, reqs: [{ branch: 'defense', amount: 8 }] })],
+    { 168001001: en('Blocking'), 168001003: en('Blocking'), 168001004: en('Blocking') });
+  assert.equal(report.variantGroups[0].simulatorId, 'skill.5.3');
+  assert.equal(report.variantGroups[0].selectorAnalysis.status, 'disjoint-or-nested-candidates');
+  assert.equal(report.variantGroups[0].selectorAnalysis.mechanicsVerified, false);
+  assert.equal(report.rows.length, 3); assert.equal(report.nativeCount, 211);
+});
 
 test('28 identities verify exact engine code, family and parent; source classes cannot drift silently', () => {
   assert.equal(audit([], {}).classChecks.length, 28);

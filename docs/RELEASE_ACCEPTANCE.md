@@ -1,9 +1,9 @@
 # Release acceptance
 
-## Modern 3.09 — native passive replacement, candidate
+## Modern 3.09 — native passive replacement, published and verified
 
-Local candidate only. Production remains accepted 3.08/catalog 22 until the
-feature checks, merge, actual deployment and live acceptance below are recorded.
+Accepted on 2026-10-04 after PR41 merged as
+`a5d2cc6910359288c92a6b1d19c9175e9bbebc4a`. Production is 3.09/catalog 22.
 No production catalog record, draft, password or session secret was changed.
 
 - 14 mapped intrinsic contributions use exact-count build anchors and original
@@ -29,6 +29,48 @@ No production catalog record, draft, password or session secret was changed.
   new service, paid resource or automatic admin seed is introduced.
 - Synthetic test values are not current-server balance and will not be published.
   Full class-variant/timing/type/combat reconciliation remains in the queue.
+
+Actual publication and acceptance:
+
+- Final feature HEAD `d3a988f3b7bd4eb6b4c2cad547718d945dfbe8fa`: Feature CI
+  `37198517572` and Worker verification `37198517565` passed. Exact feature and
+  squash trees equal `196d549fe69d2b2ea6060cb312e34e586a8d4599`. The earlier
+  run failed one outdated generic editor-copy assertion; the assertion was
+  updated to require retained mode, +10 percentage points and level 12. App
+  behavior and assertions were not weakened to pass.
+- Pages `37199641421` and Worker `37199641394` passed. Downloaded artifact tar
+  SHA-256: `c8c2024f7fb40489477d770f778d70718c42729c93bc946a57a72ef589c828ab`.
+  Eleven selected live files match it, including generated Modern calculation
+  guards and passive metadata. All 459 Legacy files and the workbook are
+  identical to accepted 3.08. Cache: `pandora-remaked-3.09-698a82fbdd96db1d`.
+  Worker: `3c33f425-2d84-4220-9b05-849a992c68cc`; actual private editor script
+  matches committed source. Existing CI authentication/migration gates passed;
+  no new migration, secret or service was introduced.
+- Actual password-file login, mapped native numbers, add/replace and authenticated
+  server preview passed. A server-validated **unpublished** Hawkeye preview was
+  applied only in an isolated browser: its precise native Accuracy contribution
+  is removed once and replaced with a temporary +3. Old revision 22, comparison
+  projection, restoration and fresh/offline preview recipient preserve exact
+  payloads and summaries. All record-writing admin routes except preview were
+  blocked; none occurred. Public revision 22 is structurally unchanged.
+- Logout revokes the real session. URL/title, meaningful content, no framework
+  overlay, PC 1440×900 and mobile-sized 390×844 bounds/interaction assertions
+  passed; actual public/private images were inspected. Application page/console
+  errors are empty; the initial anonymous session 401 is expected.
+- **Known pre-existing offline warning:** the preserved hidden FC2 hosting
+  counter requests `media.fc2.com/counter_img.php?id=50` without a network.
+  Diagnosis confirmed this is the sole offline console failure; calculations,
+  cached loading and recipient restoration passed. It is separately counted in
+  evidence, not reported as zero network errors. Modern-only removal has been
+  implemented locally with an exact Legacy-preservation test, but is not part
+  of published 3.09. The museum counter remains unchanged.
+
+Evidence outside Git: `native-passive-309-live/evidence.json`, four inspected
+public/private screenshots, `native-passive-309-worker-evidence.json` and
+`native-passive-309-pages-37199641421/artifact-evidence.json` under
+`D:\CODEX\Tasks\pandora-admin-runtime`. Annotated `v3.09` identifies the actual
+squash and these gates, including the hosting-pixel limitation. Physical mobile
+devices and complete server-skill balance remain unverified.
 
 ## Modern 3.08 — custom learning and elemental thresholds, published and verified
 
