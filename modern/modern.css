@@ -1938,10 +1938,11 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
        then shift it 1px so both boxes keep the exact same visual center. */
     width: calc(var(--rm-compact-number-width) + 2px);
     justify-self: end;
-    /* The retained skill row has a 2px effective right-edge inset at the
-       single-column breakpoint. Compensate it so the caption center follows
-       the actual input/value center rather than the nominal grid track. */
-    transform: translateX(3px);
+    /* CI geometry shows the header track sits 2px to the right of the
+       retained value track at the single-column desktop breakpoint. The
+       wider caption box already shifts its center 1px left; one more pixel
+       completes the alignment without clipping Adeptness. */
+    transform: translateX(-1px);
     text-align: center;
     font-size: 11px;
     white-space: nowrap;
