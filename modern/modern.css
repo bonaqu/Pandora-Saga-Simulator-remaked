@@ -1837,3 +1837,127 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
 #remaked-budget-warning:empty {
   display: none;
 }
+
+
+/* Compact alignment polish for the character and skill editors. Keep native
+   number inputs (and therefore their browser-provided +/-1 spinner buttons),
+   but trim unused horizontal space without assuming every skill is two-digit:
+   the recovered skill table includes requirements up to 102. */
+.remaked-modern {
+  --rm-compact-number-width: 54px;
+}
+.remaked-modern #body [data-remaked-calculator-attribute] {
+  position: relative;
+}
+.remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child > .input_gt {
+  grid-template-columns: var(--rm-compact-number-width) minmax(0, 1fr);
+}
+.remaked-modern #body [data-remaked-calculator-attribute] .remaked-calculator-number,
+.remaked-modern #body [data-remaked-skill-group] .remaked-skill-number {
+  width: var(--rm-compact-number-width);
+}
+
+/* The retained 2P/3P cost is a second source row. In Modern it is a small
+   read-only badge, so anchor it to the vertical middle of the stat card
+   instead of leaving its text at the source row's top edge. */
+.remaked-modern #body [data-remaked-calculator-attribute] > ul:nth-of-type(2) {
+  position: absolute;
+  inset-block: 0;
+  right: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  pointer-events: none;
+}
+.remaked-modern #body [data-remaked-calculator-attribute] > ul:nth-of-type(2) > [id^="Status"][id$="_4"] {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px !important;
+  height: 22px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  line-height: 1;
+}
+
+/* Riding source cells use Legacy top padding. Normalize only the Modern
+   presentation so both Re Horse and the percentage sit on the visual midline. */
+.remaked-modern #body [data-remaked-calculator-horse] tr:last-child > td > ul {
+  min-height: 28px;
+  align-items: stretch;
+}
+.remaked-modern #body [data-remaked-calculator-horse] #Text_19,
+.remaked-modern #body [data-remaked-calculator-horse] tr:last-child .input_gt {
+  box-sizing: border-box;
+  min-height: 28px;
+  margin: 0 !important;
+  padding: 0 6px !important;
+}
+.remaked-modern #body [data-remaked-calculator-horse] #Text_19 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.remaked-modern #body [data-remaked-calculator-horse] tr:last-child .input_gt {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.remaked-modern #body [data-remaked-calculator-horse] #Status_81 {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  line-height: 1;
+}
+
+/* Headings follow the actual right-aligned value tracks, not the center of the
+   flexible 80px source columns. This keeps Adeptness/Potential centered over
+   their controls while the panel narrows. */
+@media (min-width: 861px) {
+  .remaked-modern #body [data-remaked-skill-group="Potential"] [data-remaked-skill-potential-value] {
+    box-sizing: border-box;
+    width: var(--rm-compact-number-width) !important;
+    justify-self: end;
+    text-align: end !important;
+  }
+  [data-remaked-skill-column-header] > span:nth-child(2),
+  [data-remaked-skill-column-header] > span:nth-child(3),
+  [data-remaked-skill-column-header] > span:nth-child(5),
+  [data-remaked-skill-column-header] > span:nth-child(6) {
+    box-sizing: border-box;
+    width: var(--rm-compact-number-width);
+    justify-self: end;
+    text-align: center;
+    white-space: nowrap;
+    overflow: visible;
+  }
+}
+
+/* At the two-column desktop breakpoint, mirror the real 12px gap between the
+   two skill-row columns. The 4px spacer plus the two normal 4px grid gaps makes
+   the header geometry identical to the rows below it. */
+@media (min-width: 1366px) {
+  [data-remaked-skill-column-header] {
+    grid-template-columns:
+      minmax(108px, 1.25fr) minmax(80px, 1fr) minmax(80px, 1fr)
+      4px
+      minmax(108px, 1.25fr) minmax(80px, 1fr) minmax(80px, 1fr);
+    column-gap: 4px;
+  }
+  [data-remaked-skill-column-header]::before {
+    content: "";
+    grid-column: 4;
+    grid-row: 1;
+  }
+  [data-remaked-skill-column-header] > span:nth-child(1) { grid-column: 1; }
+  [data-remaked-skill-column-header] > span:nth-child(2) { grid-column: 2; }
+  [data-remaked-skill-column-header] > span:nth-child(3) { grid-column: 3; }
+  [data-remaked-skill-column-header] > span:nth-child(4) { grid-column: 5; }
+  [data-remaked-skill-column-header] > span:nth-child(5) { grid-column: 6; }
+  [data-remaked-skill-column-header] > span:nth-child(6) { grid-column: 7; }
+}
