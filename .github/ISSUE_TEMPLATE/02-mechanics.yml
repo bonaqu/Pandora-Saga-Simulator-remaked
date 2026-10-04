@@ -14,17 +14,6 @@ body:
         Use this form for incorrect stat calculations, passives, skills, damage formulas, and other game mechanics.
 
   - type: dropdown
-    id: report_language
-    attributes:
-      label: "Язык сообщения / Report language"
-      options:
-        - "Русский / Russian"
-        - "English / Английский"
-        - "Русский + English / Both"
-    validations:
-      required: true
-
-  - type: dropdown
     id: category
     attributes:
       label: "Раздел / Category"
@@ -81,12 +70,6 @@ body:
       description: "Укажите ожидаемый результат и, если известно, формулу. / Provide the expected result and formula if known."
     validations:
       required: true
-
-  - type: textarea
-    id: source
-    attributes:
-      label: "Источник или подтверждение / Source or evidence"
-      description: "Ссылка на игровую информацию, старый симулятор, wiki, скриншот из игры или другое подтверждение. / Link to game data, legacy simulator, wiki, in-game screenshot, or other evidence."
 
   - type: textarea
     id: reproduction
