@@ -1938,7 +1938,10 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
        then shift it 1px so both boxes keep the exact same visual center. */
     width: calc(var(--rm-compact-number-width) + 2px);
     justify-self: end;
-    transform: translateX(1px);
+    /* The retained skill row has a 2px effective right-edge inset at the
+       single-column breakpoint. Compensate it so the caption center follows
+       the actual input/value center rather than the nominal grid track. */
+    transform: translateX(3px);
     text-align: center;
     font-size: 11px;
     white-space: nowrap;
