@@ -3,6 +3,7 @@ description: "Неверное название, перевод, значени�
 title: "[DATA] "
 labels:
   - bug
+  - data
 body:
   - type: markdown
     attributes:

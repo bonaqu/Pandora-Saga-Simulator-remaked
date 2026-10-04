@@ -3,6 +3,7 @@ description: "Неверная механика, расчёт или форму�
 title: "[MECHANICS] "
 labels:
   - bug
+  - mechanics
 body:
   - type: markdown
     attributes:

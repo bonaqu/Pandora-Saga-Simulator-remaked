@@ -2,7 +2,7 @@ name: "✨ Предложение функции / Feature request"
 description: "Предложить новую функцию или улучшение / Suggest a new feature or improvement"
 title: "[FEATURE] "
 labels:
-  - enhancement
+  - feature
 body:
   - type: markdown
     attributes:

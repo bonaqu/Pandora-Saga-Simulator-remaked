@@ -3,6 +3,7 @@ description: "Проблема интерфейса, отображения ил
 title: "[UI] "
 labels:
   - bug
+  - ui
 body:
   - type: markdown
     attributes:

@@ -1,0 +1,45 @@
+name: Issue auto labels
+
+on:
+  issues:
+    types: [opened, edited, reopened, labeled]
+
+permissions:
+  issues: write
+
+concurrency:
+  group: issue-auto-label-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  translation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add translation label for the data form
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          script: |
+            // Read current state so a queued event cannot label an outdated body.
+            const { data: issue } = await github.rest.issues.get({
+              ...context.repo,
+              issue_number: context.issue.number,
+            });
+            const labels = issue.labels.map(label => typeof label === 'string' ? label : label.name);
+            if (!labels.includes('bug') || !labels.includes('data') || labels.includes('translation')) {
+              return;
+            }
+
+            // GitHub renders dropdown labels as H3 headings in the issue body.
+            // Match this section's entire value, never mentions in free-text fields.
+            const sections = (issue.body || '').replace(/\r\n?/g, '\n').split(/^### /m);
+            const fields = sections.slice(1).filter(section =>
+              section.split('\n', 1)[0].trim() === 'Тип данных / Data type');
+            if (fields.length !== 1) return;
+            const value = fields[0].slice(fields[0].indexOf('\n') + 1).trim();
+            if (value !== 'Перевод / Translation') return;
+
+            await github.rest.issues.addLabels({
+              ...context.repo,
+              issue_number: context.issue.number,
+              labels: ['translation'],
+            });
