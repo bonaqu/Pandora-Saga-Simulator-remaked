@@ -69,9 +69,12 @@ test('base-stat inputs stay on one x-axis and derived totals never shift the fie
 
   const sprBefore = before.SPR;
   await page.evaluate(() => {
-    const total = document.querySelector('[data-remaked-number-total="SPR"]');
-    total.hidden = false;
-    total.textContent = '→ 54';
+    // Model the same derived bonus state as SPR 40 → 54. Keeping the derived
+    // slot non-zero also prevents the normal Modern refresh observer from
+    // immediately hiding the output again.
+    Status.SPR[2] = 14;
+    document.getElementById('StatusSPR_0').textContent = '54';
+    PandoraRemaked.calculatorControls.refresh();
   });
 
   const after = await inputX();
