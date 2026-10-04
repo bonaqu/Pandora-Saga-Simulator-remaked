@@ -60,7 +60,10 @@ async function makeFixtures(page) {
 
 async function modernProjection(page, payload) {
   await openModern(page);
-  return page.evaluate((build) => window.PandoraRemaked.adapter.evaluateBuild(build), payload);
+  return page.evaluate((build) => ({
+    ...window.PandoraRemaked.adapter.evaluateBuild(build),
+    approvedNames: window.PandoraRemakedGameTerms.en
+  }), payload);
 }
 
 async function legacyProjection(page, payload, fields) {
@@ -107,6 +110,7 @@ async function legacyProjection(page, payload, fields) {
   }, payload);
 
   return page.evaluate((definitions) => ({
+    identity: window.Status.Job.slice(0, 3),
     metadata: {
       race: (document.getElementById('StatusRace')?.textContent || '').trim(),
       raceSkill: (document.getElementById('StatusRSkill')?.textContent || '').trim(),
@@ -131,7 +135,21 @@ test('representative serialized builds produce the same calculated projection in
     const fields = modern.summary.map(({ key, sourceId }) => ({ key, sourceId }));
     const legacy = await legacyProjection(page, fixture.payload, fields);
 
-    expect(legacy.metadata, `${fixture.name} metadata`).toEqual(modern.metadata);
+    // Modern deliberately uses approved current names; the museum must keep
+    // its historical names. Resolve by stable source IDs, not by fuzzy text,
+    // while retaining exact metadata and numerical projection assertions.
+    const [race, racialSkill, job] = legacy.identity;
+    const expectedMetadata = {
+      ...legacy.metadata,
+      race: modern.approvedNames[`race.${race}`] || legacy.metadata.race,
+      raceSkill: modern.approvedNames[`racial_skill.${race}.${racialSkill}`] || legacy.metadata.raceSkill,
+      job: modern.approvedNames[`job.${job}`] || legacy.metadata.job
+    };
+    expect(modern.metadata, `${fixture.name} current metadata`).toEqual(expectedMetadata);
+    if (fixture.name === 'changed-race') {
+      expect(legacy.metadata.raceSkill).toBe('Harmony with Nature');
+      expect(modern.metadata.raceSkill).toBe("Nature's Harmony");
+    }
     expect(legacy.summary, `${fixture.name} calculated summary`).toEqual(
       modern.summary.map((field) => ({ key: field.key, display: field.display }))
     );
