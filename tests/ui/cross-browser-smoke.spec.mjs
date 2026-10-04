@@ -123,9 +123,6 @@ test('wide workspace and original riding controls remain complete across respons
   await assertWorkspaceFits(page);
   const weapon = await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').boundingBox();
   expect(weapon.y + weapon.height).toBeLessThanOrEqual(900);
-  await page.locator('[data-remaked-skill-bulk]').click();
-  await assertWorkspaceFits(page, { expanded: true });
-  await page.locator('[data-remaked-skill-bulk]').click();
   for (const width of [1365, 1366, 390, 1920]) {
     await page.setViewportSize({ width, height: 900 });
     await assertWorkspaceFits(page);
@@ -330,16 +327,21 @@ test('calculator code rejects invalid data, restores compressed data and riding 
   expect(errors).toEqual([]);
 });
 
-test('native skill steps, full branch names and explicit effects work on a phone', async ({ page }) => {
+test('direct skill numbers, full branch names and explicit effects work on a phone', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 }); await page.goto('/');
   await expect(page.locator('#TextSkill_9')).toHaveText('Assassination');
   await page.locator('[data-remaked-number="Lev"]').fill('55');
   await page.locator('[data-remaked-number="Lev"]').press('Enter');
+  const input = page.locator('[data-remaked-skill-number="1"]');
   const initial = await page.evaluate(() => Store());
-  const expected = await page.evaluate(() => { document.getElementById('remaked-skill-1-Adeptness-right1').click(); return Store(); });
+  const current = Number(await input.inputValue());
+  const expected = await page.evaluate(value => {
+    CalcSet('Skill', 1, value - (Status.Skill[1][0] + Status.Skill[1][1]), 'Adeptness');
+    return Store();
+  }, current + 1);
   await page.evaluate(code => PandoraRemaked.adapter.load(code), initial);
-  await page.locator('[data-remaked-skill-step="remaked-skill-1-Adeptness-right1"]').focus();
-  await page.keyboard.press('Space'); expect(await page.evaluate(() => Store())).toBe(expected);
+  await input.fill(String(current + 1)); await input.press('Enter');
+  expect(await page.evaluate(() => Store())).toBe(expected);
   await page.locator('[data-remaked-effect="1"]').focus(); await page.keyboard.press('Enter');
   await expect(page.locator('#POTView')).toBeVisible();
   expect(await page.evaluate(() => Store())).toBe(expected);

@@ -1716,3 +1716,16 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   }
   .remaked-hero-art::after { background: linear-gradient(90deg, #e5edcf, transparent 12%); }
 }
+
+
+/* Direct skill allocation: Adeptness is the only editable branch value.
+   Potential is a class-defined read-only limit, so each group needs only its
+   caption plus one value/control at every breakpoint. */
+.remaked-modern #body [data-remaked-skill-group] > ul {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+.remaked-modern #body [data-remaked-skill-group] .remaked-skill-number {
+  width: 58px;
+  justify-self: end;
+}

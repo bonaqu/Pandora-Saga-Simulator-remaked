@@ -40,7 +40,7 @@ for (const width of [1440, 1920]) test(`complete desktop workspace brings Equipm
     expect(lines, action + ' should fit without an accidental extra row').toBe(1);
   }
   await expect(page.locator('[data-remaked-number]:visible')).toHaveCount(7);
-  await expect(page.locator('[data-remaked-skill-step]:visible')).toHaveCount(80);
+  await expect(page.locator('[data-remaked-skill-number]:visible')).toHaveCount(20);
   const first = await page.locator('[data-remaked-skill-row="0"]').boundingBox();
   const second = await page.locator('[data-remaked-skill-row="6"]').boundingBox();
   expect(second.x).toBeGreaterThan(first.x + first.width);
@@ -110,12 +110,10 @@ test('long approved translations and larger steps grow naturally across the desk
     PandoraRemaked.i18n.setLocale('ru');
   });
   await expect(page.locator('#TextSkill_1')).toHaveText('Проверочное очень длинное название ветки умений');
-  await page.locator('[data-remaked-skill-bulk]').click();
   for (const width of [320, 390, 720, 768, 861, 1024, 1099, 1280, 1365, 1366, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
-    await assertWorkspaceFits(page, { expanded: true });
+    await assertWorkspaceFits(page);
   }
-  await page.locator('[data-remaked-skill-bulk]').click();
   await page.setViewportSize({ width: 1366, height: 900 });
   await assertWorkspaceFits(page);
   await page.screenshot({ path: testInfo.outputPath('desktop-long-labels.png'), fullPage: true });

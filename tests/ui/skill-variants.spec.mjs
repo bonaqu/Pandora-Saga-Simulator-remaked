@@ -54,10 +54,13 @@ test('all 211 variant learning results match retained source ordering across 28 
       StatusMove('Lev', level - Status.Lev[0]); CalcSet('Lev');
       for (const allocated of [false, true]) {
         if (allocated) {
-          document.getElementById('remaked-skill-4-Potential-right3').click();
-          document.getElementById('remaked-skill-4-Adeptness-right3').click();
-          document.getElementById('remaked-skill-15-Potential-right3').click();
-          document.getElementById('remaked-skill-15-Adeptness-right3').click();
+          // Potential is a class-defined read-only cap. Exercise the same
+          // retained allocation engine by filling Adeptness up to that cap.
+          for (const category of [4, 15]) {
+            const current = Status.Skill[category][0] + Status.Skill[category][1];
+            const potential = Status.Skill[category][2] + Status.Skill[category][3];
+            if (potential > current) CalcSet('Skill', category, potential - current, 'Adeptness');
+          }
         }
         const oldLearn = Learn, oldFlag = Flag[3]; let learned, potential;
         try {

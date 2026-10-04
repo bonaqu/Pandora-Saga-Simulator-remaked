@@ -78,36 +78,97 @@
     });
   }
 
+  function currentAdeptness(index) {
+    var state = window.Status.Skill[index];
+    return state[0] + state[1];
+  }
+
+  function currentPotential(index) {
+    var state = window.Status.Skill[index];
+    return state[2] + state[3];
+  }
+
+  function syncSkillBounds(input) {
+    var index = Number(input.dataset.remakedSkillNumber);
+    input.min = String(window.Status.Skill[index][0]);
+    input.max = String(currentPotential(index));
+  }
+
+  function syncSkillInput(input) {
+    var index = Number(input.dataset.remakedSkillNumber);
+    syncSkillBounds(input);
+    if (document.activeElement !== input) {
+      input.value = String(currentAdeptness(index));
+      input.removeAttribute('aria-invalid');
+    }
+  }
+
+  function rebuildLearningList() {
+    if (!window.Flag[3]) return;
+    // Learn is derived UI state. Rebuild every prerequisite pool from the
+    // current class/level/branches so an unrelated catalog projection cannot
+    // leave a native icon stale after a direct branch edit.
+    window.Learn = [[], [], [], []];
+    for (var category = 0; category < window.Name.Skill.length; category++)
+      window.SkillList('Potential', category);
+    window.SkillList('Adeptness', 0);
+    window.SkillList('Create');
+    window.SkillList('Color');
+  }
+
+  function adeptnessInput(index, value, caption) {
+    var input = document.createElement('input');
+    input.type = 'number'; input.inputMode = 'numeric'; input.step = '1'; input.required = true;
+    input.className = 'remaked-calculator-number remaked-skill-number';
+    input.dataset.remakedSkillNumber = String(index);
+    input.setAttribute('aria-labelledby', 'TextSkill_' + index + ' ' + caption.id);
+    value.hidden = true;
+
+    function cancel() {
+      input.value = String(currentAdeptness(index));
+      input.removeAttribute('aria-invalid');
+    }
+    function commit() {
+      syncSkillBounds(input);
+      if (input.value === '' || input.validity.badInput || !Number.isInteger(input.valueAsNumber) || !input.checkValidity()) {
+        input.setAttribute('aria-invalid', 'true');
+        input.reportValidity();
+        return;
+      }
+      var requested = input.valueAsNumber, delta = requested - currentAdeptness(index);
+      if (delta) window.CalcSet('Skill', index, delta, 'Adeptness');
+      rebuildLearningList();
+      input.value = String(currentAdeptness(index));
+      input.removeAttribute('aria-invalid');
+      refresh();
+    }
+    input.addEventListener('input', function () { input.removeAttribute('aria-invalid'); });
+    input.addEventListener('blur', function () { if (input.value !== String(currentAdeptness(index))) commit(); });
+    input.addEventListener('keydown', function (event) {
+      event.stopPropagation();
+      if (event.key === 'Enter') { event.preventDefault(); commit(); }
+      else if (event.key === 'Escape') { event.preventDefault(); cancel(); input.blur(); }
+    });
+    input.addEventListener('keypress', function (event) { event.stopPropagation(); });
+    input.addEventListener('keyup', function (event) { event.stopPropagation(); });
+    syncSkillInput(input);
+    return input;
+  }
+
   function group(row, index, mode, value) {
     var holder = document.createElement('li'); holder.dataset.remakedSkillGroup = mode;
     var list = document.createElement('ul'); holder.appendChild(list);
     list.setAttribute('role', 'group');
     var caption = document.createElement('li'); caption.dataset.remakedSkillCaption = mode;
-    list.appendChild(caption); list.appendChild(value);
-    var steps = document.createElement('li'); steps.className = 'remaked-skill-primary';
-    var bulk = document.createElement('li'); bulk.className = 'remaked-skill-bulk';
-    list.appendChild(steps); list.appendChild(bulk);
-    var inputs = row.querySelectorAll('input[type="image"]');
-    Array.prototype.forEach.call(inputs, function (source) {
-      if (source.getAttribute('onclick').indexOf("'" + mode + "'") === -1) return;
-      var stem = source.src.match(/\/(left|right)[123]\.png$/)[0].slice(1, -4);
-      source.id = 'remaked-skill-' + index + '-' + mode + '-' + stem;
-      var button = document.createElement('button'); button.type = 'button';
-      button.className = 'remaked-calculator-step'; button.dataset.remakedSkillStep = source.id;
-      button.addEventListener('click', function (event) {
-        event.stopPropagation();
-        // The retained callback owns costs, class defaults, limits, skill
-        // unlocks and recalculation. No copied inline code or new formula.
-        source.click(); refresh();
-      });
-      (stem.endsWith('1') ? steps : bulk).appendChild(button);
-    });
-    if (mode === 'Potential') {
-      var indicator = document.createElement('li'); indicator.className = 'remaked-skill-indicator remaked-skill-bulk';
-      var indicatorList = document.createElement('ul'); indicator.appendChild(indicatorList);
-      var label = document.createElement('li'); i18n.bindText(label, 'skills.indicator');
-      indicatorList.appendChild(label); indicatorList.appendChild(byId('Skill_' + index + '_3'));
-      list.appendChild(indicator);
+    caption.id = 'remaked-skill-' + index + '-' + mode.toLowerCase() + '-label';
+    list.appendChild(caption);
+    if (mode === 'Adeptness') {
+      list.appendChild(value);
+      list.appendChild(adeptnessInput(index, value, caption));
+    } else {
+      value.dataset.remakedSkillPotentialValue = String(index);
+      value.setAttribute('aria-live', 'polite');
+      list.appendChild(value);
     }
     row.appendChild(holder);
   }
@@ -126,13 +187,6 @@
       var potentialLabel = byId('StatusUnP_0').closest('.input_gt').previousElementSibling;
       potentialLabel.id = 'remaked-potential-budget-label'; i18n.bindText(potentialLabel, 'skills.potential');
       var tools = document.createElement('div'); tools.className = 'remaked-skill-tools';
-      var toggle = document.createElement('button'); toggle.type = 'button';
-      toggle.className = 'remaked-calculator-action'; toggle.dataset.remakedSkillBulk = '';
-      toggle.setAttribute('aria-pressed', 'false'); i18n.bindText(toggle, 'skills.largerSteps');
-      toggle.addEventListener('click', function () {
-        var show = this.getAttribute('aria-pressed') !== 'true';
-        this.setAttribute('aria-pressed', String(show)); root.dataset.remakedSkillExpanded = String(show);
-      });
       var actions = document.createElement('div'); actions.className = 'remaked-skill-tools-actions';
       var title = document.createElement('h2'); title.id = 'remaked-workbench-skills-title';
       title.className = 'remaked-workbench-title'; title.dataset.remakedWorkbenchTitle = 'skills';
@@ -142,7 +196,7 @@
       var summary = document.createElement('summary'); summary.textContent = '?';
       i18n.bindAttribute(summary, 'aria-label', 'skills.help'); explanation.appendChild(summary);
       var help = document.createElement('p'); i18n.bindText(help, 'skills.help'); explanation.appendChild(help);
-      actions.appendChild(toggle); actions.appendChild(explanation); tools.appendChild(actions); root.prepend(tools);
+      actions.appendChild(explanation); tools.appendChild(actions); root.prepend(tools);
       var columns = document.createElement('div'); columns.dataset.remakedSkillColumnHeader = '';
       columns.appendChild(document.createElement('span'));
       ['skills.adeptness', 'skills.potential'].forEach(function (key) {
@@ -203,12 +257,7 @@
         var label = caption.closest('[data-remaked-skill-row]').firstElementChild.textContent.trim();
         caption.parentElement.setAttribute('aria-label', label + ' ' + caption.textContent);
       });
-      document.querySelectorAll('[data-remaked-skill-step]').forEach(function (button) {
-        var source = byId(button.dataset.remakedSkillStep), title = source.title || source.alt;
-        text(button, title);
-        button.setAttribute('aria-label', button.closest('[role="group"]').getAttribute('aria-label') + ' ' + title);
-        button.disabled = source.disabled;
-      });
+      document.querySelectorAll('[data-remaked-skill-number]').forEach(syncSkillInput);
       document.querySelectorAll('[data-remaked-effect]').forEach(function (button) {
         text(button, byId('Text_' + (17 + Number(button.dataset.remakedEffect))).textContent);
         button.setAttribute('aria-pressed', String(Number(button.dataset.remakedEffect) === Number(window.Flag[8])));
