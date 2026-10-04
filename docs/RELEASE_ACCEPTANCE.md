@@ -1,10 +1,61 @@
 # Release acceptance
 
-## Modern 3.07 — current racial data, local acceptance only
+## Modern 3.07 — current racial data, published and verified
 
-Implementation is ready for PR/CI. No public acceptance or catalog update is
-claimed yet: the production head was revision 2 at preflight. Deployment does
-not automatically seed drafts or replace administrator data.
+PR39 was squash-merged as `800821b9f8ef6d7d8651831966ff0c86d4bd00a4` and
+accepted on 2026-10-04. Code deployment does not automatically seed drafts or
+replace administrator data: the 18 approved records were published explicitly
+through authenticated draft/preview/publish after both deployments passed.
+
+- Final feature HEAD `b07fc9877fe0dea60beb45907d671f7c5d0b6732`: Feature CI
+  `37169360124` and API verification `37169360087` succeeded. Main JSON report
+  confirms 212 expected, zero skipped/unexpected/flaky results. All configured
+  65 Python, 74 backend, source catalog, editor, pinned/offline, three-engine and
+  rendered visual gates passed. Feature and squash trees both equal
+  `7198289eb2e5948a60727c691e2d4e1407983023`.
+- Pages `37170094247` and Worker `37170094265` succeeded. Pages tar SHA-256:
+  `6c919a8e3c33bf53dff46cc8821e3c3d68f67651ced0338f4767f557c34065ee`.
+  All 24 sampled live files match the exact artifact; all 459 museum files and
+  retained runtime match the preservation artifact. Private source/archive and
+  credentials are absent. Cache `pandora-remaked-3.07-afde4830c181bfdc`;
+  workbook SHA-256 `c490f9757c02a0b73c24762e5ff73409b8a48052b04e1dc7c56c37b0949bc5c4`.
+- Worker `296001d1-fb89-4b0b-bdda-67542ee4e1cd`: deployment identity and health
+  passed; no migrations were needed. Actual editor asset exactly matches the
+  committed blob SHA-256 `7e206a7dbee7f8157edab624b330c07f13efbfd7cb0713c92173daa37cfb7512`.
+  Initial working-copy comparison differed only by Windows CRLF, not server code.
+- Real first-party admin login using the unchanged private-file password passed,
+  without credential output, tracing or password reset. Before any writes, all
+  18 server previews matched and no selected record had an unpublished draft or
+  unexpected published change. Normal version-checked API publication moved
+  head 2→20; immutable revision 2 and unrelated records remain unchanged. No
+  synthetic/sample records were published; the helper revoked its own session.
+- Actual published editor acceptance also passes: current Human +10/+12% and
+  weapon conditions, Eagle Eye's explicit range limitation and Stone Skin's
+  single -10% physical modifier appear in the real form. PC and touch-sized
+  editor screenshots were reviewed. Record-write requests were blocked during
+  this read-only UI check; none occurred. Normal logout passed, zero page errors.
+- Six actual public checks pass without injected catalogs: all 18 native output
+  deltas/removal, all five immediate click/Escape paths, Human/Dwarf +10/+12%
+  and Enkidu +12% on real weapon selections, race/passive switching, old/current
+  pins, independent touch shared-recipient payload/summary and offline cache.
+  PC 1440×900 and touch-emulated 390×844 RU/EN screenshots were reviewed.
+- Initial live diagnostics caught three helper-only errors: numeric no-passive
+  sentinel 3 is not a selector option and was exposed across asynchronous DOM
+  observer turns. A focused reproduction confirms the display stack at
+  `game-term-display.js:140`; try/finally restores the valid selection in the
+  same task. No runtime error assertion was relaxed and production code/data
+  were not changed for this helper correction. Exactly two disconnected requests
+  (FC2 counter and public `api/catalog?revision=20`) and their resource-console
+  messages are classified only in deliberate offline mode. Zero unexpected
+  page/console/request/HTTP errors; zero warnings.
+
+Evidence outside Git: `racial-307-publication.json`,
+`racial-307-worker-evidence.json`, `racial-307-pages-37170094247/artifact-evidence.json`
+and `racial-307-live/evidence.json` under `D:\CODEX\Tasks\pandora-admin-runtime`.
+The actual read-only editor report is `racial-307-live/admin-evidence.json`.
+Physical Android/iOS were not tested; no redundant full PWA reinstall was run.
+
+### Local implementation and repair evidence
 
 - Read-only source audit matches all 18 current public RU/EN names/descriptions
   and effect numbers from `skills.json`, `strings.en.json`, `racialPassives.json`.
@@ -21,8 +72,8 @@ not automatically seed drafts or replace administrator data.
   All seven localization checks then pass. Three Python workbook tests likewise
   assumed an empty global dictionary; all ten updated workbook checks pass,
   requiring preservation of the other translations plus exact current 24 names.
-  Other Python checks passed in the grouped run; CI still must establish the
-  complete final suite result (now 65 tests), not infer it from these subsets.
+  Other Python checks passed in the grouped run; final CI above subsequently
+  established the complete 65-test result, not inferred from these subsets.
 - Render inspection caught the new JOB description outside the actual card:
   fixed to a semantic li inside its existing scroll surface, with boxed width,
   wrapping and independent DOM text updates. Actual PC 1440×900 and touch-sized
@@ -44,7 +95,7 @@ existing project Playwright workflow, not a new setup. Reports/screenshots and
 synthetic sessions are outside Git; no real credentials in trace-enabled tests.
 Current CI still repeats PR/Pages browser gates; its optimization is separate.
 
-CI follow-up (still not publication): first Feature run `37167644279` passed
+CI follow-up before publication: first Feature run `37167644279` passed
 210 main checks but caught a historical/current naming equality assertion.
 The corrected differential keeps exact numerical comparisons and explicitly
 requires historical Harmony with Nature versus current Nature's Harmony.
@@ -55,8 +106,8 @@ retry-only pass. A same-task click/Escape regression first confirmed stale
 aria-expanded/hidden state before the 16ms observer timer. Modern click now
 refreshes the panel synchronously and Escape checks native Flag[2], not delayed
 ARIA. Seven focused panel checks and the affected scenario in all three engines
-pass; PC/touch-sized DEFENSE screenshots were reviewed. Final CI for this actual
-runtime fix remains required. No production records have been changed.
+pass; PC/touch-sized DEFENSE screenshots were reviewed. Final CI for this runtime
+fix and the publication gates above subsequently passed.
 
 ## Modern 3.06 — complete skill descriptions, published and verified
 

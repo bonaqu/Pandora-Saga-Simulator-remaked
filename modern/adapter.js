@@ -156,6 +156,11 @@
       if (statusNode) statusNode.innerHTML = statusPairs[pairIndex][1];
     }
 
+    // Learned/potential pools belong to the loaded character. Retained native
+    // callbacks append to them, so stale entries from the previous build could
+    // be colored after their icons were removed by the new potential list.
+    // Keep the Learn object identity; rebuild its derived arrays before callbacks.
+    for (var learnIndex = 0; learnIndex < 4; learnIndex += 1) window.Learn[learnIndex] = [];
     for (var skillIndex = 0; skillIndex < window.Name['Skill'].length; skillIndex += 1) {
       var learned = byId('Skill_' + skillIndex + '_1');
       var current = byId('Skill_' + skillIndex + '_2');

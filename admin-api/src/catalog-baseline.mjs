@@ -8,6 +8,7 @@ export const baselineRecords = [...equipment.records, ...souls.records, ...chara
   ...skills.records.map(source => ({ ...source, id: source.id.replace('skill.', 'skill_entry.'), kind: source.is_active ? 'active' : 'passive' }))];
 export const baselineById = new Map(baselineRecords.map(record => [record.id, record]));
 export const categories = equipment.categories;
+export const skillCategories = skills.categories.map(row => ({ id: row.id, index: row.legacy_id, name: row.name }));
 export const sourceFingerprint = equipment.metadata.generated_from[0].sha256;
 export const characterSourceFingerprint = character.sourceFingerprint;
 export const compatibilityLabels = Object.fromEntries(['race', 'job'].map(kind => [kind, terms.terms

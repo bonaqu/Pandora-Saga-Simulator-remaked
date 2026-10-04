@@ -85,6 +85,16 @@
       if (!record.calculationCode) values.appendChild(node('li', 'Числовых бонусов в расчётной строке нет.'));
     }
     if (record.kind === 'active') ['Стоимость MP', 'Время применения, с', 'Перезарядка, с', 'Длительность, с'].forEach(function (label, index) { values.appendChild(node('li', label + ': ' + record.timing[index])); });
+    if (record.kind === 'active' || record.kind === 'passive') {
+      var learning = record.learningRequirements;
+      if (learning) {
+        values.appendChild(node('li', 'Минимальный уровень: ' + learning.minimumLevel));
+        var classes = learning.classIds.map(function (id) { return meta.compatibilityLabels.job.find(function (row) { return 'job.' + row.index === id; })?.label || id; });
+        values.appendChild(node('li', 'Классы: ' + (classes.length ? classes.join(', ') + (learning.classScope === 'descendants' ? ' и их последующие профессии' : ' — только отмеченные') : 'любой')));
+        learning.branches.forEach(function (gate) { values.appendChild(node('li', 'Ветка: ' + (meta.skillCategories.find(function (row) { return row.id === gate.branchId; })?.name.en || gate.branchId) + ' ≥ ' + gate.minimumPoints)); });
+        if (!learning.branches.length) values.appendChild(node('li', 'Требований к очкам веток нет.'));
+      } else values.appendChild(node('li', 'Исходные условия изучения: ' + (current.nativeSkill?.prerequisites.en || record.prerequisiteCode)));
+    }
     if (record.kind === 'class') ['Базовое LP', 'Базовое MP', 'Делитель роста LP от уровня', 'Делитель роста MP от уровня', 'Делитель роста LP от STA', 'Делитель роста MP от SPR'].forEach(function (label, index) { values.appendChild(node('li', label + ': ' + record.progression[index])); });
     if (record.kind === 'racial') {
       values.appendChild(node('li', record.effectMode === 'replace' ? 'Исходная механика отключена. Действуют только числа ниже.' : 'Исходная механика: ' + current.nativeMechanics));
@@ -162,6 +172,41 @@
     parent.appendChild(row);
   }
   function formValue(field) { return editor.querySelector('[data-field="' + field + '"]').value; }
+  function learningBranchRow(gate, parent) {
+    var row = node('div', undefined, 'basic-fields'); row.dataset.learningBranchRow = '';
+    var branch = selectField('Ветка умений', meta.skillCategories.map(function (entry) { return [entry.id, entry.name.en]; }), gate.branchId, 'learningBranch', row);
+    branch.dataset.learningBranch = '';
+    var points = inputField('Нужно очков · 1–200', 'number', gate.minimumPoints, 'learningPoints', row, 1, 200);
+    points.dataset.learningPoints = ''; points.step = '1'; points.required = true;
+    row.appendChild(button('Убрать требование', function () { row.remove(); changing(); }, 'secondary'));
+    parent.appendChild(row);
+  }
+  function learningEditor(edit) {
+    var fieldset = node('fieldset', undefined, 'numeric-effects'); fieldset.appendChild(node('legend', 'Условия изучения навыка'));
+    var mode = selectField('Как определяется изучение', [['native', 'Исходные условия (как раньше)'], ['custom', 'Свои условия: класс, уровень, ветки']], edit.learningRequirements ? 'custom' : 'native', 'learningMode', fieldset);
+    var native = node('p', 'Исходное условие: ' + (current.nativeSkill?.prerequisites.en || current.nativeSkill?.prerequisiteCode || 'по шаблону'), 'help-text'); fieldset.appendChild(native);
+    var required = edit.learningRequirements || { classIds: [], classScope: 'exact', minimumLevel: 1, branches: [] };
+    var custom = node('fieldset', undefined, 'numeric-effects'); custom.dataset.customLearning = '';
+    custom.appendChild(node('legend', 'Свои условия'));
+    var basic = node('div', undefined, 'basic-fields'); custom.appendChild(basic);
+    var level = inputField('Минимальный уровень · 1–55', 'number', required.minimumLevel, 'learningLevel', basic, 1, 55); level.step = '1'; level.required = true;
+    selectField('Выбранные классы', [['exact', 'Только отмеченные'], ['descendants', 'Отмеченные и их последующие профессии']], required.classScope, 'learningClassScope', basic);
+    var choices = node('details'); choices.appendChild(node('summary', 'Разрешённые классы · ничего не отмечено = любой'));
+    var classOptions = node('div', undefined, 'compatibility-fields'); choices.appendChild(classOptions);
+    meta.compatibilityLabels.job.forEach(function (entry) {
+      var id = 'job.' + entry.index;
+      var checkbox = checkboxField(entry.label, required.classIds.indexOf(id) !== -1, 'learningClass', classOptions);
+      checkbox.dataset.learningClass = id;
+    }); custom.appendChild(choices);
+    custom.appendChild(node('p', 'Все указанные ниже ветки нужны одновременно. Числа — очки ветки, включая бонусы снаряжения. Доступные очки определяют наличие навыка в списке; вложенные — изучен ли он.', 'help-text'));
+    var branches = node('div'); branches.dataset.learningBranches = ''; custom.appendChild(branches);
+    required.branches.forEach(function (gate) { learningBranchRow(gate, branches); });
+    custom.appendChild(button('Добавить требование ветки', function () { learningBranchRow({ branchId: 'skill_category.1', minimumPoints: 1 }, branches); changing(); }, 'secondary'));
+    custom.appendChild(node('p', 'Эти поля управляют изучением и дополнительными бонусами. Они не переписывают встроенные формулы, боевые эффекты или тип исходного навыка.', 'help-text'));
+    fieldset.appendChild(custom);
+    function visibility() { custom.hidden = mode.value !== 'custom'; custom.disabled = custom.hidden; native.hidden = !custom.hidden; }
+    mode.addEventListener('change', visibility); visibility(); editor.appendChild(fieldset);
+  }
   function collect() {
     var edit = structuredClone(current.edit);
     ['names', 'description', 'notes', 'acquisition', 'modifiers'].forEach(function (field) {
@@ -181,6 +226,11 @@
       return edit;
     }
     if (edit.kind === 'active' || edit.kind === 'passive') {
+      if (formValue('learningMode') === 'custom') {
+        edit.learningRequirements = { classIds: [], classScope: formValue('learningClassScope'), minimumLevel: Number(formValue('learningLevel')), branches: [] };
+        editor.querySelectorAll('[data-learning-class]').forEach(function (input) { if (input.checked) edit.learningRequirements.classIds.push(input.dataset.learningClass); });
+        editor.querySelectorAll('[data-learning-branch-row]').forEach(function (row) { edit.learningRequirements.branches.push({ branchId: row.querySelector('[data-learning-branch]').value, minimumPoints: Number(row.querySelector('[data-learning-points]').value) }); });
+      } else delete edit.learningRequirements;
       if (edit.kind === 'active') ['mpCost', 'castSeconds', 'cooldownSeconds', 'durationSeconds'].forEach(function (field) { edit[field] = Number(formValue(field)); });
       else {
         edit.effects = []; editor.querySelectorAll('.effect-row').forEach(function (row) { var inputs = row.querySelectorAll('select, input'); edit.effects.push({ stat: Number(inputs[0].value), value: Number(inputs[1].value), unit: inputs[2].value }); });
@@ -235,8 +285,9 @@
       if (edit.templateId) {
         var template = node('p', 'Шаблон изучения: ' + (current.nativeSkill.templateName?.en || '') + ' · ' + edit.templateId, 'help-text');
         template.dataset.skillTemplate = ''; editor.appendChild(template);
-        editor.appendChild(node('p', 'Это отдельный новый навык. Исходный навык не изменяется. Тип и условия изучения наследуются от шаблона; его встроенные эффекты не копируются и не удваиваются. Для пассивки действуют только явно указанные дополнительные числа.', 'help-text'));
-      } else editor.appendChild(node('p', 'Тип и условия изучения пока сохраняются: встроенные эффекты Legacy зависят также от класса и уровня, а не только от списка навыков.', 'help-text'));
+        editor.appendChild(node('p', 'Это отдельный новый навык. Тип сохраняется; условия по умолчанию — от шаблона, либо задаются отдельно ниже. Встроенный эффект шаблона не копируется. Для пассивки действуют только явно указанные дополнительные числа.', 'help-text'));
+      } else editor.appendChild(node('p', 'Тип и встроенные формулы исходного навыка сохраняются. Условия изучения можно задать отдельно; это не заменяет его встроенный эффект.', 'help-text'));
+      learningEditor(edit);
       if (edit.kind === 'active') {
         var timings = node('fieldset', undefined, 'numeric-effects'); timings.appendChild(node('legend', 'Данные активного навыка'));
         var values = node('div', undefined, 'basic-fields');
@@ -246,7 +297,7 @@
       } else {
         var bonuses = node('fieldset', undefined, 'numeric-effects'); bonuses.appendChild(node('legend', 'Дополнительные бонусы изученной пассивки'));
         bonuses.appendChild(node('p', edit.templateId
-          ? 'У нового навыка действуют только числа ниже: встроенный эффект шаблона не копируется. Штатный движок проверяет изучение по шаблону, даже если список умений скрыт. Затем проверяются условия снаряжения и езды.'
+          ? 'У нового навыка действуют только числа ниже: встроенный эффект шаблона не копируется. Изучение определяют условия выше, даже если список умений скрыт. Затем проверяются условия снаряжения и езды.'
           : 'Бонус добавляется к исходной механике, не заменяет её. Изучение проверяет штатный движок, даже если список умений скрыт. Числа применяются только с указанным ниже снаряжением.', 'help-text'));
         var bonusRows = node('div', undefined, 'effect-rows'); bonuses.appendChild(bonusRows); edit.effects.forEach(function (effect) { effectRow(effect, bonusRows); });
         bonuses.appendChild(button('Добавить характеристику', function () { effectRow({ stat: 1, value: 0, unit: 'flat' }, bonusRows); changing(); }, 'secondary')); editor.appendChild(bonuses);

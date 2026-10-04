@@ -2,7 +2,25 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
-## Modern 3.07 — current racial data, in preparation
+## Modern 3.08 — custom skill learning (release candidate)
+
+- The private skill editor can keep original learning or explicitly set classes,
+  exact/advanced-class scope, minimum level and required branch points. Current
+  values, server preview and private draft remain separate from publication.
+- Actual source icons, learned status and additional passive bonuses use those
+  conditions even with SKILL closed. Public RU/EN requirements show the real
+  thresholds, not stale template text. Six labels are editable in Translations.
+- Original source ordering, formulas and old catalog pins stay intact. Loading
+  another build rebuilds derived learned lists instead of retaining stale icons.
+- Read-only reconciliation covers the current source's 28 classes and 232 rows;
+  future skills stay. Confirmed Resist Ice/Lightning corrections (35/41 points,
+  current RU/EN names/descriptions) are prepared on their two existing identities.
+  They are not automatically seeded or published by deploying code. Remaining
+  variants, intrinsic passives and combat effects are not claimed verified.
+- Local grouped editor/learning/pin/offline checks passed. Release CI and actual
+  production acceptance remain pending; this heading is not a release claim.
+
+## Modern 3.07 — current racial data, 2026-10-04
 
 - All 18 current racial records have verified RU/EN names/descriptions and typed
   effects. Myrine gains +5 critical chance; Stone Skin and Magic Resistance
@@ -16,8 +34,10 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   source columns, other translations and the museum remain unchanged.
 - All five inspectors update visibility/accessibility state synchronously when
   clicked; immediate Escape no longer races an observer refresh in WebKit.
-- Public catalog publication and release acceptance are still pending. Deploying
-  code does not automatically seed or overwrite an administrator's records.
+- Public catalog revision 20 contains the 18 verified current records. Historical
+  revision 2 stays immutable; existing builds require explicit catalog adoption.
+  Code/data publication and real public desktop/touch/offline acceptance passed.
+  Deploying code does not automatically overwrite an administrator's records.
 
 ## Modern 3.06 — complete skill descriptions, 2026-10-04
 

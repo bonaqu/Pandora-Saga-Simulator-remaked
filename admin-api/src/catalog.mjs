@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { CatalogError, draftFromSource, validateDraft, compileRecord, EFFECTS, EQUIPMENT_CATEGORIES } from './catalog-model.mjs';
-import { baselineById, baselineRecords, categories, compatibilityLabels, sourceFingerprint, characterSourceFingerprint, sourceIdentity, firstNewIndex } from './catalog-baseline.mjs';
+import { baselineById, baselineRecords, categories, skillCategories, compatibilityLabels, sourceFingerprint, characterSourceFingerprint, sourceIdentity, firstNewIndex } from './catalog-baseline.mjs';
 import { jsonResponse } from './auth.mjs';
 
 const MAX_SNAPSHOT_BYTES = 900000;
@@ -230,7 +230,7 @@ async function list(request, env) {
 
 export async function adminCatalog(request, env, now = Math.floor(Date.now() / 1000)) {
   const path = new URL(request.url).pathname;
-  if (path === '/api/admin/meta' && request.method === 'GET') return jsonResponse({ ok: true, effects: EFFECTS, categories: categories.filter(category => EQUIPMENT_CATEGORIES.includes(category.legacy_id)), compatibilityLabels, sourceFingerprint, characterSourceFingerprint, sourceCount: baselineRecords.length });
+  if (path === '/api/admin/meta' && request.method === 'GET') return jsonResponse({ ok: true, effects: EFFECTS, categories: categories.filter(category => EQUIPMENT_CATEGORIES.includes(category.legacy_id)), skillCategories, compatibilityLabels, sourceFingerprint, characterSourceFingerprint, sourceCount: baselineRecords.length });
   if (path === '/api/admin/catalog' && request.method === 'GET') return list(request, env);
   if (path === '/api/admin/item' && request.method === 'GET') return jsonResponse(await detail(env, new URL(request.url).searchParams.get('id') || ''));
   if (path === '/api/admin/revisions' && request.method === 'GET') {

@@ -222,6 +222,16 @@ Pages artifact and all-five installed online/offline interactions passed;
 Pages `37153804413`, Worker `37153804418`. See the release ledger and durable queue.
 This UI-only fix does not publish the corrected 18-racial dataset or Myrine +5%.
 
+**Current racial follow-up, published and accepted:** Modern 3.07, PR39
+(`800821b`), Feature CI `37169360124`, Pages `37170094247`, Worker `37170094265`.
+All 18 approved RU/EN records are explicitly published as catalog 20; old
+revision 2 remains immutable. Actual native deltas/weapon bonuses, switch cleanup,
+pinned sharing, PC/touch/offline and unchanged museum bytes are verified.
+The fast-Escape inspector race caught by WebKit is also fixed and verified.
+Range/fatal-hit events are still documented reference-only limits. Current
+class-skill matching/texts/requirements/effects remain the next unfinished task;
+neither this release nor name-only candidate discovery proves them complete.
+
 Not part of this roadmap's implementation plans. Requires a new design/spec after Phases 0–7 are stable.
 
 ---
