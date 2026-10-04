@@ -14,17 +14,6 @@ body:
         Use this form for incorrect names, translations, descriptions, numeric values, and other game data.
 
   - type: dropdown
-    id: report_language
-    attributes:
-      label: "Язык сообщения / Report language"
-      options:
-        - "Русский / Russian"
-        - "English / Английский"
-        - "Русский + English / Both"
-    validations:
-      required: true
-
-  - type: dropdown
     id: data_type
     attributes:
       label: "Тип данных / Data type"
