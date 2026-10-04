@@ -54,12 +54,18 @@ test('desktop character controls and results do not push equipment behind a tall
   expect(equipment.y).toBeLessThanOrEqual(1200);
 });
 
-test('skill allocation render exposes no obsolete Potential controls and does not alter the build', async ({ page }) => {
+test('skill allocation help remains keyboard-accessible while obsolete Potential controls stay removed', async ({ page }) => {
   await page.goto('/');
   const before = await page.evaluate(() => window.PandoraRemaked.adapter.serialize());
   await expect(page.locator('[data-remaked-skill-number]')).toHaveCount(20);
   await expect(page.locator('[data-remaked-skill-group="Potential"] button, [data-remaked-skill-group="Potential"] input')).toHaveCount(0);
-  await expect(page.locator('.remaked-skill-help, [data-remaked-skill-bulk]')).toHaveCount(0);
+  await expect(page.locator('[data-remaked-skill-bulk]')).toHaveCount(0);
+  const help = page.locator('.remaked-skill-help');
+  await expect(help.locator('p')).toBeHidden();
+  await help.locator('summary').focus(); await page.keyboard.press('Enter');
+  await expect(help.locator('p')).toBeVisible();
+  await expect(help.locator('p')).toContainText('Adeptness');
+  await page.keyboard.press('Enter'); await expect(help.locator('p')).toBeHidden();
   expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(before);
 });
 
