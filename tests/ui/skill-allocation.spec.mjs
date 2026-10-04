@@ -101,6 +101,101 @@ test('Clobber is gray below Cleave 8 and active at 8 after direct edits', async 
   expect(state).toEqual({ exists: true, gray: true, learned: false });
 });
 
+async function configureElfClericHealing(page) {
+  await page.goto('/');
+  await page.evaluate(() => {
+    const races = document.getElementById('SelRace');
+    races.selectedIndex = 1;
+    races.onchange();
+  });
+  await selectCleric(page);
+
+  for (const [key, value] of [['STA', 27], ['DEX', 40], ['SPR', 40], ['INT', 93]]) {
+    const input = page.locator(`[data-remaked-number="${key}"]`);
+    await input.fill(String(value));
+    await input.press('Enter');
+    await expect(input).toHaveValue(String(value));
+  }
+  for (const [branch, value] of [[13, 71], [14, 54]]) {
+    const input = page.locator(`[data-remaked-skill-number="${branch}"]`);
+    await input.fill(String(value));
+    await input.press('Enter');
+    await expect(input).toHaveValue(String(value));
+  }
+}
+
+async function enableCalculatorAction(page, textId) {
+  const button = page.locator(`[data-remaked-calculator-action="${textId}"]`);
+  if (await button.getAttribute('aria-pressed') !== 'true') await button.click();
+  await expect(button).toHaveAttribute('aria-pressed', 'true');
+}
+
+test('real Cleric skill-list toggle colors every learned native skill from current prerequisites', async ({ page }) => {
+  await configureElfClericHealing(page);
+  await enableCalculatorAction(page, 'Text_3');
+  await page.evaluate(() => document.getElementById('Tab_1_0').click());
+
+  const learned = ['13_0', '13_2', '13_3', '13_5', '13_10', '13_11', '14_3', '14_8'];
+  const state = await page.evaluate(ids => Object.fromEntries(ids.map(id => {
+    const icon = document.getElementById('LearnSkillIcon_' + id);
+    return [id, {
+      exists: Boolean(icon),
+      learned: Learn[0].includes(id),
+      gray: icon ? icon.style.backgroundImage.includes('/gray/') : null
+    }];
+  })), learned);
+
+  for (const id of learned)
+    expect(state[id], id).toEqual({ exists: true, learned: true, gray: false });
+});
+
+test('level 50 to 49 recalculates Merciful Blessing effects and exposes an over-budget allocation', async ({ page }) => {
+  await configureElfClericHealing(page);
+  await enableCalculatorAction(page, 'Text_3');
+  await enableCalculatorAction(page, 'Text_5');
+  await enableCalculatorAction(page, 'Text_6');
+
+  await expect(page.locator('#ViewHeal_1_1')).toHaveText('1490');
+  await expect(page.locator('#StatusStP_0')).toHaveText('0');
+  await expect(page.locator('#LearnSkillIcon_13_3')).not.toHaveAttribute('style', /gray\//);
+
+  const level = page.locator('[data-remaked-number="Lev"]');
+  await level.fill('49');
+  await level.press('Enter');
+
+  await expect(page.locator('#ViewHeal_1_1')).toHaveText('919');
+  await expect(page.locator('#StatusStP_0')).toHaveText('-16');
+  await expect(page.locator('#LearnSkillIcon_13_3')).toHaveAttribute('style', /gray\//);
+  await expect(page.locator('#remaked-budget-warning')).toContainText('Status -16');
+  const statusBudget = page.locator('#StatusStP_0').locator('xpath=ancestor::ul[li[contains(@class,"input_lt")]][1]');
+  await expect(statusBudget).toHaveAttribute('data-remaked-budget-deficit', '');
+  await expect(statusBudget).toHaveAttribute('title', /Status -16/);
+  await expect(page.locator('#StatusSkP_0').locator('xpath=ancestor::ul[li[contains(@class,"input_lt")]][1]'))
+    .not.toHaveAttribute('data-remaked-budget-deficit', '');
+});
+
+test('Level, Status, Skill and Potential budget rows share the same compact geometry', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const geometry = await page.evaluate(() => {
+    const rows = [
+      document.querySelector('[data-remaked-calculator-level]'),
+      document.getElementById('StatusStP_0').closest('.input_gt').parentElement,
+      document.getElementById('StatusSkP_0').closest('.input_gt').parentElement,
+      document.getElementById('StatusUnP_0').closest('.input_gt').parentElement
+    ];
+    return rows.map(row => {
+      const box = row.getBoundingClientRect();
+      const label = row.querySelector('.input_lt').getBoundingClientRect();
+      return { width: box.width, height: box.height, labelWidth: label.width };
+    });
+  });
+  expect(new Set(geometry.map(row => Math.round(row.width))).size).toBe(1);
+  expect(new Set(geometry.map(row => Math.round(row.height))).size).toBe(1);
+  expect(new Set(geometry.map(row => Math.round(row.labelWidth))).size).toBe(1);
+  expect(Math.round(geometry[0].labelWidth)).toBe(58);
+});
+
 test('direct skill input is keyboard-operable and respects the retained skill-point budget', async ({ page }) => {
   await page.goto('/');
   await page.locator('[data-remaked-number="Lev"]').fill('55');
