@@ -1,5 +1,1 @@
 blank_issues_enabled: false
-contact_links:
-  - name: "🌐 Открыть симулятор / Open live simulator"
-    url: https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/
-    about: "Проверьте актуальную версию перед созданием Issue. / Check the current version before filing an issue."
