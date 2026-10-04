@@ -1,6 +1,7 @@
 # Current racial data and skill alignment
 
-Status: implementation started after the accepted Modern 3.06 release.
+Status: racial portion published and accepted in Modern 3.07 / catalog 20;
+class-skill reconciliation remains unfinished.
 Previous goal turn made authoritative progress: PR37/Pages/Worker and live
 PC/touch/offline tooltip acceptance completed, not merely another status update.
 
@@ -35,7 +36,7 @@ PC/touch/offline tooltip acceptance completed, not merely another status update.
 - [x] Synthetic editor preview/save/publish and immutable revision/rollback.
 - [x] Workbook H/I: exact 48 cells (six races and 18 names), all other values,
   styles, table, row layout, widths and freeze panes preserved. Render inspected.
-- [ ] Rendered desktop/touch, appropriate CI, PR/merge/free deployment and actual
+- [x] Rendered desktop/touch, appropriate CI, PR/merge/free deployment and actual
   public publication acceptance. No acceptance claim based on text alone.
 
 Only existing Worker/D1; no auth reset, new infrastructure, paid resources,

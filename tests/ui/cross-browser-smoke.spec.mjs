@@ -83,18 +83,20 @@ test('every inspector switches, floats and closes without changing the build, ev
   expect(errors).toEqual([]);
 });
 
-test('catalog variants keep keyboard details, decimal effects, literal RU/JP/TW text and native source restoration in every engine', async ({ page }) => {
+test('catalog variants keep custom learning, keyboard details, decimal effects, literal RU/JP/TW text and native source restoration in every engine', async ({ page }) => {
   await page.goto('/');
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const data = snapshot([variant('skill.0.1', edit => {
     edit.effects = [{ stat: 1, value: 0.29, unit: 'flat' }];
     edit.names = { en: 'New recovery', ru: 'Новая пассивка', jp: '新しい回復', tw: '新恢復' };
     edit.description.ru = '<img src=x onerror=alert(1)>'; edit.bonusRequirements.ridingRequired = true;
+    edit.learningRequirements = { classIds: ['job.0'], classScope: 'descendants', minimumLevel: 5, branches: [] };
   })]);
   const source = await page.evaluate(data => { const source = PandoraRemaked.adapter.serialize(); StatusMove('Lev', 11); CalcSet('Lev'); PandoraRemaked.catalog.applySnapshot(data); return source; }, data);
   await page.locator('[data-remaked-tab="1"]').click();
   const card = page.locator('[data-remaked-skill-variant]'); await expect(card).toHaveCount(1);
   await card.locator('summary').focus(); await page.keyboard.press('Enter'); await expect(card).toHaveAttribute('open', '');
+  await expect(card.locator('[data-remaked-variant-learning]')).toHaveText('Classes: Warrior and their advanced classes. Level 5 or higher');
   await expect(card.locator('[data-remaked-variant-bonus]')).toHaveText('Passive bonus inactive');
   await page.locator('[data-remaked-tab="1"]').click();
   await expect(page.locator('[data-remaked-native-panel="1"]')).toBeHidden();

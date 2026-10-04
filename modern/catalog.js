@@ -10,7 +10,8 @@
   var effectIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 18, 42, 49, 50, 51, 52, 60, 62, 65, 69, 70, 71, 72, 73, 74, 76, 77, 79, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 153, 154, 155, 156, 157, 158, 159, 160, 161];
   var percentEffectIds = [6, 7, 18, 49, 52, 62, 65];
   var baselineEquipment, baselineSouls, baselineClassMods, baselineSkills, revision = 0, recordsByTerm = Object.create(null);
-  var passiveRecords = [], variantRecords = [], learnedKey = '', learnedEntries = [], potentialEntries = [];
+  var passiveRecords = [], variantRecords = [], learningRecords = [], customLearningStates = Object.create(null);
+  var learnedKey = '', learnedEntries = [], potentialEntries = [], learningProbeDepth = 0;
   var snapshots = Object.create(null), recovery = false;
   var PUBLIC_API = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog';
   var databasePromise;
@@ -50,6 +51,23 @@
       check(typeof effect.value === 'number' && Number.isFinite(effect.value) && Math.abs(effect.value) <= 10000 && Number(effect.value.toFixed(2)) === effect.value, 'Invalid effect value');
     });
   }
+  function validateLearning(required) {
+    check(required && typeof required === 'object' && !Array.isArray(required) && Object.keys(required).every(function (key) {
+      return ['classIds', 'classScope', 'minimumLevel', 'branches'].indexOf(key) !== -1;
+    }), 'Invalid learning requirements');
+    check(Array.isArray(required.classIds) && required.classIds.length <= 28 && required.classIds.every(function (id, index) {
+      return typeof id === 'string' && /^job\.(?:[0-9]|1[0-9]|2[0-7])$/.test(id) && required.classIds.indexOf(id) === index;
+    }), 'Invalid learning classes');
+    check(['exact', 'descendants'].indexOf(required.classScope) !== -1 && Number.isInteger(required.minimumLevel) && required.minimumLevel >= 1 && required.minimumLevel <= 55, 'Invalid learning class scope/level');
+    check(Array.isArray(required.branches) && required.branches.length <= 25, 'Invalid learning branches');
+    var seen = Object.create(null);
+    required.branches.forEach(function (gate) {
+      check(gate && typeof gate === 'object' && !Array.isArray(gate) && Object.keys(gate).every(function (key) { return ['branchId', 'minimumPoints'].indexOf(key) !== -1; }) &&
+        typeof gate.branchId === 'string' && /^skill_category\.(?:[0-9]|1[0-9]|2[0-4])$/.test(gate.branchId) && !seen[gate.branchId] &&
+        Number.isInteger(gate.minimumPoints) && gate.minimumPoints >= 1 && gate.minimumPoints <= 200, 'Invalid or duplicate learning branch');
+      seen[gate.branchId] = true;
+    });
+  }
   function validate(snapshot) {
     captureBaseline();
     check(snapshot && snapshot.ok === true && snapshot.schemaVersion === 1 && snapshot.sourceFingerprint === SOURCE_FINGERPRINT, 'Catalog source/version mismatch');
@@ -67,9 +85,10 @@
         }
         var skill = baselineSkills[0][record.category][record.index];
         check(skill && record.active === Boolean(skill[4]) && record.kind === (record.active ? 'active' : 'passive') && record.prerequisiteCode === skill[9] && record.nativeEffectPolicy === (variant ? 'template-gate-only' : 'retained-plus-bonus'), 'Skill mechanics/source mismatch');
-        var skillFields = ['id', 'kind', 'category', 'index', 'names', 'description', 'active', 'prerequisiteCode', 'nativeEffectPolicy', 'timing', 'effects', 'bonusRequirements'];
+        var skillFields = ['id', 'kind', 'category', 'index', 'names', 'description', 'active', 'prerequisiteCode', 'nativeEffectPolicy', 'timing', 'effects', 'bonusRequirements', 'learningRequirements'];
         if (variant) skillFields.push('templateId');
         check(Object.keys(record).every(function (key) { return skillFields.indexOf(key) !== -1; }), 'Unsupported skill field');
+        if (Object.prototype.hasOwnProperty.call(record, 'learningRequirements')) validateLearning(record.learningRequirements);
         check(!seen[record.id], 'Duplicate skill identity'); seen[record.id] = true;
         textMap(record.names, 160); textMap(record.description, 4000); check(Boolean(record.names.en?.trim()), 'English skill name required');
         check(Array.isArray(record.timing) && record.timing.length === 4 && record.timing.every(function (value, index) { return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= (index === 0 ? 100000 : 86400) && (index === 0 ? Number.isInteger(value) : Number(value.toFixed(3)) === value); }), 'Invalid skill timing');
@@ -210,12 +229,22 @@
     });
     if (options.rebuild !== false || options.preflightOnly) selectedStateExists(equipment, souls);
     if (options.preflightOnly) return snapshot.revision;
+    // A pinned revision switch must not leave explicitly controlled source
+    // entries in the retained learned pool after their override is removed.
+    var previousCustomKeys = learningRecords.filter(function (record) { return !record.templateId; }).map(function (record) { return record.category + '_' + record.index; });
+    if (previousCustomKeys.length) {
+      window.Learn[0] = window.Learn[0].filter(function (id) { return previousCustomKeys.indexOf(id) === -1; });
+      window.Learn[1] = window.Learn[1].filter(function (id) { return previousCustomKeys.indexOf(id) === -1; });
+      window.Learn[2] = window.Learn[1].map(function (id) { return id.split('_'); });
+      window.Learn[3] = window.Learn[0].map(function (id) { return id.split('_'); });
+    }
     // Source files and captured baseline arrays remain immutable. Only the
     // explicitly documented Modern runtime data projection is replaced.
     window.EquipData = equipment; window.SoulData = souls; window.Status.Mod = classMods; recordsByTerm = terms; revision = snapshot.revision;
     for (var language = 0; language < 3; language++) window.Skill[language] = skills[language];
     passiveRecords = passives; variantRecords = additions.sort(function (a, b) { return a.id.localeCompare(b.id); });
-    learnedKey = ''; learnedEntries = []; potentialEntries = [];
+    learningRecords = snapshot.records.filter(function (record) { return (record.kind === 'active' || record.kind === 'passive') && record.learningRequirements; });
+    learnedKey = ''; learnedEntries = []; potentialEntries = []; customLearningStates = Object.create(null);
     snapshots[revision] = structuredClone(snapshot);
     if (options.rebuild !== false) {
       window.Status.Equip.forEach(function (state) { state[0] = Number(state[0]); });
@@ -232,6 +261,19 @@
     var record = recordsByTerm[term]; if (!record) return '';
     var language = namespace.i18n?.getLocale() === 'ru' ? 'ru' : languages[Number(window.Flag[0])];
     return record[field]?.[language] || record[field]?.en || '';
+  }
+  function learningText(required) {
+    var i18n = namespace.i18n, language = Number(window.Flag[0]);
+    var classes = required.classIds.map(function (id) {
+      return i18n.game(id, window.Name.Job[Number(id.slice(4))][language + 2]);
+    });
+    var parts = [classes.length ? i18n.t(required.classScope === 'exact' ? 'skills.learningClasses' : 'skills.learningDescendants', { names: classes.join(' / ') }) : i18n.t('skills.learningAnyClass'),
+      i18n.t('skills.learningLevel', { level: required.minimumLevel })];
+    required.branches.forEach(function (gate) {
+      var branch = Number(gate.branchId.slice(15));
+      parts.push(i18n.t('skills.learningBranch', { name: i18n.game('skill.' + branch, window.Name.Skill[branch][language + 1]), points: gate.minimumPoints }));
+    });
+    return parts.join('. ');
   }
   function sourceSnapshot() { return { ok: true, schemaVersion: 1, sourceFingerprint: SOURCE_FINGERPRINT, revision: 0, records: [] }; }
   // Modern build context is data only. Store()/Expand() and the museum CSV stay
@@ -387,7 +429,8 @@
       nativeLearnedEntries();
       return variantRecords.map(function (record) {
         var key = record.category + '_' + record.index;
-        return Object.assign(structuredClone(record), { learned: learnedEntries.indexOf(key) !== -1, potential: potentialEntries.indexOf(key) !== -1,
+        var state = record.learningRequirements ? customLearningStates[record.id] : { learned: learnedEntries.indexOf(key) !== -1, potential: potentialEntries.indexOf(key) !== -1 };
+        return Object.assign(structuredClone(record), { learned: state.learned, potential: state.potential,
           bonusApplied: record.kind === 'passive' && record.effects.length > 0 && passiveEligible(record, learnedEntries) });
       });
     },
@@ -398,9 +441,12 @@
       if (!recordsByTerm[term]) return null;
       return { name: textFor(term, 'names'), description: textFor(term, 'description'), calculationNotes: textFor(term, 'calculationNotes') };
     },
+    learningText: learningText,
     gameLabel: function (term) {
-      var detail = term.match(/^skill_detail\.(\d+)\.(\d+)\.3$/);
-      return detail ? textFor('skill_entry.' + detail[1] + '.' + detail[2], 'description') : textFor(term, 'names');
+      var detail = term.match(/^skill_detail\.(\d+)\.(\d+)\.(1|3)$/);
+      if (!detail) return textFor(term, 'names');
+      var id = 'skill_entry.' + detail[1] + '.' + detail[2], record = recordsByTerm[id];
+      return detail[3] === '3' ? textFor(id, 'description') : record?.learningRequirements ? learningText(record.learningRequirements) : '';
     },
     item: function (kind, value) { var id = Number(value); return recordsByTerm[kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id] || null; },
     itemText: function (kind, value, field) { var id = Number(value); return textFor(kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id, field); },
@@ -413,15 +459,78 @@
     var key = window.Status.Job[2] + ':' + window.Status.Lev[0] + ':' + window.Status.Skill.toString();
     if (key === learnedKey) return learnedEntries;
     var originalLearn = window.Learn, originalFlag = window.Flag[3];
-    window.Learn = [[], [], [], []]; window.Flag[3] = 1;
+    window.Learn = [[], [], [], []]; window.Flag[3] = 1; learningProbeDepth++;
     try {
       for (var category = 0; category < window.Name.Skill.length; category++) window.SkillList('Potential', category);
       window.SkillList('Adeptness', 0);
-      learnedEntries = window.Learn[0].slice(); potentialEntries = window.Learn[1].slice(); learnedKey = key; return learnedEntries;
-    } finally { window.Learn = originalLearn; window.Flag[3] = originalFlag; }
+      var learned = window.Learn[0].slice(), potential = window.Learn[1].slice(), states = Object.create(null);
+      learningRecords.forEach(function (record) {
+        var state = customEligibility(record.learningRequirements); states[record.id] = state;
+        if (!record.templateId) {
+          var id = record.category + '_' + record.index;
+          learned = learned.filter(function (value) { return value !== id; });
+          potential = potential.filter(function (value) { return value !== id; });
+          if (state.learned) learned.push(id);
+          if (state.potential) potential.push(id);
+        }
+      });
+      learnedEntries = learned; potentialEntries = potential; customLearningStates = states; learnedKey = key; return learnedEntries;
+    } finally { window.Learn = originalLearn; window.Flag[3] = originalFlag; learningProbeDepth--; }
   }
+  function nativeGate(code) {
+    var originalRows = window.Skill[0][0], originalLearn = window.Learn, originalFlag = window.Flag[3];
+    var row = baselineSkills[0][0][0].slice(); row[9] = code;
+    window.Skill[0][0] = [row]; window.Learn = [[], [], [], []]; window.Flag[3] = 1; learningProbeDepth++;
+    try {
+      window.SkillList('Potential', 0); window.SkillList('Adeptness', 0);
+      return { potential: window.Learn[1].indexOf('0_0') !== -1, learned: window.Learn[0].indexOf('0_0') !== -1 };
+    } finally { window.Skill[0][0] = originalRows; window.Learn = originalLearn; window.Flag[3] = originalFlag; learningProbeDepth--; }
+  }
+  function customEligibility(required) {
+    var current = Number(window.Status.Job[2]), classState = { potential: false, learned: false };
+    var ids = required.classIds.length ? required.classIds : ['job.' + current];
+    ids.forEach(function (id) {
+      var index = Number(id.split('.')[1]);
+      if (required.classScope === 'exact' && current !== index) return;
+      var gate = nativeGate('J=' + index + '=' + required.minimumLevel);
+      classState.potential = classState.potential || gate.potential; classState.learned = classState.learned || gate.learned;
+    });
+    required.branches.forEach(function (branch) {
+      var gate = nativeGate('S=' + Number(branch.branchId.split('.')[1]) + '=' + branch.minimumPoints);
+      classState.potential = classState.potential && gate.potential; classState.learned = classState.learned && gate.learned;
+    });
+    classState.learned = classState.learned && classState.potential;
+    return classState;
+  }
+  function synchronizeCustomLearning() {
+    if (!window.Flag[3] || learningProbeDepth || !learningRecords.length) return;
+    nativeLearnedEntries();
+    learningRecords.forEach(function (record) {
+      if (record.templateId) return;
+      var key = record.category + '_' + record.index, state = customLearningStates[record.id];
+      window.Learn[0] = window.Learn[0].filter(function (id) { return id !== key; });
+      window.Learn[1] = window.Learn[1].filter(function (id) { return id !== key; });
+      if (state.learned) window.Learn[0].push(key);
+      if (state.potential) window.Learn[1].push(key);
+    });
+    window.Learn[2] = window.Learn[1].map(function (id) { return id.split('_'); });
+    window.Learn[3] = window.Learn[0].map(function (id) { return id.split('_'); });
+  }
+  var retainedSkillList = window.SkillList;
+  window.SkillList = function (action) {
+    if (learningProbeDepth || !learningRecords.length || !window.Flag[3]) return retainedSkillList.apply(this, arguments);
+    if (action === 'Create' || action === 'Color') synchronizeCustomLearning();
+    var result = retainedSkillList.apply(this, arguments);
+    if (action === 'Color') learningRecords.forEach(function (record) {
+      if (record.templateId) return;
+      var icon = document.getElementById('LearnSkillIcon_' + record.category + '_' + record.index);
+      if (icon) icon.style.background = 'url(./image/icon/' + (customLearningStates[record.id].learned ? '' : 'gray/') +
+        String(record.category).padStart(2, '0') + String(record.index).padStart(2, '0') + '.png)';
+    });
+    return result;
+  };
   function passiveEligible(record, learned) {
-    return learned.indexOf(record.category + '_' + record.index) !== -1 && equipmentEligible(record.bonusRequirements);
+    return (record.learningRequirements ? customLearningStates[record.id].learned : learned.indexOf(record.category + '_' + record.index) !== -1) && equipmentEligible(record.bonusRequirements);
   }
   function equipmentEligible(required) {
     if (!required) return true;

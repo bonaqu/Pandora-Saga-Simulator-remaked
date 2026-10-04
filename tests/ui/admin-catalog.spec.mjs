@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { adminCatalog } from '../../admin-api/src/catalog.mjs';
 import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs';
@@ -92,6 +94,53 @@ async function openConsole(page, drafts = []) {
   await expect(page.locator('#catalog-state')).toContainText('Каталог загружен');
   return { sqlite, errors };
 }
+
+test('custom learning editor previews current classes/level/branches, preserves unsaved values and publishes only explicitly', async ({ page }) => {
+  const { sqlite, errors } = await openConsole(page);
+  await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('active');
+  await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill('skill_entry.18.9');
+  await page.locator('.catalog-entry').first().click();
+  const mode = page.locator('[data-field="learningMode"]');
+  await expect(mode).toHaveValue('native'); await expect(page.locator('[data-custom-learning]')).toBeHidden();
+  await mode.selectOption('custom');
+  await page.locator('[data-field="learningLevel"]').fill('3');
+  await page.locator('[data-field="learningClassScope"]').selectOption('descendants');
+  await page.getByText('Разрешённые классы · ничего не отмечено = любой', { exact: true }).click();
+  await page.locator('[data-learning-class="job.4"]').check();
+  await page.getByRole('button', { name: 'Добавить требование ветки', exact: true }).click();
+  await page.locator('[data-learning-branch]').selectOption('skill_category.18');
+  await page.locator('[data-learning-points]').fill('35');
+  await mode.selectOption('native'); await mode.selectOption('custom');
+  await expect(page.locator('[data-learning-points]')).toHaveValue('35');
+  await expect(page.locator('[data-learning-class="job.4"]')).toBeChecked();
+  await page.getByRole('button', { name: 'Проверить изменения', exact: true }).click();
+  const preview = page.locator('[data-preview-record]');
+  await expect(preview).toContainText('Минимальный уровень: 3');
+  await expect(preview).toContainText('Knight и их последующие профессии');
+  await expect(preview).toContainText('Elemental ≥ 35');
+  expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n).toBe(0);
+  await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
+  await expect(page.locator('[data-learning-points]')).toHaveValue('35');
+  expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(0);
+  page.on('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: 'Опубликовать', exact: true }).click();
+  await expect(page.locator('[data-current-record]')).toContainText('Минимальный уровень: 3');
+  await expect(page.locator('[data-current-record]')).toContainText('Elemental ≥ 35');
+  expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(1);
+  const proofDirectory = process.platform === 'win32' ? 'D:/CODEX/Tasks/pandora-admin-runtime/custom-learning-local' : path.join(os.tmpdir(), 'pandora-custom-learning-local');
+  fs.mkdirSync(proofDirectory, { recursive: true });
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.locator('[data-field="learningMode"]').scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-field="learningLevel"]')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: path.join(proofDirectory, 'admin-' + width + '.png') });
+  }
+  await page.locator('[data-field="learningLevel"]').fill('56');
+  expect(await page.locator('[data-field="learningLevel"]').evaluate(input => input.validity.rangeOverflow)).toBe(true);
+  await expect(page.locator('[data-learning-points]')).toHaveValue('35');
+  expect(errors).toEqual([]);
+});
 
 test('current racial editor preserves both attack units, weapon conditions and reference-only limits', async ({ page }, testInfo) => {
   const { sqlite, errors } = await openConsole(page, currentRacialDrafts());

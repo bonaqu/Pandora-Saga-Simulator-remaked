@@ -50,6 +50,23 @@ function flags(value, count, label) {
   check(Array.isArray(value) && value.length === count && value.every(flag => flag === 0 || flag === 1), label + ' requires ' + count + ' binary flags');
   return [...value];
 }
+function learningRequirements(input) {
+  keys(input, ['classIds', 'classScope', 'minimumLevel', 'branches'], 'Learning requirements');
+  const classIds = input.classIds;
+  check(Array.isArray(classIds) && classIds.length <= 28 && new Set(classIds).size === classIds.length &&
+    classIds.every(id => typeof id === 'string' && /^job\.(?:[0-9]|1[0-9]|2[0-7])$/.test(id)), 'Invalid learning classes');
+  check(['exact', 'descendants'].includes(input.classScope), 'Invalid learning class scope');
+  const minimumLevel = integer(input.minimumLevel, 1, 55, 'Learning level (1–55)');
+  check(Array.isArray(input.branches) && input.branches.length <= 25, 'Invalid learning branches');
+  const seen = new Set();
+  const branches = input.branches.map(gate => {
+    keys(gate, ['branchId', 'minimumPoints'], 'Learning branch');
+    check(typeof gate.branchId === 'string' && /^skill_category\.(?:[0-9]|1[0-9]|2[0-4])$/.test(gate.branchId) && !seen.has(gate.branchId), 'Invalid or duplicate learning branch');
+    seen.add(gate.branchId);
+    return { branchId: gate.branchId, minimumPoints: integer(gate.minimumPoints, 1, 200, 'Learning branch points (1–200)') };
+  });
+  return { classIds: [...classIds], classScope: input.classScope, minimumLevel, branches };
+}
 const texts = source => Object.fromEntries(LANGUAGES.map(language => [language, source?.[language] || '']));
 function effects(input) {
   check(Array.isArray(input) && input.length <= EFFECTS.reduce((count, effect) => count + effect.units.length, 0), 'Too many effects');
@@ -101,7 +118,7 @@ export function draftFromSource(source, kind) {
 export function validateDraft(input, identity) {
   if (identity.kind === 'active' || identity.kind === 'passive') {
     const variant = Boolean(identity.templateId);
-    const common = ['id', 'kind', 'category', 'names', 'description', ...(variant ? ['templateId'] : [])];
+    const common = ['id', 'kind', 'category', 'names', 'description', 'learningRequirements', ...(variant ? ['templateId'] : [])];
     keys(input, [...common, ...(identity.kind === 'active' ? ['mpCost', 'castSeconds', 'cooldownSeconds', 'durationSeconds'] : ['effects', 'bonusRequirements'])], 'Skill');
     check(input.id === identity.id && input.kind === identity.kind && input.category === identity.category && Number.isInteger(identity.category) && identity.category >= 0 && identity.category < 25 && Number.isInteger(identity.index) && identity.index >= 0 && identity.index < 1000, 'Skill identity/type cannot be changed');
     if (variant) {
@@ -109,6 +126,7 @@ export function validateDraft(input, identity) {
     } else check(input.id === 'skill_entry.' + identity.category + '.' + identity.index, 'Skill identity/type cannot be changed');
     const names = textMap(input.names, 160, 'Names'); check(names.en.length > 0, 'English name is required');
     const result = { id: input.id, kind: identity.kind, category: identity.category, names, description: textMap(input.description, 4000, 'Description') };
+    if (input.learningRequirements !== undefined) result.learningRequirements = learningRequirements(input.learningRequirements);
     if (variant) result.templateId = identity.templateId;
     if (identity.kind === 'active') {
       result.mpCost = integer(input.mpCost, 0, 100000, 'MP cost');
@@ -181,6 +199,7 @@ export function compileRecord(edit, identity, source) {
     check(source?.kind === identity.kind && source.id === (identity.templateId || identity.id), 'Skill must retain its source type and learning template');
     return { id: identity.id, kind: identity.kind, category: identity.category, index: identity.index, names: edit.names, description: edit.description,
       ...(identity.templateId ? { templateId: identity.templateId } : {}),
+      ...(edit.learningRequirements ? { learningRequirements: learningRequirements(edit.learningRequirements) } : {}),
       active: source.is_active, prerequisiteCode: source.prerequisite_code, nativeEffectPolicy: identity.templateId ? 'template-gate-only' : 'retained-plus-bonus',
       timing: identity.kind === 'active' ? [edit.mpCost, edit.castSeconds, edit.cooldownSeconds, edit.durationSeconds] : [source.mp_cost, source.cast_seconds, source.cooldown_seconds, source.duration_seconds],
       effects: (edit.effects || []).map(effect => ({ ...effect })), bonusRequirements: edit.bonusRequirements ? { ...edit.bonusRequirements, weaponCategories: [...edit.bonusRequirements.weaponCategories] } : null };

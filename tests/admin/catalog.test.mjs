@@ -35,6 +35,27 @@ const detail = (env, id = 'equipment.0.1') => call(env, 'item?id=' + id);
 const save = (env, item) => call(env, 'draft', { edit: item.edit, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
 const publish = (env, item) => call(env, 'publish', { id: item.identity.id, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
 
+test('custom learning survives draft, preview, publication, historical reads and rollback without mutating the native template', async () => {
+  const { env } = fixture(); const item = await detail(env, 'skill_entry.18.9');
+  const nativeCode = item.currentRecord.prerequisiteCode;
+  item.edit.learningRequirements = { classIds: [], classScope: 'exact', minimumLevel: 1,
+    branches: [{ branchId: 'skill_category.18', minimumPoints: 35 }] };
+  const preview = await call(env, 'preview', { edit: item.edit, expectedCatalogRevision: 0 });
+  assert.deepEqual(preview.record.learningRequirements, item.edit.learningRequirements);
+  assert.equal((await publicData(env)).revision, 0);
+  const saved = await save(env, item); await publish(env, saved);
+  const first = await publicData(env, 1), published = await detail(env, item.edit.id);
+  assert.deepEqual(first.records[0].learningRequirements, item.edit.learningRequirements);
+  assert.deepEqual(published.edit.learningRequirements, item.edit.learningRequirements);
+  assert.equal(first.records[0].prerequisiteCode, nativeCode);
+  delete published.edit.learningRequirements;
+  await publish(env, await save(env, published));
+  assert.equal(Object.hasOwn((await publicData(env)).records[0], 'learningRequirements'), false);
+  assert.deepEqual((await publicData(env, 1)).records, first.records);
+  await call(env, 'rollback', { revision: 1, expectedCatalogRevision: 2 });
+  assert.deepEqual((await publicData(env)).records, first.records);
+});
+
 test('all current racial records survive private preview, publish, historical revisions and rollback', async () => {
   const { env } = fixture();
   for (const edit of currentRacialDrafts()) {

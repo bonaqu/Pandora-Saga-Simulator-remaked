@@ -4,6 +4,49 @@ import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
 import { draftFromSource, validateDraft, compileRecord } from '../../admin-api/src/catalog-model.mjs';
 const projected = source => ({ ...source, id: source.id.replace('skill.', 'skill_entry.'), kind: source.is_active ? 'active' : 'passive' });
 const identity = source => ({ id: source.id, kind: source.kind, category: source.legacy_category_id, index: source.legacy_entry_index });
+const customLearning = () => ({ classIds: ['job.4'], classScope: 'descendants', minimumLevel: 35,
+  branches: [{ branchId: 'skill_category.18', minimumPoints: 35 }] });
+
+test('custom learning is optional and round-trips without changing retained prerequisite codes or kind', () => {
+  for (const original of [skills.records[0], skills.records.find(row => row.id === 'skill.0.1')]) {
+    const source = projected(original), id = identity(source), edit = draftFromSource(source, source.kind);
+    assert.equal(Object.hasOwn(compileRecord(validateDraft(edit, id), id, source), 'learningRequirements'), false);
+    edit.learningRequirements = customLearning();
+    const validated = validateDraft(edit, id), record = compileRecord(validated, id, source);
+    assert.deepEqual(record.learningRequirements, edit.learningRequirements);
+    assert.equal(record.prerequisiteCode, original.prerequisite_code);
+    assert.equal(record.active, original.is_active);
+    edit.learningRequirements.branches[0].minimumPoints = 41;
+    assert.equal(record.learningRequirements.branches[0].minimumPoints, 35);
+    delete edit.learningRequirements;
+    assert.equal(Object.hasOwn(validateDraft(edit, id), 'learningRequirements'), false);
+  }
+});
+
+test('custom learning accepts canonical bounded class/branch gates for variants as well as source identities', () => {
+  const source = projected(skills.records[0]);
+  const id = { ...identity(source), id: 'modern.active.00000000-0000-4000-8000-000000000001', templateId: source.id };
+  const edit = { ...draftFromSource(source, 'active'), id: id.id, templateId: source.id,
+    learningRequirements: { classIds: [], classScope: 'exact', minimumLevel: 55,
+      branches: [{ branchId: 'skill_category.0', minimumPoints: 200 }, { branchId: 'skill_category.24', minimumPoints: 1 }] } };
+  assert.deepEqual(compileRecord(validateDraft(edit, id), id, source).learningRequirements, edit.learningRequirements);
+  assert.equal(compileRecord(validateDraft(edit, id), id, source).nativeEffectPolicy, 'template-gate-only');
+});
+
+test('custom learning rejects raw code, missing fields, unknown identities, duplicate gates and out-of-range values', () => {
+  const source = projected(skills.records[0]), id = identity(source), edit = draftFromSource(source, 'active');
+  const invalid = [null, {}, 'J=4=35', { ...customLearning(), formula: 'eval(1)' },
+    { ...customLearning(), classIds: ['job.28'] }, { ...customLearning(), classIds: ['job.04'] },
+    { ...customLearning(), classIds: ['job.4', 'job.4'] }, { ...customLearning(), classScope: 'everyone' },
+    { ...customLearning(), minimumLevel: 0 }, { ...customLearning(), minimumLevel: 56 },
+    { ...customLearning(), minimumLevel: 35.5 }, { ...customLearning(), minimumLevel: '35' },
+    { ...customLearning(), branches: [{ branchId: 'skill_category.25', minimumPoints: 1 }] },
+    { ...customLearning(), branches: [{ branchId: 'skill_category.18', minimumPoints: 201 }] },
+    { ...customLearning(), branches: [{ branchId: 'skill_category.18', minimumPoints: 0 }] },
+    { ...customLearning(), branches: [{ branchId: 'skill_category.18', minimumPoints: 1, code: 'S=18=1' }] },
+    { ...customLearning(), branches: [customLearning().branches[0], customLearning().branches[0]] }];
+  for (const learningRequirements of invalid) assert.throws(() => validateDraft({ ...edit, learningRequirements }, id));
+});
 
 test('all 211 skills preserve canonical prerequisites, active/passive type and original timing data', () => {
   let active = 0, passive = 0;

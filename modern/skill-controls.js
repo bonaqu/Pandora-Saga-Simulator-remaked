@@ -41,8 +41,13 @@
         if (attribute) node.setAttribute(attribute, ''); body.appendChild(node); return node;
       }
       var source = window.Skill[language][record.category][record.index], term = 'skill_detail.' + record.category + '.' + record.index;
-      paragraph(i18n.t('skills.template', { name: game(record.templateId, source[0]) }));
-      paragraph(game('calculator.learn.6', window.Name.Learn[6][language]) + ': ' + game(term + '.1', source[1]));
+      if (record.learningRequirements) {
+        paragraph(i18n.t('skills.customLearning'));
+        paragraph(namespace.catalog.learningText(record.learningRequirements), 'data-remaked-variant-learning');
+      } else {
+        paragraph(i18n.t('skills.template', { name: game(record.templateId, source[0]) }));
+        paragraph(game('calculator.learn.6', window.Name.Learn[6][language]) + ': ' + game(term + '.1', source[1]));
+      }
       if (record.active) {
         paragraph(game('calculator.learn.7', window.Name.Learn[7][language]) + ': ' + game(term + '.2', source[2]));
         var timings = document.createElement('dl'); body.appendChild(timings);

@@ -163,13 +163,16 @@ jobs:
         run: npm run test:ui:catalog-audit
 
       - name: Verify versioned catalog calculations and offline recipients
-        run: npm run test:ui -- tests/ui/catalog-adapter.spec.mjs tests/ui/catalog-adoption.spec.mjs tests/ui/build-load-races.spec.mjs tests/ui/skill-catalog.spec.mjs tests/ui/skill-variants.spec.mjs tests/ui/build-context.spec.mjs tests/ui/admin-entry.spec.mjs --project=chromium
+        run: npm run test:ui -- tests/ui/catalog-adapter.spec.mjs tests/ui/catalog-adoption.spec.mjs tests/ui/build-load-races.spec.mjs tests/ui/skill-catalog.spec.mjs tests/ui/skill-variants.spec.mjs tests/ui/custom-skill-learning.spec.mjs tests/ui/build-context.spec.mjs tests/ui/admin-entry.spec.mjs --project=chromium
 
       - name: Run Chromium Firefox and WebKit smoke tests
         run: npm run test:ui:cross-browser
 
       - name: Verify deterministic Legacy terminology export
         run: npm run test:translations
+
+      - name: Verify pure current skill reference reconciliation
+        run: npm run test:source-audit
 
       - name: Verify deterministic structured data projections
         run: npm run test:data
