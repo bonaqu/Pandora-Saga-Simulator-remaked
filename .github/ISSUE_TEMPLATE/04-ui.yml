@@ -14,17 +14,6 @@ body:
         Use this form for interface, layout, rendering, responsive design, and other visual issues.
 
   - type: dropdown
-    id: report_language
-    attributes:
-      label: "Язык сообщения / Report language"
-      options:
-        - "Русский / Russian"
-        - "English / Английский"
-        - "Русский + English / Both"
-    validations:
-      required: true
-
-  - type: dropdown
     id: ui_type
     attributes:
       label: "Тип проблемы / Problem type"
@@ -45,8 +34,6 @@ body:
     attributes:
       label: "Браузер и версия / Browser and version"
       placeholder: "Chrome 152 / Firefox / Edge / Safari / etc."
-    validations:
-      required: true
 
   - type: input
     id: device
