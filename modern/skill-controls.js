@@ -88,10 +88,15 @@
     return state[2] + state[3];
   }
 
-  function syncSkillInput(input) {
+  function syncSkillBounds(input) {
     var index = Number(input.dataset.remakedSkillNumber);
     input.min = String(window.Status.Skill[index][0]);
     input.max = String(currentPotential(index));
+  }
+
+  function syncSkillInput(input) {
+    var index = Number(input.dataset.remakedSkillNumber);
+    syncSkillBounds(input);
     if (document.activeElement !== input) {
       input.value = String(currentAdeptness(index));
       input.removeAttribute('aria-invalid');
@@ -124,7 +129,7 @@
       input.removeAttribute('aria-invalid');
     }
     function commit() {
-      syncSkillInput(input);
+      syncSkillBounds(input);
       if (input.value === '' || input.validity.badInput || !Number.isInteger(input.valueAsNumber) || !input.checkValidity()) {
         input.setAttribute('aria-invalid', 'true');
         input.reportValidity();
