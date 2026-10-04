@@ -1731,43 +1731,42 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
 }
 
 
-/* Character point budgets share one compact geometry. Level used to keep the
-   Legacy 35px label width, which made it visibly shorter than Status/Skill/
-   Potential in the Modern workbench. */
-.remaked-modern #body [data-remaked-calculator-budget] > ul {
-  display: grid;
-  grid-template-columns: 58px minmax(0, 1fr);
-  align-items: center;
-  gap: 2px;
-  width: 100%;
-  min-height: 28px;
-}
-.remaked-modern #body [data-remaked-calculator-budget] > ul > :is(.input_lt, .input_gt) {
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  min-height: 28px;
-}
-.remaked-modern #body [data-remaked-calculator-budget] > ul > .input_gt > ul {
-  width: 100%;
-  justify-content: flex-end;
-}
-.remaked-modern #body [data-remaked-calculator-budget] > ul > li {
-  float: none !important;
-  width: auto !important;
-  min-width: 0;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-}
-.remaked-modern #body [data-remaked-calculator-level] {
-  grid-column: auto;
-}
-.remaked-modern #body [data-remaked-calculator-level] > li:nth-child(2) {
-  display: flex;
-  align-items: center;
-}
-.remaked-modern #body [data-remaked-calculator-level] .remaked-calculator-number {
-  width: 100%;
+/* Character point budgets share one compact geometry on the desktop
+   workbench. Keep the compact retained Status/Skill/Potential row height and
+   shrink Level to match it instead of making the three budget rows taller. */
+@media (min-width: 621px) {
+  .remaked-modern #body [data-remaked-calculator-budget] > ul {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr);
+    align-items: center;
+    gap: 2px;
+    width: 100%;
+  }
+  .remaked-modern #body [data-remaked-calculator-budget] > ul > li {
+    box-sizing: border-box;
+    float: none !important;
+    width: auto !important;
+    height: 22px !important;
+    min-width: 0;
+    margin: 0 !important;
+  }
+  .remaked-modern #body [data-remaked-calculator-budget] > ul > :is(.input_lt, .input_gt) {
+    display: flex;
+    align-items: center;
+  }
+  .remaked-modern #body [data-remaked-calculator-budget] > ul > .input_gt > ul {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .remaked-modern #body [data-remaked-calculator-level] {
+    grid-column: auto;
+  }
+  .remaked-modern #body [data-remaked-calculator-level] .remaked-calculator-number {
+    width: 100%;
+    height: 22px;
+    min-height: 22px;
+    padding-block: 1px;
+  }
 }
 
 /* A level decrease may leave a previously valid allocation over budget.
