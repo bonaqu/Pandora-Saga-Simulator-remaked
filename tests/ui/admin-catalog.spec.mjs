@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import { adminCatalog } from '../../admin-api/src/catalog.mjs';
+import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs';
 
 const admin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
 
@@ -44,7 +45,7 @@ test('an origin-denied login explains the safe retry without showing or storing 
   expect(await page.evaluate(() => JSON.stringify([localStorage, sessionStorage]))).toBe('[{},{}]');
 });
 
-async function openConsole(page) {
+async function openConsole(page, drafts = []) {
   // Only synthetic in-memory sessions. Never read the real administrator's
   // credential file in trace-enabled repository tests.
   const sqlite = new DatabaseSync(':memory:');
@@ -61,6 +62,15 @@ async function openConsole(page) {
     try { const results = []; for (const statement of statements) results.push(await statement.run()); sqlite.exec('COMMIT'); return results; }
     catch (error) { sqlite.exec('ROLLBACK'); throw error; }
   } };
+  for (const edit of drafts) {
+    const call = async (path, input) => {
+      const response = await adminCatalog(new Request(admin + '/api/admin/' + path, { method: input ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json' }, body: input ? JSON.stringify(input) : undefined }), { DB });
+      expect(response.status).toBe(200); return response.json();
+    };
+    const item = await call('item?id=' + edit.id);
+    const saved = await call('draft', { edit, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
+    await call('publish', { id: edit.id, expectedDraftVersion: saved.draftVersion, expectedCatalogRevision: saved.catalogRevision });
+  }
   await page.route(admin + '/**', async route => {
     const request = route.request(); const path = new URL(request.url()).pathname;
     if (path === '/api/session') return route.fulfill({ json: { ok: true, username: 'admin', csrfToken: 'synthetic-test-csrf-only', expiresAt: 9999999999 } });
@@ -82,6 +92,48 @@ async function openConsole(page) {
   await expect(page.locator('#catalog-state')).toContainText('Каталог загружен');
   return { sqlite, errors };
 }
+
+test('current racial editor preserves both attack units, weapon conditions and reference-only limits', async ({ page }, testInfo) => {
+  const { sqlite, errors } = await openConsole(page, currentRacialDrafts());
+  await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('racial');
+  async function select(id) {
+    await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill(id);
+    await page.locator('.catalog-entry').first().click();
+  }
+  await select('racial_skill.0.0');
+  const live = page.locator('[data-current-record]'), preview = page.locator('[data-preview-record]');
+  await expect(live).toContainText('Бойцовский дух');
+  await expect(live).toContainText('Физическая атака (ATK): +10');
+  await expect(live).toContainText('Физическая атака (ATK): +12 % от базы');
+  await expect(live).toContainText('Условие оружия:');
+  await expect(page.locator('[data-weapon-category="0"]')).toBeChecked();
+  await expect(page.locator('[data-weapon-category="1"]')).not.toBeChecked();
+  await expect(page.locator('.effect-rows .effect-row')).toHaveCount(2);
+  await page.getByRole('spinbutton', { name: 'Значение', exact: true }).first().fill('11');
+  await page.getByRole('button', { name: 'Проверить изменения', exact: true }).click();
+  await expect(preview).toContainText('Физическая атака (ATK): +11');
+  await expect(preview).toContainText('Физическая атака (ATK): +12 % от базы');
+  expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(18);
+  await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
+  page.on('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: 'Опубликовать', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Опубликована версия каталога 19');
+  await expect(live).toContainText('Физическая атака (ATK): +11');
+  await select('racial_skill.1.1');
+  await expect(live).toContainText('Зоркость');
+  await expect(live).toContainText('Дальность +500 указана справочно');
+  await expect(live).toContainText('Рассчитываемых числовых бонусов нет');
+  await expect(page.locator('[data-field="calculationNotes"][data-language="ru"]')).toHaveValue(/Дальность \+500/);
+  await page.screenshot({ path: testInfo.outputPath('racial-current-desktop.png'), fullPage: true });
+  await select('racial_skill.4.0');
+  await expect(live).toContainText('Каменная кожа');
+  await expect(live).toContainText('-10 % получаемого урона');
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.locator('.numeric-effects').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath('racial-editor-touch.png'), fullPage: false });
+  expect(errors).toEqual([]);
+});
 
 test('editor shows live values and a private server preview before explicit save and publication', async ({ page }, testInfo) => {
   const { sqlite, errors } = await openConsole(page);

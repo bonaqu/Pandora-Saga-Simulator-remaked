@@ -145,6 +145,26 @@
       options(byId('SelRSkill'), function (option) {
         return { id: 'racial_skill.' + race + '.' + option.value, source: names.Race.Skill[race][option.value][language] };
       });
+      var info = namespace.catalog?.racialDetails(), racialInfo = byId('RemakedRacialInfo');
+      var racialPanel = byId('Tab_0_1');
+      var racialContent = racialPanel?.querySelector('.remaked-native-panel-content') || racialPanel?.querySelector('.sub_win > ul');
+      if (!racialInfo && info && racialContent) {
+        racialInfo = document.createElement('li'); racialInfo.id = 'RemakedRacialInfo';
+        racialInfo.className = 'remaked-racial-description';
+        racialInfo.append(document.createElement('strong'), document.createElement('p'), document.createElement('p'));
+        racialContent.appendChild(racialInfo);
+      }
+      if (racialInfo) {
+        if (racialContent && racialInfo.parentElement !== racialContent) racialContent.appendChild(racialInfo);
+        racialInfo.hidden = !info;
+        if (info) {
+          if (racialInfo.children[0].textContent !== info.name) racialInfo.children[0].textContent = info.name;
+          if (racialInfo.children[1].textContent !== info.description) racialInfo.children[1].textContent = info.description;
+          var note = racialInfo.children[2]; note.hidden = !info.calculationNotes;
+          var noteText = info.calculationNotes ? (i18n.getLocale() === 'ru' ? 'Ограничение расчёта: ' : 'Calculation limit: ') + info.calculationNotes : '';
+          if (note.textContent !== noteText) note.textContent = noteText;
+        }
+      }
       options(byId('SelJob'), function (option) {
         var index = Number(option.value);
         var id = 'job.' + index;

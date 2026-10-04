@@ -1,5 +1,114 @@
 # Release acceptance
 
+## Modern 3.07 — current racial data, local acceptance only
+
+Implementation is ready for PR/CI. No public acceptance or catalog update is
+claimed yet: the production head was revision 2 at preflight. Deployment does
+not automatically seed drafts or replace administrator data.
+
+- Read-only source audit matches all 18 current public RU/EN names/descriptions
+  and effect numbers from `skills.json`, `strings.en.json`, `racialPassives.json`.
+  Owner's Acute Senses ё spelling is the only explicit spelling exception.
+  Source hashes and checks are saved outside Git in
+  `D:\CODEX\Tasks\pandora-admin-runtime\current-racial-source-audit.json`.
+- All 74 backend checks pass, including independent exact text/effect fixtures,
+  both ATK units, invalid/duplicate data rejection, normal draft/publish/history
+  and immutable rollback. No auth, secrets, schema migrations or source identity
+  changes. Existing old two-record correction payloads omit new optional fields.
+- Chromium targeted group: 52/53 initially passed; failure correctly exposed the
+  old expectation that all race translations were blank. Updated assertions
+  require Human→Человек, unchanged unapproved class and exact native build bytes.
+  All seven localization checks then pass. Three Python workbook tests likewise
+  assumed an empty global dictionary; all ten updated workbook checks pass,
+  requiring preservation of the other translations plus exact current 24 names.
+  Other Python checks passed in the grouped run; CI still must establish the
+  complete final suite result (now 65 tests), not infer it from these subsets.
+- Render inspection caught the new JOB description outside the actual card:
+  fixed to a semantic li inside its existing scroll surface, with boxed width,
+  wrapping and independent DOM text updates. Actual PC 1440×900 and touch-sized
+  390×844 screenshots were reviewed after repair. All 11 racial/panel checks pass,
+  including actual outputs, source/old/current pins, passive and race removal,
+  45 weapon boundaries, popup containment and all five panel close paths.
+- Workbook changes exactly H/I rows 1322–1345 (48 cells). All other cell values,
+  parsed styles/table, row/style IDs, widths and freeze panes match the source;
+  original workbook backup and before/after rendered views are outside Git.
+  Native Excel itself was not driven. Translation/data deterministic checks and
+  Wrangler dry-run pass; retained 28 classes/6 races/18 passives/211 skills and
+  1120 equipment/184 souls retain source fingerprints, only UI metadata is 3.07.
+
+Limits: no modeled attack range, carrying bonus or fatal-hit survival. Source
+BARE_HAND cannot justify an invented empty-slot bonus for Strong Arm; the owner's
+two-handed scope and existing weapon categories are retained. Server class-skill
+reconciliation is next, not complete. Browser plugin not available; used the
+existing project Playwright workflow, not a new setup. Reports/screenshots and
+synthetic sessions are outside Git; no real credentials in trace-enabled tests.
+Current CI still repeats PR/Pages browser gates; its optimization is separate.
+
+CI follow-up (still not publication): first Feature run `37167644279` passed
+210 main checks but caught a historical/current naming equality assertion.
+The corrected differential keeps exact numerical comparisons and explicitly
+requires historical Harmony with Nature versus current Nature's Harmony.
+Feature `37168385277` then passed all 211 main checks (zero skips/flaky/failures),
+65 Python and catalog/editor/pinned-offline gates; WebKit caught immediate
+opener-Escape failing for DEFENSE. That failure reproduced locally, not a
+retry-only pass. A same-task click/Escape regression first confirmed stale
+aria-expanded/hidden state before the 16ms observer timer. Modern click now
+refreshes the panel synchronously and Escape checks native Flag[2], not delayed
+ARIA. Seven focused panel checks and the affected scenario in all three engines
+pass; PC/touch-sized DEFENSE screenshots were reviewed. Final CI for this actual
+runtime fix remains required. No production records have been changed.
+
+## Modern 3.06 — complete skill descriptions, published and verified
+
+PR37 was squash-merged as `01258c6236856f2dbbdd8aa6744b8304f3defefa` and
+accepted on 2026-10-04 (Europe/Moscow). Only the Modern description surface
+changes: original `LearnSkill_*` nodes/IDs/text and DDM callbacks are reused in
+the browser top layer, with a same-node body-portal fallback. No copied game
+formulas, altered skill values, catalog publication or museum edits.
+
+- Feature HEAD `3b56c972bd333c4179691bb72c09a477a516a268`: Feature CI
+  `37156610968` and API verification `37156610992` succeeded. Main JSON report
+  confirms 207 expected, zero skipped/unexpected/flaky results. All other
+  configured desktop, catalog, private-editor, three-engine, visual and 64 Python
+  gates passed. Locally, four focused and 42 related browser checks plus three
+  targeted engine checks passed; the latter took 13.4s. The CI screenshot was reviewed.
+- Before the change, the actual 3.05 site reproduced clipped descriptions on PC
+  and a 390px touch-sized viewport. The fixture's mistaken skill ID was corrected
+  before accepting RED evidence: Bash is `skill.0.15`, not `skill.0.6`.
+- Pages `37157943717` and Worker `37157943710` succeeded. Pages tar SHA-256:
+  `655103be19a728161a2909f52e5a7c93ba63f1a9c3348adf5b79cc98266e4b86`.
+  All 23 sampled live files match the exact artifact. All 459 museum files and
+  retained runtime match the accepted preservation artifact; private archive,
+  admin source and credentials are absent. Cache:
+  `pandora-remaked-3.06-eb49a7d9d5ce1828`. Workbook SHA-256 is still
+  `9a0b1308dcfe5fa1c6e49779a470cdaa1ac3fc40cb5535674bea12eb44ae5969`.
+- Actual public PC/touch descriptions escape the list boundary, retain full
+  source text and stay within the viewport. Moving/tapping into the text, Escape,
+  keyboard reopening and panel-switch cleanup pass; native build and skill tables
+  remain unchanged. The new module works after controlled offline reload.
+  Three focused live checks passed; public PC and touch screenshots were inspected.
+- The helper initially hit the retained `window.Set` settings array in
+  Playwright's waitForFunction poller, then focused an offline icon before its
+  panel was visible. Node-side bounded polling and explicit catalog/panel
+  readiness corrected only the helper; no runtime globals or assertions changed.
+  Offline diagnostics identified exactly two expected disconnected requests:
+  the existing FC2 counter image and Worker public `/api/catalog`. Only those
+  exact URLs/errors in deliberate offline mode are classified separately;
+  all other console/page/network failures remain fatal. Zero unexpected errors.
+- Worker `bd17a31e-6ae1-4019-99c0-86112e88abe3`: existing CI verified deployment
+  and health; there were no migrations to apply. Auth implementation, credentials,
+  sessions and game records were not changed or re-seeded. The unchanged private
+  login was not repeated merely for this UI fix. No paid services were introduced.
+
+Limits: touch context is not physical-phone acceptance; this focused offline
+check is not another full installed-app audit. Current catalog remains revision 2;
+the full current 18 racial effects/RU-EN skills, supplied banner and wider editor
+mechanics remain queued. The owner's testing-efficiency question is recorded as
+a proposal, not an implemented CI optimization. Feature and squash source trees
+are identical, but the current Pages workflow still repeated the browser suites.
+Acceptance documentation is kept locally for the next coherent change rather
+than triggering another full docs-only deployment.
+
 ## Modern 3.05 — all five floating inspectors, published and verified
 
 PR35 was squash-merged as `03233ce0881f0ac5799a42540b5c0577ed1004ec` and

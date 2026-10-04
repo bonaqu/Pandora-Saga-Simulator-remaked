@@ -53,12 +53,13 @@ class TranslationWorkbookTests(unittest.TestCase):
             localization = self.copy_localization(root)
             workbook = localization / "translations.xlsx"
             before = read_rows(workbook)
+            previous = load_editable_catalogs(root)
             set_translation_cell(workbook, "header.project", "Community project", "I")
             set_translation_cell(workbook, "equipment.0.1", "Owner's custom weapon", "I")
             set_translation_cell(workbook, "equipment.0.1", "Оружие владельца")
             catalogs = load_editable_catalogs(root)
             self.assertEqual(catalogs.ui_english, {"header.project": "Community project"})
-            self.assertEqual(catalogs.game_english, {"equipment.0.1": "Owner's custom weapon"})
+            self.assertEqual(catalogs.game_english, {**previous.game_english, "equipment.0.1": "Owner's custom weapon"})
             self.assertEqual(catalogs.game_russian["equipment.0.1"], "Оружие владельца")
             self.assertEqual([row[:7] for row in read_rows(workbook)], [row[:7] for row in before])
 
@@ -76,11 +77,14 @@ class TranslationWorkbookTests(unittest.TestCase):
 
     def test_blank_english_override_falls_back_to_original(self):
         from scripts.translation_workbook import load_editable_catalogs
+        baseline = load_editable_catalogs(ROOT)
         with tempfile.TemporaryDirectory() as td:
             root = pathlib.Path(td)
             localization = self.copy_localization(root)
             set_translation_cell(localization / "translations.xlsx", "equipment.0.1", "  ", "I")
-            self.assertEqual(load_editable_catalogs(root).game_english, {})
+            edited = load_editable_catalogs(root)
+            self.assertNotIn("equipment.0.1", edited.game_english)
+            self.assertEqual(edited.game_english, baseline.game_english)
 
     def test_extended_workbook_keeps_one_filterable_table_and_frozen_source_ids(self):
         with zipfile.ZipFile(ROOT / "localization/translations.xlsx") as archive:
@@ -156,6 +160,7 @@ class TranslationWorkbookTests(unittest.TestCase):
 
     def test_new_skill_captions_have_editable_ru_and_en_without_affecting_source_catalog(self):
         from scripts.translation_workbook import load_editable_catalogs
+        baseline = load_editable_catalogs(ROOT)
         keys = {"skills." + key for key in ("catalog", "template", "learned", "notLearned",
                 "bonusApplied", "bonusInactive", "metadataOnly", "bonusRequirements", "unarmed", "ridingRequired")}
         rows = {row[1]: row for row in read_rows(ROOT / "localization/translations.xlsx")[1:]}
@@ -169,8 +174,27 @@ class TranslationWorkbookTests(unittest.TestCase):
             catalog = load_editable_catalogs(root)
             self.assertEqual(catalog.ui_english["skills.template"], "Source skill: {name}")
             self.assertEqual(catalog.ui_russian["skills.catalog"], "Новые умения")
-            self.assertEqual(catalog.game_english, {})
-            self.assertEqual(catalog.game_russian, {})
+            self.assertEqual(catalog.game_english, baseline.game_english)
+            self.assertEqual(catalog.game_russian, baseline.game_russian)
+
+    def test_current_races_and_all_racial_names_have_exact_editable_ru_en_aliases(self):
+        from scripts.translation_workbook import load_editable_catalogs
+        catalog = load_editable_catalogs(ROOT)
+        races = [("Человек", "Human"), ("Эльф", "Elf"), ("Цверг", "Dwarf"),
+                 ("Мирина", "Myrine"), ("Энкиду", "Enkidu"), ("Кролль", "Lapin")]
+        passives = [
+            ("Бойцовский дух", "Fighting Spirit"), ("Приспособляемость", "Adaptability"), ("Знахарство", "Pharmaceutics"),
+            ("Гармония", "Nature's Harmony"), ("Зоркость", "Eagle Eye"), ("Стойкость разума", "Steadfastness"),
+            ("Упрямое сердце", "Stronghearted"), ("Дух цверга", "Dwarf Spirit"), ("Стальная воля", "Steel will"),
+            ("Охотничье чутьё", "Acute Senses"), ("Подавление гнева", "Calmness"), ("Интуиция", "Sharpness"),
+            ("Каменная кожа", "Stone Skin"), ("Сильные руки", "Strong Arm"), ("Дух энкиду", "Enkidu Spirit"),
+            ("Антимагия", "Magic Resistance"), ("Всплеск магии", "Inner Light"), ("Дух кролля", "Lapin Spirit")]
+        for index, names in enumerate(races):
+            key = f"race.{index}"
+            self.assertEqual((catalog.game_russian[key], catalog.game_english[key]), names)
+        for index, names in enumerate(passives):
+            key = f"racial_skill.{index // 3}.{index % 3}"
+            self.assertEqual((catalog.game_russian[key], catalog.game_english[key]), names)
 
 
 if __name__ == "__main__":

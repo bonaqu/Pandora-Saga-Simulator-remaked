@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import { adminCatalog, publicCatalog } from '../../admin-api/src/catalog.mjs';
 import { draftFromSource } from '../../admin-api/src/catalog-model.mjs';
+import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs';
 
 const origin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
 function fixture() {
@@ -33,6 +34,31 @@ const publicData = async (env, revision) => (await publicCatalog(request('/api/c
 const detail = (env, id = 'equipment.0.1') => call(env, 'item?id=' + id);
 const save = (env, item) => call(env, 'draft', { edit: item.edit, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
 const publish = (env, item) => call(env, 'publish', { id: item.identity.id, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
+
+test('all current racial records survive private preview, publish, historical revisions and rollback', async () => {
+  const { env } = fixture();
+  for (const edit of currentRacialDrafts()) {
+    const item = await detail(env, edit.id);
+    const preview = await call(env, 'preview', { edit, expectedCatalogRevision: item.catalogRevision });
+    assert.deepEqual(preview.record.effects, edit.effects);
+    assert.deepEqual(preview.record.bonusRequirements, edit.bonusRequirements);
+    assert.deepEqual(preview.record.calculationNotes, edit.calculationNotes);
+    assert.equal((await publicData(env)).revision, item.catalogRevision);
+    const saved = await save(env, { ...item, edit }); await publish(env, saved);
+    const read = await detail(env, edit.id);
+    assert.deepEqual(read.currentRecord.effects, edit.effects);
+    assert.deepEqual(read.edit.bonusRequirements, edit.bonusRequirements);
+    assert.deepEqual(read.edit.calculationNotes, edit.calculationNotes);
+  }
+  const latest = await publicData(env), first = await publicData(env, 1);
+  assert.equal(latest.revision, 18); assert.equal(latest.records.length, 18);
+  assert.equal(first.records.length, 1);
+  assert.deepEqual(first.records[0].effects, currentRacialDrafts()[0].effects);
+  assert.deepEqual((await publicData(env, 0)).records, []);
+  await call(env, 'rollback', { revision: 1, expectedCatalogRevision: 18 });
+  assert.deepEqual((await publicData(env)).records, first.records);
+  assert.deepEqual((await publicData(env, 18)).records, latest.records);
+});
 
 test('editor reads actual public values separately from a private draft and previews without writes', async () => {
   const { env, sqlite } = fixture(); const item = await detail(env);

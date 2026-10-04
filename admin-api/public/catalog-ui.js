@@ -53,14 +53,15 @@
   }
   var effectNames = {
     0: 'Выносливость (ВЫН / STA)', 1: 'Сила (СИЛ / STR)', 2: 'Проворство (ПРВ / AGI)', 3: 'Ловкость (ЛВК / DEX)', 4: 'Сила духа (СД / SPR)', 5: 'Интеллект (ИНТ / INT)',
-    6: 'Здоровье (LP)', 7: 'Мана (MP)', 8: 'Эффективность зелий', 42: 'Магическая атака', 49: 'Защита',
-    52: 'Физический урон', 60: 'Магический урон', 62: 'Точность', 65: 'Уклонение', 69: 'Шанс критического удара',
-    70: 'Сопротивление криту', 71: 'Критический урон', 73: 'Скорость атаки', 74: 'Скорость движения', 76: 'Стоимость MP', 77: 'Скорость применения', 79: 'Перезарядка'
+    6: 'Здоровье (LP)', 7: 'Мана (MP)', 8: 'Эффективность зелий', 10: 'Бонус скорости восстановления ОМ', 18: 'Физическая атака (ATK)', 42: 'Магическая атака', 49: 'Защита',
+    52: 'Получаемый физический урон', 60: 'Получаемый магический урон', 62: 'Точность', 65: 'Уклонение', 69: 'Шанс критического удара',
+    70: 'Получаемый шанс крита (минус = защита)', 71: 'Критический урон', 72: 'Получаемый критический урон', 73: 'Скорость атаки', 74: 'Скорость движения', 76: 'Стоимость MP', 77: 'Скорость применения', 79: 'Перезарядка',
+    146: 'Сопротивление аномалиям тела', 147: 'Сопротивление аномалиям разума', 149: 'Сопротивление оглушению', 150: 'Сопротивление заморозке', 151: 'Сопротивление падению'
   };
   function effectLabel(id) { var definition = meta.effects.find(function (entry) { return entry.id === Number(id); }); return effectNames[id] || definition?.label || 'Условный эффект Legacy #' + id; }
   function effectText(id, value, unit) {
     var definition = meta.effects.find(function (entry) { return entry.id === Number(id); });
-    var number = Number(value), suffix = unit === 'percent' ? '% от базы' : definition && (definition.label.includes('percentage points') || Number(id) >= 138) ? ' п.п.' : '';
+    var number = Number(value), suffix = unit === 'percent' ? Number(id) === 52 ? '% получаемого урона' : '% от базы' : definition && (definition.label.includes('percentage points') || Number(id) >= 138) ? ' п.п.' : '';
     return effectLabel(id) + ': ' + (Number.isFinite(number) ? (number > 0 ? '+' : '') + number : value) + (suffix ? ' ' + suffix : '');
   }
   function recordView(record, target, title) {
@@ -87,10 +88,18 @@
     if (record.kind === 'class') ['Базовое LP', 'Базовое MP', 'Делитель роста LP от уровня', 'Делитель роста MP от уровня', 'Делитель роста LP от STA', 'Делитель роста MP от SPR'].forEach(function (label, index) { values.appendChild(node('li', label + ': ' + record.progression[index])); });
     if (record.kind === 'racial') {
       values.appendChild(node('li', record.effectMode === 'replace' ? 'Исходная механика отключена. Действуют только числа ниже.' : 'Исходная механика: ' + current.nativeMechanics));
+      var required = record.bonusRequirements;
+      if (required) {
+        var names = required.weaponCategories.map(function (id) { return id === -1 ? 'без оружия' : meta.categories.find(function (entry) { return entry.legacy_id === id; })?.name.en || '#' + id; });
+        values.appendChild(node('li', 'Условие оружия: ' + (names.length ? names.join(', ') : 'любое')));
+        if (required.shieldRequired) values.appendChild(node('li', 'Требуется щит.'));
+        if (required.ridingRequired) values.appendChild(node('li', 'Требуется верховая езда.'));
+      }
+      if (record.calculationNotes?.ru || record.calculationNotes?.en) target.appendChild(node('p', 'Ограничение расчёта: ' + (record.calculationNotes.ru || record.calculationNotes.en), 'help-text'));
     }
     if (record.kind === 'passive') values.appendChild(node('li', record.templateId ? 'Новый навык: встроенный эффект шаблона не копируется.' : 'Исходная механика сохраняется. Описание — справка; эффект зависит от изучения, класса и снаряжения.'));
     (record.effects || []).forEach(function (effect) { values.appendChild(node('li', effectText(effect.stat, effect.value, effect.unit))); });
-    if ((record.kind === 'racial' || record.kind === 'passive') && !record.effects.length) values.appendChild(node('li', 'Дополнительных числовых бонусов нет. Это не означает отсутствие исходного эффекта.'));
+    if ((record.kind === 'racial' || record.kind === 'passive') && !record.effects.length) values.appendChild(node('li', record.effectMode === 'replace' ? 'Рассчитываемых числовых бонусов нет. Справочные эффекты см. в описании и ограничениях.' : 'Дополнительных числовых бонусов нет. Это не означает отсутствие исходного эффекта.'));
     target.appendChild(values);
   }
   async function checkChanges() {
@@ -145,7 +154,7 @@
     function units() {
       var previous = unit.value || effect.unit; unit.replaceChildren();
       var definition = meta.effects.find(function (definition) { return definition.id === Number(stat.value); });
-      definition.units.forEach(function (name) { var option = node('option', name === 'percent' ? '% от базы' : definition.label.includes('percentage points') || definition.id >= 138 ? 'Процентные пункты (2 = +2%)' : 'Число (5 = +5)'); option.value = name; unit.appendChild(option); });
+      definition.units.forEach(function (name) { var option = node('option', name === 'percent' ? definition.id === 52 ? '% получаемого урона' : '% от базы' : definition.label.includes('percentage points') || definition.id >= 138 ? 'Процентные пункты (2 = +2%)' : 'Число (5 = +5)'); option.value = name; unit.appendChild(option); });
       if (definition.units.indexOf(previous) !== -1) unit.value = previous;
     }
     units(); stat.addEventListener('change', function () { units(); changing(); }); value.addEventListener('input', changing); unit.addEventListener('change', changing);
@@ -165,6 +174,10 @@
     if (edit.kind === 'racial') {
       edit.effectMode = formValue('effectMode'); edit.effects = [];
       editor.querySelectorAll('.effect-row').forEach(function (row) { var inputs = row.querySelectorAll('select, input'); edit.effects.push({ stat: Number(inputs[0].value), value: Number(inputs[1].value), unit: inputs[2].value }); });
+      edit.bonusRequirements = { weaponCategories: [], shieldRequired: editor.querySelector('[data-field="shieldRequired"]').checked, ridingRequired: editor.querySelector('[data-field="ridingRequired"]').checked };
+      editor.querySelectorAll('[data-weapon-category]').forEach(function (input) { if (input.checked) edit.bonusRequirements.weaponCategories.push(Number(input.dataset.weaponCategory)); });
+      edit.calculationNotes = {};
+      editor.querySelectorAll('[data-field="calculationNotes"]').forEach(function (input) { edit.calculationNotes[input.dataset.language] = input.value; });
       return edit;
     }
     if (edit.kind === 'active' || edit.kind === 'passive') {
@@ -259,6 +272,14 @@
       racialEffects.appendChild(node('p', 'Бонус действует только когда персонаж выбрал эту расовую способность. «Заменить» отключает её встроенные эффекты расчёта и применяет только числа ниже. Пустая замена убирает встроенный эффект. Боевые действия, которых нет в Legacy, это не создаёт.', 'help-text'));
       var racialRows = node('div', undefined, 'effect-rows'); racialEffects.appendChild(racialRows); edit.effects.forEach(function (effect) { effectRow(effect, racialRows); });
       racialEffects.appendChild(button('Добавить характеристику', function () { effectRow({ stat: 1, value: 0, unit: 'flat' }, racialRows); var mode = editor.querySelector('[data-field="effectMode"]'); if (mode.value === 'preserve') mode.value = 'add'; changing(); }, 'secondary')); editor.appendChild(racialEffects);
+      var required = edit.bonusRequirements || { weaponCategories: [], shieldRequired: false, ridingRequired: false };
+      var weaponFields = node('fieldset', undefined, 'compatibility-fields'); weaponFields.appendChild(node('legend', 'Оружие для этих бонусов · пусто = любое'));
+      [[-1, 'Без оружия']].concat(meta.categories.filter(function (entry) { return entry.legacy_id <= 13; }).map(function (entry) { return [entry.legacy_id, entry.name.en]; })).forEach(function (entry) {
+        var input = checkboxField(entry[1], required.weaponCategories.indexOf(entry[0]) !== -1, 'racialWeapon', weaponFields); input.dataset.weaponCategory = entry[0];
+      }); editor.appendChild(weaponFields);
+      checkboxField('Числовые бонусы требуют щит', required.shieldRequired, 'shieldRequired', editor);
+      checkboxField('Числовые бонусы требуют верховую езду', required.ridingRequired, 'ridingRequired', editor);
+      multilingual('Ограничения расчёта · если эффект пока только справочный', 'calculationNotes', edit.calculationNotes || { en: '', ru: '', jp: '', tw: '' }, editor, true);
       var racialActions = node('div', undefined, 'editor-actions'); racialActions.append(button('Сохранить черновик', saveDraft), button('Опубликовать', publish)); editor.appendChild(racialActions);
       finishEditor(); return;
     }

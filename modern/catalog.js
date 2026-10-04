@@ -7,8 +7,8 @@
   var allowedCategories = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 20, 30, 31, 32, 33, 34, 35, 40, 41, 42, 43];
   var languages = ['jp', 'en', 'tw'];
   // Typed option IDs/units are a data protocol, not copied game formulas.
-  var effectIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 42, 49, 50, 51, 52, 60, 62, 65, 69, 70, 71, 72, 73, 74, 76, 77, 79, 138, 139, 140, 141, 142, 143, 144, 145, 148, 149, 150, 151, 153, 154, 155, 156, 157, 158, 159, 160, 161];
-  var percentEffectIds = [6, 7, 49, 52, 62, 65];
+  var effectIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 18, 42, 49, 50, 51, 52, 60, 62, 65, 69, 70, 71, 72, 73, 74, 76, 77, 79, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 153, 154, 155, 156, 157, 158, 159, 160, 161];
+  var percentEffectIds = [6, 7, 18, 49, 52, 62, 65];
   var baselineEquipment, baselineSouls, baselineClassMods, baselineSkills, revision = 0, recordsByTerm = Object.create(null);
   var passiveRecords = [], variantRecords = [], learnedKey = '', learnedEntries = [], potentialEntries = [];
   var snapshots = Object.create(null), recovery = false;
@@ -42,9 +42,10 @@
     Object.keys(value).forEach(function (language) { check(['en', 'ru', 'jp', 'tw'].indexOf(language) !== -1 && typeof value[language] === 'string' && value[language].length <= limit, 'Invalid catalog text'); });
   }
   function typedEffects(effects) {
-    check(Array.isArray(effects) && effects.length <= effectIds.length, 'Invalid effects'); var stats = Object.create(null);
+    check(Array.isArray(effects) && effects.length <= effectIds.length + percentEffectIds.length, 'Invalid effects'); var stats = Object.create(null);
     effects.forEach(function (effect) {
-      check(effect && Object.keys(effect).every(function (key) { return ['stat', 'unit', 'value'].indexOf(key) !== -1; }) && effectIds.indexOf(effect.stat) !== -1 && !stats[effect.stat], 'Unsupported or duplicate effect'); stats[effect.stat] = true;
+      var pair = effect && effect.stat + ':' + effect.unit;
+      check(effect && Object.keys(effect).every(function (key) { return ['stat', 'unit', 'value'].indexOf(key) !== -1; }) && effectIds.indexOf(effect.stat) !== -1 && !stats[pair], 'Unsupported or duplicate effect'); stats[pair] = true;
       check(effect.unit === 'flat' || effect.unit === 'percent' && percentEffectIds.indexOf(effect.stat) !== -1, 'Unsupported effect unit');
       check(typeof effect.value === 'number' && Number.isFinite(effect.value) && Math.abs(effect.value) <= 10000 && Number(effect.value.toFixed(2)) === effect.value, 'Invalid effect value');
     });
@@ -85,12 +86,18 @@
       if (record.kind === 'racial') {
         check(snapshot.characterSourceFingerprint === CHARACTER_SOURCE_FINGERPRINT, 'Racial source/version mismatch');
         check(Number.isInteger(record.category) && record.category >= 0 && record.category < 6 && Number.isInteger(record.index) && record.index >= 0 && record.index < 3 && record.id === termFor(record), 'Invalid racial passive identity');
-        check(Object.keys(record).every(function (key) { return ['id', 'kind', 'category', 'index', 'names', 'description', 'effectMode', 'effects'].indexOf(key) !== -1; }), 'Unsupported racial field');
+        check(Object.keys(record).every(function (key) { return ['id', 'kind', 'category', 'index', 'names', 'description', 'effectMode', 'effects', 'bonusRequirements', 'calculationNotes'].indexOf(key) !== -1; }), 'Unsupported racial field');
         check(!seen[record.id], 'Duplicate racial identity'); seen[record.id] = true;
         textMap(record.names, 160); textMap(record.description, 4000); check(Boolean(record.names.en?.trim()), 'English racial name required');
-        check(['preserve', 'add', 'replace'].indexOf(record.effectMode) !== -1 && Array.isArray(record.effects) && record.effects.length <= effectIds.length, 'Invalid racial effect mode');
+        check(['preserve', 'add', 'replace'].indexOf(record.effectMode) !== -1 && Array.isArray(record.effects), 'Invalid racial effect mode');
         check(record.effectMode !== 'preserve' || record.effects.length === 0, 'Preserve mode cannot discard effects');
         typedEffects(record.effects);
+        if (record.bonusRequirements !== undefined) {
+          var required = record.bonusRequirements;
+          check(required && Object.keys(required).every(function (key) { return ['weaponCategories', 'shieldRequired', 'ridingRequired'].indexOf(key) !== -1; }) && typeof required.shieldRequired === 'boolean' && typeof required.ridingRequired === 'boolean', 'Invalid racial bonus requirements');
+          check(Array.isArray(required.weaponCategories) && required.weaponCategories.length <= 15 && required.weaponCategories.every(function (category, index) { return Number.isInteger(category) && category >= -1 && category <= 13 && required.weaponCategories.indexOf(category) === index; }), 'Invalid racial weapon requirements');
+        }
+        if (record.calculationNotes !== undefined) textMap(record.calculationNotes, 1600);
         return;
       }
       if (record.kind === 'class') {
@@ -386,6 +393,11 @@
     },
     preflightSnapshot: function (snapshot) { return applySnapshot(snapshot, { preflightOnly: true }); },
     getRevision: function () { return revision; }, hasOverrides: function () { return Object.keys(recordsByTerm).length > 0; },
+    racialDetails: function () {
+      var term = 'racial_skill.' + window.Status.Job[0] + '.' + window.Status.Job[1];
+      if (!recordsByTerm[term]) return null;
+      return { name: textFor(term, 'names'), description: textFor(term, 'description'), calculationNotes: textFor(term, 'calculationNotes') };
+    },
     gameLabel: function (term) {
       var detail = term.match(/^skill_detail\.(\d+)\.(\d+)\.3$/);
       return detail ? textFor('skill_entry.' + detail[1] + '.' + detail[2], 'description') : textFor(term, 'names');
@@ -409,9 +421,13 @@
     } finally { window.Learn = originalLearn; window.Flag[3] = originalFlag; }
   }
   function passiveEligible(record, learned) {
+    return learned.indexOf(record.category + '_' + record.index) !== -1 && equipmentEligible(record.bonusRequirements);
+  }
+  function equipmentEligible(required) {
+    if (!required) return true;
     var weaponId = Number(window.Status.Equip[0][0]), category = weaponId % 10000 ? Math.floor(weaponId / 10000) : -1;
-    var shieldId = Number(window.Status.Equip[1][0]), required = record.bonusRequirements;
-    return learned.indexOf(record.category + '_' + record.index) !== -1 && (!required.weaponCategories.length || required.weaponCategories.indexOf(category) !== -1) &&
+    var shieldId = Number(window.Status.Equip[1][0]);
+    return (!required.weaponCategories.length || required.weaponCategories.indexOf(category) !== -1) &&
       (!required.shieldRequired || Math.floor(shieldId / 10000) === 20 && shieldId % 10000 > 0) && (!required.ridingRequired || Boolean(window.Flag[7]));
   }
   function passiveEffects() {
@@ -428,7 +444,7 @@
     if (calculationDepth) return retainedCalc.apply(this, arguments);
     var record = recordsByTerm['racial_skill.' + window.Status.Job[0] + '.' + window.Status.Job[1]];
     var effects = passiveEffects();
-    if (record && record.effectMode !== 'preserve') effects = effects.concat(record.effects);
+    if (record && record.effectMode !== 'preserve' && equipmentEligible(record.bonusRequirements)) effects = effects.concat(record.effects);
     if (!effects.length && (!record || record.effectMode !== 'replace')) return retainedCalc.apply(this, arguments);
     var selected = window.Status.Job[1], originalOptions = window.EquipOpt;
     var options = originalOptions.slice();
