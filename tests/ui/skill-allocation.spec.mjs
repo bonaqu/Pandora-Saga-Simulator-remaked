@@ -174,7 +174,9 @@ test('level 50 to 49 recalculates Merciful Blessing effects and exposes an over-
 
   await expect(page.locator('#ViewHeal_1_1')).toHaveText('919');
   await expect(page.locator('#StatusStP_0')).toHaveText('-16');
-  await expect(page.locator('#LearnSkillIcon_13_3')).toHaveAttribute('style', /gray\//);
+  // Merciful Blessing is class/level-gated, so below Lv50 it leaves the
+  // potential list entirely instead of remaining as a gray branch-gated icon.
+  await expect(page.locator('#LearnSkillIcon_13_3')).toHaveCount(0);
   await expect(page.locator('#remaked-budget-warning')).toContainText('Status -16');
   const statusBudget = page.locator('#StatusStP_0').locator('xpath=ancestor::ul[li[contains(@class,"input_lt")]][1]');
   await expect(statusBudget).toHaveAttribute('data-remaked-budget-deficit', '');
