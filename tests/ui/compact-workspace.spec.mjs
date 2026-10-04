@@ -46,6 +46,100 @@ test('desktop skill rows keep direct Adeptness input and read-only Potential com
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 });
 
+test('compact stat costs, native number fields and riding text stay visually centered', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+
+  const geometry = await page.evaluate(() => {
+    function box(node) {
+      const rect = node.getBoundingClientRect();
+      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height, cx: rect.x + rect.width / 2, cy: rect.y + rect.height / 2 };
+    }
+    function textCenter(node, directTextOnly = false) {
+      let target;
+      if (directTextOnly) target = Array.from(node.childNodes).find(part => part.nodeType === Node.TEXT_NODE && part.textContent.trim());
+      else target = Array.from(node.childNodes).find(part => part.nodeType === Node.TEXT_NODE && part.textContent.trim()) || node;
+      const range = document.createRange();
+      range.selectNodeContents(target);
+      const rect = range.getBoundingClientRect();
+      return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+    }
+
+    const sta = document.querySelector('[data-remaked-number="STA"]');
+    const staCost = document.getElementById('StatusSTA_4');
+    const skill = document.querySelector('[data-remaked-skill-number="1"]');
+    const horseLabel = document.getElementById('Text_19');
+    const horseValue = document.getElementById('Status_81');
+    const horseBox = horseValue.closest('.input_gt');
+    const percentNode = Array.from(horseBox.childNodes).find(part => part.nodeType === Node.TEXT_NODE && part.textContent.includes('%'));
+    const percentRange = document.createRange(); percentRange.selectNodeContents(percentNode);
+    const percentRect = percentRange.getBoundingClientRect();
+
+    return {
+      sta: { type: sta.type, step: sta.step, ...box(sta) },
+      skill: { type: skill.type, step: skill.step, ...box(skill) },
+      cost: { box: box(staCost), text: textCenter(staCost) },
+      horseLabel: { box: box(horseLabel), text: textCenter(horseLabel) },
+      horseValue: { box: box(horseBox), text: textCenter(horseValue) },
+      horsePercentY: percentRect.y + percentRect.height / 2
+    };
+  });
+
+  expect(geometry.sta.type).toBe('number');
+  expect(geometry.skill.type).toBe('number');
+  expect(geometry.sta.step).toBe('1');
+  expect(geometry.skill.step).toBe('1');
+  expect(geometry.sta.width).toBeCloseTo(54, 0);
+  expect(geometry.skill.width).toBeCloseTo(54, 0);
+  expect(Math.abs(geometry.cost.text.y - geometry.sta.cy)).toBeLessThanOrEqual(1.5);
+  expect(Math.abs(geometry.horseLabel.text.y - geometry.horseLabel.box.cy)).toBeLessThanOrEqual(1.5);
+  expect(Math.abs(geometry.horseValue.text.y - geometry.horseValue.box.cy)).toBeLessThanOrEqual(1.5);
+  expect(Math.abs(geometry.horsePercentY - geometry.horseValue.box.cy)).toBeLessThanOrEqual(1.5);
+
+  await page.evaluate(() => {
+    Status.SPR[2] = 14;
+    document.getElementById('StatusSPR_0').textContent = '54';
+    PandoraRemaked.calculatorControls.refresh();
+  });
+  const spacing = await page.evaluate(() => {
+    const total = document.querySelector('[data-remaked-number-total="SPR"]').getBoundingClientRect();
+    const cost = document.getElementById('StatusSPR_4').getBoundingClientRect();
+    return { totalRight: total.right, costLeft: cost.left };
+  });
+  expect(spacing.totalRight).toBeLessThanOrEqual(spacing.costLeft + 1);
+});
+
+test('Adeptness and Potential headings stay centered over their real value tracks', async ({ page }) => {
+  await page.goto('/');
+  for (const width of [861, 1024, 1280, 1366, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const offsets = await page.evaluate(() => {
+      const header = document.querySelector('[data-remaked-skill-column-header]');
+      const spans = header.querySelectorAll(':scope > span');
+      function cx(node) {
+        const rect = node.getBoundingClientRect();
+        return rect.x + rect.width / 2;
+      }
+      function rowOffsets(rowIndex, adeptnessHeading, potentialHeading) {
+        const row = document.querySelector(`[data-remaked-skill-row="${rowIndex}"]`);
+        return {
+          adeptness: Math.abs(cx(spans[adeptnessHeading]) - cx(row.querySelector('[data-remaked-skill-number]'))),
+          potential: Math.abs(cx(spans[potentialHeading]) - cx(row.querySelector('[data-remaked-skill-potential-value]')))
+        };
+      }
+      const first = rowOffsets(1, 1, 2);
+      const copyVisible = getComputedStyle(spans[4]).display !== 'none';
+      return { first, second: copyVisible ? rowOffsets(7, 4, 5) : null };
+    });
+    expect(offsets.first.adeptness, `Adeptness at ${width}`).toBeLessThanOrEqual(1.5);
+    expect(offsets.first.potential, `Potential at ${width}`).toBeLessThanOrEqual(1.5);
+    if (offsets.second) {
+      expect(offsets.second.adeptness, `second Adeptness at ${width}`).toBeLessThanOrEqual(1.5);
+      expect(offsets.second.potential, `second Potential at ${width}`).toBeLessThanOrEqual(1.5);
+    }
+  }
+});
+
 test('desktop character controls and results do not push equipment behind a tall card stack', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 }); await page.goto('/');
   const character = await page.locator('[data-remaked-calculator-character]').boundingBox();
