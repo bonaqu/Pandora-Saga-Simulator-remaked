@@ -73,6 +73,9 @@ class BuildPagesTests(unittest.TestCase):
                 shutil.copy2(repository_localization / name, localization / name)
             generated = root / "data" / "generated"
             generated.mkdir(parents=True)
+            repository = pathlib.Path(__file__).resolve().parents[1]
+            shutil.copy2(repository / "data/native-passive-hooks.v1.json", root / "data/native-passive-hooks.v1.json")
+            shutil.copy2(repository / "js/calc.js", root / "js/calc.js")
             for name in ("equipment.v1.json", "souls.v1.json", "skills.v1.json"):
                 (generated / name).write_text(
                     json.dumps({"kind": name.removesuffix(".v1.json"), "records": []}),

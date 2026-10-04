@@ -1,3 +1,5 @@
+import nativePassives from '../../data/native-passive-hooks.v1.json' with { type: 'json' };
+export const NATIVE_PASSIVES = nativePassives.definitions;
 // This is a validated data codec, not a game calculator. IDs and unit suffixes
 // come from preserved Name.Option / Calc. Actual formulas stay in js/calc.js.
 const BOTH = ['flat', 'percent'];
@@ -13,6 +15,7 @@ export const EFFECTS = [
   [71, 'Critical damage (percentage points)', FLAT], [72, 'Critical damage taken (percentage points)', FLAT],
   [73, 'Attack speed (percentage points)', FLAT], [74, 'Movement speed (percentage points)', FLAT],
   [76, 'MP cost (percentage points)', FLAT], [77, 'Casting speed (percentage points)', FLAT], [79, 'Cooldown (percentage points)', FLAT],
+  [21, 'Weapon damage (percentage points)', FLAT], [81, 'Mounted stat release display (percentage points)', FLAT],
   [138, 'Fire resistance', FLAT], [139, 'Ice resistance', FLAT], [140, 'Lightning resistance', FLAT],
   [141, 'Poison resistance', FLAT], [142, 'Charm resistance', FLAT], [143, 'Light resistance', FLAT],
   [144, 'Dark resistance', FLAT], [145, 'Magic resistance', FLAT], [146, 'Physical abnormal status resistance', FLAT], [147, 'Mental abnormal status resistance', FLAT], [148, 'Burn resistance', FLAT],
@@ -119,7 +122,7 @@ export function validateDraft(input, identity) {
   if (identity.kind === 'active' || identity.kind === 'passive') {
     const variant = Boolean(identity.templateId);
     const common = ['id', 'kind', 'category', 'names', 'description', 'learningRequirements', ...(variant ? ['templateId'] : [])];
-    keys(input, [...common, ...(identity.kind === 'active' ? ['mpCost', 'castSeconds', 'cooldownSeconds', 'durationSeconds'] : ['effects', 'bonusRequirements'])], 'Skill');
+    keys(input, [...common, ...(identity.kind === 'active' ? ['mpCost', 'castSeconds', 'cooldownSeconds', 'durationSeconds'] : ['effects', 'bonusRequirements', 'intrinsicEffectMode'])], 'Skill');
     check(input.id === identity.id && input.kind === identity.kind && input.category === identity.category && Number.isInteger(identity.category) && identity.category >= 0 && identity.category < 25 && Number.isInteger(identity.index) && identity.index >= 0 && identity.index < 1000, 'Skill identity/type cannot be changed');
     if (variant) {
       check(input.templateId === identity.templateId && identity.templateId === 'skill_entry.' + identity.category + '.' + identity.index && new RegExp('^modern\\.' + identity.kind + '\\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$').test(input.id), 'Skill variant template/identity cannot be changed');
@@ -134,6 +137,10 @@ export function validateDraft(input, identity) {
         const value = input[field]; check(typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 86400 && Number(value.toFixed(3)) === value, 'Timing must be bounded seconds with at most three decimals'); result[field] = value;
       }
     } else {
+      if (input.intrinsicEffectMode !== undefined) {
+        check(!variant && Object.hasOwn(NATIVE_PASSIVES, identity.id) && ['add', 'replace'].includes(input.intrinsicEffectMode), 'Unsupported intrinsic passive mode or identity');
+        result.intrinsicEffectMode = input.intrinsicEffectMode;
+      }
       result.effects = effects(input.effects);
       keys(input.bonusRequirements, ['weaponCategories', 'shieldRequired', 'ridingRequired'], 'Bonus requirements');
       const categories = input.bonusRequirements.weaponCategories;
@@ -200,7 +207,8 @@ export function compileRecord(edit, identity, source) {
     return { id: identity.id, kind: identity.kind, category: identity.category, index: identity.index, names: edit.names, description: edit.description,
       ...(identity.templateId ? { templateId: identity.templateId } : {}),
       ...(edit.learningRequirements ? { learningRequirements: learningRequirements(edit.learningRequirements) } : {}),
-      active: source.is_active, prerequisiteCode: source.prerequisite_code, nativeEffectPolicy: identity.templateId ? 'template-gate-only' : 'retained-plus-bonus',
+      ...(edit.intrinsicEffectMode !== undefined ? { intrinsicEffectMode: edit.intrinsicEffectMode } : {}),
+      active: source.is_active, prerequisiteCode: source.prerequisite_code, nativeEffectPolicy: identity.templateId ? 'template-gate-only' : edit.intrinsicEffectMode === 'replace' ? 'typed-replacement' : 'retained-plus-bonus',
       timing: identity.kind === 'active' ? [edit.mpCost, edit.castSeconds, edit.cooldownSeconds, edit.durationSeconds] : [source.mp_cost, source.cast_seconds, source.cooldown_seconds, source.duration_seconds],
       effects: (edit.effects || []).map(effect => ({ ...effect })), bonusRequirements: edit.bonusRequirements ? { ...edit.bonusRequirements, weaponCategories: [...edit.bonusRequirements.weaponCategories] } : null };
   }

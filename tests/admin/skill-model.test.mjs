@@ -1,11 +1,35 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
-import { draftFromSource, validateDraft, compileRecord } from '../../admin-api/src/catalog-model.mjs';
+import { draftFromSource, validateDraft, compileRecord, NATIVE_PASSIVES } from '../../admin-api/src/catalog-model.mjs';
 const projected = source => ({ ...source, id: source.id.replace('skill.', 'skill_entry.'), kind: source.is_active ? 'active' : 'passive' });
 const identity = source => ({ id: source.id, kind: source.kind, category: source.legacy_category_id, index: source.legacy_entry_index });
 const customLearning = () => ({ classIds: ['job.4'], classScope: 'descendants', minimumLevel: 35,
   branches: [{ branchId: 'skill_category.18', minimumPoints: 35 }] });
+
+test('all fourteen identified native passives support explicit replacement while old source payloads remain unchanged', () => {
+  assert.equal(Object.keys(NATIVE_PASSIVES).length, 14);
+  for (const id of Object.keys(NATIVE_PASSIVES)) {
+    const source = projected(skills.records.find(row => row.id.replace('skill.', 'skill_entry.') === id)), who = identity(source);
+    const edit = draftFromSource(source, 'passive');
+    const old = compileRecord(validateDraft(edit, who), who, source);
+    assert.equal(Object.hasOwn(old, 'intrinsicEffectMode'), false); assert.equal(old.nativeEffectPolicy, 'retained-plus-bonus');
+    edit.intrinsicEffectMode = 'replace'; const replacement = compileRecord(validateDraft(edit, who), who, source);
+    assert.equal(replacement.nativeEffectPolicy, 'typed-replacement'); assert.deepEqual(replacement.effects, []);
+    assert.deepEqual(replacement.timing, old.timing); assert.equal(replacement.prerequisiteCode, old.prerequisiteCode);
+    edit.intrinsicEffectMode = 'add'; assert.equal(compileRecord(validateDraft(edit, who), who, source).nativeEffectPolicy, 'retained-plus-bonus');
+  }
+});
+
+test('intrinsic replacement rejects active skills, variants, unmapped source passives and malformed modes', () => {
+  for (const [native, mode] of [['skill.6.0', null], ['skill.6.0', 'eval(1)'], ['skill.0.0', 'replace'], ['skill.1.6', 'replace']]) {
+    const source = projected(skills.records.find(row => row.id === native)), who = identity(source), edit = draftFromSource(source, source.kind);
+    edit.intrinsicEffectMode = mode; assert.throws(() => validateDraft(edit, who));
+  }
+  const source = projected(skills.records.find(row => row.id === 'skill.6.0'));
+  const who = { ...identity(source), id: 'modern.passive.00000000-0000-4000-8000-000000000001', templateId: source.id };
+  assert.throws(() => validateDraft({ ...draftFromSource(source, 'passive'), id: who.id, templateId: source.id, intrinsicEffectMode: 'replace' }, who));
+});
 
 test('custom learning is optional and round-trips without changing retained prerequisite codes or kind', () => {
   for (const original of [skills.records[0], skills.records.find(row => row.id === 'skill.0.1')]) {

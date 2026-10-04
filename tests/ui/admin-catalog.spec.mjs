@@ -95,6 +95,49 @@ async function openConsole(page, drafts = []) {
   return { sqlite, errors };
 }
 
+test('mapped native passive editor clearly separates add and replacement, and a duplicate never inherits native replacement', async ({ page }) => {
+  const { sqlite, errors } = await openConsole(page);
+  const consoleErrors = []; page.on('console', message => { if (['error', 'warning'].includes(message.type())) consoleErrors.push(message.text()); });
+  expect(page.url()).toBe(admin + '/admin'); await expect(page).toHaveTitle('Pandora Admin Terminal');
+  await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('passive');
+  await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill('skill_entry.6.0');
+  await page.locator('.catalog-entry').first().click();
+  await expect(page.locator('[data-field="intrinsicEffectMode"]')).toHaveValue('add');
+  await expect(page.locator('[data-current-record]')).toContainText('Встроенный эффект сохранён');
+  await expect(page.locator('[data-current-record]')).toContainText('+10');
+  await page.locator('[data-field="intrinsicEffectMode"]').selectOption('replace');
+  await page.getByRole('button', { name: 'Проверить изменения', exact: true }).click();
+  await expect(page.locator('[data-preview-record]')).toContainText('Рассчитываемых числовых бонусов нет');
+  await expect(page.locator('[data-preview-record]')).not.toContainText('Это не означает отсутствие исходного эффекта');
+  await page.getByRole('button', { name: 'Добавить характеристику', exact: true }).click();
+  await page.getByRole('combobox', { name: 'Характеристика', exact: true }).selectOption('62');
+  await page.getByRole('spinbutton', { name: 'Значение', exact: true }).fill('3');
+  await page.getByRole('button', { name: 'Проверить изменения', exact: true }).click();
+  await expect(page.locator('[data-preview-record]')).toContainText('Встроенный эффект заменён');
+  await expect(page.locator('[data-preview-record]')).not.toContainText('Исходная механика сохраняется');
+  expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(0);
+  await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  page.on('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: 'Опубликовать', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Опубликована версия каталога 1');
+  const record = JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head').get().snapshot_json)[0];
+  expect(record.edit.intrinsicEffectMode).toBe('replace'); expect(record.edit.effects).toEqual([{ stat: 62, value: 3, unit: 'flat' }]);
+  const directory = process.platform === 'win32' ? 'D:/CODEX/Tasks/pandora-admin-runtime/native-passive-local' : path.join(os.tmpdir(), 'pandora-native-passive-local');
+  fs.mkdirSync(directory, { recursive: true });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.locator('[data-field="intrinsicEffectMode"]').scrollIntoViewIfNeeded(); await page.screenshot({ path: directory + '/admin-1440.png' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.locator('[data-field="intrinsicEffectMode"]').scrollIntoViewIfNeeded(); await page.screenshot({ path: directory + '/admin-390.png' });
+  await page.getByRole('button', { name: 'Создать новый навык по этому шаблону', exact: true }).click();
+  await expect(page.locator('[data-field="intrinsicEffectMode"]')).toHaveCount(0);
+  await page.locator('[data-field="names"][data-language="en"]').fill('Synthetic additional accuracy');
+  await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  expect(errors).toEqual([]); expect(consoleErrors).toEqual([]);
+});
+
 test('custom learning editor previews current classes/level/branches, preserves unsaved values and publishes only explicitly', async ({ page }) => {
   const { sqlite, errors } = await openConsole(page);
   await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('active');
@@ -228,11 +271,16 @@ test('editor shows live values and a private server preview before explicit save
 
 test('racial and skill editors expose current descriptions, numbers and calculation limits', async ({ page }) => {
   const { errors } = await openConsole(page);
-  for (const [kind, id, text] of [['racial', 'racial_skill.4.0', 'Получаемый физический урон −10%'], ['active', 'skill_entry.0.0', 'Стоимость MP'], ['passive', 'skill_entry.0.1', 'Исходная механика']]) {
+  for (const [kind, id, text] of [['racial', 'racial_skill.4.0', 'Получаемый физический урон −10%'], ['active', 'skill_entry.0.0', 'Стоимость MP'], ['passive', 'skill_entry.0.1', 'Встроенный эффект сохранён']]) {
     await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption(kind);
     await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill(id);
     await page.locator('.catalog-entry').first().click();
     await expect(page.locator('[data-current-record]')).toContainText(text);
+    if (kind === 'passive') {
+      await expect(page.locator('[data-current-record]')).toContainText('+10 процентных пунктов');
+      await expect(page.locator('[data-current-record]')).toContainText('с уровня 12');
+      await expect(page.locator('[data-field="intrinsicEffectMode"]')).toHaveValue('add');
+    }
     await expect(page.getByRole('button', { name: 'Проверить изменения', exact: true })).toBeVisible();
   }
   expect(errors).toEqual([]);

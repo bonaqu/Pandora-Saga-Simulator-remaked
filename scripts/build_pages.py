@@ -13,9 +13,11 @@ import shutil
 try:
     from scripts.translation_workbook import load_editable_catalogs
     from scripts.recover_archived_javascript import recover_archived_javascript
+    from scripts.native_passive_hooks import materialize_native_passives
 except ModuleNotFoundError:  # Direct execution keeps only scripts/ on sys.path.
     from translation_workbook import load_editable_catalogs
     from recover_archived_javascript import recover_archived_javascript
+    from native_passive_hooks import materialize_native_passives
 
 PROJECT_URL = "https://github.com/bonaqu/Pandora-Saga-Simulator-remaked"
 UPDATES_URL = "https://github.com/bonaqu/Pandora-Saga-Simulator-remaked/blob/bonaqu_projects/CHANGELOG.md"
@@ -114,6 +116,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/i18n.js"></script>
 <script src="./modern/adapter.js"></script>
 <script src="./modern/build-store.js"></script>
+<script src="./modern/native-passives.js"></script>
 <script src="./modern/catalog.js"></script>
 <script src="./modern/admin-entry.js"></script>
 <script src="./modern/search.js"></script>
@@ -374,6 +377,7 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     _materialize_game_terms(output, translations.game_russian, translations.game_english)
     _publish_translation_workbook(root, output)
     _materialize_generated_data(root, output)
+    materialize_native_passives(root, output)
 
     source_bytes = (root / "index.html").read_bytes()
     source_text = source_bytes.decode("utf-8-sig")

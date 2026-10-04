@@ -1,8 +1,37 @@
 # Current class skills — reconciliation before mutation
 
-Status: identity/definition audit and custom-learning support implemented locally;
-current server gameplay updates not published or accepted. Continues queue item
-4 after accepted 3.07.
+Status: identity/definition audit and custom-learning support shipped in accepted
+3.08, PR40. Two reviewed elemental source records are published in revision 22.
+Class variants, intrinsic passive replacement and complete balance remain
+unfinished. Continues queue item 4; see the 3.08 release acceptance ledger.
+
+## Local candidate 3.09: explicit native passive replacement
+
+Fourteen identified native contributions are guarded only in Modern's generated
+calc.js; the source and museum remain unchanged. The strict build helper checks
+every original anchor count, preserving formula expressions exactly. Optional
+`intrinsicEffectMode: replace` disables that contribution; absent/add retains old
+semantics. Active skills, variants and unmapped passives reject replacement.
+
+The editor shows numeric dependencies and separates current/draft/preview.
+Empty replacement is explicitly zero, not "native mechanics preserved". Stat 21
+is weapon-damage percentage points; stat 81 is display-only mounted release,
+not a new cross-stat riding formula. Merciful replacement switches its three
+native heal amplifiers back to ordinary formulas; arbitrary combat is unsupported.
+
+Runtime evidence found Paladin's Jousting bonus falsely unlearned because the
+full native list carries temporary prerequisite state from an earlier row.
+Only opted-in replacements now use the existing isolated native gate probe;
+visible learned pools/icons and effects use the same state. Old additive pins
+retain their exact default learned behavior.
+
+Focused Chromium checks cover all 14 actual contributions, revision-zero
+restoration, all three heal outputs, four separate riding identities, level and
+class changes, comparison restoration and fresh/offline recipients. Editor
+preview/draft/publish and duplicate isolation use synthetic local sessions only.
+Release CI/deployment/live acceptance are still pending; no server balance record
+has been published by this support change. Remaining variants/timing/type changes
+listed below remain unfinished.
 
 ## Reference and preservation
 
@@ -107,13 +136,13 @@ No deployed application change was made from that invalid result.
    Production publication remains blocked by unverified gameplay differences,
    not by a need to ask the absent owner routine implementation questions.
 
-The first two support steps are now local code, not production balance. See
+The first two support steps are now accepted production code, not complete balance. See
 [custom learning implementation and gates](2026-10-03-custom-skill-learning.md#local-implementation-4-october).
 Public descriptions now derive from explicit conditions; future source updates
 must still review each variant, timing and intrinsic effect before publishing.
 
-Two source-active records are prepared in `current-elemental-skills.mjs`, not
-automatically published: Resist Ice `skill_entry.18.9` (35) and Resist Lightning
+Two source-active records from `current-elemental-skills.mjs` were deliberately
+published after deployment: Resist Ice `skill_entry.18.9` (35) and Resist Lightning
 `skill_entry.18.10` (41). Fresh reference fetch at 03:35 UTC had the same three
 resource hashes. Original MP/cast/cooldown match; current official RU/EN names
 and descriptions are copied literally. Duration stays native; target resistance
@@ -121,3 +150,9 @@ and combat are explicitly not simulated. No variant, duplicate or formula added.
 The two typed conditions passed 140 synthetic parser states across all 28 native
 class identities, plus original summary/code/revision restoration. These probes
 do not assert legal point allocation or combat balance for every class.
+
+Actual publication moved 20→22 without changing unrelated records or historic
+20/2. Production Warlock uses its normal Elemental potential 90 and actual
+allocated learned points 33/34/35/40/41; icons/learned pools match current gates,
+old pin 20 keeps both at 33. Fresh/offline C1 recipients, actual editor login and
+PC/mobile screenshots passed. Complete class reconciliation is still open.

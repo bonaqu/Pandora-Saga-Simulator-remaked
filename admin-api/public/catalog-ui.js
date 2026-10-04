@@ -54,6 +54,7 @@
   var effectNames = {
     0: 'Выносливость (ВЫН / STA)', 1: 'Сила (СИЛ / STR)', 2: 'Проворство (ПРВ / AGI)', 3: 'Ловкость (ЛВК / DEX)', 4: 'Сила духа (СД / SPR)', 5: 'Интеллект (ИНТ / INT)',
     6: 'Здоровье (LP)', 7: 'Мана (MP)', 8: 'Эффективность зелий', 10: 'Бонус скорости восстановления ОМ', 18: 'Физическая атака (ATK)', 42: 'Магическая атака', 49: 'Защита',
+    21: 'Урон оружием · процентные пункты', 81: 'Показатель раскрытия статов верхом · только отображение',
     52: 'Получаемый физический урон', 60: 'Получаемый магический урон', 62: 'Точность', 65: 'Уклонение', 69: 'Шанс критического удара',
     70: 'Получаемый шанс крита (минус = защита)', 71: 'Критический урон', 72: 'Получаемый критический урон', 73: 'Скорость атаки', 74: 'Скорость движения', 76: 'Стоимость MP', 77: 'Скорость применения', 79: 'Перезарядка',
     146: 'Сопротивление аномалиям тела', 147: 'Сопротивление аномалиям разума', 149: 'Сопротивление оглушению', 150: 'Сопротивление заморозке', 151: 'Сопротивление падению'
@@ -86,6 +87,10 @@
     }
     if (record.kind === 'active') ['Стоимость MP', 'Время применения, с', 'Перезарядка, с', 'Длительность, с'].forEach(function (label, index) { values.appendChild(node('li', label + ': ' + record.timing[index])); });
     if (record.kind === 'active' || record.kind === 'passive') {
+      if (record.kind === 'passive' && !record.templateId && current.nativeSkill?.intrinsicEffect) {
+        values.appendChild(node('li', record.intrinsicEffectMode === 'replace' ? 'Встроенный эффект заменён: работают только числа ниже при выполнении условий.' : 'Встроенный эффект сохранён; числа ниже добавляются к нему.'));
+        values.appendChild(node('li', current.nativeSkill.intrinsicEffect.noteRu));
+      }
       var learning = record.learningRequirements;
       if (learning) {
         values.appendChild(node('li', 'Минимальный уровень: ' + learning.minimumLevel));
@@ -107,9 +112,9 @@
       }
       if (record.calculationNotes?.ru || record.calculationNotes?.en) target.appendChild(node('p', 'Ограничение расчёта: ' + (record.calculationNotes.ru || record.calculationNotes.en), 'help-text'));
     }
-    if (record.kind === 'passive') values.appendChild(node('li', record.templateId ? 'Новый навык: встроенный эффект шаблона не копируется.' : 'Исходная механика сохраняется. Описание — справка; эффект зависит от изучения, класса и снаряжения.'));
+    if (record.kind === 'passive' && (record.templateId || !current.nativeSkill?.intrinsicEffect)) values.appendChild(node('li', record.templateId ? 'Новый навык: встроенный эффект шаблона не копируется.' : 'Исходная механика сохраняется. Описание — справка; эффект зависит от изучения, класса и снаряжения.'));
     (record.effects || []).forEach(function (effect) { values.appendChild(node('li', effectText(effect.stat, effect.value, effect.unit))); });
-    if ((record.kind === 'racial' || record.kind === 'passive') && !record.effects.length) values.appendChild(node('li', record.effectMode === 'replace' ? 'Рассчитываемых числовых бонусов нет. Справочные эффекты см. в описании и ограничениях.' : 'Дополнительных числовых бонусов нет. Это не означает отсутствие исходного эффекта.'));
+    if ((record.kind === 'racial' || record.kind === 'passive') && !record.effects.length) values.appendChild(node('li', record.effectMode === 'replace' || record.intrinsicEffectMode === 'replace' ? 'Рассчитываемых числовых бонусов нет. Справочные эффекты см. в описании и ограничениях.' : 'Дополнительных числовых бонусов нет. Это не означает отсутствие исходного эффекта.'));
     target.appendChild(values);
   }
   async function checkChanges() {
@@ -233,6 +238,10 @@
       } else delete edit.learningRequirements;
       if (edit.kind === 'active') ['mpCost', 'castSeconds', 'cooldownSeconds', 'durationSeconds'].forEach(function (field) { edit[field] = Number(formValue(field)); });
       else {
+        if (editor.querySelector('[data-field="intrinsicEffectMode"]')) {
+          var mode = formValue('intrinsicEffectMode');
+          if (mode === 'add') delete edit.intrinsicEffectMode; else edit.intrinsicEffectMode = mode;
+        }
         edit.effects = []; editor.querySelectorAll('.effect-row').forEach(function (row) { var inputs = row.querySelectorAll('select, input'); edit.effects.push({ stat: Number(inputs[0].value), value: Number(inputs[1].value), unit: inputs[2].value }); });
         edit.bonusRequirements.weaponCategories = []; editor.querySelectorAll('[data-weapon-category]').forEach(function (input) { if (input.checked) edit.bonusRequirements.weaponCategories.push(Number(input.dataset.weaponCategory)); });
         ['shieldRequired', 'ridingRequired'].forEach(function (field) { edit.bonusRequirements[field] = editor.querySelector('[data-field="' + field + '"]').checked; });
@@ -286,7 +295,7 @@
         var template = node('p', 'Шаблон изучения: ' + (current.nativeSkill.templateName?.en || '') + ' · ' + edit.templateId, 'help-text');
         template.dataset.skillTemplate = ''; editor.appendChild(template);
         editor.appendChild(node('p', 'Это отдельный новый навык. Тип сохраняется; условия по умолчанию — от шаблона, либо задаются отдельно ниже. Встроенный эффект шаблона не копируется. Для пассивки действуют только явно указанные дополнительные числа.', 'help-text'));
-      } else editor.appendChild(node('p', 'Тип и встроенные формулы исходного навыка сохраняются. Условия изучения можно задать отдельно; это не заменяет его встроенный эффект.', 'help-text'));
+      } else editor.appendChild(node('p', 'Условия изучения и числовой эффект редактируются отдельно. Изменение названия или описания само по себе не меняет расчёт.', 'help-text'));
       learningEditor(edit);
       if (edit.kind === 'active') {
         var timings = node('fieldset', undefined, 'numeric-effects'); timings.appendChild(node('legend', 'Данные активного навыка'));
@@ -295,18 +304,23 @@
           var input = inputField(field[1], 'number', edit[field[0]], field[0], values, 0, index === 0 ? 100000 : 86400); input.step = index === 0 ? '1' : '.001'; input.required = true;
         }); timings.appendChild(values); timings.appendChild(node('p', 'Эти значения отображаются в изученном навыке. Они не создают новую формулу урона или новую боевую симуляцию. Встроенные эффекты и переключатели баффов Legacy сохраняются.', 'help-text')); editor.appendChild(timings);
       } else {
-        var bonuses = node('fieldset', undefined, 'numeric-effects'); bonuses.appendChild(node('legend', 'Дополнительные бонусы изученной пассивки'));
-        bonuses.appendChild(node('p', edit.templateId
+        var bonuses = node('fieldset', undefined, 'numeric-effects'); bonuses.appendChild(node('legend', 'Эффект изученной пассивки'));
+        if (current.nativeSkill.intrinsicEffect && !edit.templateId) {
+          selectField('Что делать со встроенным эффектом', [['add', 'Добавить к исходному эффекту'], ['replace', 'Заменить исходный эффект']], edit.intrinsicEffectMode || 'add', 'intrinsicEffectMode', bonuses);
+          bonuses.appendChild(node('p', current.nativeSkill.intrinsicEffect.noteRu, 'help-text'));
+          bonuses.appendChild(node('p', 'Замена отключает старый вклад. Укажите новые числа ниже; пустой список отключает вклад без новых бонусов. Числа зависят от изучения, оружия, щита и езды. Они не создают боевую механику, которую калькулятор не моделирует.', 'help-text'));
+        }
+        if (edit.templateId || !current.nativeSkill.intrinsicEffect) bonuses.appendChild(node('p', edit.templateId
           ? 'У нового навыка действуют только числа ниже: встроенный эффект шаблона не копируется. Изучение определяют условия выше, даже если список умений скрыт. Затем проверяются условия снаряжения и езды.'
-          : 'Бонус добавляется к исходной механике, не заменяет её. Изучение проверяет штатный движок, даже если список умений скрыт. Числа применяются только с указанным ниже снаряжением.', 'help-text'));
+          : 'Встроенный эффект этого навыка ещё не сопоставлен с расчётами: его замена недоступна. Можно добавить только числа ниже; они не доказывают работу исходной боевой механики.', 'help-text'));
         var bonusRows = node('div', undefined, 'effect-rows'); bonuses.appendChild(bonusRows); edit.effects.forEach(function (effect) { effectRow(effect, bonusRows); });
         bonuses.appendChild(button('Добавить характеристику', function () { effectRow({ stat: 1, value: 0, unit: 'flat' }, bonusRows); changing(); }, 'secondary')); editor.appendChild(bonuses);
-        var requirements = node('fieldset', undefined, 'compatibility-fields'); requirements.appendChild(node('legend', 'Оружие для дополнительного бонуса · пусто = любое'));
+        var requirements = node('fieldset', undefined, 'compatibility-fields'); requirements.appendChild(node('legend', 'Оружие для числового эффекта · пусто = любое'));
         [[-1, 'Без оружия']].concat(meta.categories.filter(function (entry) { return entry.legacy_id <= 13; }).map(function (entry) { return [entry.legacy_id, entry.name.en]; })).forEach(function (entry) {
           var input = checkboxField(entry[1], edit.bonusRequirements.weaponCategories.indexOf(entry[0]) !== -1, 'bonusWeapon', requirements); input.dataset.weaponCategory = entry[0];
         }); editor.appendChild(requirements);
-        checkboxField('Дополнительный бонус требует надетый щит', edit.bonusRequirements.shieldRequired, 'shieldRequired', editor);
-        checkboxField('Дополнительный бонус требует включённую верховую езду', edit.bonusRequirements.ridingRequired, 'ridingRequired', editor);
+        checkboxField('Числовой эффект требует надетый щит', edit.bonusRequirements.shieldRequired, 'shieldRequired', editor);
+        checkboxField('Числовой эффект требует включённую верховую езду', edit.bonusRequirements.ridingRequired, 'ridingRequired', editor);
       }
       var skillActions = node('div', undefined, 'editor-actions'); skillActions.append(button('Сохранить черновик', saveDraft), button('Опубликовать', publish));
       if (edit.id) skillActions.append(button('Создать новый навык по этому шаблону', duplicateSkill, 'secondary'));
@@ -422,6 +436,7 @@
     if (!current || !['active', 'passive'].includes(current.edit.kind) || !editor.reportValidity()) return;
     var source = current, edit = collect();
     edit.templateId = source.identity.templateId || source.identity.id; edit.id = '';
+    delete edit.intrinsicEffectMode;
     editorRequest++;
     current = { identity: { id: '', kind: edit.kind, category: edit.category, index: source.identity.index, templateId: edit.templateId },
       draftVersion: 0, catalogRevision: source.catalogRevision, hasDraft: false, published: false, edit: edit, nativeSkill: source.nativeSkill };

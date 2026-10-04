@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { CatalogError, draftFromSource, validateDraft, compileRecord, EFFECTS, EQUIPMENT_CATEGORIES } from './catalog-model.mjs';
+import { CatalogError, draftFromSource, validateDraft, compileRecord, EFFECTS, EQUIPMENT_CATEGORIES, NATIVE_PASSIVES } from './catalog-model.mjs';
 import { baselineById, baselineRecords, categories, skillCategories, compatibilityLabels, sourceFingerprint, characterSourceFingerprint, sourceIdentity, firstNewIndex } from './catalog-baseline.mjs';
 import { jsonResponse } from './auth.mjs';
 
@@ -96,7 +96,8 @@ async function detail(env, id) {
   const currentRecord = published ? compileEntry(published) : source && !identity.templateId ? compileRecord(draftFromSource(source, identity.kind), identity, source) : null;
   return { ok: true, identity, edit, currentRecord, nativeMechanics: identity.kind === 'racial' ? racialReference[id] || 'Эта расовая механика не моделируется в исходном калькуляторе. Описание из игры не создаёт числовой эффект автоматически.' : null,
     draftVersion: draft?.version || 0, hasDraft: Boolean(draft?.is_dirty), catalogRevision: snapshot.version, published: Boolean(published), sourceCode: source?.calculation_code || '', engineKey: source?.name.jp || 'Modern:' + id,
-    nativeSkill: source?.prerequisite_code ? { templateName: source.name, prerequisites: source.prerequisites, equipmentRequirements: source.equipment_requirements, prerequisiteCode: source.prerequisite_code } : null };
+    nativeSkill: source?.prerequisite_code ? { templateName: source.name, prerequisites: source.prerequisites, equipmentRequirements: source.equipment_requirements, prerequisiteCode: source.prerequisite_code,
+      intrinsicEffect: !identity.templateId && NATIVE_PASSIVES[identity.id] ? structuredClone(NATIVE_PASSIVES[identity.id]) : null } : null };
 }
 
 async function preview(request, env) {
