@@ -118,6 +118,19 @@ test('direct skill input is keyboard-operable and respects the retained skill-po
   expect(await page.evaluate(() => Store())).toBe(changed);
 });
 
+
+test('direct skill input commits a valid edit when focus leaves the field', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('[data-remaked-number="Lev"]').fill('55');
+  await page.locator('[data-remaked-number="Lev"]').press('Enter');
+  const input = page.locator('[data-remaked-skill-number="1"]');
+  const before = Number(await input.inputValue());
+  await input.fill(String(before + 1));
+  await page.locator('#TextSkill_2').click();
+  await expect(input).toHaveValue(String(before + 1));
+  expect(await page.evaluate(() => Status.Skill[1][0] + Status.Skill[1][1])).toBe(before + 1);
+});
+
 test('effects are explicit keyboard controls, not hover switches; values and hints survive', async ({ page }) => {
   await page.goto('/');
   const source = await page.evaluate(() => ({ build: Store(),
