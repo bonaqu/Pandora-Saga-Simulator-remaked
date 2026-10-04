@@ -16,7 +16,11 @@ test('all leaf branches use direct Adeptness numbers while Potential stays read-
   await page.goto('/');
   await expect(page.locator('[data-remaked-skill-number]')).toHaveCount(20);
   await expect(page.locator('[data-remaked-skill-step]')).toHaveCount(0);
-  expect(await page.locator('[data-remaked-skill-number]').evaluateAll(nodes => nodes.map(node => Number(node.dataset.remakedSkillNumber)))).toEqual(leafBranches);
+  const inputs = page.locator('[data-remaked-skill-number]');
+  const indexes = [];
+  for (let index = 0; index < await inputs.count(); index++)
+    indexes.push(Number(await inputs.nth(index).getAttribute('data-remaked-skill-number')));
+  expect(indexes).toEqual(leafBranches);
 
   for (const index of leafBranches) {
     const group = page.locator(`[data-remaked-skill-row="${index}"] [data-remaked-skill-group="Potential"]`);
