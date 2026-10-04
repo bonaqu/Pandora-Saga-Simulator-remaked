@@ -1918,6 +1918,11 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
    flexible 80px source columns. This keeps Adeptness/Potential centered over
    their controls while the panel narrows. */
 @media (min-width: 861px) {
+  .remaked-modern #body #SkillSet[data-remaked-skill-controls] {
+    /* Keep a small breathing strip at the right edge for headings in wide
+       monospace/system-font fallbacks without changing control alignment. */
+    padding-inline-end: 10px !important;
+  }
   .remaked-modern #body [data-remaked-skill-group="Potential"] [data-remaked-skill-potential-value] {
     box-sizing: border-box;
     width: var(--rm-compact-number-width) !important;
