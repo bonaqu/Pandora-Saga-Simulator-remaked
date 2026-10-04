@@ -107,8 +107,17 @@ async function configureElfClericHealing(page) {
     const races = document.getElementById('SelRace');
     races.selectedIndex = 1;
     races.onchange();
+    // Choose the class before adding level points. Selecting an advanced class
+    // after leveling makes the retained engine try to preserve Warrior base
+    // stats and consumes part of the 504-point Lv50 budget.
+    const jobs = document.getElementById('SelJob');
+    jobs.selectedIndex = 16;
+    jobs.onchange();
   });
-  await selectCleric(page);
+  const level = page.locator('[data-remaked-number="Lev"]');
+  await level.fill('50');
+  await level.press('Enter');
+  await expect(level).toHaveValue('50');
 
   for (const [key, value] of [['STA', 27], ['DEX', 40], ['SPR', 40], ['INT', 93]]) {
     const input = page.locator(`[data-remaked-number="${key}"]`);
