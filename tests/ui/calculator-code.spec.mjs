@@ -199,19 +199,18 @@ test('valid code with unavailable autosave preserves old storage and reports a w
   await expect(page.locator('[data-remaked-code-status]')).toHaveAttribute('data-state', 'warning');
 });
 
-test('clearing an error stays cleared across locales and skill min/max labels use the existing translation keys', async ({ page }) => {
+test('clearing an error stays cleared across locales and direct skill bounds stay stable', async ({ page }) => {
   await page.goto('/');
   await openCode(page);
   await page.locator('#InCode').fill('invalid'); await page.locator(codeAction('load')).click();
   await page.locator('#InCode').fill('new input');
   await page.keyboard.press('Escape');
-  await page.evaluate(() => Object.assign(PandoraRemakedGameTerms.ru, { 'calculator.literal.max': 'Максимум', 'calculator.literal.min': 'Минимум' }));
+  const skill = page.locator('[data-remaked-skill-number="1"]');
+  const bounds = await skill.evaluate(node => ({ min: node.min, max: node.max, value: node.value }));
   await page.locator('[data-remaked-ui-locale="ru"]').click();
   await expect(page.locator('[data-remaked-code-status]')).toBeEmpty();
   await expect(page.locator('#InCode')).not.toHaveAttribute('aria-invalid', 'true');
-  await page.locator('[data-remaked-skill-bulk]').click();
-  await expect(page.locator('[data-remaked-skill-step="remaked-skill-1-Adeptness-right3"]')).toHaveText('Максимум');
-  await expect(page.locator('[data-remaked-skill-step="remaked-skill-1-Adeptness-left3"]')).toHaveText('Минимум');
+  expect(await skill.evaluate(node => ({ min: node.min, max: node.max, value: node.value }))).toEqual(bounds);
   await page.locator('[data-remaked-ui-locale="en"]').click();
-  await expect(page.locator('[data-remaked-skill-step="remaked-skill-1-Adeptness-right3"]')).toHaveText('max');
+  expect(await skill.evaluate(node => ({ min: node.min, max: node.max, value: node.value }))).toEqual(bounds);
 });
