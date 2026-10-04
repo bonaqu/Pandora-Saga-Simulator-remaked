@@ -2,7 +2,7 @@
   "name": "pandora-saga-simulator-remaked",
   "private": true,
   "scripts": {
-    "test:admin": "node --test tests/admin/auth.test.mjs tests/admin/worker.test.mjs tests/admin/wrangler-json.test.mjs tests/admin/catalog-model.test.mjs tests/admin/character-model.test.mjs tests/admin/skill-model.test.mjs tests/admin/catalog.test.mjs tests/admin/racial-corrections.test.mjs tests/admin/current-elemental-skills.test.mjs",
+    "test:admin": "node --test tests/admin/auth.test.mjs tests/admin/worker.test.mjs tests/admin/wrangler-json.test.mjs tests/admin/catalog-model.test.mjs tests/admin/character-model.test.mjs tests/admin/skill-model.test.mjs tests/admin/catalog.test.mjs tests/admin/racial-corrections.test.mjs tests/admin/current-elemental-skills.test.mjs tests/admin/current-active-profiles.test.mjs",
     "admin:check": "wrangler deploy --config admin-api/wrangler.jsonc --dry-run",
     "admin:dev": "wrangler dev --config admin-api/wrangler.jsonc --ip 127.0.0.1 --port 18788 --inspector-port 19230",
     "admin:migrate": "wrangler d1 migrations apply pandora-saga-simulator-remaked-admin-db --config admin-api/wrangler.jsonc --remote",
@@ -13,6 +13,7 @@
     "test:ui:catalog-audit": "playwright test tests/ui/catalog-wide-differential.spec.mjs --project=chromium",
     "test:ui:admin": "playwright test tests/ui/admin-catalog.spec.mjs --project=chromium",
     "test:ui:learning": "playwright test tests/ui/custom-skill-learning.spec.mjs --project=chromium",
+    "test:ui:profiles": "playwright test tests/ui/skill-profiles.spec.mjs --project=chromium",
     "test:ui:foundation": "playwright test tests/ui/modern-foundation.spec.mjs",
     "test:ui:adapter": "playwright test tests/ui/adapter.spec.mjs",
     "test:ui:summary": "playwright test tests/ui/summary-adapter.spec.mjs",

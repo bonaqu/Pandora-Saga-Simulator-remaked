@@ -198,6 +198,14 @@ def _modernize_html(source: str) -> str:
         raise ValueError("could not set Modern default language to English")
     if "</head>" not in source or "</body>" not in source:
         raise ValueError("legacy HTML is missing </head> or </body>")
+    # Hosting-only hidden counter, not game content or author attribution.
+    # The original HTML copied to /legacy remains byte-identical.
+    source = re.sub(
+        r'''<img\b(?=[^>]*\bsrc=["'](?:https?:)?//media\.fc2\.com/counter_img\.php\?id=50["'])(?=[^>]*\balt=["']inserted by FC2 system["'])[^>]*>''',
+        "<!-- Obsolete FC2 hosting counter omitted from Modern. -->",
+        source,
+        flags=re.IGNORECASE,
+    )
     source = source.replace("</head>", f"{HEAD_INJECTION}\n</head>", 1)
     source = source.replace("</body>", f"{BODY_INJECTION}\n</body>", 1)
     return source

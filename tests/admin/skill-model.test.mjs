@@ -7,6 +7,78 @@ const identity = source => ({ id: source.id, kind: source.kind, category: source
 const customLearning = () => ({ classIds: ['job.4'], classScope: 'descendants', minimumLevel: 35,
   branches: [{ branchId: 'skill_category.18', minimumPoints: 35 }] });
 
+const profile = (id, classIds = [], minimumLevel = 1, points = 8) => ({ id,
+  names: { en: 'Blocking ' + id, ru: 'Блокирование ' + id }, description: { en: 'Current profile', ru: 'Текущий вариант' },
+  learningRequirements: { classIds, classScope: 'exact', minimumLevel,
+    branches: [{ branchId: 'skill_category.5', minimumPoints: points }] },
+  mpCost: 5, castSeconds: 0, cooldownSeconds: 2, durationSeconds: 0 });
+
+test('conditional active profiles retain one native identity and exact old payload when absent', () => {
+  const source = projected(skills.records.find(row => row.id === 'skill.5.3')), who = identity(source), edit = draftFromSource(source, 'active');
+  const previous = compileRecord(validateDraft(edit, who), who, source);
+  assert.equal(Object.hasOwn(previous, 'profiles'), false);
+  const input = { ...edit, profiles: [profile('base'), profile('general45', ['job.5'], 45), profile('paladin45', ['job.6'], 45)] };
+  const original = JSON.stringify(input);
+  const normalized = validateDraft(input, who), record = compileRecord(normalized, who, source);
+  assert.equal(record.id, previous.id); assert.equal(record.index, previous.index);
+  assert.equal(record.prerequisiteCode, previous.prerequisiteCode); assert.equal(record.active, previous.active);
+  assert.deepEqual(record.timing, previous.timing); assert.equal(record.profiles.length, 3);
+  assert.deepEqual(record.profiles[1].timing, [5, 0, 2, 0]);
+  assert.equal(record.profiles[1].names.en, 'Blocking general45');
+  assert.deepEqual(record.profiles[1].learningRequirements, input.profiles[1].learningRequirements);
+  assert.equal(JSON.stringify(input), original);
+  input.profiles.reverse();
+  assert.deepEqual(compileRecord(validateDraft(input, who), who, source).profiles.slice().reverse(), record.profiles);
+  assert.deepEqual(compileRecord(validateDraft(edit, who), who, source), previous);
+});
+
+test('profile domain validation handles actual descendants and rejects equal/incomparable gates, not array order', () => {
+  const source = projected(skills.records.find(row => row.id === 'skill.5.3')), who = identity(source), edit = draftFromSource(source, 'active');
+  const parent = profile('knight', ['job.4'], 35); parent.learningRequirements.classScope = 'descendants';
+  assert.equal(validateDraft({ ...edit, profiles: [parent, profile('general45', ['job.5'], 45)] }, who).profiles.length, 2);
+  // Knight + General + Paladin exactly equals Knight and descendants.
+  assert.throws(() => validateDraft({ ...edit, profiles: [parent, profile('same', ['job.4', 'job.5', 'job.6'], 35)] }, who), /ambiguously/);
+  const incomparable = profile('stronger-branch', ['job.5'], 34, 41);
+  assert.throws(() => validateDraft({ ...edit, profiles: [parent, incomparable] }, who), /ambiguously/);
+  const branchA = profile('alchemy'), branchB = profile('hymn');
+  branchA.learningRequirements.branches = [{ branchId: 'skill_category.8', minimumPoints: 12 }];
+  branchB.learningRequirements.branches = [{ branchId: 'skill_category.16', minimumPoints: 8 }];
+  assert.throws(() => validateDraft({ ...edit, profiles: [branchA, branchB] }, who), /ambiguously/);
+  branchB.learningRequirements = structuredClone(branchA.learningRequirements);
+  branchB.learningRequirements.branches[0].minimumPoints = 61;
+  assert.equal(validateDraft({ ...edit, profiles: [branchA, branchB] }, who).profiles.length, 2);
+  for (const indices of [[0, 1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12, 13], [14, 15, 16, 17, 18, 19, 20], [21, 22, 23, 24, 25, 26, 27]]) {
+    const family = profile('family', ['job.' + indices[0]]); family.learningRequirements.classScope = 'descendants';
+    const exact = profile('exact', indices.map(index => 'job.' + index));
+    assert.throws(() => validateDraft({ ...edit, profiles: [family, exact] }, who), /ambiguously/);
+    for (const child of indices.slice(1))
+      assert.equal(validateDraft({ ...edit, profiles: [family, profile('child', ['job.' + child], 45)] }, who).profiles.length, 2);
+  }
+});
+
+test('conditional profiles reject malformed, executable and unbounded data and unsupported skill kinds', () => {
+  const source = projected(skills.records.find(row => row.id === 'skill.5.3')), who = identity(source), edit = draftFromSource(source, 'active');
+  const bad = [null, [], Array(9).fill(profile('base')), [profile('base'), profile('base')],
+    [{ ...profile('base'), id: 'eval()' }], [{ ...profile('base'), effects: [] }],
+    [{ ...profile('base'), learningRequirements: 'S=5=8' }], [{ ...profile('base'), mpCost: 1.5 }],
+    [{ ...profile('base'), castSeconds: 0.0001 }], [{ ...profile('base'), durationSeconds: Infinity }],
+    [{ ...profile('base'), names: { en: '' } }]];
+  for (const profiles of bad) assert.throws(() => validateDraft({ ...edit, profiles }, who));
+  const large = [profile('one', ['job.0']), profile('two', ['job.7'])];
+  for (const row of large) row.description = Object.fromEntries(['en', 'ru', 'jp', 'tw'].map(language => [language, 'x'.repeat(4000)]));
+  assert.throws(() => validateDraft({ ...edit, profiles: large }, who), /too large/);
+  const future = profile('future55', ['job.6'], 55, 200);
+  assert.equal(validateDraft({ ...edit, profiles: [future] }, who).profiles[0].learningRequirements.minimumLevel, 55);
+  future.learningRequirements.minimumLevel = 56;
+  assert.throws(() => validateDraft({ ...edit, profiles: [future] }, who));
+  const variant = { ...who, id: 'modern.active.12345678-1234-1234-1234-123456789abc', templateId: who.id };
+  assert.throws(() => validateDraft({ ...edit, id: variant.id, templateId: who.id, profiles: [profile('base')] }, variant));
+  const passiveSource = projected(skills.records.find(row => row.id === 'skill.6.0')), passiveId = identity(passiveSource);
+  const passive = { ...draftFromSource(passiveSource, 'passive'), profiles: [profile('base')] };
+  assert.throws(() => validateDraft(passive, passiveId));
+  assert.throws(() => compileRecord(passive, passiveId, passiveSource), /existing active skill/);
+});
+
 test('all fourteen identified native passives support explicit replacement while old source payloads remain unchanged', () => {
   assert.equal(Object.keys(NATIVE_PASSIVES).length, 14);
   for (const id of Object.keys(NATIVE_PASSIVES)) {

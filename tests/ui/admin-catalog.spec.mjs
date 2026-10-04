@@ -95,6 +95,100 @@ async function openConsole(page, drafts = []) {
   return { sqlite, errors };
 }
 
+test('conditional skill profile editor keeps one compact form, isolated base values and server-reviewed variants through draft/publication', async ({ page }) => {
+  const { sqlite, errors } = await openConsole(page);
+  await expect(page).toHaveTitle('Pandora Admin Terminal');
+  await expect(page.locator('#admin-workspace')).toBeVisible();
+  const consoleErrors = [];
+  page.on('console', message => {
+    if (!['error', 'warning'].includes(message.type())) return;
+    if (message.location().url === admin + '/api/admin/preview' && /status of 400/.test(message.text())) return;
+    consoleErrors.push(message.text());
+  });
+  await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('active');
+  await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill('skill_entry.5.3');
+  await page.locator('.catalog-entry').first().click();
+  await page.locator('[data-field="names"][data-language="en"]').fill('Default Blocking');
+  const root = page.locator('[data-root-learning]');
+  await root.locator('[data-field="learningMode"]').selectOption('custom');
+  await root.getByRole('button', { name: 'Добавить требование ветки', exact: true }).click();
+  await root.locator('[data-learning-branch]').selectOption('skill_category.5');
+  await root.locator('[data-learning-points]').fill('8');
+  const section = page.locator('[data-skill-profiles]'), profile = section.locator('[data-profile-editor]');
+  async function add(name, job, mp) {
+    await section.getByRole('button', { name: 'Добавить вариант', exact: true }).click();
+    await profile.locator('[data-profile-field="names"][data-language="en"]').fill(name);
+    await profile.locator('[data-profile-field="names"][data-language="ru"]').fill('Вариант ' + name);
+    await profile.locator('[data-profile-field="learningLevel"]').fill('45');
+    await profile.getByText('Разрешённые классы · ничего не отмечено = любой', { exact: true }).click();
+    await profile.locator('[data-learning-class="job.' + job + '"]').check();
+    await profile.locator('[data-profile-field="mpCost"]').fill(String(mp));
+  }
+  await add('General Blocking', 5, 15); await add('Paladin Blocking', 6, 25);
+  await expect(page.locator('[data-field="names"][data-language="en"]')).toHaveValue('Default Blocking');
+  await expect(page.locator('[data-field="mpCost"]')).toHaveValue('5');
+  await expect(root.locator('[data-learning-class]:checked')).toHaveCount(0);
+  expect(errors).toEqual([]);
+  expect(await profile.locator('input, select, textarea').evaluateAll(inputs => inputs.filter(input => !input.checkValidity()).map(input => ({ field: input.dataset.profileField, message: input.validationMessage, value: input.value })))).toEqual([]);
+  await section.locator('[data-profile-choice]').selectOption('0');
+  await expect(profile.locator('[data-profile-field="names"][data-language="en"]')).toHaveValue('General Blocking');
+  await expect(profile.locator('[data-learning-class="job.5"]')).toBeChecked();
+  await expect(profile.locator('[data-learning-class="job.6"]')).not.toBeChecked();
+  await expect(section.locator('[data-profile-field="learningLevel"]')).toHaveCount(1);
+  await section.locator('[data-profile-choice]').selectOption('1');
+  await profile.getByText('Разрешённые классы · ничего не отмечено = любой', { exact: true }).click();
+  await profile.locator('[data-learning-class="job.6"]').uncheck(); await profile.locator('[data-learning-class="job.5"]').check();
+  await page.getByRole('button', { name: 'Проверить изменения', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Условия вариантов совпадают');
+  await expect(profile.locator('[data-profile-field="mpCost"]')).toHaveValue('25');
+  expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n).toBe(0);
+  await profile.locator('[data-learning-class="job.5"]').uncheck(); await profile.locator('[data-learning-class="job.6"]').check();
+  await page.getByRole('button', { name: 'Проверить изменения', exact: true }).click();
+  await expect(page.locator('[data-preview-record]')).toContainText('Условные варианты: 2');
+  await expect(page.locator('[data-preview-record]')).toContainText('MP: 15');
+  await expect(page.locator('[data-preview-record]')).toContainText('MP: 25');
+  await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
+  expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(0);
+  page.on('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: 'Опубликовать', exact: true }).click();
+  await expect(page.locator('[data-current-record]')).toContainText('Условные варианты: 2');
+  const published = JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head').get().snapshot_json);
+  expect(published).toHaveLength(1); expect(published[0].identity.id).toBe('skill_entry.5.3');
+  expect(published[0].edit.learningRequirements.classIds).toEqual([]);
+  expect(published[0].edit.profiles.map(row => [row.names.en, row.mpCost, row.learningRequirements.classIds])).toEqual([
+    ['General Blocking', 15, ['job.5']], ['Paladin Blocking', 25, ['job.6']]
+  ]);
+  expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_skill_allocations').get().n).toBe(0);
+  await section.locator('[data-profile-choice]').selectOption('1');
+  await profile.locator('[data-learning-points]').fill('12');
+  await section.locator('[data-profile-choice]').selectOption('0');
+  await expect(profile.locator('[data-learning-points]')).toHaveValue('8');
+  await section.locator('[data-profile-choice]').selectOption('1');
+  await expect(profile.locator('[data-learning-points]')).toHaveValue('12');
+  await expect(root.locator('[data-learning-points]')).toHaveValue('8');
+  const directory = process.platform === 'win32' ? 'D:/CODEX/Tasks/pandora-admin-runtime/skill-profiles-local' : path.join(os.tmpdir(), 'pandora-skill-profiles-local');
+  fs.mkdirSync(directory, { recursive: true });
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await section.locator('[data-profile-choice]').scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: path.join(directory, 'admin-' + width + '.png') });
+  }
+  await section.getByRole('button', { name: 'Удалить выбранный вариант', exact: true }).click();
+  await expect(profile.locator('[data-profile-field="names"][data-language="en"]')).toHaveValue('General Blocking');
+  await section.getByRole('button', { name: 'Удалить выбранный вариант', exact: true }).click();
+  await expect(section).toContainText('Вариантов пока нет. Используются основные поля навыка выше.');
+  await expect(section.locator('[data-profile-choice]')).toBeDisabled();
+  await expect(profile.locator('input')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Проверить изменения', exact: true }).click();
+  await expect(page.locator('[data-preview-record]')).not.toContainText('Условные варианты:');
+  expect(JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head').get().snapshot_json)[0].edit.profiles).toHaveLength(2);
+  await page.getByRole('button', { name: 'Создать новый навык по этому шаблону', exact: true }).click();
+  await expect(page.locator('[data-skill-profiles]')).toHaveCount(0);
+  await expect(page.locator('[data-field="names"][data-language="en"]')).toHaveValue('Default Blocking');
+  expect(errors).toEqual([]); expect(consoleErrors).toEqual([]);
+});
+
 test('mapped native passive editor clearly separates add and replacement, and a duplicate never inherits native replacement', async ({ page }) => {
   const { sqlite, errors } = await openConsole(page);
   const consoleErrors = []; page.on('console', message => { if (['error', 'warning'].includes(message.type())) consoleErrors.push(message.text()); });

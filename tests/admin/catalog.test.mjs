@@ -224,6 +224,40 @@ test('new active/passive variants inherit a source template without replacing it
   assert.deepEqual((await publicData(env, 0)).records, []);
 });
 
+test('conditional profiles preview privately, publish one existing skill and retain immutable history without allocating duplicates', async () => {
+  const { env, sqlite } = fixture(); const item = await detail(env, 'skill_entry.5.3');
+  const makeProfile = (id, classIds, minimumLevel) => ({ id, names: { en: 'Blocking ' + id, ru: 'Блокирование ' + id },
+    description: { en: 'Reviewed class profile', ru: 'Проверенный вариант класса' },
+    learningRequirements: { classIds, classScope: 'exact', minimumLevel,
+      branches: [{ branchId: 'skill_category.5', minimumPoints: 8 }] },
+    mpCost: 5, castSeconds: 0, cooldownSeconds: 2, durationSeconds: 0 });
+  item.edit.profiles = [makeProfile('general45', ['job.5'], 45), makeProfile('paladin45', ['job.6'], 45)];
+  const preview = await call(env, 'preview', { edit: item.edit, expectedCatalogRevision: 0 });
+  assert.equal(preview.record.id, item.identity.id); assert.equal(preview.record.profiles.length, 2);
+  assert.deepEqual((await publicData(env)).records, []);
+  assert.equal((await detail(env, item.identity.id)).hasDraft, false);
+  const saved = await save(env, item); assert.equal(saved.hasDraft, true);
+  assert.deepEqual((await publicData(env)).records, []);
+  assert.deepEqual(saved.edit.profiles, preview.record.profiles.map(profile => ({
+    id: profile.id, names: profile.names, description: profile.description, learningRequirements: profile.learningRequirements,
+    mpCost: profile.timing[0], castSeconds: profile.timing[1], cooldownSeconds: profile.timing[2], durationSeconds: profile.timing[3]
+  })));
+  await publish(env, saved);
+  const published = await publicData(env); assert.equal(published.revision, 1); assert.equal(published.records.length, 1);
+  assert.deepEqual(published.records[0], preview.record);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_skill_allocations').get().n, 0);
+  const current = await detail(env, item.identity.id); current.edit.profiles[0].cooldownSeconds = 3;
+  const privateDraft = await save(env, current);
+  assert.equal(privateDraft.hasDraft, true); assert.deepEqual((await publicData(env, 1)).records, published.records);
+  const bad = structuredClone(privateDraft.edit); bad.profiles.push(structuredClone(bad.profiles[0])); bad.profiles[2].id = 'same-conditions';
+  await assert.rejects(() => call(env, 'preview', { edit: bad, expectedCatalogRevision: 1 }), error => error.status === 400);
+  assert.deepEqual((await detail(env, item.identity.id)).edit, privateDraft.edit);
+  await call(env, 'rollback', { revision: 0, expectedCatalogRevision: 1 });
+  assert.deepEqual((await publicData(env)).records, []);
+  assert.deepEqual((await publicData(env, 1)).records, published.records);
+  assert.equal((await detail(env, item.identity.id)).hasDraft, true);
+});
+
 test('variant source/type/branch and opaque identity are immutable; forged templates and executable fields fail closed', async () => {
   const { env, sqlite } = fixture(); const source = await detail(env, 'skill_entry.0.0');
   const edit = { ...source.edit, id: '', templateId: source.identity.id };

@@ -49,6 +49,8 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
 .catalog-editor fieldset { border: 1px solid var(--border); padding: 14px; margin: 18px 0; min-width: 0; }
 .catalog-editor legend { color: var(--green); font-size: 13px; padding: 0 6px; }
 .basic-fields, .translation-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.profile-controls { grid-template-columns: minmax(0, 1fr) auto auto; align-items: end; }
+.profile-controls button { align-self: end; }
 .editor-field { display: grid; gap: 6px; min-width: 0; line-height: 1.45; }
 .editor-field input, .editor-field select, .editor-field textarea { width: 100%; min-width: 0; }
 .help-text, .item-identity, .source-effects { color: #c6cdbb; font-size: 12px; overflow-wrap: anywhere; }

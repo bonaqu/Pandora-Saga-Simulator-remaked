@@ -98,7 +98,7 @@ The [new-skill beginner guide](docs/ADMIN_NEW_SKILLS.ru.md) explains template
 learning, explicit passive bonuses, private drafts and publishing limitations.
 The [step-by-step editing guide](docs/ADMIN_EDITING_FOR_BEGINNERS.ru.md) explains
 current values, server previews, numerical effects, translations and safe publication.
-Modern 3.08 is published: editable skill learning conditions, current elemental
+Modern 3.09 is published: editable skill learning conditions, current elemental
 thresholds and all 18 current racial records. Complete skill descriptions above the scrolling panel,
 compact Hybrid C sections, floating JOB/SKILL/ATTACK/DEFENSE/BUFF,
 field-specific numeric feedback, aligned BUFF controls and PC/phone discovery.
@@ -106,9 +106,12 @@ Bounded level/attributes, touch-stable Equipment, equal-row filtering and
 current-vs-preview editing remain intact. The release ledger records exact
 production artifact, authentication and installed/offline checks.
 
-The local 3.09 candidate adds explicit replacement for 14 mapped native passive
+Version 3.09 adds explicit replacement for 14 mapped native passive
 contributions, with readable dependencies in the editor and unchanged old pins.
-It is not yet deployed; complete current-server skill balance remains unfinished.
+Actual login/preview, pins, comparison and fresh/offline recipients passed without
+publishing test records. Complete current-server skill balance remains unfinished.
+The release ledger also records an inherited offline FC2 counter warning;
+Modern-only removal is pending the next deployment.
 
 ## 🚧 What's coming next
 
@@ -134,7 +137,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** Modern 3.08 (published; verification in the release ledger)
+- **Remaked UI:** Modern 3.09 (published; verification and limits in the release ledger)
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 

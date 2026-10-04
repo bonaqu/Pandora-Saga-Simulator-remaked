@@ -24,6 +24,23 @@ HERO_WEBP_FIXTURE = b"RIFF\x04\x00\x00\x00WEBP"
 
 
 class BuildPagesTests(unittest.TestCase):
+    def test_modern_omits_only_obsolete_hidden_counter_and_preserves_legacy(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            base = pathlib.Path(temporary)
+            root = self.make_root(base)
+            counter = '<img src="//media.fc2.com/counter_img.php?id=50" style="display:none" alt="inserted by FC2 system" width="0" height="0">'
+            content = '<img src="./image/fixture.txt" alt="game content"><a href="http://awayfromkuma.blog87.fc2.com/">Original author</a>'
+            source = LEGACY_HTML.replace('</body>', counter + content + '</body>')
+            (root / 'index.html').write_text(source, encoding='utf-8')
+            original = (root / 'index.html').read_bytes()
+            output = root / '_site'
+            build_pages(root, output)
+            modern = (output / 'index.html').read_text(encoding='utf-8')
+            self.assertNotIn('counter_img.php', modern)
+            self.assertIn(content, modern)
+            self.assertEqual((output / 'legacy/index.html').read_bytes(), original)
+            self.assertEqual((root / 'index.html').read_bytes(), original)
+
     def make_root(self, base: pathlib.Path, with_modern: bool = True) -> pathlib.Path:
         root = base / "repo"
         root.mkdir()
