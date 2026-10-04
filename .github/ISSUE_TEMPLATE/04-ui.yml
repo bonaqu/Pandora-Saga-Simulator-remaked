@@ -1,0 +1,96 @@
+name: "🎨 UI / визуальная проблема"
+description: "Проблема интерфейса, отображения или адаптивности / UI, layout or visual problem"
+title: "[UI] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🎨 UI / визуальная проблема
+        ## 🎨 UI / visual issue
+
+        Используйте этот шаблон для проблем с интерфейсом, вёрсткой, отображением, мобильной версией и визуальными элементами.
+        Use this form for interface, layout, rendering, responsive design, and other visual issues.
+
+  - type: dropdown
+    id: report_language
+    attributes:
+      label: "Язык сообщения / Report language"
+      options:
+        - "Русский / Russian"
+        - "English / Английский"
+        - "Русский + English / Both"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: ui_type
+    attributes:
+      label: "Тип проблемы / Problem type"
+      options:
+        - "Вёрстка / Layout"
+        - "Мобильная версия / Mobile"
+        - "Текст обрезан или перекрывается / Text clipping or overlap"
+        - "Кнопка или элемент отображается неправильно / Broken element"
+        - "Цвета / контраст / Colors / contrast"
+        - "Размеры / масштаб / Sizing / scaling"
+        - "Анимация / Animation"
+        - "Другое / Other"
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: "Браузер и версия / Browser and version"
+      placeholder: "Chrome 152 / Firefox / Edge / Safari / etc."
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: "Устройство и разрешение / Device and resolution"
+      placeholder: "PC 1920x1080 / Android 1080x2400 / etc."
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Что отображается неправильно? / What looks wrong?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Как должно выглядеть? / Expected appearance"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Как воспроизвести? / Steps to reproduce"
+      placeholder: |
+        1. Открыть / Open ...
+        2. Перейти / Go to ...
+        3. Изменить / Change ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: "Скриншоты или видео / Screenshots or video"
+      description: "Очень желательно приложить изображение проблемы. / A screenshot of the issue is highly recommended."
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: "Проверка / Checklist"
+      options:
+        - label: "Я проверил(а), что такой Issue ещё не создан. / I checked that this issue has not already been reported."
+          required: true
