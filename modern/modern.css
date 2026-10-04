@@ -1740,6 +1740,17 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   align-items: center;
   gap: 2px;
   width: 100%;
+  min-height: 28px;
+}
+.remaked-modern #body [data-remaked-calculator-budget] > ul > :is(.input_lt, .input_gt) {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+}
+.remaked-modern #body [data-remaked-calculator-budget] > ul > .input_gt > ul {
+  width: 100%;
+  justify-content: flex-end;
 }
 .remaked-modern #body [data-remaked-calculator-budget] > ul > li {
   float: none !important;
