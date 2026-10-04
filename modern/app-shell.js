@@ -200,6 +200,9 @@
       button.addEventListener('click', function () {
         var legacyTab = document.getElementById('Tab_' + index + '_0');
         if (legacyTab) legacyTab.click();
+        // Visibility and accessibility state must follow this user action now,
+        // not one observer timer later (a quick Escape can arrive first).
+        if (namespace.calculatorControls) namespace.calculatorControls.refresh();
         syncNavButtons(header);
       });
       nav.appendChild(button);

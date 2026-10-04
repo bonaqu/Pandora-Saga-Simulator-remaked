@@ -123,7 +123,7 @@
         var content = card.firstElementChild; content.classList.add('remaked-native-panel-content');
         bar.append(title, close); card.insertBefore(bar, content);
         opener.addEventListener('keydown', function (event) {
-          if (event.key === 'Escape' && this.getAttribute('aria-expanded') === 'true') {
+          if (event.key === 'Escape' && Number(window.Flag[2]) === Number(this.dataset.remakedTab) + 1) {
             event.preventDefault(); event.stopPropagation();
             byId(this.getAttribute('aria-controls')).querySelector('[data-remaked-panel-close]').click();
           }

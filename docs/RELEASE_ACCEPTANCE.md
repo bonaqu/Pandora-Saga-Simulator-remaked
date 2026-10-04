@@ -44,6 +44,20 @@ existing project Playwright workflow, not a new setup. Reports/screenshots and
 synthetic sessions are outside Git; no real credentials in trace-enabled tests.
 Current CI still repeats PR/Pages browser gates; its optimization is separate.
 
+CI follow-up (still not publication): first Feature run `37167644279` passed
+210 main checks but caught a historical/current naming equality assertion.
+The corrected differential keeps exact numerical comparisons and explicitly
+requires historical Harmony with Nature versus current Nature's Harmony.
+Feature `37168385277` then passed all 211 main checks (zero skips/flaky/failures),
+65 Python and catalog/editor/pinned-offline gates; WebKit caught immediate
+opener-Escape failing for DEFENSE. That failure reproduced locally, not a
+retry-only pass. A same-task click/Escape regression first confirmed stale
+aria-expanded/hidden state before the 16ms observer timer. Modern click now
+refreshes the panel synchronously and Escape checks native Flag[2], not delayed
+ARIA. Seven focused panel checks and the affected scenario in all three engines
+pass; PC/touch-sized DEFENSE screenshots were reviewed. Final CI for this actual
+runtime fix remains required. No production records have been changed.
+
 ## Modern 3.06 — complete skill descriptions, published and verified
 
 PR37 was squash-merged as `01258c6236856f2dbbdd8aa6744b8304f3defefa` and

@@ -14,6 +14,8 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
   JOB shows the selected description and explicit unsupported combat/range limits.
 - Workbook H/I contains current names for six races and 18 passives; protected
   source columns, other translations and the museum remain unchanged.
+- All five inspectors update visibility/accessibility state synchronously when
+  clicked; immediate Escape no longer races an observer refresh in WebKit.
 - Public catalog publication and release acceptance are still pending. Deploying
   code does not automatically seed or overwrite an administrator's records.
 

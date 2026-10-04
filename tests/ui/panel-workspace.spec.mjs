@@ -1,5 +1,30 @@
 import { test, expect } from '@playwright/test';
 
+test('opening and Escape in the same task synchronously update every inspector and its opener', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(() => {
+    const before = PandoraRemaked.adapter.serialize();
+    const states = [0, 1, 2, 3, 4].map(tab => {
+      const opener = document.querySelector('[data-remaked-tab="' + tab + '"]');
+      const panel = document.querySelector('[data-remaked-native-panel="' + tab + '"]');
+      opener.click();
+      const opened = { flag: Flag[2], hidden: panel.hidden, expanded: opener.getAttribute('aria-expanded') };
+      opener.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+      const closed = { flag: Flag[2], hidden: panel.hidden, expanded: opener.getAttribute('aria-expanded'), focused: document.activeElement === opener };
+      // Retain independent evidence for the next tab even if this one fails.
+      if (Flag[2]) document.getElementById('Tab_' + tab + '_0').click();
+      PandoraRemaked.calculatorControls.refresh();
+      return { tab, opened, closed };
+    });
+    return { states, before, after: PandoraRemaked.adapter.serialize() };
+  });
+  for (const { tab, opened, closed } of result.states) {
+    expect(opened, 'synchronous opening of tab ' + tab).toEqual({ flag: tab + 1, hidden: false, expanded: 'true' });
+    expect(closed, 'immediate Escape of tab ' + tab).toEqual({ flag: 0, hidden: true, expanded: 'false', focused: true });
+  }
+  expect(result.after).toBe(result.before);
+});
+
 test('JOB retains two readable selection columns; disabled SKILL explains and enables the native list', async ({ page }, testInfo) => {
   await page.goto('/'); const before = await page.evaluate(() => Store());
   await page.locator('[data-remaked-tab="0"]').click();
