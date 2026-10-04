@@ -103,17 +103,34 @@
     }
   }
 
+  function syncLearningColors() {
+    if (!window.Flag[3] || !window.Learn) return;
+    var learned = new Set(window.Learn[0].map(String));
+    document.querySelectorAll('#LearnView [id^="LearnSkillIcon_"]').forEach(function (icon) {
+      var match = icon.id.match(/^LearnSkillIcon_(\d+)_(\d+)$/);
+      if (!match) return;
+      var key = match[1] + '_' + match[2];
+      var path = learned.has(key) ? '' : 'gray/';
+      // The retained Color pass is vulnerable to stale/partially projected
+      // Learn state. Re-project the icon image from the final learned set so
+      // the visible list always matches the current prerequisites.
+      icon.style.backgroundImage = 'url("./image/icon/' + path +
+        String(match[1]).padStart(2, '0') + String(match[2]).padStart(2, '0') + '.png")';
+    });
+  }
+
   function rebuildLearningList() {
     if (!window.Flag[3]) return;
     // Learn is derived UI state. Rebuild every prerequisite pool from the
     // current class/level/branches so an unrelated catalog projection cannot
-    // leave a native icon stale after a direct branch edit.
+    // leave a native icon stale after a direct branch edit or skill-list toggle.
     window.Learn = [[], [], [], []];
     for (var category = 0; category < window.Name.Skill.length; category++)
       window.SkillList('Potential', category);
     window.SkillList('Adeptness', 0);
     window.SkillList('Create');
     window.SkillList('Color');
+    syncLearningColors();
   }
 
   function adeptnessInput(index, value, caption) {
@@ -275,7 +292,7 @@
       observer = new MutationObserver(schedule); refresh();
     }
   }
-  namespace.skillControls = { refresh: refresh };
+  namespace.skillControls = { refresh: refresh, rebuildLearningList: rebuildLearningList, syncLearningColors: syncLearningColors };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
   else init();
 })();
