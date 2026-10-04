@@ -1744,6 +1744,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     align-items: center;
     gap: 2px;
     width: 100%;
+    height: 28px;
   }
   .remaked-modern #body [data-remaked-calculator-budget] > ul > li {
     box-sizing: border-box;
