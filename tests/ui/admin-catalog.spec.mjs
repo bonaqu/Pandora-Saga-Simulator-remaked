@@ -271,11 +271,16 @@ test('editor shows live values and a private server preview before explicit save
 
 test('racial and skill editors expose current descriptions, numbers and calculation limits', async ({ page }) => {
   const { errors } = await openConsole(page);
-  for (const [kind, id, text] of [['racial', 'racial_skill.4.0', 'Получаемый физический урон −10%'], ['active', 'skill_entry.0.0', 'Стоимость MP'], ['passive', 'skill_entry.0.1', 'Исходная механика']]) {
+  for (const [kind, id, text] of [['racial', 'racial_skill.4.0', 'Получаемый физический урон −10%'], ['active', 'skill_entry.0.0', 'Стоимость MP'], ['passive', 'skill_entry.0.1', 'Встроенный эффект сохранён']]) {
     await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption(kind);
     await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill(id);
     await page.locator('.catalog-entry').first().click();
     await expect(page.locator('[data-current-record]')).toContainText(text);
+    if (kind === 'passive') {
+      await expect(page.locator('[data-current-record]')).toContainText('+10 процентных пунктов');
+      await expect(page.locator('[data-current-record]')).toContainText('с уровня 12');
+      await expect(page.locator('[data-field="intrinsicEffectMode"]')).toHaveValue('add');
+    }
     await expect(page.getByRole('button', { name: 'Проверить изменения', exact: true })).toBeVisible();
   }
   expect(errors).toEqual([]);
