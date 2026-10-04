@@ -939,6 +939,40 @@ body.remaked-modern {
   margin-right: 5px !important;
 }
 
+/* Keep every base-stat editor on the same horizontal rails. The Legacy rows
+   size their labels from proportional text, so STA/INT/etc. otherwise move the
+   numeric field by a few pixels. A derived total such as SPR 40 → 54 must live
+   in its own track and never push the input itself. */
+.remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 4px;
+}
+.remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child > [id^="Text_"] {
+  box-sizing: border-box;
+  width: 24px !important;
+  min-width: 24px;
+  margin: 0 !important;
+}
+.remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child > .input_gt {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 4px;
+  min-width: 0;
+}
+.remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child > .input_gt > .remaked-calculator-number {
+  grid-column: 1;
+}
+.remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child > .input_gt > [data-remaked-number-total] {
+  grid-column: 2;
+  justify-self: start;
+  margin-inline-start: 0;
+  white-space: nowrap;
+}
+
 .remaked-modern #body [data-remaked-calculator-steps] {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1757,6 +1791,12 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   .remaked-modern #body [data-remaked-calculator-budget] > ul > :is(.input_lt, .input_gt) {
     display: flex;
     align-items: center;
+  }
+  .remaked-modern #body #remaked-level-label {
+    /* The generic Modern level reset removes the Legacy label padding. Restore
+       the same tiny inset used by Status/Skill/Potential so Level does not sit
+       flush against the left edge. */
+    padding: 2px 1px 0 2px !important;
   }
   .remaked-modern #body [data-remaked-calculator-budget] > ul > .input_gt > ul {
     width: 100%;
