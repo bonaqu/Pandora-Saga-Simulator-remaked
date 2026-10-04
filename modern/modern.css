@@ -1933,6 +1933,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     width: var(--rm-compact-number-width);
     justify-self: end;
     text-align: center;
+    font-size: 11px;
     white-space: nowrap;
     overflow: visible;
   }
