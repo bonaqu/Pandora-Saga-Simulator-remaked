@@ -268,6 +268,38 @@ test('equipment picker supports arrows, Enter and one-key Escape inside a 390px 
   await expect(opener).toBeFocused();
 });
 
+test('picker search uses the full control width when no type filter is available', async ({ page }) => {
+  await openModern(page);
+  const target = await page.evaluate(() => window.PandoraRemaked.adapter.listEquipmentTargets()
+    .map((candidate) => {
+      const options = window.PandoraRemaked.adapter.listEquipmentOptions(candidate.slotIndex);
+      const categories = [];
+      let currentCategory = '';
+      for (const option of options) {
+        const heading = String(option.name || '').match(/^\+-----\s*(.+?)\s*$/)?.[1]?.trim() || '';
+        if (heading) {
+          currentCategory = heading;
+          continue;
+        }
+        if (currentCategory && !categories.includes(currentCategory)) categories.push(currentCategory);
+      }
+      return { candidate, categories };
+    })
+    .find((entry) => entry.categories.length < 2));
+  expect(target).toBeTruthy();
+
+  await page.locator(`[data-remaked-equipment-picker="${target.candidate.selectId}"]`).click();
+  const panel = page.locator('[data-remaked-search-panel]');
+  const controls = panel.locator('.remaked-picker-controls');
+  const filter = panel.locator('[data-remaked-picker-type-filter]');
+  await expect(filter).toBeHidden();
+  await expect(controls).toHaveClass(/remaked-picker-controls-single/);
+
+  const fieldBox = await controls.locator('.remaked-search-field').boundingBox();
+  const controlsBox = await controls.boundingBox();
+  expect(fieldBox.width).toBeGreaterThanOrEqual(controlsBox.width - 2);
+});
+
 test('equipment picker renders native type separators as headings and can filter by type', async ({ page }) => {
   await openModern(page);
   const target = await page.evaluate(() => window.PandoraRemaked.adapter.listEquipmentTargets()
