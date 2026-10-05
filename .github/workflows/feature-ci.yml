@@ -161,7 +161,7 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium --with-deps --only-shell
 
 
       - name: Run complete desktop workspace contract
@@ -217,7 +217,7 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium --with-deps --only-shell
 
 
       - name: Run browser contract shard ${{ matrix.shard }}/3
@@ -331,7 +331,13 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Install ${{ matrix.browser }}
-        run: npx playwright install --with-deps ${{ matrix.browser }}
+        shell: bash
+        run: |
+          if [[ "${{ matrix.browser }}" == "chromium" ]]; then
+            npx playwright install chromium --with-deps --only-shell
+          else
+            npx playwright install --with-deps "${{ matrix.browser }}"
+          fi
 
       - name: Run ${{ matrix.browser }} smoke tests
         run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=${{ matrix.browser }}-smoke
