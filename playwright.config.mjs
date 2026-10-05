@@ -4,6 +4,7 @@ export default defineConfig({
   testDir: './tests/ui',
   timeout: 30000,
   expect: { timeout: 5000 },
+  fullyParallel: process.env.PW_FULLY_PARALLEL === '1',
   projects: [
     { name: 'chromium', testIgnore: '**/cross-browser-smoke.spec.mjs', use: { browserName: 'chromium' } },
     ...['chromium', 'firefox', 'webkit'].map(browserName => ({
