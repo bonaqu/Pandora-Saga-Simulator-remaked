@@ -59,7 +59,7 @@
   }
 
   function showRestoredAutosaveStatus() {
-    showRestoredAutosaveStatus();
+    setAutosaveStatus(t('builds.autosaveRestored', null, 'Restored autosave'), 'restored');
     autosaveSettleTimer = window.setTimeout(function () {
       autosaveSettleTimer = null;
       if (!autosaveStatus || autosaveStatus.dataset.state !== 'restored') return;
@@ -464,7 +464,7 @@
       return;
     }
     lastSavedPayload = loaded.payload;
-    setAutosaveStatus(t('builds.autosaveRestored', null, 'Restored autosave'), 'restored');
+    showRestoredAutosaveStatus();
   }
 
   function button(label, className, key) {
