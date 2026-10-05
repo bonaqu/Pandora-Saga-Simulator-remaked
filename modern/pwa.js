@@ -7,6 +7,9 @@
   var installButton = null;
   var updateNotice = null;
   var waitingWorker = null;
+  var activeRegistration = null;
+  var updateReloadPending = false;
+  var updateFallbackTimer = null;
   var initialized = false;
 
   function bindText(node, key, fallback) {
@@ -57,19 +60,27 @@
     if (installButton) installButton.hidden = true;
   }
 
-  function requestUpdate() {
-    if (!waitingWorker || typeof waitingWorker.postMessage !== 'function') return;
+  function requestUpdate(worker) {
+    if (worker && typeof worker.postMessage === 'function') waitingWorker = worker;
+    if (!waitingWorker || typeof waitingWorker.postMessage !== 'function' || updateReloadPending) return;
+    updateReloadPending = true;
     if (namespace.builds && typeof namespace.builds.flushAutosave === 'function') {
       namespace.builds.flushAutosave();
     }
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('controllerchange', function () {
+        window.clearTimeout(updateFallbackTimer);
         window.location.reload();
       }, { once: true });
     }
     var reload = updateNotice && updateNotice.querySelector('[data-remaked-update-reload]');
     if (reload) reload.disabled = true;
     waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+    updateFallbackTimer = window.setTimeout(function () {
+      if (!updateReloadPending) return;
+      updateReloadPending = false;
+      showUpdateNotice(waitingWorker);
+    }, 8000);
   }
 
   function showUpdateNotice(worker) {
@@ -101,23 +112,39 @@
 
   function watchRegistration(registration) {
     if (!registration) return;
+    activeRegistration = registration;
     if (registration.waiting && navigator.serviceWorker.controller) {
-      showUpdateNotice(registration.waiting);
+      requestUpdate(registration.waiting);
     }
-    registration.addEventListener('updatefound', function () {
-      var installing = registration.installing;
+    function watchInstalling(installing) {
       if (!installing) return;
+      // Capture whether an older active worker already controls this page now.
+      // On first install, clients.claim() may create a controller before the
+      // "installed" state callback runs (notably in WebKit); that must not be
+      // mistaken for an update and trigger a surprise reload.
+      var replacingActiveWorker = Boolean(registration.active && navigator.serviceWorker.controller);
       installing.addEventListener('statechange', function () {
-        if (installing.state === 'installed' && navigator.serviceWorker.controller) {
-          showUpdateNotice(registration.waiting || installing);
+        if (installing.state === 'installed' && replacingActiveWorker) {
+          requestUpdate(registration.waiting || installing);
         }
       });
+    }
+    if (registration.installing) watchInstalling(registration.installing);
+    registration.addEventListener('updatefound', function () {
+      watchInstalling(registration.installing);
     });
+  }
+
+  function checkForUpdate() {
+    if (!activeRegistration || document.visibilityState === 'hidden' || navigator.onLine === false) {
+      return Promise.resolve(null);
+    }
+    return activeRegistration.update().catch(function () { return null; });
   }
 
   function register() {
     if (!('serviceWorker' in navigator)) return Promise.resolve(null);
-    return navigator.serviceWorker.register('./service-worker.js')
+    return navigator.serviceWorker.register('./service-worker.js', { updateViaCache: 'none' })
       .then(function (registration) {
         watchRegistration(registration);
         return registration;
@@ -133,6 +160,10 @@
     initialized = true;
     window.addEventListener('beforeinstallprompt', captureInstallPrompt);
     window.addEventListener('appinstalled', clearInstallPrompt);
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') checkForUpdate();
+    });
+    window.addEventListener('online', checkForUpdate);
     register();
   }
 
@@ -140,7 +171,8 @@
     init: init,
     register: register,
     captureInstallPrompt: captureInstallPrompt,
-    showUpdateNotice: showUpdateNotice
+    showUpdateNotice: showUpdateNotice,
+    checkForUpdate: checkForUpdate
   };
 
   if (document.readyState === 'loading') {
