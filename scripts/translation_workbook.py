@@ -124,6 +124,8 @@ def read_rows(path: pathlib.Path) -> list[list[str]]:
 @dataclass(frozen=True)
 class TranslationCatalogs:
     ui_russian: dict[str, str]
+    ui_japanese: dict[str, str]
+    ui_traditional_chinese: dict[str, str]
     game_russian: dict[str, str]
     ui_english: dict[str, str]
     game_english: dict[str, str]
@@ -158,6 +160,8 @@ def load_editable_catalogs(root: pathlib.Path) -> TranslationCatalogs:
         raise ValueError(f"translation workbook must contain {len(expected)} rows; found {len(actual)}")
 
     ui_russian: dict[str, str] = {}
+    ui_japanese: dict[str, str] = {}
+    ui_traditional_chinese: dict[str, str] = {}
     game_russian: dict[str, str] = {}
     ui_english: dict[str, str] = {}
     game_english: dict[str, str] = {}
@@ -167,22 +171,34 @@ def load_editable_catalogs(root: pathlib.Path) -> TranslationCatalogs:
         source = expected.get(identifier)
         if source is None:
             raise ValueError(f"unknown translation ID in row {index}: {identifier or 'missing ID'}")
-        stable = tuple(row[:7])
-        if stable != source:
+        stable = tuple(row[:5] if row[0] == "Интерфейс" else row[:7])
+        expected_stable = source[:5] if row[0] == "Интерфейс" else source
+        if stable != expected_stable:
             raise ValueError(f"source columns changed in translation row {index} ({row[1] or 'missing ID'})")
         if identifier in seen:
             raise ValueError(f"duplicate translation ID in row {index}: {identifier}")
         seen.add(identifier)
+        japanese = row[5] if row[5].strip() else ""
+        traditional_chinese = row[6] if row[6].strip() else ""
         russian = row[7] if row[7].strip() else ""
         english_override = row[8] if row[8].strip() else ""
         if row[0] == "Интерфейс":
-            if russian and sorted(PLACEHOLDER.findall(row[4])) != sorted(PLACEHOLDER.findall(russian)):
-                raise ValueError(f"translation placeholders do not match in row {index}: {identifier}")
+            source_placeholders = sorted(PLACEHOLDER.findall(row[4]))
+            for language, value in (
+                ("Japanese", japanese),
+                ("Traditional Chinese", traditional_chinese),
+                ("Russian", russian),
+                ("English", english_override),
+            ):
+                if value and source_placeholders != sorted(PLACEHOLDER.findall(value)):
+                    raise ValueError(f"{language} translation placeholders do not match in row {index}: {identifier}")
+            if japanese:
+                ui_japanese[identifier] = japanese
+            if traditional_chinese:
+                ui_traditional_chinese[identifier] = traditional_chinese
             if russian:
                 ui_russian[identifier] = russian
             if english_override:
-                if sorted(PLACEHOLDER.findall(row[4])) != sorted(PLACEHOLDER.findall(english_override)):
-                    raise ValueError(f"English translation placeholders do not match in row {index}: {identifier}")
                 ui_english[identifier] = english_override
         elif russian:
             game_russian[identifier] = russian.strip()
@@ -193,7 +209,15 @@ def load_editable_catalogs(root: pathlib.Path) -> TranslationCatalogs:
     if missing:
         raise ValueError("translation workbook is missing IDs: " + ", ".join(missing[:5]))
 
-    return TranslationCatalogs(ui_russian, game_russian, ui_english, game_english, len(actual))
+    return TranslationCatalogs(
+        ui_russian,
+        ui_japanese,
+        ui_traditional_chinese,
+        game_russian,
+        ui_english,
+        game_english,
+        len(actual),
+    )
 
 
 def load_translation_catalogs(root: pathlib.Path) -> tuple[dict[str, str], dict[str, str], int]:
@@ -209,7 +233,9 @@ def main() -> int:
     catalogs = load_editable_catalogs(args.root.resolve())
     print(
         f"Verified {catalogs.total} translation rows: "
-        f"{len(catalogs.ui_russian)} Russian UI strings and {len(catalogs.game_russian)} approved Russian game terms; "
+        f"{len(catalogs.ui_russian)} Russian, {len(catalogs.ui_japanese)} Japanese and "
+        f"{len(catalogs.ui_traditional_chinese)} Traditional Chinese UI strings; "
+        f"{len(catalogs.game_russian)} approved Russian game terms; "
         f"{len(catalogs.ui_english)} English UI overrides and {len(catalogs.game_english)} English game overrides."
     )
     return 0

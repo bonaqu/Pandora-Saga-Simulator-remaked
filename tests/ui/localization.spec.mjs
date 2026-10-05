@@ -17,7 +17,7 @@ test('English is the default language in the unified Modern control', async ({ p
   const ui = page.locator('[data-remaked-ui-locale]');
   const data = page.locator('[data-remaked-language]');
 
-  await expect(ui).toHaveCount(2);
+  await expect(ui).toHaveCount(4);
   await expect(data).toHaveCount(3);
   await expect(ui.filter({ hasText: 'EN' })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('[data-remaked-hero]')).toContainText('Character Builder');

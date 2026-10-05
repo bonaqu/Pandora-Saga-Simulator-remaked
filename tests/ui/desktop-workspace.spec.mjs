@@ -104,7 +104,7 @@ test('all four languages and font fallbacks keep the complete desktop controls i
   for (const [label, language] of [['EN', 1], ['RU', 1], ['JP', 0], ['TW', 2]]) {
     await page.locator('[data-remaked-language-panel]').getByRole('button', { name: label, exact: true }).click();
     expect(await page.evaluate(() => Flag[0])).toBe(language);
-    expect(await page.evaluate(() => PandoraRemaked.i18n.getLocale())).toBe(label === 'RU' ? 'ru' : 'en');
+    expect(await page.evaluate(() => PandoraRemaked.i18n.getLocale())).toBe(label.toLowerCase());
     for (const font of ['Arial, sans-serif', 'Verdana, sans-serif', 'Consolas, monospace']) {
       await page.addStyleTag({ content: `.remaked-modern { --rm-font: ${font}; }` });
       for (const width of [1366, 1440, 1920, 2560]) {
