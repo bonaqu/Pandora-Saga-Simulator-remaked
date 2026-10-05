@@ -160,7 +160,7 @@ class RepositoryDocsTests(unittest.TestCase):
 
         self.assertIn("'REMAKED UI ' + version.ui", shell)
         self.assertIn("'Legacy Engine ' + version.legacyEngine", shell)
-        self.assertIn("data.remakedVersionBadge", shell)
+        self.assertIn("versionBadge.dataset.remakedVersionBadge", shell)
         self.assertNotIn("dataset.remakedVersion =", shell)
         self.assertNotIn("REMAKED UI 3.11", shell)
         self.assertIn(".remaked-version-badge-ui", styles)
