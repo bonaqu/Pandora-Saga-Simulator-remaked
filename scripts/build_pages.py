@@ -95,6 +95,38 @@ HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <link rel="icon" type="image/svg+xml" href="./modern/favicon.svg" />
 <link rel="apple-touch-icon" sizes="180x180" href="./modern/apple-touch-icon.png" />
 <link rel="manifest" href="./modern/manifest.webmanifest" />
+<script>
+(function () {
+  if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) return;
+  var reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', function () {
+    if (reloading) return;
+    reloading = true;
+    window.location.reload();
+  });
+  navigator.serviceWorker.getRegistration().then(function (registration) {
+    if (!registration) return;
+    function activateWaiting() {
+      if (registration.waiting && typeof registration.waiting.postMessage === 'function') {
+        window.__pandoraPwaBootstrapUpdating = true;
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+    }
+    function watchInstalling(worker) {
+      if (!worker) return;
+      worker.addEventListener('statechange', function () {
+        if (worker.state === 'installed') activateWaiting();
+      });
+    }
+    activateWaiting();
+    watchInstalling(registration.installing);
+    registration.addEventListener('updatefound', function () {
+      watchInstalling(registration.installing);
+    });
+    registration.update().then(activateWaiting).catch(function () {});
+  }).catch(function () {});
+})();
+</script>
 <link rel="stylesheet" href="./modern/modern.css" />
 <link rel="stylesheet" href="./modern/search.css" />
 <link rel="stylesheet" href="./modern/builds.css" />
