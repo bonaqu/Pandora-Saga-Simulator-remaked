@@ -12,6 +12,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Новые версии сайта теперь сами обнаруживают и активируют свежий Service Worker. Обычное открытие страницы, F5, возврат во вкладку или восстановление сети подхватывают новый кэш без обязательного Ctrl+F5; автосохранение и офлайн-режим сохранены.
 - Окно «Что нового» и номер Remaked UI теперь собираются из верхнего релиза CHANGELOG, поэтому версия сайта и последние изменения больше не должны расходиться вручную.
 - Публикация проекта стала заметно быстрее: проверки распараллелены без удаления покрытия, WebKit использует закреплённый Playwright image, Chromium в headless CI не скачивает лишний полный браузер, а проверенный merge повторно не гоняет уже пройденные тяжёлые проверки.
+- Версия в шапке теперь собрана в единый двухсекционный бейдж: заметный `REMAKED UI` и более спокойный `Legacy Engine`. Обе цифры берутся из общей release metadata, а прежний дублирующий номер версии справа сверху удалён.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
@@ -22,6 +23,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Fresh deployments now discover and activate the new Service Worker automatically. Normal navigation, F5, returning to the tab or coming back online can adopt the new cache without requiring Ctrl+F5; autosave and offline behavior are preserved.
 - The on-site “What’s new” panel and Remaked UI version are now generated from the latest CHANGELOG release, so release notes and the visible version no longer need separate manual synchronization.
 - Delivery is substantially faster without dropping test coverage: browser work is sharded, WebKit uses a pinned Playwright image, headless Chromium avoids the unnecessary full browser download, and trusted merges reuse the exact successful PR validation instead of repeating it.
+- The header now uses one joined two-part version badge: a prominent `REMAKED UI` segment and a quieter `Legacy Engine` segment. Both values come from shared release metadata, and the duplicate version text in the top-right controls is removed.
 <!-- /release-notes:en -->
 
 ### Project and delivery details
@@ -33,6 +35,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - The same work exposed and fixed a real Equipment item-preview scroll/hover race rather than masking it with larger test timeouts.
 - PR #55/#56 fixed stale PWA assets after deploy. Update checks bypass the HTTP cache for the worker script, new workers activate safely, first install is not mistaken for an update in WebKit, and fresh navigation HTML can bridge users still controlled by the pre-fix cached runtime.
 - Public documentation was reorganized around player help, project status, architecture, history and roadmap. Maintainer-only administrator instructions were removed from the public documentation set and preserved separately for the project owner. Feature CI now rejects user-facing runtime/UI changes that omit a CHANGELOG update.
+- The header version display was consolidated into a single split badge sourced entirely from `PandoraRemakedVersion`; the redundant top-right version label was removed. A lightweight source-level test guards the dynamic wiring without adding browser-suite runtime.
 
 ## Modern 3.10 — conditional active-skill profiles, candidate
 
