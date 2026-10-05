@@ -81,7 +81,7 @@
 .remaked-modern :is(.remaked-tool-button, .remaked-install-button) {
   box-sizing: border-box;
   min-height: var(--rm-control-height);
-  padding: .5rem .75rem;
+  padding: .5rem .65rem;
   border: 1px solid #a9c28a;
   border-radius: .5rem;
   background: #f3f7ec;
@@ -106,21 +106,66 @@
   border-color: #a9c28a;
 }
 .remaked-modern [data-remaked-language-panel] button {
-  min-width: 2.75rem;
+  min-width: 2.55rem;
   min-height: var(--rm-control-height);
-  padding: .375rem .5rem;
+  padding: .375rem .45rem;
   font: 700 .75rem/1.25 var(--rm-font);
 }
 .remaked-modern .remaked-autosave {
   box-sizing: border-box;
-  min-height: var(--rm-control-height);
-  padding: .5rem 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  font: 500 .75rem/1.25 var(--rm-font);
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  flex: 0 0 auto;
+  min-height: 1.9rem;
+  padding: .28rem .55rem;
+  border: 1px solid #bdd1a5;
+  border-radius: 999px;
+  background: rgba(247, 250, 242, .9);
+  color: #627058;
+  font: 600 .6875rem/1.2 var(--rm-font);
+  white-space: nowrap;
+}
+
+.remaked-modern .remaked-autosave::before {
+  content: "";
+  width: .44rem;
+  height: .44rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #8aa96b;
+  box-shadow: 0 0 0 2px rgba(138, 169, 107, .12);
+}
+
+.remaked-modern .remaked-autosave[data-state="saved"],
+.remaked-modern .remaked-autosave[data-state="restored"],
+.remaked-modern .remaked-autosave[data-state="ready"] {
+  border-color: #a7c889;
+  background: rgba(242, 249, 236, .94);
+  color: #4e752f;
+}
+
+.remaked-modern .remaked-autosave[data-state="saved"]::before,
+.remaked-modern .remaked-autosave[data-state="restored"]::before,
+.remaked-modern .remaked-autosave[data-state="ready"]::before {
+  background: #79a851;
+  box-shadow: 0 0 0 2px rgba(121, 168, 81, .14);
+}
+
+.remaked-modern .remaked-autosave[data-state="warning"],
+.remaked-modern .remaked-autosave[data-state="error"] {
+  border-color: #d6b77c;
+  background: rgba(255, 249, 235, .95);
+  color: #866126;
+}
+
+.remaked-modern .remaked-autosave[data-state="warning"]::before,
+.remaked-modern .remaked-autosave[data-state="error"]::before {
+  background: #c79536;
+  box-shadow: 0 0 0 2px rgba(199, 149, 54, .12);
 }
 @media (min-width: 621px) {
   .remaked-modern { --rm-control-height: 2.25rem; --rm-header-control-height: 2.25rem; }
-  .remaked-modern [data-remaked-language-panel] button { min-width: 2.25rem; min-height: 1.875rem; }
+  .remaked-modern [data-remaked-language-panel] button { min-width: 2.1rem; min-height: 1.875rem; }
+  .remaked-modern .remaked-install-button { padding-inline: .6rem; }
 }
