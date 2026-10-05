@@ -21,7 +21,7 @@ class GeneratedDataTests(unittest.TestCase):
 
     def test_projection_metadata_and_source_fingerprints_are_current(self):
         version_source = (ROOT / "modern" / "version.js").read_text(encoding="utf-8")
-        match = re.search(r"\\bui\\s*:\\s*['\"]([^'\"]+)['\"]", version_source)
+        match = re.search(r"\bui\s*:\s*[\'\"]([^\'\"]+)[\'\"]", version_source)
         self.assertIsNotNone(match, "modern/version.js must expose the Remaked UI version")
         current_ui = match.group(1)
 
