@@ -45,7 +45,10 @@ export async function withLegacyRuntime(siteRoot, callback) {
   await fs.access(path.join(root, 'index.html'));
   const server = await startStaticServer(root);
   const address = server.address();
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({
+    headless: true,
+    ...(process.env.PW_USE_SYSTEM_CHROME === '1' ? { channel: 'chrome' } : {})
+  });
   try {
     const page = await browser.newPage();
     await page.goto(`http://127.0.0.1:${address.port}/`, { waitUntil: 'domcontentloaded' });
