@@ -80,6 +80,24 @@ jobs:
           printf ' - %s\n' "${files[@]}"
           echo "docs_only=$docs_only css_only=$css_only full_required=$full_required"
 
+  browser_site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Build browser-test site once
+        run: python3 scripts/build_pages.py --output _site
+
+      - name: Upload browser-test site
+        uses: actions/upload-artifact@v4
+        with:
+          name: feature-browser-site
+          path: _site
+          if-no-files-found: error
+          retention-days: 1
+
   static:
     needs: classify
     runs-on: ubuntu-latest
@@ -304,29 +322,39 @@ jobs:
           --shard=${{ matrix.shard }}/2
 
   cross_browser:
-    needs: classify
+    needs:
+      - classify
+      - browser_site
     if: needs.classify.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
     strategy:
       fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
+    env:
+      PW_PREBUILT_SITE: '1'
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          cache: npm
-
-      - name: Install dependencies
+      - name: Install project dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Install ${{ matrix.browser }}
-        run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Download prebuilt browser-test site
+        uses: actions/download-artifact@v4
+        with:
+          name: feature-browser-site
+          path: _site
+
+      - name: Verify pinned Playwright runtime
+        run: |
+          node --version
+          npx playwright --version
+          test "$PLAYWRIGHT_BROWSERS_PATH" = "/ms-playwright"
 
       - name: Run ${{ matrix.browser }} smoke tests
         run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=${{ matrix.browser }}-smoke
