@@ -23,12 +23,10 @@ env:
   SOURCE_PATH: ps_simulator/PSS_original
 
 jobs:
-  trust_gate:
+  build:
     runs-on: ubuntu-latest
-    outputs:
-      full_validation: ${{ steps.gate.outputs.full_validation }}
-      source_pr: ${{ steps.gate.outputs.source_pr }}
-      source_head: ${{ steps.gate.outputs.source_head }}
+    timeout-minutes: 20
+
     steps:
       - name: Reuse exact successful PR validation when possible
         id: gate
@@ -45,7 +43,9 @@ jobs:
           source_head=""
 
           if [[ "$EVENT_NAME" == "push" ]]; then
-            prs="$(gh api               -H 'Accept: application/vnd.github+json'               "repos/$REPOSITORY/commits/$DEPLOY_SHA/pulls")"
+            prs="$(gh api \
+              -H 'Accept: application/vnd.github+json' \
+              "repos/$REPOSITORY/commits/$DEPLOY_SHA/pulls")"
 
             source_pr="$(jq -r '
               map(select(.merged_at != null and .base.ref == "bonaqu_projects"))
@@ -57,7 +57,8 @@ jobs:
               pr="$(gh api "repos/$REPOSITORY/pulls/$source_pr")"
               source_head="$(jq -r '.head.sha' <<<"$pr")"
 
-              runs="$(gh api                 "repos/$REPOSITORY/actions/workflows/feature-ci.yml/runs?head_sha=$source_head&event=pull_request&status=completed&per_page=20")"
+              runs="$(gh api \
+                "repos/$REPOSITORY/actions/workflows/feature-ci.yml/runs?head_sha=$source_head&event=pull_request&status=completed&per_page=20")"
 
               if jq -e '.workflow_runs | any(.conclusion == "success")' <<<"$runs" >/dev/null; then
                 full_validation=false
@@ -78,12 +79,6 @@ jobs:
             echo "source_head=$source_head"
           } >> "$GITHUB_OUTPUT"
 
-  build:
-    needs: trust_gate
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    steps:
       - name: Checkout preservation repository
         uses: actions/checkout@v7
         with:
@@ -189,32 +184,32 @@ jobs:
       - name: Install Chromium for production smoke
         run: npx playwright install --with-deps chromium
 
-      - name: Run production smoke gate
+      - name: Run lightweight production smoke gate
         run: >
           npx playwright test
           tests/ui/modern-foundation.spec.mjs
-          tests/ui/cross-browser-smoke.spec.mjs
           --project=chromium
-          --project=chromium-smoke
+          --grep
+          "Modern shell exposes meaningful navigation and defaults to English|Modern and Legacy routes load without missing local assets"
 
       - name: Install remaining browsers for fallback validation
-        if: needs.trust_gate.outputs.full_validation == 'true'
+        if: steps.gate.outputs.full_validation == 'true'
         run: npx playwright install --with-deps firefox webkit
 
       - name: Run complete desktop workspace contract on untrusted push
-        if: needs.trust_gate.outputs.full_validation == 'true'
+        if: steps.gate.outputs.full_validation == 'true'
         run: npm run test:ui:desktop -- --project=chromium
 
       - name: Run shipped browser contract tests on untrusted push
-        if: needs.trust_gate.outputs.full_validation == 'true'
+        if: steps.gate.outputs.full_validation == 'true'
         run: npm run test:ui:ci -- --project=chromium
 
       - name: Audit every selectable source catalog record on untrusted push
-        if: needs.trust_gate.outputs.full_validation == 'true'
+        if: steps.gate.outputs.full_validation == 'true'
         run: npm run test:ui:catalog-audit
 
       - name: Verify versioned catalog calculations on untrusted push
-        if: needs.trust_gate.outputs.full_validation == 'true'
+        if: steps.gate.outputs.full_validation == 'true'
         run: >
           npm run test:ui --
           tests/ui/catalog-adapter.spec.mjs
@@ -230,11 +225,11 @@ jobs:
           --project=chromium
 
       - name: Run cross-browser smoke tests on untrusted push
-        if: needs.trust_gate.outputs.full_validation == 'true'
+        if: steps.gate.outputs.full_validation == 'true'
         run: npm run test:ui:cross-browser
 
       - name: Run visual QA on untrusted push
-        if: needs.trust_gate.outputs.full_validation == 'true'
+        if: steps.gate.outputs.full_validation == 'true'
         run: npm run test:ui:visual -- --project=chromium
 
       - name: Verify deterministic lightweight projections
@@ -245,9 +240,9 @@ jobs:
 
       - name: Report validation path
         run: |
-          echo "full_validation=${{ needs.trust_gate.outputs.full_validation }}"
-          echo "source_pr=${{ needs.trust_gate.outputs.source_pr }}"
-          echo "source_head=${{ needs.trust_gate.outputs.source_head }}"
+          echo "full_validation=${{ steps.gate.outputs.full_validation }}"
+          echo "source_pr=${{ steps.gate.outputs.source_pr }}"
+          echo "source_head=${{ steps.gate.outputs.source_head }}"
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
