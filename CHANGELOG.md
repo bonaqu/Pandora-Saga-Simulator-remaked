@@ -11,9 +11,10 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Возвращён мягкий полупрозрачный фон стоимости характеристик 2P/3P и отполированы компактные поля персонажа, верховая езда и заголовки навыков; исправлена гонка hover-preview при автоматической прокрутке списка предметов.
 - Новые версии сайта теперь сами обнаруживают и активируют свежий Service Worker. Обычное открытие страницы, F5, возврат во вкладку или восстановление сети подхватывают новый кэш без обязательного Ctrl+F5; автосохранение и офлайн-режим сохранены.
 - Окно «Что нового» и номер Remaked UI теперь собираются из верхнего релиза CHANGELOG, поэтому версия сайта и последние изменения больше не должны расходиться вручную.
-- Публикация проекта стала заметно быстрее: проверки распараллелены без удаления покрытия, WebKit использует закреплённый Playwright image, Chromium в headless CI не скачивает лишний полный браузер, а проверенный merge повторно не гоняет уже пройденные тяжёлые проверки.
+- Публикация проекта стала заметно быстрее: проверки распараллелены без удаления покрытия, WebKit и Firefox используют закреплённый Playwright image, Chromium в headless CI не скачивает лишний полный браузер, а проверенный merge повторно не гоняет уже пройденные тяжёлые проверки.
 - Версия в шапке теперь собрана в единый двухсекционный бейдж: заметный `REMAKED UI` и более спокойный `Legacy Engine`. Обе цифры берутся из общей release metadata, а прежний дублирующий номер версии справа сверху удалён.
 - Шапка получила финальную лёгкую полировку: Legacy-сегмент версии стал мягче и чуть теплее по цвету, статус автосохранения отделён от навигации как компактный индикатор, языки и установка немного компактнее, а служебная подпись под временным hero-артом убрана.
+- Исправлена стабильность шапки при переключении языка: ширины верхних контролов, нижней навигации, Builds/Compare и статуса автосохранения больше не пересчитываются от длины перевода. Статус автосохранения приведён к обычному радиусу интерфейса, `LEGACY ENGINE` отображается прописными буквами, а version badge опущен на 2 px.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
@@ -23,9 +24,10 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - The soft translucent 2P/3P stat-cost treatment is restored, compact character/riding/skill alignment is polished, and an item-preview hover race caused by automatic picker scrolling is fixed.
 - Fresh deployments now discover and activate the new Service Worker automatically. Normal navigation, F5, returning to the tab or coming back online can adopt the new cache without requiring Ctrl+F5; autosave and offline behavior are preserved.
 - The on-site “What’s new” panel and Remaked UI version are now generated from the latest CHANGELOG release, so release notes and the visible version no longer need separate manual synchronization.
-- Delivery is substantially faster without dropping test coverage: browser work is sharded, WebKit uses a pinned Playwright image, headless Chromium avoids the unnecessary full browser download, and trusted merges reuse the exact successful PR validation instead of repeating it.
+- Delivery is substantially faster without dropping test coverage: browser work is sharded, WebKit and Firefox use a pinned Playwright image, headless Chromium avoids the unnecessary full browser download, and trusted merges reuse the exact successful PR validation instead of repeating it.
 - The header now uses one joined two-part version badge: a prominent `REMAKED UI` segment and a quieter `Legacy Engine` segment. Both values come from shared release metadata, and the duplicate version text in the top-right controls is removed.
 - The header received a final light polish: the Legacy version segment is softer and slightly greener, autosave is separated from navigation as a compact status indicator, language/install controls are a little tighter, and the temporary hero-art attribution caption is removed.
+- Header layout is stable across language switches: top controls, lower navigation, Builds/Compare and autosave no longer resize from translated label length. Autosave now uses the interface's regular corner radius, `LEGACY ENGINE` is uppercase, and the version badge sits 2 px lower.
 <!-- /release-notes:en -->
 
 ### Project and delivery details
@@ -39,6 +41,8 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Public documentation was reorganized around player help, project status, architecture, history and roadmap. Maintainer-only administrator instructions were removed from the public documentation set and preserved separately for the project owner. Feature CI now rejects user-facing runtime/UI changes that omit a CHANGELOG update.
 - The header version display was consolidated into a single split badge sourced entirely from `PandoraRemakedVersion`; the redundant top-right version label was removed. A lightweight source-level test guards the dynamic wiring without adding browser-suite runtime.
 - Follow-up header polish keeps the same structure and version wiring while softening the Legacy segment, styling autosave as a status chip, tightening desktop language/install controls and removing the temporary artwork caption.
+- A second header follow-up removes locale-switch layout jitter by using stable desktop tracks for utility links, install/language controls, Modern tabs and Builds/Compare, plus a fixed desktop autosave status track. The status chip returns to the site's normal 7px radius; the Legacy badge label is uppercase and the badge is lowered by 2px.
+- Firefox smoke validation now mirrors the pinned-container approach already used for WebKit, with the container home fixed explicitly for Firefox. This avoids both the repeated browser download that could consume the 10-minute timeout and the container launch failure caused by a mismatched HOME owner.
 
 ## Modern 3.10 — conditional active-skill profiles, candidate
 

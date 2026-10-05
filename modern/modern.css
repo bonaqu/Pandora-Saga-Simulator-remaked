@@ -205,7 +205,7 @@ body.remaked-modern {
 .remaked-hero-meta {
   display: flex;
   align-items: center;
-  margin-top: 11px;
+  margin-top: 13px;
   color: #68745e;
   font-size: 10px;
   font-weight: 700;
@@ -249,7 +249,8 @@ body.remaked-modern {
   color: #626c58;
   font-size: 9px;
   font-weight: 760;
-  letter-spacing: .015em;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
 
 .remaked-hero p {
@@ -302,7 +303,8 @@ body.remaked-modern {
 }
 
 .remaked-nav-button {
-  flex: 1 0 76px;
+  flex: 1 1 0;
+  min-width: 76px;
   min-height: 31px;
   padding: 7px 11px;
   border: 1px solid #b8cba0;
@@ -1506,7 +1508,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
 }
 /* Desktop is a compact working calculator, not a stack of touch cards. The
    source-delegating controls and phone-size targets remain unchanged. */
-.remaked-build-actions { display: flex; flex: 2 0 auto; border: 1px solid var(--rm-border-strong); border-radius: 7px; overflow: hidden; }
+.remaked-build-actions { display: flex; flex: 2 1 0; min-width: 0; border: 1px solid var(--rm-border-strong); border-radius: 7px; overflow: hidden; }
 .remaked-modern .remaked-build-actions .remaked-tool-button { flex: 1; border: 0; border-radius: 0; }
 .remaked-modern .remaked-build-actions .remaked-tool-button + .remaked-tool-button { border-inline-start: 1px solid var(--rm-border-strong); }
 .remaked-modern .remaked-build-actions .remaked-tool-button:focus-visible { outline: 2px solid var(--rm-accent-strong); outline-offset: -3px; }
@@ -1527,6 +1529,23 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   .remaked-build-actions { grid-column: 1 / -1; min-width: 0; }
 }
 @media (min-width: 861px) {
+  .remaked-utilities-primary {
+    display: grid;
+    grid-template-columns: 60px 82px 100px;
+    gap: 5px;
+    flex: 0 0 auto;
+  }
+  .remaked-utilities-primary .remaked-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
+  .remaked-utilities-controls {
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+  }
+
   .remaked-modern #body [data-remaked-calculator-main] { display: grid; grid-template-columns: minmax(0, 1fr) 310px; column-gap: 6px; }
   .remaked-modern #body [data-remaked-calculator-main] > ul { grid-column: 1 / -1; }
   .remaked-modern #body [data-remaked-calculator-main] > [data-remaked-calculator-code] { grid-column: 1; }

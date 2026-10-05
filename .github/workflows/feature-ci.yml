@@ -334,10 +334,6 @@ jobs:
     if: needs.classify.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chromium, firefox]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -351,17 +347,46 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Install ${{ matrix.browser }}
-        shell: bash
-        run: |
-          if [[ "${{ matrix.browser }}" == "chromium" ]]; then
-            npx playwright install chromium --with-deps --only-shell
-          else
-            npx playwright install --with-deps "${{ matrix.browser }}"
-          fi
+      - name: Install Chromium
+        run: npx playwright install chromium --with-deps --only-shell
 
-      - name: Run ${{ matrix.browser }} smoke tests
-        run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=${{ matrix.browser }}-smoke
+      - name: Run chromium smoke tests
+        run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=chromium-smoke
+
+  cross_browser_firefox:
+    needs:
+      - classify
+      - browser_site
+    if: needs.classify.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+    env:
+      PW_PREBUILT_SITE: '1'
+      HOME: /root
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install project dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Download prebuilt browser-test site
+        uses: actions/download-artifact@v4
+        with:
+          name: feature-browser-site
+          path: _site
+
+      - name: Verify pinned Playwright runtime
+        run: |
+          node --version
+          npx playwright --version
+          test "$PLAYWRIGHT_BROWSERS_PATH" = "/ms-playwright"
+          test "$HOME" = "/root"
+
+      - name: Run firefox smoke tests
+        run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=firefox-smoke
 
   cross_browser_webkit:
     needs:
@@ -406,6 +431,7 @@ jobs:
       - catalog_audit
       - catalog_contract
       - cross_browser
+      - cross_browser_firefox
       - cross_browser_webkit
     runs-on: ubuntu-latest
     steps:
@@ -419,10 +445,11 @@ jobs:
           CATALOG_AUDIT: ${{ needs.catalog_audit.result }}
           CATALOG_CONTRACT: ${{ needs.catalog_contract.result }}
           CROSS_BROWSER: ${{ needs.cross_browser.result }}
+          CROSS_BROWSER_FIREFOX: ${{ needs.cross_browser_firefox.result }}
           CROSS_BROWSER_WEBKIT: ${{ needs.cross_browser_webkit.result }}
         run: |
           set -euo pipefail
-          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE" "$CATALOG_AUDIT" "$CATALOG_CONTRACT" "$CROSS_BROWSER" "$CROSS_BROWSER_WEBKIT"; do
+          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE" "$CATALOG_AUDIT" "$CATALOG_CONTRACT" "$CROSS_BROWSER" "$CROSS_BROWSER_FIREFOX" "$CROSS_BROWSER_WEBKIT"; do
             if [[ "$result" != "success" && "$result" != "skipped" ]]; then
               echo "A required CI partition ended as: $result"
               exit 1

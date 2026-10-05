@@ -115,13 +115,15 @@
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: .4rem;
-  flex: 0 0 auto;
+  flex: 0 0 13rem;
+  min-width: 13rem;
   min-height: 1.9rem;
   padding: .28rem .55rem;
   border: 1px solid #bdd1a5;
-  border-radius: 999px;
-  background: rgba(247, 250, 242, .9);
+  border-radius: 7px;
+  background: rgba(247, 250, 242, .92);
   color: #627058;
   font: 600 .75rem/1.2 var(--rm-font);
   white-space: nowrap;
@@ -166,6 +168,25 @@
 }
 @media (min-width: 621px) {
   .remaked-modern { --rm-control-height: 2.25rem; --rm-header-control-height: 2.25rem; }
-  .remaked-modern [data-remaked-language-panel] button { min-width: 2.1rem; min-height: 1.875rem; }
-  .remaked-modern .remaked-install-button { padding-inline: .6rem; }
+  .remaked-modern [data-remaked-language-panel] {
+    flex: 0 0 auto;
+  }
+  .remaked-modern [data-remaked-language-panel] button {
+    width: 2.1rem;
+    min-width: 2.1rem;
+    min-height: 1.875rem;
+  }
+  .remaked-modern .remaked-install-button {
+    width: 10.25rem;
+    min-width: 10.25rem;
+    padding-inline: .6rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 860px) {
+  .remaked-modern .remaked-autosave {
+    flex-basis: auto;
+    min-width: 0;
+  }
 }
