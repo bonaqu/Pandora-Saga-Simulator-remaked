@@ -350,6 +350,8 @@
     select.replaceChildren(fragment);
     if (categories.indexOf(previous) !== -1) select.value = previous;
     select.hidden = categories.length < 2;
+    var controls = select.closest('.remaked-picker-controls');
+    if (controls) controls.classList.toggle('remaked-picker-controls-single', select.hidden);
     select.setAttribute('aria-label', localeText('Фильтр по типу', 'Filter by type'));
     return select.value;
   }
@@ -519,6 +521,8 @@
       typeFilter = element('select', 'remaked-search-select remaked-picker-type-filter');
       typeFilter.dataset.remakedPickerTypeFilter = '';
       pickerControls.appendChild(typeFilter);
+    } else {
+      pickerControls.classList.add('remaked-picker-controls-single');
     }
     pickerControls.appendChild(field('search.name', 'Name', query));
     shell.body.appendChild(pickerControls);
