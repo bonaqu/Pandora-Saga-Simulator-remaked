@@ -46,6 +46,28 @@ class BuildPagesTests(unittest.TestCase):
         root.mkdir()
         (root / "index.html").write_text(LEGACY_HTML, encoding="utf-8")
         (root / "readme.txt").write_text("readme", encoding="utf-8")
+        (root / "CHANGELOG.md").write_text(
+            """# Changelog
+
+All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
+
+## Modern 3.11 — fixture release, 2026-10-05
+
+<!-- release-notes:ru -->
+### Кратко
+- Проверка русского release note.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Highlights
+- Fixture English release note.
+<!-- /release-notes:en -->
+
+## Modern 3.10 — older fixture, 2026-10-04
+- Older entry.
+""",
+            encoding="utf-8",
+        )
         for dirname in ("css", "js", "image"):
             (root / dirname).mkdir()
             (root / dirname / "fixture.txt").write_text(dirname, encoding="utf-8")
@@ -177,6 +199,7 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/favicon.svg",
                 "modern/manifest.webmanifest",
                 "modern/version.js",
+                "modern/release-notes.js",
                 "modern/locales.js",
                 "modern/game-terms.js",
                 "modern/i18n.js",
@@ -198,7 +221,8 @@ class BuildPagesTests(unittest.TestCase):
                 "modern/pwa.js",
             ):
                 self.assertEqual(html.count(relative), 1, relative)
-            self.assertLess(html.index("modern/version.js"), html.index("modern/locales.js"))
+            self.assertLess(html.index("modern/version.js"), html.index("modern/release-notes.js"))
+            self.assertLess(html.index("modern/release-notes.js"), html.index("modern/locales.js"))
             self.assertLess(html.index("modern/locales.js"), html.index("modern/game-terms.js"))
             self.assertLess(html.index("modern/game-terms.js"), html.index("modern/i18n.js"))
             self.assertLess(html.index("modern/i18n.js"), html.index("modern/adapter.js"))
@@ -226,6 +250,12 @@ class BuildPagesTests(unittest.TestCase):
                 html,
             )
             self.assertIn('data-legacy-url="./legacy/"', html)
+            version_js = (output / "modern" / "version.js").read_text(encoding="utf-8")
+            release_js = (output / "modern" / "release-notes.js").read_text(encoding="utf-8")
+            self.assertIn('"ui":"3.11"', version_js)
+            self.assertIn('"version":"3.11"', release_js)
+            self.assertIn("Fixture English release note.", release_js)
+            self.assertIn("Проверка русского release note.", release_js)
             legacy = (output / "legacy" / "index.html").read_text(encoding="utf-8")
             self.assertIn("   0 // [ 0]", legacy)
             for relative in (
