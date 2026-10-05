@@ -10,10 +10,10 @@
   document.addEventListener('keydown', function () { keyboardInput = true; }, true);
   document.addEventListener('pointerdown', function () { keyboardInput = false; }, true);
 
-  function cancelPreviews(keepInline, keepKeyboardRequest) {
+  function cancelPreviews(keepInline, keepKeyboardRequest, resumeHover) {
     if (!active) return;
     active.hoverPausedUntil = Date.now() + 450;
-    active.cancelPreviews.forEach(function (cancel) { cancel(keepInline === true, keepKeyboardRequest === true); });
+    active.cancelPreviews.forEach(function (cancel) { cancel(keepInline === true, keepKeyboardRequest === true, resumeHover === true); });
   }
 
   function t(key, values, fallback) {
@@ -156,7 +156,7 @@
     });
     panel.addEventListener('scroll', function (event) {
       if (event.target.closest && event.target.closest('.remaked-item-description')) return;
-      cancelPreviews(true, true);
+      cancelPreviews(true, true, true);
     }, true);
     panel.addEventListener('wheel', function (event) {
       if (!event.target.closest('.remaked-item-description')) cancelPreviews(true);
@@ -350,9 +350,9 @@
       description.style.left = Math.max(12, Math.min(left, innerWidth - width - 12)) + 'px';
       description.style.top = Math.max(12, Math.min(rect.top, innerHeight - description.getBoundingClientRect().height - 12)) + 'px';
     }
-    if (active) active.cancelPreviews.push(function (keepInline, keepKeyboardRequest) {
+    if (active) active.cancelPreviews.push(function (keepInline, keepKeyboardRequest, resumeHover) {
       cancelHover();
-      if (hoveringButton) scheduleHoverPreview(Math.max(16, active.hoverPausedUntil - Date.now() + 16));
+      if (resumeHover && hoveringButton) scheduleHoverPreview(Math.max(16, active.hoverPausedUntil - Date.now() + 16));
       if (!keepKeyboardRequest) cancelFocusPreview();
       // Focus-driven scrolling is asynchronous in WebKit and can arrive after
       // any fixed number of frames. Keep the active keyboard card, reposition
