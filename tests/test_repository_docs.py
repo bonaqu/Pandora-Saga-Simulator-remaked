@@ -154,6 +154,18 @@ class RepositoryDocsTests(unittest.TestCase):
         self.assertIn("translations.xlsx", architecture)
         self.assertIn("translations.xlsx", deployment)
 
+    def test_header_uses_single_dynamic_two_part_version_badge(self):
+        shell = self.read("modern/app-shell.js")
+        styles = self.read("modern/modern.css")
+
+        self.assertIn("'REMAKED UI ' + version.ui", shell)
+        self.assertIn("'Legacy Engine ' + version.legacyEngine", shell)
+        self.assertIn("versionBadge.dataset.remakedVersionBadge", shell)
+        self.assertNotIn("dataset.remakedVersion =", shell)
+        self.assertNotIn("REMAKED UI 3.11", shell)
+        self.assertIn(".remaked-version-badge-ui", styles)
+        self.assertIn(".remaked-version-badge-legacy", styles)
+
 
 if __name__ == "__main__":
     unittest.main()

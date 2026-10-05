@@ -144,12 +144,6 @@ body.remaked-modern {
   box-shadow: 0 1px 4px rgba(63, 106, 31, 0.25);
 }
 
-.remaked-version {
-  color: #7b846f;
-  font-size: 9px;
-  white-space: nowrap;
-}
-
 .remaked-hero {
   box-sizing: border-box;
   position: relative;
@@ -211,23 +205,51 @@ body.remaked-modern {
 .remaked-hero-meta {
   display: flex;
   align-items: center;
-  gap: 8px;
   margin-top: 11px;
   color: #68745e;
   font-size: 10px;
   font-weight: 700;
 }
 
-.remaked-hero-badge {
-  padding: 4px 8px;
-  border: 1px solid #91b36a;
+.remaked-version-badge {
+  display: inline-flex;
+  align-items: stretch;
+  overflow: hidden;
+  max-width: 100%;
+  border: 1px solid rgba(126, 148, 98, .72);
   border-radius: 999px;
-  background: rgba(102,155,54,.12);
-  color: #466f27;
+  background: rgba(244, 247, 236, .96);
+  box-shadow:
+    0 2px 7px rgba(54, 75, 38, .10),
+    inset 0 1px 0 rgba(255, 255, 255, .72);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.remaked-version-badge-ui,
+.remaked-version-badge-legacy {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  padding: 5px 9px;
+}
+
+.remaked-version-badge-ui {
+  background: linear-gradient(180deg, #79aa48 0%, #5f9132 100%);
+  color: #fff;
   font-size: 9px;
-  font-weight: 850;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: .055em;
+  text-shadow: 0 1px 1px rgba(39, 72, 20, .24);
+}
+
+.remaked-version-badge-legacy {
+  border-left: 1px solid rgba(114, 126, 89, .28);
+  background: linear-gradient(180deg, rgba(250, 248, 239, .98), rgba(237, 240, 228, .98));
+  color: #626c58;
+  font-size: 9px;
+  font-weight: 760;
+  letter-spacing: .015em;
 }
 
 .remaked-hero p {
