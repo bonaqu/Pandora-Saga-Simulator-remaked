@@ -42,7 +42,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - The header version display was consolidated into a single split badge sourced entirely from `PandoraRemakedVersion`; the redundant top-right version label was removed. A lightweight source-level test guards the dynamic wiring without adding browser-suite runtime.
 - Follow-up header polish keeps the same structure and version wiring while softening the Legacy segment, styling autosave as a status chip, tightening desktop language/install controls and removing the temporary artwork caption.
 - A second header follow-up removes locale-switch layout jitter by using stable desktop tracks for utility links, install/language controls, Modern tabs and Builds/Compare, plus a fixed desktop autosave status track. The status chip returns to the site's normal 7px radius; the Legacy badge label is uppercase and the badge is lowered by 2px.
-- Firefox smoke validation now mirrors the pinned-container approach already used for WebKit, avoiding a repeated browser download that could consume the entire 10-minute CI job timeout before tests even started.
+- Firefox smoke validation now mirrors the pinned-container approach already used for WebKit, with the container home fixed explicitly for Firefox. This avoids both the repeated browser download that could consume the 10-minute timeout and the container launch failure caused by a mismatched HOME owner.
 
 ## Modern 3.10 — conditional active-skill profiles, candidate
 
