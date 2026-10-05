@@ -30,9 +30,8 @@ for (const width of [1440, 1920]) test(`Hybrid workbench has distinct, aligned s
   const reset = await page.locator('[data-remaked-equipment-reset]').boundingBox();
   const section = await page.locator('[data-remaked-picker-section]').boundingBox();
   expect(section.x + section.width - reset.x - reset.width, JSON.stringify(toolbar)).toBeLessThanOrEqual(8);
-  await expect(page.locator('[data-remaked-tools]')).toHaveCount(1);
-  await expect(page.locator('[data-remaked-picker-section] [data-remaked-equipment-search]')).toHaveCount(1);
-  const heights = await page.evaluate(() => [...document.querySelectorAll('[data-remaked-equipment-search], [data-remaked-soul-search], [data-remaked-equipment-reset], #SelGem select')].map(node => node.getBoundingClientRect().height));
+  await expect(page.locator('[data-remaked-tools]')).toHaveCount(0);
+  const heights = await page.evaluate(() => [...document.querySelectorAll('[data-remaked-equipment-reset], #SelGem select')].map(node => node.getBoundingClientRect().height));
   expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(1);
   // A result is text, not a lookalike input. Keep every original output/ID.
   await expect(page.locator('#StatusView [data-remaked-calculator-pair]').first()).toHaveCSS('border-top-width', '0px');
@@ -76,26 +75,20 @@ test('compact composition retains phone-size input and equipment targets across 
   await expect(page.locator('[data-remaked-workbench-title]')).toHaveCount(0);
 });
 
-test('discovery returns above the calculator on phones without cloning controls or losing their actions', async ({ page }) => {
+test('Equipment search stays on slot pickers across viewport changes without duplicate discovery controls', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 }); await page.goto('/');
-  const before = await page.evaluate(() => {
-    window.discoveryNodes = [...document.querySelectorAll('[data-remaked-tools] button')]; return Store();
-  });
+  const before = await page.evaluate(() => Store());
   for (const width of [390, 1440, 320, 1920, 390]) {
     await page.setViewportSize({ width, height: 900 });
-    await expect.poll(() => page.evaluate(() => !!document.querySelector('[data-remaked-tools]').closest('[data-remaked-picker-section]'))).toBe(width >= 861);
-    await expect(page.locator('[data-remaked-tools]')).toHaveCount(1);
-    expect(await page.evaluate(() => discoveryNodes.every((node, index) => node === document.querySelectorAll('[data-remaked-tools] button')[index]))).toBe(true);
-    if (width < 861) {
-      const tools = await page.locator('[data-remaked-tools]').boundingBox();
-      const character = await page.locator('[data-remaked-calculator-character]').boundingBox();
-      expect(tools.y + tools.height).toBeLessThanOrEqual(character.y);
-      await expect(page.locator('#Title')).toBeHidden();
-    }
+    await expect(page.locator('[data-remaked-tools]')).toHaveCount(0);
+    await expect(page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]')).toBeVisible();
+    if (width < 861) await expect(page.locator('#Title')).toBeHidden();
   }
-  await page.locator('[data-remaked-equipment-search]').click();
+  const opener = page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]');
+  await opener.focus();
+  await opener.press('Enter');
   await expect(page.locator('[data-remaked-search-panel]')).toBeVisible();
   await page.keyboard.press('Escape');
-  await expect(page.locator('[data-remaked-equipment-search]')).toBeFocused();
+  await expect(opener).toBeFocused();
   expect(await page.evaluate(() => Store())).toBe(before);
 });
