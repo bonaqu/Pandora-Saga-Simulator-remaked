@@ -181,10 +181,9 @@ jobs:
       - name: Install browser test dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Install Chromium for production smoke
-        run: npx playwright install --with-deps chromium
-
-      - name: Run lightweight production smoke gate
+      - name: Run lightweight production smoke gate with runner Chrome
+        env:
+          PW_USE_SYSTEM_CHROME: '1'
         run: >
           npx playwright test
           tests/ui/modern-foundation.spec.mjs
@@ -192,9 +191,9 @@ jobs:
           --grep
           "Modern shell exposes meaningful navigation and defaults to English|Modern and Legacy routes load without missing local assets"
 
-      - name: Install remaining browsers for fallback validation
+      - name: Install bundled browsers for fallback validation
         if: steps.gate.outputs.full_validation == 'true'
-        run: npx playwright install --with-deps firefox webkit
+        run: npx playwright install --with-deps chromium firefox webkit
 
       - name: Run complete desktop workspace contract on untrusted push
         if: steps.gate.outputs.full_validation == 'true'
