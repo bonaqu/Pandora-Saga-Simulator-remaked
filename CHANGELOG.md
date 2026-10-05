@@ -27,6 +27,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Type grouping is presentation-only and is derived from the existing Legacy `+-----` category placeholders. Placeholder rows are not reinterpreted as equipment and the underlying option IDs, compatibility list, selection callbacks and calculation engine remain unchanged.
 - Empty-state reset only clears Modern search/type/level filters and rerenders the current adapter options; it does not mutate the character.
 - Existing native-button keyboard semantics remain in place for Enter, while the already-present arrow navigation is covered by browser tests and picker Escape is captured before preview disclosure handling.
+- Generated read-only data projections now receive their `remaked_ui` metadata from the same top CHANGELOG release during Pages build, so moving from 3.11 to 3.12 cannot leave projection metadata on the previous UI version.
 
 ## Modern 3.11 — automatic updates, cleaner Equipment and faster delivery, 2026-10-05
 
