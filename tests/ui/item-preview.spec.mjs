@@ -49,7 +49,7 @@ test('slot rings match source counts and equipped upgrades do not leak into anot
 test('equipment hover and keyboard preview expose Legacy descriptions without equipping', async ({ page }) => {
   await page.goto('/');
   const before = await page.evaluate(() => ({ code: window.Store(), data: JSON.stringify(window.EquipData) }));
-  await page.locator('[data-remaked-equipment-search]').click();
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
   const fixture = await page.evaluate(() => {
     for (const option of PandoraRemaked.adapter.listEquipmentOptions(0)) {
       const id = Number(option.value);
