@@ -133,6 +133,20 @@ test('service-worker registration bypasses HTTP cache and checks again when requ
   expect(result.updates).toBe(1);
 });
 
+test('runtime does not duplicate activation when fresh HTML bootstrap owns the update', async ({ page }) => {
+  await openModern(page);
+  const calls = await page.evaluate(() => {
+    window.__pandoraPwaBootstrapUpdating = true;
+    window.__bootstrapPostCalls = 0;
+    window.PandoraRemaked.pwa.showUpdateNotice({
+      postMessage() { window.__bootstrapPostCalls += 1; }
+    });
+    document.querySelector('[data-remaked-update-reload]').click();
+    return window.__bootstrapPostCalls;
+  });
+  expect(calls).toBe(0);
+});
+
 test('service-worker registration failure leaves the calculator usable', async ({ page }) => {
   await openModern(page);
   const result = await page.evaluate(async () => {
