@@ -137,8 +137,6 @@ jobs:
     if: needs.classify.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      PW_USE_SYSTEM_CHROME: '1'
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -151,6 +149,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
 
 
       - name: Run complete desktop workspace contract
@@ -188,8 +189,6 @@ jobs:
     if: needs.classify.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      PW_USE_SYSTEM_CHROME: '1'
     strategy:
       fail-fast: false
       matrix:
@@ -206,6 +205,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
 
 
       - name: Run browser contract shard ${{ matrix.shard }}/3
@@ -237,7 +239,6 @@ jobs:
         shard: [1, 2]
     env:
       PW_FULLY_PARALLEL: '1'
-      PW_USE_SYSTEM_CHROME: '1'
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -251,6 +252,9 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
 
       - name: Audit source catalog shard ${{ matrix.shard }}/2
         run: npm run test:ui:catalog-audit -- --shard=${{ matrix.shard }}/2
@@ -260,8 +264,6 @@ jobs:
     if: needs.classify.outputs.full_required == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      PW_USE_SYSTEM_CHROME: '1'
     strategy:
       fail-fast: false
       matrix:
@@ -278,6 +280,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
 
 
       - name: Verify versioned catalog calculations shard ${{ matrix.shard }}/2
