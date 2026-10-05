@@ -422,6 +422,9 @@
   align-items: end;
   gap: 6px;
 }
+.remaked-picker-controls.remaked-picker-controls-single {
+  grid-template-columns: minmax(0, 1fr);
+}
 .remaked-picker-type-filter {
   width: auto;
   min-width: 118px;

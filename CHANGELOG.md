@@ -11,6 +11,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - В выпадающем Equipment picker нативные разделители типов оружия и экипировки теперь отображаются как явные визуальные заголовки групп; для списков с несколькими типами появился компактный фильтр `Все типы`.
 - Keyboard UX picker проверен и закреплён: стрелки переходят между результатами, Enter выбирает сфокусированный предмет, а Escape одним нажатием закрывает picker даже при открытом preview.
 
+- Исправлена ширина поля поиска в picker: если для текущего слота нет фильтра по типу, поиск теперь занимает всю доступную ширину вместо укороченной колонки.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
@@ -20,6 +21,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Equipment picker now renders the Legacy weapon/equipment type separators as clear visual group headings, with a compact `All types` filter when more than one type is available.
 - Picker keyboard UX is explicitly preserved and covered: arrows move between results, Enter selects the focused item, and a single Escape closes the picker even when an item preview is open.
 
+- Fixed picker search width: when the current slot has no type filter, the search field now uses the full available width instead of staying in a shortened grid column.
 <!-- /release-notes:en -->
 
 ### Project and delivery details
@@ -28,6 +30,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Empty-state reset only clears Modern search/type/level filters and rerenders the current adapter options; it does not mutate the character.
 - Existing native-button keyboard semantics remain in place for Enter, while the already-present arrow navigation is covered by browser tests and picker Escape is captured before preview disclosure handling.
 - Generated read-only data projections now receive their `remaked_ui` metadata from the same top CHANGELOG release during Pages build, so moving from 3.11 to 3.12 cannot leave projection metadata on the previous UI version.
+- Picker controls now switch to a single-column grid whenever the type selector is hidden or absent, so Equipment and Soul pickers do not reserve empty space for a non-existent filter.
 
 ## Modern 3.11 — automatic updates, cleaner Equipment and faster delivery, 2026-10-05
 
