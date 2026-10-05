@@ -264,7 +264,9 @@
   display: grid;
   grid-column: 1 / -1;
   min-height: 110px;
-  place-items: center;
+  place-content: center;
+  justify-items: center;
+  gap: 7px;
   padding: 20px;
   border: 1px dashed #c5d3b3;
   border-radius: 10px;
@@ -273,6 +275,26 @@
   font-size: 11px;
   font-weight: 650;
   text-align: center;
+}
+
+.remaked-search-empty-reset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #4e752f;
+  font: inherit;
+  font-weight: 750;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.remaked-search-empty-reset:hover,
+.remaked-search-empty-reset:focus-visible {
+  color: #35591e;
+  outline: none;
+  text-decoration-thickness: 2px;
 }
 
 @media (max-width: 700px) {
@@ -394,7 +416,34 @@
 .remaked-equipment-picker:focus-visible,
 .remaked-search-result:focus-visible,
 .remaked-item-preview summary:focus-visible { outline: 2px solid #35591e; outline-offset: 2px; }
-.remaked-picker-results { grid-template-columns: 1fr; margin-top: 12px; overscroll-behavior: contain; }
+.remaked-picker-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 6px;
+}
+.remaked-picker-type-filter {
+  width: auto;
+  min-width: 118px;
+  max-width: 168px;
+}
+.remaked-picker-type-filter[hidden] { display: none; }
+.remaked-picker-summary { margin-top: 7px; }
+.remaked-picker-results { grid-template-columns: 1fr; margin-top: 0; overscroll-behavior: contain; }
+.remaked-picker-group {
+  position: sticky;
+  top: -2px;
+  z-index: 2;
+  margin: 4px 0 0;
+  padding: 5px 9px;
+  border-block: 1px solid #c7d5b5;
+  background: linear-gradient(180deg, #eef5e5 0%, #e5efda 100%);
+  color: #536a42;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .025em;
+}
+.remaked-picker-group:first-child { margin-top: 0; }
 .remaked-picker-results .remaked-search-row { position: relative; }
 .remaked-picker-results .remaked-search-result { width: calc(100% - 48px); position: relative; padding-left: 28px; }
 .remaked-picker-results .remaked-search-result:only-child { width: 100%; }
@@ -405,6 +454,10 @@
 .remaked-picker-results .remaked-search-result[data-selected="true"] { border-color: #598832; background: #e4f1d6; }
 .remaked-picker-results .remaked-search-result[data-selected="true"]::before { content: '✓'; position: absolute; left: 10px; }
 @media (max-width: 700px) { .remaked-equipment-picker { min-height: 44px; } }
+@media (max-width: 420px) {
+  .remaked-picker-controls { grid-template-columns: 1fr; }
+  .remaked-picker-type-filter { width: 100%; max-width: none; }
+}
 .remaked-equipment-dropdown {
   position: fixed; inset: auto; margin: 0; padding: 0; border: 0;
   max-width: calc(100vw - 16px); background: transparent; overflow: visible;
