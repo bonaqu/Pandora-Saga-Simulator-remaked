@@ -171,12 +171,16 @@ jobs:
           npm run test:ui:desktop -- --project=chromium --reporter=json > .ci-artifacts/workspace-report.json
 
       - name: Verify deterministic Legacy terminology export
+        env:
+          PW_USE_SYSTEM_CHROME: '1'
         run: npm run test:translations
 
       - name: Verify pure current skill reference reconciliation
         run: npm run test:source-audit
 
       - name: Verify deterministic structured data projections
+        env:
+          PW_USE_SYSTEM_CHROME: '1'
         run: npm run test:data
 
       - name: Capture desktop and mobile visual QA
