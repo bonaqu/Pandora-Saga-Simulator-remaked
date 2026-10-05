@@ -1880,7 +1880,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   margin: 0 !important;
   padding: 0 !important;
   border: 0;
-  background: transparent;
+  background: rgba(255,255,255,0.6);
   box-shadow: none;
   line-height: 1;
 }
