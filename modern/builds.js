@@ -819,8 +819,11 @@
     else autosaveStatus.textContent = 'Autosave…';
     statusHost.appendChild(autosaveStatus);
     window.addEventListener('pandora-remaked:localechange', function () {
-      if (autosaveStatus && autosaveStatus.dataset.state === 'ready') {
+      if (!autosaveStatus) return;
+      if (autosaveStatus.dataset.state === 'ready') {
         autosaveStatus.textContent = autosaveEnabledLabel();
+      } else if (autosaveStatus.dataset.state === 'restored') {
+        autosaveStatus.textContent = t('builds.autosaveRestored', null, 'Restored autosave');
       }
     });
   }
