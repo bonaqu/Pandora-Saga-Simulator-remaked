@@ -10,10 +10,10 @@
   document.addEventListener('keydown', function () { keyboardInput = true; }, true);
   document.addEventListener('pointerdown', function () { keyboardInput = false; }, true);
 
-  function cancelPreviews(keepInline, keepKeyboardRequest) {
+  function cancelPreviews(keepInline, keepKeyboardRequest, resumeHover) {
     if (!active) return;
     active.hoverPausedUntil = Date.now() + 450;
-    active.cancelPreviews.forEach(function (cancel) { cancel(keepInline === true, keepKeyboardRequest === true); });
+    active.cancelPreviews.forEach(function (cancel) { cancel(keepInline === true, keepKeyboardRequest === true, resumeHover === true); });
   }
 
   function t(key, values, fallback) {
@@ -141,10 +141,13 @@
     });
 
     var returnFocus = trigger && typeof trigger.focus === 'function' ? trigger : document.activeElement;
-    active = { backdrop: backdrop, panel: panel, returnFocus: returnFocus, dropdown: dropdown, cancelPreviews: [], hoverPausedUntil: 0 };
+    active = { backdrop: backdrop, panel: panel, returnFocus: returnFocus, dropdown: dropdown, cancelPreviews: [], hoverPausedUntil: 0, manualScrollUntil: 0 };
     backdrop.addEventListener('cancel', function (event) { event.preventDefault(); closePanel(); });
     panel.addEventListener('keydown', function (event) {
-      if (event.key === 'PageDown' || event.key === 'PageUp') cancelPreviews(true);
+      if (event.key === 'PageDown' || event.key === 'PageUp') {
+        active.manualScrollUntil = Date.now() + 600;
+        cancelPreviews(true);
+      }
       // Chromium/Firefox otherwise consume Escape to clear a type=search input
       // before the native dialog can cancel. Keep the established one-key close.
       if (event.key === 'Escape') {
@@ -156,16 +159,26 @@
     });
     panel.addEventListener('scroll', function (event) {
       if (event.target.closest && event.target.closest('.remaked-item-description')) return;
-      cancelPreviews(true, true);
+      var manualScroll = Date.now() < active.manualScrollUntil;
+      if (manualScroll) active.manualScrollUntil = Date.now() + 600;
+      cancelPreviews(true, true, !manualScroll);
     }, true);
     panel.addEventListener('wheel', function (event) {
-      if (!event.target.closest('.remaked-item-description')) cancelPreviews(true);
+      if (event.target.closest('.remaked-item-description')) return;
+      active.manualScrollUntil = Date.now() + 600;
+      cancelPreviews(true);
     }, { passive: true });
-    panel.addEventListener('touchstart', function () { cancelPreviews(true); }, { passive: true });
+    panel.addEventListener('touchstart', function () {
+      active.manualScrollUntil = Date.now() + 600;
+      cancelPreviews(true);
+    }, { passive: true });
     panel.addEventListener('pointerdown', function (event) {
       // Scrollbar/empty-list presses are manual scrolling intent. Selection
       // and disclosure actions handle their own state; do not toggle twice.
-      if (!event.target.closest('button, summary, .remaked-item-description')) cancelPreviews(true);
+      if (!event.target.closest('button, summary, .remaked-item-description')) {
+        active.manualScrollUntil = Date.now() + 600;
+        cancelPreviews(true);
+      }
     });
     if (dropdown) {
       returnFocus.setAttribute('aria-expanded', 'true');
@@ -323,10 +336,26 @@
     details.appendChild(description); row.appendChild(details);
     var pinned = false;
     var hoverTimer = null;
+    var hoveringButton = false;
     var focusFrame = null;
     function cancelHover() { window.clearTimeout(hoverTimer); hoverTimer = null; }
     function cancelFocusPreview() { window.cancelAnimationFrame(focusFrame); focusFrame = null; }
     var floating = window.matchMedia('(min-width: 701px) and (hover: hover)').matches && typeof description.showPopover === 'function';
+    function scheduleHoverPreview(delay) {
+      cancelHover();
+      if (!hoveringButton || !active) return;
+      function openWhenSettled() {
+        hoverTimer = null;
+        if (!hoveringButton || !row.isConnected || !button.matches(':hover') || !active) return;
+        var remainingPause = active.hoverPausedUntil - Date.now();
+        if (remainingPause > 0) {
+          hoverTimer = window.setTimeout(openWhenSettled, remainingPause + 16);
+          return;
+        }
+        details.open = true;
+      }
+      hoverTimer = window.setTimeout(openWhenSettled, Math.max(0, delay || 0));
+    }
     function positionDescription() {
       var rect = row.getBoundingClientRect(), width = description.getBoundingClientRect().width;
       var left = rect.right + 8;
@@ -334,8 +363,9 @@
       description.style.left = Math.max(12, Math.min(left, innerWidth - width - 12)) + 'px';
       description.style.top = Math.max(12, Math.min(rect.top, innerHeight - description.getBoundingClientRect().height - 12)) + 'px';
     }
-    if (active) active.cancelPreviews.push(function (keepInline, keepKeyboardRequest) {
+    if (active) active.cancelPreviews.push(function (keepInline, keepKeyboardRequest, resumeHover) {
       cancelHover();
+      if (resumeHover && hoveringButton) scheduleHoverPreview(Math.max(16, active.hoverPausedUntil - Date.now() + 16));
       if (!keepKeyboardRequest) cancelFocusPreview();
       // Focus-driven scrolling is asynchronous in WebKit and can arrive after
       // any fixed number of frames. Keep the active keyboard card, reposition
@@ -365,15 +395,15 @@
       if (details.open && !pinned) { event.preventDefault(); pinned = true; }
       else pinned = !details.open;
     });
-    button.addEventListener('mouseenter', function () {
-      cancelHover();
-      if (!window.matchMedia('(min-width: 701px) and (hover: hover)').matches || !active) return;
-      hoverTimer = window.setTimeout(function () {
-        hoverTimer = null;
-        if (row.isConnected && button.matches(':hover') && active && Date.now() >= active.hoverPausedUntil) details.open = true;
-      }, 450);
+    button.addEventListener('pointerenter', function (event) {
+      hoveringButton = event.pointerType === 'mouse';
+      if (!hoveringButton || !active) return;
+      scheduleHoverPreview(450);
     });
-    button.addEventListener('pointerdown', cancelHover);
+    button.addEventListener('pointerdown', function () {
+      hoveringButton = false;
+      cancelHover();
+    });
     button.addEventListener('focus', function () {
       if (!keyboardInput || !button.matches(':focus-visible')) return;
       cancelFocusPreview();
@@ -389,6 +419,7 @@
     });
     button.addEventListener('blur', cancelFocusPreview);
     row.addEventListener('mouseleave', function () {
+      hoveringButton = false;
       cancelHover();
       window.setTimeout(function () {
         if (!pinned && !(keyboardInput && row.contains(document.activeElement)) && !row.matches(':hover') && !description.matches(':hover')) details.open = false;

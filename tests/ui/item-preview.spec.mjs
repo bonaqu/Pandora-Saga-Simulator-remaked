@@ -57,7 +57,7 @@ test('equipment hover and keyboard preview expose Legacy descriptions without eq
       const source = EquipData[1][Math.floor(id / 10000)][id % 10000];
       const node = document.createElement('div'); node.innerHTML = source[1];
       const expected = node.textContent.trim();
-      if (expected) return { value: option.value, expected };
+      if (expected) return { value: option.value, name: option.name, expected };
     }
     throw new Error('No compatible item with a nonempty Legacy description');
   });
@@ -67,10 +67,14 @@ test('equipment hover and keyboard preview expose Legacy descriptions without eq
   await expect(row.locator('details')).toHaveAttribute('open', '');
   await expect(row.locator('[data-remaked-item-description]')).toContainText(fixture.expected);
   await row.locator('[data-remaked-item-description]').hover();
-  await page.locator('[data-remaked-search-query]').hover();
+  const query = page.locator('[data-remaked-search-query]');
+  await query.hover();
   await expect(row.locator('details')).not.toHaveAttribute('open', '');
+  await query.fill(fixture.name);
+  await expect(page.locator('[data-remaked-search-result]')).toHaveCount(1);
+  await query.focus();
   await page.keyboard.press('Tab');
-  await row.locator('[data-remaked-search-result]').focus();
+  await expect(row.locator('[data-remaked-search-result]')).toBeFocused();
   await expect(row.locator('details')).toHaveAttribute('open', '');
   await page.keyboard.press('Escape');
   await expect(row.locator('details')).not.toHaveAttribute('open', '');

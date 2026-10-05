@@ -80,6 +80,24 @@ jobs:
           printf ' - %s\n' "${files[@]}"
           echo "docs_only=$docs_only css_only=$css_only full_required=$full_required"
 
+  browser_site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Build browser-test site once
+        run: python3 scripts/build_pages.py --output _site
+
+      - name: Upload browser-test site
+        uses: actions/upload-artifact@v4
+        with:
+          name: feature-browser-site
+          path: _site
+          if-no-files-found: error
+          retention-days: 1
+
   static:
     needs: classify
     runs-on: ubuntu-latest
@@ -114,6 +132,16 @@ jobs:
             node --check "$file"
           done
 
+      - name: Install admin test dependencies
+        if: needs.classify.outputs.full_required == 'true'
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify admin editor with synthetic sessions only
+        if: needs.classify.outputs.full_required == 'true'
+        env:
+          PW_USE_SYSTEM_CHROME: '1'
+        run: npm run test:ui:admin
+
   workspace_visual:
     needs: classify
     if: needs.classify.outputs.docs_only != 'true'
@@ -134,6 +162,7 @@ jobs:
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+
 
       - name: Run complete desktop workspace contract
         id: workspace
@@ -190,6 +219,7 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
+
       - name: Run browser contract shard ${{ matrix.shard }}/3
         id: browser
         shell: bash
@@ -219,6 +249,7 @@ jobs:
         shard: [1, 2]
     env:
       PW_FULLY_PARALLEL: '1'
+      PW_USE_SYSTEM_CHROME: '1'
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -232,41 +263,17 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
 
       - name: Audit source catalog shard ${{ matrix.shard }}/2
         run: npm run test:ui:catalog-audit -- --shard=${{ matrix.shard }}/2
-
-  catalog_admin:
-    needs: classify
-    if: needs.classify.outputs.full_required == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci --no-audit --no-fund
-
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-
-      - name: Verify admin editor with synthetic sessions only
-        run: npm run test:ui:admin
 
   catalog_contract:
     needs: classify
     if: needs.classify.outputs.full_required == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      PW_USE_SYSTEM_CHROME: '1'
     strategy:
       fail-fast: false
       matrix:
@@ -284,8 +291,6 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
 
       - name: Verify versioned catalog calculations shard ${{ matrix.shard }}/2
         run: >
@@ -311,7 +316,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [chromium, firefox, webkit]
+        browser: [chromium, firefox]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -331,6 +336,39 @@ jobs:
       - name: Run ${{ matrix.browser }} smoke tests
         run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=${{ matrix.browser }}-smoke
 
+  cross_browser_webkit:
+    needs:
+      - classify
+      - browser_site
+    if: needs.classify.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+    env:
+      PW_PREBUILT_SITE: '1'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install project dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Download prebuilt browser-test site
+        uses: actions/download-artifact@v4
+        with:
+          name: feature-browser-site
+          path: _site
+
+      - name: Verify pinned Playwright runtime
+        run: |
+          node --version
+          npx playwright --version
+          test "$PLAYWRIGHT_BROWSERS_PATH" = "/ms-playwright"
+
+      - name: Run webkit smoke tests
+        run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=webkit-smoke
+
   test:
     if: always()
     needs:
@@ -339,9 +377,9 @@ jobs:
       - workspace_visual
       - browser_core
       - catalog_audit
-      - catalog_admin
       - catalog_contract
       - cross_browser
+      - cross_browser_webkit
     runs-on: ubuntu-latest
     steps:
       - name: Require every applicable CI partition
@@ -352,12 +390,12 @@ jobs:
           WORKSPACE: ${{ needs.workspace_visual.result }}
           CORE: ${{ needs.browser_core.result }}
           CATALOG_AUDIT: ${{ needs.catalog_audit.result }}
-          CATALOG_ADMIN: ${{ needs.catalog_admin.result }}
           CATALOG_CONTRACT: ${{ needs.catalog_contract.result }}
           CROSS_BROWSER: ${{ needs.cross_browser.result }}
+          CROSS_BROWSER_WEBKIT: ${{ needs.cross_browser_webkit.result }}
         run: |
           set -euo pipefail
-          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE" "$CATALOG_AUDIT" "$CATALOG_ADMIN" "$CATALOG_CONTRACT" "$CROSS_BROWSER"; do
+          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE" "$CATALOG_AUDIT" "$CATALOG_CONTRACT" "$CROSS_BROWSER" "$CROSS_BROWSER_WEBKIT"; do
             if [[ "$result" != "success" && "$result" != "skipped" ]]; then
               echo "A required CI partition ended as: $result"
               exit 1
