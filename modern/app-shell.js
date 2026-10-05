@@ -131,10 +131,6 @@
     var subtitle = document.createElement('p');
     localizeText(subtitle, 'hero.subtitle', 'The preserved legacy calculator, wrapped in a cleaner modern interface.');
 
-    var source = document.createElement('span');
-    source.className = 'remaked-hero-source';
-    localizeText(source, 'hero.source', 'Unofficial Pandora Saga fan artwork');
-
     copy.appendChild(eyebrow);
     copy.appendChild(title);
     copy.appendChild(meta);
@@ -150,7 +146,6 @@
     image.loading = 'eager';
     image.decoding = 'async';
     art.appendChild(image);
-    art.appendChild(source);
 
     hero.appendChild(copy);
     hero.appendChild(art);
