@@ -1879,9 +1879,8 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   height: 22px !important;
   margin: 0 !important;
   padding: 0 !important;
-  border: 0;
-  background: rgba(255,255,255,0.6);
-  box-shadow: none;
+  /* Preserve the original input_lt2_2 translucent fill/color; Modern still
+     owns the compact geometry, border reset and vertical centering here. */
   line-height: 1;
 }
 

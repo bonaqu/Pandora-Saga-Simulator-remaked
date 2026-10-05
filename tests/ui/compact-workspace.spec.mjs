@@ -92,7 +92,10 @@ test('compact stat costs, native number fields and riding text stay visually cen
   expect(geometry.sta.width).toBeCloseTo(52, 0);
   expect(geometry.skill.width).toBeCloseTo(52, 0);
   expect(Math.abs(geometry.cost.text.y - geometry.sta.cy)).toBeLessThanOrEqual(1.5);
-  await expect(page.locator('#StatusSTA_4')).toHaveCSS('background-color', 'rgba(255, 255, 255, 0.6)');
+  const statCost = page.locator('#StatusSTA_4');
+  // The original translucent white input_lt2_2 fill composites over the
+  // simulator's green base to this soft gray-green used color.
+  await expect(statCost).toHaveCSS('background-color', 'rgb(231, 255, 213)');
   expect(Math.abs(geometry.horseLabel.text.y - geometry.horseLabel.box.cy)).toBeLessThanOrEqual(1.5);
   expect(Math.abs(geometry.horseValue.text.y - geometry.horseValue.box.cy)).toBeLessThanOrEqual(1.5);
   expect(Math.abs(geometry.horsePercentY - geometry.horseValue.box.cy)).toBeLessThanOrEqual(1.5);
