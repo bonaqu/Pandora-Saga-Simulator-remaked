@@ -189,6 +189,7 @@
 
     var navRow = document.createElement('div');
     navRow.className = 'remaked-nav-row';
+    navRow.dataset.remakedNavRow = '';
     var nav = document.createElement('nav');
     nav.className = 'remaked-nav';
     nav.dataset.remakedNav = '';
