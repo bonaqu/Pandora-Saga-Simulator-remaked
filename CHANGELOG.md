@@ -32,7 +32,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - PR #52/#53 measured Playwright setup instead of blindly caching it: WebKit moved to the pinned `mcr.microsoft.com/playwright:v1.63.0-noble` image, Chromium headless jobs use `--only-shell`, and duplicate trusted-deploy projections were removed. A measured Feature CI run reached about 2m31s and the normal trusted Pages path about one minute of execution.
 - The same work exposed and fixed a real Equipment item-preview scroll/hover race rather than masking it with larger test timeouts.
 - PR #55/#56 fixed stale PWA assets after deploy. Update checks bypass the HTTP cache for the worker script, new workers activate safely, first install is not mistaken for an update in WebKit, and fresh navigation HTML can bridge users still controlled by the pre-fix cached runtime.
-- Public documentation is being reorganized around player help, project status, architecture, history and roadmap. Maintainer-only administrator instructions are removed from the public documentation set and preserved separately for the project owner.
+- Public documentation was reorganized around player help, project status, architecture, history and roadmap. Maintainer-only administrator instructions were removed from the public documentation set and preserved separately for the project owner. Feature CI now rejects user-facing runtime/UI changes that omit a CHANGELOG update.
 
 ## Modern 3.10 — conditional active-skill profiles, candidate
 
