@@ -365,9 +365,9 @@
       if (details.open && !pinned) { event.preventDefault(); pinned = true; }
       else pinned = !details.open;
     });
-    button.addEventListener('mouseenter', function () {
+    button.addEventListener('pointerenter', function (event) {
       cancelHover();
-      if (!window.matchMedia('(min-width: 701px) and (hover: hover)').matches || !active) return;
+      if (event.pointerType !== 'mouse' || !active) return;
       function openAfterHoverPause() {
         hoverTimer = null;
         if (!row.isConnected || !button.matches(':hover') || !active) return;
