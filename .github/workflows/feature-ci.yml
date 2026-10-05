@@ -291,9 +291,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [chromium, firefox, webkit]
+        include:
+          - browser: chromium
+            workers: 2
+            fully_parallel: '1'
+          - browser: firefox
+            workers: 2
+            fully_parallel: '1'
+          - browser: webkit
+            workers: 1
+            fully_parallel: '0'
     env:
-      PW_FULLY_PARALLEL: '1'
+      PW_FULLY_PARALLEL: ${{ matrix.fully_parallel }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -311,7 +320,7 @@ jobs:
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Run ${{ matrix.browser }} smoke tests
-        run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=${{ matrix.browser }}-smoke --workers=2
+        run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=${{ matrix.browser }}-smoke --workers=${{ matrix.workers }}
 
   test:
     if: always()
