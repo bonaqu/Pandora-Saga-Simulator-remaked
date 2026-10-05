@@ -218,10 +218,10 @@ body.remaked-modern {
   max-width: 100%;
   border: 1px solid rgba(126, 148, 98, .72);
   border-radius: 999px;
-  background: rgba(244, 247, 236, .96);
+  background: rgba(241, 246, 232, .98);
   box-shadow:
-    0 2px 7px rgba(54, 75, 38, .10),
-    inset 0 1px 0 rgba(255, 255, 255, .72);
+    0 1px 4px rgba(54, 75, 38, .07),
+    inset 0 1px 0 rgba(255, 255, 255, .68);
   line-height: 1;
   white-space: nowrap;
 }
@@ -245,7 +245,7 @@ body.remaked-modern {
 
 .remaked-version-badge-legacy {
   border-left: 1px solid rgba(114, 126, 89, .28);
-  background: linear-gradient(180deg, rgba(250, 248, 239, .98), rgba(237, 240, 228, .98));
+  background: linear-gradient(180deg, rgba(246, 249, 238, .98), rgba(235, 241, 225, .98));
   color: #626c58;
   font-size: 9px;
   font-weight: 760;
@@ -258,22 +258,6 @@ body.remaked-modern {
   color: #58634f;
   font-size: 12px;
   line-height: 1.35;
-}
-
-.remaked-hero-source {
-  margin-top: 7px;
-  color: #71805e;
-  font-size: 9px;
-  font-weight: 650;
-  text-decoration: none;
-  opacity: .82;
-}
-
-.remaked-hero-source:hover,
-.remaked-hero-source:focus-visible {
-  color: #466f27;
-  text-decoration: underline;
-  outline: none;
 }
 
 .remaked-hero-art {
@@ -302,6 +286,7 @@ body.remaked-modern {
 }
 
 .remaked-nav-row {
+  gap: 8px;
   padding: 7px 9px;
   background: linear-gradient(180deg, #f0f5e7 0%, #e9f1dd 100%);
 }
