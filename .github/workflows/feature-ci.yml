@@ -322,6 +322,34 @@ jobs:
           --shard=${{ matrix.shard }}/2
 
   cross_browser:
+    needs: classify
+    if: needs.classify.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install ${{ matrix.browser }}
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Run ${{ matrix.browser }} smoke tests
+        run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=${{ matrix.browser }}-smoke
+
+  cross_browser_webkit:
     needs:
       - classify
       - browser_site
@@ -330,11 +358,6 @@ jobs:
     timeout-minutes: 10
     container:
       image: mcr.microsoft.com/playwright:v1.63.0-noble
-      options: --ipc=host
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chromium, firefox, webkit]
     env:
       PW_PREBUILT_SITE: '1'
     steps:
@@ -356,8 +379,8 @@ jobs:
           npx playwright --version
           test "$PLAYWRIGHT_BROWSERS_PATH" = "/ms-playwright"
 
-      - name: Run ${{ matrix.browser }} smoke tests
-        run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=${{ matrix.browser }}-smoke
+      - name: Run webkit smoke tests
+        run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=webkit-smoke
 
   test:
     if: always()
@@ -370,6 +393,7 @@ jobs:
       - catalog_admin
       - catalog_contract
       - cross_browser
+      - cross_browser_webkit
     runs-on: ubuntu-latest
     steps:
       - name: Require every applicable CI partition
@@ -383,9 +407,10 @@ jobs:
           CATALOG_ADMIN: ${{ needs.catalog_admin.result }}
           CATALOG_CONTRACT: ${{ needs.catalog_contract.result }}
           CROSS_BROWSER: ${{ needs.cross_browser.result }}
+          CROSS_BROWSER_WEBKIT: ${{ needs.cross_browser_webkit.result }}
         run: |
           set -euo pipefail
-          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE" "$CATALOG_AUDIT" "$CATALOG_ADMIN" "$CATALOG_CONTRACT" "$CROSS_BROWSER"; do
+          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE" "$CATALOG_AUDIT" "$CATALOG_ADMIN" "$CATALOG_CONTRACT" "$CROSS_BROWSER" "$CROSS_BROWSER_WEBKIT"; do
             if [[ "$result" != "success" && "$result" != "skipped" ]]; then
               echo "A required CI partition ended as: $result"
               exit 1
