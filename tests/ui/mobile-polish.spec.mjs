@@ -92,7 +92,7 @@ test('essential Modern phone controls are touch-sized and page has no body overf
   const selectors = [
     '[data-remaked-nav] button',
     '[data-remaked-language]',
-    '[data-remaked-tools] button',
+    '[data-remaked-equipment-picker]',
     '[data-remaked-collapse-toggle]'
   ];
   for (const selector of selectors) {
