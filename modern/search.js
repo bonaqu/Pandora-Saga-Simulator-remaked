@@ -368,10 +368,17 @@
     button.addEventListener('mouseenter', function () {
       cancelHover();
       if (!window.matchMedia('(min-width: 701px) and (hover: hover)').matches || !active) return;
-      hoverTimer = window.setTimeout(function () {
+      function openAfterHoverPause() {
         hoverTimer = null;
-        if (row.isConnected && button.matches(':hover') && active && Date.now() >= active.hoverPausedUntil) details.open = true;
-      }, 450);
+        if (!row.isConnected || !button.matches(':hover') || !active) return;
+        var remainingPause = active.hoverPausedUntil - Date.now();
+        if (remainingPause > 0) {
+          hoverTimer = window.setTimeout(openAfterHoverPause, remainingPause + 16);
+          return;
+        }
+        details.open = true;
+      }
+      hoverTimer = window.setTimeout(openAfterHoverPause, 450);
     });
     button.addEventListener('pointerdown', cancelHover);
     button.addEventListener('focus', function () {
