@@ -117,6 +117,9 @@ jobs:
       - name: Install Node dependencies for deterministic extractors
         run: npm ci --no-audit --no-fund
 
+      - name: Build deterministic site projection for extractors
+        run: python3 scripts/build_pages.py --output _site
+
       - name: Verify deterministic Legacy terminology export
         run: npm run test:translations
 
