@@ -35,11 +35,7 @@ async function switchLegacySelectIndex(page, id, index) {
 }
 
 async function openEquipment(page, slotIndex = null) {
-  if (slotIndex == null) {
-    await page.getByRole('button', { name: 'Equipment Search', exact: true }).click();
-  } else {
-    await page.evaluate((slot) => window.PandoraRemaked.search.openEquipmentSearch(slot), slotIndex);
-  }
+  await page.evaluate((slot) => window.PandoraRemaked.search.openEquipmentSearch(slot), slotIndex);
   await expect(page.locator('[data-remaked-search-panel][data-search-kind="equipment"]')).toBeVisible();
 }
 
@@ -191,7 +187,7 @@ test('choosing Equipment from Modern Search is payload-identical to direct legac
 
 test('Soul Search explains missing sockets then rebuilds targets after equipping a socket item', async ({ page }) => {
   await openModern(page);
-  await page.getByRole('button', { name: 'Soul Search', exact: true }).click();
+  await page.evaluate(() => window.PandoraRemaked.search.openSoulSearch(null));
   await expect(page.locator('[data-remaked-search-panel][data-search-kind="soul"]')).toBeVisible();
   const initialTargets = await page.evaluate(() => window.PandoraRemaked.adapter.listSoulTargets());
   if (!initialTargets.length) {
@@ -238,7 +234,9 @@ test('Soul query filters localized names and selection keeps exact legacy payloa
 test('search panel is keyboard-closeable and remains inside a 390px viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openModern(page);
-  await openEquipment(page);
+  const opener = page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]');
+  await opener.focus();
+  await opener.press('Enter');
   const panel = page.locator('[data-remaked-search-panel]');
   const box = await panel.boundingBox();
   expect(box).not.toBeNull();
@@ -246,5 +244,5 @@ test('search panel is keyboard-closeable and remains inside a 390px viewport', a
   expect(box.x + box.width).toBeLessThanOrEqual(390);
   await page.keyboard.press('Escape');
   await expect(panel).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Equipment Search', exact: true })).toBeFocused();
+  await expect(opener).toBeFocused();
 });
