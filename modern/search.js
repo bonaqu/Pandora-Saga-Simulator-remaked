@@ -141,10 +141,13 @@
     });
 
     var returnFocus = trigger && typeof trigger.focus === 'function' ? trigger : document.activeElement;
-    active = { backdrop: backdrop, panel: panel, returnFocus: returnFocus, dropdown: dropdown, cancelPreviews: [], hoverPausedUntil: 0 };
+    active = { backdrop: backdrop, panel: panel, returnFocus: returnFocus, dropdown: dropdown, cancelPreviews: [], hoverPausedUntil: 0, manualScrollUntil: 0 };
     backdrop.addEventListener('cancel', function (event) { event.preventDefault(); closePanel(); });
     panel.addEventListener('keydown', function (event) {
-      if (event.key === 'PageDown' || event.key === 'PageUp') cancelPreviews(true);
+      if (event.key === 'PageDown' || event.key === 'PageUp') {
+        active.manualScrollUntil = Date.now() + 600;
+        cancelPreviews(true);
+      }
       // Chromium/Firefox otherwise consume Escape to clear a type=search input
       // before the native dialog can cancel. Keep the established one-key close.
       if (event.key === 'Escape') {
@@ -156,16 +159,26 @@
     });
     panel.addEventListener('scroll', function (event) {
       if (event.target.closest && event.target.closest('.remaked-item-description')) return;
-      cancelPreviews(true, true, true);
+      var manualScroll = Date.now() < active.manualScrollUntil;
+      if (manualScroll) active.manualScrollUntil = Date.now() + 600;
+      cancelPreviews(true, true, !manualScroll);
     }, true);
     panel.addEventListener('wheel', function (event) {
-      if (!event.target.closest('.remaked-item-description')) cancelPreviews(true);
+      if (event.target.closest('.remaked-item-description')) return;
+      active.manualScrollUntil = Date.now() + 600;
+      cancelPreviews(true);
     }, { passive: true });
-    panel.addEventListener('touchstart', function () { cancelPreviews(true); }, { passive: true });
+    panel.addEventListener('touchstart', function () {
+      active.manualScrollUntil = Date.now() + 600;
+      cancelPreviews(true);
+    }, { passive: true });
     panel.addEventListener('pointerdown', function (event) {
       // Scrollbar/empty-list presses are manual scrolling intent. Selection
       // and disclosure actions handle their own state; do not toggle twice.
-      if (!event.target.closest('button, summary, .remaked-item-description')) cancelPreviews(true);
+      if (!event.target.closest('button, summary, .remaked-item-description')) {
+        active.manualScrollUntil = Date.now() + 600;
+        cancelPreviews(true);
+      }
     });
     if (dropdown) {
       returnFocus.setAttribute('aria-expanded', 'true');
