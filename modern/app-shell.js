@@ -93,7 +93,7 @@
   }
 
   function createHero() {
-    var version = window.PandoraRemakedVersion || { legacyEngine: '2.00', ui: '2026.09.1' };
+    var version = window.PandoraRemakedVersion || { legacyEngine: '—', ui: '—' };
     var hero = document.createElement('section');
     hero.className = 'remaked-hero';
     hero.dataset.remakedHero = '';
@@ -112,13 +112,21 @@
 
     var meta = document.createElement('div');
     meta.className = 'remaked-hero-meta';
-    var badge = document.createElement('span');
-    badge.className = 'remaked-hero-badge';
-    localizeText(badge, 'hero.badge', 'Remaked');
-    var versionText = document.createElement('span');
-    localizeText(versionText, 'hero.version', 'Legacy ' + version.legacyEngine + ' · UI ' + version.ui, version);
-    meta.appendChild(badge);
-    meta.appendChild(versionText);
+    var versionBadge = document.createElement('span');
+    versionBadge.className = 'remaked-version-badge';
+    versionBadge.dataset.remakedVersionBadge = '';
+
+    var uiVersion = document.createElement('span');
+    uiVersion.className = 'remaked-version-badge-ui';
+    uiVersion.textContent = 'REMAKED UI ' + version.ui;
+
+    var legacyVersion = document.createElement('span');
+    legacyVersion.className = 'remaked-version-badge-legacy';
+    legacyVersion.textContent = 'Legacy Engine ' + version.legacyEngine;
+
+    versionBadge.appendChild(uiVersion);
+    versionBadge.appendChild(legacyVersion);
+    meta.appendChild(versionBadge);
 
     var subtitle = document.createElement('p');
     localizeText(subtitle, 'hero.subtitle', 'The preserved legacy calculator, wrapped in a cleaner modern interface.');
@@ -176,12 +184,6 @@
     pwaActions.className = 'remaked-pwa-actions';
     pwaActions.dataset.remakedPwaActions = '';
     controls.appendChild(pwaActions);
-    var version = window.PandoraRemakedVersion || { legacyEngine: '2.00', ui: '2026.09.1' };
-    var versionNode = document.createElement('span');
-    versionNode.className = 'remaked-version';
-    versionNode.dataset.remakedVersion = '';
-    localizeText(versionNode, 'shell.version', 'Legacy ' + version.legacyEngine + ' · Remaked ' + version.ui, version);
-    controls.appendChild(versionNode);
     top.appendChild(controls);
 
     header.appendChild(top);
