@@ -421,13 +421,13 @@ test('item preview and shared build link work without mutating Legacy data', asy
   const equipmentOpener = page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]');
   await equipmentOpener.click();
   const equipmentPanel = page.locator('[data-remaked-search-panel]');
-  const row = page.locator('[data-remaked-search-row][data-value="1"]');
+  const row = equipmentPanel.locator('[data-remaked-search-row]').filter({ has: equipmentPanel.locator('summary') }).first();
+  await expect(row).toBeVisible();
   await row.locator('summary').click();
   await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
   await row.locator('summary').focus();
-  await page.keyboard.press('Escape');
-  await expect(row.locator('details')).not.toHaveAttribute('open', '');
-  await expect(equipmentPanel).toBeVisible();
+  // Modern 3.12 makes Escape a picker-level command: one press closes the
+  // picker even if the currently focused row has an expanded preview.
   await page.keyboard.press('Escape');
   await expect(equipmentPanel).toHaveCount(0);
   await expect(equipmentOpener).toBeFocused();
