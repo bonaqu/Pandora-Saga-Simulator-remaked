@@ -275,15 +275,17 @@ test('equipment picker renders native type separators as headings and can filter
       const options = window.PandoraRemaked.adapter.listEquipmentOptions(candidate.slotIndex);
       let currentCategory = '';
       const categories = [];
+      const groupHeadings = [];
       for (const option of options) {
         const heading = String(option.name || '').match(/^\+-----\s*(.+?)\s*$/)?.[1]?.trim() || '';
         if (heading) {
           currentCategory = heading;
+          groupHeadings.push(heading);
           continue;
         }
         if (currentCategory && !categories.includes(currentCategory)) categories.push(currentCategory);
       }
-      return { candidate, categories };
+      return { candidate, categories, groupHeadings };
     })
     .find((entry) => entry.categories.length >= 2));
   expect(target).toBeTruthy();
@@ -293,11 +295,15 @@ test('equipment picker renders native type separators as headings and can filter
   const panel = page.locator('[data-remaked-search-panel]');
   const filter = panel.locator('[data-remaked-picker-type-filter]');
   await expect(filter).toBeVisible();
-  await expect(panel.locator('[data-remaked-picker-group]')).toHaveCount(target.categories.length);
+  await expect(panel.locator('[data-remaked-picker-group]')).toHaveCount(target.groupHeadings.length);
 
-  await filter.selectOption({ label: target.categories[1] });
-  await expect(panel.locator('[data-remaked-picker-group]')).toHaveCount(1);
-  await expect(panel.locator('[data-remaked-picker-group]')).toHaveText(target.categories[1]);
+  const selectedType = target.categories[1];
+  await filter.selectOption({ label: selectedType });
+  const expectedGroupCount = target.groupHeadings.filter((heading) => heading === selectedType).length;
+  await expect(panel.locator('[data-remaked-picker-group]')).toHaveCount(expectedGroupCount);
+  await expect(panel.locator('[data-remaked-picker-group]')).toHaveText(
+    Array(expectedGroupCount).fill(selectedType)
+  );
 
   await panel.locator('[data-remaked-search-query]').fill('__definitely_no_such_picker_item__');
   await expect(panel.locator('[data-remaked-search-empty-reset]')).toHaveText('Reset filter');
