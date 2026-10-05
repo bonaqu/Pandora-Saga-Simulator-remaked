@@ -321,12 +321,13 @@
       if (heading) {
         currentCategory = heading;
         if (categories.indexOf(heading) === -1) categories.push(heading);
+        entries.push({ option: option, category: heading, isCategory: true });
         return;
       }
-      entries.push({ option: option, category: currentCategory });
+      entries.push({ option: option, category: currentCategory, isCategory: false });
     });
     categories = categories.filter(function (category) {
-      return entries.some(function (entry) { return entry.category === category; });
+      return entries.some(function (entry) { return !entry.isCategory && entry.category === category; });
     });
     return { entries: entries, categories: categories };
   }
@@ -513,13 +514,13 @@
     shell.panel.querySelector('h2').textContent = adapter.listEquipmentTargets().find(function (target) { return target.slotIndex === slot; }).label + (fieldIndex ? ' · Soul ' + (fieldIndex - 3) : '');
     var query = queryInput(kind === 'equipment' ? 'search.equipment.placeholder' : 'search.soul.placeholder', 'Search…');
     var pickerControls = element('div', 'remaked-picker-controls');
-    pickerControls.appendChild(field('search.name', 'Name', query));
     var typeFilter = null;
     if (kind === 'equipment') {
       typeFilter = element('select', 'remaked-search-select remaked-picker-type-filter');
       typeFilter.dataset.remakedPickerTypeFilter = '';
       pickerControls.appendChild(typeFilter);
     }
+    pickerControls.appendChild(field('search.name', 'Name', query));
     shell.body.appendChild(pickerControls);
     var summary = element('div', 'remaked-search-summary remaked-picker-summary');
     summary.dataset.remakedSearchSummary = '';
@@ -560,32 +561,34 @@
       var filtered = entries.filter(function (entry) {
         var option = entry.option;
         if (selectedType && entry.category !== selectedType) return false;
+        if (entry.isCategory) return !needle;
         var id = kind === 'equipment' ? equipmentTermId(option.value) : soulTermId(option.value);
         return !needle || normalizeQuery(option.name + ' ' + gameName(id, option.name)).indexOf(needle) !== -1;
       });
+      var shownItems = filtered.filter(function (entry) { return !entry.isCategory; }).length;
+      var totalItems = entries.filter(function (entry) { return !entry.isCategory; }).length;
       summary.textContent = kind === 'equipment'
-        ? t('search.equipmentSummary', { shown: filtered.length, total: entries.length }, filtered.length + ' of ' + entries.length + ' compatible items')
-        : t('search.soulSummary', { total: filtered.length }, filtered.length + ' compatible Souls');
+        ? t('search.equipmentSummary', { shown: shownItems, total: totalItems }, shownItems + ' of ' + totalItems + ' compatible items')
+        : t('search.soulSummary', { total: shownItems }, shownItems + ' compatible Souls');
 
       var fragment = document.createDocumentFragment();
-      var lastCategory = null;
       filtered.forEach(function (entry) {
         var option = entry.option;
-        if (kind === 'equipment' && entry.category && entry.category !== lastCategory) {
-          var group = element('div', 'remaked-picker-group', entry.category);
-          group.dataset.remakedPickerGroup = entry.category;
-          fragment.appendChild(group);
-        }
-        lastCategory = entry.category;
         var id = kind === 'equipment' ? equipmentTermId(option.value) : soulTermId(option.value);
-        var button = resultButton({ value: option.value, name: gameName(id, option.name) }, option.level == null ? '' : t('search.level', { level: option.level }, 'Lv ' + option.level));
+        var name = entry.isCategory ? entry.category : gameName(id, option.name);
+        var button = resultButton({ value: option.value, name: name }, entry.isCategory || option.level == null ? '' : t('search.level', { level: option.level }, 'Lv ' + option.level));
         button.dataset.selected = current.value === String(option.value) ? 'true' : 'false';
         button.setAttribute('aria-pressed', button.dataset.selected);
         button.addEventListener('click', function () {
           var changed = kind === 'equipment' ? adapter.selectEquipment(slot, option.value) : adapter.selectSoul({ slotIndex: slot, socketIndex: fieldIndex }, option.value);
           if (changed) closePanel();
         });
-        fragment.appendChild(resultRow(button, kind, option.value, slot));
+        var row = resultRow(button, kind, option.value, slot);
+        if (entry.isCategory) {
+          row.classList.add('remaked-picker-group');
+          row.dataset.remakedPickerGroup = entry.category;
+        }
+        fragment.appendChild(row);
       });
       results.replaceChildren(fragment);
       if (!filtered.length) {
