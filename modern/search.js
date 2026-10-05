@@ -323,10 +323,26 @@
     details.appendChild(description); row.appendChild(details);
     var pinned = false;
     var hoverTimer = null;
+    var hoveringButton = false;
     var focusFrame = null;
     function cancelHover() { window.clearTimeout(hoverTimer); hoverTimer = null; }
     function cancelFocusPreview() { window.cancelAnimationFrame(focusFrame); focusFrame = null; }
     var floating = window.matchMedia('(min-width: 701px) and (hover: hover)').matches && typeof description.showPopover === 'function';
+    function scheduleHoverPreview(delay) {
+      cancelHover();
+      if (!hoveringButton || !active) return;
+      function openWhenSettled() {
+        hoverTimer = null;
+        if (!hoveringButton || !row.isConnected || !button.matches(':hover') || !active) return;
+        var remainingPause = active.hoverPausedUntil - Date.now();
+        if (remainingPause > 0) {
+          hoverTimer = window.setTimeout(openWhenSettled, remainingPause + 16);
+          return;
+        }
+        details.open = true;
+      }
+      hoverTimer = window.setTimeout(openWhenSettled, Math.max(0, delay || 0));
+    }
     function positionDescription() {
       var rect = row.getBoundingClientRect(), width = description.getBoundingClientRect().width;
       var left = rect.right + 8;
@@ -336,6 +352,7 @@
     }
     if (active) active.cancelPreviews.push(function (keepInline, keepKeyboardRequest) {
       cancelHover();
+      if (hoveringButton) scheduleHoverPreview(Math.max(16, active.hoverPausedUntil - Date.now() + 16));
       if (!keepKeyboardRequest) cancelFocusPreview();
       // Focus-driven scrolling is asynchronous in WebKit and can arrive after
       // any fixed number of frames. Keep the active keyboard card, reposition
@@ -366,21 +383,14 @@
       else pinned = !details.open;
     });
     button.addEventListener('pointerenter', function (event) {
-      cancelHover();
-      if (event.pointerType !== 'mouse' || !active) return;
-      function openAfterHoverPause() {
-        hoverTimer = null;
-        if (!row.isConnected || !button.matches(':hover') || !active) return;
-        var remainingPause = active.hoverPausedUntil - Date.now();
-        if (remainingPause > 0) {
-          hoverTimer = window.setTimeout(openAfterHoverPause, remainingPause + 16);
-          return;
-        }
-        details.open = true;
-      }
-      hoverTimer = window.setTimeout(openAfterHoverPause, 450);
+      hoveringButton = event.pointerType === 'mouse';
+      if (!hoveringButton || !active) return;
+      scheduleHoverPreview(450);
     });
-    button.addEventListener('pointerdown', cancelHover);
+    button.addEventListener('pointerdown', function () {
+      hoveringButton = false;
+      cancelHover();
+    });
     button.addEventListener('focus', function () {
       if (!keyboardInput || !button.matches(':focus-visible')) return;
       cancelFocusPreview();
@@ -396,6 +406,7 @@
     });
     button.addEventListener('blur', cancelFocusPreview);
     row.addEventListener('mouseleave', function () {
+      hoveringButton = false;
       cancelHover();
       window.setTimeout(function () {
         if (!pinned && !(keyboardInput && row.contains(document.activeElement)) && !row.matches(':hover') && !description.matches(':hover')) details.open = false;
