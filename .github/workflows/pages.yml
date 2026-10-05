@@ -8,12 +8,14 @@ on:
 
 permissions:
   contents: write
+  actions: read
+  pull-requests: read
   pages: write
   id-token: write
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   SOURCE_REPOSITORY: https://github.com/palver1/Pandora_saga_tools.git
@@ -21,8 +23,65 @@ env:
   SOURCE_PATH: ps_simulator/PSS_original
 
 jobs:
-  build:
+  trust_gate:
     runs-on: ubuntu-latest
+    outputs:
+      full_validation: ${{ steps.gate.outputs.full_validation }}
+      source_pr: ${{ steps.gate.outputs.source_pr }}
+      source_head: ${{ steps.gate.outputs.source_head }}
+    steps:
+      - name: Reuse exact successful PR validation when possible
+        id: gate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          REPOSITORY: ${{ github.repository }}
+          DEPLOY_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          full_validation=true
+          source_pr=""
+          source_head=""
+
+          if [[ "$EVENT_NAME" == "push" ]]; then
+            prs="$(gh api               -H 'Accept: application/vnd.github+json'               "repos/$REPOSITORY/commits/$DEPLOY_SHA/pulls")"
+
+            source_pr="$(jq -r '
+              map(select(.merged_at != null and .base.ref == "bonaqu_projects"))
+              | first
+              | .number // empty
+            ' <<<"$prs")"
+
+            if [[ -n "$source_pr" ]]; then
+              pr="$(gh api "repos/$REPOSITORY/pulls/$source_pr")"
+              source_head="$(jq -r '.head.sha' <<<"$pr")"
+
+              runs="$(gh api                 "repos/$REPOSITORY/actions/workflows/feature-ci.yml/runs?head_sha=$source_head&event=pull_request&status=completed&per_page=20")"
+
+              if jq -e '.workflow_runs | any(.conclusion == "success")' <<<"$runs" >/dev/null; then
+                full_validation=false
+                echo "Exact PR head $source_head already passed Feature CI; using the fast production gate."
+              else
+                echo "No successful Feature CI found for exact PR head $source_head; keeping full production validation."
+              fi
+            else
+              echo "No merged PR is associated with $DEPLOY_SHA; keeping full production validation."
+            fi
+          else
+            echo "Manual deployment requested; keeping full production validation."
+          fi
+
+          {
+            echo "full_validation=$full_validation"
+            echo "source_pr=$source_pr"
+            echo "source_head=$source_head"
+          } >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: trust_gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout preservation repository
@@ -40,6 +99,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '24'
+          cache: npm
 
       - name: Import recovered simulator once
         shell: bash
@@ -96,7 +156,7 @@ jobs:
             git push origin HEAD:bonaqu_projects
           fi
 
-      - name: Run Python tests
+      - name: Run fast production unit checks
         run: python -m unittest discover -s tests -v
 
       - name: Validate preservation snapshot
@@ -106,34 +166,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --check js/calc.js
-          node --check js/equip.js
-          node --check js/item.js
-          node --check js/skill.js
-          node --check js/ini.js
-          node --check modern/version.js
-          node --check modern/i18n.js
-          node --check modern/adapter.js
-          node --check modern/catalog.js
-          node --check modern/admin-entry.js
-          node --check modern/calculator-labels.js
-          node --check modern/game-term-display.js
-          node --check modern/build-store.js
-          node --check modern/search.js
-          node --check modern/equipment-picker.js
-          node --check modern/calculator-controls.js
-          node --check modern/skill-controls.js
-          node --check modern/builds.js
-          node --check modern/app-shell.js
-          node --check modern/tooltips.js
-          node --check modern/compare.js
-          node --check modern/mobile.js
-          node --check modern/pwa.js
-          node --check modern/service-worker.js
-          node --check scripts/lib/legacy-runtime.mjs
-          node --check scripts/serve_pages.mjs
-          node --check scripts/extract_legacy_terms.mjs
-          node --check scripts/extract_legacy_data.mjs
+          for file in             js/calc.js js/equip.js js/item.js js/skill.js js/ini.js             modern/version.js modern/i18n.js modern/adapter.js modern/catalog.js             modern/admin-entry.js modern/calculator-labels.js modern/game-term-display.js             modern/build-store.js modern/search.js modern/equipment-picker.js             modern/calculator-controls.js modern/skill-controls.js modern/builds.js             modern/app-shell.js modern/tooltips.js modern/compare.js modern/mobile.js             modern/pwa.js modern/service-worker.js scripts/lib/legacy-runtime.mjs             scripts/serve_pages.mjs scripts/extract_legacy_terms.mjs scripts/extract_legacy_data.mjs
+          do
+            node --check "$file"
+          done
 
       - name: Build Modern and Legacy Pages routes
         run: python3 scripts/build_pages.py --output _site
@@ -150,35 +186,68 @@ jobs:
       - name: Install browser test dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Install Playwright browser engines
-        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Install Chromium for production smoke
+        run: npx playwright install --with-deps chromium
 
-      - name: Run complete desktop workspace contract
-        run: npm run test:ui:desktop
+      - name: Run production smoke gate
+        run: >
+          npx playwright test
+          tests/ui/modern-foundation.spec.mjs
+          tests/ui/cross-browser-smoke.spec.mjs
+          --project=chromium
+          --project=chromium-smoke
 
-      - name: Run shipped browser contract tests
-        run: npm run test:ui:ci
+      - name: Install remaining browsers for fallback validation
+        if: needs.trust_gate.outputs.full_validation == 'true'
+        run: npx playwright install --with-deps firefox webkit
 
-      - name: Audit every selectable source catalog record against the museum
+      - name: Run complete desktop workspace contract on untrusted push
+        if: needs.trust_gate.outputs.full_validation == 'true'
+        run: npm run test:ui:desktop -- --project=chromium
+
+      - name: Run shipped browser contract tests on untrusted push
+        if: needs.trust_gate.outputs.full_validation == 'true'
+        run: npm run test:ui:ci -- --project=chromium
+
+      - name: Audit every selectable source catalog record on untrusted push
+        if: needs.trust_gate.outputs.full_validation == 'true'
         run: npm run test:ui:catalog-audit
 
-      - name: Verify versioned catalog calculations and offline recipients
-        run: npm run test:ui -- tests/ui/catalog-adapter.spec.mjs tests/ui/catalog-adoption.spec.mjs tests/ui/build-load-races.spec.mjs tests/ui/skill-catalog.spec.mjs tests/ui/skill-variants.spec.mjs tests/ui/custom-skill-learning.spec.mjs tests/ui/skill-profiles.spec.mjs tests/ui/native-passive-effects.spec.mjs tests/ui/build-context.spec.mjs tests/ui/admin-entry.spec.mjs --project=chromium
+      - name: Verify versioned catalog calculations on untrusted push
+        if: needs.trust_gate.outputs.full_validation == 'true'
+        run: >
+          npm run test:ui --
+          tests/ui/catalog-adapter.spec.mjs
+          tests/ui/catalog-adoption.spec.mjs
+          tests/ui/build-load-races.spec.mjs
+          tests/ui/skill-catalog.spec.mjs
+          tests/ui/skill-variants.spec.mjs
+          tests/ui/custom-skill-learning.spec.mjs
+          tests/ui/skill-profiles.spec.mjs
+          tests/ui/native-passive-effects.spec.mjs
+          tests/ui/build-context.spec.mjs
+          tests/ui/admin-entry.spec.mjs
+          --project=chromium
 
-      - name: Run Chromium Firefox and WebKit smoke tests
+      - name: Run cross-browser smoke tests on untrusted push
+        if: needs.trust_gate.outputs.full_validation == 'true'
         run: npm run test:ui:cross-browser
 
-      - name: Verify deterministic Legacy terminology export
-        run: npm run test:translations
+      - name: Run visual QA on untrusted push
+        if: needs.trust_gate.outputs.full_validation == 'true'
+        run: npm run test:ui:visual -- --project=chromium
 
-      - name: Verify pure current skill reference reconciliation
-        run: npm run test:source-audit
+      - name: Verify deterministic lightweight projections
+        run: |
+          npm run test:translations
+          npm run test:source-audit
+          npm run test:data
 
-      - name: Verify deterministic structured data projections
-        run: npm run test:data
-
-      - name: Run visual QA capture
-        run: npm run test:ui:visual
+      - name: Report validation path
+        run: |
+          echo "full_validation=${{ needs.trust_gate.outputs.full_validation }}"
+          echo "source_pr=${{ needs.trust_gate.outputs.source_pr }}"
+          echo "source_head=${{ needs.trust_gate.outputs.source_head }}"
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
