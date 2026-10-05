@@ -2,6 +2,32 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Modern 3.12 — clearer equipment search and keyboard picking, 2026-10-05
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Поиск больше не оставляет пустую область без объяснения: при нулевом результате показывается понятное сообщение, подчёркнутая ссылка `Сбросить фильтр` и количество найденных/совместимых предметов.
+- В выпадающем Equipment picker нативные разделители типов оружия и экипировки теперь отображаются как явные визуальные заголовки групп; для списков с несколькими типами появился компактный фильтр `Все типы`.
+- Keyboard UX picker проверен и закреплён: стрелки переходят между результатами, Enter выбирает сфокусированный предмет, а Escape одним нажатием закрывает picker даже при открытом preview.
+
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Search no longer leaves an unexplained blank area: zero-result states show a clear message, an underlined `Reset filter` action and the current compatible/result count.
+- Equipment picker now renders the Legacy weapon/equipment type separators as clear visual group headings, with a compact `All types` filter when more than one type is available.
+- Picker keyboard UX is explicitly preserved and covered: arrows move between results, Enter selects the focused item, and a single Escape closes the picker even when an item preview is open.
+
+<!-- /release-notes:en -->
+
+### Project and delivery details
+
+- Type grouping is presentation-only and is derived from the existing Legacy `+-----` category placeholders. Placeholder rows are not reinterpreted as equipment and the underlying option IDs, compatibility list, selection callbacks and calculation engine remain unchanged.
+- Empty-state reset only clears Modern search/type/level filters and rerenders the current adapter options; it does not mutate the character.
+- Existing native-button keyboard semantics remain in place for Enter, while the already-present arrow navigation is covered by browser tests and picker Escape is captured before preview disclosure handling.
+
 ## Modern 3.11 — automatic updates, cleaner Equipment and faster delivery, 2026-10-05
 
 <!-- release-notes:ru -->
