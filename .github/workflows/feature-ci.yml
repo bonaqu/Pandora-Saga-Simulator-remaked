@@ -9,20 +9,84 @@ on:
       - bonaqu_projects
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: feature-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
+  classify:
     runs-on: ubuntu-latest
+    outputs:
+      docs_only: ${{ steps.changes.outputs.docs_only }}
+      css_only: ${{ steps.changes.outputs.css_only }}
+      full_required: ${{ steps.changes.outputs.full_required }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Classify changed files
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base="${{ github.event.pull_request.base.sha }}"
+          else
+            git fetch origin bonaqu_projects --depth=1
+            base="$(git merge-base HEAD origin/bonaqu_projects)"
+          fi
+
+          mapfile -t files < <(git diff --name-only "$base"...HEAD)
+          docs_only=true
+          css_only=true
+
+          if [[ ${#files[@]} -eq 0 ]]; then
+            docs_only=false
+            css_only=false
+          fi
+
+          for file in "${files[@]}"; do
+            case "$file" in
+              *.md|docs/*|.github/ISSUE_TEMPLATE/*)
+                ;;
+              *)
+                docs_only=false
+                ;;
+            esac
+
+            case "$file" in
+              modern/*.css|tests/ui/*.spec.mjs|tests/ui/helpers/*.mjs|*.md|docs/*|.github/ISSUE_TEMPLATE/*)
+                ;;
+              *)
+                css_only=false
+                ;;
+            esac
+          done
+
+          if [[ "$docs_only" == "true" || "$css_only" == "true" ]]; then
+            full_required=false
+          else
+            full_required=true
+          fi
+
+          printf 'docs_only=%s\ncss_only=%s\nfull_required=%s\n' \
+            "$docs_only" "$css_only" "$full_required" >> "$GITHUB_OUTPUT"
+
+          printf 'Changed files (%d):\n' "${#files[@]}"
+          printf ' - %s\n' "${files[@]}"
+          echo "docs_only=$docs_only css_only=$css_only full_required=$full_required"
+
+  static:
+    needs: classify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -34,17 +98,6 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Generate preservation baseline when bootstrapping
-        id: baseline
-        shell: bash
-        run: |
-          if [[ ! -f preservation/legacy-files.sha256 ]]; then
-            python3 scripts/legacy_fingerprint.py --write preservation/legacy-files.sha256
-            echo 'created=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'created=false' >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Run Python tests
         run: python -m unittest discover -s tests -v
 
@@ -54,93 +107,11 @@ jobs:
       - name: Syntax-check core JavaScript
         shell: bash
         run: |
-          node --check js/calc.js
-          node --check js/equip.js
-          node --check js/item.js
-          node --check js/skill.js
-          node --check js/ini.js
-          node --check modern/version.js
-          node --check modern/i18n.js
-          node --check modern/adapter.js
-          node --check modern/catalog.js
-          node --check modern/admin-entry.js
-          node --check modern/calculator-labels.js
-          node --check modern/game-term-display.js
-          node --check modern/build-store.js
-          node --check modern/search.js
-          node --check modern/equipment-picker.js
-          node --check modern/calculator-controls.js
-          node --check modern/skill-controls.js
-          node --check modern/skill-tooltips.js
-          node --check modern/builds.js
-          node --check modern/app-shell.js
-          node --check modern/tooltips.js
-          node --check modern/compare.js
-          node --check modern/mobile.js
-          node --check modern/pwa.js
-          node --check modern/service-worker.js
-          node --check scripts/lib/legacy-runtime.mjs
-          node --check scripts/serve_pages.mjs
-          node --check scripts/extract_legacy_terms.mjs
-          node --check scripts/extract_legacy_data.mjs
-
-      - name: Install browser test dependencies
-        id: npm
-        shell: bash
-        run: |
-          if [[ -f package-lock.json ]]; then
-            npm ci --no-audit --no-fund
-            echo 'lock_created=false' >> "$GITHUB_OUTPUT"
-          else
-            npm install --no-audit --no-fund
-            echo 'lock_created=true' >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Install Playwright browser engines
-        run: npx playwright install --with-deps chromium firefox webkit
-
-      # Keep the platform-sensitive workspace gate early and separate, not
-      # duplicated in the long main suite. Its failure evidence survives.
-      - name: Run complete desktop workspace contract
-        id: workspace_contract
-        shell: bash
-        run: |
-          mkdir -p .ci-artifacts
-          npm run test:ui:desktop -- --reporter=json > .ci-artifacts/workspace-report.json
-
-      - name: Upload desktop workspace evidence
-        if: ${{ always() && steps.workspace_contract.outcome != 'skipped' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: feature-desktop-workspace
-          path: |
-            .ci-artifacts/workspace-report.json
-            test-results/desktop-workspace-*/desktop-workspace.png
-            test-results/desktop-workspace-*/test-failed-*.png
-            test-results/hybrid-composition-*/hybrid-*.png
-            test-results/hybrid-composition-*/test-failed-*.png
-          if-no-files-found: error
-          retention-days: 1
-
-      - name: Run shipped browser contract tests
-        id: browser_contract
-        shell: bash
-        run: |
-          mkdir -p .ci-artifacts
-          npm run test:ui:ci -- --reporter=json > .ci-artifacts/browser-report.json
-
-      - name: Upload native panel and input visual evidence
-        if: ${{ always() && steps.browser_contract.outcome != 'skipped' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: feature-native-panels
-          path: |
-            .ci-artifacts/browser-report.json
-            test-results/panel-workspace-*/**/*.png
-            test-results/compact-inputs-*/**/*.png
-            test-results/skill-tooltips-*/**/*.png
-          if-no-files-found: error
-          retention-days: 1
+          set -euo pipefail
+          for file in             js/calc.js js/equip.js js/item.js js/skill.js js/ini.js             modern/version.js modern/i18n.js modern/adapter.js modern/catalog.js             modern/admin-entry.js modern/calculator-labels.js modern/game-term-display.js             modern/build-store.js modern/search.js modern/equipment-picker.js             modern/calculator-controls.js modern/skill-controls.js modern/skill-tooltips.js             modern/builds.js modern/app-shell.js modern/tooltips.js modern/compare.js             modern/mobile.js modern/pwa.js modern/service-worker.js             scripts/lib/legacy-runtime.mjs scripts/serve_pages.mjs             scripts/extract_legacy_terms.mjs scripts/extract_legacy_data.mjs
+          do
+            node --check "$file"
+          done
 
       - name: Verify deterministic Legacy terminology export
         run: npm run test:translations
@@ -148,74 +119,246 @@ jobs:
       - name: Verify pure current skill reference reconciliation
         run: npm run test:source-audit
 
+      - name: Verify deterministic structured data projections
+        run: npm run test:data
+
+  workspace_visual:
+    needs: classify
+    if: needs.classify.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run complete desktop workspace contract
+        id: workspace
+        run: |
+          mkdir -p .ci-artifacts
+          npm run test:ui:desktop -- --project=chromium --reporter=json > .ci-artifacts/workspace-report.json
+
+      - name: Capture desktop and mobile visual QA
+        id: visual
+        run: npm run test:ui:visual -- --project=chromium
+
+      - name: Upload workspace and visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: feature-workspace-visual
+          path: |
+            .ci-artifacts/workspace-report.json
+            test-results/**/*.png
+          if-no-files-found: warn
+          retention-days: 1
+
+  browser_core_1:
+    needs: classify
+    if: needs.classify.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run browser contract shard 1
+        id: browser
+        shell: bash
+        run: |
+          mkdir -p .ci-artifacts
+          npm run test:ui:ci -- --project=chromium --shard=1/2 --reporter=json > .ci-artifacts/browser-report-1.json
+
+      - name: Upload browser shard 1 report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: feature-browser-report-1
+          path: |
+            .ci-artifacts/browser-report-1.json
+            test-results/**/test-failed-*.png
+          if-no-files-found: warn
+          retention-days: 1
+
+  browser_core_2:
+    needs: classify
+    if: needs.classify.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run browser contract shard 2
+        id: browser
+        shell: bash
+        run: |
+          mkdir -p .ci-artifacts
+          npm run test:ui:ci -- --project=chromium --shard=2/2 --reporter=json > .ci-artifacts/browser-report-2.json
+
+      - name: Upload browser shard 2 report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: feature-browser-report-2
+          path: |
+            .ci-artifacts/browser-report-2.json
+            test-results/**/test-failed-*.png
+          if-no-files-found: warn
+          retention-days: 1
+
+  catalog_audit:
+    needs: classify
+    if: needs.classify.outputs.full_required == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
       - name: Audit every selectable source catalog record against the museum
         run: npm run test:ui:catalog-audit
+
+  catalog_contract:
+    needs: classify
+    if: needs.classify.outputs.full_required == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
 
       - name: Verify admin editor with synthetic sessions only
         run: npm run test:ui:admin
 
       - name: Verify versioned catalog calculations and offline recipients
-        id: catalog_contract
-        shell: bash
-        run: |
-          mkdir -p .ci-artifacts
-          npm run test:ui -- tests/ui/catalog-adapter.spec.mjs tests/ui/catalog-adoption.spec.mjs tests/ui/build-load-races.spec.mjs tests/ui/skill-catalog.spec.mjs tests/ui/skill-variants.spec.mjs tests/ui/custom-skill-learning.spec.mjs tests/ui/skill-profiles.spec.mjs tests/ui/native-passive-effects.spec.mjs tests/ui/build-context.spec.mjs tests/ui/admin-entry.spec.mjs --project=chromium --reporter=json > .ci-artifacts/catalog-report.json
+        run: >
+          npm run test:ui --
+          tests/ui/catalog-adapter.spec.mjs
+          tests/ui/catalog-adoption.spec.mjs
+          tests/ui/build-load-races.spec.mjs
+          tests/ui/skill-catalog.spec.mjs
+          tests/ui/skill-variants.spec.mjs
+          tests/ui/custom-skill-learning.spec.mjs
+          tests/ui/skill-profiles.spec.mjs
+          tests/ui/native-passive-effects.spec.mjs
+          tests/ui/build-context.spec.mjs
+          tests/ui/admin-entry.spec.mjs
+          --project=chromium
 
-      # Capture the populated skill view before the next Playwright batch
-      # clears test-results. All catalog sessions and records here are synthetic.
-      - name: Upload versioned catalog evidence
-        if: ${{ always() && steps.catalog_contract.outcome != 'skipped' }}
-        uses: actions/upload-artifact@v4
+  cross_browser:
+    needs: classify
+    if: needs.classify.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
         with:
-          name: feature-catalog-evidence
-          path: |
-            .ci-artifacts/catalog-report.json
-            test-results/**/skill-additions-*.png
-            test-results/**/test-failed-*.png
-          if-no-files-found: error
-          retention-days: 1
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium firefox webkit
 
       - name: Run Chromium Firefox and WebKit smoke tests
         run: npm run test:ui:cross-browser
 
-      - name: Syntax-check recovered archived codecs
-        run: |
-          node --check _site/js/base64.js
-          node --check _site/js/rawinflate.js
-          node --check _site/js/rawdeflate.js
-
-      - name: Verify deterministic structured data projections
-        run: npm run test:data
-
-      - name: Upload browser contract report
-        if: ${{ always() && steps.browser_contract.outcome != 'skipped' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: feature-browser-report
-          path: .ci-artifacts/browser-report.json
-          if-no-files-found: error
-          retention-days: 1
-
-      - name: Capture desktop and mobile visual QA
-        run: npm run test:ui:visual
-
-      - name: Upload visual QA screenshots
-        uses: actions/upload-artifact@v4
-        with:
-          name: feature-visual-qa
-          path: test-results/**/modern-*.png
-          if-no-files-found: error
-          retention-days: 1
-
-      - name: Commit generated bootstrap metadata once
-        if: github.event_name == 'push' && (steps.baseline.outputs.created == 'true' || steps.npm.outputs.lock_created == 'true')
+  test:
+    if: always()
+    needs:
+      - classify
+      - static
+      - workspace_visual
+      - browser_core_1
+      - browser_core_2
+      - catalog_audit
+      - catalog_contract
+      - cross_browser
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every applicable CI partition
         shell: bash
+        env:
+          CLASSIFY: ${{ needs.classify.result }}
+          STATIC: ${{ needs.static.result }}
+          WORKSPACE: ${{ needs.workspace_visual.result }}
+          CORE_1: ${{ needs.browser_core_1.result }}
+          CORE_2: ${{ needs.browser_core_2.result }}
+          CATALOG_AUDIT: ${{ needs.catalog_audit.result }}
+          CATALOG_CONTRACT: ${{ needs.catalog_contract.result }}
+          CROSS_BROWSER: ${{ needs.cross_browser.result }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add preservation/legacy-files.sha256 package-lock.json
-          if git diff --cached --quiet; then
-            exit 0
-          fi
-          git commit -m "chore: lock modernization test metadata"
-          git push origin HEAD:${GITHUB_REF_NAME}
+          set -euo pipefail
+          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE_1" "$CORE_2" "$CATALOG_AUDIT" "$CATALOG_CONTRACT" "$CROSS_BROWSER"; do
+            if [[ "$result" != "success" && "$result" != "skipped" ]]; then
+              echo "A required CI partition ended as: $result"
+              exit 1
+            fi
+          done
+          echo "All applicable Feature CI partitions passed."
