@@ -57,7 +57,7 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/
 
 ## In use
 
-Real Modern Mode screens from UI `2026.09.11`, captured from the release candidate published with this update. The comparison uses two example builds with different races; names and calculations come from the preserved engine.
+The screenshots below are real Modern Mode captures and remain representative of the interface; the live site may contain newer visual polish. Names and calculations shown in them come from the preserved engine.
 
 <img src="docs/assets/screenshots/equipment-search-desktop.png" alt="Equipment Search on desktop: compatible items with name and level filters" width="720" />
 
@@ -88,45 +88,25 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 
 Translations are maintained in one [Excel workbook](localization/translations.xlsx): H (yellow) is Russian, I (green) is an editable English override. The original source columns stay read-only. See the [step-by-step Russian guide](docs/LOCALIZATION_FOR_BEGINNERS.ru.md). Approved translations appear throughout the Modern calculator, lists, search and skill descriptions. Blank game fields retain the selected source language; Legacy Mode stays unchanged.
 
-Modern 3.02 adds active/passive skill variants through native learning templates
-and keyboard/touch details in the native SKILL panel. Download the latest workbook from the default branch;
-Pages validates and publishes uploaded workbook updates automatically.
-The six-category Worker/D1 administrator catalog is described in the
-[Russian operations guide](docs/ADMIN_OPERATIONS.ru.md), including its supported
-mechanics and the direct-login follow-up. No player cloud-save service is implied.
-The [new-skill beginner guide](docs/ADMIN_NEW_SKILLS.ru.md) explains template
-learning, explicit passive bonuses, private drafts and publishing limitations.
-The [step-by-step editing guide](docs/ADMIN_EDITING_FOR_BEGINNERS.ru.md) explains
-current values, server previews, numerical effects, translations and safe publication.
-Modern 3.09 is published: editable skill learning conditions, current elemental
-thresholds and all 18 current racial records. Complete skill descriptions above the scrolling panel,
-compact Hybrid C sections, floating JOB/SKILL/ATTACK/DEFENSE/BUFF,
-field-specific numeric feedback, aligned BUFF controls and PC/phone discovery.
-Bounded level/attributes, touch-stable Equipment, equal-row filtering and
-current-vs-preview editing remain intact. The release ledger records exact
-production artifact, authentication and installed/offline checks.
+Modern **3.11** is published. Equipment and Soul discovery now lives directly in the relevant slot pickers instead of duplicate top-level search actions. Compatibility rules, calculations, builds and Legacy Mode are preserved.
 
-Version 3.09 adds explicit replacement for 14 mapped native passive
-contributions, with readable dependencies in the editor and unchanged old pins.
-Actual login/preview, pins, comparison and fresh/offline recipients passed without
-publishing test records. Complete current-server skill balance remains unfinished.
-The release ledger also records an inherited offline FC2 counter warning;
-Modern-only removal is pending the next deployment.
+Modern now checks for a fresh deployment automatically. Normal navigation, F5, returning to the tab or coming back online can adopt the new Service Worker without requiring Ctrl+F5. Autosave and offline use remain supported.
+
+The on-site **Updates / What’s new** dialog is generated from the latest release in [CHANGELOG.md](CHANGELOG.md), and the visible Remaked UI version is derived from the same release during build. The visible version, short release notes and full changelog therefore share one source of truth.
+
+Public documentation focuses on player help, project architecture, history, release behavior and roadmap. Private catalog-administration credentials and maintainer-only operating instructions are intentionally kept out of the public documentation set.
 
 ## 🚧 What's coming next
 
-The modernization roadmap includes:
+Current directions include:
 
-- user-verified Russian game terminology;
-- broader class/skill mechanics beyond the existing bounded catalog editors;
-- continued visual, accessibility and cross-browser polish.
+- continued verification of current equipment, Souls, classes and skills against confirmed sources;
+- more verified Russian game terminology;
+- broader supported learning/effect data without inventing mechanics missing from the Legacy engine;
+- continued visual, touch, keyboard and cross-browser polish;
+- preserving old build/link reproducibility as catalogs evolve.
 
-The six-category catalog, non-destructive Legacy FILE recovery and compact PC
-workspace are already implemented. See the release ledger for acceptance gates.
-
-See [CHANGELOG.md](CHANGELOG.md) for released changes and current progress.
-The [Russian task queue](docs/TASK_QUEUE.ru.md) distinguishes shipped work from
-current-server data alignment, custom learning and new-class work still unfinished.
+See [CHANGELOG.md](CHANGELOG.md) for released changes and the [public roadmap](docs/TASK_QUEUE.ru.md) for current and future work.
 
 ## 🐛 Report a problem
 
@@ -137,7 +117,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** Modern 3.09 (published; verification and limits in the release ledger)
+- **Remaked UI:** Modern 3.11
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 
