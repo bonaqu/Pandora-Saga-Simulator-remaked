@@ -415,12 +415,12 @@
   }
 
   function createTrigger() {
-    var tools = document.querySelector('[data-remaked-tools]');
-    if (!tools || tools.querySelector('[data-remaked-compare-open]')) return;
+    var actions = document.querySelector('[data-remaked-build-actions]');
+    if (!actions || actions.querySelector('[data-remaked-compare-open]')) return;
     var trigger = button('Compare Builds', 'remaked-tool-button', 'compare.button');
     trigger.dataset.remakedCompareOpen = '';
     trigger.addEventListener('click', function () { open(trigger); });
-    (document.querySelector('[data-remaked-build-actions]') || tools).appendChild(trigger);
+    actions.appendChild(trigger);
   }
 
   function init() {
