@@ -276,7 +276,7 @@ test('equipment picker renders native type separators as headings and can filter
       let currentCategory = '';
       const categories = [];
       for (const option of options) {
-        const heading = String(option.name || '').match(/^\\+-----\\s*(.+?)\\s*$/)?.[1]?.trim() || '';
+        const heading = String(option.name || '').match(/^\+-----\s*(.+?)\s*$/)?.[1]?.trim() || '';
         if (heading) {
           currentCategory = heading;
           continue;
