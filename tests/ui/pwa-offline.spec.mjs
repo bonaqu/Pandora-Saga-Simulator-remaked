@@ -51,7 +51,7 @@ test('installed Modern and Legacy routes boot offline without changing the build
   }
 });
 
-test('translation-only artifact update reaches an existing offline installation', async ({ page, context }) => {
+test('translation-only artifact update activates automatically and reaches an existing offline installation', async ({ page, context }) => {
   const originalLocales = await publishedLocaleFingerprints();
   const fixture = await test.step('Copy isolated published artifact', () => createPublishedFixture(test.info()));
   const site = fixture.site;
@@ -78,8 +78,6 @@ test('translation-only artifact update reaches an existing offline installation'
     expect(await publishedLocaleFingerprints()).toEqual(originalLocales);
 
     await page.evaluate(async () => (await navigator.serviceWorker.getRegistration()).update());
-    await expect(page.locator('[data-remaked-update-notice]')).toBeVisible();
-    await page.locator('[data-remaked-update-reload]').click();
     await expect(page.locator('[data-remaked-header]')).toContainText('Проверка обновления из таблицы');
     const after = await page.evaluate(() => ({ payload: window.Store(), version: window.PandoraRemakedVersion.ui }));
     expect(after).toEqual(before);
