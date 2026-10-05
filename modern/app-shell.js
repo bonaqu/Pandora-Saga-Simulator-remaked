@@ -221,6 +221,43 @@
   }
 
   var updatesDialog;
+
+  function latestReleaseHighlights() {
+    var release = window.PandoraRemakedRelease;
+    if (!release || !release.highlights) return [];
+    var locale = namespace.i18n && typeof namespace.i18n.getLocale === 'function'
+      ? namespace.i18n.getLocale()
+      : (document.documentElement.lang || 'en');
+    var notes = release.highlights[locale] || release.highlights.en || [];
+    return Array.isArray(notes) ? notes.filter(function (note) {
+      return typeof note === 'string' && note.trim();
+    }) : [];
+  }
+
+  function refreshUpdatesContent() {
+    if (!updatesDialog) return;
+    var version = updatesDialog.querySelector('.remaked-updates-version');
+    if (version) localizeText(version, 'updates.version', '', window.PandoraRemakedVersion);
+
+    var list = updatesDialog.querySelector('[data-remaked-updates-list]');
+    if (!list) return;
+    list.replaceChildren();
+    var notes = latestReleaseHighlights();
+    if (notes.length) {
+      notes.forEach(function (note) {
+        var item = document.createElement('li');
+        item.textContent = note;
+        list.appendChild(item);
+      });
+      return;
+    }
+    ['keyboard', 'translations', 'builds', 'offline', 'preservation'].forEach(function (key) {
+      var item = document.createElement('li');
+      localizeText(item, 'updates.' + key, '');
+      list.appendChild(item);
+    });
+  }
+
   function openUpdates(changelogUrl, projectUrl) {
     if (!updatesDialog) {
       updatesDialog = document.createElement('dialog');
@@ -237,12 +274,9 @@
       close.addEventListener('click', function () { updatesDialog.close(); });
       header.appendChild(title); header.appendChild(close); panel.appendChild(header);
       var version = document.createElement('p'); version.className = 'remaked-updates-version';
-      localizeText(version, 'updates.version', '', window.PandoraRemakedVersion);
       panel.appendChild(version);
       var list = document.createElement('ul');
-      ['keyboard', 'translations', 'builds', 'offline', 'preservation'].forEach(function (key) {
-        var item = document.createElement('li'); localizeText(item, 'updates.' + key, ''); list.appendChild(item);
-      });
+      list.dataset.remakedUpdatesList = '';
       panel.appendChild(list);
       var links = document.createElement('div'); links.className = 'remaked-updates-links';
       links.appendChild(makeLink('Full changelog', changelogUrl, 'updates.fullChangelog'));
@@ -251,6 +285,7 @@
       updatesDialog.addEventListener('click', function (event) { if (event.target === updatesDialog) updatesDialog.close(); });
       document.body.appendChild(updatesDialog);
     }
+    refreshUpdatesContent();
     if (!updatesDialog.open) updatesDialog.showModal();
   }
 
