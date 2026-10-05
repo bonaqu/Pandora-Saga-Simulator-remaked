@@ -139,8 +139,9 @@ class RepositoryDocsTests(unittest.TestCase):
 
         for document in (changelog, plan):
             self.assertIn("2026.09.7", document)
-        for document in (english, russian, changelog):
-            self.assertIn("2026.09.11", document)
+        self.assertIn("3.11", english)
+        self.assertIn("3.11", russian)
+        self.assertIn("## Modern 3.11", changelog)
         self.assertIn("LOCALIZATION_FOR_BEGINNERS.ru.md", russian)
         self.assertIn("translations.xlsx", english)
         self.assertIn("translations.xlsx", guide)

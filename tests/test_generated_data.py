@@ -1,6 +1,7 @@
 import hashlib
 import json
 import pathlib
+import re
 import unittest
 
 
@@ -19,6 +20,11 @@ class GeneratedDataTests(unittest.TestCase):
         return json.loads((GENERATED / name).read_text(encoding="utf-8"))
 
     def test_projection_metadata_and_source_fingerprints_are_current(self):
+        version_source = (ROOT / "modern" / "version.js").read_text(encoding="utf-8")
+        match = re.search(r"\bui\s*:\s*[\'\"]([^\'\"]+)[\'\"]", version_source)
+        self.assertIsNotNone(match, "modern/version.js must expose the Remaked UI version")
+        current_ui = match.group(1)
+
         for filename, (kind, count, source_paths) in EXPECTED.items():
             payload = self.read(filename)
             metadata = payload["metadata"]
@@ -26,7 +32,7 @@ class GeneratedDataTests(unittest.TestCase):
             self.assertEqual(metadata["schema_version"], 1)
             self.assertEqual(metadata["projection_version"], "v1")
             self.assertEqual(metadata["legacy_engine"], "2.00")
-            self.assertEqual(metadata["remaked_ui"], "3.10")
+            self.assertEqual(metadata["remaked_ui"], current_ui)
             self.assertEqual(
                 metadata["source_fingerprint"],
                 "SHA-256 after CRLF-to-LF normalization",

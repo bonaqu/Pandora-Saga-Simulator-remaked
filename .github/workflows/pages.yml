@@ -298,6 +298,8 @@ jobs:
           cp docs/ARCHITECTURE.md "$wiki_dir/Architecture.md"
           cp docs/DEPLOYMENT.md "$wiki_dir/Deployment.md"
           cp docs/HISTORY.md "$wiki_dir/History.md"
+          cp docs/TASK_QUEUE.ru.md "$wiki_dir/Roadmap.md"
+          cp CHANGELOG.md "$wiki_dir/Changelog.md"
 
           cd "$wiki_dir"
           git config user.name "github-actions[bot]"

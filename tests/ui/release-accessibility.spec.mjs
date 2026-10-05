@@ -48,6 +48,9 @@ test('Updates provides an accessible on-site release panel without altering the 
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText(await page.evaluate(() => PandoraRemakedVersion.ui));
   await expect(dialog).toContainText('Legacy engine: 2.00');
+  const latestEnglishNote = await page.evaluate(() => PandoraRemakedRelease.highlights.en[0]);
+  await expect(dialog.locator('li').first()).toHaveText(latestEnglishNote);
+  await expect(dialog.locator('li')).toHaveCount(await page.evaluate(() => PandoraRemakedRelease.highlights.en.length));
   await expect(dialog.locator('li').first()).toHaveCSS('font-size', '15px');
   await expect(dialog.locator('li').first()).toHaveCSS('letter-spacing', 'normal');
   await expect(dialog.getByRole('link', { name: 'Full changelog', exact: true })).toHaveAttribute('href', /CHANGELOG\.md$/);

@@ -1,114 +1,89 @@
 # FAQ
 
-## What is this repository?
+## What is this project?
 
-This project restores the legacy **Pandora Saga Simulator** that used to be available at `pansaga3.web.fc2.com/simu/`. The goal is preservation: keep the original calculator usable even though the old hosting is no longer reliable.
+**Pandora Saga Simulator Remaked** restores the old Pandora Saga browser calculator and keeps the original 2.00 calculation engine available while adding a maintained Modern interface.
 
-## Is this an official Pandora Saga project?
+## Is it official?
 
-No. This is an independent preservation/restoration repository and is not affiliated with the original game publisher, operators or rights holders.
+No. This is an independent, unofficial preservation and modernization project. It is not affiliated with the original publisher or game operators.
 
-## Is the simulator really hosted only here?
+## What is the difference between Modern and Legacy?
 
-Yes after the first bootstrap run. The restored HTML, JavaScript, CSS, data and image assets are committed into this repository and GitHub Pages serves those local files.
+- **Modern** is the actively maintained interface: responsive layout, equipment/Soul pickers, build management, comparison, localization and PWA/offline support.
+- **Legacy** is the preserved museum route. It exists so the original calculator behavior can still be inspected and compared.
 
-The recovery source is used only once to import a pinned snapshot. Runtime use of the simulator does not depend on FC2 or the recovery repository.
+Modern additions are guarded so that improving the interface does not silently rewrite the preserved Legacy source.
 
-## Does it need a database?
+## What version is current?
 
-No. The recovered simulator is client-side JavaScript. Character, skill, item and option data are shipped as local JavaScript/assets, so the calculator can run from static hosting.
+The current published interface is **Modern 3.11**. The preserved calculation engine remains **Legacy 2.00**.
 
-## Do we need Cloudflare?
+The site now derives its visible Remaked version from the latest dated Modern release in `CHANGELOG.md`.
 
-No for the restored simulator.
+## Why did I previously need Ctrl+F5 after an update?
 
-Cloudflare would only be useful if future features need a backend, for example:
+The PWA Service Worker cached CSS/JavaScript for offline use and older clients could keep serving the previous asset set after a deployment.
 
-- cloud-saved builds;
-- user accounts;
-- shared build IDs backed by persistent storage;
-- an API;
-- server-side analytics or rate limiting.
+Modern 3.11 changes the update lifecycle:
 
-For the current preservation goal, GitHub Pages is simpler and free.
+- the worker script is checked without reusing its HTTP cache;
+- a newly installed update can activate automatically;
+- fresh navigation HTML can upgrade clients still controlled by the older cached runtime;
+- returning to the tab or network performs another update check.
 
-## Which languages are present?
+A completely untouched open tab cannot receive a push notification from static GitHub Pages by itself, but normal navigation/F5/returning to the tab should no longer require Ctrl+F5.
 
-The recovered client already contains language selection for:
+## Does the project work offline?
 
-- English;
-- Japanese;
-- Traditional Chinese.
+After a successful online load, Modern and Legacy can be available through the PWA cache. Offline use does not mean cloud storage: builds are primarily stored in the current browser.
 
-Language selection can also be driven by the legacy `?lang=` query parameter supported by the simulator.
+## Where is Equipment/Soul search?
 
-## Why is the interface so old-school?
+Search is integrated into the normal slot-selection flow. Open the relevant weapon, shield, armor or accessory slot to search compatible equipment; open a visible Soul socket to search compatible Souls.
 
-Because the UI is intentionally preserved instead of redesigned. The purpose of this repository is to keep the original calculator behavior and layout available, not to replace it with a new calculator.
+The old duplicate top-level Equipment Search and Soul Search actions were removed in Modern 3.11.
 
-## What was changed from the recovered page?
+## Are old saved builds automatically changed by catalog updates?
 
-Only hosting-related changes are applied automatically:
+No. Versioned catalog context is kept so an old build or shared link does not silently change its result. Updating a current build to a newer published catalog is an explicit action.
 
-1. the recovered HTML becomes the repository root `index.html`;
-2. obsolete FC2 footer/runtime injection is removed from the published HTML;
-3. a local preservation `readme.txt` is provided so the original menu does not depend on the dead host;
-4. provenance is recorded in `SOURCE.lock`.
+## Which languages are supported?
 
-The calculator/data JavaScript is not rewritten by the bootstrap process.
+The preserved source contains English, Japanese and Traditional Chinese game data. Modern also provides a Russian interface and an editable translation workflow.
 
-## What is `SOURCE.lock`?
+See [LOCALIZATION_FOR_BEGINNERS.ru.md](LOCALIZATION_FOR_BEGINNERS.ru.md).
 
-A small provenance file generated during the one-time import. It records the source repository, exact commit and source path used for recovery so the restoration can be independently audited later.
+## Does the site need a backend?
 
-## Keyboard shortcuts
+The public calculator itself is delivered as static GitHub Pages. Modern can also read versioned catalog data from a separate backend, but player builds do not require an account or cloud save.
 
-The recovered original README documents these controls. Lowercase generally increases and uppercase decreases the corresponding value in the legacy simulator.
+Private administrator credentials and operating procedures are intentionally outside the public documentation.
 
-| Keys | Value |
-|---|---|
-| `+ / -` | Level |
-| `q / Q` | Stamina |
-| `w / W` | Strength |
-| `e / E` | Agility |
-| `r / R` | Dexterity |
-| `t / T` | Inspiration |
-| `y / Y` | Intelligence |
-| `a / A` | Slash |
-| `s / S` | Thrust |
-| `d / D` | Cleave |
-| `f / F` | Bash |
-| `g / G` | Defense |
-| `z / Z` | Shooting |
-| `x / X` | Alchemy |
-| `c / C` | Assassination |
-| `v / V` | Trapping |
-| `b / B` | Dodge |
-| `h / H` | Benevolence |
-| `j / J` | Blessing |
-| `k / K` | Exorcism |
-| `l / L` | Hymn |
-| `n / N` | Elemental |
-| `m / M` | Invocation |
-| `, / <` | Darkness |
-| `. / >` | Confusion |
-| `/ / ?` | Racial |
-| `\\ / _` | Horsemanship |
+## How are releases tested?
 
-## The page loads but something is broken. What should I report?
+The project combines data/static checks with Chromium regression coverage and focused Chromium/Firefox/WebKit compatibility smoke. PWA/offline changes receive browser-specific tests.
 
-Open an Issue and include:
+Normal merges can reuse the exact successful PR validation; unusual/direct/manual publication paths retain the full fallback validation.
 
-- browser + version;
-- selected simulator language;
-- class/build values you entered;
+See [Deployment](DEPLOYMENT.md) and [Architecture](ARCHITECTURE.md).
+
+## Where can I see recent and planned changes?
+
+- [CHANGELOG.md](../CHANGELOG.md) — published releases.
+- [Public roadmap](TASK_QUEUE.ru.md) — current directions and future work.
+- [History](HISTORY.md) — preservation/project provenance.
+
+## How do I report a problem?
+
+Open a GitHub Issue and include the shortest reproducible sequence you can:
+
+- browser and version;
+- selected language;
+- relevant class/build values;
 - what you clicked;
 - expected result;
 - actual result;
-- screenshot or console error if available.
+- screenshot or console error when useful.
 
-The shortest reproducible sequence is more useful than a long description.
-
-## Can the project be modernized later?
-
-Yes, but preservation and modernization should stay separated. A modern UI can be added as another entry point while keeping the original restored calculator intact for comparison and regression testing.
+A small reproducible example is more useful than a long description without steps.

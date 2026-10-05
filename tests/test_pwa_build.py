@@ -155,7 +155,7 @@ class PwaBuildTests(unittest.TestCase):
             self.assertTrue(worker_path.is_file())
             self.assertFalse((output / "modern" / "service-worker.js").exists())
             worker = worker_path.read_text(encoding="utf-8")
-            self.assertIn("pandora-remaked-2026.09.4", worker)
+            self.assertIn("pandora-remaked-3.11", worker)
             for relative in (
                 "./index.html",
                 "./css/fixture.txt",

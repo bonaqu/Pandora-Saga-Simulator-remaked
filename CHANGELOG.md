@@ -2,6 +2,38 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Modern 3.11 — automatic updates, cleaner Equipment and faster delivery, 2026-10-05
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- В Equipment убраны две лишние верхние кнопки поиска экипировки и Souls: поиск не удалён и по-прежнему открывается прямо из каждого слота оружия, щита, брони и каждой доступной ячейки Soul.
+- Возвращён мягкий полупрозрачный фон стоимости характеристик 2P/3P и отполированы компактные поля персонажа, верховая езда и заголовки навыков; исправлена гонка hover-preview при автоматической прокрутке списка предметов.
+- Новые версии сайта теперь сами обнаруживают и активируют свежий Service Worker. Обычное открытие страницы, F5, возврат во вкладку или восстановление сети подхватывают новый кэш без обязательного Ctrl+F5; автосохранение и офлайн-режим сохранены.
+- Окно «Что нового» и номер Remaked UI теперь собираются из верхнего релиза CHANGELOG, поэтому версия сайта и последние изменения больше не должны расходиться вручную.
+- Публикация проекта стала заметно быстрее: проверки распараллелены без удаления покрытия, WebKit использует закреплённый Playwright image, Chromium в headless CI не скачивает лишний полный браузер, а проверенный merge повторно не гоняет уже пройденные тяжёлые проверки.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Equipment no longer shows duplicate top-level Equipment Search and Soul Search actions. Search is still available where it belongs: inside every equipment picker and every visible Soul socket.
+- The soft translucent 2P/3P stat-cost treatment is restored, compact character/riding/skill alignment is polished, and an item-preview hover race caused by automatic picker scrolling is fixed.
+- Fresh deployments now discover and activate the new Service Worker automatically. Normal navigation, F5, returning to the tab or coming back online can adopt the new cache without requiring Ctrl+F5; autosave and offline behavior are preserved.
+- The on-site “What’s new” panel and Remaked UI version are now generated from the latest CHANGELOG release, so release notes and the visible version no longer need separate manual synchronization.
+- Delivery is substantially faster without dropping test coverage: browser work is sharded, WebKit uses a pinned Playwright image, headless Chromium avoids the unnecessary full browser download, and trusted merges reuse the exact successful PR validation instead of repeating it.
+<!-- /release-notes:en -->
+
+### Project and delivery details
+
+- PR #46 polished stat costs, riding alignment and skill headers; PR #47/#48 restored the intended translucent stat-cost background and kept the newer centering.
+- PR #48/#49 restructured Feature CI and Pages into parallel, exact-head-validated paths. The original roughly 16-minute Feature CI and roughly 15-minute deploy were reduced to the low single-digit-minute range without deleting the aggregate safety gate.
+- PR #50 removed only the duplicate Equipment/Soul discovery toolbar. Slot-level search, compatibility rules, formulas, catalogs, saves and Legacy behavior were retained.
+- PR #52/#53 measured Playwright setup instead of blindly caching it: WebKit moved to the pinned `mcr.microsoft.com/playwright:v1.63.0-noble` image, Chromium headless jobs use `--only-shell`, and duplicate trusted-deploy projections were removed. A measured Feature CI run reached about 2m31s and the normal trusted Pages path about one minute of execution.
+- The same work exposed and fixed a real Equipment item-preview scroll/hover race rather than masking it with larger test timeouts.
+- PR #55/#56 fixed stale PWA assets after deploy. Update checks bypass the HTTP cache for the worker script, new workers activate safely, first install is not mistaken for an update in WebKit, and fresh navigation HTML can bridge users still controlled by the pre-fix cached runtime.
+- Public documentation was reorganized around player help, project status, architecture, history and roadmap. Maintainer-only administrator instructions were removed from the public documentation set and preserved separately for the project owner. Feature CI now rejects user-facing runtime/UI changes that omit a CHANGELOG update.
+
 ## Modern 3.10 — conditional active-skill profiles, candidate
 
 - Existing active skills can have bounded class/level/branch variants without

@@ -16,12 +16,13 @@ test('generated indexes map stable IDs back to the live Legacy runtime', async (
   expect(projections.equipment.count).toBe(1120);
   expect(projections.souls.count).toBe(184);
   expect(projections.skills.count).toBe(211);
+  const currentUi = await page.evaluate(() => PandoraRemakedVersion.ui);
   for (const projection of Object.values(projections)) {
     expect(projection.metadata).toMatchObject({
       schema_version: 1,
       projection_version: 'v1',
       legacy_engine: '2.00',
-      remaked_ui: '3.10'
+      remaked_ui: currentUi
     });
   }
 
