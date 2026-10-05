@@ -126,6 +126,24 @@ class PwaBuildTests(unittest.TestCase):
                 {("192x192", "any maskable"), ("512x512", "any maskable")},
             )
 
+    def test_modern_html_bootstraps_existing_service_worker_updates_without_touching_legacy(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            output = root / "_site"
+            build_pages(root, output)
+
+            html = (output / "index.html").read_text(encoding="utf-8")
+            legacy = (output / "legacy" / "index.html").read_text(encoding="utf-8")
+            self.assertIn("navigator.serviceWorker.getRegistration()", html)
+            self.assertIn("registration.update().then(activateWaiting)", html)
+            self.assertIn("registration.waiting.postMessage({ type: 'SKIP_WAITING' })", html)
+            self.assertIn("navigator.serviceWorker.addEventListener('controllerchange'", html)
+            self.assertLess(
+                html.index("navigator.serviceWorker.getRegistration()"),
+                html.index('<link rel="stylesheet" href="./modern/modern.css" />'),
+            )
+            self.assertNotIn("navigator.serviceWorker.getRegistration()", legacy)
+
     def test_generates_versioned_root_service_worker_with_bounded_precache(self):
         with tempfile.TemporaryDirectory() as td:
             root = self.make_root(pathlib.Path(td))
