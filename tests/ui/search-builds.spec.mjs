@@ -273,10 +273,17 @@ test('equipment picker renders native type separators as headings and can filter
   const target = await page.evaluate(() => window.PandoraRemaked.adapter.listEquipmentTargets()
     .map((candidate) => {
       const options = window.PandoraRemaked.adapter.listEquipmentOptions(candidate.slotIndex);
-      const categories = options
-        .map((option) => String(option.name || '').match(/^\\+-----\\s*(.+?)\\s*$/)?.[1]?.trim() || '')
-        .filter(Boolean);
-      return { candidate, categories: [...new Set(categories)] };
+      let currentCategory = '';
+      const categories = [];
+      for (const option of options) {
+        const heading = String(option.name || '').match(/^\\+-----\\s*(.+?)\\s*$/)?.[1]?.trim() || '';
+        if (heading) {
+          currentCategory = heading;
+          continue;
+        }
+        if (currentCategory && !categories.includes(currentCategory)) categories.push(currentCategory);
+      }
+      return { candidate, categories };
     })
     .find((entry) => entry.categories.length >= 2));
   expect(target).toBeTruthy();
