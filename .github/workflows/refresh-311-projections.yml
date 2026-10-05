@@ -1,0 +1,70 @@
+name: Refresh 3.11 projections
+
+on:
+  push:
+    branches:
+      - release/modern-3.11-docs-changelog
+    paths:
+      - .github/workflows/refresh-311-projections.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: release/modern-3.11-docs-changelog
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install chromium --with-deps --only-shell
+
+      - name: Preserve current projections
+        run: |
+          mkdir -p /tmp/projections-before
+          cp data/generated/equipment.v1.json /tmp/projections-before/
+          cp data/generated/souls.v1.json /tmp/projections-before/
+          cp data/generated/skills.v1.json /tmp/projections-before/
+
+      - name: Regenerate projections
+        run: npm run extract:data
+
+      - name: Prove only UI metadata changed
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+
+          for name in ("equipment.v1.json", "souls.v1.json", "skills.v1.json"):
+              before = json.loads((Path("/tmp/projections-before") / name).read_text(encoding="utf-8"))
+              after = json.loads((Path("data/generated") / name).read_text(encoding="utf-8"))
+              old = before["metadata"].get("remaked_ui")
+              new = after["metadata"].get("remaked_ui")
+              if old != "3.10" or new != "3.11":
+                  raise SystemExit(f"{name}: unexpected UI metadata transition {old!r} -> {new!r}")
+              before["metadata"]["remaked_ui"] = new
+              if before != after:
+                  raise SystemExit(f"{name}: projection content changed beyond metadata.remaked_ui")
+              print(f"{name}: verified only remaked_ui 3.10 -> 3.11")
+
+      - name: Commit generated metadata
+        run: |
+          set -euo pipefail
+          git add data/generated/equipment.v1.json data/generated/souls.v1.json data/generated/skills.v1.json
+          git diff --cached --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "data: refresh generated projection metadata for 3.11"
+          git push origin HEAD:release/modern-3.11-docs-changelog
