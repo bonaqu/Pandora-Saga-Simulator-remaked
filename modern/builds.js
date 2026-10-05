@@ -774,13 +774,14 @@
   }
 
   function createBuildTools() {
-    var tools = document.querySelector('[data-remaked-tools]');
-    if (!tools) return;
+    var actions = document.querySelector('[data-remaked-build-actions]');
+    var statusHost = document.querySelector('[data-remaked-nav-row]');
+    if (!actions || !statusHost) return;
 
     var buildsButton = button('Builds', 'remaked-tool-button', 'builds.button');
     buildsButton.dataset.remakedBuildsOpen = '';
     buildsButton.addEventListener('click', openManager);
-    (document.querySelector('[data-remaked-build-actions]') || tools).appendChild(buildsButton);
+    actions.appendChild(buildsButton);
 
     autosaveStatus = document.createElement('span');
     autosaveStatus.className = 'remaked-autosave';
@@ -788,7 +789,7 @@
     autosaveStatus.setAttribute('aria-live', 'polite');
     if (i18n && typeof i18n.bindText === 'function') i18n.bindText(autosaveStatus, 'builds.autosavePending');
     else autosaveStatus.textContent = 'Autosave…';
-    tools.appendChild(autosaveStatus);
+    statusHost.appendChild(autosaveStatus);
   }
 
   function bindLegacyChanges() {
