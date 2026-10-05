@@ -348,8 +348,16 @@ def _publish_translation_workbook(root: pathlib.Path, output: pathlib.Path) -> N
 def _materialize_generated_data(root: pathlib.Path, output: pathlib.Path) -> None:
     destination = output / "data" / "generated"
     destination.mkdir(parents=True)
+    ui_version = _read_ui_version(root)
     for relative in REQUIRED_GENERATED:
-        shutil.copy2(root / relative, destination / pathlib.Path(relative).name)
+        source = root / relative
+        payload = json.loads(source.read_text(encoding="utf-8"))
+        metadata = payload.setdefault("metadata", {})
+        metadata["remaked_ui"] = ui_version
+        (destination / pathlib.Path(relative).name).write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
 
 
 RELEASE_HEADING_RE = re.compile(
