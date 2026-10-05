@@ -62,6 +62,10 @@ jobs:
                 ;;
             esac
             case "$file" in
+              CHANGELOG.md)
+                # CHANGELOG now generates the visible UI version and What's new runtime data.
+                docs_only=false
+                ;;
               *.md|docs/*|.github/ISSUE_TEMPLATE/*)
                 ;;
               *)
