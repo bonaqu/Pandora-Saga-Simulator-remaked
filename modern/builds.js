@@ -6,7 +6,9 @@
   var store = namespace.buildStore;
   var i18n = namespace.i18n;
   var DEBOUNCE_MS = 300;
+  var RESTORED_STATUS_MS = 4500;
   var timer = null;
+  var autosaveSettleTimer = null;
   var lastSavedPayload = null;
   var autosaveStatus = null;
   var managerOverlay = null;
@@ -34,10 +36,36 @@
     return now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
   }
 
+  function clearAutosaveSettleTimer() {
+    if (autosaveSettleTimer !== null) {
+      window.clearTimeout(autosaveSettleTimer);
+      autosaveSettleTimer = null;
+    }
+  }
+
+  function autosaveEnabledLabel() {
+    return i18n && typeof i18n.getLocale === 'function' && i18n.getLocale() === 'ru'
+      ? 'Автосохранение включено'
+      : 'Autosave enabled';
+  }
+
   function setAutosaveStatus(message, state) {
+    clearAutosaveSettleTimer();
     if (!autosaveStatus) return;
+    delete autosaveStatus.dataset.remakedI18n;
+    delete autosaveStatus.dataset.remakedI18nValues;
     autosaveStatus.textContent = message;
     autosaveStatus.dataset.state = state || 'ready';
+  }
+
+  function showRestoredAutosaveStatus() {
+    showRestoredAutosaveStatus();
+    autosaveSettleTimer = window.setTimeout(function () {
+      autosaveSettleTimer = null;
+      if (!autosaveStatus || autosaveStatus.dataset.state !== 'restored') return;
+      autosaveStatus.textContent = autosaveEnabledLabel();
+      autosaveStatus.dataset.state = 'ready';
+    }, RESTORED_STATUS_MS);
   }
 
   function setManagerStatus(message, state) {
@@ -425,7 +453,7 @@
     }
     if (!read.record) {
       try { lastSavedPayload = currentPayload(); } catch (error) { lastSavedPayload = null; }
-      setAutosaveStatus(t('builds.autosaveReady', null, 'Autosave ready'), 'ready');
+      setAutosaveStatus(autosaveEnabledLabel(), 'ready');
       return;
     }
 
@@ -790,6 +818,11 @@
     if (i18n && typeof i18n.bindText === 'function') i18n.bindText(autosaveStatus, 'builds.autosavePending');
     else autosaveStatus.textContent = 'Autosave…';
     statusHost.appendChild(autosaveStatus);
+    window.addEventListener('pandora-remaked:localechange', function () {
+      if (autosaveStatus && autosaveStatus.dataset.state === 'ready') {
+        autosaveStatus.textContent = autosaveEnabledLabel();
+      }
+    });
   }
 
   function bindLegacyChanges() {
