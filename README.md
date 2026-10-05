@@ -33,9 +33,8 @@ The main site opens in **Modern Mode**:
 - English interface by default;
 - Japanese and Traditional Chinese legacy data remain available;
 - responsive application shell for desktop, ultrawide, tablet and phone screens;
-- **Equipment Search** with name and level filters over the current compatible legacy options;
-- **Equipment selection** in compact dropdowns beside the original fields, with item/Soul characteristics, deliberate desktop hover and a separate touch info action; review never equips a candidate;
-- **Soul Search** for currently available sockets and compatible legacy Soul options;
+- **searchable Equipment selection** directly inside each weapon/armor/accessory picker, with compatibility filtering, name/level search, item/Soul characteristics, deliberate desktop hover and a separate touch info action; review never equips a candidate;
+- **searchable Soul selection** directly inside each visible Soul socket, limited to compatible options;
 - automatic local autosave with recovery after refresh;
 - **Build Manager** for named local builds: save, load, rename, duplicate and delete;
 - import/export using the simulator's existing serialized build code;
@@ -45,7 +44,7 @@ The main site opens in **Modern Mode**:
 - an on-site **Updates** panel with separate Legacy/UI versions, release highlights and the full changelog;
 - a compact sticky character summary and collapsible detail cards on phone screens;
 - an installable PWA shell with reliable offline boot for both Modern and Legacy routes;
-- a non-blocking update notice that lets you finish or save work before reloading;
+- automatic PWA update checks and safe activation of fresh deployments without normally requiring Ctrl+F5; a fallback notice remains available if activation cannot complete;
 - one EN/RU/JP/TW language panel: RU with English fallback, or original JP/TW game data with the English Modern shell;
 - read-only item/Soul details in Modern search and a Share build link that restores the character in another browser;
 - all Remaked autosaves and named builds stay local to the current browser in this release.
