@@ -26,7 +26,7 @@ for (const width of [320, 390, 768, 1440]) {
         return { height: node.getBoundingClientRect().height, size: css.fontSize, radius: css.borderRadius };
       }
       const toolbar = [];
-      document.querySelectorAll('[data-remaked-tools] button, [data-remaked-build-actions] button').forEach(node => {
+      document.querySelectorAll('[data-remaked-build-actions] button').forEach(node => {
         const css = getComputedStyle(node);
         toolbar.push({ height: node.getBoundingClientRect().height, size: css.fontSize });
       });
@@ -34,10 +34,10 @@ for (const width of [320, 390, 768, 1440]) {
     });
     expect(metrics.overflow).toBeLessThanOrEqual(1);
     expect(metrics.install.height).toBe(metrics.language.height);
-    // Builds/Compare now occupy the former FILE/LOG space, not a second toolbar copy.
-    await expect(page.locator('[data-remaked-tools] button')).toHaveCount(2);
+    // Builds/Compare occupy the former FILE/LOG space; Equipment/Soul search lives in each slot picker.
+    await expect(page.locator('[data-remaked-tools]')).toHaveCount(0);
     await expect(page.locator('[data-remaked-build-actions] button')).toHaveCount(2);
-    expect(metrics.toolbar.length).toBe(4);
+    expect(metrics.toolbar.length).toBe(2);
     for (const entry of metrics.toolbar) expect(entry).toEqual(metrics.toolbar[0]);
     expect(parseFloat(metrics.toolbar[0].size)).toBeGreaterThanOrEqual(12);
     expect(metrics.toolbar[0].height).toBeGreaterThanOrEqual(width <= 620 ? 44 : 36);
