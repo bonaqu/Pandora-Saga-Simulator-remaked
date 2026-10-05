@@ -108,6 +108,7 @@ HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
     if (!registration) return;
     function activateWaiting() {
       if (registration.waiting && typeof registration.waiting.postMessage === 'function') {
+        window.__pandoraPwaBootstrapUpdating = true;
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       }
     }
