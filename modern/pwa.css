@@ -113,18 +113,19 @@
 }
 .remaked-modern .remaked-autosave {
   box-sizing: border-box;
+  position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: .4rem;
+  justify-content: flex-start;
+  gap: .42rem;
   flex: 0 0 13rem;
   min-width: 13rem;
   min-height: 1.9rem;
-  padding: .28rem .55rem;
-  border: 1px solid #bdd1a5;
-  border-radius: 7px;
-  background: rgba(247, 250, 242, .92);
-  color: #627058;
+  padding: .28rem .65rem .28rem .82rem;
+  border: 0;
+  border-radius: 3px;
+  background: rgba(232, 241, 222, .52);
+  color: #5b694f;
   font: 600 .75rem/1.2 var(--rm-font);
   white-space: nowrap;
 }
@@ -136,14 +137,22 @@
   flex: 0 0 auto;
   border-radius: 999px;
   background: #8aa96b;
-  box-shadow: 0 0 0 2px rgba(138, 169, 107, .12);
+  box-shadow: 0 0 0 2px rgba(138, 169, 107, .10);
+}
+
+.remaked-modern .remaked-autosave::after {
+  content: "";
+  position: absolute;
+  inset-block: .28rem;
+  inset-inline-start: 0;
+  width: 1px;
+  background: rgba(139, 158, 111, .38);
 }
 
 .remaked-modern .remaked-autosave[data-state="saved"],
 .remaked-modern .remaked-autosave[data-state="restored"],
 .remaked-modern .remaked-autosave[data-state="ready"] {
-  border-color: #a7c889;
-  background: rgba(242, 249, 236, .94);
+  background: rgba(232, 241, 222, .52);
   color: #4e752f;
 }
 
@@ -151,20 +160,19 @@
 .remaked-modern .remaked-autosave[data-state="restored"]::before,
 .remaked-modern .remaked-autosave[data-state="ready"]::before {
   background: #79a851;
-  box-shadow: 0 0 0 2px rgba(121, 168, 81, .14);
+  box-shadow: 0 0 0 2px rgba(121, 168, 81, .12);
 }
 
 .remaked-modern .remaked-autosave[data-state="warning"],
 .remaked-modern .remaked-autosave[data-state="error"] {
-  border-color: #d6b77c;
-  background: rgba(255, 249, 235, .95);
+  background: rgba(255, 247, 232, .74);
   color: #866126;
 }
 
 .remaked-modern .remaked-autosave[data-state="warning"]::before,
 .remaked-modern .remaked-autosave[data-state="error"]::before {
   background: #c79536;
-  box-shadow: 0 0 0 2px rgba(199, 149, 54, .12);
+  box-shadow: 0 0 0 2px rgba(199, 149, 54, .10);
 }
 @media (min-width: 621px) {
   .remaked-modern { --rm-control-height: 2.25rem; --rm-header-control-height: 2.25rem; }

@@ -87,7 +87,11 @@ test('reload restores the last compatible autosave and reports recovery', async 
   await page.reload();
   await expect(page.locator('[data-remaked-shell]')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(savedPayload);
-  await expect(page.locator('[data-remaked-autosave-status]')).toContainText('Restored');
+  const autosaveStatus = page.locator('[data-remaked-autosave-status]');
+  await expect(autosaveStatus).toContainText('Restored');
+  await expect(autosaveStatus).toHaveText('Autosave enabled', { timeout: 6000 });
+  await page.evaluate(() => window.PandoraRemaked.i18n.setLocale('ru'));
+  await expect(autosaveStatus).toHaveText('Автосохранение включено');
   expect(await page.evaluate(() => localStorage.getItem('file'))).toBe('legacy-sentinel');
 });
 
