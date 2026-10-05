@@ -1,5 +1,9 @@
 import { defineConfig } from '@playwright/test';
 
+const webServerCommand = process.env.PW_PREBUILT_SITE === '1'
+  ? 'node scripts/serve_pages.mjs _site'
+  : 'python scripts/build_pages.py --output _site && node scripts/serve_pages.mjs _site';
+
 export default defineConfig({
   testDir: './tests/ui',
   timeout: 30000,
@@ -19,7 +23,7 @@ export default defineConfig({
     screenshot: 'only-on-failure'
   },
   webServer: {
-    command: 'python scripts/build_pages.py --output _site && node scripts/serve_pages.mjs _site',
+    command: webServerCommand,
     url: 'http://127.0.0.1:8000',
     reuseExistingServer: true,
     timeout: 30000
