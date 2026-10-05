@@ -116,14 +116,22 @@
     if (registration.waiting && navigator.serviceWorker.controller) {
       requestUpdate(registration.waiting);
     }
-    registration.addEventListener('updatefound', function () {
-      var installing = registration.installing;
+    function watchInstalling(installing) {
       if (!installing) return;
+      // Capture whether an older active worker already controls this page now.
+      // On first install, clients.claim() may create a controller before the
+      // "installed" state callback runs (notably in WebKit); that must not be
+      // mistaken for an update and trigger a surprise reload.
+      var replacingActiveWorker = Boolean(registration.active && navigator.serviceWorker.controller);
       installing.addEventListener('statechange', function () {
-        if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+        if (installing.state === 'installed' && replacingActiveWorker) {
           requestUpdate(registration.waiting || installing);
         }
       });
+    }
+    if (registration.installing) watchInstalling(registration.installing);
+    registration.addEventListener('updatefound', function () {
+      watchInstalling(registration.installing);
     });
   }
 
