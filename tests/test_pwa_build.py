@@ -136,6 +136,7 @@ class PwaBuildTests(unittest.TestCase):
             legacy = (output / "legacy" / "index.html").read_text(encoding="utf-8")
             self.assertIn("navigator.serviceWorker.getRegistration()", html)
             self.assertIn("registration.update().then(activateWaiting)", html)
+            self.assertIn("window.__pandoraPwaBootstrapUpdating = true", html)
             self.assertIn("registration.waiting.postMessage({ type: 'SKIP_WAITING' })", html)
             self.assertIn("navigator.serviceWorker.addEventListener('controllerchange'", html)
             self.assertLess(
