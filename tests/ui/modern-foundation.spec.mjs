@@ -2,16 +2,19 @@ import { test, expect } from '@playwright/test';
 
 const repoUrl = 'https://github.com/bonaqu/Pandora-Saga-Simulator-remaked';
 
-test('Modern 3.10 identifies the rework version without relabeling the museum engine', async ({ page }) => {
+test('Modern derives the visible UI version from the latest changelog release without relabeling the museum engine', async ({ page }) => {
   await page.goto('/');
-  expect(await page.evaluate(() => ({ ...PandoraRemakedVersion }))).toEqual({ legacyEngine: '2.00', ui: '3.10' });
+  const release = await page.evaluate(() => ({ ...PandoraRemakedRelease }));
+  const version = await page.evaluate(() => ({ ...PandoraRemakedVersion }));
+  expect(version).toEqual({ legacyEngine: '2.00', ui: release.version });
+  expect(release.version).toMatch(/^\\d+\\.\\d+$/);
   expect(await page.evaluate(() => Ver)).toBe('2.00');
-  await expect(page.locator('[data-remaked-hero]')).toContainText('3.10');
+  await expect(page.locator('[data-remaked-hero]')).toContainText(release.version);
   await expect(page.locator('[data-remaked-hero]')).toContainText('2.00');
   const sourceTitles = await page.evaluate(() => Name.Title.slice());
   for (const language of ['EN', 'RU', 'JP', 'TW']) {
     await page.locator('[data-remaked-language-panel]').getByRole('button', { name: language, exact: true }).click();
-    const expected = await page.evaluate(() => Name.Title[Number(Flag[0]) + 1] + ' 3.10');
+    const expected = await page.evaluate(() => Name.Title[Number(Flag[0]) + 1] + ' ' + PandoraRemakedRelease.version);
     await expect(page.locator('#Title')).toHaveText(expected);
     expect(await page.evaluate(() => Name.Title.slice())).toEqual(sourceTitles);
     expect(await page.evaluate(() => Ver)).toBe('2.00');
