@@ -418,7 +418,7 @@
 .remaked-item-preview summary:focus-visible { outline: 2px solid #35591e; outline-offset: 2px; }
 .remaked-picker-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: end;
   gap: 6px;
 }
@@ -434,16 +434,28 @@
   position: sticky;
   top: -2px;
   z-index: 2;
-  margin: 4px 0 0;
+  margin-top: 4px;
+}
+.remaked-picker-group:first-child { margin-top: 0; }
+.remaked-picker-results .remaked-picker-group .remaked-search-result {
+  width: 100%;
+  min-height: 31px;
   padding: 5px 9px;
-  border-block: 1px solid #c7d5b5;
+  border-color: #c7d5b5;
+  border-radius: 5px;
   background: linear-gradient(180deg, #eef5e5 0%, #e5efda 100%);
   color: #536a42;
+}
+.remaked-picker-results .remaked-picker-group .remaked-search-result-name {
   font-size: 10px;
   font-weight: 800;
   letter-spacing: .025em;
 }
-.remaked-picker-group:first-child { margin-top: 0; }
+.remaked-picker-results .remaked-picker-group .remaked-search-result:hover,
+.remaked-picker-results .remaked-picker-group .remaked-search-result:focus-visible {
+  border-color: #9eb987;
+  background: #e2edd6;
+}
 .remaked-picker-results .remaked-search-row { position: relative; }
 .remaked-picker-results .remaked-search-result { width: calc(100% - 48px); position: relative; padding-left: 28px; }
 .remaked-picker-results .remaked-search-result:only-child { width: 100%; }
