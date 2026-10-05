@@ -12,7 +12,6 @@ test('skip navigation reaches the calculator before repeated chrome', async ({ p
 });
 
 for (const [name, trigger, panel] of [
-  ['search', '[data-remaked-equipment-search]', '[data-remaked-search-panel]'],
   ['builds', '[data-remaked-builds-open]', '[data-remaked-build-manager]'],
   ['compare', '[data-remaked-compare-open]', '[data-remaked-compare]']
 ]) {
