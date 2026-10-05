@@ -38,6 +38,9 @@ jobs:
           cp data/generated/souls.v1.json /tmp/projections-before/
           cp data/generated/skills.v1.json /tmp/projections-before/
 
+      - name: Build browser runtime
+        run: python3 scripts/build_pages.py --output _site
+
       - name: Regenerate projections
         run: npm run extract:data
 
