@@ -287,8 +287,67 @@
     return button;
   }
 
-  function renderEmpty(container, message) {
-    container.replaceChildren(element('div', 'remaked-search-empty', message));
+  function localeText(russian, english) {
+    return i18n && typeof i18n.getLocale === 'function' && i18n.getLocale() === 'ru' ? russian : english;
+  }
+
+  function renderEmpty(container, message, onReset) {
+    var empty = element('div', 'remaked-search-empty');
+    empty.appendChild(element('span', 'remaked-search-empty-message', message));
+    if (typeof onReset === 'function') {
+      var reset = element('button', 'remaked-search-empty-reset', localeText('Сбросить фильтр', 'Reset filter'));
+      reset.type = 'button';
+      reset.dataset.remakedSearchEmptyReset = '';
+      reset.addEventListener('click', onReset);
+      empty.appendChild(reset);
+    }
+    container.replaceChildren(empty);
+  }
+
+  function equipmentCategory(option) {
+    var source = String(option && option.name || '');
+    var match = source.match(/^\+-----\s*(.+?)\s*$/);
+    if (!match) return '';
+    var label = match[1].trim();
+    return gameName(equipmentTermId(option.value), label);
+  }
+
+  function pickerEquipmentEntries(options) {
+    var currentCategory = '';
+    var categories = [];
+    var entries = [];
+    (options || []).forEach(function (option) {
+      var heading = equipmentCategory(option);
+      if (heading) {
+        currentCategory = heading;
+        if (categories.indexOf(heading) === -1) categories.push(heading);
+        return;
+      }
+      entries.push({ option: option, category: currentCategory });
+    });
+    return { entries: entries, categories: categories };
+  }
+
+  function syncPickerTypeFilter(select, categories) {
+    if (!select) return '';
+    var previous = select.value;
+    var all = localeText('Все типы', 'All types');
+    var fragment = document.createDocumentFragment();
+    var any = document.createElement('option');
+    any.value = '';
+    any.textContent = all;
+    fragment.appendChild(any);
+    categories.forEach(function (category) {
+      var option = document.createElement('option');
+      option.value = category;
+      option.textContent = category;
+      fragment.appendChild(option);
+    });
+    select.replaceChildren(fragment);
+    if (categories.indexOf(previous) !== -1) select.value = previous;
+    select.hidden = categories.length < 2;
+    select.setAttribute('aria-label', localeText('Фильтр по типу', 'Filter by type'));
+    return select.value;
   }
 
   function resultRow(button, kind, value, targetSlot) {
@@ -450,22 +509,71 @@
     shell.panel.querySelector('h2').removeAttribute('data-remaked-i18n');
     shell.panel.querySelector('h2').textContent = adapter.listEquipmentTargets().find(function (target) { return target.slotIndex === slot; }).label + (fieldIndex ? ' · Soul ' + (fieldIndex - 3) : '');
     var query = queryInput(kind === 'equipment' ? 'search.equipment.placeholder' : 'search.soul.placeholder', 'Search…');
-    shell.body.appendChild(field('search.name', 'Name', query));
+    var pickerControls = element('div', 'remaked-picker-controls');
+    pickerControls.appendChild(field('search.name', 'Name', query));
+    var typeFilter = null;
+    if (kind === 'equipment') {
+      typeFilter = element('select', 'remaked-search-select remaked-picker-type-filter');
+      typeFilter.dataset.remakedPickerTypeFilter = '';
+      pickerControls.appendChild(typeFilter);
+    }
+    shell.body.appendChild(pickerControls);
+    var summary = element('div', 'remaked-search-summary remaked-picker-summary');
+    summary.dataset.remakedSearchSummary = '';
+    shell.body.appendChild(summary);
     var results = element('div', 'remaked-search-results remaked-picker-results');
     results.dataset.remakedSearchResults = '';
     shell.body.appendChild(results);
+
+    // Picker keyboard UX already used native buttons for Enter and result-to-result
+    // Arrow navigation. Capture Escape here so one press always closes the picker,
+    // even when an item preview happens to be open.
+    shell.panel.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      event.stopPropagation();
+      closePanel();
+    }, true);
+
+    function resetPickerFilters() {
+      query.value = '';
+      if (typeFilter) typeFilter.value = '';
+      render();
+      query.focus();
+    }
+
     function render() {
       cancelPreviews();
       active.cancelPreviews = [];
       var current = document.getElementById(selectId);
       if (!current || current.style.display === 'none') { closePanel(); return; }
       var options = kind === 'equipment' ? adapter.listEquipmentOptions(slot) : adapter.listSoulOptions({ slotIndex: slot, socketIndex: fieldIndex });
-      var filtered = options.filter(function (option) {
+      var equipmentEntries = kind === 'equipment' ? pickerEquipmentEntries(options) : null;
+      var entries = kind === 'equipment'
+        ? equipmentEntries.entries
+        : options.map(function (option) { return { option: option, category: '' }; });
+      var selectedType = kind === 'equipment' ? syncPickerTypeFilter(typeFilter, equipmentEntries.categories) : '';
+      var needle = normalizeQuery(query.value);
+      var filtered = entries.filter(function (entry) {
+        var option = entry.option;
+        if (selectedType && entry.category !== selectedType) return false;
         var id = kind === 'equipment' ? equipmentTermId(option.value) : soulTermId(option.value);
-        return normalizeQuery(option.name + ' ' + gameName(id, option.name)).indexOf(normalizeQuery(query.value)) !== -1;
+        return !needle || normalizeQuery(option.name + ' ' + gameName(id, option.name)).indexOf(needle) !== -1;
       });
+      summary.textContent = kind === 'equipment'
+        ? t('search.equipmentSummary', { shown: filtered.length, total: entries.length }, filtered.length + ' of ' + entries.length + ' compatible items')
+        : t('search.soulSummary', { total: filtered.length }, filtered.length + ' compatible Souls');
+
       var fragment = document.createDocumentFragment();
-      filtered.forEach(function (option) {
+      var lastCategory = null;
+      filtered.forEach(function (entry) {
+        var option = entry.option;
+        if (kind === 'equipment' && entry.category && entry.category !== lastCategory) {
+          var group = element('div', 'remaked-picker-group', entry.category);
+          group.dataset.remakedPickerGroup = entry.category;
+          fragment.appendChild(group);
+        }
+        lastCategory = entry.category;
         var id = kind === 'equipment' ? equipmentTermId(option.value) : soulTermId(option.value);
         var button = resultButton({ value: option.value, name: gameName(id, option.name) }, option.level == null ? '' : t('search.level', { level: option.level }, 'Lv ' + option.level));
         button.dataset.selected = current.value === String(option.value) ? 'true' : 'false';
@@ -477,7 +585,13 @@
         fragment.appendChild(resultRow(button, kind, option.value, slot));
       });
       results.replaceChildren(fragment);
-      if (!filtered.length) renderEmpty(results, t(kind === 'equipment' ? 'search.noEquipmentMatches' : 'search.noSoulMatches', null, 'No matches'));
+      if (!filtered.length) {
+        renderEmpty(
+          results,
+          t(kind === 'equipment' ? 'search.noEquipmentMatches' : 'search.noSoulMatches', null, 'No matches'),
+          resetPickerFilters
+        );
+      }
     }
     // Native buttons + disclosures, not a fake listbox containing interactive
     // children. Tab traverses actions; arrows provide an additional shortcut.
@@ -492,6 +606,7 @@
     });
     active.render = render;
     query.addEventListener('input', render);
+    if (typeFilter) typeFilter.addEventListener('change', render);
     render();
     // Touch users first want to pick an item, not open a software keyboard.
     // Search remains directly tappable; keyboard users retain immediate focus.
@@ -571,7 +686,13 @@
       });
       summary.textContent = t('search.equipmentSummary', { shown: filtered.length, total: options.length }, filtered.length + ' of ' + options.length + ' compatible items');
       if (!filtered.length) {
-        renderEmpty(results, t('search.noEquipmentMatches', null, 'No matching equipment'));
+        renderEmpty(results, t('search.noEquipmentMatches', null, 'No matching equipment'), function () {
+          query.value = '';
+          minLevel.value = '';
+          maxLevel.value = '';
+          render();
+          query.focus();
+        });
         return;
       }
       var fragment = document.createDocumentFragment();
@@ -660,7 +781,11 @@
       });
       summary.textContent = t('search.soulSummary', { total: options.length }, options.length + ' compatible Souls');
       if (!options.length) {
-        renderEmpty(results, t('search.noSoulMatches', null, 'No matching Souls'));
+        renderEmpty(results, t('search.noSoulMatches', null, 'No matching Souls'), function () {
+          query.value = '';
+          render();
+          query.focus();
+        });
         return;
       }
       var fragment = document.createDocumentFragment();
