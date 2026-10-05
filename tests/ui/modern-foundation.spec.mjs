@@ -7,7 +7,7 @@ test('Modern derives the visible UI version from the latest changelog release wi
   const release = await page.evaluate(() => ({ ...PandoraRemakedRelease }));
   const version = await page.evaluate(() => ({ ...PandoraRemakedVersion }));
   expect(version).toEqual({ legacyEngine: '2.00', ui: release.version });
-  expect(release.version).toMatch(/^\\d+\\.\\d+$/);
+  expect(release.version).toMatch(/^\d+\.\d+$/);
   expect(await page.evaluate(() => Ver)).toBe('2.00');
   await expect(page.locator('[data-remaked-hero]')).toContainText(release.version);
   await expect(page.locator('[data-remaked-hero]')).toContainText('2.00');
