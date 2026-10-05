@@ -1,0 +1,57 @@
+name: Export private maintainer docs
+
+on:
+  push:
+    branches:
+      - release/modern-3.11-docs-changelog
+    paths:
+      - .github/workflows/export-private-docs.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout with history
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Export removed maintainer documents from base branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin bonaqu_projects
+          root="private-docs"
+          mkdir -p "$root/docs/superpowers/plans"
+          files=(
+            "docs/ADMIN_EDITING_FOR_BEGINNERS.ru.md"
+            "docs/ADMIN_NEW_SKILLS.ru.md"
+            "docs/ADMIN_OPERATIONS.ru.md"
+            "docs/RELEASE_ACCEPTANCE.md"
+            "docs/superpowers/plans/2026-09-30-modern-3-admin.md"
+          )
+          for file in "${files[@]}"; do
+            mkdir -p "$root/$(dirname "$file")"
+            git show "origin/bonaqu_projects:$file" > "$root/$file"
+          done
+          cat > "$root/README.txt" <<'EOF'
+          Pandora Saga Simulator Remaked — private maintainer documentation archive
+          Exported from bonaqu_projects before the public documentation cleanup on 2026-10-05.
+
+          These files were intentionally removed from the public documentation because they contain
+          owner/admin operating instructions, private operational evidence, or an administrator
+          implementation plan. Keep this archive private if those details should not be public.
+          EOF
+          zip -r pandora-admin-maintainer-docs-2026-10-05.zip "$root"
+
+      - name: Upload archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: pandora-admin-maintainer-docs-2026-10-05
+          path: pandora-admin-maintainer-docs-2026-10-05.zip
+          if-no-files-found: error
+          retention-days: 1
