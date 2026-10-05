@@ -1,20 +1,7 @@
 (function () {
   'use strict';
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
-  var timer = null, discoveryAnchor = null;
-  function positionDiscovery(section) {
-    var tools = document.querySelector('[data-remaked-tools]');
-    if (!tools) return;
-    if (!discoveryAnchor) {
-      discoveryAnchor = document.createComment('Modern discovery tools home'); tools.before(discoveryAnchor);
-    }
-    if (window.matchMedia('(min-width: 861px)').matches) {
-      if (tools.closest('[data-remaked-picker-section]')) return;
-      var holder = section.querySelector('[data-remaked-picker-discovery]');
-      if (!holder) { holder = document.createElement('li'); holder.dataset.remakedPickerDiscovery = ''; section.firstElementChild.appendChild(holder); }
-      holder.appendChild(tools);
-    } else if (tools.closest('[data-remaked-picker-section]')) discoveryAnchor.after(tools);
-  }
+  var timer = null;
   function refresh() {
     var labels = {};
     namespace.adapter.listEquipmentTargets().forEach(function (target) { labels[target.slotIndex] = target.label; });
@@ -29,12 +16,7 @@
       slotRow.dataset.remakedPickerSlot = '';
       slotRow.firstElementChild.dataset.remakedPickerSlotLabel = '';
       var section = slotRow.closest('.main');
-      if (section) {
-        section.dataset.remakedPickerSection = '';
-        // The same controls belong beside Equipment on PC and above the long
-        // calculator on phones. Move nodes, preserving callbacks/autosave.
-        positionDiscovery(section);
-      }
+      if (section) section.dataset.remakedPickerSection = '';
       var match = select.id.match(/^SelEquip_(\d+)_(0|[4-6])$/);
       if (!match) return;
       var button = select._remakedPicker;
