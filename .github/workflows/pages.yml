@@ -232,6 +232,7 @@ jobs:
         run: npm run test:ui:visual -- --project=chromium
 
       - name: Verify deterministic lightweight projections
+        if: steps.gate.outputs.full_validation == 'true'
         run: |
           npm run test:translations
           npm run test:source-audit
