@@ -332,6 +332,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
                 "modern/icon-192.svg",
                 "modern/icon-512.svg",
                 "modern/version.js",
+                "modern/release-notes.js",
                 "modern/locales.js",
                 "modern/game-terms.js",
                 "modern/i18n.js",
