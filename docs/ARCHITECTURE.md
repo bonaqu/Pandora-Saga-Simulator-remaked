@@ -4,7 +4,7 @@ Modern share/installation metadata is injected only at the build boundary: absol
 
 ## Summary
 
-Pandora Saga Simulator is a static, browser-side application. The restored deployment has no application server, PHP runtime or database.
+Pandora Saga Simulator's public calculator is delivered as a static, browser-side GitHub Pages application. The preserved Legacy 2.00 engine and the Modern UI run in the browser. Modern may additionally read immutable public catalog revisions from a separate service; player use does not require an account, server-rendered application or PHP runtime.
 
 ```mermaid
 flowchart TB
@@ -72,7 +72,7 @@ Build sharing uses validated `#build=` payloads through the safe-load adapter. A
 
 Modern search, build manager, compare and Updates use native modal dialogs. The browser makes background content inert; a shared boundary handler wraps Tab/Shift+Tab at the dialog's focusable ends. Equipment uses an anchored nonmodal dropdown instead; a delayed preview cancels on deliberate scrolling and review never equips an item. Closing returns focus to the opener. Escape dismisses a focused stat tooltip before its parent dialog. A first-focusable skip link moves to the calculator main landmark. These are tested DOM/keyboard contracts, not a claim of full screen-reader conformance.
 
-The service worker cache key includes a deterministic fingerprint of its precached files. Updating only workbook translations changes the generated catalogs and cache key, allowing the normal update notice to deliver them to existing offline installations.
+The service worker cache key includes a deterministic fingerprint of its precached files. Updating only workbook translations changes the generated catalogs and cache key. Modern 3.11 checks the worker script without reusing its HTTP cache, activates real updates automatically and uses fresh navigation HTML to bridge clients still controlled by an older cached runtime. Normal navigation/refresh, returning to the tab or coming back online can therefore adopt the fresh cache without requiring Ctrl+F5.
 
 ```mermaid
 sequenceDiagram
@@ -92,11 +92,13 @@ sequenceDiagram
     Pages-->>Pages: serve index.html + local assets
 ```
 
-## Why no backend?
+## Backend boundary
 
-All known recovered simulator behavior is implemented in client-side files. Adding a server would increase maintenance and cost without improving preservation.
+The preserved calculator remains client-side. Legacy formulas, source item/skill arrays, build serialization and the museum route are not moved into a server-side reimplementation.
 
-A backend should only be introduced for genuinely server-side features such as accounts, cross-device saved builds, public build IDs backed by persistent storage, or an API.
+Modern can read a separate versioned catalog service for explicitly published catalog revisions. Those public revisions are treated as data inputs around the preservation core: saved/shared builds retain their pinned revision, and adopting a newer revision is an explicit action.
+
+Player builds remain local to the browser unless the user deliberately exports or shares them. The public site does not require a player account or cloud-save backend. Private catalog-maintenance authentication and operating procedures are intentionally outside this public architecture document.
 
 ## Preservation boundary
 
@@ -133,34 +135,14 @@ The original calculator logic and data are treated as the preservation core. Hos
 That separation makes it possible to modernize the project later without silently changing the preserved calculator.
 
 Three archived codec files (`base64.js`, `rawinflate.js`, `rawdeflate.js`) are CodeRepos Trac HTML snapshots containing their original source in numbered code tables. `scripts/recover_archived_javascript.py` extracts those source cells during Pages generation, decodes HTML entities and reverses Trac's non-breaking-space formatting. It rejects missing/incomplete tables. Repository snapshots and preservation hashes stay unchanged; published Modern and Legacy runtime copies receive the recovered original JavaScript. This is a transport recovery, with the existing compressed File format checked by browser round-trips.
-# Modern 3.00 and administrator catalog
+# Versioned Modern catalog layer
 
-The owner has authorized a separate Cloudflare Worker/D1 administrator catalog.
-Its plan is [Modern 3.00 and admin](superpowers/plans/2026-09-30-modern-3-admin.md).
-Worker auth, the initial six editor kinds and their Pages consumer are published
-through PR24. A subsequent direct Worker-native login regression was corrected in PR25
-without changing the password or admitting null/foreign origins. Museum Legacy
-2.00 remains unchanged. See `RELEASE_ACCEPTANCE.md` for the exact gates.
-The translation workbook now supports optional English display overrides in
-column I as well as Russian in H; A:G remain preserved source references.
+Modern can consume immutable public catalog revisions alongside the preserved Legacy source. This layer exists so verified data corrections can be published without rewriting the historical calculator files.
 
-Catalog revisions are immutable public snapshots. Existing saved/shared builds
-keep their pin; explicit **Update current build** checks the live public head
-without an offline-head fallback. It projects and preflights current item,
-class/race compatibility and occupied Soul sockets before any runtime mutation.
-The revision changes through the same safe adapter load, retaining numeric CSV
-and C1 context. Named records are not rewritten. A stale request, changed link,
-closed manager, incompatible projection or protected unavailable autosave cannot
-replace the character. Calculation failure attempts the original revision/context
-restore; an unverified restore is surfaced and pauses autosave until recovery.
-Storage quota failure keeps the old save and explicitly reports unsaved state.
-Successful explicit adoption, code import or named load removes only an obsolete
-`#build=` fragment, so reload cannot override the new autosave with an old shared build.
+The translation workbook supports optional English display overrides in column I and Russian in H; A:G remain preserved source references.
 
-Every asynchronous build load also captures a monotonic intent, current payload
-and hash before fetching. New imports/loads, character input (including edits
-back to the original value), Code edits and closing Builds invalidate older
-intents. Pending named loads recheck that the record still exists and matches.
-Only a current intent can mutate runtime or saves. Stale completion/error UI
-cannot overwrite newer feedback or steal focus. Revision validation shares
-the serialized PS3 format's nine-digit upper bound.
+Catalog revisions are immutable public snapshots. Existing saved/shared builds keep their pin; explicit **Update current build** checks the current public head and preflights item, class/race compatibility and occupied Soul sockets before any runtime mutation. Named records are not rewritten automatically.
+
+A failed or stale update cannot silently replace the character. Revision/context restoration, autosave safeguards and serialized build limits are enforced in the Modern adapter layer around the preserved engine.
+
+Private catalog-maintenance authentication, credentials and publication procedures are deliberately not documented here. The public architecture only describes the player-visible data boundary and compatibility behavior.
