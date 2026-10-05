@@ -165,11 +165,15 @@ jobs:
           if-no-files-found: warn
           retention-days: 1
 
-  browser_core_1:
+  browser_core:
     needs: classify
     if: needs.classify.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -186,59 +190,20 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run browser contract shard 1
+      - name: Run browser contract shard ${{ matrix.shard }}/3
         id: browser
         shell: bash
         run: |
           mkdir -p .ci-artifacts
-          npm run test:ui:ci -- --project=chromium --shard=1/2 --reporter=json > .ci-artifacts/browser-report-1.json
+          npm run test:ui:ci -- --project=chromium --shard=${{ matrix.shard }}/3 --reporter=json > .ci-artifacts/browser-report-${{ matrix.shard }}.json
 
-      - name: Upload browser shard 1 report
+      - name: Upload browser shard ${{ matrix.shard }} report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: feature-browser-report-1
+          name: feature-browser-report-${{ matrix.shard }}
           path: |
-            .ci-artifacts/browser-report-1.json
-            test-results/**/test-failed-*.png
-          if-no-files-found: warn
-          retention-days: 1
-
-  browser_core_2:
-    needs: classify
-    if: needs.classify.outputs.docs_only != 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci --no-audit --no-fund
-
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-
-      - name: Run browser contract shard 2
-        id: browser
-        shell: bash
-        run: |
-          mkdir -p .ci-artifacts
-          npm run test:ui:ci -- --project=chromium --shard=2/2 --reporter=json > .ci-artifacts/browser-report-2.json
-
-      - name: Upload browser shard 2 report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: feature-browser-report-2
-          path: |
-            .ci-artifacts/browser-report-2.json
+            .ci-artifacts/browser-report-${{ matrix.shard }}.json
             test-results/**/test-failed-*.png
           if-no-files-found: warn
           retention-days: 1
@@ -248,6 +213,12 @@ jobs:
     if: needs.classify.outputs.full_required == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
+    env:
+      PW_FULLY_PARALLEL: '1'
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -264,10 +235,10 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Audit every selectable source catalog record against the museum
-        run: npm run test:ui:catalog-audit
+      - name: Audit source catalog shard ${{ matrix.shard }}/2
+        run: npm run test:ui:catalog-audit -- --shard=${{ matrix.shard }}/2
 
-  catalog_contract:
+  catalog_admin:
     needs: classify
     if: needs.classify.outputs.full_required == 'true'
     runs-on: ubuntu-latest
@@ -291,26 +262,15 @@ jobs:
       - name: Verify admin editor with synthetic sessions only
         run: npm run test:ui:admin
 
-      - name: Verify versioned catalog calculations and offline recipients
-        run: >
-          npm run test:ui --
-          tests/ui/catalog-adapter.spec.mjs
-          tests/ui/catalog-adoption.spec.mjs
-          tests/ui/build-load-races.spec.mjs
-          tests/ui/skill-catalog.spec.mjs
-          tests/ui/skill-variants.spec.mjs
-          tests/ui/custom-skill-learning.spec.mjs
-          tests/ui/skill-profiles.spec.mjs
-          tests/ui/native-passive-effects.spec.mjs
-          tests/ui/build-context.spec.mjs
-          tests/ui/admin-entry.spec.mjs
-          --project=chromium
-
-  cross_browser:
+  catalog_contract:
     needs: classify
-    if: needs.classify.outputs.docs_only != 'true'
+    if: needs.classify.outputs.full_required == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -324,11 +284,52 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Install browser engines
-        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
 
-      - name: Run Chromium Firefox and WebKit smoke tests
-        run: npm run test:ui:cross-browser
+      - name: Verify versioned catalog calculations shard ${{ matrix.shard }}/2
+        run: >
+          npm run test:ui --
+          tests/ui/catalog-adapter.spec.mjs
+          tests/ui/catalog-adoption.spec.mjs
+          tests/ui/build-load-races.spec.mjs
+          tests/ui/skill-catalog.spec.mjs
+          tests/ui/skill-variants.spec.mjs
+          tests/ui/custom-skill-learning.spec.mjs
+          tests/ui/skill-profiles.spec.mjs
+          tests/ui/native-passive-effects.spec.mjs
+          tests/ui/build-context.spec.mjs
+          tests/ui/admin-entry.spec.mjs
+          --project=chromium
+          --shard=${{ matrix.shard }}/2
+
+  cross_browser:
+    needs: classify
+    if: needs.classify.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install ${{ matrix.browser }}
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Run ${{ matrix.browser }} smoke tests
+        run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=${{ matrix.browser }}-smoke
 
   test:
     if: always()
@@ -336,9 +337,9 @@ jobs:
       - classify
       - static
       - workspace_visual
-      - browser_core_1
-      - browser_core_2
+      - browser_core
       - catalog_audit
+      - catalog_admin
       - catalog_contract
       - cross_browser
     runs-on: ubuntu-latest
@@ -349,14 +350,14 @@ jobs:
           CLASSIFY: ${{ needs.classify.result }}
           STATIC: ${{ needs.static.result }}
           WORKSPACE: ${{ needs.workspace_visual.result }}
-          CORE_1: ${{ needs.browser_core_1.result }}
-          CORE_2: ${{ needs.browser_core_2.result }}
+          CORE: ${{ needs.browser_core.result }}
           CATALOG_AUDIT: ${{ needs.catalog_audit.result }}
+          CATALOG_ADMIN: ${{ needs.catalog_admin.result }}
           CATALOG_CONTRACT: ${{ needs.catalog_contract.result }}
           CROSS_BROWSER: ${{ needs.cross_browser.result }}
         run: |
           set -euo pipefail
-          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE_1" "$CORE_2" "$CATALOG_AUDIT" "$CATALOG_CONTRACT" "$CROSS_BROWSER"; do
+          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE" "$CATALOG_AUDIT" "$CATALOG_ADMIN" "$CATALOG_CONTRACT" "$CROSS_BROWSER"; do
             if [[ "$result" != "success" && "$result" != "skipped" ]]; then
               echo "A required CI partition ended as: $result"
               exit 1
