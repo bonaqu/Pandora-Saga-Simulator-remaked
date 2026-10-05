@@ -143,6 +143,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
   data-updates-url="{UPDATES_URL}"
   data-legacy-url="./legacy/"></div>
 <script src="./modern/version.js"></script>
+<script src="./modern/release-notes.js"></script>
 <script src="./modern/locales.js"></script>
 <script src="./modern/game-terms.js"></script>
 <script src="./modern/i18n.js"></script>
@@ -203,9 +204,9 @@ def _require_inputs(root: pathlib.Path) -> None:
         if not (root / relative).is_file():
             raise FileNotFoundError(f"missing required Modern asset: {relative}")
     _hero_part_files(root)
-    for relative in ("index.html", "readme.txt"):
+    for relative in ("index.html", "readme.txt", "CHANGELOG.md"):
         if not (root / relative).is_file():
-            raise FileNotFoundError(f"missing required legacy file: {relative}")
+            raise FileNotFoundError(f"missing required project file: {relative}")
     for relative in REQUIRED_LOCALIZATION:
         if not (root / relative).is_file():
             raise FileNotFoundError(f"missing required localization catalog: {relative}")
@@ -351,12 +352,94 @@ def _materialize_generated_data(root: pathlib.Path, output: pathlib.Path) -> Non
         shutil.copy2(root / relative, destination / pathlib.Path(relative).name)
 
 
-def _read_ui_version(root: pathlib.Path) -> str:
-    source = (root / "modern/version.js").read_text(encoding="utf-8")
-    match = re.search(r"\bui\s*:\s*['\"]([^'\"]+)['\"]", source)
+RELEASE_HEADING_RE = re.compile(
+    r"^## Modern (?P<version>\d+\.\d+) — (?P<title>.+?), (?P<date>\d{4}-\d{2}-\d{2})\s*$",
+    re.MULTILINE,
+)
+
+
+def _plain_release_bullet(text: str) -> str:
+    text = re.sub(r"\[([^]]+)\]\([^)]+\)", r"\1", text)
+    text = text.replace("**", "").replace("__", "").replace(chr(96), "")
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _release_marker_bullets(section: str, locale: str) -> list[str]:
+    marker = re.search(
+        rf"<!-- release-notes:{re.escape(locale)} -->(.*?)<!-- /release-notes:{re.escape(locale)} -->",
+        section,
+        flags=re.DOTALL,
+    )
+    if not marker:
+        return []
+    bullets: list[str] = []
+    current: list[str] = []
+    for line in marker.group(1).splitlines():
+        if line.startswith("- "):
+            if current:
+                bullets.append(_plain_release_bullet(" ".join(current)))
+            current = [line[2:].strip()]
+        elif current and (line.startswith("  ") or not line.strip()):
+            if line.strip():
+                current.append(line.strip())
+        elif current:
+            bullets.append(_plain_release_bullet(" ".join(current)))
+            current = []
+    if current:
+        bullets.append(_plain_release_bullet(" ".join(current)))
+    return [bullet for bullet in bullets if bullet]
+
+
+def _read_latest_release(root: pathlib.Path) -> dict[str, object]:
+    source = (root / "CHANGELOG.md").read_text(encoding="utf-8")
+    match = RELEASE_HEADING_RE.search(source)
     if not match:
-        raise ValueError("modern/version.js is missing the Remaked UI version")
-    return match.group(1)
+        raise ValueError(
+            "CHANGELOG.md must begin with a dated release heading like "
+            "'## Modern 3.11 — release title, 2026-10-05'"
+        )
+    rest = source[match.end():]
+    next_release = re.search(r"^## Modern ", rest, flags=re.MULTILINE)
+    section = rest[: next_release.start()] if next_release else rest
+    highlights = {
+        "en": _release_marker_bullets(section, "en"),
+        "ru": _release_marker_bullets(section, "ru"),
+    }
+    if not highlights["en"] or not highlights["ru"]:
+        raise ValueError(
+            "latest CHANGELOG release must contain non-empty "
+            "release-notes:en and release-notes:ru marker blocks"
+        )
+    return {
+        "version": match.group("version"),
+        "title": match.group("title").strip(),
+        "date": match.group("date"),
+        "highlights": highlights,
+    }
+
+
+def _materialize_release_metadata(root: pathlib.Path, output: pathlib.Path) -> None:
+    release = _read_latest_release(root)
+    version_payload = {
+        "legacyEngine": "2.00",
+        "ui": release["version"],
+    }
+    (output / "modern/version.js").write_text(
+        "window.PandoraRemakedVersion = Object.freeze("
+        + json.dumps(version_payload, ensure_ascii=False, separators=(",", ":"))
+        + ");\n",
+        encoding="utf-8",
+    )
+    (output / "modern/release-notes.js").write_text(
+        "window.PandoraRemakedRelease = Object.freeze("
+        + json.dumps(release, ensure_ascii=False, separators=(",", ":"))
+        + ");\n",
+        encoding="utf-8",
+    )
+
+
+def _read_ui_version(root: pathlib.Path) -> str:
+    return str(_read_latest_release(root)["version"])
 
 
 def _relative_urls(base: pathlib.Path, directory: pathlib.Path) -> list[str]:
@@ -413,6 +496,7 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
 
     _copy_runtime(root, output)
     _materialize_modern_assets(root, output)
+    _materialize_release_metadata(root, output)
     _materialize_locales(root, output, translations.ui_russian, translations.ui_english)
     _materialize_game_terms(output, translations.game_russian, translations.game_english)
     _publish_translation_workbook(root, output)
