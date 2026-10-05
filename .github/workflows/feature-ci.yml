@@ -114,21 +114,6 @@ jobs:
             node --check "$file"
           done
 
-      - name: Install Node dependencies for deterministic extractors
-        run: npm ci --no-audit --no-fund
-
-      - name: Build deterministic site projection for extractors
-        run: python3 scripts/build_pages.py --output _site
-
-      - name: Verify deterministic Legacy terminology export
-        run: npm run test:translations
-
-      - name: Verify pure current skill reference reconciliation
-        run: npm run test:source-audit
-
-      - name: Verify deterministic structured data projections
-        run: npm run test:data
-
   workspace_visual:
     needs: classify
     if: needs.classify.outputs.docs_only != 'true'
@@ -155,6 +140,15 @@ jobs:
         run: |
           mkdir -p .ci-artifacts
           npm run test:ui:desktop -- --project=chromium --reporter=json > .ci-artifacts/workspace-report.json
+
+      - name: Verify deterministic Legacy terminology export
+        run: npm run test:translations
+
+      - name: Verify pure current skill reference reconciliation
+        run: npm run test:source-audit
+
+      - name: Verify deterministic structured data projections
+        run: npm run test:data
 
       - name: Capture desktop and mobile visual QA
         id: visual
