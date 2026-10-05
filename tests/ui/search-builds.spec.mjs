@@ -150,6 +150,11 @@ test('Equipment query, level filters, reset and empty state operate on current a
 
   await page.locator('[data-remaked-search-query]').fill('__definitely_no_such_equipment__');
   await expect(page.getByText('No matching equipment', { exact: true })).toBeVisible();
+  const inlineReset = page.locator('[data-remaked-search-empty-reset]');
+  await expect(inlineReset).toHaveText('Reset filter');
+  await inlineReset.click();
+  expect(await page.locator('[data-remaked-search-query]').inputValue()).toBe('');
+  await expect(page.locator('[data-remaked-search-result]').first()).toBeVisible();
 });
 
 test('Equipment search rebuilds compatibility from current legacy state', async ({ page }) => {
@@ -231,7 +236,7 @@ test('Soul query filters localized names and selection keeps exact legacy payloa
   expect(viaSearch).toBe(await page.evaluate(() => window.PandoraRemaked.adapter.serialize()));
 });
 
-test('search panel is keyboard-closeable and remains inside a 390px viewport', async ({ page }) => {
+test('equipment picker supports arrows, Enter and one-key Escape inside a 390px viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openModern(page);
   const opener = page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]');
@@ -242,7 +247,54 @@ test('search panel is keyboard-closeable and remains inside a 390px viewport', a
   expect(box).not.toBeNull();
   expect(box.x).toBeGreaterThanOrEqual(0);
   expect(box.x + box.width).toBeLessThanOrEqual(390);
-  await page.keyboard.press('Escape');
+
+  const query = panel.locator('[data-remaked-search-query]');
+  await query.focus();
+  await query.press('ArrowDown');
+  const focusedValue = await page.evaluate(() => document.activeElement?.dataset?.value || '');
+  expect(focusedValue).not.toBe('');
+  await page.keyboard.press('Enter');
   await expect(panel).toHaveCount(0);
+
+  await opener.focus();
+  await opener.press('Enter');
+  await expect(page.locator('[data-remaked-search-panel]')).toBeVisible();
+  const details = page.locator('[data-remaked-search-panel] details').first();
+  if (await details.count()) {
+    await details.evaluate((node) => { node.open = true; });
+  }
+  await page.keyboard.press('Escape');
+  await expect(page.locator('[data-remaked-search-panel]')).toHaveCount(0);
   await expect(opener).toBeFocused();
+});
+
+test('equipment picker renders native type separators as headings and can filter by type', async ({ page }) => {
+  await openModern(page);
+  const target = await page.evaluate(() => window.PandoraRemaked.adapter.listEquipmentTargets()
+    .map((candidate) => {
+      const options = window.PandoraRemaked.adapter.listEquipmentOptions(candidate.slotIndex);
+      const categories = options
+        .map((option) => String(option.name || '').match(/^\\+-----\\s*(.+?)\\s*$/)?.[1]?.trim() || '')
+        .filter(Boolean);
+      return { candidate, categories: [...new Set(categories)] };
+    })
+    .find((entry) => entry.categories.length >= 2));
+  expect(target).toBeTruthy();
+
+  const opener = page.locator(`[data-remaked-equipment-picker="${target.candidate.selectId}"]`);
+  await opener.click();
+  const panel = page.locator('[data-remaked-search-panel]');
+  const filter = panel.locator('[data-remaked-picker-type-filter]');
+  await expect(filter).toBeVisible();
+  await expect(panel.locator('[data-remaked-picker-group]')).toHaveCount(target.categories.length);
+
+  await filter.selectOption({ label: target.categories[1] });
+  await expect(panel.locator('[data-remaked-picker-group]')).toHaveCount(1);
+  await expect(panel.locator('[data-remaked-picker-group]')).toHaveText(target.categories[1]);
+
+  await panel.locator('[data-remaked-search-query]').fill('__definitely_no_such_picker_item__');
+  await expect(panel.locator('[data-remaked-search-empty-reset]')).toHaveText('Reset filter');
+  await panel.locator('[data-remaked-search-empty-reset]').click();
+  expect(await filter.inputValue()).toBe('');
+  await expect(panel.locator('[data-remaked-search-result]').first()).toBeVisible();
 });
