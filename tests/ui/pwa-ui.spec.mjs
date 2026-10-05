@@ -98,6 +98,41 @@ test('Reload flushes autosave before requesting waiting worker activation', asyn
   ]);
 });
 
+test('service-worker registration bypasses HTTP cache and checks again when requested', async ({ page }) => {
+  await openModern(page);
+  const result = await page.evaluate(async () => {
+    window.__pwaRegisterArgs = null;
+    window.__pwaUpdateCalls = 0;
+    const fakeRegistration = {
+      waiting: null,
+      installing: null,
+      addEventListener() {},
+      update() {
+        window.__pwaUpdateCalls += 1;
+        return Promise.resolve();
+      }
+    };
+    Object.defineProperty(navigator.serviceWorker, 'register', {
+      configurable: true,
+      value: (url, options) => {
+        window.__pwaRegisterArgs = { url, options };
+        return Promise.resolve(fakeRegistration);
+      }
+    });
+    const registration = await window.PandoraRemaked.pwa.register();
+    await window.PandoraRemaked.pwa.checkForUpdate();
+    return {
+      sameRegistration: registration === fakeRegistration,
+      args: window.__pwaRegisterArgs,
+      updates: window.__pwaUpdateCalls
+    };
+  });
+  expect(result.sameRegistration).toBe(true);
+  expect(result.args.url).toBe('./service-worker.js');
+  expect(result.args.options).toEqual({ updateViaCache: 'none' });
+  expect(result.updates).toBe(1);
+});
+
 test('service-worker registration failure leaves the calculator usable', async ({ page }) => {
   await openModern(page);
   const result = await page.evaluate(async () => {
