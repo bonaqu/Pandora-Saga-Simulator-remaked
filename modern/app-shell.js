@@ -189,6 +189,7 @@
 
     var navRow = document.createElement('div');
     navRow.className = 'remaked-nav-row';
+    navRow.dataset.remakedNavRow = '';
     var nav = document.createElement('nav');
     nav.className = 'remaked-nav';
     nav.dataset.remakedNav = '';
@@ -217,38 +218,6 @@
     syncUiLocaleButtons(header);
     syncNavButtons(header);
     return header;
-  }
-
-  function createDiscoveryTools() {
-    var tools = document.createElement('section');
-    tools.className = 'remaked-tools';
-    tools.dataset.remakedTools = '';
-    localizeAttribute(tools, 'aria-label', 'tools.region', 'Build discovery tools');
-
-    var label = document.createElement('span');
-    label.className = 'remaked-tools-label';
-    localizeText(label, 'tools.label', 'Search current build data');
-    tools.appendChild(label);
-
-    var equipment = makeButton('Equipment Search', 'remaked-tool-button', 'tools.equipmentSearch');
-    equipment.dataset.remakedEquipmentSearch = '';
-    equipment.addEventListener('click', function () {
-      if (namespace.search && typeof namespace.search.openEquipmentSearch === 'function') {
-        namespace.search.openEquipmentSearch(null, equipment);
-      }
-    });
-    tools.appendChild(equipment);
-
-    var souls = makeButton('Soul Search', 'remaked-tool-button', 'tools.soulSearch');
-    souls.dataset.remakedSoulSearch = '';
-    souls.addEventListener('click', function () {
-      if (namespace.search && typeof namespace.search.openSoulSearch === 'function') {
-        namespace.search.openSoulSearch(null, souls);
-      }
-    });
-    tools.appendChild(souls);
-
-    return tools;
   }
 
   var updatesDialog;
@@ -343,7 +312,6 @@
     skip.addEventListener('click', function () { frame.focus(); });
     shell.appendChild(skip);
     shell.appendChild(createHeader());
-    shell.appendChild(createDiscoveryTools());
     shell.appendChild(frame);
     frame.appendChild(legacyBody);
     return shell;

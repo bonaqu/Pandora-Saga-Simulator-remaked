@@ -58,19 +58,17 @@ for (const width of [320, 390, 1440]) test(`Equipment opens an anchored nonmodal
   expect(await page.evaluate(() => Store())).toBe(before);
 });
 
-test('Search and Equipment use compact labelled info controls without a second characteristics row', async ({ page }) => {
+test('Equipment picker uses compact labelled info controls without a second characteristics row', async ({ page }) => {
   await page.goto('/');
-  for (const selector of ['[data-remaked-equipment-search]', '[data-remaked-equipment-picker="SelEquip_0_0"]']) {
-    await page.locator(selector).click();
-    const row = page.locator('[data-remaked-search-row][data-value="8"]');
-    await row.locator('button').hover();
-    const itemBox = await row.locator('button').boundingBox();
-    const infoBox = await row.locator('summary').boundingBox();
-    expect(Math.abs(itemBox.y - infoBox.y)).toBeLessThanOrEqual(2);
-    expect(infoBox.width).toBeLessThanOrEqual(44);
-    await expect(row.locator('summary')).toHaveAccessibleName('Details');
-    await page.locator('.remaked-search-close').click();
-  }
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
+  const row = page.locator('[data-remaked-search-row][data-value="8"]');
+  await row.locator('button').hover();
+  const itemBox = await row.locator('button').boundingBox();
+  const infoBox = await row.locator('summary').boundingBox();
+  expect(Math.abs(itemBox.y - infoBox.y)).toBeLessThanOrEqual(2);
+  expect(infoBox.width).toBeLessThanOrEqual(44);
+  await expect(row.locator('summary')).toHaveAccessibleName('Details');
+  await page.locator('.remaked-search-close').click();
 });
 
 test('opening Equipment keeps the currently worn item in view without opening or changing it', async ({ page }) => {
@@ -217,7 +215,7 @@ test('touch Equipment and Soul details are separate from selection; existing upg
 test('search pointer click does not flash characteristics and wheel cancels a pending hover', async ({ page }) => {
   await page.goto('/');
   const f = await fixture(page);
-  await page.locator('[data-remaked-equipment-search]').click();
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
   const row = page.locator(`[data-remaked-search-row][data-value="${f.value}"]`);
   await row.locator('button').hover();
   await page.waitForTimeout(200);

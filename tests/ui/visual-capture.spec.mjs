@@ -89,7 +89,7 @@ for (const [name, viewport] of [['desktop', desktop], ['mobile', mobile]]) {
   test(`capture item preview and sharing ${name}`, async ({ page }, testInfo) => {
     await openModern(page, viewport);
     await page.locator('[data-remaked-ui-locale="ru"]').click();
-    await page.locator('[data-remaked-equipment-search]').click();
+    await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
     const row = page.locator('[data-remaked-search-row][data-value="2"]');
     await row.locator('summary').click();
     await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
@@ -104,7 +104,7 @@ for (const [name, viewport] of [['desktop', desktop], ['mobile', mobile]]) {
       const soul = adapter.listSoulOptions(target).find(s => Number(s.value) > 0);
       if (!soul || !adapter.selectSoul(target, soul.value)) throw new Error('No compatible Soul for screenshot');
     });
-    await page.locator('[data-remaked-equipment-search]').click();
+    await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
     await row.locator('summary').click();
     await expect(row.locator('[data-remaked-item-description] strong')).toContainText('+4');
     await expect(row.locator('[data-remaked-socket][data-filled="true"]')).toHaveCount(1);
@@ -140,9 +140,9 @@ async function captureMain(page, testInfo, viewport, name) {
   await page.screenshot({ path: testInfo.outputPath(name), fullPage: true });
 }
 
-async function captureEquipmentSearch(page, testInfo, viewport, name) {
+async function captureEquipmentPicker(page, testInfo, viewport, name) {
   await openModern(page, viewport);
-  await page.locator('[data-remaked-equipment-search]').click();
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
   await expect(page.locator('[data-remaked-search-panel][data-search-kind="equipment"]')).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath(name), fullPage: false });
 }
@@ -225,12 +225,12 @@ test('capture Modern mobile QA screenshot', async ({ page }, testInfo) => {
   await captureMain(page, testInfo, mobile, 'modern-mobile.png');
 });
 
-test('capture Equipment Search desktop QA screenshot', async ({ page }, testInfo) => {
-  await captureEquipmentSearch(page, testInfo, desktop, 'modern-equipment-search-desktop.png');
+test('capture Equipment picker desktop QA screenshot', async ({ page }, testInfo) => {
+  await captureEquipmentPicker(page, testInfo, desktop, 'modern-equipment-picker-desktop.png');
 });
 
-test('capture Equipment Search mobile QA screenshot', async ({ page }, testInfo) => {
-  await captureEquipmentSearch(page, testInfo, mobile, 'modern-equipment-search-mobile.png');
+test('capture Equipment picker mobile QA screenshot', async ({ page }, testInfo) => {
+  await captureEquipmentPicker(page, testInfo, mobile, 'modern-equipment-picker-mobile.png');
 });
 
 test('capture Build Manager desktop QA screenshot', async ({ page }, testInfo) => {

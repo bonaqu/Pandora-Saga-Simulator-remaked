@@ -78,9 +78,7 @@ test('all five inspectors float without shifting the workbench and close by tab,
   const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
   for (const width of [320, 390, 768, 1366, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
-    // Capture the resting workbench only after its responsive toolbar move.
-    // Otherwise the 54px phone toolbar can move between the before/after reads.
-    await expect.poll(() => page.evaluate(() => Boolean(document.querySelector('[data-remaked-tools]').closest('[data-remaked-picker-section]')))).toBe(width > 860);
+    await expect(page.locator('[data-remaked-tools]')).toHaveCount(0);
     const restingCharacter = await page.locator('[data-remaked-calculator-character]').boundingBox();
     for (const tab of [0, 1, 2, 3, 4]) {
       const opener = page.locator('[data-remaked-tab="' + tab + '"]'); await opener.click();

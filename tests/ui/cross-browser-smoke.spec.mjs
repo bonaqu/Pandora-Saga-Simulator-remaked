@@ -418,15 +418,19 @@ test('actual Equipment picker separates review and selection and preserves nativ
 test('item preview and shared build link work without mutating Legacy data', async ({ page, browser }) => {
   await page.goto('/');
   const before = await page.evaluate(() => ({ code: Store(), data: JSON.stringify(EquipData) }));
-  await page.locator('[data-remaked-equipment-search]').click();
+  const equipmentOpener = page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]');
+  await equipmentOpener.click();
+  const equipmentPanel = page.locator('[data-remaked-search-panel]');
   const row = page.locator('[data-remaked-search-row][data-value="1"]');
   await row.locator('summary').click();
   await expect(row.locator('[data-remaked-item-description]')).toBeVisible();
   await row.locator('summary').focus();
   await page.keyboard.press('Escape');
-  await expect(page.locator('dialog[open]')).toHaveCount(1);
+  await expect(row.locator('details')).not.toHaveAttribute('open', '');
+  await expect(equipmentPanel).toBeVisible();
   await page.keyboard.press('Escape');
-  await expect(page.locator('dialog[open]')).toHaveCount(0);
+  await expect(equipmentPanel).toHaveCount(0);
+  await expect(equipmentOpener).toBeFocused();
   expect(await page.evaluate(() => ({ code: Store(), data: JSON.stringify(EquipData) }))).toEqual(before);
   await page.locator('[data-remaked-builds-open]').click();
   await page.locator('[data-remaked-share-build]').click();
@@ -443,7 +447,7 @@ test('item preview and shared build link work without mutating Legacy data', asy
 test('native Modern dialogs keep focus and restore their opener', async ({ page }) => {
   await page.goto('/');
   const before = await page.evaluate(() => Store());
-  for (const selector of ['[data-remaked-equipment-search]', '[data-remaked-builds-open]', '[data-remaked-compare-open]', '[data-remaked-updates-open]']) {
+  for (const selector of ['[data-remaked-builds-open]', '[data-remaked-compare-open]', '[data-remaked-updates-open]']) {
     const opener = page.locator(selector);
     await opener.focus(); await page.keyboard.press('Enter');
     const dialog = page.locator('dialog[open]');
@@ -499,7 +503,7 @@ test('native Modern dialogs keep focus and restore their opener', async ({ page 
       await page.locator('[data-remaked-ui-locale="ru"]').focus();
       await page.keyboard.press('Enter');
       await expect(page.locator('#StatusRace')).toHaveText('Проверочная раса');
-      const opener = page.locator('[data-remaked-equipment-search]');
+      const opener = page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]');
       await opener.focus();
       await page.keyboard.press('Enter');
       await page.locator('[data-remaked-search-query]').fill(source.name);

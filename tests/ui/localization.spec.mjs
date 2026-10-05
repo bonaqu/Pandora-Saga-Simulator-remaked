@@ -31,7 +31,7 @@ test('RU translates the Modern shell live without changing Legacy build bytes or
 
   await expect(page.locator('[data-remaked-header]')).toContainText(await russianText(page, 'header.project'));
   await expect(page.locator('[data-remaked-hero]')).toContainText(await russianText(page, 'hero.eyebrow'));
-  await expect(page.locator('[data-remaked-tools]')).toContainText(await russianText(page, 'tools.equipmentSearch'));
+  await expect(page.locator('[data-remaked-tools]')).toHaveCount(0);
   await expect(page.locator('html')).toHaveAttribute('lang', 'ru');
   await expect(page.locator('[data-remaked-ui-locale="ru"]')).toHaveAttribute('aria-pressed', 'true');
 
@@ -73,8 +73,8 @@ test('RU covers Modern surfaces and approved race names while unapproved classes
   const payloadBefore = await page.evaluate(() => Store());
   await page.locator('[data-remaked-ui-locale="ru"]').click();
 
-  await page.locator('[data-remaked-equipment-search]').click();
-  await expect(page.locator('[data-remaked-search-panel]')).toContainText(await russianText(page, 'search.equipment.title'));
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
+  await expect(page.locator('[data-remaked-search-query]')).toHaveAttribute('placeholder', await russianText(page, 'search.equipment.placeholder'));
   await page.getByRole('button', { name: await russianText(page, 'search.close'), exact: true }).click();
 
   await page.locator('[data-remaked-builds-open]').click();
@@ -106,7 +106,7 @@ test('approved workbook game terms appear in Modern search without changing Lega
     window.PandoraRemakedGameTerms.ru['equipment.0.1'] = 'Проверочный меч';
   });
   await page.locator('[data-remaked-ui-locale="ru"]').click();
-  await page.locator('[data-remaked-equipment-search]').click();
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
 
   await expect(page.locator('[data-remaked-search-result][data-value="1"]')).toContainText('Проверочный меч');
   await page.locator('[data-remaked-search-query]').fill(sourceName);
@@ -126,7 +126,8 @@ test('Russian shell remains usable without body overflow at 390px', async ({ pag
   await page.locator('[data-remaked-ui-locale="ru"]').click();
   await expect(page.getByRole('link', { name: await russianText(page, 'header.legacyMode'), exact: true })).toBeVisible();
   await expect(page.locator('[data-remaked-ui-locale="ru"]')).toHaveCSS('background-color', 'rgb(102, 155, 54)');
-  await expect(page.locator('[data-remaked-equipment-search]')).toBeVisible();
+  await expect(page.locator('[data-remaked-tools]')).toHaveCount(0);
+  await expect(page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]')).toBeVisible();
   const metrics = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
     scrollWidth: document.documentElement.scrollWidth
