@@ -6,7 +6,7 @@ test('one language panel has exactly one active language and preserves build byt
   await expect(panel).toHaveCount(1);
   await expect(panel.locator('button')).toHaveText(['EN', 'RU', 'JP', 'TW']);
   const before = await page.evaluate(() => window.Store());
-  for (const [label, locale, data] of [['JP', 'en', 0], ['RU', 'ru', 1], ['TW', 'en', 2], ['EN', 'en', 1]]) {
+  for (const [label, locale, data] of [['JP', 'jp', 0], ['RU', 'ru', 1], ['TW', 'tw', 2], ['EN', 'en', 1]]) {
     await panel.getByRole('button', { name: label, exact: true }).click();
     await expect(panel.locator('[aria-pressed="true"]')).toHaveText(label);
     expect(await page.evaluate(() => ({ payload: window.Store(), locale: window.PandoraRemaked.i18n.getLocale(), data: window.Flag[0] })))
