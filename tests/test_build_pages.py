@@ -256,6 +256,9 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             self.assertIn('"version":"3.11"', release_js)
             self.assertIn("Fixture English release note.", release_js)
             self.assertIn("Проверка русского release note.", release_js)
+            for name in ("equipment.v1.json", "souls.v1.json", "skills.v1.json"):
+                projection = json.loads((output / "data" / "generated" / name).read_text(encoding="utf-8"))
+                self.assertEqual(projection["metadata"]["remaked_ui"], "3.11")
             legacy = (output / "legacy" / "index.html").read_text(encoding="utf-8")
             self.assertIn("   0 // [ 0]", legacy)
             for relative in (
