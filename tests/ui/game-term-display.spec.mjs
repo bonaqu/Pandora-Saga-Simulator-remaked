@@ -134,7 +134,7 @@ test('an actual edited workbook publishes calculator labels and names together',
       'set_translation_cell(workbook, "calculator.text.0", "Custom race label", "I")',
       'set_translation_cell(workbook, "header.project", "Community project", "I")',
       'catalogs = load_editable_catalogs(root)',
-      '_materialize_locales(root, site, catalogs.ui_russian, catalogs.ui_english)',
+      '_materialize_locales(root, site, catalogs.ui_russian, catalogs.ui_japanese, catalogs.ui_traditional_chinese, catalogs.ui_english)',
       '_materialize_game_terms(site, catalogs.game_russian, catalogs.game_english)',
       '_materialize_service_worker(pathlib.Path.cwd(), site)'
     ].join('\n'), source, site], { cwd: process.cwd(), stdio: 'pipe' }));
@@ -277,8 +277,9 @@ test('native equipment and Soul options translate by value, retain prefixes and 
   for (const language of [0, 2, 1]) {
     await page.locator(`[data-remaked-language="${language}"]`).click();
     const source = await page.evaluate(({ category, index, soulValue }) => ({ item: EquipData[Flag[0]][category][index][0], soul: SoulData[Flag[0]][soulValue][0] }), fixture);
-    // Unified user control selects the source language and English shell together.
-    expect(await page.evaluate(() => PandoraRemaked.i18n.getLocale())).toBe('en');
+    // Unified control now selects both the retained game source language and
+    // the matching Modern shell locale, with English fallback where JP/TW is blank.
+    expect(await page.evaluate(() => PandoraRemaked.i18n.getLocale())).toBe(['jp', 'en', 'tw'][language]);
     await expect(item).toHaveText(fixture.prefix + source.item);
     await expect(soul).toHaveText(source.soul);
     await page.locator('[data-remaked-ui-locale="ru"]').click();
