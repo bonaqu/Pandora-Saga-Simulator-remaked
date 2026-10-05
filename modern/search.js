@@ -325,6 +325,9 @@
       }
       entries.push({ option: option, category: currentCategory });
     });
+    categories = categories.filter(function (category) {
+      return entries.some(function (entry) { return entry.category === category; });
+    });
     return { entries: entries, categories: categories };
   }
 
