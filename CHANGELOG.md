@@ -12,6 +12,8 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Keyboard UX picker проверен и закреплён: стрелки переходят между результатами, Enter выбирает сфокусированный предмет, а Escape одним нажатием закрывает picker даже при открытом preview.
 
 - Исправлена ширина поля поиска в picker: если для текущего слота нет фильтра по типу, поиск теперь занимает всю доступную ширину вместо укороченной колонки.
+- Локализация Modern снова сведена в единый источник: `Сбросить фильтр`, `Все типы`, `Фильтр по типу` и `Автосохранение включено` перенесены в `translations.xlsx` и заполнены для EN / RU / JP / TW; незаполненные JP/TW строки Modern безопасно используют английский fallback.
+- По приложенному RU/EN списку навыков добавлены русские названия и описания для 205 надёжно сопоставленных Legacy-умений; 198 английских описаний приведены к тексту из предоставленного списка. Требования, MP, тайминги, формулы, эффекты и ID навыков не менялись.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
@@ -22,6 +24,8 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Picker keyboard UX is explicitly preserved and covered: arrows move between results, Enter selects the focused item, and a single Escape closes the picker even when an item preview is open.
 
 - Fixed picker search width: when the current slot has no type filter, the search field now uses the full available width instead of staying in a shortened grid column.
+- Recent Modern strings are back in the single translation source: `Reset filter`, `All types`, `Filter by type` and `Autosave enabled` now live in `translations.xlsx` with EN / RU / JP / TW values; untranslated JP/TW Modern strings safely fall back to English.
+- Using the supplied RU/EN skill list, Russian names and descriptions were added for 205 confidently matched Legacy skills, and 198 English descriptions were normalized to the supplied text. Requirements, MP, timing, formulas, effects and skill IDs were not changed.
 <!-- /release-notes:en -->
 
 ### Project and delivery details
@@ -31,6 +35,9 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Existing native-button keyboard semantics remain in place for Enter, while the already-present arrow navigation is covered by browser tests and picker Escape is captured before preview disclosure handling.
 - Generated read-only data projections now receive their `remaked_ui` metadata from the same top CHANGELOG release during Pages build, so moving from 3.11 to 3.12 cannot leave projection metadata on the previous UI version.
 - Picker controls now switch to a single-column grid whenever the type selector is hidden or absent, so Equipment and Soul pickers do not reserve empty space for a non-existent filter.
+- The translation workbook now accepts sparse JP/TW values only for Modern UI rows while keeping Legacy game-source JP/TW columns immutable. The build publishes four UI locale catalogs with English fallback.
+- Stored JP/TW Modern locale now restores the matching retained game language after reload; RU continues to use the EN game source underneath the Russian overlay.
+- Skill text import is presentation-only: six Legacy skills without a reliable counterpart in the supplied workbook (`Slash`, `Bash`, `Misdirection`, `Ossify`, `Physical Barrier`, `Magical Barrier`) were deliberately left unchanged rather than guessed.
 
 ## Modern 3.11 — automatic updates, cleaner Equipment and faster delivery, 2026-10-05
 

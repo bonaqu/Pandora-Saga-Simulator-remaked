@@ -81,13 +81,22 @@ test('Modern header includes the approved Hybrid C hero treatment', async ({ pag
   expect(metrics.height).toBeLessThanOrEqual(100);
 });
 
-test('Modern language controls drive the legacy language state', async ({ page }) => {
+test('Modern language controls drive and restore the legacy language state', async ({ page }) => {
   await openModern(page);
-  const header = page.locator('[data-remaked-header]');
+  let header = page.locator('[data-remaked-header]');
   await header.getByRole('button', { name: 'JP', exact: true }).click();
   await expect.poll(() => page.evaluate(() => window.Flag[0])).toBe(0);
+  await expect.poll(() => page.evaluate(() => window.PandoraRemaked.i18n.getLocale())).toBe('jp');
+
+  await page.reload();
+  await page.waitForLoadState('networkidle');
+  header = page.locator('[data-remaked-header]');
+  await expect.poll(() => page.evaluate(() => window.Flag[0])).toBe(0);
+  await expect(header.getByRole('button', { name: 'JP', exact: true })).toHaveAttribute('aria-pressed', 'true');
+
   await header.locator('[data-remaked-language="1"]').click();
   await expect.poll(() => page.evaluate(() => window.Flag[0])).toBe(1);
+  await expect.poll(() => page.evaluate(() => window.PandoraRemaked.i18n.getLocale())).toBe('en');
 });
 
 test('Modern tab navigation drives the existing legacy tab handlers', async ({ page }) => {

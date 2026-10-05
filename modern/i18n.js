@@ -50,8 +50,9 @@
   function translateGameTerm(key, fallback) {
     var published = namespace.catalog && namespace.catalog.gameLabel(key);
     if (published) return published;
-    // JP/TW use the original game's language, while their Modern shell is EN.
-    // An English name override must not silently replace those source languages.
+    // JP/TW keep the original game's language for Legacy game terms while the
+    // Modern shell uses its sparse JP/TW catalog with English fallback.
+    // An English game-name override must not silently replace source languages.
     var useEnglish = !window.Flag || Number(window.Flag[0]) === 1;
     var active = currentLocale === 'en' && !useEnglish ? {} : gameCatalogs[currentLocale] || {};
     var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : '';

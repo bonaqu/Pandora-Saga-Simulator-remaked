@@ -321,10 +321,26 @@ def _load_catalog(path: pathlib.Path, *, require_values: bool) -> dict[str, str]
     return catalog
 
 
-def _materialize_locales(root: pathlib.Path, output: pathlib.Path, russian: dict[str, str], english_overrides: dict[str, str] | None = None) -> None:
+def _materialize_locales(
+    root: pathlib.Path,
+    output: pathlib.Path,
+    russian: dict[str, str],
+    japanese: dict[str, str] | None = None,
+    traditional_chinese: dict[str, str] | None = None,
+    english_overrides: dict[str, str] | None = None,
+) -> None:
     english = _load_catalog(root / "localization/ui.en.json", require_values=True)
     english.update(english_overrides or {})
-    payload = json.dumps({"en": english, "ru": russian}, ensure_ascii=False, sort_keys=True)
+    payload = json.dumps(
+        {
+            "en": english,
+            "ru": russian,
+            "jp": japanese or {},
+            "tw": traditional_chinese or {},
+        },
+        ensure_ascii=False,
+        sort_keys=True,
+    )
     (output / "modern/locales.js").write_text(
         "window.PandoraRemakedLocales = Object.freeze(" + payload + ");\n",
         encoding="utf-8",
@@ -505,7 +521,14 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     _copy_runtime(root, output)
     _materialize_modern_assets(root, output)
     _materialize_release_metadata(root, output)
-    _materialize_locales(root, output, translations.ui_russian, translations.ui_english)
+    _materialize_locales(
+        root,
+        output,
+        translations.ui_russian,
+        translations.ui_japanese,
+        translations.ui_traditional_chinese,
+        translations.ui_english,
+    )
     _materialize_game_terms(output, translations.game_russian, translations.game_english)
     _publish_translation_workbook(root, output)
     _materialize_generated_data(root, output)

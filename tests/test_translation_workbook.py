@@ -91,8 +91,8 @@ class TranslationWorkbookTests(unittest.TestCase):
             tables = [name for name in archive.namelist() if name.startswith("xl/tables/") and name.endswith(".xml")]
             self.assertEqual(len(tables), 1)
             table = ElementTree.fromstring(archive.read(tables[0]))
-            self.assertEqual(table.attrib["ref"], "A1:I2900")
-            self.assertEqual(table.find(f"{{{MAIN_NS}}}autoFilter").attrib["ref"], "A1:I2900")
+            self.assertEqual(table.attrib["ref"], "A1:I2904")
+            self.assertEqual(table.find(f"{{{MAIN_NS}}}autoFilter").attrib["ref"], "A1:I2904")
             sheet = ElementTree.fromstring(archive.read("xl/worksheets/sheet1.xml"))
             pane = sheet.find(f".//{{{MAIN_NS}}}pane")
             self.assertEqual(pane.attrib["state"], "frozen")
@@ -101,10 +101,24 @@ class TranslationWorkbookTests(unittest.TestCase):
 
     def test_workbook_matches_every_ui_and_game_source_row(self):
         ui_russian, game_russian, total = load_translation_catalogs(ROOT)
-        self.assertEqual(total, 2899)
+        self.assertEqual(total, 2903)
         rows = read_rows(ROOT / "localization/translations.xlsx")[1:]
         self.assertEqual(ui_russian, {row[1]: row[7] for row in rows if row[0] == "Интерфейс" and row[7].strip()})
         self.assertEqual(game_russian, {row[1]: row[7].strip() for row in rows if row[0] == "Игра" and row[7].strip()})
+
+    def test_recent_modern_strings_publish_in_all_four_ui_locales(self):
+        from scripts.translation_workbook import load_editable_catalogs
+        catalog = load_editable_catalogs(ROOT)
+        expected = {
+            "search.resetFilter": ("Сбросить фильтр", "フィルターをリセット", "重設篩選條件"),
+            "search.allTypes": ("Все типы", "すべての種類", "所有類型"),
+            "search.typeFilter": ("Фильтр по типу", "種類で絞り込む", "依類型篩選"),
+            "builds.autosaveEnabled": ("Автосохранение включено", "自動保存が有効です", "自動儲存已啟用"),
+        }
+        for key, (ru, jp, tw) in expected.items():
+            self.assertEqual(catalog.ui_russian[key], ru)
+            self.assertEqual(catalog.ui_japanese[key], jp)
+            self.assertEqual(catalog.ui_traditional_chinese[key], tw)
 
     def test_changed_source_column_is_rejected(self):
         with tempfile.TemporaryDirectory() as td:
@@ -138,7 +152,7 @@ class TranslationWorkbookTests(unittest.TestCase):
             set_russian_cell(localization / "translations.xlsx", "equipment.0.1", "Проверочный предмет")
 
             _, game_russian, total = load_translation_catalogs(root)
-            self.assertEqual(total, 2899)
+            self.assertEqual(total, 2903)
             self.assertEqual(game_russian["equipment.0.1"], "Проверочный предмет")
 
     def test_workbench_captions_keep_editable_languages_and_no_game_data_changes(self):
@@ -156,7 +170,7 @@ class TranslationWorkbookTests(unittest.TestCase):
             self.assertEqual(edited.ui_russian["workbench.results"], "Итоги")
             self.assertEqual(edited.game_russian, before.game_russian)
             self.assertEqual(edited.game_english, before.game_english)
-            self.assertEqual(edited.total, 2899)
+            self.assertEqual(edited.total, 2903)
 
     def test_new_skill_captions_have_editable_ru_and_en_without_affecting_source_catalog(self):
         from scripts.translation_workbook import load_editable_catalogs
@@ -181,6 +195,36 @@ class TranslationWorkbookTests(unittest.TestCase):
             self.assertEqual(catalog.ui_russian["skills.learningBranch"], "{name}: нужно {points} очков")
             self.assertEqual(catalog.game_english, baseline.game_english)
             self.assertEqual(catalog.game_russian, baseline.game_russian)
+
+    def test_supplied_skill_text_import_only_populates_names_and_descriptions(self):
+        rows = {row[1]: row for row in read_rows(ROOT / "localization/translations.xlsx")[1:]}
+        skill_names = [row for identifier, row in rows.items() if identifier.startswith("skill_entry.")]
+        descriptions = [row for identifier, row in rows.items() if identifier.startswith("skill_detail.") and identifier.endswith(".3")]
+
+        self.assertEqual(sum(bool(row[7].strip()) for row in skill_names), 205)
+        self.assertEqual(sum(bool(row[8].strip()) for row in skill_names), 0)
+        self.assertEqual(sum(bool(row[7].strip()) for row in descriptions), 205)
+        self.assertEqual(sum(bool(row[8].strip()) for row in descriptions), 198)
+
+        # Legacy uses "Resist Cold", while the supplied list names the same
+        # レジストアイス skill "Resist Ice". Keep the English skill name intact,
+        # but use the supplied RU name and EN/RU description.
+        self.assertEqual(rows["skill_entry.18.9"][4], "Resist Cold")
+        self.assertEqual(rows["skill_entry.18.9"][7], "Сопротивляемость льду")
+        self.assertEqual(
+            rows["skill_detail.18.9.3"][7],
+            "Сопротивляемость цели к магии льда повышается, а к магии огня и молний - понижается.",
+        )
+        self.assertEqual(
+            rows["skill_detail.18.9.3"][8],
+            "Increases your target's Ice Resistance, but reduces their Fire and Lightning Resistance.",
+        )
+
+        untouched = (
+            "skill_entry.0.14", "skill_entry.0.15", "skill_entry.0.16",
+            "skill_entry.0.17", "skill_entry.12.3", "skill_entry.12.4",
+        )
+        self.assertTrue(all(not rows[identifier][7].strip() and not rows[identifier][8].strip() for identifier in untouched))
 
     def test_current_races_and_all_racial_names_have_exact_editable_ru_en_aliases(self):
         from scripts.translation_workbook import load_editable_catalogs

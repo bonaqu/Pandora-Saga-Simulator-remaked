@@ -44,9 +44,7 @@
   }
 
   function autosaveEnabledLabel() {
-    return i18n && typeof i18n.getLocale === 'function' && i18n.getLocale() === 'ru'
-      ? 'Автосохранение включено'
-      : 'Autosave enabled';
+    return t('builds.autosaveEnabled', null, 'Autosave enabled');
   }
 
   function setAutosaveStatus(message, state) {

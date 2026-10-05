@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 from scripts.build_pages import build_pages
-from scripts.translation_workbook import load_translation_catalogs
+from scripts.translation_workbook import load_editable_catalogs, load_translation_catalogs
 
 
 LEGACY_HTML = '''<!DOCTYPE html><html><head><title>Pandora Saga Simulator</title></head><body>
@@ -293,8 +293,11 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             locales = (output / "modern" / "locales.js").read_text(encoding="utf-8")
             self.assertIn('"controls.interfaceLanguage": "Interface language"', locales)
             ui_russian, game_russian, _ = load_translation_catalogs(root)
+            editable = load_editable_catalogs(root)
             parsed_locales = json.loads(locales.split("Object.freeze(", 1)[1].removesuffix(");\n"))
             self.assertEqual(parsed_locales["ru"], ui_russian)
+            self.assertEqual(parsed_locales["jp"], editable.ui_japanese)
+            self.assertEqual(parsed_locales["tw"], editable.ui_traditional_chinese)
             game_terms = (output / "modern" / "game-terms.js").read_text(encoding="utf-8")
             parsed_game = json.loads(game_terms.split(" = ", 1)[1].removesuffix(";\n"))
             self.assertEqual(parsed_game["ru"], game_russian)

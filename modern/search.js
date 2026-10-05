@@ -287,15 +287,11 @@
     return button;
   }
 
-  function localeText(russian, english) {
-    return i18n && typeof i18n.getLocale === 'function' && i18n.getLocale() === 'ru' ? russian : english;
-  }
-
   function renderEmpty(container, message, onReset) {
     var empty = element('div', 'remaked-search-empty');
     empty.appendChild(element('span', 'remaked-search-empty-message', message));
     if (typeof onReset === 'function') {
-      var reset = element('button', 'remaked-search-empty-reset', localeText('Сбросить фильтр', 'Reset filter'));
+      var reset = element('button', 'remaked-search-empty-reset', t('search.resetFilter', null, 'Reset filter'));
       reset.type = 'button';
       reset.dataset.remakedSearchEmptyReset = '';
       reset.addEventListener('click', onReset);
@@ -335,7 +331,7 @@
   function syncPickerTypeFilter(select, categories) {
     if (!select) return '';
     var previous = select.value;
-    var all = localeText('Все типы', 'All types');
+    var all = t('search.allTypes', null, 'All types');
     var fragment = document.createDocumentFragment();
     var any = document.createElement('option');
     any.value = '';
@@ -352,7 +348,7 @@
     select.hidden = categories.length < 2;
     var controls = select.closest('.remaked-picker-controls');
     if (controls) controls.classList.toggle('remaked-picker-controls-single', select.hidden);
-    select.setAttribute('aria-label', localeText('Фильтр по типу', 'Filter by type'));
+    select.setAttribute('aria-label', t('search.typeFilter', null, 'Filter by type'));
     return select.value;
   }
 

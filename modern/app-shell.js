@@ -47,7 +47,10 @@
 
   function syncLanguageButtons(header) {
     var current = Number(getFlag(0, 1));
-    var locale = i18n && i18n.getLocale() === 'ru' ? 'RU' : ['JP', 'EN', 'TW'][current];
+    var uiLocale = i18n && typeof i18n.getLocale === 'function' ? i18n.getLocale() : '';
+    var locale = ['en', 'ru', 'jp', 'tw'].indexOf(uiLocale) !== -1
+      ? uiLocale.toUpperCase()
+      : ['JP', 'EN', 'TW'][current];
     header.querySelectorAll('[data-remaked-language-panel] button').forEach(function (button) {
       var active = button.textContent === locale;
       button.setAttribute('aria-pressed', active ? 'true' : 'false');
@@ -69,6 +72,14 @@
   }
 
   function createLanguageControl(header) {
+    // JP/TW are now real Modern UI locales, so restore the matching retained
+    // game-language state after reload. RU intentionally uses the EN source
+    // game data underneath its translation overlay.
+    var storedLocale = i18n && typeof i18n.getLocale === 'function' ? i18n.getLocale() : 'en';
+    var initialIndex = storedLocale === 'jp' ? 0 : storedLocale === 'tw' ? 2 : 1;
+    var initialLegacyControl = document.getElementById('Lang_' + initialIndex);
+    if (initialLegacyControl && Number(getFlag(0, 1)) !== initialIndex) initialLegacyControl.click();
+
     var language = document.createElement('div');
     language.className = 'remaked-segment remaked-ui-locale';
     language.dataset.remakedLanguagePanel = '';
@@ -78,12 +89,12 @@
       var index = label === 'JP' ? 0 : label === 'TW' ? 2 : 1;
       var button = makeButton(label, 'remaked-segment-button');
       if (label !== 'RU') button.dataset.remakedLanguage = String(index);
-      if (label === 'RU' || label === 'EN') button.dataset.remakedUiLocale = label.toLowerCase();
+      button.dataset.remakedUiLocale = label.toLowerCase();
       button.setAttribute('aria-pressed', 'false');
       button.addEventListener('click', function () {
         var legacyControl = document.getElementById('Lang_' + index);
         if (legacyControl) legacyControl.click();
-        if (i18n) i18n.setLocale(label === 'RU' ? 'ru' : 'en');
+        if (i18n) i18n.setLocale(label.toLowerCase());
         syncLanguageButtons(header);
         syncNavButtons(header);
       });
