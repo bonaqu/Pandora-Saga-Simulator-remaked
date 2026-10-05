@@ -62,6 +62,7 @@
 
   function requestUpdate(worker) {
     if (worker && typeof worker.postMessage === 'function') waitingWorker = worker;
+    if (window.__pandoraPwaBootstrapUpdating) return;
     if (!waitingWorker || typeof waitingWorker.postMessage !== 'function' || updateReloadPending) return;
     updateReloadPending = true;
     if (namespace.builds && typeof namespace.builds.flushAutosave === 'function') {
