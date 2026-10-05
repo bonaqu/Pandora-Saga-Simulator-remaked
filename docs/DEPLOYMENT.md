@@ -1,92 +1,71 @@
-# Deployment
+# How project updates reach the live site
 
 ## Hosting
 
-The production site is published with **GitHub Pages** from GitHub Actions:
+The public simulator is published to GitHub Pages:
 
-```text
 https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/
-```
 
-Repository branch used by this project:
+The project keeps two user-facing modes:
 
-```text
-bonaqu_projects
-```
+- **Modern** — the actively maintained interface and PWA.
+- **Legacy** — the preserved Pandora Saga Simulator 2.00 museum route.
 
-## First run
+## Release flow
 
-The first workflow run performs a one-time preservation import:
+A normal user-facing change is developed on a branch, validated by Feature CI and merged into `bonaqu_projects`. GitHub Actions then builds the static Pages artifact and publishes it.
 
-1. checks out this repository;
-2. clones the public recovery repository at the exact commit recorded in the workflow;
-3. sparse-checks out only `ps_simulator/PSS_original`;
-4. copies the original HTML/CSS/JS/images into this repository;
-5. renames the main HTML file to `index.html`;
-6. strips obsolete FC2 footer injection from the published entry point;
-7. writes `SOURCE.lock`;
-8. commits the imported files back to `bonaqu_projects`;
-9. validates the static site;
-10. deploys the Pages artifact.
+For an exact merge whose PR head already passed Feature CI, deployment reuses that successful validation and runs a smaller production smoke gate. Direct pushes, manual runs and any case that cannot prove the exact successful PR head automatically use the full fallback validation path.
 
-A `.source-imported` marker prevents future runs from re-importing over your local copy.
+This keeps normal releases fast without turning off the safety checks needed for unusual publication paths.
 
-## Normal deployments
+## What is validated
 
-After bootstrap, any push to `bonaqu_projects` runs validation and redeploys GitHub Pages.
+Depending on the change, validation includes:
 
-The workflow can also be started manually from **Actions → Deploy Pandora Saga Simulator → Run workflow**.
+- preserved Legacy source and calculation compatibility;
+- Python/Node data and projection checks;
+- Chromium browser contracts;
+- focused Chromium/Firefox/WebKit compatibility smoke;
+- PWA/offline behavior;
+- generated localization and structured data;
+- Modern/Legacy routing and production artifact checks.
 
-For Russian translations, upload the edited `localization/translations.xlsx` through GitHub's web interface. The same workflow validates the workbook, generates the runtime catalogs and deploys them. No local build or manual version bump is needed. Follow [the beginner's guide](LOCALIZATION_FOR_BEGINNERS.ru.md).
+The public release pipeline does not intentionally weaken formulas or silently rewrite old saved builds to make a test pass.
 
-## Validation
+## Cache and PWA updates
 
-The deployment blocks publication when required files are missing or when the entry point still contains known FC2 runtime injection. It also rebuilds the equipment, Soul and skill projections from the live Legacy runtime and rejects stale JSON or source fingerprints.
+Modern uses a content-fingerprinted Service Worker for offline use. Since Modern 3.11:
 
-If an older Windows checkout fails the raw preservation manifest solely due
-to CRLF line endings, run `node scripts/repair_legacy_line_endings.mjs` first
-(read-only). Its opt-in `--repair --backup <absolute-directory-outside-Git>`
-restores only bytes whose CRLF-to-LF conversion exactly matches the existing
-SHA-256 manifest. It refuses real content differences and saves prior bytes.
-Do not regenerate the preservation manifest or weaken its assertions.
+- the Service Worker script is checked without reusing its HTTP cache;
+- a newly installed version can activate automatically;
+- fresh navigation HTML can bridge clients still controlled by an older cached runtime;
+- returning to the tab or network can trigger another update check;
+- one controlled reload switches to the fresh cache;
+- first install is kept separate from a real update.
 
-The workflow also syntax-checks the core JavaScript files with Node.js and runs the complete browser contract suite before artifact upload.
+As a result, users should not normally need Ctrl+F5 after a release. An already-open untouched tab cannot receive a GitHub Pages push event by itself, so the update is picked up on normal navigation, refresh, visibility/online checks or the next visit.
 
-The generated Base64/DEFLATE files are syntax-checked after extraction from their archived CodeRepos HTML pages. Browser contracts also reject startup exceptions and verify the preserved compressed File save/load path on both routes.
+## Translation releases
 
-CI also runs bounded Chromium/Firefox/WebKit smoke for both routes, native modal keyboard behavior and mobile RU search. PNG installation/share assets have decoding/dimension and museum-isolation contracts. Release evidence and the immutable annotated tag policy are documented in [release acceptance](RELEASE_ACCEPTANCE.md).
+The editable translation workbook is `localization/translations.xlsx`. Its structure is validated before publication and the runtime localization files are generated during the Pages build.
 
-## Updating the preserved source intentionally
+See [the Russian translation guide](LOCALIZATION_FOR_BEGINNERS.ru.md).
 
-Do **not** delete `.source-imported` casually. If a new preservation snapshot must replace the current one:
+## Version and changelog
 
-1. review the new upstream commit manually;
-2. update the pinned commit in `.github/workflows/pages.yml`;
-3. compare calculator/data files against the current copy;
-4. delete `.source-imported` only after the comparison is understood;
-5. run the workflow;
-6. verify the live simulator and update `docs/HISTORY.md`.
+The latest dated `## Modern X.Y — ...` entry in [CHANGELOG.md](../CHANGELOG.md) is the canonical public release record. During build, the site derives from it:
 
-This makes upstream changes explicit instead of silently modifying the preserved calculator.
+- the visible Remaked UI version;
+- the PWA cache version prefix;
+- the RU/EN highlights shown in the on-site **What’s new / Что нового** dialog.
+
+That prevents the visible version, popup and full changelog from drifting apart.
 
 ## Wiki synchronization
 
-The workflow includes a best-effort Wiki sync from `docs/wiki/` when the repository Wiki git remote is available. The canonical source remains the normal repository documentation, so a Wiki failure never blocks the simulator deployment.
+After a successful Pages deploy, the workflow performs a best-effort synchronization of the public documentation into the GitHub Wiki. A Wiki failure does not block the simulator itself.
 
-## Custom domain / Cloudflare
+## Backend boundary
 
-A custom domain is optional. GitHub Pages works without Cloudflare.
-
-If a custom domain is added later, Cloudflare can provide DNS, caching and optional security controls. That still does **not** require a database.
-
-Modern 3.00 uses an owner-approved Cloudflare Worker/D1 backend only for the
-administrator CMS. The public frontend remains on GitHub Pages; player builds
-are still local, not cloud saves. This does not move the site to Cloudflare.
-
-The `Cloudflare Admin API` workflow verifies the backend, applies additive D1
-migrations and deploys the existing Worker. It uses GitHub
-`secrets.CLOUDFLARE_API_TOKEN` and `vars.CLOUDFLARE_ACCOUNT_ID` in the
-`cloudflare-admin` environment. The `DB` binding and Cloudflare-only
-`AUTH_PEPPER` must be retained. Deployments never recreate the administrator
-or rotate the pepper. See [administrator operations](ADMIN_OPERATIONS.ru.md)
-for login, draft/publication, capability boundaries and recovery.
+The public calculator is still delivered as a static GitHub Pages application. A separate backend may provide versioned catalog data used by Modern, but maintainer credentials, secrets, administrator login instructions and recovery procedures are intentionally not part of the public documentation.
