@@ -62,7 +62,9 @@ test('Modern header includes the approved Hybrid C hero treatment', async ({ pag
   const hero = page.locator('[data-remaked-hero]');
   await expect(hero).toBeVisible();
   await expect(hero.getByRole('heading', { name: 'Pandora Saga Simulator', exact: true })).toBeVisible();
-  await expect(hero.getByText('Remaked', { exact: true })).toBeVisible();
+  const releaseVersion = await page.evaluate(() => window.PandoraRemakedVersion);
+  await expect(hero.getByText(`REMAKED UI ${releaseVersion.ui}`, { exact: true })).toBeVisible();
+  await expect(hero.getByText(`Legacy Engine ${releaseVersion.legacyEngine}`, { exact: true })).toBeVisible();
   const heroArt = hero.locator('img[data-remaked-hero-art]');
   await expect(heroArt).toHaveAttribute('src', './modern/pandora-hero.webp');
   await expect.poll(() => heroArt.evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
