@@ -77,8 +77,8 @@ test('equipment hover and keyboard preview expose Legacy descriptions without eq
   await expect(row.locator('[data-remaked-search-result]')).toBeFocused();
   await expect(row.locator('details')).toHaveAttribute('open', '');
   await page.keyboard.press('Escape');
-  await expect(row.locator('details')).not.toHaveAttribute('open', '');
-  await expect(page.locator('[data-remaked-search-panel]')).toBeVisible();
+  await expect(page.locator('[data-remaked-search-panel]')).toHaveCount(0);
+  await expect(page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]')).toBeFocused();
   expect(await page.evaluate(() => ({ code: window.Store(), data: JSON.stringify(window.EquipData) }))).toEqual(before);
 });
 
