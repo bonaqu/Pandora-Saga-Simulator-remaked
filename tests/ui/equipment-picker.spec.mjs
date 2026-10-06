@@ -299,7 +299,23 @@ test('Equipment slot labels and compact Reset stay fully visible in every UI loc
     expect(layout.reset.width).toBeCloseTo(72, 0);
     expect(layout.reset.scroll).toBeLessThanOrEqual(layout.reset.client);
     for (const label of layout.labels) expect(label.scroll, locale + ': ' + label.text).toBeLessThanOrEqual(label.client);
+    for (const label of layout.labels) expect(label.client, locale + ': ' + label.text).toBe(76);
   }
+
+  // A client can briefly combine the new component with an older cached
+  // locales.js during a service-worker update. The button must still show a
+  // human label, never the raw translation key.
+  const staleCatalogFallback = await page.evaluate(() => {
+    const catalog = window.PandoraRemakedLocales.ru;
+    const saved = catalog['equipment.reset'];
+    delete catalog['equipment.reset'];
+    window.PandoraRemaked.i18n.setLocale('ru');
+    window.PandoraRemaked.equipmentPicker.refresh();
+    const text = document.querySelector('[data-remaked-equipment-reset]').textContent.trim();
+    catalog['equipment.reset'] = saved;
+    return text;
+  });
+  expect(staleCatalogFallback).toBe('Сброс');
 });
 
 test('all fourteen actual slots have correct source labels and usable selection dropdowns', async ({ page }) => {

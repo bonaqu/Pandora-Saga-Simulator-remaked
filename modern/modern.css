@@ -2052,11 +2052,9 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   font-size: 11px;
 }
 
-.remaked-modern #body [data-remaked-calculator-results] [id^="TextStatus_"][title] {
+.remaked-modern #body [data-remaked-calculator-results] [id^="TextStatus_"][title]:not(:has(.help)) {
   cursor: help;
-  text-decoration-line: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 2px;
+  text-decoration: underline;
 }
 
 @media (min-width: 621px) {
@@ -2066,8 +2064,8 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   }
   .remaked-modern #body [data-remaked-picker-slot] > [data-remaked-picker-slot-label] {
     box-sizing: border-box;
-    width: 80px !important;
-    min-width: 80px;
+    width: 76px !important;
+    min-width: 76px;
     padding-inline-end: 5px !important;
     text-align: left !important;
     white-space: nowrap;
@@ -2075,7 +2073,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   }
   .remaked-modern #body [data-remaked-picker-slot] > .input_gt {
     box-sizing: border-box;
-    width: calc(100% - 80px) !important;
+    width: calc(100% - 76px) !important;
     min-width: 0;
   }
 }
