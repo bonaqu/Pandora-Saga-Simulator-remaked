@@ -158,63 +158,105 @@
     } catch { return false; }
   }
 
-  async function updateCurrentCatalog() {
+  async function updateCurrentCatalog(options) {
+    options = options || {};
+    var automatic = Boolean(options.automatic);
     var catalog = namespace.catalog;
     if (!catalog || catalogBusy) return { ok: false, reason: 'unavailable' };
     if (restorationFailed) {
-      setCatalogStatus('builds.catalogRestorationFailed', 'error', null, 'Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.');
+      if (!automatic) setCatalogStatus('builds.catalogRestorationFailed', 'error', null, 'Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.');
       return { ok: false, reason: 'restore-failed' };
     }
     if (catalog.needsRecovery()) {
-      setCatalogStatus('builds.catalogProtected', 'warning', null, 'Restore or export the protected autosave first. It was not replaced.');
+      if (!automatic) setCatalogStatus('builds.catalogProtected', 'warning', null, 'Restore or export the protected autosave first. It was not replaced.');
       return { ok: false, reason: 'protected-save' };
     }
     var before;
     try { before = currentPayload(); }
     catch (error) {
-      setCatalogStatus('builds.serializeFailed', 'error', null, 'Current build could not be serialized.');
+      if (!automatic) setCatalogStatus('builds.serializeFailed', 'error', null, 'Current build could not be serialized.');
       return { ok: false, error: error };
     }
     var request = ++catalogRequest, hash = location.hash, shared = shareRequest, loading = ++loadRequest;
-    catalogBusy = true; setCatalogStatus('builds.catalogChecking', 'ready', null, 'Checking published catalog…');
+    catalogBusy = true;
+    if (!automatic) setCatalogStatus('builds.catalogChecking', 'ready', null, 'Checking published catalog…');
     try {
       var snapshot = await catalog.fetchSnapshot(null, { networkOnly: true });
+      setLatestCatalogRevision(snapshot.revision);
       if (request !== catalogRequest) return { ok: false, reason: 'cancelled' };
       if (loading !== loadRequest || hash !== location.hash || shared !== shareRequest || before !== currentPayload() || catalog.needsRecovery()) {
-        setCatalogStatus('builds.catalogCancelled', 'warning', null, 'Update cancelled: the character or link changed. Try again for the current build.');
+        if (!automatic) setCatalogStatus('builds.catalogCancelled', 'warning', null, 'Update cancelled: the character or link changed. Try again for the current build.');
         return { ok: false, reason: 'cancelled' };
       }
       if (snapshot.revision < catalog.getRevision()) throw new Error('Published head predates current revision');
       if (snapshot.revision === catalog.getRevision()) {
-        setCatalogStatus('builds.catalogCurrent', 'success', null, 'This catalog is already current. No build or save was changed.');
+        if (!automatic) setCatalogStatus('builds.catalogCurrent', 'success', null, 'This catalog is already current. No build or save was changed.');
         return { ok: true, unchanged: true };
       }
       try { catalog.preflightSnapshot(snapshot); }
       catch (error) {
-        setCatalogStatus('builds.catalogIncompatible', 'warning', null, 'Update incompatible with equipped items, Soul slots or class requirements. Current build and saves kept.');
-        return { ok: false, error: error };
+        if (!automatic) setCatalogStatus('builds.catalogIncompatible', 'warning', null, 'Update incompatible with equipped items, Soul slots or class requirements. Current build and saves kept.');
+        return { ok: false, reason: 'incompatible', error: error };
       }
-      var candidate = catalog.packPayload(catalog.unpackPayload(before).payload, snapshot.revision);
+      var candidate = catalog.repinPayload(before, snapshot.revision);
       var loaded = loadPayloadSafely(candidate);
       if (!loaded.ok) {
-        setCatalogStatus(loaded.restored ? 'builds.catalogCalculationFailed' : 'builds.catalogRestorationFailed', 'error', null,
-          loaded.restored ? 'Recalculation failed. The previous catalog, character and saves were restored.' : 'Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.');
+        if (!automatic) {
+          setCatalogStatus(loaded.restored ? 'builds.catalogCalculationFailed' : 'builds.catalogRestorationFailed', 'error', null,
+            loaded.restored ? 'Recalculation failed. The previous catalog, character and saves were restored.' : 'Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.');
+        }
         return loaded;
       }
       clearScheduledAutosave();
       var saved = persistLoadedPayload(loaded.payload);
       var detached = detachLoadedShareLink();
       if (shareUrl) { shareUrl.hidden = true; shareUrl.value = ''; }
-      setCatalogStatus(!saved.ok ? 'builds.catalogUnsaved' : !detached ? 'builds.catalogUrlWarning' : 'builds.catalogApplied',
-        saved.ok && detached ? 'success' : 'warning', { revision: snapshot.revision },
-        'Catalog ' + snapshot.revision + ' applied. Named builds keep their original revision.');
-      return { ok: true, payload: loaded.payload, autosaved: saved.ok, detached: detached };
+      setCatalogStatus(
+        !saved.ok ? 'builds.catalogUnsaved' : !detached ? 'builds.catalogUrlWarning' : automatic ? 'builds.catalogAutoApplied' : 'builds.catalogApplied',
+        saved.ok && detached ? 'success' : 'warning',
+        { revision: snapshot.revision },
+        automatic
+          ? 'Catalog ' + snapshot.revision + ' applied automatically.'
+          : 'Catalog ' + snapshot.revision + ' applied. Saved builds are checked against the live catalog when used.'
+      );
+      return { ok: true, payload: loaded.payload, autosaved: saved.ok, detached: detached, automatic: automatic };
     } catch (error) {
-      if (request === catalogRequest) setCatalogStatus('builds.catalogUnavailable', 'warning', null, 'Could not check the published catalog. Current build and saves kept; try again online.');
+      if (!automatic && request === catalogRequest) {
+        setCatalogStatus('builds.catalogUnavailable', 'warning', null, 'Could not check the published catalog. Current build and saves kept; try again online.');
+      }
       return { ok: false, error: error };
     } finally {
       if (request === catalogRequest) { catalogBusy = false; refreshCatalogControls(); }
     }
+  }
+
+  async function checkCatalogHead() {
+    var catalog = namespace.catalog;
+    if (!catalog || catalogHeadBusy || document.visibilityState === 'hidden' || navigator.onLine === false) return { ok: false, reason: 'paused' };
+    catalogHeadBusy = true;
+    try {
+      var head = await catalog.fetchHead({ networkOnly: true });
+      setLatestCatalogRevision(head);
+      if (head > catalog.getRevision()) return await updateCurrentCatalog({ automatic: true });
+      return { ok: true, unchanged: true, revision: head };
+    } catch (error) {
+      return { ok: false, error: error };
+    } finally {
+      catalogHeadBusy = false;
+    }
+  }
+
+  function startCatalogPolling() {
+    if (!namespace.catalog || catalogPollTimer !== null) return;
+    catalogPollTimer = window.setInterval(checkCatalogHead, CATALOG_POLL_MS);
+    window.addEventListener('online', checkCatalogHead);
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') checkCatalogHead();
+    });
+    window.addEventListener('pandora-remaked:cataloghead', function (event) {
+      if (event.detail) setLatestCatalogRevision(event.detail.revision);
+    });
+    checkCatalogHead();
   }
 
   function payloadLooksLikeCurrentCsv(payload, reference) {
