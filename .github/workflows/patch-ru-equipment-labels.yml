@@ -1,0 +1,175 @@
+name: One-shot RU Equipment translation patch
+
+on:
+  push:
+    branches:
+      - i18n/ru-equipment-label-polish
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: i18n/ru-equipment-label-polish
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Patch translation workbook
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pathlib
+          import zipfile
+          from xml.etree import ElementTree
+          from scripts.translation_workbook import MAIN_NS, read_rows
+
+          workbook = pathlib.Path("localization/translations.xlsx")
+          game = {
+              "calculator.status.2": "УВЕЛИЧЗЕЛ",
+              "calculator.status.3": "% исцел ОЗ",
+              "calculator.status.7": "Спина+",
+              "calculator.status.8": "МАТК",
+              "calculator.status.10": "Сопр ФРОНТ",
+              "calculator.status.12": "СОПР Физ",
+              "calculator.status.13": "Сопр ФИЗ",
+              "calculator.status.14": "Сопр МАГ",
+              "calculator.status.17": "ШАНС КРИТ",
+              "calculator.status.20": "Сопр КРИТ",
+              "calculator.status.21": "СОПР КУРОН",
+              "calculator.status.24": "МАГУКЛОН",
+              "calculator.status.27": "Сопр ОГН",
+              "calculator.status.29": "Сопр ЛЕД",
+              "calculator.status.32": "Сопр МОЛН",
+              "calculator.status.33": "Откат",
+              "calculator.status.34": "Сопр ЯД",
+              "calculator.status.36": "СКР Движ Астир",
+              "calculator.status.37": "Сопр ЧАР",
+              "calculator.status.38": "Сопр СВЕТ",
+              "calculator.status.39": "Сопр ТЬМ",
+              "calculator.status.40": "АНОМТЕЛ Сопр",
+              "calculator.status.41": "АНОМДУХ Сопр",
+              "calculator.status.42": "Сопр МАГ",
+              "calculator.qualified_buff.5": "Усил МАТК",
+              "calculator.qualified_buff.6": "Усил АУР",
+              "calculator.qualified_buff.9": "ПЕСН МАТК",
+              "calculator.qualified_buff.10": "ПЕСН Откат",
+              "calculator.slot.0": "Снаряжение",
+              "calculator.slot.1": "Оружие",
+              "calculator.slot.2": "Щит",
+              "calculator.slot.3": "Шлем",
+              "calculator.slot.4": "Доспех",
+              "calculator.slot.5": "Перчатки",
+              "calculator.slot.6": "Штаны",
+              "calculator.slot.7": "Ботинки",
+              "calculator.slot.8": "Плащ",
+              "calculator.slot.9": "Серьги",
+              "calculator.slot.10": "Амулет",
+              "calculator.slot.11": "Пояс",
+              "calculator.slot.12": "Кольцо",
+              "calculator.gem.0.0": "Физ",
+              "calculator.gem.0.1": "Маг",
+              "calculator.gem.1.0": "Огонь",
+              "calculator.gem.1.1": "Лед",
+              "calculator.gem.1.2": "Молния",
+              "calculator.gem.1.3": "Яд",
+              "calculator.gem.1.4": "Свет",
+              "calculator.gem.1.5": "Тьма",
+              "calculator.gem.1.6": "Призма",
+              "soul.0": "Душа",
+              "calculator.text.26": "Сброс снаряжения",
+              "equipment_category.0": "Одноручный меч",
+              "equipment_category.1": "Двуручный меч",
+              "equipment_category.2": "Одноручный топор",
+              "equipment_category.3": "Двуручный топор",
+              "equipment_category.4": "Одноручное копьё",
+              "equipment_category.5": "Двуручное копьё",
+              "equipment_category.6": "Кинжал",
+              "equipment_category.7": "Кастеты",
+              "equipment_category.8": "Лук",
+              "equipment_category.9": "Арбалет",
+              "equipment_category.10": "Одноручный молот",
+              "equipment_category.11": "Двуручный молот",
+              "equipment_category.12": "Одноручный жезл",
+              "equipment_category.13": "Двуручный жезл",
+              "equipment_category.20": "Щит",
+              "equipment_category.30": "Шлем",
+              "equipment_category.31": "Доспех",
+              "equipment_category.32": "Перчатки",
+              "equipment_category.33": "Штаны",
+              "equipment_category.34": "Ботинки",
+              "equipment_category.35": "Плащ",
+              "equipment_category.40": "Серьги",
+              "equipment_category.41": "Амулет",
+              "equipment_category.42": "Пояс",
+              "equipment_category.43": "Кольцо",
+          }
+          ui = {
+              "search.eyebrow.equipment": "Снаряжение",
+              "search.equipment.title": "Найти снаряжение",
+              "search.equipment.placeholder": "Поиск снаряжения…",
+              "search.noEquipmentMatches": "Подходящее снаряжение не найдено",
+              "search.noEquipmentSlots": "Нет доступных ячеек снаряжения",
+              "tools.equipmentSearch": "Поиск снаряжения",
+              "search.eyebrow.soul": "Душа",
+              "search.soul.title": "Найти душу",
+              "search.soul.placeholder": "Поиск души…",
+              "search.noSoulMatches": "Подходящие души не найдены",
+              "search.noSoulSockets": "Нет доступных сокетов душ",
+              "search.sockets": "Сокетов душ: {count}",
+              "search.soulSummary": "Подходящих душ: {total}",
+              "tools.soulSearch": "Поиск душ",
+          }
+          values = {**game, **ui}
+
+          rows = read_rows(workbook)
+          row_by_id = {row[1]: index for index, row in enumerate(rows, start=1)}
+          missing = sorted(set(values) - set(row_by_id))
+          if missing:
+              raise SystemExit("Missing translation IDs: " + ", ".join(missing))
+
+          rewritten = workbook.with_suffix(".patched.xlsx")
+          with zipfile.ZipFile(workbook) as source, zipfile.ZipFile(rewritten, "w") as target:
+              for entry in source.infolist():
+                  payload = source.read(entry.filename)
+                  if entry.filename == "xl/worksheets/sheet1.xml":
+                      sheet = ElementTree.fromstring(payload)
+                      for identifier, value in values.items():
+                          row_number = row_by_id[identifier]
+                          row = sheet.find(f".//{{{MAIN_NS}}}row[@r='{row_number}']")
+                          if row is None:
+                              raise SystemExit(f"Missing workbook row {row_number}: {identifier}")
+                          ref = f"H{row_number}"
+                          cell = row.find(f"{{{MAIN_NS}}}c[@r='{ref}']")
+                          if cell is None:
+                              cell = ElementTree.SubElement(row, f"{{{MAIN_NS}}}c", {"r": ref})
+                          cell.clear()
+                          cell.attrib.update({"r": ref, "t": "inlineStr"})
+                          inline = ElementTree.SubElement(cell, f"{{{MAIN_NS}}}is")
+                          ElementTree.SubElement(inline, f"{{{MAIN_NS}}}t").text = value
+                      payload = ElementTree.tostring(sheet, encoding="utf-8", xml_declaration=True)
+                  target.writestr(entry, payload)
+          rewritten.replace(workbook)
+          PY
+
+      - name: Validate translations
+        run: |
+          python scripts/translation_workbook.py --root .
+          python -m unittest tests.test_translation_workbook -v
+
+      - name: Commit workbook and remove one-shot workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add localization/translations.xlsx
+          git rm .github/workflows/patch-ru-equipment-labels.yml
+          git commit -m "i18n: apply Russian Equipment terminology"
+          git push origin HEAD:i18n/ru-equipment-label-polish
