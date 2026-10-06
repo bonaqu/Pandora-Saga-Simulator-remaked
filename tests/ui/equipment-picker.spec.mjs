@@ -299,9 +299,7 @@ test('Equipment slot labels and compact Reset stay fully visible in every UI loc
     expect(layout.reset.width).toBeCloseTo(72, 0);
     expect(layout.reset.scroll).toBeLessThanOrEqual(layout.reset.client);
     for (const label of layout.labels) expect(label.scroll, locale + ': ' + label.text).toBeLessThanOrEqual(label.client);
-    if (innerWidth >= 621) {
-      for (const label of layout.labels) expect(label.client, locale + ': ' + label.text).toBe(74);
-    }
+    for (const label of layout.labels) expect(label.client, locale + ': ' + label.text).toBe(74);
   }
 
   // A client can briefly combine the new component with an older cached
