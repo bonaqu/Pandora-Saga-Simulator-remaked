@@ -2,6 +2,39 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Modern 3.18 — automatic live updates and saved-build freshness, 2026-10-06
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Открытый сайт теперь сам проверяет новые версии приложения и опубликованного игрового каталога; ручное обновление страницы или кнопка «Обновить текущий билд» для обычного сценария больше не нужны.
+- Перед автоматическим переключением PWA на новую версию текущий прогресс принудительно сохраняется. Если сохранение не удалось, автоматическая активация обновления блокируется.
+- При обновлении service worker каждая открытая вкладка отдельно сохраняет свой текущий прогресс перед перезагрузкой.
+- Изменения предметов, душ, классов, расовых и обычных навыков, опубликованные через админку, подхватываются текущим персонажем автоматически после обнаружения новой ревизии.
+- Сохранённые билды со старой ревизией каталога отмечаются красной пунктирной рамкой и меткой «Возможно устарел». При загрузке такой билд безопасно пересчитывается на актуальном каталоге; при несовместимости сохраняется и открывается историческая версия.
+- Сравнение сохранённых билдов при наличии сети использует актуальную опубликованную ревизию, а офлайн сохраняет возможность работать с уже закэшированными историческими ревизиями.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Open pages now check automatically for new app versions and published catalog revisions; normal use no longer depends on manually reloading or pressing “Update current build”.
+- Current progress is flushed before automatic PWA activation. If saving fails, the update is not activated.
+- Every open tab saves its own state before a service-worker controller reload.
+- Published admin changes to equipment, Souls, classes, racial data and skills are adopted automatically by the active character.
+- Named builds pinned to an older catalog are highlighted as possibly outdated and are safely upgraded when loaded; incompatible builds retain their historical revision.
+- Saved-build comparison uses the current published catalog online and cached pinned revisions offline.
+<!-- /release-notes:en -->
+
+### Project and delivery details
+
+- The public Worker exposes a lightweight `/api/catalog/head` revision beacon so Pages can poll frequently without downloading the full catalog.
+- Production Pages polls the catalog head only while visible/online and downloads a full snapshot only after the revision changes.
+- PWA update checks run on page load, visibility/online recovery and a short interval; service-worker registration bypasses the HTTP cache.
+- Versioned cache generations and generation-scoped cache reads from Modern 3.17 remain intact.
+- Translation-workbook row/schema compatibility is unchanged; Excel translation edits still publish through the normal Pages build/deploy and are then picked up by the same PWA update path.
+- Legacy formulas and the numeric build payload layout remain unchanged.
+
 ## Modern 3.17 — centered reset and PWA update safety, 2026-10-06
 
 <!-- release-notes:ru -->
