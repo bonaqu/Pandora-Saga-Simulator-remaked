@@ -898,7 +898,7 @@
       var catalogHelp = document.createElement('p');
       catalogHelp.id = 'remaked-catalog-update-help';
       if (i18n) i18n.bindText(catalogHelp, 'builds.catalogHelp');
-      else catalogHelp.textContent = 'Updates only this character to the published catalog. Equipped items, Souls and effects are checked; named builds keep their original revision.';
+      else catalogHelp.textContent = 'Published catalog changes are detected automatically. The current character is updated safely; older named builds are marked and upgraded when loaded.';
       catalogSection.appendChild(catalogHelp);
       catalogUpdate = button('Update current build', null, 'builds.catalogUpdate');
       catalogUpdate.dataset.remakedCatalogUpdate = '';
@@ -979,7 +979,9 @@
     var startupRequest = loadRequest;
     Promise.resolve(namespace.catalog?.ready).then(async function () {
       if (startupRequest === loadRequest) { restoreAutosaveOnce(); await loadSharedBuild(); }
-      window.addEventListener('hashchange', loadSharedBuild); bindLegacyChanges();
+      window.addEventListener('hashchange', loadSharedBuild);
+      bindLegacyChanges();
+      window.setTimeout(startCatalogPolling, 0);
     }).finally(function () { suppressAutosave = false; if (legacy) legacy.inert = false; });
   }
 
@@ -988,6 +990,8 @@
     importPreparedPayload: importPreparedPayload,
     importCodeField: importCodeField,
     updateCurrentCatalog: updateCurrentCatalog,
+    checkCatalogHead: checkCatalogHead,
+    getLatestCatalogRevision: function () { return latestCatalogRevision; },
     scheduleAutosave: scheduleAutosave,
     flushAutosave: flushAutosave,
     openManager: openManager,
