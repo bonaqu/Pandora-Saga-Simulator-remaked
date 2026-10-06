@@ -2002,3 +2002,86 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   [data-remaked-skill-column-header] > span:nth-child(5) { grid-column: 6; }
   [data-remaked-skill-column-header] > span:nth-child(6) { grid-column: 7; }
 }
+
+
+/* Modern 3.15: keep compact translated labels readable without changing the
+   retained calculator's source values or callbacks. */
+.remaked-modern #body [data-remaked-calculator-attribute] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18px;
+  column-gap: 2px;
+  align-items: center;
+}
+.remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child {
+  grid-column: 1;
+  grid-template-columns: 32px minmax(0, 1fr);
+  column-gap: 3px;
+  min-width: 0;
+  padding-inline-end: 0 !important;
+}
+.remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child > [id^="Text_"] {
+  width: 32px !important;
+  min-width: 32px;
+}
+.remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child > .input_gt {
+  grid-template-columns: 40px minmax(32px, 1fr);
+  column-gap: 3px;
+  min-width: 0;
+  overflow: visible;
+}
+.remaked-modern #body [data-remaked-calculator-attribute] .remaked-calculator-number {
+  width: 40px;
+}
+.remaked-modern #body [data-remaked-calculator-attribute] [data-remaked-number-total] {
+  min-width: 32px;
+  overflow: visible;
+  white-space: nowrap;
+}
+.remaked-modern #body [data-remaked-calculator-attribute] > ul:nth-of-type(2) {
+  position: static;
+  inset: auto;
+  grid-column: 2;
+  grid-row: 1;
+  width: 18px;
+  min-width: 18px;
+}
+.remaked-modern #body [data-remaked-calculator-attribute] > ul:nth-of-type(2) > [id^="Status"][id$="_4"] {
+  width: 18px !important;
+  min-width: 18px;
+  font-size: 11px;
+}
+
+.remaked-modern #body [data-remaked-calculator-results] [id^="TextStatus_"][title] {
+  cursor: help;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+}
+
+.remaked-modern #body [data-remaked-picker-slot] {
+  display: flex;
+  align-items: center;
+}
+.remaked-modern #body [data-remaked-picker-slot] > [data-remaked-picker-slot-label] {
+  box-sizing: border-box;
+  width: 68px !important;
+  min-width: 68px;
+  padding-inline-end: 5px !important;
+  text-align: left !important;
+  white-space: nowrap;
+  overflow: visible;
+}
+.remaked-modern #body [data-remaked-picker-slot] > .input_gt {
+  box-sizing: border-box;
+  width: calc(100% - 68px) !important;
+  min-width: 0;
+}
+.remaked-modern #body [data-remaked-equipment-reset] {
+  box-sizing: border-box;
+  width: 72px !important;
+  min-width: 72px;
+  max-width: 72px;
+  padding-inline: 8px !important;
+  overflow: visible;
+  white-space: nowrap;
+}
