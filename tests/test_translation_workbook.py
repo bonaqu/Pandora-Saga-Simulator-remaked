@@ -112,27 +112,27 @@ class TranslationWorkbookTests(unittest.TestCase):
         expected = {
             "calculator.text.10": "ВЫН", "calculator.text.11": "СИЛ", "calculator.text.12": "ПРВ",
             "calculator.text.13": "ЛВК", "calculator.text.14": "СД", "calculator.text.15": "ИНТ",
-            "calculator.status.0": "ОЗ", "calculator.status.1": "ОМ", "calculator.status.2": "УВЕЛЗЕЛ",
-            "calculator.status.3": "% исцеления ОЗ", "calculator.status.4": "Восст ОМ",
-            "calculator.status.5": "МаксАТК", "calculator.status.6": "Фронт+", "calculator.status.7": "Спин+",
-            "calculator.status.8": "МагАТК", "calculator.status.9": "ЗАЩИТА",
-            "calculator.status.10": "ФРОНТ Сопр", "calculator.status.11": "СПИН Сопр",
-            "calculator.status.12": "Физ СОПР", "calculator.status.13": "ФИЗ Сопр",
-            "calculator.status.14": "МАГ Сопр", "calculator.status.15": "Точность",
-            "calculator.status.16": "ТОЧН", "calculator.status.17": "ШК",
+            "calculator.status.0": "ОЗ", "calculator.status.1": "ОМ", "calculator.status.2": "УВЕЛИЧЗЕЛ",
+            "calculator.status.3": "% исцел ОЗ", "calculator.status.4": "Восст ОМ",
+            "calculator.status.5": "МаксАТК", "calculator.status.6": "Фронт+", "calculator.status.7": "Спина+",
+            "calculator.status.8": "МАТК", "calculator.status.9": "ЗАЩИТА",
+            "calculator.status.10": "Сопр ФРОНТ", "calculator.status.11": "СПИН Сопр",
+            "calculator.status.12": "СОПР Физ", "calculator.status.13": "Сопр ФИЗ",
+            "calculator.status.14": "Сопр МАГ", "calculator.status.15": "Точность",
+            "calculator.status.16": "ТОЧН", "calculator.status.17": "ШАНС КРИТ",
             "calculator.status.18": "Крит УРОН", "calculator.status.19": "Уклонение",
-            "calculator.status.20": "КРИТ Сопр", "calculator.status.21": "КУРОН СОПР",
+            "calculator.status.20": "Сопр КРИТ", "calculator.status.21": "СОПР КУРОН",
             "calculator.status.22": "Ближ УКЛОН", "calculator.status.23": "Дальн АТК УКЛОН",
-            "calculator.status.24": "Маг УКЛОН", "calculator.status.25": "Дист ближ АТК",
-            "calculator.status.26": "Дист дальн АТК", "calculator.status.27": "ОГН Сопр",
-            "calculator.status.28": "СКР АТК", "calculator.status.29": "ЛЕД Сопр",
+            "calculator.status.24": "МАГУКЛОН", "calculator.status.25": "Дист ближ АТК",
+            "calculator.status.26": "Дист дальн АТК", "calculator.status.27": "Сопр ОГН",
+            "calculator.status.28": "СКР АТК", "calculator.status.29": "Сопр ЛЕД",
             "calculator.status.30": "СКР Каста", "calculator.status.31": "ВремяКаст",
-            "calculator.status.32": "МОЛН Сопр", "calculator.status.33": "Перезарядка",
-            "calculator.status.34": "ЯД Сопр", "calculator.status.35": "СКР Движ",
-            "calculator.status.36": "ГородСКРП", "calculator.status.37": "ЧАР Сопр",
-            "calculator.status.38": "СВЕТ Сопр", "calculator.status.39": "ТЬМ Сопр",
-            "calculator.status.40": "АНМСОСТТЕЛ Сопр", "calculator.status.41": "АНМСОСТДУХ Сопр",
-            "calculator.status.42": "МАГ Сопр",
+            "calculator.status.32": "Сопр МОЛН", "calculator.status.33": "Откат",
+            "calculator.status.34": "Сопр ЯД", "calculator.status.35": "СКР Движ",
+            "calculator.status.36": "СКР Движ Астир", "calculator.status.37": "Сопр ЧАР",
+            "calculator.status.38": "Сопр СВЕТ", "calculator.status.39": "Сопр ТЬМ",
+            "calculator.status.40": "АНОМТЕЛ Сопр", "calculator.status.41": "АНОМДУХ Сопр",
+            "calculator.status.42": "Сопр МАГ",
             "skill.0": "Ближний бой", "skill.1": "Секущий удар", "skill.2": "Колющий удар",
             "skill.3": "Рубящий удар", "skill.4": "Тяжелый удар", "skill.5": "Оборона",
             "skill.6": "Тактика", "skill.7": "Стрельба", "skill.8": "Ремесло",
@@ -142,9 +142,9 @@ class TranslationWorkbookTests(unittest.TestCase):
             "skill.18": "Магия стихий", "skill.19": "Воплощение", "skill.20": "Магия тьмы",
             "skill.21": "Чары", "skill.22": "Особые", "skill.23": "Расовые",
             "skill.24": "Верховая езда",
-            "calculator.qualified_buff.5": "Усил МагАТК", "calculator.qualified_buff.6": "Усил Аура",
-            "calculator.qualified_buff.9": "ПЕСН МагАТК",
-            "calculator.qualified_buff.10": "ПЕСН Перезарядка",
+            "calculator.qualified_buff.5": "Усил МАТК", "calculator.qualified_buff.6": "Усил АУР",
+            "calculator.qualified_buff.9": "ПЕСН МАТК",
+            "calculator.qualified_buff.10": "ПЕСН Откат",
         }
         hints = {
             "calculator.status.2.hint": "Восстанавливающее действие зелья",
@@ -190,6 +190,58 @@ class TranslationWorkbookTests(unittest.TestCase):
         }
         for identifier, value in {**expected, **hints}.items():
             self.assertEqual(catalog.game_russian[identifier], value, identifier)
+
+    def test_requested_russian_equipment_chrome_and_categories_are_exact(self):
+        from scripts.translation_workbook import load_editable_catalogs
+        catalog = load_editable_catalogs(ROOT)
+        game_expected = {
+            "calculator.slot.0": "Снаряжение",
+            "calculator.slot.1": "Оружие", "calculator.slot.2": "Щит",
+            "calculator.slot.3": "Шлем", "calculator.slot.4": "Доспех",
+            "calculator.slot.5": "Перчатки", "calculator.slot.6": "Штаны",
+            "calculator.slot.7": "Ботинки", "calculator.slot.8": "Плащ",
+            "calculator.slot.9": "Серьги", "calculator.slot.10": "Амулет",
+            "calculator.slot.11": "Пояс", "calculator.slot.12": "Кольцо",
+            "calculator.gem.0.0": "Физ", "calculator.gem.0.1": "Маг",
+            "calculator.gem.1.0": "Огонь", "calculator.gem.1.1": "Лед",
+            "calculator.gem.1.2": "Молния", "calculator.gem.1.3": "Яд",
+            "calculator.gem.1.4": "Свет", "calculator.gem.1.5": "Тьма",
+            "calculator.gem.1.6": "Призма", "soul.0": "Душа",
+            "calculator.text.26": "Сброс снаряжения",
+            "equipment_category.0": "Одноручный меч", "equipment_category.1": "Двуручный меч",
+            "equipment_category.2": "Одноручный топор", "equipment_category.3": "Двуручный топор",
+            "equipment_category.4": "Одноручное копьё", "equipment_category.5": "Двуручное копьё",
+            "equipment_category.6": "Кинжал", "equipment_category.7": "Кастеты",
+            "equipment_category.8": "Лук", "equipment_category.9": "Арбалет",
+            "equipment_category.10": "Одноручный молот", "equipment_category.11": "Двуручный молот",
+            "equipment_category.12": "Одноручный жезл", "equipment_category.13": "Двуручный жезл",
+            "equipment_category.20": "Щит", "equipment_category.30": "Шлем",
+            "equipment_category.31": "Доспех", "equipment_category.32": "Перчатки",
+            "equipment_category.33": "Штаны", "equipment_category.34": "Ботинки",
+            "equipment_category.35": "Плащ", "equipment_category.40": "Серьги",
+            "equipment_category.41": "Амулет", "equipment_category.42": "Пояс",
+            "equipment_category.43": "Кольцо",
+        }
+        ui_expected = {
+            "search.eyebrow.equipment": "Снаряжение",
+            "search.equipment.title": "Найти снаряжение",
+            "search.equipment.placeholder": "Поиск снаряжения…",
+            "search.noEquipmentMatches": "Подходящее снаряжение не найдено",
+            "search.noEquipmentSlots": "Нет доступных ячеек снаряжения",
+            "tools.equipmentSearch": "Поиск снаряжения",
+            "search.eyebrow.soul": "Душа",
+            "search.soul.title": "Найти душу",
+            "search.soul.placeholder": "Поиск души…",
+            "search.noSoulMatches": "Подходящие души не найдены",
+            "search.noSoulSockets": "Нет доступных сокетов душ",
+            "search.sockets": "Сокетов душ: {count}",
+            "search.soulSummary": "Подходящих душ: {total}",
+            "tools.soulSearch": "Поиск душ",
+        }
+        for identifier, value in game_expected.items():
+            self.assertEqual(catalog.game_russian[identifier], value, identifier)
+        for identifier, value in ui_expected.items():
+            self.assertEqual(catalog.ui_russian[identifier], value, identifier)
 
     def test_recent_modern_strings_publish_in_all_four_ui_locales(self):
         from scripts.translation_workbook import load_editable_catalogs
