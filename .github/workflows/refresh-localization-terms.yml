@@ -18,6 +18,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Build published site fixture
+        run: python3 scripts/build_pages.py --output _site
       - name: Regenerate Legacy term export
         run: npm run extract:terms
       - name: Validate workbook against refreshed export
