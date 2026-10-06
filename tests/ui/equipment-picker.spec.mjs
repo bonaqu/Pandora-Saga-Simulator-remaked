@@ -246,12 +246,28 @@ test('RU Equipment chrome, gem selectors and category headings use workbook term
     'Серьги · 1', 'Серьги · 2', 'Амулет', 'Пояс', 'Кольцо · 1', 'Кольцо · 2'
   ]);
 
-  expect(await page.locator('#SelEquip_0_1 option').allTextContents()).toEqual(['Физ', 'Маг']);
-  expect(await page.locator('#SelEquip_0_2 option').allTextContents()).toEqual(['Огонь', 'Лед', 'Молния', 'Яд', 'Свет', 'Тьма', 'Призма']);
-  await expect(page.locator('#SelEquip_0_4 option').first()).toHaveText('Душа');
+  const modifierLabels = await page.evaluate(() => {
+    function texts(selector) {
+      const nodes = document.querySelectorAll(selector), values = [];
+      for (let index = 0; index < nodes.length; index++) values[values.length] = String(nodes[index].textContent).trim();
+      return values;
+    }
+    return {
+      kind: texts('#SelEquip_0_1 option'),
+      element: texts('#SelEquip_0_2 option'),
+      soul: String(document.querySelector('#SelEquip_0_4 option').textContent).trim()
+    };
+  });
+  expect(modifierLabels.kind).toEqual(['Физ', 'Маг']);
+  expect(modifierLabels.element).toEqual(['Огонь', 'Лед', 'Молния', 'Яд', 'Свет', 'Тьма', 'Призма']);
+  expect(modifierLabels.soul).toBe('Душа');
 
   await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
-  const typeLabels = await page.locator('[data-remaked-picker-type-filter] option').allTextContents();
+  const typeLabels = await page.evaluate(() => {
+    const nodes = document.querySelectorAll('[data-remaked-picker-type-filter] option'), values = [];
+    for (let index = 0; index < nodes.length; index++) values[values.length] = String(nodes[index].textContent).trim();
+    return values;
+  });
   expect(typeLabels).toEqual(expect.arrayContaining([
     'Одноручный меч', 'Двуручный меч', 'Одноручный топор', 'Двуручный топор',
     'Одноручное копьё', 'Двуручное копьё', 'Кинжал', 'Кастеты', 'Лук', 'Арбалет'
