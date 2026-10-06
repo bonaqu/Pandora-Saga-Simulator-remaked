@@ -11,7 +11,7 @@ export const EFFECTS = [
   [6, 'LP', BOTH], [7, 'MP', BOTH], [8, 'Potion effectiveness (percentage points)', FLAT], [10, 'MP recovery speed bonus (percentage points)', FLAT], [18, 'Physical attack', BOTH], [42, 'Magic attack (percentage points)', FLAT], [49, 'Defense', BOTH],
   [50, 'Front damage resistance', FLAT], [51, 'Back damage resistance', FLAT], [52, 'Physical damage resistance', BOTH],
   [60, 'Magic damage resistance (percentage points)', FLAT], [62, 'Accuracy', BOTH], [65, 'Dodge', BOTH],
-  [69, 'Critical chance (percentage points)', FLAT], [70, 'Incoming critical chance (percentage points)', FLAT],
+  [69, 'Critical chance (percentage points)', FLAT], [70, 'Incoming critical chance (percentage points)', FLAT], [91, 'Stun chance (percentage points)', FLAT],
   [71, 'Critical damage (percentage points)', FLAT], [72, 'Critical damage taken (percentage points)', FLAT],
   [73, 'Attack speed (percentage points)', FLAT], [74, 'Movement speed (percentage points)', FLAT],
   [76, 'MP cost (percentage points)', FLAT], [77, 'Casting speed (percentage points)', FLAT], [79, 'Cooldown (percentage points)', FLAT],

@@ -1,5 +1,36 @@
 # Changelog
 
+## Modern 3.20 — Pandora Saga OS item data sync, 2026-10-06
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Сверены с предоставленной таблицей Pandora Saga OS и обновлены **180 уже существующих записей** симулятора: 111 оружий/предметов экипировки и 69 Souls.
+- Для найденных записей добавлены русские названия и описания из таблицы; английские названия и описания приведены к значениям из той же таблицы.
+- Исправлены характеристики, которые реально поддерживает движок симулятора: Soul slots у 103 предметов, уровень и W у Heavy Crossbow, STR у Bounty Lance, Magic ATK у указанных wand/staff, шанс оглушения Iron Staff и Dodge у Soul of Cerberus.
+- Изменения механики публикуются отдельной ревизией игровых данных 79, поэтому сохранённые билды ревизии 78 корректно считаются более старыми, а сама историческая ревизия 78 остаётся неизменной.
+- **Healer Soul** из таблицы не добавлялся: среди уже существующих Souls симулятора не найдено однозначного соответствия с тем же эффектом, а эта синхронизация намеренно не создаёт новые предметы по догадке.
+- PEN, Range, базовый Attack Speed и Block из таблицы не подменялись другими параметрами: в текущей модели предметов симулятора для них нет отдельных рассчитываемых полей. Эти значения потребуют отдельного расширения движка/карточек, если мы захотим поддерживать их в будущем.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Synchronized **180 existing simulator records** with the supplied Pandora Saga OS workbook: 111 weapons/equipment items and 69 Souls.
+- Added the supplied Russian names/descriptions and aligned English names/descriptions with the same reference.
+- Corrected mechanics that the current simulator actually represents, including 103 Soul-socket counts, Heavy Crossbow level/W, Bounty Lance STR, selected wand/staff Magic ATK, Iron Staff stun chance, and Soul of Cerberus Dodge.
+- Mechanical changes are released as game-data revision 79, preserving revision 78 as a real historical snapshot for saved builds.
+- Healer Soul was not created because no unambiguous existing Soul with the same effect was found.
+- PEN, Range, base Attack Speed and Block were not mapped onto unrelated stats because the current item engine has no dedicated per-item fields for them.
+<!-- /release-notes:en -->
+
+### Project and delivery details
+
+- The release is stored as a checksum-verified immutable payload and materialized deterministically into D1 migration `0005_pandora_os_item_sync.sql` immediately before migration application.
+- The migration merges the 180 matched item identities into the current catalog snapshot atomically and advances both `revision` and `impactRevision` to 79.
+- The preserved Legacy runtime remains untouched, so historical catalog revisions continue to compile against the same source fingerprint.
+- Regression coverage validates all 180 edits through the real catalog codec and checks the key mechanical corrections before deployment.
+
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
 ## Modern 3.19 — impact-aware saved builds and simpler Builds UI, 2026-10-06

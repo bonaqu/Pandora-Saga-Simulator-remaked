@@ -21,3 +21,6 @@ Thumbs.db
 .dev.vars*
 .env*
 *.credentials.json
+
+# Deterministically materialized from the checksum-verified Pandora Saga OS release payload.
+admin-api/migrations/0005_pandora_os_item_sync.sql
