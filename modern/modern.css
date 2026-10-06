@@ -2008,30 +2008,30 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
    retained calculator's source values or callbacks. */
 .remaked-modern #body [data-remaked-calculator-attribute] {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 18px;
+  grid-template-columns: minmax(0, 1fr) 16px;
   column-gap: 2px;
   align-items: center;
 }
 .remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child {
   grid-column: 1;
-  grid-template-columns: 32px minmax(0, 1fr);
+  grid-template-columns: 30px minmax(0, 1fr);
   column-gap: 3px;
   min-width: 0;
   padding-inline-end: 0 !important;
 }
 .remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child > [id^="Text_"] {
-  width: 32px !important;
-  min-width: 32px;
+  width: 30px !important;
+  min-width: 30px;
 }
 .remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child > .input_gt {
-  grid-template-columns: 40px minmax(32px, 1fr);
-  column-gap: 3px;
+  grid-template-columns: 44px minmax(32px, 1fr);
+  column-gap: 2px;
   min-width: 0;
   overflow: visible;
 }
 .remaked-modern #body [data-remaked-calculator-attribute] .remaked-calculator-number {
-  width: 40px;
-  min-width: 40px;
+  width: 44px;
+  min-width: 44px;
 }
 .remaked-modern #body [data-remaked-calculator-attribute] [data-remaked-number-total] {
   min-width: 32px;
@@ -2043,12 +2043,12 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   inset: auto;
   grid-column: 2;
   grid-row: 1;
-  width: 18px;
-  min-width: 18px;
+  width: 16px;
+  min-width: 16px;
 }
 .remaked-modern #body [data-remaked-calculator-attribute] > ul:nth-of-type(2) > [id^="Status"][id$="_4"] {
-  width: 18px !important;
-  min-width: 18px;
+  width: 16px !important;
+  min-width: 16px;
   font-size: 11px;
 }
 
