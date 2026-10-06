@@ -209,7 +209,7 @@ test('requested Russian calculator labels, skill groups and effect hints render 
   await expect(page.locator('#Text_10')).toHaveText('ВЫН');
   await expect(page.locator('#Text_15')).toHaveText('ИНТ');
   await expect(page.locator('#TextStatus_0')).toHaveText('ОЗ');
-  await expect(page.locator('#TextStatus_3')).toHaveText('% исцеления ОЗ');
+  await expect(page.locator('#TextStatus_3')).toHaveText('% исцел ОЗ');
   await expect(page.locator('#TextStatus_3 [title]')).toHaveAttribute('title', '% исцеленного ОЗ');
   await expect(page.locator('#TextStatus_25')).toHaveText('Дист ближ АТК');
   await expect(page.locator('#TextStatus_25 [title]')).toHaveAttribute('title', 'Дальность атак ближнего боя');
@@ -220,13 +220,13 @@ test('requested Russian calculator labels, skill groups and effect hints render 
   await expect(page.locator('#TextSkill_13')).toHaveText('Исцеление');
   await expect(page.locator('#TextSkill_24')).toHaveText('Верховая езда');
 
-  await expect(page.locator('#ViewBuff_5_0')).toHaveText('Усил МагАТК');
+  await expect(page.locator('#ViewBuff_5_0')).toHaveText('Усил МАТК');
   await expect(page.locator('#ViewBuff_5_0 [title]')).toHaveAttribute('title', 'Усиление урона магией');
-  await expect(page.locator('#ViewBuff_6_0')).toHaveText('Усил Аура');
+  await expect(page.locator('#ViewBuff_6_0')).toHaveText('Усил АУР');
   await expect(page.locator('#ViewBuff_6_0 [title]')).toHaveAttribute('title', 'Усиление урона аурой');
-  await expect(page.locator('#ViewBuff_9_0')).toHaveText('ПЕСН МагАТК');
+  await expect(page.locator('#ViewBuff_9_0')).toHaveText('ПЕСН МАТК');
   await expect(page.locator('#ViewBuff_9_0 [title]')).toHaveAttribute('title', 'Усиление урона магией');
-  await expect(page.locator('#ViewBuff_10_0')).toHaveText('ПЕСН Перезарядка');
+  await expect(page.locator('#ViewBuff_10_0')).toHaveText('ПЕСН Откат');
   await expect(page.locator('#ViewBuff_10_0 [title]')).toHaveAttribute('title', 'Ускорение перезарядки умений');
 
   expect(await immutableState(page)).toEqual(before);

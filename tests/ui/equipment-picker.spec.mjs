@@ -232,6 +232,51 @@ test('search pointer click does not flash characteristics and wheel cancels a pe
   expect(await page.evaluate(() => window.fixturePreviewFlashed)).toBe(false);
 });
 
+test('RU Equipment chrome, gem selectors and category headings use workbook terminology without changing the build', async ({ page }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+
+  await expect(page.locator('#TextEquip_0')).toHaveText('Снаряжение');
+  await expect(page.locator('[data-remaked-equipment-reset]')).toHaveText('Сброс снаряжения');
+
+  const labels = await page.evaluate(() => PandoraRemaked.adapter.listEquipmentTargets().map(target => target.label));
+  expect(labels).toEqual([
+    'Оружие', 'Щит', 'Шлем', 'Доспех', 'Перчатки', 'Штаны', 'Ботинки', 'Плащ',
+    'Серьги · 1', 'Серьги · 2', 'Амулет', 'Пояс', 'Кольцо · 1', 'Кольцо · 2'
+  ]);
+
+  const modifierLabels = await page.evaluate(() => {
+    function texts(selector) {
+      const nodes = document.querySelectorAll(selector), values = [];
+      for (let index = 0; index < nodes.length; index++) values[values.length] = String(nodes[index].textContent).trim();
+      return values;
+    }
+    return {
+      kind: texts('#SelEquip_0_1 option'),
+      element: texts('#SelEquip_0_2 option'),
+      soul: String(document.querySelector('#SelEquip_0_4 option').textContent).trim().replace(/^\+-----\s*/, '')
+    };
+  });
+  expect(modifierLabels.kind).toEqual(['Физ', 'Маг']);
+  expect(modifierLabels.element).toEqual(['Огонь', 'Лед', 'Молния', 'Яд', 'Свет', 'Тьма', 'Призма']);
+  expect(modifierLabels.soul.replace(/^\+-----\s*/, '')).toBe('Душа');
+
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
+  const typeLabels = await page.evaluate(() => {
+    const nodes = document.querySelectorAll('[data-remaked-picker-type-filter] option'), values = [];
+    for (let index = 0; index < nodes.length; index++) values[values.length] = String(nodes[index].textContent).trim();
+    return values;
+  });
+  expect(typeLabels).toEqual(expect.arrayContaining([
+    'Одноручный меч', 'Двуручный меч', 'Одноручный топор', 'Двуручный топор',
+    'Одноручное копьё', 'Двуручное копьё', 'Кинжал', 'Кастеты', 'Лук', 'Арбалет'
+  ]));
+  await page.locator('[data-remaked-picker-panel] .remaked-search-close').click();
+
+  expect(await page.evaluate(() => Store())).toBe(before);
+});
+
 test('all fourteen actual slots have correct source labels and usable selection dropdowns', async ({ page }) => {
   await page.goto('/');
   const targets = await page.evaluate(() => PandoraRemaked.adapter.listEquipmentTargets());

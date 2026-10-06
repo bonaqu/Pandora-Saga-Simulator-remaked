@@ -37,13 +37,16 @@
 
   function equipmentTermId(value) {
     var legacyId = Number(value);
-    if (!Number.isInteger(legacyId) || legacyId <= 0) return '';
-    return 'equipment.' + String(Math.floor(legacyId / 10000)) + '.' + String(legacyId % 10000);
+    if (!Number.isInteger(legacyId) || legacyId < 0) return '';
+    var category = Math.floor(legacyId / 10000);
+    var index = legacyId % 10000;
+    return index === 0 ? 'equipment_category.' + String(category)
+      : 'equipment.' + String(category) + '.' + String(index);
   }
 
   function soulTermId(value) {
     var legacyId = Number(value);
-    return Number.isInteger(legacyId) && legacyId > 0 ? 'soul.' + String(legacyId) : '';
+    return Number.isInteger(legacyId) && legacyId >= 0 ? 'soul.' + String(legacyId) : '';
   }
 
   function filterEquipment(options, filters) {
@@ -382,10 +385,11 @@
         var socket = element('span', 'remaked-item-socket');
         socket.dataset.remakedSocket = ''; socket.dataset.filled = soul.id > 0 ? 'true' : 'false';
         var label = soul.id > 0 ? gameName(soulTermId(soul.id), soul.name) : '—';
-        socket.setAttribute('aria-label', 'Soul ' + (index + 1) + ': ' + label);
+        var soulLabel = gameName('soul.0', 'Soul');
+        socket.setAttribute('aria-label', soulLabel + ' ' + (index + 1) + ': ' + label);
         socket.setAttribute('role', 'img'); socket.title = label;
         sockets.appendChild(socket);
-        if (soul.id > 0) description.appendChild(element('p', '', 'Soul ' + (index + 1) + ': ' + label));
+        if (soul.id > 0) description.appendChild(element('p', '', soulLabel + ' ' + (index + 1) + ': ' + label));
       });
       description.insertBefore(sockets, description.children[1]);
     }
@@ -509,7 +513,9 @@
     var shell = createShell(kind, kind === 'equipment' ? 'search.equipment.title' : 'search.soul.title', 'Equipment', trigger, true);
     shell.panel.dataset.remakedPickerPanel = selectId;
     shell.panel.querySelector('h2').removeAttribute('data-remaked-i18n');
-    shell.panel.querySelector('h2').textContent = adapter.listEquipmentTargets().find(function (target) { return target.slotIndex === slot; }).label + (fieldIndex ? ' · Soul ' + (fieldIndex - 3) : '');
+    var pickerSoulLabel = gameName('soul.0', 'Soul');
+    shell.panel.querySelector('h2').textContent = adapter.listEquipmentTargets().find(function (target) { return target.slotIndex === slot; }).label
+      + (fieldIndex ? ' · ' + pickerSoulLabel + ' ' + (fieldIndex - 3) : '');
     var query = queryInput(kind === 'equipment' ? 'search.equipment.placeholder' : 'search.soul.placeholder', 'Search…');
     var pickerControls = element('div', 'remaked-picker-controls');
     var typeFilter = null;

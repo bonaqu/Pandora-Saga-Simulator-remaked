@@ -89,7 +89,7 @@ test('compact stat costs, native number fields and riding text stay visually cen
   expect(geometry.skill.type).toBe('number');
   expect(geometry.sta.step).toBe('1');
   expect(geometry.skill.step).toBe('1');
-  expect(geometry.sta.width).toBeCloseTo(52, 0);
+  expect(geometry.sta.width).toBeCloseTo(44, 0);
   expect(geometry.skill.width).toBeCloseTo(52, 0);
   expect(Math.abs(geometry.cost.text.y - geometry.sta.cy)).toBeLessThanOrEqual(1.5);
   const statCost = page.locator('#StatusSTA_4');

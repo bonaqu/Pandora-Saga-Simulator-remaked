@@ -52,7 +52,8 @@
       var text = option ? option.textContent.trim().replace(/^\+-----\s*/, '') : '—';
       if (button.textContent !== text) button.textContent = text;
       var label = labels[Number(match[1])] || '';
-      var name = label + (Number(match[2]) ? ' · Soul ' + (Number(match[2]) - 3) : '') + ': ' + text;
+      var soulLabel = namespace.i18n && typeof namespace.i18n.game === 'function' ? namespace.i18n.game('soul.0', 'Soul') : 'Soul';
+      var name = label + (Number(match[2]) ? ' · ' + soulLabel + ' ' + (Number(match[2]) - 3) : '') + ': ' + text;
       if (button.getAttribute('aria-label') !== name) button.setAttribute('aria-label', name);
       button.hidden = select.style.display === 'none';
       button.disabled = select.disabled;
