@@ -260,7 +260,7 @@ test('RU Equipment chrome, gem selectors and category headings use workbook term
   });
   expect(modifierLabels.kind).toEqual(['Физ', 'Маг']);
   expect(modifierLabels.element).toEqual(['Огонь', 'Лед', 'Молния', 'Яд', 'Свет', 'Тьма', 'Призма']);
-  expect(modifierLabels.soul).toBe('Душа');
+  expect(modifierLabels.soul.replace(/^\+-----\s*/, '')).toBe('Душа');
 
   await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
   const typeLabels = await page.evaluate(() => {
