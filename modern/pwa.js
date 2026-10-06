@@ -78,6 +78,7 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('controllerchange', function () {
         window.clearTimeout(updateFallbackTimer);
+        if (window.__pandoraPwaReloading) return;
         if (namespace.builds && typeof namespace.builds.flushAutosave === 'function') {
           var savedAtSwitch = namespace.builds.flushAutosave();
           if (!savedAtSwitch || savedAtSwitch.ok !== true) {
@@ -85,6 +86,7 @@
             return;
           }
         }
+        window.__pandoraPwaReloading = true;
         window.location.reload();
       }, { once: true });
     }
