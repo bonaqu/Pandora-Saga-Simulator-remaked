@@ -117,7 +117,10 @@
     captureBaseline();
     check(snapshot && snapshot.ok === true && snapshot.schemaVersion === 1 && snapshot.sourceFingerprint === SOURCE_FINGERPRINT, 'Catalog source/version mismatch');
     check(Number.isSafeInteger(snapshot.revision) && snapshot.revision >= 0 && snapshot.revision <= 999999999 && Array.isArray(snapshot.records) && snapshot.records.length <= 4000, 'Invalid catalog snapshot');
-    check(Number.isSafeInteger(snapshot.impactRevision) && snapshot.impactRevision >= 0 && snapshot.impactRevision <= snapshot.revision, 'Invalid catalog impact revision');
+    // During a rolling deploy an older Worker can briefly serve a snapshot
+    // without impactRevision. Treat that conservatively as build-affecting.
+    if (!Number.isSafeInteger(snapshot.impactRevision)) snapshot.impactRevision = snapshot.revision;
+    check(snapshot.impactRevision >= 0 && snapshot.impactRevision <= snapshot.revision, 'Invalid catalog impact revision');
     check(snapshot.revision > 0 || snapshot.records.length === 0, 'Source revision must not contain overrides');
     var seen = Object.create(null), variants = 0;
     snapshot.records.forEach(function (record) {
