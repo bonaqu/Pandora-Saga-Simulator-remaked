@@ -206,6 +206,7 @@ class TranslationWorkbookTests(unittest.TestCase):
             "calculator.text.0": "Раса", "calculator.text.1": "Пасивн", "calculator.text.2": "Класс",
             "calculator.tab.0": "КЛАСС", "calculator.tab.1": "УМЕНИЯ",
             "calculator.tab.2": "АТАКА", "calculator.tab.3": "ЗАЩИТА", "calculator.tab.4": "УСИЛЕНИЯ",
+            "calculator.learn.0": "Умения",
             "calculator.slot.1": "Оружие", "calculator.slot.2": "Щит",
             "calculator.slot.3": "Шлем", "calculator.slot.4": "Броня",
             "calculator.slot.5": "Перчатки", "calculator.slot.6": "Штаны",
