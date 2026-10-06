@@ -2,6 +2,16 @@
   'use strict';
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
   var timer = null;
+
+  function localizedResetLabel() {
+    var locale = namespace.i18n && typeof namespace.i18n.getLocale === 'function'
+      ? namespace.i18n.getLocale()
+      : String(document.documentElement.lang || 'en').toLowerCase();
+    var fallback = { en: 'Reset', ru: 'Сброс', jp: 'リセット', tw: '重設' }[locale] || 'Reset';
+    if (!namespace.i18n || typeof namespace.i18n.t !== 'function') return fallback;
+    var translated = namespace.i18n.t('equipment.reset');
+    return translated && translated !== 'equipment.reset' ? translated : fallback;
+  }
   function refresh() {
     var labels = {};
     namespace.adapter.listEquipmentTargets().forEach(function (target) { labels[target.slotIndex] = target.label; });
@@ -93,8 +103,13 @@
         resetText.parentElement.removeAttribute('onclick');
         resetText.hidden = true;
       }
-      if (namespace.i18n && typeof namespace.i18n.bindText === 'function') namespace.i18n.bindText(reset, 'equipment.reset');
-      else if (reset.textContent !== 'Reset') reset.textContent = 'Reset';
+      // Do not bind the raw key directly: during a PWA update an older
+      // locales.js can briefly coexist with the newer component script. In that
+      // mixed-cache window i18n.t() returns the key itself. Keep a short,
+      // locale-specific fallback so users never see "equipment.reset".
+      reset.removeAttribute('data-remaked-i18n');
+      var resetLabel = localizedResetLabel();
+      if (reset.textContent !== resetLabel) reset.textContent = resetLabel;
     }
   }
   function schedule() {
