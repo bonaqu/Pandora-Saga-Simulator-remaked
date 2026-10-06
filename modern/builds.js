@@ -253,7 +253,7 @@
     if (!automatic) setCatalogStatus('builds.catalogChecking', 'ready', null, 'Checking published catalog…');
     try {
       var snapshot = await catalog.fetchSnapshot(null, { networkOnly: true });
-      setLatestCatalogRevision(snapshot.revision);
+      setLatestCatalogRevision(snapshot.revision, snapshot.impactRevision);
       if (request !== catalogRequest) return { ok: false, reason: 'cancelled' };
       if (loading !== loadRequest || hash !== location.hash || shared !== shareRequest || before !== currentPayload() || catalog.needsRecovery()) {
         if (!automatic) setCatalogStatus('builds.catalogCancelled', 'warning', null, 'Update cancelled: the character or link changed. Try again for the current build.');
@@ -1006,18 +1006,14 @@
       catalogRevision = document.createElement('div');
       catalogRevision.className = 'remaked-build-catalog-line';
       catalogRevision.dataset.remakedCatalogRevision = '';
+      catalogRevision.title = liveText('catalogHelp');
       catalogSection.appendChild(catalogRevision);
-      var catalogHelp = document.createElement('p');
-      catalogHelp.id = 'remaked-catalog-update-help';
-      catalogHelp.className = 'remaked-build-catalog-help';
-      catalogHelp.textContent = liveText('catalogHelp');
-      catalogSection.appendChild(catalogHelp);
       catalogStatus = document.createElement('p');
       catalogStatus.className = 'remaked-build-status'; catalogStatus.dataset.remakedCatalogStatus = '';
       catalogStatus.setAttribute('role', 'status'); catalogSection.appendChild(catalogStatus);
       body.appendChild(catalogSection); refreshCatalogControls();
       window.addEventListener('pandora-remaked:localechange', function () {
-        catalogHelp.textContent = liveText('catalogHelp');
+        catalogRevision.title = liveText('catalogHelp');
         refreshCatalogControls();
         if (managerOverlay && managerOverlay.open) renderBuilds();
       });
