@@ -44,11 +44,11 @@ test('impact migration conservatively upgrades an existing nonzero catalog histo
 
   sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/0004_catalog_impact_revision.sql', import.meta.url), 'utf8'));
 
-  assert.deepEqual(sqlite.prepare('SELECT version, impact_version FROM catalog_head WHERE id = 1').get(), { version: 78, impact_version: 78 });
-  assert.deepEqual(
-    sqlite.prepare('SELECT version, impact_version FROM catalog_revisions ORDER BY version').all(),
-    [{ version: 77, impact_version: 77 }, { version: 78, impact_version: 78 }]
-  );
+  const head = sqlite.prepare('SELECT version, impact_version FROM catalog_head WHERE id = 1').get();
+  assert.equal(head.version, 78);
+  assert.equal(head.impact_version, 78);
+  const history = sqlite.prepare('SELECT version, impact_version FROM catalog_revisions ORDER BY version').all();
+  assert.deepEqual(history.map(row => [row.version, row.impact_version]), [[77, 77], [78, 78]]);
 });
 
 test('public catalog head separates immutable publication revision from build impact', async () => {
