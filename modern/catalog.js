@@ -455,6 +455,14 @@
     var parsed = unpackPayload(payload);
     return packWithContext(parsed.payload, targetRevision, parsed.context);
   }
+  async function latestPayload(payload, options) {
+    options = options || {};
+    var parsed = unpackPayload(payload);
+    var head = await fetchHead({ networkOnly: options.networkOnly !== false });
+    if (head <= parsed.revision) return payload;
+    await fetchSnapshot(head, { networkOnly: options.networkOnly !== false });
+    return repinPayload(payload, head);
+  }
 
   async function fetchSnapshot(requested, options) {
     options = options || {};
@@ -540,7 +548,7 @@
     },
     item: function (kind, value) { var id = Number(value); return recordsByTerm[kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id] || null; },
     itemText: function (kind, value, field) { var id = Number(value); return textFor(kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id, field); },
-    packPayload, repinPayload, captureContext, applyContext,
+    packPayload, repinPayload, latestPayload, captureContext, applyContext,
     unpackPayload, preparePayload, useRevision, fetchSnapshot, fetchHead, bootstrap,
     getHeadRevision: function () { return headRevision; },
     validateCurrentState: function () { selectedStateExists(window.EquipData, window.SoulData); },
