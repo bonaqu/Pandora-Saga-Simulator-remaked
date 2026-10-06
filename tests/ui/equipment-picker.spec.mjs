@@ -255,7 +255,7 @@ test('RU Equipment chrome, gem selectors and category headings use workbook term
     return {
       kind: texts('#SelEquip_0_1 option'),
       element: texts('#SelEquip_0_2 option'),
-      soul: String(document.querySelector('#SelEquip_0_4 option').textContent).trim()
+      soul: String(document.querySelector('#SelEquip_0_4 option').textContent).trim().replace(/^\+-----\s*/, '')
     };
   });
   expect(modifierLabels.kind).toEqual(['Физ', 'Маг']);
