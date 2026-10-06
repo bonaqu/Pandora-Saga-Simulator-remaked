@@ -10,6 +10,8 @@
   var activeRegistration = null;
   var updateReloadPending = false;
   var updateFallbackTimer = null;
+  var updatePollTimer = null;
+  var UPDATE_POLL_MS = 15000;
   var initialized = false;
 
   function bindText(node, key, fallback) {
@@ -64,10 +66,15 @@
     if (worker && typeof worker.postMessage === 'function') waitingWorker = worker;
     if (window.__pandoraPwaBootstrapUpdating) return;
     if (!waitingWorker || typeof waitingWorker.postMessage !== 'function' || updateReloadPending) return;
-    updateReloadPending = true;
     if (namespace.builds && typeof namespace.builds.flushAutosave === 'function') {
-      namespace.builds.flushAutosave();
+      var saved = namespace.builds.flushAutosave();
+      if (!saved || saved.ok !== true) {
+        updateReloadPending = false;
+        showUpdateNotice(waitingWorker);
+        return;
+      }
     }
+    updateReloadPending = true;
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('controllerchange', function () {
         window.clearTimeout(updateFallbackTimer);
@@ -142,7 +149,19 @@
     if (!activeRegistration || document.visibilityState === 'hidden' || navigator.onLine === false) {
       return Promise.resolve(null);
     }
-    return activeRegistration.update().catch(function () { return null; });
+    if (activeRegistration.waiting) {
+      requestUpdate(activeRegistration.waiting);
+      return Promise.resolve(activeRegistration);
+    }
+    return activeRegistration.update().then(function () {
+      if (activeRegistration.waiting) requestUpdate(activeRegistration.waiting);
+      return activeRegistration;
+    }).catch(function () { return null; });
+  }
+
+  function startUpdatePolling() {
+    if (updatePollTimer !== null) return;
+    updatePollTimer = window.setInterval(checkForUpdate, UPDATE_POLL_MS);
   }
 
   function register() {
@@ -165,9 +184,16 @@
     window.addEventListener('appinstalled', clearInstallPrompt);
     document.addEventListener('visibilitychange', function () {
       if (document.visibilityState === 'visible') checkForUpdate();
+      else if (namespace.builds && typeof namespace.builds.flushAutosave === 'function') namespace.builds.flushAutosave();
     });
     window.addEventListener('online', checkForUpdate);
-    register();
+    window.addEventListener('pagehide', function () {
+      if (namespace.builds && typeof namespace.builds.flushAutosave === 'function') namespace.builds.flushAutosave();
+    });
+    register().then(function () {
+      startUpdatePolling();
+      checkForUpdate();
+    });
   }
 
   namespace.pwa = {
