@@ -101,6 +101,11 @@ HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
   var reloading = false;
   navigator.serviceWorker.addEventListener('controllerchange', function () {
     if (reloading) return;
+    var builds = window.PandoraRemaked && window.PandoraRemaked.builds;
+    if (builds && typeof builds.flushAutosave === 'function') {
+      var saved = builds.flushAutosave();
+      if (saved && saved.ok === false) return;
+    }
     reloading = true;
     window.location.reload();
   });
