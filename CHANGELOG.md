@@ -8,7 +8,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 ### Кратко для игроков
 
 - Исправлена кнопка сброса снаряжения: при временном рассинхроне PWA-кэша больше не может показываться сырой ключ `equipment.reset`; всегда используется человекочитаемый `Reset / Сброс / リセット / 重設`.
-- Ширина названий слотов снаряжения уменьшена с 80 до 74 px: `Перчатки` всё ещё помещается полностью, но лишнее пустое пространство сокращено.
+- Ширина названий слотов снаряжения уменьшена с 80 до 76 px: `Перчатки` всё ещё помещается полностью, но лишнее пустое пространство сокращено.
 - `Сопр АНООМДУХ` исправлено на `Сопр АНОМДУХ`.
 - Новые hover-подсказки в «Результатах расчёта» теперь используют обычное сплошное подчёркивание, как существующие Legacy-подсказки, а не пунктир.
 - Сохранены исправления Modern 3.15: трёхзначные итоги базовых характеристик, русские подписи персонажа/навигации, переводы Equipment и компактные кнопки.
@@ -18,7 +18,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 ### Player highlights
 
 - Equipment reset now has a safe locale fallback and can no longer expose the raw `equipment.reset` key during a mixed PWA-cache update.
-- Desktop/tablet Equipment slot-label width is tightened from 80px to 74px while keeping long RU labels visible.
+- Desktop/tablet Equipment slot-label width is tightened from 80px to 76px while keeping long RU labels visible.
 - Corrected the RU anomalous-spirit resistance abbreviation.
 - Newly added calculated-result hints now match the existing solid Legacy help underline.
 <!-- /release-notes:en -->
