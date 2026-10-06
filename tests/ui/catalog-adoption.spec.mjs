@@ -300,10 +300,12 @@ test('automatic catalog status is compact, localized and has no manual update bu
   await page.locator('[data-remaked-builds-open]').click();
 
   await expect(page.locator('[data-remaked-catalog-update]')).toHaveCount(0);
-  await expect(page.locator('[data-remaked-catalog-revision]')).toHaveText('Каталог: исходная ревизия 0 · обновляется автоматически');
-  await expect(page.locator('#remaked-catalog-update-help')).toContainText('названий');
+  const catalogLine = page.locator('[data-remaked-catalog-revision]');
+  await expect(catalogLine).toHaveText('Каталог: исходная ревизия 0 · обновляется автоматически');
+  await expect(catalogLine).toHaveAttribute('title', /названий/);
+  await expect(page.locator('#remaked-catalog-update-help')).toHaveCount(0);
   const box = await page.locator('.remaked-build-catalog').boundingBox();
-  expect(box.height).toBeLessThan(100);
+  expect(box.height).toBeLessThan(70);
   expect(box.x).toBeGreaterThanOrEqual(0);
   expect(box.x + box.width).toBeLessThanOrEqual(320);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
