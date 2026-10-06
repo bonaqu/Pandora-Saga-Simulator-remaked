@@ -609,6 +609,22 @@
   }
 
   async function loadNamedBuildLatest(storedBuild, stillWanted) {
+    var intent;
+    try { intent = beginLoadIntent(); }
+    catch (error) { return { ok: false, error: error }; }
+
+    async function prepareCandidate(candidate) {
+      try { if (namespace.catalog) await namespace.catalog.preparePayload(candidate); }
+      catch (error) {
+        return currentLoadIntent(intent, stillWanted)
+          ? { ok: false, error: error, request: intent.request }
+          : cancelledLoad(intent, stillWanted);
+      }
+      return currentLoadIntent(intent, stillWanted)
+        ? { ok: true, request: intent.request }
+        : cancelledLoad(intent, stillWanted);
+    }
+
     var candidate = storedBuild.payload, upgraded = false;
     try {
       candidate = await latestNamedPayload(storedBuild.payload);
@@ -616,23 +632,25 @@
     } catch {
       candidate = storedBuild.payload;
     }
+    if (!currentLoadIntent(intent, stillWanted)) return cancelledLoad(intent, stillWanted);
 
-    var prepared = await prepareLoad(candidate, stillWanted);
+    var prepared = await prepareCandidate(candidate);
     if (!prepared.ok) return prepared;
     var loaded = loadPayloadSafely(candidate);
     if (loaded.ok) {
       if (upgraded) {
         var rewritten = store.updateBuild(storedBuild.id, { payload: loaded.payload });
-        if (!rewritten.ok) return { ok: true, loaded: loaded, upgraded: false, rewriteFailed: true };
+        if (!rewritten.ok) return { ok: true, loaded: loaded, upgraded: true, rewriteFailed: true };
       }
       return { ok: true, loaded: loaded, upgraded: upgraded };
     }
 
     // A compatibility change can make the latest catalog invalid for this
-    // exact saved setup. Keep the saved record intact and still allow the user
-    // to open its historical pinned revision.
-    if (!upgraded) return { ok: false, error: loaded.error };
-    var fallbackPrepared = await prepareLoad(storedBuild.payload, stillWanted);
+    // exact saved setup. Fall back only after a verified rollback; never build
+    // on top of an uncertain partially restored character.
+    if (!upgraded || loaded.restored === false) return { ok: false, error: loaded.error };
+    if (!currentLoadIntent(intent, stillWanted)) return cancelledLoad(intent, stillWanted);
+    var fallbackPrepared = await prepareCandidate(storedBuild.payload);
     if (!fallbackPrepared.ok) return fallbackPrepared;
     var fallback = loadPayloadSafely(storedBuild.payload);
     return fallback.ok
