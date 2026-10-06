@@ -543,6 +543,38 @@
     return node;
   }
 
+  async function loadNamedBuildLatest(storedBuild, stillWanted) {
+    var candidate = storedBuild.payload, upgraded = false;
+    try {
+      candidate = await latestNamedPayload(storedBuild.payload);
+      upgraded = candidate !== storedBuild.payload;
+    } catch {
+      candidate = storedBuild.payload;
+    }
+
+    var prepared = await prepareLoad(candidate, stillWanted);
+    if (!prepared.ok) return prepared;
+    var loaded = loadPayloadSafely(candidate);
+    if (loaded.ok) {
+      if (upgraded) {
+        var rewritten = store.updateBuild(storedBuild.id, { payload: loaded.payload });
+        if (!rewritten.ok) return { ok: true, loaded: loaded, upgraded: false, rewriteFailed: true };
+      }
+      return { ok: true, loaded: loaded, upgraded: upgraded };
+    }
+
+    // A compatibility change can make the latest catalog invalid for this
+    // exact saved setup. Keep the saved record intact and still allow the user
+    // to open its historical pinned revision.
+    if (!upgraded) return { ok: false, error: loaded.error };
+    var fallbackPrepared = await prepareLoad(storedBuild.payload, stillWanted);
+    if (!fallbackPrepared.ok) return fallbackPrepared;
+    var fallback = loadPayloadSafely(storedBuild.payload);
+    return fallback.ok
+      ? { ok: true, loaded: fallback, upgraded: false, historical: true }
+      : { ok: false, error: fallback.error };
+  }
+
   function renderBuilds() {
     if (!buildList || !store) return;
     if (legacyRecovery) {
@@ -578,8 +610,30 @@
 
       var name = document.createElement('div');
       name.className = 'remaked-build-row-name';
-      name.textContent = build.name;
-      name.title = build.name;
+      var stale = staleBuild(build);
+      if (stale) {
+        row.dataset.catalogStale = 'true';
+        var staleLabel = t('builds.possiblyOutdated', null, 'Possibly outdated');
+        var staleHelp = t(
+          'builds.possiblyOutdatedHelp',
+          { saved: payloadRevision(build.payload), current: latestCatalogRevision },
+          'The catalog changed after this build was saved. It will be recalculated with current data when loaded; if the new data is incompatible, the historical revision is kept.'
+        );
+        name.title = staleHelp;
+        var nameText = document.createElement('span');
+        nameText.className = 'remaked-build-row-name-text';
+        nameText.textContent = build.name;
+        name.appendChild(nameText);
+        var staleBadge = document.createElement('span');
+        staleBadge.className = 'remaked-build-stale-badge';
+        staleBadge.dataset.remakedBuildStale = '';
+        staleBadge.textContent = staleLabel;
+        staleBadge.title = staleHelp;
+        name.appendChild(staleBadge);
+      } else {
+        name.textContent = build.name;
+        name.title = build.name;
+      }
       row.appendChild(name);
 
       var load = button('Load', null, 'builds.load');
@@ -591,25 +645,31 @@
           renderBuilds();
           return;
         }
-        var prepared = await prepareLoad(storedBuild.payload, function () {
+        var result = await loadNamedBuildLatest(storedBuild, function () {
           return load.isConnected && managerOverlay.open && store.getBuild(build.id)?.payload === storedBuild.payload;
         });
-        if (!prepared.ok) {
-          if (prepared.reason === 'cancelled') {
-            if (!prepared.silent) setManagerStatus(t('builds.loadCancelled', null, 'Loading cancelled. Current character and saved builds kept.'), 'warning');
+        if (!result.ok) {
+          if (result.reason === 'cancelled') {
+            if (!result.silent) setManagerStatus(t('builds.loadCancelled', null, 'Loading cancelled. Current character and saved builds kept.'), 'warning');
           } else setManagerStatus(t('builds.loadUnavailable', null, 'Catalog revision unavailable; current character and saved builds kept.'), 'warning');
           return;
         }
-        var loaded = loadPayloadSafely(storedBuild.payload);
-        if (!loaded.ok) {
-          setManagerStatus(t('builds.invalid', null, 'Build is invalid and could not be loaded.'), 'error');
-          return;
-        }
-        var saved = persistLoadedPayload(loaded.payload, t('builds.savedLoaded', null, 'Saved loaded build'));
+        var saved = persistLoadedPayload(result.loaded.payload, t('builds.savedLoaded', null, 'Saved loaded build'));
         var detached = detachLoadedShareLink();
-        setManagerStatus(!detached ? t('builds.urlWarning', null, 'Old shared link could not be cleared. Export a new link before reloading.') : saved.ok
-          ? t('builds.loaded', { name: store.getBuild(build.id).name }, 'Loaded “' + store.getBuild(build.id).name + '”.')
-          : t('builds.loadedNoAutosave', null, 'Build loaded, but autosave is unavailable.'), saved.ok && detached ? 'success' : 'warning');
+        renderBuilds();
+        var currentBuild = store.getBuild(build.id);
+        var statusKey = result.historical ? 'builds.loadedHistorical' : result.upgraded ? 'builds.loadedUpdated' : 'builds.loaded';
+        var fallback = result.historical
+          ? 'Loaded the historical build because the latest catalog is incompatible with this setup.'
+          : result.upgraded
+            ? 'Loaded and updated “' + currentBuild.name + '” to the current catalog.'
+            : 'Loaded “' + currentBuild.name + '”.';
+        setManagerStatus(
+          !detached ? t('builds.urlWarning', null, 'Old shared link could not be cleared. Export a new link before reloading.')
+            : !saved.ok ? t('builds.loadedNoAutosave', null, 'Build loaded, but autosave is unavailable.')
+            : t(statusKey, { name: currentBuild.name }, fallback),
+          saved.ok && detached && !result.historical ? 'success' : result.historical ? 'warning' : saved.ok && detached ? 'success' : 'warning'
+        );
       });
       row.appendChild(load);
 
