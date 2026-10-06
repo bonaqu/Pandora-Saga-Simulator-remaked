@@ -216,11 +216,24 @@ test('requested Russian calculator labels, skill groups and effect hints render 
   await expect(page.locator('#TextStatus_15')).toHaveAttribute('title', 'Очки Точности; Точность попадания по цели');
   await expect(page.locator('#TextStatus_19')).toHaveAttribute('title', 'Очки Уклонения; Шанс уклониться от атаки');
   await expect(page.locator('#TextStatus_33')).toHaveAttribute('title', 'Время перезарядки умений');
+
+  const helpDecoration = await page.evaluate(() => ({
+    existing: getComputedStyle(document.querySelector('#TextStatus_27 .help')).textDecorationStyle,
+    added: [0, 1, 5, 9, 15, 19, 33].map(index => {
+      const style = getComputedStyle(document.getElementById('TextStatus_' + index));
+      return { line: style.textDecorationLine, style: style.textDecorationStyle };
+    })
+  }));
+  expect(helpDecoration.existing).toBe('solid');
+  for (const item of helpDecoration.added) {
+    expect(item.line).toContain('underline');
+    expect(item.style).toBe('solid');
+  }
   await expect(page.locator('#TextStatus_11')).toHaveText('Сопр УРОНСПИН');
   await expect(page.locator('#TextStatus_12')).toHaveText('Сопр ФИЗ');
   await expect(page.locator('#TextStatus_21')).toHaveText('Сопр КРУРОН');
   await expect(page.locator('#TextStatus_40')).toHaveText('Сопр АНОМТЕЛ');
-  await expect(page.locator('#TextStatus_41')).toHaveText('Сопр АНООМДУХ');
+  await expect(page.locator('#TextStatus_41')).toHaveText('Сопр АНОМДУХ');
   await expect(page.locator('#TextStatus_3')).toHaveText('% исцел ОЗ');
   await expect(page.locator('#TextStatus_3 [title]')).toHaveAttribute('title', '% исцеленного ОЗ');
   await expect(page.locator('#TextStatus_25')).toHaveText('Дист ближ АТК');
