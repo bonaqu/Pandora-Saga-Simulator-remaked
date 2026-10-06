@@ -24,7 +24,7 @@
   var previousBodyOverflow = '';
   var catalogRevision = null, catalogUpdate = null, catalogStatus = null;
   var catalogRequest = 0, catalogBusy = false, catalogMessage = null;
-  var catalogPollTimer = null, catalogHeadBusy = false, latestCatalogRevision = 0;
+  var catalogPollTimer = null, catalogHeadBusy = false, latestCatalogRevision = 0, catalogAutoBlockedKey = '';
   var restorationFailed = false;
   var loadRequest = 0;
 
@@ -201,6 +201,7 @@
       var candidate = catalog.repinPayload(before, snapshot.revision);
       var loaded = loadPayloadSafely(candidate);
       if (!loaded.ok) {
+        loaded.reason = loaded.restored ? 'calculation-failed' : 'restore-failed';
         if (!automatic) {
           setCatalogStatus(loaded.restored ? 'builds.catalogCalculationFailed' : 'builds.catalogRestorationFailed', 'error', null,
             loaded.restored ? 'Recalculation failed. The previous catalog, character and saves were restored.' : 'Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.');
@@ -237,7 +238,20 @@
     try {
       var head = await catalog.fetchHead({ networkOnly: true });
       setLatestCatalogRevision(head);
-      if (head > catalog.getRevision()) return await updateCurrentCatalog({ automatic: true });
+      if (head > catalog.getRevision()) {
+        var payload;
+        try { payload = currentPayload(); }
+        catch { return { ok: false, reason: 'serialize-failed' }; }
+        var attemptKey = head + ':' + payload;
+        if (catalogAutoBlockedKey === attemptKey) return { ok: false, reason: 'blocked-incompatible', revision: head };
+        var result = await updateCurrentCatalog({ automatic: true });
+        if (result.ok) catalogAutoBlockedKey = '';
+        else if (result.reason === 'incompatible' || result.reason === 'calculation-failed' || result.reason === 'restore-failed') {
+          catalogAutoBlockedKey = attemptKey;
+        }
+        return result;
+      }
+      catalogAutoBlockedKey = '';
       return { ok: true, unchanged: true, revision: head };
     } catch (error) {
       return { ok: false, error: error };
