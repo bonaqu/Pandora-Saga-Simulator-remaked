@@ -143,6 +143,12 @@
 
   async function latestNamedPayload(payload) {
     if (!namespace.catalog) return payload;
+    var savedRevision = payloadRevision(payload);
+    if (latestCatalogRevision > savedRevision) {
+      await namespace.catalog.fetchSnapshot(latestCatalogRevision);
+      return namespace.catalog.repinPayload(payload, latestCatalogRevision);
+    }
+    if (location.origin !== 'https://bonaqu.github.io') return payload;
     var latest = await namespace.catalog.latestPayload(payload, { networkOnly: true });
     setLatestCatalogRevision(namespace.catalog.getHeadRevision());
     return latest;
