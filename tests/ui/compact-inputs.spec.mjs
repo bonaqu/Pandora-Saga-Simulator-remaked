@@ -109,6 +109,30 @@ test('seven bounded numeric controls delegate allocation and limits to the retai
   await level.press('Escape'); await expect(level).toHaveValue('55');
 });
 
+test('Russian base-stat abbreviations fit beside compact number fields without clipping', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+  const report = await page.evaluate(() => [10, 11, 12, 13, 14, 15].map(index => {
+    const label = document.getElementById('Text_' + index);
+    const row = label.closest('[data-remaked-calculator-attribute]');
+    const input = row.querySelector('.remaked-calculator-number');
+    return {
+      text: label.textContent.trim(),
+      clientWidth: label.clientWidth,
+      scrollWidth: label.scrollWidth,
+      inputWidth: input.getBoundingClientRect().width,
+      rowRight: row.getBoundingClientRect().right,
+      inputRight: input.getBoundingClientRect().right
+    };
+  }));
+  expect(report.map(item => item.text)).toEqual(['ВЫН', 'СИЛ', 'ПРВ', 'ЛВК', 'СД', 'ИНТ']);
+  for (const item of report) {
+    expect(item.scrollWidth).toBeLessThanOrEqual(item.clientWidth);
+    expect(item.inputWidth).toBeLessThanOrEqual(49);
+    expect(item.inputRight).toBeLessThanOrEqual(item.rowRight);
+  }
+});
+
 test('typing is stable across refresh and reset/load update the input without losing source nodes', async ({ page }) => {
   await page.goto('/');
   const input = page.locator('[data-remaked-number="Lev"]');
