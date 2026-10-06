@@ -494,6 +494,8 @@ def _materialize_service_worker(root: pathlib.Path, output: pathlib.Path) -> Non
         raise ValueError("modern/service-worker.js is missing build placeholders")
     urls = _precache_urls(output)
     fingerprint = hashlib.sha256()
+    fingerprint.update(template.encode("utf-8"))
+    fingerprint.update(b"\0")
     for url in urls:
         fingerprint.update(url.encode("utf-8"))
         fingerprint.update(b"\0")

@@ -58,6 +58,16 @@ class PwaBuildTests(unittest.TestCase):
         self.assertEqual(preview[:8], b"\x89PNG\r\n\x1a\n")
         self.assertEqual(struct.unpack(">II", preview[16:24]), (1200, 630))
 
+    def test_real_service_worker_keeps_each_client_on_one_cache_generation(self):
+        modern = pathlib.Path(__file__).resolve().parents[1] / "modern"
+        worker = (modern / "service-worker.js").read_text(encoding="utf-8")
+        self.assertIn("function navigationCacheFirst(request)", worker)
+        self.assertIn("request.mode === 'navigate' ? navigationCacheFirst(request) : cacheFirst(request)", worker)
+        self.assertIn("caches.open(CACHE_NAME)", worker)
+        self.assertIn("new Request(url, { cache: 'reload' })", worker)
+        self.assertNotIn("return caches.match(", worker)
+        self.assertNotIn("function networkFirst(request)", worker)
+
     def test_modern_share_metadata_does_not_leak_into_museum(self):
         with tempfile.TemporaryDirectory() as td:
             root = self.make_root(pathlib.Path(td))
@@ -175,6 +185,25 @@ class PwaBuildTests(unittest.TestCase):
             self.assertNotIn("./legacy/image/icon/0000.png", worker)
             self.assertNotIn("https://", worker)
             self.assertIn("url.origin !== self.location.origin", worker)
+
+    def test_service_worker_logic_change_rotates_cache_generation(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self.make_root(pathlib.Path(td))
+            output = root / "_site"
+            build_pages(root, output)
+            before = (output / "service-worker.js").read_text(encoding="utf-8")
+            before_name = before.split("const CACHE_NAME = '", 1)[1].split("'", 1)[0]
+
+            template = root / "modern" / "service-worker.js"
+            template.write_text(
+                template.read_text(encoding="utf-8") + "\n// worker-only regression marker\n",
+                encoding="utf-8",
+            )
+            build_pages(root, output)
+            after = (output / "service-worker.js").read_text(encoding="utf-8")
+            after_name = after.split("const CACHE_NAME = '", 1)[1].split("'", 1)[0]
+
+            self.assertNotEqual(after_name, before_name)
 
     def test_translation_only_update_changes_worker_and_keeps_builds_deterministic(self):
         with tempfile.TemporaryDirectory() as td:

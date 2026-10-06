@@ -98,6 +98,32 @@ test('Reload flushes autosave before requesting waiting worker activation', asyn
   ]);
 });
 
+test('stalled worker activation re-enables Reload for a safe retry', async ({ page }) => {
+  await openModern(page);
+  await page.evaluate(() => {
+    window.__pwaTimerCallback = null;
+    window.__pwaNativeSetTimeout = window.setTimeout;
+    window.setTimeout = function (callback, delay) {
+      if (delay === 8000) {
+        window.__pwaTimerCallback = callback;
+        return 987654;
+      }
+      return window.__pwaNativeSetTimeout(callback, delay);
+    };
+    window.PandoraRemaked.pwa.showUpdateNotice({ postMessage() {} });
+  });
+
+  const reload = page.locator('[data-remaked-update-reload]');
+  await reload.click();
+  await expect(reload).toBeDisabled();
+
+  await page.evaluate(() => {
+    window.__pwaTimerCallback();
+    window.setTimeout = window.__pwaNativeSetTimeout;
+  });
+  await expect(reload).toBeEnabled();
+});
+
 test('service-worker registration bypasses HTTP cache and checks again when requested', async ({ page }) => {
   await openModern(page);
   const result = await page.evaluate(async () => {
