@@ -149,6 +149,8 @@ class PwaBuildTests(unittest.TestCase):
             self.assertIn("window.__pandoraPwaBootstrapUpdating = true", html)
             self.assertIn("registration.waiting.postMessage({ type: 'SKIP_WAITING' })", html)
             self.assertIn("navigator.serviceWorker.addEventListener('controllerchange'", html)
+            self.assertIn("builds.flushAutosave()", html)
+            self.assertIn("if (saved && saved.ok === false) return", html)
             self.assertLess(
                 html.index("navigator.serviceWorker.getRegistration()"),
                 html.index('<link rel="stylesheet" href="./modern/modern.css" />'),

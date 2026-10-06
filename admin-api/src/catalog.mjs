@@ -34,6 +34,11 @@ async function identityFor(env, id) {
   if (skill) return normalizeSkillIdentity(skill);
   fail('Item not found', 404);
 }
+async function headVersion(env) {
+  const row = await env.DB.prepare('SELECT version FROM catalog_head WHERE id = ?').bind(1).first();
+  if (!row) fail('Catalog is not initialized', 503);
+  return row.version;
+}
 async function head(env) {
   const row = await env.DB.prepare('SELECT version, snapshot_json FROM catalog_head WHERE id = ?').bind(1).first();
   if (!row) fail('Catalog is not initialized', 503);
@@ -66,6 +71,16 @@ async function body(request) {
   for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
   try { return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)); }
   catch { fail('Invalid JSON'); }
+}
+
+export async function publicCatalogHead(env) {
+  return jsonResponse({
+    ok: true,
+    schemaVersion: 1,
+    sourceFingerprint,
+    characterSourceFingerprint,
+    revision: await headVersion(env)
+  });
 }
 
 export async function publicCatalog(request, env) {

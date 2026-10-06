@@ -60,5 +60,9 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+  if (!event.data || event.data.type !== 'SKIP_WAITING') return;
+  // Modern 3.18+ flushes synchronously before this message. The short grace
+  // period also protects a tab still running the previous 300 ms debounce-only
+  // client during the one-time migration to this safer update protocol.
+  event.waitUntil(new Promise((resolve) => setTimeout(resolve, 500)).then(() => self.skipWaiting()));
 });

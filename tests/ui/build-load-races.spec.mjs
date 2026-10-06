@@ -43,8 +43,23 @@ async function waitSettled(page) {
 }
 async function observePreparation(page) {
   await page.evaluate(() => {
-    const prepare = PandoraRemaked.catalog.preparePayload;
-    PandoraRemaked.catalog.preparePayload = async function () { try { return await prepare.apply(this, arguments); } finally { setTimeout(() => { window.loadRaceSettled = true; }, 0); } };
+    window.loadRaceSettled = false;
+    window.loadRaceInFlight = 0;
+    const wrap = key => {
+      const original = PandoraRemaked.catalog[key];
+      PandoraRemaked.catalog[key] = async function () {
+        window.loadRaceInFlight += 1;
+        try { return await original.apply(this, arguments); }
+        finally {
+          window.loadRaceInFlight -= 1;
+          setTimeout(() => {
+            if (window.loadRaceInFlight === 0) window.loadRaceSettled = true;
+          }, 0);
+        }
+      };
+    };
+    wrap('latestPayload');
+    wrap('preparePayload');
   });
 }
 async function showRace(page) {

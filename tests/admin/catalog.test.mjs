@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
-import { adminCatalog, publicCatalog } from '../../admin-api/src/catalog.mjs';
+import { adminCatalog, publicCatalog, publicCatalogHead } from '../../admin-api/src/catalog.mjs';
 import { draftFromSource } from '../../admin-api/src/catalog-model.mjs';
 import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs';
 
@@ -32,6 +32,24 @@ const call = async (env, path, input) => {
 };
 const publicData = async (env, revision) => (await publicCatalog(request('/api/catalog' + (revision === undefined ? '' : '?revision=' + revision)), env)).json();
 const detail = (env, id = 'equipment.0.1') => call(env, 'item?id=' + id);
+
+test('public catalog head is lightweight and tracks the current immutable revision', async () => {
+  const { env } = fixture();
+  let head = await (await publicCatalogHead(env)).json();
+  assert.equal(head.ok, true);
+  assert.equal(head.revision, 0);
+  assert.equal(Object.hasOwn(head, 'records'), false);
+
+  let item = await detail(env);
+  item.edit.names.en = 'Head revision check';
+  item = await save(env, item);
+  await publish(env, item);
+
+  head = await (await publicCatalogHead(env)).json();
+  assert.equal(head.revision, 1);
+  assert.equal(Object.hasOwn(head, 'records'), false);
+});
+
 const save = (env, item) => call(env, 'draft', { edit: item.edit, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
 const publish = (env, item) => call(env, 'publish', { id: item.identity.id, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
 

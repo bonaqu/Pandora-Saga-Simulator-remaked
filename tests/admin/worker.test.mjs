@@ -34,11 +34,13 @@ test('every private route rejects missing sessions, independent of hidden UI', a
 });
 
 test('CORS grants only the exact production Pages origin, no wildcard or credentials', async () => {
-  for (const requestOrigin of [pages, 'https://evil.test', pages + '.evil.test', 'null']) {
-    const result = await worker.fetch(new Request(origin + '/api/catalog', { method: 'OPTIONS', headers: { Origin: requestOrigin, 'Access-Control-Request-Method': 'GET' } }), env);
-    assert.equal(result.status, requestOrigin === pages ? 204 : 403);
-    assert.equal(result.headers.get('Access-Control-Allow-Origin'), requestOrigin === pages ? pages : null);
-    assert.equal(result.headers.has('Access-Control-Allow-Credentials'), false);
+  for (const path of ['/api/catalog', '/api/catalog/head']) {
+    for (const requestOrigin of [pages, 'https://evil.test', pages + '.evil.test', 'null']) {
+      const result = await worker.fetch(new Request(origin + path, { method: 'OPTIONS', headers: { Origin: requestOrigin, 'Access-Control-Request-Method': 'GET' } }), env);
+      assert.equal(result.status, requestOrigin === pages ? 204 : 403);
+      assert.equal(result.headers.get('Access-Control-Allow-Origin'), requestOrigin === pages ? pages : null);
+      assert.equal(result.headers.has('Access-Control-Allow-Credentials'), false);
+    }
   }
 });
 

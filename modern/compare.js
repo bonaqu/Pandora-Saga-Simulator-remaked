@@ -219,10 +219,33 @@
     }
 
     try {
-      if (namespace.catalog) await Promise.all([namespace.catalog.preparePayload(buildA.payload), namespace.catalog.preparePayload(buildB.payload)]);
+      var payloadA = buildA.payload, payloadB = buildB.payload;
+      if (namespace.catalog) {
+        try {
+          var knownHead = namespace.builds && typeof namespace.builds.getLatestCatalogRevision === 'function'
+            ? namespace.builds.getLatestCatalogRevision() : 0;
+          if (knownHead > 0) {
+            await namespace.catalog.fetchSnapshot(knownHead);
+            if (namespace.catalog.unpackPayload(payloadA).revision < knownHead) payloadA = namespace.catalog.repinPayload(payloadA, knownHead);
+            if (namespace.catalog.unpackPayload(payloadB).revision < knownHead) payloadB = namespace.catalog.repinPayload(payloadB, knownHead);
+          } else if (location.origin === 'https://bonaqu.github.io') {
+            [payloadA, payloadB] = await Promise.all([
+              namespace.catalog.latestPayload(buildA.payload, { networkOnly: true }),
+              namespace.catalog.latestPayload(buildB.payload, { networkOnly: true })
+            ]);
+          }
+        } catch {
+          // Offline comparison keeps the immutable pinned revisions that were
+          // previously cached instead of failing just because the live head is
+          // unreachable.
+          payloadA = buildA.payload;
+          payloadB = buildB.payload;
+        }
+        await Promise.all([namespace.catalog.preparePayload(payloadA), namespace.catalog.preparePayload(payloadB)]);
+      }
       if (selectA.value !== idA || selectB.value !== idB) return;
-      var projectionA = adapter.evaluateBuild(buildA.payload);
-      var projectionB = adapter.evaluateBuild(buildB.payload);
+      var projectionA = adapter.evaluateBuild(payloadA);
+      var projectionB = adapter.evaluateBuild(payloadB);
       metaA.textContent = metadataText(buildA, projectionA);
       metaB.textContent = metadataText(buildB, projectionB);
       renderTable(projectionA, projectionB);

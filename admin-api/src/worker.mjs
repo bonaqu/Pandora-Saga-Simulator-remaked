@@ -1,5 +1,5 @@
 import { authorize, jsonResponse, login, logout } from './auth.mjs';
-import { adminCatalog, publicCatalog } from './catalog.mjs';
+import { adminCatalog, publicCatalog, publicCatalogHead } from './catalog.mjs';
 import { CatalogError } from './catalog-model.mjs';
 
 const PRIVATE_CSP = "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'; font-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'";
@@ -26,7 +26,7 @@ function secureResponse(response, request, env) {
 async function route(request, env) {
   const url = new URL(request.url);
   if (request.method === 'OPTIONS') {
-    if (request.headers.get('Origin') !== env.PUBLIC_ORIGIN || !['/api/catalog', '/api/auth/login'].includes(url.pathname)) return jsonResponse({ ok: false }, 403);
+    if (request.headers.get('Origin') !== env.PUBLIC_ORIGIN || !['/api/catalog', '/api/catalog/head', '/api/auth/login'].includes(url.pathname)) return jsonResponse({ ok: false }, 403);
     const method = request.headers.get('Access-Control-Request-Method');
     if (!['GET', 'POST'].includes(method)) return jsonResponse({ ok: false }, 403);
     const requestedHeaders = (request.headers.get('Access-Control-Request-Headers') || '').split(',').map(header => header.trim().toLowerCase()).filter(Boolean);
@@ -47,6 +47,7 @@ async function route(request, env) {
     return response;
   }
   if (url.pathname === '/api/auth/logout') return logout(request, env);
+  if (url.pathname === '/api/catalog/head' && request.method === 'GET') return publicCatalogHead(env);
   if (url.pathname === '/api/catalog' && request.method === 'GET') return publicCatalog(request, env);
 
   // Authorize before routing: even a future/new/unknown admin endpoint cannot

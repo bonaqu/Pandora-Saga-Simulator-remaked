@@ -39,6 +39,63 @@ async function openManager(page) {
 const update = page => page.locator('[data-remaked-catalog-update]');
 const status = page => page.locator('[data-remaked-catalog-status]');
 
+test('live catalog head updates the current character and autosave without opening Builds or pressing Update', async ({ page }) => {
+  const next = editedWarrior();
+  await page.route(publicApi + '**', route => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/head')) {
+      return route.fulfill({ json: {
+        ok: true, schemaVersion: 1, sourceFingerprint: next.sourceFingerprint,
+        characterSourceFingerprint: next.characterSourceFingerprint, revision: next.revision
+      } });
+    }
+    return route.fulfill({ json: next });
+  });
+  await page.goto('/');
+  const before = await page.evaluate(() => {
+    PandoraRemaked.builds.flushAutosave();
+    return { lp: Status.LP, payload: PandoraRemaked.adapter.serialize() };
+  });
+  const result = await page.evaluate(() => PandoraRemaked.builds.checkCatalogHead());
+  expect(result.ok).toBe(true);
+  expect(result.automatic).toBe(true);
+  expect(await page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(2);
+  expect(await page.evaluate(() => Status.LP)).toBe(before.lp + 100);
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toMatch(/^PS3:2:/);
+  expect(await page.evaluate(() => PandoraRemaked.buildStore.readAutosave().record.payload)).toMatch(/^PS3:2:/);
+});
+
+test('older named builds are visibly marked and safely upgraded when loaded', async ({ page }) => {
+  const next = editedWarrior();
+  await page.route(publicApi + '**', route => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/head')) {
+      return route.fulfill({ json: {
+        ok: true, schemaVersion: 1, sourceFingerprint: next.sourceFingerprint,
+        characterSourceFingerprint: next.characterSourceFingerprint, revision: next.revision
+      } });
+    }
+    return route.fulfill({ json: next });
+  });
+  await page.goto('/');
+  const build = await page.evaluate(() => PandoraRemaked.buildStore.saveBuild('Old build', PandoraRemaked.adapter.serialize()).build);
+  await page.evaluate(() => PandoraRemaked.builds.checkCatalogHead());
+  await page.locator('[data-remaked-builds-open]').click();
+
+  const row = page.locator('[data-remaked-build-row][data-build-id="' + build.id + '"]');
+  await expect(row).toHaveAttribute('data-catalog-stale', 'true');
+  await expect(row.locator('[data-remaked-build-stale]')).toHaveText('Possibly outdated');
+  const style = await row.evaluate(node => ({ borderStyle: getComputedStyle(node).borderStyle, color: getComputedStyle(node).borderColor }));
+  expect(style.borderStyle).toBe('dotted');
+  expect(style.color).not.toBe('rgb(208, 221, 192)');
+
+  await row.locator('[data-remaked-build-load]').click();
+  await expect(row.locator('[data-remaked-build-stale]')).toHaveCount(0);
+  const stored = await page.evaluate(id => PandoraRemaked.buildStore.getBuild(id), build.id);
+  expect(stored.payload).toMatch(/^PS3:2:/);
+  await expect(page.locator('[data-remaked-build-manager-status]')).toContainText(/updated|current catalog/i);
+});
+
 test('catalog adoption is explicit, retains C1 and named pins, and reloads the adopted autosave rather than an old shared link', async ({ page }, info) => {
   const requests = [];
   await page.route(publicApi + '**', route => { requests.push(route.request().url()); return route.fulfill({ json: editedWarrior() }); });

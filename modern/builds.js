@@ -7,6 +7,7 @@
   var i18n = namespace.i18n;
   var DEBOUNCE_MS = 300;
   var RESTORED_STATUS_MS = 4500;
+  var CATALOG_POLL_MS = 10000;
   var timer = null;
   var autosaveSettleTimer = null;
   var lastSavedPayload = null;
@@ -23,11 +24,57 @@
   var previousBodyOverflow = '';
   var catalogRevision = null, catalogUpdate = null, catalogStatus = null;
   var catalogRequest = 0, catalogBusy = false, catalogMessage = null;
+  var catalogPollTimer = null, catalogHeadBusy = false, latestCatalogRevision = 0, catalogAutoBlockedKey = '';
   var restorationFailed = false;
   var loadRequest = 0;
 
   function t(key, values, fallback) {
     return i18n && typeof i18n.t === 'function' ? i18n.t(key, values) : fallback;
+  }
+
+  function liveText(key, values) {
+    var locale = i18n && typeof i18n.getLocale === 'function' ? i18n.getLocale() : 'en';
+    var copy = {
+      possiblyOutdated: {
+        en: 'Possibly outdated', ru: 'Возможно устарел',
+        jp: '更新の可能性あり', tw: '可能已過期'
+      },
+      possiblyOutdatedHelp: {
+        en: 'The catalog changed after this build was saved (saved revision {saved}, current {current}). It will be recalculated with current data when loaded; if incompatible, the historical revision is kept.',
+        ru: 'После сохранения этого билда каталог изменился (сохранённая ревизия {saved}, текущая {current}). При загрузке билд будет пересчитан на актуальных данных; если новая ревизия несовместима, сохранится историческая версия.',
+        jp: 'このビルドの保存後にカタログが更新されました（保存版 {saved}、現在 {current}）。読み込み時に最新データで再計算し、互換性がない場合は過去版を維持します。',
+        tw: '此配置儲存後目錄已更新（儲存版本 {saved}，目前 {current}）。載入時會以最新資料重新計算；若不相容則保留歷史版本。'
+      },
+      loadedUpdated: {
+        en: 'Loaded and updated “{name}” to the current catalog.',
+        ru: '«{name}» загружен и обновлён до актуального каталога.',
+        jp: '「{name}」を読み込み、最新カタログへ更新しました。',
+        tw: '已載入「{name}」並更新至最新目錄。'
+      },
+      loadedHistorical: {
+        en: 'Loaded historical “{name}”: the current catalog is incompatible with this setup.',
+        ru: 'Загружена историческая версия «{name}»: текущий каталог несовместим с этим билдом.',
+        jp: '「{name}」の過去版を読み込みました。現在のカタログとは互換性がありません。',
+        tw: '已載入「{name}」的歷史版本：目前目錄與此配置不相容。'
+      },
+      autoApplied: {
+        en: 'Catalog {revision} applied automatically.',
+        ru: 'Каталог {revision} применён автоматически.',
+        jp: 'カタログ {revision} を自動適用しました。',
+        tw: '已自動套用目錄 {revision}。'
+      },
+      catalogHelp: {
+        en: 'Published catalog changes are detected automatically. The current character is updated safely; older named builds are marked and updated when loaded.',
+        ru: 'Опубликованные изменения каталога обнаруживаются автоматически. Текущий персонаж безопасно обновляется, а старые именованные билды помечаются и обновляются при загрузке.',
+        jp: '公開済みカタログの変更は自動検出されます。現在のキャラクターは安全に更新され、古い保存ビルドは印が付き、読み込み時に更新されます。',
+        tw: '已發布的目錄變更會自動偵測。目前角色會安全更新；較舊的已儲存配置會被標記，並在載入時更新。'
+      }
+    };
+    var text = (copy[key] && (copy[key][locale] || copy[key].en)) || key;
+    Object.keys(values || {}).forEach(function (name) {
+      text = text.replace(new RegExp('\\{' + name + '\\}', 'g'), String(values[name]));
+    });
+    return text;
   }
 
   function nowLabel() {
@@ -74,6 +121,37 @@
 
   function currentPayload() {
     return adapter.serialize();
+  }
+
+  function payloadRevision(payload) {
+    if (!namespace.catalog) return 0;
+    try { return namespace.catalog.unpackPayload(payload).revision; }
+    catch { return 0; }
+  }
+
+  function setLatestCatalogRevision(next) {
+    next = Number(next);
+    if (!Number.isSafeInteger(next) || next < 0 || next === latestCatalogRevision) return;
+    latestCatalogRevision = next;
+    if (managerOverlay && managerOverlay.open) renderBuilds();
+    window.dispatchEvent(new CustomEvent('pandora-remaked:buildcataloghead', { detail: { revision: next } }));
+  }
+
+  function staleBuild(build) {
+    return Boolean(latestCatalogRevision > payloadRevision(build.payload));
+  }
+
+  async function latestNamedPayload(payload) {
+    if (!namespace.catalog) return payload;
+    var savedRevision = payloadRevision(payload);
+    if (latestCatalogRevision > savedRevision) {
+      await namespace.catalog.fetchSnapshot(latestCatalogRevision);
+      return namespace.catalog.repinPayload(payload, latestCatalogRevision);
+    }
+    if (location.origin !== 'https://bonaqu.github.io') return payload;
+    var latest = await namespace.catalog.latestPayload(payload, { networkOnly: true });
+    setLatestCatalogRevision(namespace.catalog.getHeadRevision());
+    return latest;
   }
 
   function beginLoadIntent() {
@@ -131,63 +209,125 @@
     } catch { return false; }
   }
 
-  async function updateCurrentCatalog() {
+  async function updateCurrentCatalog(options) {
+    options = options || {};
+    var automatic = Boolean(options.automatic);
     var catalog = namespace.catalog;
     if (!catalog || catalogBusy) return { ok: false, reason: 'unavailable' };
     if (restorationFailed) {
-      setCatalogStatus('builds.catalogRestorationFailed', 'error', null, 'Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.');
+      if (!automatic) setCatalogStatus('builds.catalogRestorationFailed', 'error', null, 'Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.');
       return { ok: false, reason: 'restore-failed' };
     }
     if (catalog.needsRecovery()) {
-      setCatalogStatus('builds.catalogProtected', 'warning', null, 'Restore or export the protected autosave first. It was not replaced.');
+      if (!automatic) setCatalogStatus('builds.catalogProtected', 'warning', null, 'Restore or export the protected autosave first. It was not replaced.');
       return { ok: false, reason: 'protected-save' };
     }
     var before;
     try { before = currentPayload(); }
     catch (error) {
-      setCatalogStatus('builds.serializeFailed', 'error', null, 'Current build could not be serialized.');
+      if (!automatic) setCatalogStatus('builds.serializeFailed', 'error', null, 'Current build could not be serialized.');
       return { ok: false, error: error };
     }
     var request = ++catalogRequest, hash = location.hash, shared = shareRequest, loading = ++loadRequest;
-    catalogBusy = true; setCatalogStatus('builds.catalogChecking', 'ready', null, 'Checking published catalog…');
+    catalogBusy = true;
+    if (!automatic) setCatalogStatus('builds.catalogChecking', 'ready', null, 'Checking published catalog…');
     try {
       var snapshot = await catalog.fetchSnapshot(null, { networkOnly: true });
+      setLatestCatalogRevision(snapshot.revision);
       if (request !== catalogRequest) return { ok: false, reason: 'cancelled' };
       if (loading !== loadRequest || hash !== location.hash || shared !== shareRequest || before !== currentPayload() || catalog.needsRecovery()) {
-        setCatalogStatus('builds.catalogCancelled', 'warning', null, 'Update cancelled: the character or link changed. Try again for the current build.');
+        if (!automatic) setCatalogStatus('builds.catalogCancelled', 'warning', null, 'Update cancelled: the character or link changed. Try again for the current build.');
         return { ok: false, reason: 'cancelled' };
       }
       if (snapshot.revision < catalog.getRevision()) throw new Error('Published head predates current revision');
       if (snapshot.revision === catalog.getRevision()) {
-        setCatalogStatus('builds.catalogCurrent', 'success', null, 'This catalog is already current. No build or save was changed.');
+        if (!automatic) setCatalogStatus('builds.catalogCurrent', 'success', null, 'This catalog is already current. No build or save was changed.');
         return { ok: true, unchanged: true };
       }
       try { catalog.preflightSnapshot(snapshot); }
       catch (error) {
-        setCatalogStatus('builds.catalogIncompatible', 'warning', null, 'Update incompatible with equipped items, Soul slots or class requirements. Current build and saves kept.');
-        return { ok: false, error: error };
+        if (!automatic) setCatalogStatus('builds.catalogIncompatible', 'warning', null, 'Update incompatible with equipped items, Soul slots or class requirements. Current build and saves kept.');
+        return { ok: false, reason: 'incompatible', error: error };
       }
-      var candidate = catalog.packPayload(catalog.unpackPayload(before).payload, snapshot.revision);
+      var candidate = catalog.repinPayload(before, snapshot.revision);
       var loaded = loadPayloadSafely(candidate);
       if (!loaded.ok) {
-        setCatalogStatus(loaded.restored ? 'builds.catalogCalculationFailed' : 'builds.catalogRestorationFailed', 'error', null,
-          loaded.restored ? 'Recalculation failed. The previous catalog, character and saves were restored.' : 'Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.');
+        loaded.reason = loaded.restored ? 'calculation-failed' : 'restore-failed';
+        if (!automatic) {
+          setCatalogStatus(loaded.restored ? 'builds.catalogCalculationFailed' : 'builds.catalogRestorationFailed', 'error', null,
+            loaded.restored ? 'Recalculation failed. The previous catalog, character and saves were restored.' : 'Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.');
+        }
         return loaded;
       }
       clearScheduledAutosave();
       var saved = persistLoadedPayload(loaded.payload);
       var detached = detachLoadedShareLink();
       if (shareUrl) { shareUrl.hidden = true; shareUrl.value = ''; }
-      setCatalogStatus(!saved.ok ? 'builds.catalogUnsaved' : !detached ? 'builds.catalogUrlWarning' : 'builds.catalogApplied',
-        saved.ok && detached ? 'success' : 'warning', { revision: snapshot.revision },
-        'Catalog ' + snapshot.revision + ' applied. Named builds keep their original revision.');
-      return { ok: true, payload: loaded.payload, autosaved: saved.ok, detached: detached };
+      if (automatic && saved.ok && detached) {
+        catalogMessage = null;
+        if (catalogStatus) {
+          catalogStatus.textContent = liveText('autoApplied', { revision: snapshot.revision });
+          catalogStatus.dataset.state = 'success';
+        }
+      } else {
+        setCatalogStatus(
+          !saved.ok ? 'builds.catalogUnsaved' : !detached ? 'builds.catalogUrlWarning' : 'builds.catalogApplied',
+          saved.ok && detached ? 'success' : 'warning',
+          { revision: snapshot.revision },
+          'Catalog ' + snapshot.revision + ' applied. Saved builds are checked against the live catalog when used.'
+        );
+      }
+      return { ok: true, payload: loaded.payload, autosaved: saved.ok, detached: detached, automatic: automatic };
     } catch (error) {
-      if (request === catalogRequest) setCatalogStatus('builds.catalogUnavailable', 'warning', null, 'Could not check the published catalog. Current build and saves kept; try again online.');
+      if (!automatic && request === catalogRequest) {
+        setCatalogStatus('builds.catalogUnavailable', 'warning', null, 'Could not check the published catalog. Current build and saves kept; try again online.');
+      }
       return { ok: false, error: error };
     } finally {
       if (request === catalogRequest) { catalogBusy = false; refreshCatalogControls(); }
     }
+  }
+
+  async function checkCatalogHead() {
+    var catalog = namespace.catalog;
+    if (!catalog || catalogHeadBusy || document.visibilityState === 'hidden' || navigator.onLine === false) return { ok: false, reason: 'paused' };
+    catalogHeadBusy = true;
+    try {
+      var head = await catalog.fetchHead({ networkOnly: true });
+      setLatestCatalogRevision(head);
+      if (head > catalog.getRevision()) {
+        var payload;
+        try { payload = currentPayload(); }
+        catch { return { ok: false, reason: 'serialize-failed' }; }
+        var attemptKey = head + ':' + payload;
+        if (catalogAutoBlockedKey === attemptKey) return { ok: false, reason: 'blocked-incompatible', revision: head };
+        var result = await updateCurrentCatalog({ automatic: true });
+        if (result.ok) catalogAutoBlockedKey = '';
+        else if (result.reason === 'incompatible' || result.reason === 'calculation-failed' || result.reason === 'restore-failed') {
+          catalogAutoBlockedKey = attemptKey;
+        }
+        return result;
+      }
+      catalogAutoBlockedKey = '';
+      return { ok: true, unchanged: true, revision: head };
+    } catch (error) {
+      return { ok: false, error: error };
+    } finally {
+      catalogHeadBusy = false;
+    }
+  }
+
+  function startCatalogPolling() {
+    if (!namespace.catalog || catalogPollTimer !== null || location.origin !== 'https://bonaqu.github.io') return;
+    catalogPollTimer = window.setInterval(checkCatalogHead, CATALOG_POLL_MS);
+    window.addEventListener('online', checkCatalogHead);
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') checkCatalogHead();
+    });
+    window.addEventListener('pandora-remaked:cataloghead', function (event) {
+      if (event.detail) setLatestCatalogRevision(event.detail.revision);
+    });
+    checkCatalogHead();
   }
 
   function payloadLooksLikeCurrentCsv(payload, reference) {
@@ -338,6 +478,10 @@
 
   function flushAutosave() {
     clearScheduledAutosave();
+    // During startup the Legacy engine still contains its defaults until the
+    // previous autosave/import has been restored. A pagehide/controllerchange
+    // in that window must never overwrite the stored character with defaults.
+    if (suppressAutosave) return { ok: true, suppressed: true };
     if (restorationFailed) {
       setAutosaveStatus(t('builds.autosaveWarning', { code: 'restore-failed' }, 'Autosave paused: restore-failed'), 'warning');
       return { ok: false, error: { code: 'restore-failed' } };
@@ -474,6 +618,56 @@
     return node;
   }
 
+  async function loadNamedBuildLatest(storedBuild, stillWanted) {
+    var intent;
+    try { intent = beginLoadIntent(); }
+    catch (error) { return { ok: false, error: error }; }
+
+    async function prepareCandidate(candidate) {
+      try { if (namespace.catalog) await namespace.catalog.preparePayload(candidate); }
+      catch (error) {
+        return currentLoadIntent(intent, stillWanted)
+          ? { ok: false, error: error, request: intent.request }
+          : cancelledLoad(intent, stillWanted);
+      }
+      return currentLoadIntent(intent, stillWanted)
+        ? { ok: true, request: intent.request }
+        : cancelledLoad(intent, stillWanted);
+    }
+
+    var candidate = storedBuild.payload, upgraded = false;
+    try {
+      candidate = await latestNamedPayload(storedBuild.payload);
+      upgraded = candidate !== storedBuild.payload;
+    } catch {
+      candidate = storedBuild.payload;
+    }
+    if (!currentLoadIntent(intent, stillWanted)) return cancelledLoad(intent, stillWanted);
+
+    var prepared = await prepareCandidate(candidate);
+    if (!prepared.ok) return prepared;
+    var loaded = loadPayloadSafely(candidate);
+    if (loaded.ok) {
+      if (upgraded) {
+        var rewritten = store.updateBuild(storedBuild.id, { payload: loaded.payload });
+        if (!rewritten.ok) return { ok: true, loaded: loaded, upgraded: true, rewriteFailed: true };
+      }
+      return { ok: true, loaded: loaded, upgraded: upgraded };
+    }
+
+    // A compatibility change can make the latest catalog invalid for this
+    // exact saved setup. Fall back only after a verified rollback; never build
+    // on top of an uncertain partially restored character.
+    if (!upgraded || loaded.restored === false) return { ok: false, error: loaded.error };
+    if (!currentLoadIntent(intent, stillWanted)) return cancelledLoad(intent, stillWanted);
+    var fallbackPrepared = await prepareCandidate(storedBuild.payload);
+    if (!fallbackPrepared.ok) return fallbackPrepared;
+    var fallback = loadPayloadSafely(storedBuild.payload);
+    return fallback.ok
+      ? { ok: true, loaded: fallback, upgraded: false, historical: true }
+      : { ok: false, error: fallback.error };
+  }
+
   function renderBuilds() {
     if (!buildList || !store) return;
     if (legacyRecovery) {
@@ -509,8 +703,29 @@
 
       var name = document.createElement('div');
       name.className = 'remaked-build-row-name';
-      name.textContent = build.name;
-      name.title = build.name;
+      var stale = staleBuild(build);
+      if (stale) {
+        row.dataset.catalogStale = 'true';
+        var staleLabel = liveText('possiblyOutdated');
+        var staleHelp = liveText('possiblyOutdatedHelp', {
+          saved: payloadRevision(build.payload), current: latestCatalogRevision
+        });
+        row.title = staleHelp;
+        name.title = staleHelp;
+        var nameText = document.createElement('span');
+        nameText.className = 'remaked-build-row-name-text';
+        nameText.textContent = build.name;
+        name.appendChild(nameText);
+        var staleBadge = document.createElement('span');
+        staleBadge.className = 'remaked-build-stale-badge';
+        staleBadge.dataset.remakedBuildStale = '';
+        staleBadge.textContent = staleLabel;
+        staleBadge.title = staleHelp;
+        name.appendChild(staleBadge);
+      } else {
+        name.textContent = build.name;
+        name.title = build.name;
+      }
       row.appendChild(name);
 
       var load = button('Load', null, 'builds.load');
@@ -522,25 +737,30 @@
           renderBuilds();
           return;
         }
-        var prepared = await prepareLoad(storedBuild.payload, function () {
+        var result = await loadNamedBuildLatest(storedBuild, function () {
           return load.isConnected && managerOverlay.open && store.getBuild(build.id)?.payload === storedBuild.payload;
         });
-        if (!prepared.ok) {
-          if (prepared.reason === 'cancelled') {
-            if (!prepared.silent) setManagerStatus(t('builds.loadCancelled', null, 'Loading cancelled. Current character and saved builds kept.'), 'warning');
+        if (!result.ok) {
+          if (result.reason === 'cancelled') {
+            if (!result.silent) setManagerStatus(t('builds.loadCancelled', null, 'Loading cancelled. Current character and saved builds kept.'), 'warning');
           } else setManagerStatus(t('builds.loadUnavailable', null, 'Catalog revision unavailable; current character and saved builds kept.'), 'warning');
           return;
         }
-        var loaded = loadPayloadSafely(storedBuild.payload);
-        if (!loaded.ok) {
-          setManagerStatus(t('builds.invalid', null, 'Build is invalid and could not be loaded.'), 'error');
-          return;
-        }
-        var saved = persistLoadedPayload(loaded.payload, t('builds.savedLoaded', null, 'Saved loaded build'));
+        var saved = persistLoadedPayload(result.loaded.payload, t('builds.savedLoaded', null, 'Saved loaded build'));
         var detached = detachLoadedShareLink();
-        setManagerStatus(!detached ? t('builds.urlWarning', null, 'Old shared link could not be cleared. Export a new link before reloading.') : saved.ok
-          ? t('builds.loaded', { name: store.getBuild(build.id).name }, 'Loaded “' + store.getBuild(build.id).name + '”.')
-          : t('builds.loadedNoAutosave', null, 'Build loaded, but autosave is unavailable.'), saved.ok && detached ? 'success' : 'warning');
+        renderBuilds();
+        var currentBuild = store.getBuild(build.id);
+        var loadedMessage = result.historical
+          ? liveText('loadedHistorical', { name: currentBuild.name })
+          : result.upgraded
+            ? liveText('loadedUpdated', { name: currentBuild.name })
+            : t('builds.loaded', { name: currentBuild.name }, 'Loaded “' + currentBuild.name + '”.');
+        setManagerStatus(
+          !detached ? t('builds.urlWarning', null, 'Old shared link could not be cleared. Export a new link before reloading.')
+            : !saved.ok ? t('builds.loadedNoAutosave', null, 'Build loaded, but autosave is unavailable.')
+            : loadedMessage,
+          saved.ok && detached && !result.historical ? 'success' : result.historical ? 'warning' : saved.ok && detached ? 'success' : 'warning'
+        );
       });
       row.appendChild(load);
 
@@ -768,8 +988,7 @@
       catalogSection.appendChild(catalogRevision);
       var catalogHelp = document.createElement('p');
       catalogHelp.id = 'remaked-catalog-update-help';
-      if (i18n) i18n.bindText(catalogHelp, 'builds.catalogHelp');
-      else catalogHelp.textContent = 'Updates only this character to the published catalog. Equipped items, Souls and effects are checked; named builds keep their original revision.';
+      catalogHelp.textContent = liveText('catalogHelp');
       catalogSection.appendChild(catalogHelp);
       catalogUpdate = button('Update current build', null, 'builds.catalogUpdate');
       catalogUpdate.dataset.remakedCatalogUpdate = '';
@@ -780,7 +999,11 @@
       catalogStatus.className = 'remaked-build-status'; catalogStatus.dataset.remakedCatalogStatus = '';
       catalogStatus.setAttribute('role', 'status'); catalogSection.appendChild(catalogStatus);
       body.appendChild(catalogSection); refreshCatalogControls();
-      window.addEventListener('pandora-remaked:localechange', refreshCatalogControls);
+      window.addEventListener('pandora-remaked:localechange', function () {
+        catalogHelp.textContent = liveText('catalogHelp');
+        refreshCatalogControls();
+        if (managerOverlay && managerOverlay.open) renderBuilds();
+      });
     }
 
     managerStatus = document.createElement('p');
@@ -850,7 +1073,9 @@
     var startupRequest = loadRequest;
     Promise.resolve(namespace.catalog?.ready).then(async function () {
       if (startupRequest === loadRequest) { restoreAutosaveOnce(); await loadSharedBuild(); }
-      window.addEventListener('hashchange', loadSharedBuild); bindLegacyChanges();
+      window.addEventListener('hashchange', loadSharedBuild);
+      bindLegacyChanges();
+      window.setTimeout(startCatalogPolling, 0);
     }).finally(function () { suppressAutosave = false; if (legacy) legacy.inert = false; });
   }
 
@@ -859,6 +1084,8 @@
     importPreparedPayload: importPreparedPayload,
     importCodeField: importCodeField,
     updateCurrentCatalog: updateCurrentCatalog,
+    checkCatalogHead: checkCatalogHead,
+    getLatestCatalogRevision: function () { return latestCatalogRevision; },
     scheduleAutosave: scheduleAutosave,
     flushAutosave: flushAutosave,
     openManager: openManager,

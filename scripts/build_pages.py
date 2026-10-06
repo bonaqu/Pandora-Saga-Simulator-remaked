@@ -100,8 +100,14 @@ HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
   if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) return;
   var reloading = false;
   navigator.serviceWorker.addEventListener('controllerchange', function () {
-    if (reloading) return;
+    if (reloading || window.__pandoraPwaReloading) return;
+    var builds = window.PandoraRemaked && window.PandoraRemaked.builds;
+    if (builds && typeof builds.flushAutosave === 'function') {
+      var saved = builds.flushAutosave();
+      if (saved && saved.ok === false) return;
+    }
     reloading = true;
+    window.__pandoraPwaReloading = true;
     window.location.reload();
   });
   navigator.serviceWorker.getRegistration().then(function (registration) {

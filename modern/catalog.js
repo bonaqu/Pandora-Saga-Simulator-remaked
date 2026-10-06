@@ -14,9 +14,10 @@
   var passiveRecords = [], variantRecords = [], learningRecords = [], customLearningStates = Object.create(null);
   var profileRecords = [], selectedProfiles = Object.create(null);
   var learnedKey = '', learnedEntries = [], potentialEntries = [], learningProbeDepth = 0;
-  var snapshots = Object.create(null), recovery = false;
+  var snapshots = Object.create(null), recovery = false, headRevision = 0;
   var nativePassiveDefinitions = window.PandoraRemakedNativePassives || {};
   var PUBLIC_API = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog';
+  var PUBLIC_HEAD_API = PUBLIC_API + '/head';
   var databasePromise;
   function check(condition, message) { if (!condition) throw new Error(message); }
   function escaped(value) { return String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
@@ -377,15 +378,16 @@
     context.clan.forEach(function (value, index) { document.getElementById('SelBuffClan_' + index).selectedIndex = value; });
     context.caster.forEach(function (value, index) { document.getElementById('InBuff_' + index).value = String(value); });
   }
-  function packPayload(payload, targetRevision) {
-    var pinned = targetRevision === undefined ? revision : targetRevision;
+  function packWithContext(payload, pinned, context) {
     check(Number.isSafeInteger(pinned) && pinned >= 0 && pinned <= 999999999, 'Invalid catalog revision');
-    var context = captureContext();
-    if (JSON.stringify(context) !== JSON.stringify(defaultContext)) {
+    if (context && JSON.stringify(context) !== JSON.stringify(defaultContext)) {
       var encoded = btoa(JSON.stringify(context)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
       return 'PS3:' + pinned + ':C1:' + encoded + ':' + payload;
     }
     return pinned ? 'PS3:' + pinned + ':' + payload : payload;
+  }
+  function packPayload(payload, targetRevision) {
+    return packWithContext(payload, targetRevision === undefined ? revision : targetRevision, captureContext());
   }
   function unpackPayload(payload) {
     check(typeof payload === 'string' && payload.length > 0 && payload.length <= 20000, 'Invalid build code');
@@ -422,6 +424,46 @@
       });
     } catch { /* Public cache failure cannot destroy the character or builds. */ }
   }
+  function announceHead(next) {
+    check(Number.isSafeInteger(next) && next >= 0 && next <= 999999999, 'Invalid catalog head');
+    if (next === headRevision) return headRevision;
+    var previous = headRevision;
+    headRevision = next;
+    window.dispatchEvent(new CustomEvent('pandora-remaked:cataloghead', {
+      detail: { revision: next, previousRevision: previous }
+    }));
+    return headRevision;
+  }
+  async function fetchHead(options) {
+    options = options || {};
+    try {
+      var response = await fetch(PUBLIC_HEAD_API, { credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(3000) });
+      check(response.ok, 'Catalog head unavailable');
+      var data = await response.json();
+      check(data && data.ok === true && data.schemaVersion === 1, 'Invalid catalog head');
+      check(data.sourceFingerprint === SOURCE_FINGERPRINT && data.characterSourceFingerprint === CHARACTER_SOURCE_FINGERPRINT, 'Catalog source/version mismatch');
+      announceHead(data.revision);
+      return data.revision;
+    } catch (error) {
+      if (options.networkOnly) throw error;
+      var latest = await cached(-1);
+      if (latest && Number.isSafeInteger(latest.head)) return announceHead(latest.head);
+      throw error;
+    }
+  }
+  function repinPayload(payload, targetRevision) {
+    var parsed = unpackPayload(payload);
+    return packWithContext(parsed.payload, targetRevision, parsed.context);
+  }
+  async function latestPayload(payload, options) {
+    options = options || {};
+    var parsed = unpackPayload(payload);
+    var head = await fetchHead({ networkOnly: options.networkOnly !== false });
+    if (head <= parsed.revision) return payload;
+    await fetchSnapshot(head, { networkOnly: options.networkOnly !== false });
+    return repinPayload(payload, head);
+  }
+
   async function fetchSnapshot(requested, options) {
     options = options || {};
     if (requested === 0) return sourceSnapshot();
@@ -431,7 +473,10 @@
       check(response.ok, 'Catalog revision unavailable');
       var snapshot = await response.json(); validate(snapshot);
       check(requested === null || snapshot.revision === requested, 'Catalog revision mismatch');
-      snapshots[snapshot.revision] = snapshot; await remember(snapshot, requested === null); return snapshot;
+      snapshots[snapshot.revision] = snapshot;
+      if (requested === null) announceHead(snapshot.revision);
+      await remember(snapshot, requested === null);
+      return snapshot;
     } catch (error) {
       // An explicit update must check the actual public head. Cached pinned
       // revisions still work offline, but cannot be advertised as the latest.
@@ -439,7 +484,13 @@
       var target = requested;
       if (target === null) target = (await cached(-1))?.head;
       var offline = target === 0 ? sourceSnapshot() : target !== undefined ? await cached(target) : null;
-      if (offline) { validate(offline); check(requested === null || offline.revision === requested, 'Cached catalog revision mismatch'); snapshots[offline.revision] = offline; return offline; }
+      if (offline) {
+        validate(offline);
+        check(requested === null || offline.revision === requested, 'Cached catalog revision mismatch');
+        snapshots[offline.revision] = offline;
+        if (requested === null) announceHead(offline.revision);
+        return offline;
+      }
       throw error;
     }
   }
@@ -497,8 +548,9 @@
     },
     item: function (kind, value) { var id = Number(value); return recordsByTerm[kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id] || null; },
     itemText: function (kind, value, field) { var id = Number(value); return textFor(kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id, field); },
-    packPayload, captureContext, applyContext,
-    unpackPayload, preparePayload, useRevision, fetchSnapshot, bootstrap,
+    packPayload, repinPayload, latestPayload, captureContext, applyContext,
+    unpackPayload, preparePayload, useRevision, fetchSnapshot, fetchHead, bootstrap,
+    getHeadRevision: function () { return headRevision; },
     validateCurrentState: function () { selectedStateExists(window.EquipData, window.SoulData); },
     needsRecovery: function () { return recovery; }, clearRecovery: function () { recovery = false; }
   };
