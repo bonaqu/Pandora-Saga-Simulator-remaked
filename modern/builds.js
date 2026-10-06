@@ -247,7 +247,7 @@
   }
 
   function startCatalogPolling() {
-    if (!namespace.catalog || catalogPollTimer !== null) return;
+    if (!namespace.catalog || catalogPollTimer !== null || location.origin !== 'https://bonaqu.github.io') return;
     catalogPollTimer = window.setInterval(checkCatalogHead, CATALOG_POLL_MS);
     window.addEventListener('online', checkCatalogHead);
     document.addEventListener('visibilitychange', function () {
