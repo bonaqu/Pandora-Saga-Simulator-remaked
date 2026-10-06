@@ -120,7 +120,7 @@ test('name, description and translation-only publications never mark saved build
   const row = page.locator('[data-remaked-build-row][data-build-id="' + build.id + '"]');
   await expect(row).not.toHaveAttribute('data-catalog-stale', 'true');
   await expect(row.locator('[data-remaked-build-stale]')).toHaveCount(0);
-  await expect(page.locator('[data-remaked-catalog-revision]')).toContainText('revision 2');
+  await expect(page.locator('[data-remaked-catalog-revision]')).toContainText('version 2');
   expect(await page.evaluate(() => PandoraRemaked.builds.getLatestCatalogImpactRevision())).toBe(0);
 });
 
@@ -138,7 +138,7 @@ test('catalog adoption is explicit, retains C1 and named pins, and reloads the a
     return { payload, lp: Status.LP, context: PandoraRemaked.catalog.captureContext(), named: localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY) };
   });
   await page.locator('[data-remaked-builds-open]').click();
-  await expect(page.locator('[data-remaked-catalog-revision]')).toContainText('source revision 0'); expect(requests).toEqual([]);
+  await expect(page.locator('[data-remaked-catalog-revision]')).toContainText('base version'); expect(requests).toEqual([]);
   await runUpdate(page); await expect(status(page)).toContainText('Catalog 2 applied');
   const after = await state(page);
   expect(after.revision).toBe(2); expect(after.payload).toMatch(/^PS3:2:C1:/); expect(after.context).toEqual(before.context);
