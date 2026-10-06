@@ -292,12 +292,18 @@ test('Equipment slot labels and compact Reset stay fully visible in every UI loc
         rows.push({ text: label.textContent.trim(), client: label.clientWidth, scroll: label.scrollWidth });
       }
       return {
-        reset: { client: reset.clientWidth, scroll: reset.scrollWidth, width: reset.getBoundingClientRect().width },
+        reset: {
+          client: reset.clientWidth,
+          scroll: reset.scrollWidth,
+          width: reset.getBoundingClientRect().width,
+          textAlign: getComputedStyle(reset).textAlign
+        },
         labels: rows
       };
     });
     expect(layout.reset.width).toBeCloseTo(72, 0);
     expect(layout.reset.scroll).toBeLessThanOrEqual(layout.reset.client);
+    expect(layout.reset.textAlign).toBe('center');
     for (const label of layout.labels) expect(label.scroll, locale + ': ' + label.text).toBeLessThanOrEqual(label.client);
     for (const label of layout.labels) expect(label.client, locale + ': ' + label.text).toBe(76);
   }
