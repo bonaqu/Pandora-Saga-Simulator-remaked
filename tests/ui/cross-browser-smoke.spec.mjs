@@ -45,6 +45,10 @@ import { assertWorkspaceFits } from './helpers/desktop-workspace.mjs';
 import { variant, snapshot } from './helpers/skill-variants.mjs';
 
 test('every inspector switches, floats and closes without changing the build, even after scroll or short-screen resize', async ({ page }) => {
+  // This deliberately performs ten full popup switch/close/resize cycles.
+  // WebKit can cross the default 30s whole-test budget under CI load even
+  // when every interaction succeeds, so give this smoke contract its own cap.
+  test.setTimeout(60_000);
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 1440, height: 900 }); await page.goto('/');
   const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
