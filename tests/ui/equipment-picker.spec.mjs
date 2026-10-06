@@ -247,8 +247,8 @@ test('RU Equipment chrome, gem selectors and category headings use workbook term
   ]);
 
   const modifierLabels = await page.evaluate(() => ({
-    kind: Array.from(document.getElementById('SelEquip_0_1').options, option => option.textContent.trim()),
-    element: Array.from(document.getElementById('SelEquip_0_2').options, option => option.textContent.trim()),
+    kind: Array.prototype.map.call(document.getElementById('SelEquip_0_1').options, option => option.textContent.trim()),
+    element: Array.prototype.map.call(document.getElementById('SelEquip_0_2').options, option => option.textContent.trim()),
     soul: document.getElementById('SelEquip_0_4').options[0].textContent.trim(),
     categories: Array.from(document.getElementById('SelEquip_0_0').options)
       .filter(option => Number(option.value) % 10000 === 0)
