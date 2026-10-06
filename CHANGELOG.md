@@ -2,6 +2,32 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Modern 3.14 — Russian Equipment terminology and compact stat labels, 2026-10-06
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Исправлено обрезание русских сокращений базовых характеристик: `ВЫН`, `СИЛ`, `ПРВ`, `ЛВК`, `СД` и `ИНТ` теперь полностью помещаются рядом с числовыми полями.
+- Уточнены короткие русские подписи в «Результатах расчёта» и «Эффектах»: сопротивления приведены к более единообразному виду, `МагАТК` сокращено до `МАТК`, а перезарядка — до `Откат`.
+- Блок Equipment русифицирован: названия слотов, физический/магический тип, стихии, Soul, сброс снаряжения и категории оружия/экипировки теперь имеют русские подписи.
+- Категории в Equipment picker также используют эти переводы, поэтому названия типов оружия совпадают в исходном селекторе, фильтре и выпадающем поиске.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Russian base-stat abbreviations no longer clip beside their numeric fields.
+- RU calculated-result and effect labels received the requested shorter, more consistent terminology.
+- The Equipment area now has Russian slot, modifier, element, Soul, reset and equipment-category labels.
+- Equipment picker category headings and filters use the same translated category names.
+<!-- /release-notes:en -->
+
+### Project and delivery details
+
+- Translation changes remain presentation-only in `localization/translations.xlsx`; Legacy values, formulas, item IDs and build serialization are unchanged.
+- The Equipment search term resolver now recognizes category placeholder IDs and the `soul.0` placeholder, allowing workbook translations to reach picker headings without rewriting native options.
+- Regression coverage checks Russian base-stat geometry, exact workbook terminology, translated Equipment controls/categories and immutable calculator state.
+
 ## Modern 3.13 — Russian calculator terminology and hover help, 2026-10-06
 
 <!-- release-notes:ru -->
