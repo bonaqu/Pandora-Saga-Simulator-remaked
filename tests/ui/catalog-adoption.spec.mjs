@@ -301,8 +301,8 @@ test('automatic catalog status is compact, localized and has no manual update bu
 
   await expect(page.locator('[data-remaked-catalog-update]')).toHaveCount(0);
   const catalogLine = page.locator('[data-remaked-catalog-revision]');
-  await expect(catalogLine).toHaveText('Каталог: исходная ревизия 0 · обновляется автоматически');
-  await expect(catalogLine).toHaveAttribute('title', /названий/);
+  await expect(catalogLine).toHaveText('Игровые данные: базовая версия · обновляются автоматически');
+  await expect(catalogLine).toHaveAttribute('title', 'Сайт сам обновляет предметы, навыки и другие игровые данные. Если обновление может изменить сохранённый билд, рядом появится предупреждение.');
   await expect(page.locator('#remaked-catalog-update-help')).toHaveCount(0);
   const box = await page.locator('.remaked-build-catalog').boundingBox();
   expect(box.height).toBeLessThan(70);
