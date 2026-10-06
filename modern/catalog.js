@@ -14,7 +14,7 @@
   var passiveRecords = [], variantRecords = [], learningRecords = [], customLearningStates = Object.create(null);
   var profileRecords = [], selectedProfiles = Object.create(null);
   var learnedKey = '', learnedEntries = [], potentialEntries = [], learningProbeDepth = 0;
-  var snapshots = Object.create(null), recovery = false, headRevision = 0;
+  var snapshots = Object.create(null), recovery = false, headRevision = 0, headImpactRevision = 0;
   var nativePassiveDefinitions = window.PandoraRemakedNativePassives || {};
   var PUBLIC_API = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog';
   var PUBLIC_HEAD_API = PUBLIC_API + '/head';
@@ -117,6 +117,7 @@
     captureBaseline();
     check(snapshot && snapshot.ok === true && snapshot.schemaVersion === 1 && snapshot.sourceFingerprint === SOURCE_FINGERPRINT, 'Catalog source/version mismatch');
     check(Number.isSafeInteger(snapshot.revision) && snapshot.revision >= 0 && snapshot.revision <= 999999999 && Array.isArray(snapshot.records) && snapshot.records.length <= 4000, 'Invalid catalog snapshot');
+    check(Number.isSafeInteger(snapshot.impactRevision) && snapshot.impactRevision >= 0 && snapshot.impactRevision <= snapshot.revision, 'Invalid catalog impact revision');
     check(snapshot.revision > 0 || snapshot.records.length === 0, 'Source revision must not contain overrides');
     var seen = Object.create(null), variants = 0;
     snapshot.records.forEach(function (record) {
@@ -321,7 +322,7 @@
     });
     return parts.join('. ');
   }
-  function sourceSnapshot() { return { ok: true, schemaVersion: 1, sourceFingerprint: SOURCE_FINGERPRINT, revision: 0, records: [] }; }
+  function sourceSnapshot() { return { ok: true, schemaVersion: 1, sourceFingerprint: SOURCE_FINGERPRINT, characterSourceFingerprint: CHARACTER_SOURCE_FINGERPRINT, revision: 0, impactRevision: 0, records: [] }; }
   // Modern build context is data only. Store()/Expand() and the museum CSV stay
   // unchanged. Presentation flags, credentials and arbitrary Flag keys are never
   // included. These are the actual source controls that affect calculations.
@@ -419,18 +420,19 @@
       var db = await database();
       await new Promise(function (resolve) {
         var transaction = db.transaction('snapshots', 'readwrite'); var store = transaction.objectStore('snapshots');
-        store.put(snapshot); if (latest) store.put({ revision: -1, head: snapshot.revision });
+        store.put(snapshot); if (latest) store.put({ revision: -1, head: snapshot.revision, impactHead: snapshot.impactRevision });
         transaction.oncomplete = resolve; transaction.onerror = resolve; transaction.onabort = resolve;
       });
     } catch { /* Public cache failure cannot destroy the character or builds. */ }
   }
-  function announceHead(next) {
+  function announceHead(next, impact) {
     check(Number.isSafeInteger(next) && next >= 0 && next <= 999999999, 'Invalid catalog head');
-    if (next === headRevision) return headRevision;
-    var previous = headRevision;
-    headRevision = next;
+    check(Number.isSafeInteger(impact) && impact >= 0 && impact <= next, 'Invalid catalog impact head');
+    if (next === headRevision && impact === headImpactRevision) return headRevision;
+    var previous = headRevision, previousImpact = headImpactRevision;
+    headRevision = next; headImpactRevision = impact;
     window.dispatchEvent(new CustomEvent('pandora-remaked:cataloghead', {
-      detail: { revision: next, previousRevision: previous }
+      detail: { revision: next, impactRevision: impact, previousRevision: previous, previousImpactRevision: previousImpact }
     }));
     return headRevision;
   }
@@ -442,12 +444,14 @@
       var data = await response.json();
       check(data && data.ok === true && data.schemaVersion === 1, 'Invalid catalog head');
       check(data.sourceFingerprint === SOURCE_FINGERPRINT && data.characterSourceFingerprint === CHARACTER_SOURCE_FINGERPRINT, 'Catalog source/version mismatch');
-      announceHead(data.revision);
+      announceHead(data.revision, Number.isSafeInteger(data.impactRevision) ? data.impactRevision : data.revision);
       return data.revision;
     } catch (error) {
       if (options.networkOnly) throw error;
       var latest = await cached(-1);
-      if (latest && Number.isSafeInteger(latest.head)) return announceHead(latest.head);
+      if (latest && Number.isSafeInteger(latest.head)) {
+        return announceHead(latest.head, Number.isSafeInteger(latest.impactHead) ? latest.impactHead : latest.head);
+      }
       throw error;
     }
   }
@@ -474,7 +478,7 @@
       var snapshot = await response.json(); validate(snapshot);
       check(requested === null || snapshot.revision === requested, 'Catalog revision mismatch');
       snapshots[snapshot.revision] = snapshot;
-      if (requested === null) announceHead(snapshot.revision);
+      if (requested === null) announceHead(snapshot.revision, snapshot.impactRevision);
       await remember(snapshot, requested === null);
       return snapshot;
     } catch (error) {
@@ -488,7 +492,7 @@
         validate(offline);
         check(requested === null || offline.revision === requested, 'Cached catalog revision mismatch');
         snapshots[offline.revision] = offline;
-        if (requested === null) announceHead(offline.revision);
+        if (requested === null) announceHead(offline.revision, offline.impactRevision);
         return offline;
       }
       throw error;
@@ -551,6 +555,7 @@
     packPayload, repinPayload, latestPayload, captureContext, applyContext,
     unpackPayload, preparePayload, useRevision, fetchSnapshot, fetchHead, bootstrap,
     getHeadRevision: function () { return headRevision; },
+    getHeadImpactRevision: function () { return headImpactRevision; },
     validateCurrentState: function () { selectedStateExists(window.EquipData, window.SoulData); },
     needsRecovery: function () { return recovery; }, clearRecovery: function () { recovery = false; }
   };
