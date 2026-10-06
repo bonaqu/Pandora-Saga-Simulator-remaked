@@ -366,20 +366,14 @@
 .remaked-modern [data-remaked-code-status][data-state="warning"] { color: #8b6025; }
 
 .remaked-build-catalog {
-  gap: 6px;
-  padding: 10px 12px;
+  gap: 4px;
+  padding: 9px 12px;
   background: linear-gradient(180deg, #f8fbf4, #f3f8ed);
 }
 .remaked-build-catalog-line {
   color: #49633a;
   font: 800 11px/1.35 var(--rm-font);
   letter-spacing: .01em;
-}
-.remaked-build-catalog-help {
-  margin: 0;
-  color: #718068;
-  font: 10px/1.45 var(--rm-font);
-  overflow-wrap: anywhere;
 }
 .remaked-build-catalog [data-remaked-catalog-status] {
   margin: 0;
