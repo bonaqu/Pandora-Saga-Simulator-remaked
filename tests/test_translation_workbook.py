@@ -131,7 +131,7 @@ class TranslationWorkbookTests(unittest.TestCase):
             "calculator.status.34": "Сопр ЯД", "calculator.status.35": "СКР Движ",
             "calculator.status.36": "СКР Движ Астир", "calculator.status.37": "Сопр ЧАР",
             "calculator.status.38": "Сопр СВЕТ", "calculator.status.39": "Сопр ТЬМ",
-            "calculator.status.40": "Сопр АНОМТЕЛ", "calculator.status.41": "Сопр АНООМДУХ",
+            "calculator.status.40": "Сопр АНОМТЕЛ", "calculator.status.41": "Сопр АНОМДУХ",
             "calculator.status.42": "Сопр МАГ",
             "skill.0": "Ближний бой", "skill.1": "Секущий удар", "skill.2": "Колющий удар",
             "skill.3": "Рубящий удар", "skill.4": "Тяжелый удар", "skill.5": "Оборона",
