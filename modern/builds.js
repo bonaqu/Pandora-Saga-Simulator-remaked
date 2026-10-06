@@ -64,28 +64,28 @@
         tw: '已自動套用目錄 {revision}。'
       },
       catalogHelp: {
-        en: 'Changes are detected automatically. Saved builds are highlighted only when calculations or compatibility can change; text-only edits never mark them outdated.',
-        ru: 'Изменения обнаруживаются автоматически. Билды помечаются только при изменениях расчёта или совместимости; правки названий, описаний и переводов не считаются устареванием.',
-        jp: '変更は自動検出されます。保存ビルドは計算や互換性に影響する変更だけで警告され、名前・説明・翻訳だけの変更では古い扱いになりません。',
-        tw: '變更會自動偵測。只有可能影響計算或相容性的變更才會標記已儲存配置；僅名稱、說明或翻譯變更不算過期。'
+        en: 'The site updates items, skills and other game data automatically. If an update can change a saved build, you will see a warning next to it.',
+        ru: 'Сайт сам обновляет предметы, навыки и другие игровые данные. Если обновление может изменить сохранённый билд, рядом появится предупреждение.',
+        jp: 'アイテムやスキルなどのゲームデータは自動で更新されます。保存したビルドに影響する更新がある場合は、ビルドの横に警告が表示されます。',
+        tw: '網站會自動更新物品、技能和其他遊戲資料。如果更新可能影響已儲存的配置，配置旁會顯示提醒。'
       },
       catalogLine: {
-        en: 'Catalog: revision {revision} · updates automatically',
-        ru: 'Каталог: ревизия {revision} · обновляется автоматически',
-        jp: 'カタログ: リビジョン {revision} · 自動更新',
-        tw: '目錄：版本 {revision} · 自動更新'
+        en: 'Game data: version {revision} · updates automatically',
+        ru: 'Игровые данные: версия {revision} · обновляются автоматически',
+        jp: 'ゲームデータ: バージョン {revision} · 自動更新',
+        tw: '遊戲資料：版本 {revision} · 自動更新'
       },
       catalogSourceLine: {
-        en: 'Catalog: source revision 0 · updates automatically',
-        ru: 'Каталог: исходная ревизия 0 · обновляется автоматически',
-        jp: 'カタログ: 元リビジョン 0 · 自動更新',
-        tw: '目錄：來源版本 0 · 自動更新'
+        en: 'Game data: base version · updates automatically',
+        ru: 'Игровые данные: базовая версия · обновляются автоматически',
+        jp: 'ゲームデータ: 基本バージョン · 自動更新',
+        tw: '遊戲資料：基礎版本 · 自動更新'
       },
       catalogCheckingLine: {
-        en: 'Catalog: revision {revision} · checking for updates…',
-        ru: 'Каталог: ревизия {revision} · проверка обновлений…',
-        jp: 'カタログ: リビジョン {revision} · 更新を確認中…',
-        tw: '目錄：版本 {revision} · 正在檢查更新…'
+        en: 'Game data: version {revision} · checking for updates…',
+        ru: 'Игровые данные: версия {revision} · проверяем обновления…',
+        jp: 'ゲームデータ: バージョン {revision} · 更新を確認中…',
+        tw: '遊戲資料：版本 {revision} · 正在檢查更新…'
       }
     };
     var text = (copy[key] && (copy[key][locale] || copy[key].en)) || key;
