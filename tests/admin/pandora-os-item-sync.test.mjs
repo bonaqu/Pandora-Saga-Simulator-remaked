@@ -91,7 +91,9 @@ test('generated catalog migration initializes a fresh database at revision 79 an
   const fresh = database();
   transaction(fresh, buildMigration());
   const head = fresh.prepare('SELECT version, impact_version, json_array_length(snapshot_json) AS count FROM catalog_head WHERE id = 1').get();
-  assert.deepEqual(head, { version: 79, impact_version: 79, count: 180 });
+  assert.equal(head.version, 79);
+  assert.equal(head.impact_version, 79);
+  assert.equal(head.count, 180);
 
   const unexpected = database();
   unexpected.prepare('UPDATE catalog_head SET version = 77, impact_version = 77 WHERE id = 1').run();
