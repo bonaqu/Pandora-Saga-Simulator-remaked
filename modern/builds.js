@@ -682,6 +682,7 @@
         var staleHelp = liveText('possiblyOutdatedHelp', {
           saved: payloadRevision(build.payload), current: latestCatalogRevision
         });
+        row.title = staleHelp;
         name.title = staleHelp;
         var nameText = document.createElement('span');
         nameText.className = 'remaked-build-row-name-text';
