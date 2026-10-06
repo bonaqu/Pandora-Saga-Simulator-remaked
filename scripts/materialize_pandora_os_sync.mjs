@@ -73,21 +73,32 @@ function sqlQuote(value) {
   return "'" + String(value).replaceAll("'", "''") + "'";
 }
 
+export function buildReleaseInsertStatements(entries = loadReleaseEntries()) {
+  validateReleaseEntries(entries);
+  return entries.map((entry, index) => {
+    const statement = `INSERT INTO _pandora_os_sync_release (release_order, identity_id, payload_json) VALUES (${index}, ${sqlQuote(entry.identity.id)}, ${sqlQuote(JSON.stringify(entry))});`;
+    invariant(Buffer.byteLength(statement) < 16384, 'Pandora Saga OS release row exceeds safe D1 statement size: ' + entry.identity.id);
+    return statement;
+  });
+}
+
 export function buildMigration(entries = loadReleaseEntries()) {
   validateReleaseEntries(entries);
-  const payload = JSON.stringify(entries);
-  const release = sqlQuote(payload);
+  const releaseStatements = buildReleaseInsertStatements(entries).join('\n');
   return `-- Generated deterministically by scripts/materialize_pandora_os_sync.mjs.
 -- Source: Pandora Saga OS EN/RU weapon, equipment and Soul workbook supplied 2026-10-06.
 -- The preserved Legacy runtime is intentionally not edited. Production revision 78 remains historical.
+-- Release rows are intentionally inserted one per statement: Cloudflare D1 rejects oversized single statements.
 CREATE TABLE _pandora_os_sync_guard (ok INTEGER NOT NULL CHECK (ok = 1));
 INSERT INTO _pandora_os_sync_guard (ok)
 SELECT CASE WHEN (SELECT version FROM catalog_head WHERE id = 1) IN (0, 78) THEN 1 ELSE 0 END;
 
 CREATE TABLE _pandora_os_sync_release (
+  release_order INTEGER PRIMARY KEY,
+  identity_id TEXT NOT NULL UNIQUE,
   payload_json TEXT NOT NULL CHECK (json_valid(payload_json))
 );
-INSERT INTO _pandora_os_sync_release (payload_json) VALUES (${release});
+${releaseStatements}
 
 CREATE TABLE _pandora_os_sync_snapshot (
   payload_json TEXT NOT NULL CHECK (json_valid(payload_json))
@@ -100,12 +111,12 @@ FROM (
   WHERE head.id = 1
     AND NOT EXISTS (
       SELECT 1
-      FROM _pandora_os_sync_release AS source, json_each(source.payload_json) AS incoming
-      WHERE json_extract(incoming.value, '$.identity.id') = json_extract(existing.value, '$.identity.id')
+      FROM _pandora_os_sync_release AS incoming
+      WHERE incoming.identity_id = json_extract(existing.value, '$.identity.id')
     )
   UNION ALL
-  SELECT incoming.value AS entry, 1 AS release_group, CAST(incoming.key AS INTEGER) AS release_order
-  FROM _pandora_os_sync_release AS source, json_each(source.payload_json) AS incoming
+  SELECT incoming.payload_json AS entry, 1 AS release_group, incoming.release_order
+  FROM _pandora_os_sync_release AS incoming
   ORDER BY release_group, release_order
 );
 
