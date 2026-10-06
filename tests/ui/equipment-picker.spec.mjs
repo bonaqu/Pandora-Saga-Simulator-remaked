@@ -238,12 +238,12 @@ test('RU Equipment chrome, gem selectors and category headings use workbook term
   await page.locator('[data-remaked-ui-locale="ru"]').click();
 
   await expect(page.locator('#TextEquip_0')).toHaveText('Снаряжение');
-  await expect(page.locator('[data-remaked-equipment-reset]')).toHaveText('Сброс снаряжения');
+  await expect(page.locator('[data-remaked-equipment-reset]')).toHaveText('Сброс');
 
   const labels = await page.evaluate(() => PandoraRemaked.adapter.listEquipmentTargets().map(target => target.label));
   expect(labels).toEqual([
-    'Оружие', 'Щит', 'Шлем', 'Доспех', 'Перчатки', 'Штаны', 'Ботинки', 'Плащ',
-    'Серьги · 1', 'Серьги · 2', 'Амулет', 'Пояс', 'Кольцо · 1', 'Кольцо · 2'
+    'Оружие', 'Щит', 'Шлем', 'Броня', 'Перчатки', 'Штаны', 'Обувь', 'Плащ',
+    'Серьга · 1', 'Серьга · 2', 'Амулет', 'Пояс', 'Кольцо · 1', 'Кольцо · 2'
   ]);
 
   const modifierLabels = await page.evaluate(() => {
@@ -259,7 +259,7 @@ test('RU Equipment chrome, gem selectors and category headings use workbook term
     };
   });
   expect(modifierLabels.kind).toEqual(['Физ', 'Маг']);
-  expect(modifierLabels.element).toEqual(['Огонь', 'Лед', 'Молния', 'Яд', 'Свет', 'Тьма', 'Призма']);
+  expect(modifierLabels.element).toEqual(['Огонь', 'Лед', 'Молния', 'Яд', 'Свет', 'Тьма', 'Радуга']);
   expect(modifierLabels.soul.replace(/^\+-----\s*/, '')).toBe('Душа');
 
   await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
@@ -275,6 +275,31 @@ test('RU Equipment chrome, gem selectors and category headings use workbook term
   await page.locator('[data-remaked-picker-panel] .remaked-search-close').click();
 
   expect(await page.evaluate(() => Store())).toBe(before);
+});
+
+test('Equipment slot labels and compact Reset stay fully visible in every UI locale', async ({ page }) => {
+  await page.goto('/');
+  const expectedReset = { en: 'Reset', ru: 'Сброс', jp: 'リセット', tw: '重設' };
+  for (const locale of ['en', 'ru', 'jp', 'tw']) {
+    await page.locator(`[data-remaked-ui-locale="${locale}"]`).click();
+    await expect(page.locator('[data-remaked-equipment-reset]')).toHaveText(expectedReset[locale]);
+    const layout = await page.evaluate(() => {
+      const reset = document.querySelector('[data-remaked-equipment-reset]');
+      const labels = document.querySelectorAll('[data-remaked-picker-slot-label]');
+      const rows = [];
+      for (let index = 0; index < labels.length; index++) {
+        const label = labels[index];
+        rows.push({ text: label.textContent.trim(), client: label.clientWidth, scroll: label.scrollWidth });
+      }
+      return {
+        reset: { client: reset.clientWidth, scroll: reset.scrollWidth, width: reset.getBoundingClientRect().width },
+        labels: rows
+      };
+    });
+    expect(layout.reset.width).toBeCloseTo(72, 0);
+    expect(layout.reset.scroll).toBeLessThanOrEqual(layout.reset.client);
+    for (const label of layout.labels) expect(label.scroll, locale + ': ' + label.text).toBeLessThanOrEqual(label.client);
+  }
 });
 
 test('all fourteen actual slots have correct source labels and usable selection dropdowns', async ({ page }) => {
@@ -446,24 +471,22 @@ test('phone bulk modifiers fit the Equipment section, recalculate through Legacy
   await expect(page.locator('[data-remaked-equipment-picker="SelEquip_0_4"]')).toBeHidden();
 });
 
-test('Equipment reset fits its text instead of inheriting a fixed Legacy width, with bounded long translations', async ({ page }) => {
+test('Equipment reset uses the compact UI-localized caption and ignores long Legacy source text', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
-  // A wider installed/fallback font must not turn an ordinary desktop action
-  // into two lines. Linux and Windows need not have identical font metrics.
   await page.addStyleTag({ content: ':root { --rm-font: monospace; }' });
   const toolbar = page.locator('[data-remaked-picker-toolbar]');
   const reset = toolbar.locator('[data-remaked-equipment-reset]');
-  await expect(reset).toHaveText('Equipment reset');
-  expect((await reset.boundingBox()).height).toBeLessThanOrEqual(40);
+  await expect(reset).toHaveText('Reset');
   const initial = await page.evaluate(() => Store());
   const longLabel = 'Сбросить всё надетое снаряжение персонажа '.repeat(12);
   await page.evaluate(label => { document.getElementById('Text_26').textContent = label; }, longLabel);
-  await expect(reset).toHaveText(longLabel.trim());
+  await expect(reset).toHaveText('Reset');
   for (const width of [1440, 701, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     const section = await page.locator('[data-remaked-picker-section]').boundingBox();
     const box = await reset.boundingBox();
+    expect(box.width).toBeCloseTo(72, 0);
     expect(box.x).toBeGreaterThanOrEqual(section.x);
     expect(box.x + box.width).toBeLessThanOrEqual(section.x + section.width);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);

@@ -2,6 +2,35 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Modern 3.15 — Russian result help and compact layout polish, 2026-10-06
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Уточнены русские подписи нескольких сопротивлений в «Результатах расчёта»: `Сопр КРУРОН`, `Сопр ФИЗ`, `Сопр УРОНСПИН`, `Сопр АНОМТЕЛ` и `Сопр АНООМДУХ`.
+- Для `ОЗ`, `ОМ`, `Точность`, `Уклонение`, `Откат`, `МаксАТК` и `ЗАЩИТА` добавлена такая же hover-подсказка, как у уже поясняемых коротких показателей.
+- Переводы персонажа и верхней навигации уточнены: `Раса`, `Пасивн`, `Класс`, `КЛАСС`, `УМЕНИЯ`, `АТАКА`, `ЗАЩИТА`, `УСИЛЕНИЯ`; внутри окна SKILL исходная подпись `Skill` отображается как `Умения`.
+- В снаряжении `Призма` переименована в `Радуга`, `Серьги` в `Серьга`, `Доспех` в `Броня`, `Ботинки` в `Обувь`; кнопка сброса стала компактной и переводится как короткий `Reset / Сброс / リセット / 重設`.
+- Исправлено обрезание трёхзначных итогов базовых характеристик вроде `→ 110`; узкий бейдж стоимости очков получил отдельную компактную колонку.
+- Подписи слотов снаряжения получили достаточно фиксированного пространства, чтобы длинные названия вроде `Перчатки` не обрезались.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Refined several RU calculated-result resistance labels and added hover help for seven compact stats.
+- Updated RU character and calculator-navigation terminology.
+- Renamed several RU equipment labels and shortened the reset action in all four UI locales.
+- Three-digit derived base-stat totals and longer equipment slot labels now fit without clipping.
+<!-- /release-notes:en -->
+
+### Project and delivery details
+
+- New result hints are exported as calculator-hint rows and remain translation-workbook driven.
+- The Equipment reset caption is now a Modern UI locale string so EN / RU / JP / TW can use the same fixed compact button safely.
+- Layout tests cover three-digit base-stat totals, compact point-cost badges, reset-button width and non-clipping slot labels across all UI locales.
+- Legacy calculations, source arrays, item IDs, callbacks and build serialization are unchanged.
+
 ## Modern 3.14 — Russian Equipment terminology and compact stat labels, 2026-10-06
 
 <!-- release-notes:ru -->

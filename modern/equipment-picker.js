@@ -93,7 +93,8 @@
         resetText.parentElement.removeAttribute('onclick');
         resetText.hidden = true;
       }
-      if (reset.textContent !== resetText.textContent) reset.textContent = resetText.textContent;
+      if (namespace.i18n && typeof namespace.i18n.bindText === 'function') namespace.i18n.bindText(reset, 'equipment.reset');
+      else if (reset.textContent !== 'Reset') reset.textContent = 'Reset';
     }
   }
   function schedule() {

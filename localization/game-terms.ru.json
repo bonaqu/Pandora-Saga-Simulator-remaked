@@ -3085,12 +3085,32 @@
       "ru_approved": ""
     },
     {
+      "id": "calculator.status.0.hint",
+      "category": "calculator_hint",
+      "legacy_path": "Name.Text.Status[0] @title",
+      "source_en": "Health Points",
+      "source_jp": "",
+      "source_tw": "",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
       "id": "calculator.status.1",
       "category": "calculator_label",
       "legacy_path": "Name.Text.Status[1]",
       "source_en": "MP",
       "source_jp": "MP",
       "source_tw": "MP",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "calculator.status.1.hint",
+      "category": "calculator_hint",
+      "legacy_path": "Name.Text.Status[1] @title",
+      "source_en": "Mana Points",
+      "source_jp": "",
+      "source_tw": "",
       "ru_proposed": "",
       "ru_approved": ""
     },
@@ -3165,6 +3185,16 @@
       "ru_approved": ""
     },
     {
+      "id": "calculator.status.5.hint",
+      "category": "calculator_hint",
+      "legacy_path": "Name.Text.Status[5] @title",
+      "source_en": "Current maximum attack value",
+      "source_jp": "",
+      "source_tw": "",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
       "id": "calculator.status.6",
       "category": "calculator_label",
       "legacy_path": "Name.Text.Status[6]",
@@ -3231,6 +3261,16 @@
       "source_en": "DEF",
       "source_jp": "防御力",
       "source_tw": "防禦",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "calculator.status.9.hint",
+      "category": "calculator_hint",
+      "legacy_path": "Name.Text.Status[9] @title",
+      "source_en": "Defense Points; reduces physical damage taken",
+      "source_jp": "",
+      "source_tw": "",
       "ru_proposed": "",
       "ru_approved": ""
     },
@@ -3345,6 +3385,16 @@
       "ru_approved": ""
     },
     {
+      "id": "calculator.status.15.hint",
+      "category": "calculator_hint",
+      "legacy_path": "Name.Text.Status[15] @title",
+      "source_en": "Accuracy Points; hit accuracy against the target",
+      "source_jp": "",
+      "source_tw": "",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
       "id": "calculator.status.16",
       "category": "calculator_label",
       "legacy_path": "Name.Text.Status[16]",
@@ -3411,6 +3461,16 @@
       "source_en": "Dodge",
       "source_jp": "回避",
       "source_tw": "迴避",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "calculator.status.19.hint",
+      "category": "calculator_hint",
+      "legacy_path": "Name.Text.Status[19] @title",
+      "source_en": "Dodge Points; chance to evade an attack",
+      "source_jp": "",
+      "source_tw": "",
       "ru_proposed": "",
       "ru_approved": ""
     },
@@ -3681,6 +3741,16 @@
       "source_en": "Cooldown",
       "source_jp": "再使用",
       "source_tw": "冷卻時間",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "calculator.status.33.hint",
+      "category": "calculator_hint",
+      "legacy_path": "Name.Text.Status[33] @title",
+      "source_en": "Skill cooldown time",
+      "source_jp": "",
+      "source_tw": "",
       "ru_proposed": "",
       "ru_approved": ""
     },

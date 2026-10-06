@@ -76,6 +76,27 @@
     group('calculator.attack', 'Name.Text.ATK', names.Text.ATK, 'TextATK_');
     group('calculator.defense', 'Name.Text.RES', names.Text.RES, 'TextRES_');
     group('calculator.status', 'Name.Text.Status', names.Text.Status, 'TextStatus_');
+    // Some compact result labels never had Legacy hover help. Export explicit
+    // source hints so translations can add the same native-title affordance as
+    // existing help labels without changing any calculation data.
+    [
+      [0, 'Health Points'],
+      [1, 'Mana Points'],
+      [5, 'Current maximum attack value'],
+      [9, 'Defense Points; reduces physical damage taken'],
+      [15, 'Accuracy Points; hit accuracy against the target'],
+      [19, 'Dodge Points; chance to evade an attack'],
+      [33, 'Skill cooldown time']
+    ].forEach(function (entry) {
+      rows.push({
+        id: 'calculator.status.' + entry[0] + '.hint',
+        category: 'calculator_hint',
+        legacy_path: 'Name.Text.Status[' + entry[0] + '] @title',
+        values: ['', entry[1], ''],
+        targets: [{ selector: '#TextStatus_' + entry[0] }],
+        hint: true
+      });
+    });
     group('calculator.honor', 'Skill.Honor', window.Skill.Honor, 'TextBuffHonor_');
     names.POT.forEach(function (entry, index) {
       add('calculator.potion.' + index, 'Name.POT[' + index + ']', entry,

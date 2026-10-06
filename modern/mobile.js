@@ -100,7 +100,11 @@
   }
 
   function scheduleRefresh() {
-    if (refreshTimer !== null) window.clearTimeout(refreshTimer);
+    // Legacy recalculation can emit a burst of DOM mutations after one user
+    // action. Do not keep pushing the summary refresh farther into the future:
+    // the first signal owns the timer, then later mutations may schedule the
+    // next refresh after this one has completed.
+    if (refreshTimer !== null) return;
     refreshTimer = window.setTimeout(function () {
       refreshTimer = null;
       refreshSummary();

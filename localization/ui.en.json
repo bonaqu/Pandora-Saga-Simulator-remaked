@@ -234,5 +234,6 @@
   "calculator.attributeInputHelp": "Base attribute before equipment bonuses. Race minimum, maximum 99 and available points apply. Enter applies; Esc cancels.",
   "calculator.totalWithBonuses": "Total including equipment and other bonuses",
   "compare.hideIdentical": "Hide identical stats",
-  "compare.allIdentical": "All displayed stats are identical."
+  "compare.allIdentical": "All displayed stats are identical.",
+  "equipment.reset": "Reset"
 }

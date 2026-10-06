@@ -209,12 +209,33 @@ test('requested Russian calculator labels, skill groups and effect hints render 
   await expect(page.locator('#Text_10')).toHaveText('ВЫН');
   await expect(page.locator('#Text_15')).toHaveText('ИНТ');
   await expect(page.locator('#TextStatus_0')).toHaveText('ОЗ');
+  await expect(page.locator('#TextStatus_0')).toHaveAttribute('title', 'Очки Здоровья');
+  await expect(page.locator('#TextStatus_1')).toHaveAttribute('title', 'Очки Маны');
+  await expect(page.locator('#TextStatus_5')).toHaveAttribute('title', 'Текущий максимальный показатель атаки');
+  await expect(page.locator('#TextStatus_9')).toHaveAttribute('title', 'Очки Защиты; Уменьшение получаемого физического урона');
+  await expect(page.locator('#TextStatus_15')).toHaveAttribute('title', 'Очки Точности; Точность попадания по цели');
+  await expect(page.locator('#TextStatus_19')).toHaveAttribute('title', 'Очки Уклонения; Шанс уклониться от атаки');
+  await expect(page.locator('#TextStatus_33')).toHaveAttribute('title', 'Время перезарядки умений');
+  await expect(page.locator('#TextStatus_11')).toHaveText('Сопр УРОНСПИН');
+  await expect(page.locator('#TextStatus_12')).toHaveText('Сопр ФИЗ');
+  await expect(page.locator('#TextStatus_21')).toHaveText('Сопр КРУРОН');
+  await expect(page.locator('#TextStatus_40')).toHaveText('Сопр АНОМТЕЛ');
+  await expect(page.locator('#TextStatus_41')).toHaveText('Сопр АНООМДУХ');
   await expect(page.locator('#TextStatus_3')).toHaveText('% исцел ОЗ');
   await expect(page.locator('#TextStatus_3 [title]')).toHaveAttribute('title', '% исцеленного ОЗ');
   await expect(page.locator('#TextStatus_25')).toHaveText('Дист ближ АТК');
   await expect(page.locator('#TextStatus_25 [title]')).toHaveAttribute('title', 'Дальность атак ближнего боя');
   await expect(page.locator('#TextStatus_26')).toHaveText('Дист дальн АТК');
   await expect(page.locator('#TextStatus_26 [title]')).toHaveAttribute('title', 'Дальность атак дальнего боя');
+
+  await expect(page.locator('#Text_0')).toHaveText('Раса');
+  await expect(page.locator('#Text_1')).toHaveText('Пасивн');
+  await expect(page.locator('#Text_2')).toHaveText('Класс');
+  await expect(page.locator('[data-remaked-tab="0"]')).toHaveText('КЛАСС');
+  await expect(page.locator('[data-remaked-tab="1"]')).toHaveText('УМЕНИЯ');
+  await expect(page.locator('[data-remaked-tab="2"]')).toHaveText('АТАКА');
+  await expect(page.locator('[data-remaked-tab="3"]')).toHaveText('ЗАЩИТА');
+  await expect(page.locator('[data-remaked-tab="4"]')).toHaveText('УСИЛЕНИЯ');
 
   await expect(page.locator('#TextSkill_0')).toHaveText('Ближний бой');
   await expect(page.locator('#TextSkill_13')).toHaveText('Исцеление');
