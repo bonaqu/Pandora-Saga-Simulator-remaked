@@ -150,7 +150,7 @@ test('three-digit derived totals remain fully visible beside the compact point-c
   });
   expect(geometry.total.scroll).toBeLessThanOrEqual(geometry.total.client);
   expect(geometry.total.right).toBeLessThanOrEqual(geometry.cost.left + 1);
-  expect(geometry.cost.width).toBeLessThanOrEqual(18.5);
+  expect(geometry.cost.width).toBeLessThanOrEqual(16.5);
   expect(geometry.cost.scroll).toBeLessThanOrEqual(geometry.cost.client);
 });
 
