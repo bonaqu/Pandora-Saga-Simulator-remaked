@@ -154,7 +154,7 @@ test('catalog adoption is explicit, retains C1 and named pins, and reloads the a
 
 for (const conflict of ['missing item', 'fewer sockets', 'Soul slot', 'class compatibility']) {
   test('incompatible adoption keeps every character/storage value: ' + conflict, async ({ page }) => {
-    const original = socketItems(), next = structuredClone(original); next.revision = 2;
+    const original = socketItems(), next = structuredClone(original); next.revision = 2; next.impactRevision = 2;
     if (conflict === 'missing item') next.records = [];
     if (conflict === 'fewer sockets') next.records[0].sockets = 0;
     if (conflict === 'Soul slot') next.records[1].compatibility = [0, 0, 0, 1, 0, 0, 0, 0];
@@ -260,7 +260,7 @@ test('failed rollback is reported honestly and pauses autosave until a successfu
 });
 
 test('adopted equipped weapon and Soul share their new pin with a fresh recipient, not a later head', async ({ page, browser }) => {
-  const original = socketItems(), next = structuredClone(original); next.revision = 2; next.records[0].calculationCode = '18=W95';
+  const original = socketItems(), next = structuredClone(original); next.revision = 2; next.impactRevision = 2; next.records[0].calculationCode = '18=W95';
   await page.route(publicApi + '**', route => route.fulfill({ json: next })); await openManager(page);
   await page.evaluate(data => {
     PandoraRemaked.catalog.applySnapshot(data); PandoraRemaked.adapter.selectEquipment(0, data.records[0].engineId);
@@ -279,7 +279,7 @@ test('adopted equipped weapon and Soul share their new pin with a fresh recipien
   try {
     await context.route(publicApi + '**', route => {
       const revision = new URL(route.request().url()).searchParams.get('revision'); requests.push(revision);
-      const later = structuredClone(next); later.revision = 3; later.records[0].calculationCode = '18=W125';
+      const later = structuredClone(next); later.revision = 3; later.impactRevision = 3; later.records[0].calculationCode = '18=W125';
       return route.fulfill({ json: revision === '2' ? next : later });
     });
     await recipient.goto(link); await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
