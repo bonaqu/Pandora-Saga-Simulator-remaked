@@ -120,7 +120,7 @@ test('name, description and translation-only publications never mark saved build
   const row = page.locator('[data-remaked-build-row][data-build-id="' + build.id + '"]');
   await expect(row).not.toHaveAttribute('data-catalog-stale', 'true');
   await expect(row.locator('[data-remaked-build-stale]')).toHaveCount(0);
-  await expect(page.locator('[data-remaked-catalog-revision]')).toContainText('revision 2');
+  await expect(page.locator('[data-remaked-catalog-revision]')).toContainText('version 2');
   expect(await page.evaluate(() => PandoraRemaked.builds.getLatestCatalogImpactRevision())).toBe(0);
 });
 
@@ -138,7 +138,7 @@ test('catalog adoption is explicit, retains C1 and named pins, and reloads the a
     return { payload, lp: Status.LP, context: PandoraRemaked.catalog.captureContext(), named: localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY) };
   });
   await page.locator('[data-remaked-builds-open]').click();
-  await expect(page.locator('[data-remaked-catalog-revision]')).toContainText('source revision 0'); expect(requests).toEqual([]);
+  await expect(page.locator('[data-remaked-catalog-revision]')).toContainText('base version'); expect(requests).toEqual([]);
   await runUpdate(page); await expect(status(page)).toContainText('Catalog 2 applied');
   const after = await state(page);
   expect(after.revision).toBe(2); expect(after.payload).toMatch(/^PS3:2:C1:/); expect(after.context).toEqual(before.context);
@@ -301,8 +301,8 @@ test('automatic catalog status is compact, localized and has no manual update bu
 
   await expect(page.locator('[data-remaked-catalog-update]')).toHaveCount(0);
   const catalogLine = page.locator('[data-remaked-catalog-revision]');
-  await expect(catalogLine).toHaveText('Каталог: исходная ревизия 0 · обновляется автоматически');
-  await expect(catalogLine).toHaveAttribute('title', /названий/);
+  await expect(catalogLine).toHaveText('Игровые данные: базовая версия · обновляются автоматически');
+  await expect(catalogLine).toHaveAttribute('title', 'Сайт сам обновляет предметы, навыки и другие игровые данные. Если обновление может изменить сохранённый билд, рядом появится предупреждение.');
   await expect(page.locator('#remaked-catalog-update-help')).toHaveCount(0);
   const box = await page.locator('.remaked-build-catalog').boundingBox();
   expect(box.height).toBeLessThan(70);

@@ -8,7 +8,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 ### Кратко для игроков
 
 - Из Менеджера билдов убрана ручная кнопка «Обновить текущий билд»: каталог уже обновляется автоматически, поэтому отдельное действие больше не требуется.
-- Блок каталога стал компактнее и показывает понятную строку вида `Каталог: ревизия 78 · обновляется автоматически`.
+- Блок игровых данных стал компактнее и использует понятную игроку строку вида `Игровые данные: версия 78 · обновляются автоматически`; подсказка объясняет простыми словами, что сайт обновляет данные сам и предупредит, если изменение может затронуть сохранённый билд.
 - Обычная ревизия каталога и ревизия, влияющая на билд, теперь разделены. Переименование предмета/души/навыка, изменение описания или перевод сразу публикуются в интерфейсе, но **не** делают сохранённый билд устаревшим.
 - Красная пунктирная метка «Возможно устарел» появляется только после изменений, способных повлиять на расчёт или совместимость: характеристик, эффектов, сокетов, требований, совместимости, class progression, skill timing/requirements и других engine-facing данных.
 - Загрузка реально устаревшего билда по-прежнему безопасно пересчитывает его на актуальном каталоге; при несовместимости исторический билд сохраняется без повреждения.
@@ -18,7 +18,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 ### Player highlights
 
 - Removed the manual “Update current build” control because catalog updates are automatic.
-- The Builds manager now uses a compact automatic catalog-status block.
+- The Builds manager now uses a player-friendly automatic game-data status and a plain-language hint instead of internal catalog/revision terminology.
 - Catalog publication revision and build-impact revision are tracked separately, so names, descriptions and translations update normally without falsely marking saved builds stale.
 - The stale warning is reserved for changes that can affect calculations or compatibility.
 <!-- /release-notes:en -->
