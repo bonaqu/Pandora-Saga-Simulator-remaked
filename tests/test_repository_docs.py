@@ -146,7 +146,7 @@ class RepositoryDocsTests(unittest.TestCase):
         self.assertIn("translations.xlsx", english)
         self.assertIn("translations.xlsx", guide)
         self.assertIn("Русский — заполнять здесь", guide)
-        self.assertIn("2 903", guide)
+        self.assertIn("2 907", guide)
         self.assertIn("EN / RU / JP / TW", guide)
         self.assertIn("Log", guide)
         self.assertIn("Alt+Enter", guide)
