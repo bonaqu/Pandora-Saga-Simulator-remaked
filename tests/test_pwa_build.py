@@ -58,6 +58,15 @@ class PwaBuildTests(unittest.TestCase):
         self.assertEqual(preview[:8], b"\x89PNG\r\n\x1a\n")
         self.assertEqual(struct.unpack(">II", preview[16:24]), (1200, 630))
 
+    def test_real_service_worker_keeps_each_client_on_one_cache_generation(self):
+        modern = pathlib.Path(__file__).resolve().parents[1] / "modern"
+        worker = (modern / "service-worker.js").read_text(encoding="utf-8")
+        self.assertIn("function navigationCacheFirst(request)", worker)
+        self.assertIn("request.mode === 'navigate' ? navigationCacheFirst(request) : cacheFirst(request)", worker)
+        self.assertIn("caches.open(CACHE_NAME)", worker)
+        self.assertNotIn("return caches.match(", worker)
+        self.assertNotIn("function networkFirst(request)", worker)
+
     def test_modern_share_metadata_does_not_leak_into_museum(self):
         with tempfile.TemporaryDirectory() as td:
             root = self.make_root(pathlib.Path(td))
