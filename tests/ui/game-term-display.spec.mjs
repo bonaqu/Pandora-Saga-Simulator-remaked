@@ -201,6 +201,37 @@ test('inherited labels, qualified effects, hints and implicit option values deco
   expect(await immutableState(page)).toEqual(before);
 });
 
+test('requested Russian calculator labels, skill groups and effect hints render from the workbook', async ({ page }) => {
+  await page.goto('/');
+  const before = await immutableState(page);
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+
+  await expect(page.locator('#Text_10')).toHaveText('ВЫН');
+  await expect(page.locator('#Text_15')).toHaveText('ИНТ');
+  await expect(page.locator('#TextStatus_0')).toHaveText('ОЗ');
+  await expect(page.locator('#TextStatus_3')).toHaveText('% исцеления ОЗ');
+  await expect(page.locator('#TextStatus_3 [title]')).toHaveAttribute('title', '% исцеленного ОЗ');
+  await expect(page.locator('#TextStatus_25')).toHaveText('Дист ближ АТК');
+  await expect(page.locator('#TextStatus_25 [title]')).toHaveAttribute('title', 'Дальность атак ближнего боя');
+  await expect(page.locator('#TextStatus_26')).toHaveText('Дист дальн АТК');
+  await expect(page.locator('#TextStatus_26 [title]')).toHaveAttribute('title', 'Дальность атак дальнего боя');
+
+  await expect(page.locator('#TextSkill_0')).toHaveText('Ближний бой');
+  await expect(page.locator('#TextSkill_13')).toHaveText('Исцеление');
+  await expect(page.locator('#TextSkill_24')).toHaveText('Верховая езда');
+
+  await expect(page.locator('#ViewBuff_5_0')).toHaveText('Усил МагАТК');
+  await expect(page.locator('#ViewBuff_5_0 [title]')).toHaveAttribute('title', 'Усиление урона магией');
+  await expect(page.locator('#ViewBuff_6_0')).toHaveText('Усил Аура');
+  await expect(page.locator('#ViewBuff_6_0 [title]')).toHaveAttribute('title', 'Усиление урона аурой');
+  await expect(page.locator('#ViewBuff_9_0')).toHaveText('ПЕСН МагАТК');
+  await expect(page.locator('#ViewBuff_9_0 [title]')).toHaveAttribute('title', 'Усиление урона магией');
+  await expect(page.locator('#ViewBuff_10_0')).toHaveText('ПЕСН Перезарядка');
+  await expect(page.locator('#ViewBuff_10_0 [title]')).toHaveAttribute('title', 'Ускорение перезарядки умений');
+
+  expect(await immutableState(page)).toEqual(before);
+});
+
 test('a hint-only translation restores its source on leaving RU', async ({ page }) => {
   await page.goto('/');
   const original = await page.locator('#TextATK_0 [title]').getAttribute('title');
