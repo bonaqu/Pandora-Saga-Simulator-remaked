@@ -1,0 +1,36 @@
+name: Refresh localization term export
+on:
+  push:
+    branches: [i18n/ru-calculator-labels]
+    paths: [localization/refresh-terms.ready]
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: i18n/ru-calculator-labels
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Regenerate Legacy term export
+        run: npm run extract:terms
+      - name: Validate workbook against refreshed export
+        run: python scripts/translation_workbook.py --root .
+      - name: Commit refreshed export
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add localization/game-terms.ru.json
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "No export changes"
+            exit 0
+          fi
+          git commit -m "i18n: refresh Legacy term export"
+          git push origin HEAD:i18n/ru-calculator-labels
