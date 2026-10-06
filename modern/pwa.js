@@ -80,6 +80,8 @@
     updateFallbackTimer = window.setTimeout(function () {
       if (!updateReloadPending) return;
       updateReloadPending = false;
+      var retry = updateNotice && updateNotice.querySelector('[data-remaked-update-reload]');
+      if (retry) retry.disabled = false;
       showUpdateNotice(waitingWorker);
     }, 8000);
   }
