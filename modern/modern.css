@@ -2031,6 +2031,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
 }
 .remaked-modern #body [data-remaked-calculator-attribute] .remaked-calculator-number {
   width: 40px;
+  min-width: 40px;
 }
 .remaked-modern #body [data-remaked-calculator-attribute] [data-remaked-number-total] {
   min-width: 32px;
