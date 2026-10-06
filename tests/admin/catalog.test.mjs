@@ -33,6 +33,24 @@ const call = async (env, path, input) => {
 const publicData = async (env, revision) => (await publicCatalog(request('/api/catalog' + (revision === undefined ? '' : '?revision=' + revision)), env)).json();
 const detail = (env, id = 'equipment.0.1') => call(env, 'item?id=' + id);
 
+test('impact migration conservatively upgrades an existing nonzero catalog history', () => {
+  const sqlite = new DatabaseSync(':memory:');
+  for (const name of ['0002_catalog.sql', '0003_skill_variants.sql']) {
+    sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
+  }
+  sqlite.prepare('UPDATE catalog_head SET version = ?, snapshot_json = ? WHERE id = 1').run(78, '[]');
+  sqlite.prepare('INSERT INTO catalog_revisions (version, snapshot_json, created_at, note) VALUES (?, ?, ?, ?)').run(77, '[]', 900, 'Older production revision');
+  sqlite.prepare('INSERT INTO catalog_revisions (version, snapshot_json, created_at, note) VALUES (?, ?, ?, ?)').run(78, '[]', 1000, 'Current production revision');
+
+  sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/0004_catalog_impact_revision.sql', import.meta.url), 'utf8'));
+
+  assert.deepEqual(sqlite.prepare('SELECT version, impact_version FROM catalog_head WHERE id = 1').get(), { version: 78, impact_version: 78 });
+  assert.deepEqual(
+    sqlite.prepare('SELECT version, impact_version FROM catalog_revisions ORDER BY version').all(),
+    [{ version: 77, impact_version: 77 }, { version: 78, impact_version: 78 }]
+  );
+});
+
 test('public catalog head separates immutable publication revision from build impact', async () => {
   const { env } = fixture();
   let head = await (await publicCatalogHead(env)).json();
