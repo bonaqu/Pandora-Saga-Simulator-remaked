@@ -478,6 +478,10 @@
 
   function flushAutosave() {
     clearScheduledAutosave();
+    // During startup the Legacy engine still contains its defaults until the
+    // previous autosave/import has been restored. A pagehide/controllerchange
+    // in that window must never overwrite the stored character with defaults.
+    if (suppressAutosave) return { ok: true, suppressed: true };
     if (restorationFailed) {
       setAutosaveStatus(t('builds.autosaveWarning', { code: 'restore-failed' }, 'Autosave paused: restore-failed'), 'warning');
       return { ok: false, error: { code: 'restore-failed' } };
