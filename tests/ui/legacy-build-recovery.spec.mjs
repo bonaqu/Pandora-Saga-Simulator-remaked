@@ -71,6 +71,6 @@ test('Builds offers explicit FILE recovery and recovered codes load through the 
   await page.locator('[data-remaked-import-legacy]').click();
   await expect(page.locator('[data-remaked-build-row]')).toHaveCount(2);
   await page.locator('[data-remaked-build-row]').nth(1).locator('[data-remaked-build-load]').click();
-  expect(await page.evaluate(() => window.Store())).toBe(seed.second);
+  await expect.poll(() => page.evaluate(() => window.Store())).toBe(seed.second);
   expect(await page.evaluate(() => localStorage.getItem('file'))).toBe(seed.original);
 });
