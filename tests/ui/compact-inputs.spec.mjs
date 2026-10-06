@@ -133,6 +133,27 @@ test('Russian base-stat abbreviations fit beside compact number fields without c
   }
 });
 
+test('three-digit derived totals remain fully visible beside the compact point-cost badge', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+  const geometry = await page.evaluate(() => {
+    const card = document.getElementById('Text_14').closest('[data-remaked-calculator-attribute]');
+    const total = card.querySelector('[data-remaked-number-total]');
+    const cost = card.querySelector('[id^="Status"][id$="_4"]');
+    total.hidden = false;
+    total.textContent = '→ 110';
+    const totalBox = total.getBoundingClientRect(), costBox = cost.getBoundingClientRect();
+    return {
+      total: { client: total.clientWidth, scroll: total.scrollWidth, right: totalBox.right },
+      cost: { width: costBox.width, left: costBox.left, client: cost.clientWidth, scroll: cost.scrollWidth }
+    };
+  });
+  expect(geometry.total.scroll).toBeLessThanOrEqual(geometry.total.client);
+  expect(geometry.total.right).toBeLessThanOrEqual(geometry.cost.left + 1);
+  expect(geometry.cost.width).toBeLessThanOrEqual(18.5);
+  expect(geometry.cost.scroll).toBeLessThanOrEqual(geometry.cost.client);
+});
+
 test('typing is stable across refresh and reset/load update the input without losing source nodes', async ({ page }) => {
   await page.goto('/');
   const input = page.locator('[data-remaked-number="Lev"]');
