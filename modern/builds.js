@@ -32,6 +32,51 @@
     return i18n && typeof i18n.t === 'function' ? i18n.t(key, values) : fallback;
   }
 
+  function liveText(key, values) {
+    var locale = i18n && typeof i18n.getLocale === 'function' ? i18n.getLocale() : 'en';
+    var copy = {
+      possiblyOutdated: {
+        en: 'Possibly outdated', ru: 'Возможно устарел',
+        jp: '更新の可能性あり', tw: '可能已過期'
+      },
+      possiblyOutdatedHelp: {
+        en: 'The catalog changed after this build was saved (saved revision {saved}, current {current}). It will be recalculated with current data when loaded; if incompatible, the historical revision is kept.',
+        ru: 'После сохранения этого билда каталог изменился (сохранённая ревизия {saved}, текущая {current}). При загрузке билд будет пересчитан на актуальных данных; если новая ревизия несовместима, сохранится историческая версия.',
+        jp: 'このビルドの保存後にカタログが更新されました（保存版 {saved}、現在 {current}）。読み込み時に最新データで再計算し、互換性がない場合は過去版を維持します。',
+        tw: '此配置儲存後目錄已更新（儲存版本 {saved}，目前 {current}）。載入時會以最新資料重新計算；若不相容則保留歷史版本。'
+      },
+      loadedUpdated: {
+        en: 'Loaded and updated “{name}” to the current catalog.',
+        ru: '«{name}» загружен и обновлён до актуального каталога.',
+        jp: '「{name}」を読み込み、最新カタログへ更新しました。',
+        tw: '已載入「{name}」並更新至最新目錄。'
+      },
+      loadedHistorical: {
+        en: 'Loaded historical “{name}”: the current catalog is incompatible with this setup.',
+        ru: 'Загружена историческая версия «{name}»: текущий каталог несовместим с этим билдом.',
+        jp: '「{name}」の過去版を読み込みました。現在のカタログとは互換性がありません。',
+        tw: '已載入「{name}」的歷史版本：目前目錄與此配置不相容。'
+      },
+      autoApplied: {
+        en: 'Catalog {revision} applied automatically.',
+        ru: 'Каталог {revision} применён автоматически.',
+        jp: 'カタログ {revision} を自動適用しました。',
+        tw: '已自動套用目錄 {revision}。'
+      },
+      catalogHelp: {
+        en: 'Published catalog changes are detected automatically. The current character is updated safely; older named builds are marked and updated when loaded.',
+        ru: 'Опубликованные изменения каталога обнаруживаются автоматически. Текущий персонаж безопасно обновляется, а старые сохранённые билды помечаются и обновляются при загрузке.',
+        jp: '公開済みカタログの変更は自動検出されます。現在のキャラクターは安全に更新され、古い保存ビルドは印が付き、読み込み時に更新されます。',
+        tw: '已發布的目錄變更會自動偵測。目前角色會安全更新；較舊的已儲存配置會被標記，並在載入時更新。'
+      }
+    };
+    var text = (copy[key] && (copy[key][locale] || copy[key].en)) || key;
+    Object.keys(values || {}).forEach(function (name) {
+      text = text.replace(new RegExp('\\{' + name + '\\}', 'g'), String(values[name]));
+    });
+    return text;
+  }
+
   function nowLabel() {
     var now = new Date();
     var locale = i18n && i18n.getLocale && i18n.getLocale() === 'ru' ? 'ru-RU' : 'en';
@@ -212,14 +257,20 @@
       var saved = persistLoadedPayload(loaded.payload);
       var detached = detachLoadedShareLink();
       if (shareUrl) { shareUrl.hidden = true; shareUrl.value = ''; }
-      setCatalogStatus(
-        !saved.ok ? 'builds.catalogUnsaved' : !detached ? 'builds.catalogUrlWarning' : automatic ? 'builds.catalogAutoApplied' : 'builds.catalogApplied',
-        saved.ok && detached ? 'success' : 'warning',
-        { revision: snapshot.revision },
-        automatic
-          ? 'Catalog ' + snapshot.revision + ' applied automatically.'
-          : 'Catalog ' + snapshot.revision + ' applied. Saved builds are checked against the live catalog when used.'
-      );
+      if (automatic && saved.ok && detached) {
+        catalogMessage = null;
+        if (catalogStatus) {
+          catalogStatus.textContent = liveText('autoApplied', { revision: snapshot.revision });
+          catalogStatus.dataset.state = 'success';
+        }
+      } else {
+        setCatalogStatus(
+          !saved.ok ? 'builds.catalogUnsaved' : !detached ? 'builds.catalogUrlWarning' : 'builds.catalogApplied',
+          saved.ok && detached ? 'success' : 'warning',
+          { revision: snapshot.revision },
+          'Catalog ' + snapshot.revision + ' applied. Saved builds are checked against the live catalog when used.'
+        );
+      }
       return { ok: true, payload: loaded.payload, autosaved: saved.ok, detached: detached, automatic: automatic };
     } catch (error) {
       if (!automatic && request === catalogRequest) {
@@ -627,12 +678,10 @@
       var stale = staleBuild(build);
       if (stale) {
         row.dataset.catalogStale = 'true';
-        var staleLabel = t('builds.possiblyOutdated', null, 'Possibly outdated');
-        var staleHelp = t(
-          'builds.possiblyOutdatedHelp',
-          { saved: payloadRevision(build.payload), current: latestCatalogRevision },
-          'The catalog changed after this build was saved. It will be recalculated with current data when loaded; if the new data is incompatible, the historical revision is kept.'
-        );
+        var staleLabel = liveText('possiblyOutdated');
+        var staleHelp = liveText('possiblyOutdatedHelp', {
+          saved: payloadRevision(build.payload), current: latestCatalogRevision
+        });
         name.title = staleHelp;
         var nameText = document.createElement('span');
         nameText.className = 'remaked-build-row-name-text';
@@ -672,16 +721,15 @@
         var detached = detachLoadedShareLink();
         renderBuilds();
         var currentBuild = store.getBuild(build.id);
-        var statusKey = result.historical ? 'builds.loadedHistorical' : result.upgraded ? 'builds.loadedUpdated' : 'builds.loaded';
-        var fallback = result.historical
-          ? 'Loaded the historical build because the latest catalog is incompatible with this setup.'
+        var loadedMessage = result.historical
+          ? liveText('loadedHistorical', { name: currentBuild.name })
           : result.upgraded
-            ? 'Loaded and updated “' + currentBuild.name + '” to the current catalog.'
-            : 'Loaded “' + currentBuild.name + '”.';
+            ? liveText('loadedUpdated', { name: currentBuild.name })
+            : t('builds.loaded', { name: currentBuild.name }, 'Loaded “' + currentBuild.name + '”.');
         setManagerStatus(
           !detached ? t('builds.urlWarning', null, 'Old shared link could not be cleared. Export a new link before reloading.')
             : !saved.ok ? t('builds.loadedNoAutosave', null, 'Build loaded, but autosave is unavailable.')
-            : t(statusKey, { name: currentBuild.name }, fallback),
+            : loadedMessage,
           saved.ok && detached && !result.historical ? 'success' : result.historical ? 'warning' : saved.ok && detached ? 'success' : 'warning'
         );
       });
@@ -911,8 +959,7 @@
       catalogSection.appendChild(catalogRevision);
       var catalogHelp = document.createElement('p');
       catalogHelp.id = 'remaked-catalog-update-help';
-      if (i18n) i18n.bindText(catalogHelp, 'builds.catalogHelp');
-      else catalogHelp.textContent = 'Published catalog changes are detected automatically. The current character is updated safely; older named builds are marked and upgraded when loaded.';
+      catalogHelp.textContent = liveText('catalogHelp');
       catalogSection.appendChild(catalogHelp);
       catalogUpdate = button('Update current build', null, 'builds.catalogUpdate');
       catalogUpdate.dataset.remakedCatalogUpdate = '';
@@ -923,7 +970,11 @@
       catalogStatus.className = 'remaked-build-status'; catalogStatus.dataset.remakedCatalogStatus = '';
       catalogStatus.setAttribute('role', 'status'); catalogSection.appendChild(catalogStatus);
       body.appendChild(catalogSection); refreshCatalogControls();
-      window.addEventListener('pandora-remaked:localechange', refreshCatalogControls);
+      window.addEventListener('pandora-remaked:localechange', function () {
+        catalogHelp.textContent = liveText('catalogHelp');
+        refreshCatalogControls();
+        if (managerOverlay && managerOverlay.open) renderBuilds();
+      });
     }
 
     managerStatus = document.createElement('p');
