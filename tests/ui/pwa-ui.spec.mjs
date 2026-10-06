@@ -98,6 +98,26 @@ test('Reload flushes autosave before requesting waiting worker activation', asyn
   ]);
 });
 
+test('failed autosave blocks activation so an update cannot discard current progress', async ({ page }) => {
+  await openModern(page);
+  const result = await page.evaluate(() => {
+    window.__pwaPostCalls = 0;
+    window.PandoraRemaked.builds.flushAutosave = function () {
+      return { ok: false, error: { code: 'synthetic-save-failure' } };
+    };
+    window.PandoraRemaked.pwa.showUpdateNotice({
+      postMessage() { window.__pwaPostCalls += 1; }
+    });
+    document.querySelector('[data-remaked-update-reload]').click();
+    return {
+      posts: window.__pwaPostCalls,
+      disabled: document.querySelector('[data-remaked-update-reload]').disabled
+    };
+  });
+  expect(result).toEqual({ posts: 0, disabled: false });
+  await expect(page.locator('[data-remaked-update-notice]')).toBeVisible();
+});
+
 test('stalled worker activation re-enables Reload for a safe retry', async ({ page }) => {
   await openModern(page);
   await page.evaluate(() => {
