@@ -193,12 +193,8 @@
     window.addEventListener('appinstalled', clearInstallPrompt);
     document.addEventListener('visibilitychange', function () {
       if (document.visibilityState === 'visible') checkForUpdate();
-      else if (namespace.builds && typeof namespace.builds.flushAutosave === 'function') namespace.builds.flushAutosave();
     });
     window.addEventListener('online', checkForUpdate);
-    window.addEventListener('pagehide', function () {
-      if (namespace.builds && typeof namespace.builds.flushAutosave === 'function') namespace.builds.flushAutosave();
-    });
     register().then(function () {
       startUpdatePolling();
       checkForUpdate();
