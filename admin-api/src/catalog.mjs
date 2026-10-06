@@ -68,6 +68,17 @@ async function body(request) {
   catch { fail('Invalid JSON'); }
 }
 
+export async function publicCatalogHead(env) {
+  const snapshot = await head(env);
+  return jsonResponse({
+    ok: true,
+    schemaVersion: 1,
+    sourceFingerprint,
+    characterSourceFingerprint,
+    revision: snapshot.version
+  });
+}
+
 export async function publicCatalog(request, env) {
   const url = new URL(request.url);
   const requested = url.searchParams.get('revision');
