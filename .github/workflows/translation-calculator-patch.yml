@@ -1,0 +1,27 @@
+name: Apply RU calculator translation patch
+on:
+  push:
+    branches: [i18n/ru-calculator-labels]
+    paths: [localization/ru-calculator-translations.ready]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: i18n/ru-calculator-labels
+          fetch-depth: 0
+      - name: Apply translation workbook patch
+        run: python scripts/apply_ru_calculator_translation_patch.py
+      - name: Validate translation workbook
+        run: python scripts/translation_workbook.py --root .
+      - name: Commit workbook
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add localization/translations.xlsx
+          git diff --cached --check
+          git commit -m "i18n: add Russian calculator labels and hints"
+          git push origin HEAD:i18n/ru-calculator-labels
