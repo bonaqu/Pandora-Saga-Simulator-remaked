@@ -33,21 +33,54 @@ const call = async (env, path, input) => {
 const publicData = async (env, revision) => (await publicCatalog(request('/api/catalog' + (revision === undefined ? '' : '?revision=' + revision)), env)).json();
 const detail = (env, id = 'equipment.0.1') => call(env, 'item?id=' + id);
 
-test('public catalog head is lightweight and tracks the current immutable revision', async () => {
+test('public catalog head separates immutable publication revision from build impact', async () => {
   const { env } = fixture();
   let head = await (await publicCatalogHead(env)).json();
   assert.equal(head.ok, true);
   assert.equal(head.revision, 0);
+  assert.equal(head.impactRevision, 0);
   assert.equal(Object.hasOwn(head, 'records'), false);
 
+  // Name/description/translation edits publish immediately but do not make
+  // saved builds stale because they cannot change calculations.
   let item = await detail(env);
   item.edit.names.en = 'Head revision check';
+  item.edit.names.ru = 'Проверка ревизии';
+  item.edit.description.en = 'Display-only description';
   item = await save(env, item);
-  await publish(env, item);
+  let published = await publish(env, item);
+  assert.equal(published.catalogRevision, 1);
+  assert.equal(published.impactRevision, 0);
 
   head = await (await publicCatalogHead(env)).json();
   assert.equal(head.revision, 1);
+  assert.equal(head.impactRevision, 0);
+  assert.equal((await publicData(env, 1)).impactRevision, 0);
   assert.equal(Object.hasOwn(head, 'records'), false);
+
+  // A calculation-affecting edit advances both the catalog and impact head.
+  item = await detail(env);
+  item.edit.effectMode = 'patch';
+  item.edit.effects = [{ stat: 1, value: 7, unit: 'flat' }];
+  item = await save(env, item);
+  published = await publish(env, item);
+  assert.equal(published.catalogRevision, 2);
+  assert.equal(published.impactRevision, 2);
+  head = await (await publicCatalogHead(env)).json();
+  assert.equal(head.revision, 2);
+  assert.equal(head.impactRevision, 2);
+
+  // Another text-only publication keeps the last mechanical revision stable.
+  item = await detail(env);
+  item.edit.description.ru = 'Только новое описание';
+  item = await save(env, item);
+  published = await publish(env, item);
+  assert.equal(published.catalogRevision, 3);
+  assert.equal(published.impactRevision, 2);
+  head = await (await publicCatalogHead(env)).json();
+  assert.equal(head.revision, 3);
+  assert.equal(head.impactRevision, 2);
+  assert.equal((await publicData(env, 3)).impactRevision, 2);
 });
 
 const save = (env, item) => call(env, 'draft', { edit: item.edit, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
