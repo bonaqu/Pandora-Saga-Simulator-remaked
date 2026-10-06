@@ -91,8 +91,8 @@ class TranslationWorkbookTests(unittest.TestCase):
             tables = [name for name in archive.namelist() if name.startswith("xl/tables/") and name.endswith(".xml")]
             self.assertEqual(len(tables), 1)
             table = ElementTree.fromstring(archive.read(tables[0]))
-            self.assertEqual(table.attrib["ref"], "A1:I2904")
-            self.assertEqual(table.find(f"{{{MAIN_NS}}}autoFilter").attrib["ref"], "A1:I2904")
+            self.assertEqual(table.attrib["ref"], "A1:I2908")
+            self.assertEqual(table.find(f"{{{MAIN_NS}}}autoFilter").attrib["ref"], "A1:I2908")
             sheet = ElementTree.fromstring(archive.read("xl/worksheets/sheet1.xml"))
             pane = sheet.find(f".//{{{MAIN_NS}}}pane")
             self.assertEqual(pane.attrib["state"], "frozen")
@@ -101,10 +101,95 @@ class TranslationWorkbookTests(unittest.TestCase):
 
     def test_workbook_matches_every_ui_and_game_source_row(self):
         ui_russian, game_russian, total = load_translation_catalogs(ROOT)
-        self.assertEqual(total, 2903)
+        self.assertEqual(total, 2907)
         rows = read_rows(ROOT / "localization/translations.xlsx")[1:]
         self.assertEqual(ui_russian, {row[1]: row[7] for row in rows if row[0] == "Интерфейс" and row[7].strip()})
         self.assertEqual(game_russian, {row[1]: row[7].strip() for row in rows if row[0] == "Игра" and row[7].strip()})
+
+    def test_requested_russian_calculator_labels_and_hints_are_exact(self):
+        from scripts.translation_workbook import load_editable_catalogs
+        catalog = load_editable_catalogs(ROOT)
+        expected = {
+            "calculator.text.10": "ВЫН", "calculator.text.11": "СИЛ", "calculator.text.12": "ПРВ",
+            "calculator.text.13": "ЛВК", "calculator.text.14": "СД", "calculator.text.15": "ИНТ",
+            "calculator.status.0": "ОЗ", "calculator.status.1": "ОМ", "calculator.status.2": "УВЕЛЗЕЛ",
+            "calculator.status.3": "% исцеления ОЗ", "calculator.status.4": "Восст ОМ",
+            "calculator.status.5": "МаксАТК", "calculator.status.6": "Фронт+", "calculator.status.7": "Спин+",
+            "calculator.status.8": "МагАТК", "calculator.status.9": "ЗАЩИТА",
+            "calculator.status.10": "ФРОНТ Сопр", "calculator.status.11": "СПИН Сопр",
+            "calculator.status.12": "Физ СОПР", "calculator.status.13": "ФИЗ Сопр",
+            "calculator.status.14": "МАГ Сопр", "calculator.status.15": "Точность",
+            "calculator.status.16": "ТОЧН", "calculator.status.17": "ШК",
+            "calculator.status.18": "Крит УРОН", "calculator.status.19": "Уклонение",
+            "calculator.status.20": "КРИТ Сопр", "calculator.status.21": "КУРОН СОПР",
+            "calculator.status.22": "Ближ УКЛОН", "calculator.status.23": "Дальн АТК УКЛОН",
+            "calculator.status.24": "Маг УКЛОН", "calculator.status.25": "Дист ближ АТК",
+            "calculator.status.26": "Дист дальн АТК", "calculator.status.27": "ОГН Сопр",
+            "calculator.status.28": "СКР АТК", "calculator.status.29": "ЛЕД Сопр",
+            "calculator.status.30": "СКР Каста", "calculator.status.31": "ВремяКаст",
+            "calculator.status.32": "МОЛН Сопр", "calculator.status.33": "Перезарядка",
+            "calculator.status.34": "ЯД Сопр", "calculator.status.35": "СКР Движ",
+            "calculator.status.36": "ГородСКРП", "calculator.status.37": "ЧАР Сопр",
+            "calculator.status.38": "СВЕТ Сопр", "calculator.status.39": "ТЬМ Сопр",
+            "calculator.status.40": "АНМСОСТТЕЛ Сопр", "calculator.status.41": "АНМСОСТДУХ Сопр",
+            "calculator.status.42": "МАГ Сопр",
+            "skill.0": "Ближний бой", "skill.1": "Секущий удар", "skill.2": "Колющий удар",
+            "skill.3": "Рубящий удар", "skill.4": "Тяжелый удар", "skill.5": "Оборона",
+            "skill.6": "Тактика", "skill.7": "Стрельба", "skill.8": "Ремесло",
+            "skill.9": "Убийства", "skill.10": "Ловушки", "skill.11": "Уклонение",
+            "skill.12": "Молитва", "skill.13": "Исцеление", "skill.14": "Благословение",
+            "skill.15": "Экзорцизм", "skill.16": "Песнопения", "skill.17": "Магия",
+            "skill.18": "Магия стихий", "skill.19": "Воплощение", "skill.20": "Магия тьмы",
+            "skill.21": "Чары", "skill.22": "Особые", "skill.23": "Расовые",
+            "skill.24": "Верховая езда",
+            "calculator.qualified_buff.5": "Усил МагАТК", "calculator.qualified_buff.6": "Усил Аура",
+            "calculator.qualified_buff.9": "ПЕСН МагАТК",
+            "calculator.qualified_buff.10": "ПЕСН Перезарядка",
+        }
+        hints = {
+            "calculator.status.2.hint": "Восстанавливающее действие зелья",
+            "calculator.status.3.hint": "% исцеленного ОЗ",
+            "calculator.status.4.hint": "Восстановление ОМ",
+            "calculator.status.6.hint": "АТК / Фронтальная атака",
+            "calculator.status.7.hint": "АТК / Атака в спину",
+            "calculator.status.8.hint": "Магическая атака",
+            "calculator.status.10.hint": "Уменьшение получаемого урона от фронтальных атак",
+            "calculator.status.11.hint": "Уменьшение получаемого урона от атак в спину",
+            "calculator.status.12.hint": "Снижение получаемого физического урона",
+            "calculator.status.13.hint": "Уменьшение получаемого физического урона",
+            "calculator.status.14.hint": "Уменьшение получаемого магического урона",
+            "calculator.status.16.hint": "Точность",
+            "calculator.status.17.hint": "Шанс критической атаки",
+            "calculator.status.18.hint": "Критический урон",
+            "calculator.status.20.hint": "Шанс получить критический удар; 0 - стандарт",
+            "calculator.status.21.hint": "Снижение получаемого критического урона",
+            "calculator.status.22.hint": "Уклонение от атак ближнего боя",
+            "calculator.status.23.hint": "Шанс уклониться от атаки дальнего боя",
+            "calculator.status.24.hint": "Уклонение от магии",
+            "calculator.status.25.hint": "Дальность атак ближнего боя",
+            "calculator.status.26.hint": "Дальность атак дальнего боя",
+            "calculator.status.27.hint": "Сопротивляемость огню",
+            "calculator.status.28.hint": "Скорость атаки",
+            "calculator.status.29.hint": "Сопротивляемость магии льда",
+            "calculator.status.30.hint": "Скорость применения умений",
+            "calculator.status.31.hint": "Уменьшение времени применения умений",
+            "calculator.status.32.hint": "Сопротивляемость магии молнии",
+            "calculator.status.34.hint": "Сопротивляемость магии яда",
+            "calculator.status.35.hint": "Скорость передвижения",
+            "calculator.status.36.hint": "Скорость передвижения по городу",
+            "calculator.status.37.hint": "Сопротивляемость магии чар",
+            "calculator.status.38.hint": "Сопротивляемость магии света",
+            "calculator.status.39.hint": "Сопротивляемость тьме",
+            "calculator.status.40.hint": "Сопротивляемость аномальных состояний тела",
+            "calculator.status.41.hint": "Сопротивляемость аномальных состояний духа",
+            "calculator.status.42.hint": "Сопротивляемость магии",
+            "calculator.qualified_buff.5.hint": "Усиление урона магией",
+            "calculator.qualified_buff.6.hint": "Усиление урона аурой",
+            "calculator.qualified_buff.9.hint": "Усиление урона магией",
+            "calculator.qualified_buff.10.hint": "Ускорение перезарядки умений",
+        }
+        for identifier, value in {**expected, **hints}.items():
+            self.assertEqual(catalog.game_russian[identifier], value, identifier)
 
     def test_recent_modern_strings_publish_in_all_four_ui_locales(self):
         from scripts.translation_workbook import load_editable_catalogs
@@ -152,7 +237,7 @@ class TranslationWorkbookTests(unittest.TestCase):
             set_russian_cell(localization / "translations.xlsx", "equipment.0.1", "Проверочный предмет")
 
             _, game_russian, total = load_translation_catalogs(root)
-            self.assertEqual(total, 2903)
+            self.assertEqual(total, 2907)
             self.assertEqual(game_russian["equipment.0.1"], "Проверочный предмет")
 
     def test_workbench_captions_keep_editable_languages_and_no_game_data_changes(self):
@@ -170,7 +255,7 @@ class TranslationWorkbookTests(unittest.TestCase):
             self.assertEqual(edited.ui_russian["workbench.results"], "Итоги")
             self.assertEqual(edited.game_russian, before.game_russian)
             self.assertEqual(edited.game_english, before.game_english)
-            self.assertEqual(edited.total, 2903)
+            self.assertEqual(edited.total, 2907)
 
     def test_new_skill_captions_have_editable_ru_and_en_without_affecting_source_catalog(self):
         from scripts.translation_workbook import load_editable_catalogs
