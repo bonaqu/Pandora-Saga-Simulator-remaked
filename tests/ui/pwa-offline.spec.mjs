@@ -65,11 +65,30 @@ test('translation-only artifact update activates automatically and reaches an ex
     await page.locator('[data-remaked-ui-locale="ru"]').click();
     const before = await page.evaluate(() => ({ payload: window.Store(), version: window.PandoraRemakedVersion.ui }));
 
+    // Stage a next-generation HTML file with a visible marker. index.html is a
+    // hardlink in this fixture, so replace it copy-on-write instead of editing
+    // the shared _site inode.
+    const indexPath = path.join(site, 'index.html');
+    const indexSource = await fs.readFile(indexPath, 'utf8');
+    const nextIndexPath = indexPath + '.next';
+    await fs.writeFile(
+      nextIndexPath,
+      indexSource.replace('</body>', '<div data-remaked-generation-marker="next">next generation</div></body>')
+    );
+    await fs.rename(nextIndexPath, indexPath);
+
     const catalogPath = path.join(site, 'modern/locales.js');
     const source = await fs.readFile(catalogPath, 'utf8');
     const catalogs = JSON.parse(source.split('Object.freeze(')[1].replace(/\);\s*$/, ''));
     catalogs.ru['header.project'] = 'Проверка обновления из таблицы';
     await fs.writeFile(catalogPath, 'window.PandoraRemakedLocales = Object.freeze(' + JSON.stringify(catalogs) + ');\n');
+
+    // The old active worker must keep serving its complete old generation even
+    // though newer HTML/assets already exist on the server.
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-remaked-generation-marker]')).toHaveCount(0);
+    await expect(page.locator('[data-remaked-header]')).not.toContainText('Проверка обновления из таблицы');
+
     execFileSync(process.env.PYTHON || 'python', [
       '-c',
       'import pathlib,sys; from scripts.build_pages import _materialize_service_worker; _materialize_service_worker(pathlib.Path.cwd(), pathlib.Path(sys.argv[1]))',
@@ -78,6 +97,7 @@ test('translation-only artifact update activates automatically and reaches an ex
     expect(await publishedLocaleFingerprints()).toEqual(originalLocales);
 
     await page.evaluate(async () => (await navigator.serviceWorker.getRegistration()).update());
+    await expect(page.locator('[data-remaked-generation-marker]')).toHaveCount(1);
     await expect(page.locator('[data-remaked-header]')).toContainText('Проверка обновления из таблицы');
     const after = await page.evaluate(() => ({ payload: window.Store(), version: window.PandoraRemakedVersion.ui }));
     expect(after).toEqual(before);
