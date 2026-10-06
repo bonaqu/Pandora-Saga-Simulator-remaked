@@ -232,6 +232,39 @@ test('search pointer click does not flash characteristics and wheel cancels a pe
   expect(await page.evaluate(() => window.fixturePreviewFlashed)).toBe(false);
 });
 
+test('RU Equipment chrome, gem selectors and category headings use workbook terminology without changing the build', async ({ page }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+
+  await expect(page.locator('#TextEquip_0')).toHaveText('Снаряжение');
+  await expect(page.locator('[data-remaked-equipment-reset]')).toHaveText('Сброс снаряжения');
+
+  const labels = await page.evaluate(() => PandoraRemaked.adapter.listEquipmentTargets().map(target => target.label));
+  expect(labels).toEqual([
+    'Оружие', 'Щит', 'Шлем', 'Доспех', 'Перчатки', 'Штаны', 'Ботинки', 'Плащ',
+    'Серьги · 1', 'Серьги · 2', 'Амулет', 'Пояс', 'Кольцо · 1', 'Кольцо · 2'
+  ]);
+
+  const modifierLabels = await page.evaluate(() => ({
+    kind: Array.from(document.getElementById('SelEquip_0_1').options, option => option.textContent.trim()),
+    element: Array.from(document.getElementById('SelEquip_0_2').options, option => option.textContent.trim()),
+    soul: document.getElementById('SelEquip_0_4').options[0].textContent.trim(),
+    categories: Array.from(document.getElementById('SelEquip_0_0').options)
+      .filter(option => Number(option.value) % 10000 === 0)
+      .map(option => option.textContent.trim().replace(/^\+-----\s*/, ''))
+  }));
+  expect(modifierLabels.kind).toEqual(['Физ', 'Маг']);
+  expect(modifierLabels.element).toEqual(['Огонь', 'Лед', 'Молния', 'Яд', 'Свет', 'Тьма', 'Призма']);
+  expect(modifierLabels.soul).toBe('Душа');
+  expect(modifierLabels.categories).toEqual(expect.arrayContaining([
+    'Одноручный меч', 'Двуручный меч', 'Одноручный топор', 'Двуручный топор',
+    'Одноручное копьё', 'Двуручное копьё', 'Кинжал', 'Кастеты', 'Лук', 'Арбалет'
+  ]));
+
+  expect(await page.evaluate(() => Store())).toBe(before);
+});
+
 test('all fourteen actual slots have correct source labels and usable selection dropdowns', async ({ page }) => {
   await page.goto('/');
   const targets = await page.evaluate(() => PandoraRemaked.adapter.listEquipmentTargets());
