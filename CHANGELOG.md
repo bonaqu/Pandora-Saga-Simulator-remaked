@@ -10,6 +10,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - Текст кнопки `Сброс` в блоке снаряжения теперь выровнен строго по центру без изменения её размера или логики.
 - Обновления PWA теперь переключаются между версиями целиком: активная страница не смешивает HTML одной версии с JS/CSS из другого кэша.
 - Service worker читает файлы только из собственного версионного cache, поэтому одновременно существующие active/waiting-кэши не могут подмешивать друг другу assets.
+- Precache новой версии принудительно перепроверяет файлы мимо браузерного HTTP-cache, а изменение самого PWA-worker теперь тоже меняет cache-generation.
 - Если активация нового service worker зависла, кнопка перезагрузки снова становится доступной для повторной попытки вместо вечного disabled-состояния.
 <!-- /release-notes:ru -->
 
@@ -19,6 +20,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - The Equipment reset caption is now centered without changing its size or behavior.
 - PWA updates now keep HTML and static assets on one cache generation until the new service worker is activated.
 - Service workers read only from their own versioned cache, preventing active/waiting cache cross-contamination.
+- New precaches revalidate assets past the browser HTTP cache, and worker-only logic changes now rotate the cache generation too.
 - A stalled worker activation re-enables Reload so the user can retry safely.
 <!-- /release-notes:en -->
 
@@ -26,7 +28,8 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 
 - Controlled navigations use the active worker's cached `index.html` / `legacy/index.html` until the bootstrap activates the next worker and reloads.
 - All cache reads are scoped through `caches.open(CACHE_NAME)`; no runtime lookup spans multiple PWA cache generations.
-- Regression tests cover generation-atomic updates, offline reload after an update, retry after stalled activation, and centered reset text.
+- Precache requests use `cache: 'reload'`, and the service-worker source template participates in the generated cache fingerprint.
+- Regression tests cover generation-atomic updates, worker-only cache rotation, offline reload after an update, retry after stalled activation, and centered reset text.
 - Calculator formulas, source arrays, item IDs, callbacks, translations and build serialization are unchanged.
 
 ## Modern 3.16 — production polish after RU layout review, 2026-10-06
