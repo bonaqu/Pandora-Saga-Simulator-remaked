@@ -238,12 +238,12 @@ test('RU Equipment chrome, gem selectors and category headings use workbook term
   await page.locator('[data-remaked-ui-locale="ru"]').click();
 
   await expect(page.locator('#TextEquip_0')).toHaveText('Снаряжение');
-  await expect(page.locator('[data-remaked-equipment-reset]')).toHaveText('Сброс снаряжения');
+  await expect(page.locator('[data-remaked-equipment-reset]')).toHaveText('Сброс');
 
   const labels = await page.evaluate(() => PandoraRemaked.adapter.listEquipmentTargets().map(target => target.label));
   expect(labels).toEqual([
-    'Оружие', 'Щит', 'Шлем', 'Доспех', 'Перчатки', 'Штаны', 'Ботинки', 'Плащ',
-    'Серьги · 1', 'Серьги · 2', 'Амулет', 'Пояс', 'Кольцо · 1', 'Кольцо · 2'
+    'Оружие', 'Щит', 'Шлем', 'Броня', 'Перчатки', 'Штаны', 'Обувь', 'Плащ',
+    'Серьга · 1', 'Серьга · 2', 'Амулет', 'Пояс', 'Кольцо · 1', 'Кольцо · 2'
   ]);
 
   const modifierLabels = await page.evaluate(() => {
@@ -259,7 +259,7 @@ test('RU Equipment chrome, gem selectors and category headings use workbook term
     };
   });
   expect(modifierLabels.kind).toEqual(['Физ', 'Маг']);
-  expect(modifierLabels.element).toEqual(['Огонь', 'Лед', 'Молния', 'Яд', 'Свет', 'Тьма', 'Призма']);
+  expect(modifierLabels.element).toEqual(['Огонь', 'Лед', 'Молния', 'Яд', 'Свет', 'Тьма', 'Радуга']);
   expect(modifierLabels.soul.replace(/^\+-----\s*/, '')).toBe('Душа');
 
   await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
@@ -275,6 +275,31 @@ test('RU Equipment chrome, gem selectors and category headings use workbook term
   await page.locator('[data-remaked-picker-panel] .remaked-search-close').click();
 
   expect(await page.evaluate(() => Store())).toBe(before);
+});
+
+test('Equipment slot labels and compact Reset stay fully visible in every UI locale', async ({ page }) => {
+  await page.goto('/');
+  const expectedReset = { en: 'Reset', ru: 'Сброс', jp: 'リセット', tw: '重設' };
+  for (const locale of ['en', 'ru', 'jp', 'tw']) {
+    await page.locator(`[data-remaked-ui-locale="${locale}"]`).click();
+    await expect(page.locator('[data-remaked-equipment-reset]')).toHaveText(expectedReset[locale]);
+    const layout = await page.evaluate(() => {
+      const reset = document.querySelector('[data-remaked-equipment-reset]');
+      const labels = document.querySelectorAll('[data-remaked-picker-slot-label]');
+      const rows = [];
+      for (let index = 0; index < labels.length; index++) {
+        const label = labels[index];
+        rows.push({ text: label.textContent.trim(), client: label.clientWidth, scroll: label.scrollWidth });
+      }
+      return {
+        reset: { client: reset.clientWidth, scroll: reset.scrollWidth, width: reset.getBoundingClientRect().width },
+        labels: rows
+      };
+    });
+    expect(layout.reset.width).toBeCloseTo(72, 0);
+    expect(layout.reset.scroll).toBeLessThanOrEqual(layout.reset.client);
+    for (const label of layout.labels) expect(label.scroll, locale + ': ' + label.text).toBeLessThanOrEqual(label.client);
+  }
 });
 
 test('all fourteen actual slots have correct source labels and usable selection dropdowns', async ({ page }) => {
