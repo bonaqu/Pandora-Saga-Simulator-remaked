@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
-import { buildMigration, loadReleaseEntries, validateReleaseEntries } from '../../scripts/materialize_pandora_os_sync.mjs';
+import { buildMigration, buildReleaseInsertStatements, loadReleaseEntries, validateReleaseEntries } from '../../scripts/materialize_pandora_os_sync.mjs';
 import { baselineById } from '../../admin-api/src/catalog-baseline.mjs';
 import { compileRecord, validateDraft } from '../../admin-api/src/catalog-model.mjs';
 
@@ -32,6 +32,9 @@ test('Pandora Saga OS release payload is complete, unique and compilable against
   assert.equal(entries.filter(entry => entry.identity.kind === 'equipment').length, 111);
   assert.equal(entries.filter(entry => entry.identity.kind === 'soul').length, 69);
   assert.equal(entries.some(entry => entry.edit.names.en === 'Healer Soul'), false);
+  const releaseStatements = buildReleaseInsertStatements(entries);
+  assert.equal(releaseStatements.length, 180);
+  assert.ok(Math.max(...releaseStatements.map(statement => Buffer.byteLength(statement))) < 16384);
 
   const compiled = new Map();
   for (const entry of entries) {
