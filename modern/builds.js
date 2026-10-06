@@ -7,6 +7,7 @@
   var i18n = namespace.i18n;
   var DEBOUNCE_MS = 300;
   var RESTORED_STATUS_MS = 4500;
+  var CATALOG_POLL_MS = 10000;
   var timer = null;
   var autosaveSettleTimer = null;
   var lastSavedPayload = null;
@@ -23,6 +24,7 @@
   var previousBodyOverflow = '';
   var catalogRevision = null, catalogUpdate = null, catalogStatus = null;
   var catalogRequest = 0, catalogBusy = false, catalogMessage = null;
+  var catalogPollTimer = null, catalogHeadBusy = false, latestCatalogRevision = 0;
   var restorationFailed = false;
   var loadRequest = 0;
 
@@ -74,6 +76,31 @@
 
   function currentPayload() {
     return adapter.serialize();
+  }
+
+  function payloadRevision(payload) {
+    if (!namespace.catalog) return 0;
+    try { return namespace.catalog.unpackPayload(payload).revision; }
+    catch { return 0; }
+  }
+
+  function setLatestCatalogRevision(next) {
+    next = Number(next);
+    if (!Number.isSafeInteger(next) || next < 0 || next === latestCatalogRevision) return;
+    latestCatalogRevision = next;
+    if (managerOverlay && managerOverlay.open) renderBuilds();
+    window.dispatchEvent(new CustomEvent('pandora-remaked:buildcataloghead', { detail: { revision: next } }));
+  }
+
+  function staleBuild(build) {
+    return Boolean(latestCatalogRevision > payloadRevision(build.payload));
+  }
+
+  async function latestNamedPayload(payload) {
+    if (!namespace.catalog) return payload;
+    var latest = await namespace.catalog.latestPayload(payload, { networkOnly: true });
+    setLatestCatalogRevision(namespace.catalog.getHeadRevision());
+    return latest;
   }
 
   function beginLoadIntent() {
