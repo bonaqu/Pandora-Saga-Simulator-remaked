@@ -8,6 +8,9 @@
       ? namespace.i18n.getLocale()
       : String(document.documentElement.lang || 'en').toLowerCase();
     var fallback = { en: 'Reset', ru: 'Сброс', jp: 'リセット', tw: '重設' }[locale] || 'Reset';
+    var localeCatalogs = window.PandoraRemakedLocales || {};
+    var activeCatalog = localeCatalogs[locale] || {};
+    if (!Object.prototype.hasOwnProperty.call(activeCatalog, 'equipment.reset')) return fallback;
     if (!namespace.i18n || typeof namespace.i18n.t !== 'function') return fallback;
     var translated = namespace.i18n.t('equipment.reset');
     return translated && translated !== 'equipment.reset' ? translated : fallback;
