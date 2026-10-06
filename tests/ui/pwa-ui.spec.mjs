@@ -118,6 +118,26 @@ test('failed autosave blocks activation so an update cannot discard current prog
   await expect(page.locator('[data-remaked-update-notice]')).toBeVisible();
 });
 
+test('controller switch flushes again and blocks reload if progress changed after the first save', async ({ page }) => {
+  await openModern(page);
+  const before = page.url();
+  await page.evaluate(() => {
+    window.__switchFlushCalls = 0;
+    window.PandoraRemaked.builds.flushAutosave = function () {
+      window.__switchFlushCalls += 1;
+      return { ok: window.__switchFlushCalls === 1 };
+    };
+    window.PandoraRemaked.pwa.showUpdateNotice({
+      postMessage() {
+        queueMicrotask(() => navigator.serviceWorker.dispatchEvent(new Event('controllerchange')));
+      }
+    });
+  });
+  await page.locator('[data-remaked-update-reload]').click();
+  await expect.poll(() => page.evaluate(() => window.__switchFlushCalls)).toBeGreaterThanOrEqual(2);
+  expect(page.url()).toBe(before);
+});
+
 test('stalled worker activation re-enables Reload for a safe retry', async ({ page }) => {
   await openModern(page);
   await page.evaluate(() => {
