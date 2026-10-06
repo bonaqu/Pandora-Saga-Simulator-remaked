@@ -223,8 +223,9 @@ test('explicit public catalog adoption retains effect context and old named pin 
     history.replaceState(null, '', '#build=' + encodeURIComponent(payload));
     return { lp: Status.LP, raw: Store(), context: api.catalog.captureContext(), named: localStorage.getItem(api.buildStore.BUILDS_KEY) };
   });
-  await page.locator('[data-remaked-builds-open]').click(); await page.locator('[data-remaked-catalog-update]').click();
-  await expect(page.locator('[data-remaked-catalog-update]')).toBeEnabled();
+  await page.locator('[data-remaked-builds-open]').click();
+  await page.evaluate(() => PandoraRemaked.builds.updateCurrentCatalog());
+  await expect(page.locator('[data-remaked-catalog-update]')).toHaveCount(0);
   await expect(page.locator('[data-remaked-catalog-status]')).toContainText('Catalog 2 applied');
   const after = await page.evaluate(() => ({ lp: Status.LP, raw: Store(), context: PandoraRemaked.catalog.captureContext(),
     revision: PandoraRemaked.catalog.getRevision(), named: localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY), hash: location.hash }));

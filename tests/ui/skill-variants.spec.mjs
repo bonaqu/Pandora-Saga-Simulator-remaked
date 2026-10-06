@@ -34,7 +34,8 @@ test('explicit adoption adds a learned variant and updates only current autosave
     const payload = api.adapter.serialize(); api.buildStore.saveBuild('Keep source skill pin', payload); api.builds.flushAutosave();
     return { lp: Status.LP, context: api.catalog.captureContext(), tables: JSON.stringify(Skill), named: localStorage.getItem(api.buildStore.BUILDS_KEY) };
   });
-  await page.locator('[data-remaked-builds-open]').click(); await page.locator('[data-remaked-catalog-update]').click();
+  await page.locator('[data-remaked-builds-open]').click();
+  await page.evaluate(() => PandoraRemaked.builds.updateCurrentCatalog());
   await expect(page.locator('[data-remaked-catalog-status]')).toContainText('Catalog 1 applied');
   const after = await page.evaluate(() => ({ payload: PandoraRemaked.adapter.serialize(), lp: Status.LP, context: PandoraRemaked.catalog.captureContext(), tables: JSON.stringify(Skill), named: localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY) }));
   expect(after.payload).toMatch(/^PS3:1:C1:/); expect(after.lp).toBe(before.lp + 5); expect(after.context).toEqual(before.context);

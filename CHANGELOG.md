@@ -2,6 +2,35 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Modern 3.19 — impact-aware saved builds and simpler Builds UI, 2026-10-06
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Из Менеджера билдов убрана ручная кнопка «Обновить текущий билд»: каталог уже обновляется автоматически, поэтому отдельное действие больше не требуется.
+- Блок каталога стал компактнее и показывает понятную строку вида `Каталог: ревизия 78 · обновляется автоматически`.
+- Обычная ревизия каталога и ревизия, влияющая на билд, теперь разделены. Переименование предмета/души/навыка, изменение описания или перевод сразу публикуются в интерфейсе, но **не** делают сохранённый билд устаревшим.
+- Красная пунктирная метка «Возможно устарел» появляется только после изменений, способных повлиять на расчёт или совместимость: характеристик, эффектов, сокетов, требований, совместимости, class progression, skill timing/requirements и других engine-facing данных.
+- Загрузка реально устаревшего билда по-прежнему безопасно пересчитывает его на актуальном каталоге; при несовместимости исторический билд сохраняется без повреждения.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Removed the manual “Update current build” control because catalog updates are automatic.
+- The Builds manager now uses a compact automatic catalog-status block.
+- Catalog publication revision and build-impact revision are tracked separately, so names, descriptions and translations update normally without falsely marking saved builds stale.
+- The stale warning is reserved for changes that can affect calculations or compatibility.
+<!-- /release-notes:en -->
+
+### Project and delivery details
+
+- D1 migration `0004_catalog_impact_revision.sql` adds a monotonic `impact_version` to the catalog head and immutable revisions.
+- Worker-side impact projection strips display-only fields before comparing effective runtime catalog data.
+- Existing installations conservatively treat the migration-time head as the initial impact baseline; all later publications are classified precisely.
+- Pages consumes `impactRevision` from both the lightweight head and immutable snapshots, with conservative fallback for a rolling deploy against an older Worker.
+- Regression coverage proves text-only publications do not produce stale-build UI while mechanical publications still do.
+
 ## Modern 3.18 — automatic live updates and saved-build freshness, 2026-10-06
 
 <!-- release-notes:ru -->

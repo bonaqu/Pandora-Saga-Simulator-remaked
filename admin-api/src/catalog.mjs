@@ -34,19 +34,43 @@ async function identityFor(env, id) {
   if (skill) return normalizeSkillIdentity(skill);
   fail('Item not found', 404);
 }
-async function headVersion(env) {
-  const row = await env.DB.prepare('SELECT version FROM catalog_head WHERE id = ?').bind(1).first();
+async function headMeta(env) {
+  const row = await env.DB.prepare('SELECT version, impact_version FROM catalog_head WHERE id = ?').bind(1).first();
   if (!row) fail('Catalog is not initialized', 503);
-  return row.version;
+  return { version: row.version, impactVersion: row.impact_version };
 }
 async function head(env) {
-  const row = await env.DB.prepare('SELECT version, snapshot_json FROM catalog_head WHERE id = ?').bind(1).first();
+  const row = await env.DB.prepare('SELECT version, impact_version, snapshot_json FROM catalog_head WHERE id = ?').bind(1).first();
   if (!row) fail('Catalog is not initialized', 503);
-  return { version: row.version, entries: JSON.parse(row.snapshot_json) };
+  return { version: row.version, impactVersion: row.impact_version, entries: JSON.parse(row.snapshot_json) };
 }
 async function draftRow(env, id) { return env.DB.prepare('SELECT payload_json, version, is_dirty, updated_at FROM catalog_drafts WHERE id = ?').bind(id).first(); }
 function compileEntry(entry) {
   return compileRecord(validateDraft(entry.edit, entry.identity), entry.identity, sourceFor(entry.identity));
+}
+function buildImpactRecord(record) {
+  const result = structuredClone(record);
+  // Display-only/catalog-documentation fields must never make a saved build
+  // stale. They still publish in the normal catalog revision so the UI updates.
+  for (const key of ['names', 'description', 'notes', 'acquisition', 'modifiers', 'calculationNotes']) delete result[key];
+  if (Array.isArray(result.profiles)) {
+    result.profiles = result.profiles.map(profile => {
+      const copy = structuredClone(profile);
+      delete copy.names;
+      delete copy.description;
+      return copy;
+    });
+  }
+  return result;
+}
+function impactProjection(entries) {
+  const effective = new Map();
+  for (const source of baselineRecords) {
+    const identity = sourceIdentity(source);
+    effective.set(identity.id, buildImpactRecord(compileRecord(draftFromSource(source, identity.kind), identity, source)));
+  }
+  for (const entry of entries) effective.set(entry.identity.id, buildImpactRecord(compileEntry(entry)));
+  return JSON.stringify([...effective.entries()].sort((a, b) => a[0].localeCompare(b[0])));
 }
 function version(value, label) {
   if (!Number.isSafeInteger(value) || value < 0) fail(label + ' must be a non-negative integer');
@@ -74,12 +98,14 @@ async function body(request) {
 }
 
 export async function publicCatalogHead(env) {
+  const meta = await headMeta(env);
   return jsonResponse({
     ok: true,
     schemaVersion: 1,
     sourceFingerprint,
     characterSourceFingerprint,
-    revision: await headVersion(env)
+    revision: meta.version,
+    impactRevision: meta.impactVersion
   });
 }
 
@@ -91,14 +117,14 @@ export async function publicCatalog(request, env) {
   else {
     if (!/^\d{1,9}$/.test(requested)) fail('Invalid revision');
     const revision = Number(requested);
-    if (revision === 0) snapshot = { version: 0, entries: [] };
+    if (revision === 0) snapshot = { version: 0, impactVersion: 0, entries: [] };
     else {
-      const row = await env.DB.prepare('SELECT snapshot_json FROM catalog_revisions WHERE version = ?').bind(revision).first();
+      const row = await env.DB.prepare('SELECT impact_version, snapshot_json FROM catalog_revisions WHERE version = ?').bind(revision).first();
       if (!row) fail('Catalog revision not found', 404);
-      snapshot = { version: revision, entries: JSON.parse(row.snapshot_json) };
+      snapshot = { version: revision, impactVersion: row.impact_version, entries: JSON.parse(row.snapshot_json) };
     }
   }
-  return jsonResponse({ ok: true, schemaVersion: 1, sourceFingerprint, characterSourceFingerprint, revision: snapshot.version, records: snapshot.entries.map(compileEntry) });
+  return jsonResponse({ ok: true, schemaVersion: 1, sourceFingerprint, characterSourceFingerprint, revision: snapshot.version, impactRevision: snapshot.impactVersion, records: snapshot.entries.map(compileEntry) });
 }
 
 async function detail(env, id) {
@@ -181,17 +207,20 @@ async function commitSnapshot(env, previous, entries, now, note, draft = null) {
   const json = JSON.stringify(entries);
   if (encoder.encode(json).length > MAX_SNAPSHOT_BYTES) fail('Catalog exceeds the safe snapshot size', 413);
   for (const entry of entries) compileEntry(entry);
+  const current = await head(env);
+  if (current.version !== previous) fail('Catalog changed in another tab; reload before publishing', 409);
   const token = randomUUID(); const next = previous + 1;
+  const impactVersion = impactProjection(current.entries) === impactProjection(entries) ? current.impactVersion : next;
   const guard = draft ? ' AND EXISTS (SELECT 1 FROM catalog_drafts WHERE id = ? AND version = ? AND is_dirty = 1)' : '';
-  const update = env.DB.prepare('UPDATE catalog_head SET version = ?, snapshot_json = ?, write_token = ?, updated_at = ? WHERE id = 1 AND version = ?' + guard)
-    .bind(next, json, token, now, previous, ...(draft ? [draft.id, draft.version] : []));
+  const update = env.DB.prepare('UPDATE catalog_head SET version = ?, impact_version = ?, snapshot_json = ?, write_token = ?, updated_at = ? WHERE id = 1 AND version = ?' + guard)
+    .bind(next, impactVersion, json, token, now, previous, ...(draft ? [draft.id, draft.version] : []));
   const statements = [update,
-    env.DB.prepare('INSERT INTO catalog_revisions (version, snapshot_json, created_at, note) SELECT ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND write_token = ?)').bind(next, json, now, note, token)
+    env.DB.prepare('INSERT INTO catalog_revisions (version, impact_version, snapshot_json, created_at, note) SELECT ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND write_token = ?)').bind(next, impactVersion, json, now, note, token)
   ];
   if (draft) statements.push(env.DB.prepare('UPDATE catalog_drafts SET is_dirty = 0, version = version + 1 WHERE id = ? AND version = ? AND EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND write_token = ?)').bind(draft.id, draft.version, token));
   const result = await env.DB.batch(statements);
   if (result[0].meta.changes !== 1) fail('Catalog or draft changed in another tab; reload before publishing', 409);
-  return jsonResponse({ ok: true, catalogRevision: next, message: 'Catalog published' });
+  return jsonResponse({ ok: true, catalogRevision: next, impactRevision: impactVersion, message: 'Catalog published' });
 }
 async function publish(request, env, now) {
   const input = await body(request); schema(input, ['id', 'expectedDraftVersion', 'expectedCatalogRevision']);
@@ -250,8 +279,9 @@ export async function adminCatalog(request, env, now = Math.floor(Date.now() / 1
   if (path === '/api/admin/catalog' && request.method === 'GET') return list(request, env);
   if (path === '/api/admin/item' && request.method === 'GET') return jsonResponse(await detail(env, new URL(request.url).searchParams.get('id') || ''));
   if (path === '/api/admin/revisions' && request.method === 'GET') {
-    const rows = await env.DB.prepare('SELECT version, created_at, note FROM catalog_revisions ORDER BY version DESC LIMIT 50').all();
-    return jsonResponse({ ok: true, revisions: rows.results, catalogRevision: (await head(env)).version });
+    const rows = await env.DB.prepare('SELECT version, impact_version AS impactRevision, created_at, note FROM catalog_revisions ORDER BY version DESC LIMIT 50').all();
+    const current = await head(env);
+    return jsonResponse({ ok: true, revisions: rows.results, catalogRevision: current.version, impactRevision: current.impactVersion });
   }
   if (path === '/api/admin/draft' && request.method === 'POST') return saveDraft(request, env, now);
   if (path === '/api/admin/preview' && request.method === 'POST') return preview(request, env);

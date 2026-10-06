@@ -36,21 +36,33 @@ User editing increments the intent even if a value is then changed back.
 Deleting a named record cancels its pending load; stale feedback cannot steal
 focus or replace the newer action's message.
 
-Production Pages checks a lightweight public catalog-head revision while
-the page is visible and online. When the published head advances, the active
-character is adopted automatically: the current payload is snapshotted, the new
-snapshot is preflighted against equipped item/class/race and occupied Soul
-requirements, then the same CSV/C1 state is restored through the adapter with a
-new pin. A user edit or newer load intent during the network request cancels the
-automatic adoption before mutation.
+Production Pages checks a lightweight public catalog head while the page is
+visible and online. The head carries two monotonic values:
 
-Named builds keep their immutable pinned revision in storage until they are used.
-A pin lower than the current live head is displayed as possibly outdated. Loading
-such a build first attempts a safe repin/recalculation against the current head
-and rewrites that named record only after successful restoration. If the latest
-catalog is incompatible, the saved record is left untouched and its historical
-revision is loaded instead. Online comparison evaluates against the current head;
-offline comparison retains cached pinned revisions.
+- `revision` changes for every publication, including display-only name,
+  description and translation edits, so those changes can reach the UI quickly.
+- `impactRevision` changes only when the effective runtime data can affect a
+  build: calculation/effect values, timing or learning requirements, class
+  progression, availability, level/socket requirements, compatibility, Soul
+  slots or other engine-facing fields. Names, descriptions, notes, acquisition
+  text, display modifiers and translations are deliberately excluded.
+
+When the published `revision` advances, the active character is adopted
+automatically: the current payload is snapshotted, the new snapshot is
+preflighted against equipped item/class/race and occupied Soul requirements,
+then the same CSV/C1 state is restored through the adapter with a new pin. A
+user edit or newer load intent during the network request cancels the automatic
+adoption before mutation.
+
+Named builds keep their immutable pinned catalog revision in storage until they
+are used. A build is displayed as possibly outdated only when the current
+`impactRevision` is newer than that pin. A text-only publication therefore
+never creates a false stale warning. Loading an actually stale build first
+attempts a safe repin/recalculation against the current head and rewrites that
+named record only after successful restoration. If the latest catalog is
+incompatible, the saved record is left untouched and its historical revision is
+loaded instead. Online comparison evaluates against the current head; offline
+comparison retains cached pinned revisions.
 
 An offline cached head is never presented as the live latest revision.
 Incompatibility/failure preserves the current character and saves; failed native

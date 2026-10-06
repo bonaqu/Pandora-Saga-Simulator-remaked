@@ -51,7 +51,7 @@ async function openConsole(page, drafts = []) {
   // Only synthetic in-memory sessions. Never read the real administrator's
   // credential file in trace-enabled repository tests.
   const sqlite = new DatabaseSync(':memory:');
-  for (const name of ['0002_catalog.sql', '0003_skill_variants.sql']) sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
+  for (const name of ['0002_catalog.sql', '0003_skill_variants.sql', '0004_catalog_impact_revision.sql']) sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
   const DB = { prepare(sql) {
     let values = [];
     return { bind(...params) { values = params; return this; },

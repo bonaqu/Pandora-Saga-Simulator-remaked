@@ -9,7 +9,7 @@ import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs
 const origin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
 function fixture() {
   const sqlite = new DatabaseSync(':memory:');
-  for (const name of ['0002_catalog.sql', '0003_skill_variants.sql']) sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
+  for (const name of ['0002_catalog.sql', '0003_skill_variants.sql', '0004_catalog_impact_revision.sql']) sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
   const DB = { prepare(sql) {
     let params = [];
     return {
@@ -33,21 +33,72 @@ const call = async (env, path, input) => {
 const publicData = async (env, revision) => (await publicCatalog(request('/api/catalog' + (revision === undefined ? '' : '?revision=' + revision)), env)).json();
 const detail = (env, id = 'equipment.0.1') => call(env, 'item?id=' + id);
 
-test('public catalog head is lightweight and tracks the current immutable revision', async () => {
+test('impact migration conservatively upgrades an existing nonzero catalog history', () => {
+  const sqlite = new DatabaseSync(':memory:');
+  for (const name of ['0002_catalog.sql', '0003_skill_variants.sql']) {
+    sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
+  }
+  sqlite.prepare('UPDATE catalog_head SET version = ?, snapshot_json = ? WHERE id = 1').run(78, '[]');
+  sqlite.prepare('INSERT INTO catalog_revisions (version, snapshot_json, created_at, note) VALUES (?, ?, ?, ?)').run(77, '[]', 900, 'Older production revision');
+  sqlite.prepare('INSERT INTO catalog_revisions (version, snapshot_json, created_at, note) VALUES (?, ?, ?, ?)').run(78, '[]', 1000, 'Current production revision');
+
+  sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/0004_catalog_impact_revision.sql', import.meta.url), 'utf8'));
+
+  const head = sqlite.prepare('SELECT version, impact_version FROM catalog_head WHERE id = 1').get();
+  assert.equal(head.version, 78);
+  assert.equal(head.impact_version, 78);
+  const history = sqlite.prepare('SELECT version, impact_version FROM catalog_revisions ORDER BY version').all();
+  assert.deepEqual(history.map(row => [row.version, row.impact_version]), [[77, 77], [78, 78]]);
+});
+
+test('public catalog head separates immutable publication revision from build impact', async () => {
   const { env } = fixture();
   let head = await (await publicCatalogHead(env)).json();
   assert.equal(head.ok, true);
   assert.equal(head.revision, 0);
+  assert.equal(head.impactRevision, 0);
   assert.equal(Object.hasOwn(head, 'records'), false);
 
+  // Name/description/translation edits publish immediately but do not make
+  // saved builds stale because they cannot change calculations.
   let item = await detail(env);
   item.edit.names.en = 'Head revision check';
+  item.edit.names.ru = 'Проверка ревизии';
+  item.edit.description.en = 'Display-only description';
   item = await save(env, item);
-  await publish(env, item);
+  let published = await publish(env, item);
+  assert.equal(published.catalogRevision, 1);
+  assert.equal(published.impactRevision, 0);
 
   head = await (await publicCatalogHead(env)).json();
   assert.equal(head.revision, 1);
+  assert.equal(head.impactRevision, 0);
+  assert.equal((await publicData(env, 1)).impactRevision, 0);
   assert.equal(Object.hasOwn(head, 'records'), false);
+
+  // A calculation-affecting edit advances both the catalog and impact head.
+  item = await detail(env);
+  item.edit.effectMode = 'patch';
+  item.edit.effects = [{ stat: 1, value: 7, unit: 'flat' }];
+  item = await save(env, item);
+  published = await publish(env, item);
+  assert.equal(published.catalogRevision, 2);
+  assert.equal(published.impactRevision, 2);
+  head = await (await publicCatalogHead(env)).json();
+  assert.equal(head.revision, 2);
+  assert.equal(head.impactRevision, 2);
+
+  // Another text-only publication keeps the last mechanical revision stable.
+  item = await detail(env);
+  item.edit.description.ru = 'Только новое описание';
+  item = await save(env, item);
+  published = await publish(env, item);
+  assert.equal(published.catalogRevision, 3);
+  assert.equal(published.impactRevision, 2);
+  head = await (await publicCatalogHead(env)).json();
+  assert.equal(head.revision, 3);
+  assert.equal(head.impactRevision, 2);
+  assert.equal((await publicData(env, 3)).impactRevision, 2);
 });
 
 const save = (env, item) => call(env, 'draft', { edit: item.edit, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
