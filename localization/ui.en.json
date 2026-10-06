@@ -166,7 +166,7 @@
   "updates.keyboard": "Keyboard navigation: skip straight to the calculator, keep focus inside open dialogs, and return to the opener with Escape.",
   "updates.translations": "Translate the Modern interface, game names, labels and skill descriptions in one Excel workbook. Upload it to GitHub to publish an update.",
   "updates.builds": "Search compatible equipment and Souls, save named builds locally, and compare their calculated stats without changing your current character.",
-  "updates.offline": "Install the site or use Modern and Legacy modes offline after the first successful load. Save your work before accepting an update.",
+  "updates.offline": "Install the site or use Modern and Legacy modes offline after the first successful load. Updates are detected automatically and current progress is autosaved before an automatic reload.",
   "updates.preservation": "The Legacy 2.00 engine remains the calculation source. This is an unofficial community project. Build storage is local to this browser.",
   "updates.fullChangelog": "Full changelog",
   "updates.report": "Report a problem",
@@ -192,10 +192,10 @@
   "builds.catalogSource": "Legacy source (revision 0)",
   "builds.catalogRevision": "Catalog revision: {revision}",
   "builds.catalogUpdate": "Update current build",
-  "builds.catalogHelp": "Updates only this character to the published catalog. Equipped items, Souls and effects are checked; named builds keep their original revision.",
+  "builds.catalogHelp": "Published catalog changes are detected automatically. The current character is updated safely; older named builds are marked and updated when loaded.",
   "builds.catalogChecking": "Checking published catalog…",
   "builds.catalogCurrent": "This catalog is already current. No build or save was changed.",
-  "builds.catalogApplied": "Catalog {revision} applied. Named builds keep their original revision.",
+  "builds.catalogApplied": "Catalog {revision} applied. Saved builds are checked against the live catalog when used.",
   "builds.catalogUnsaved": "Catalog {revision} applied, but autosave failed. Export the current code before leaving; the old save was kept.",
   "builds.catalogUrlWarning": "Catalog {revision} applied, but the old shared link could not be cleared. Export a new code or link before reloading.",
   "builds.catalogUnavailable": "Could not check the published catalog. Current build and saves kept; try again online.",
@@ -235,5 +235,10 @@
   "calculator.totalWithBonuses": "Total including equipment and other bonuses",
   "compare.hideIdentical": "Hide identical stats",
   "compare.allIdentical": "All displayed stats are identical.",
-  "equipment.reset": "Reset"
+  "equipment.reset": "Reset",
+  "builds.catalogAutoApplied": "Catalog {revision} applied automatically.",
+  "builds.possiblyOutdated": "Possibly outdated",
+  "builds.possiblyOutdatedHelp": "The catalog changed after this build was saved (saved revision {saved}, current {current}). It will be recalculated with current data when loaded; if incompatible, the historical revision is kept.",
+  "builds.loadedUpdated": "Loaded and updated “{name}” to the current catalog.",
+  "builds.loadedHistorical": "Loaded historical “{name}”: the current catalog is incompatible with this setup."
 }
