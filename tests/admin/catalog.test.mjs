@@ -9,7 +9,7 @@ import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs
 const origin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
 function fixture() {
   const sqlite = new DatabaseSync(':memory:');
-  for (const name of ['0002_catalog.sql', '0003_skill_variants.sql']) sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
+  for (const name of ['0002_catalog.sql', '0003_skill_variants.sql', '0004_catalog_impact_revision.sql']) sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
   const DB = { prepare(sql) {
     let params = [];
     return {
