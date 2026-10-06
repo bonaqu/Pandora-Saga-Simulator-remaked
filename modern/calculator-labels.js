@@ -130,13 +130,24 @@
     });
     [5, 6, 9, 10].forEach(function (index) {
       // These are qualified effects, not interchangeable with their base skill.
-      var values = names.Text.Skill.Buff[index].slice(1, 4).map(function (html) {
+      // Keep the compact visible label and the hover help as separate workbook
+      // terms so translators can change either without flattening the Legacy span.
+      var sourceValues = names.Text.Skill.Buff[index].slice(1, 4);
+      var values = sourceValues.map(function (html) {
         var source = document.createElement('span'); source.innerHTML = html;
         var help = source.querySelector('[title]');
-        return help ? help.title : html;
+        return (help || source).textContent.trim();
+      });
+      var hints = sourceValues.map(function (html) {
+        var source = document.createElement('span'); source.innerHTML = html;
+        var help = source.querySelector('[title]');
+        return help ? help.title : '';
       });
       add('calculator.qualified_buff.' + index, 'Name.Text.Skill.Buff[' + index + ']', values,
-        [{ selector: '#ViewBuff_' + index + '_0', sourceValues: names.Text.Skill.Buff[index].slice(1, 4) }]);
+        [{ selector: '#ViewBuff_' + index + '_0', sourceValues: sourceValues }]);
+      if (hints[1]) rows.push({ id: 'calculator.qualified_buff.' + index + '.hint',
+        category: 'calculator_hint', legacy_path: 'Name.Text.Skill.Buff[' + index + '] @title',
+        values: hints, targets: [{ selector: '#ViewBuff_' + index + '_0' }], hint: true });
     });
     names.Text.Skill.Text.forEach(function (entry, index) {
       var targets = [];

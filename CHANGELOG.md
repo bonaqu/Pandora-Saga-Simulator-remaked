@@ -2,6 +2,32 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Modern 3.13 — Russian calculator terminology and hover help, 2026-10-06
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Базовые характеристики получили согласованные русские сокращения: `ВЫН`, `СИЛ`, `ПРВ`, `ЛВК`, `СД`, `ИНТ`.
+- В «Результатах расчёта» переведены основные боевые, защитные, скоростные, элементальные и служебные показатели, включая `ОЗ`, `ОМ`, `Точность`, `Крит УРОН`, `Ближ УКЛОН`, `Дальн АТК УКЛОН`, дистанцию ближней/дальней атаки и сопротивления.
+- Для показателей, где короткой подписи недостаточно, добавлены отдельные русские hover-подсказки: например, снижение физического/магического/критического урона, уклонение, дальность, скорость и сопротивления.
+- Все 25 групп навыков получили русские названия, а четыре составных эффекта Enchantment / Sage's Song — короткие русские подписи и отдельные пояснения при наведении.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Base attributes now use the requested compact Russian abbreviations in RU mode.
+- Calculated results have reviewed Russian labels for combat, defense, evasion, range, speed, elemental resistance and utility stats.
+- Compact labels can now carry independent translated hover help, so explanatory Russian text does not have to be baked into the visible abbreviation.
+- All 25 skill branches and four qualified Enchantment / Sage's Song effect labels now have reviewed Russian display text.
+<!-- /release-notes:en -->
+
+### Project and delivery details
+
+- These changes are display-only and live in `localization/translations.xlsx`; Legacy arrays, formulas, numeric results, build serialization and source-language data are unchanged.
+- Qualified effect labels and their `title` help are now exported as separate translation IDs, matching the existing calculator-label / calculator-hint model used by other Legacy help text.
+- Browser coverage verifies representative base stats, result labels, skill groups and qualified-effect hover help while asserting that translated display leaves do not mutate Legacy calculator state.
+
 ## Modern 3.12 — clearer equipment search and keyboard picking, 2026-10-05
 
 <!-- release-notes:ru -->

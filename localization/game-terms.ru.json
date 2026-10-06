@@ -2778,9 +2778,19 @@
       "id": "calculator.qualified_buff.5",
       "category": "calculator_label",
       "legacy_path": "Name.Text.Skill.Buff[5]",
+      "source_en": "Enchant (MATK)",
+      "source_jp": "エンハ (魔攻)",
+      "source_tw": "鋼力招來 (魔攻)",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "calculator.qualified_buff.5.hint",
+      "category": "calculator_hint",
+      "legacy_path": "Name.Text.Skill.Buff[5] @title",
       "source_en": "Enchantment (Magic attack)",
       "source_jp": "エンハンスエンチャント (魔法攻撃力)",
-      "source_tw": "鋼力招來 (魔攻)",
+      "source_tw": "",
       "ru_proposed": "",
       "ru_approved": ""
     },
@@ -2788,9 +2798,19 @@
       "id": "calculator.qualified_buff.6",
       "category": "calculator_label",
       "legacy_path": "Name.Text.Skill.Buff[6]",
+      "source_en": "Enchant (Aura)",
+      "source_jp": "エンハ (オーラ)",
+      "source_tw": "鋼力招來 (靈氣)",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "calculator.qualified_buff.6.hint",
+      "category": "calculator_hint",
+      "legacy_path": "Name.Text.Skill.Buff[6] @title",
       "source_en": "Enchantment (Aura damage)",
       "source_jp": "エンハンスエンチャント (オーラダメージ)",
-      "source_tw": "鋼力招來 (靈氣)",
+      "source_tw": "",
       "ru_proposed": "",
       "ru_approved": ""
     },
@@ -2798,9 +2818,19 @@
       "id": "calculator.qualified_buff.9",
       "category": "calculator_label",
       "legacy_path": "Name.Text.Skill.Buff[9]",
-      "source_en": "Sage's Song (MATK)",
+      "source_en": "Sage's (MATK)",
       "source_jp": "魔力の歌(魔攻)",
       "source_tw": "魔力之歌 (魔攻)",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "calculator.qualified_buff.9.hint",
+      "category": "calculator_hint",
+      "legacy_path": "Name.Text.Skill.Buff[9] @title",
+      "source_en": "Sage's Song (MATK)",
+      "source_jp": "",
+      "source_tw": "",
       "ru_proposed": "",
       "ru_approved": ""
     },
@@ -2808,9 +2838,19 @@
       "id": "calculator.qualified_buff.10",
       "category": "calculator_label",
       "legacy_path": "Name.Text.Skill.Buff[10]",
-      "source_en": "Sage's Song (Delay)",
+      "source_en": "Sage's (Delay)",
       "source_jp": "魔力の歌(再使用)",
       "source_tw": "魔力之歌 (冷卻)",
+      "ru_proposed": "",
+      "ru_approved": ""
+    },
+    {
+      "id": "calculator.qualified_buff.10.hint",
+      "category": "calculator_hint",
+      "legacy_path": "Name.Text.Skill.Buff[10] @title",
+      "source_en": "Sage's Song (Delay)",
+      "source_jp": "",
+      "source_tw": "",
       "ru_proposed": "",
       "ru_approved": ""
     },

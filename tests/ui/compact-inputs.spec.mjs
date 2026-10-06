@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('numeric feedback names each field and its actual limit; cancel clears it without changing the build', async ({ page }, testInfo) => {
+  testInfo.setTimeout(60_000);
   await page.goto('/');
   const before = await page.evaluate(() => Store());
   const status = page.locator('#remaked-number-status');

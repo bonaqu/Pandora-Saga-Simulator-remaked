@@ -153,7 +153,7 @@ test('source tooltip and added skill show the actual custom requirements in EN/R
   await expect(card.locator('[data-remaked-variant-learning]')).toContainText('не меньше 8 очков');
   await expect(card).toContainText('Настроенные условия изучения');
   await page.setViewportSize({ width: 390, height: 844 }); await icon.focus(); await expect(tooltip).toBeVisible();
-  await expect(requirements).toHaveText('Любой класс. Уровень 1 или выше. Elemental: не меньше 35 очков');
+  await expect(requirements).toHaveText('Любой класс. Уровень 1 или выше. Магия стихий: не меньше 35 очков');
   const bounds = await tooltip.boundingBox(); expect(bounds.x).toBeGreaterThanOrEqual(8); expect(bounds.x + bounds.width).toBeLessThanOrEqual(382);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: directory + '/public-learning-390.png' });
