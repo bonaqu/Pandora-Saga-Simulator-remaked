@@ -471,24 +471,22 @@ test('phone bulk modifiers fit the Equipment section, recalculate through Legacy
   await expect(page.locator('[data-remaked-equipment-picker="SelEquip_0_4"]')).toBeHidden();
 });
 
-test('Equipment reset fits its text instead of inheriting a fixed Legacy width, with bounded long translations', async ({ page }) => {
+test('Equipment reset uses the compact UI-localized caption and ignores long Legacy source text', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
-  // A wider installed/fallback font must not turn an ordinary desktop action
-  // into two lines. Linux and Windows need not have identical font metrics.
   await page.addStyleTag({ content: ':root { --rm-font: monospace; }' });
   const toolbar = page.locator('[data-remaked-picker-toolbar]');
   const reset = toolbar.locator('[data-remaked-equipment-reset]');
-  await expect(reset).toHaveText('Equipment reset');
-  expect((await reset.boundingBox()).height).toBeLessThanOrEqual(40);
+  await expect(reset).toHaveText('Reset');
   const initial = await page.evaluate(() => Store());
   const longLabel = 'Сбросить всё надетое снаряжение персонажа '.repeat(12);
   await page.evaluate(label => { document.getElementById('Text_26').textContent = label; }, longLabel);
-  await expect(reset).toHaveText(longLabel.trim());
+  await expect(reset).toHaveText('Reset');
   for (const width of [1440, 701, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     const section = await page.locator('[data-remaked-picker-section]').boundingBox();
     const box = await reset.boundingBox();
+    expect(box.width).toBeCloseTo(72, 0);
     expect(box.x).toBeGreaterThanOrEqual(section.x);
     expect(box.x + box.width).toBeLessThanOrEqual(section.x + section.width);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
