@@ -284,7 +284,7 @@
           targets.push({
             slotIndex: slotIndex,
             socketIndex: socketIndex,
-            label: equipmentLabel(slotIndex) + ' · Soul ' + (socketIndex - 3),
+            label: equipmentLabel(slotIndex) + ' · ' + namespace.i18n.game('soul.0', 'Soul') + ' ' + (socketIndex - 3),
             selectId: selectId
           });
         }
