@@ -2014,14 +2014,14 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
 }
 .remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child {
   grid-column: 1;
-  grid-template-columns: 30px minmax(0, 1fr);
+  grid-template-columns: 32px minmax(0, 1fr);
   column-gap: 3px;
   min-width: 0;
   padding-inline-end: 0 !important;
 }
 .remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child > [id^="Text_"] {
-  width: 30px !important;
-  min-width: 30px;
+  width: 32px !important;
+  min-width: 32px;
 }
 .remaked-modern #body [data-remaked-calculator-attribute] > ul:first-child > .input_gt {
   grid-template-columns: 44px minmax(32px, 1fr);
