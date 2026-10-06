@@ -120,7 +120,7 @@ test('name, description and translation-only publications never mark saved build
   const row = page.locator('[data-remaked-build-row][data-build-id="' + build.id + '"]');
   await expect(row).not.toHaveAttribute('data-catalog-stale', 'true');
   await expect(row.locator('[data-remaked-build-stale]')).toHaveCount(0);
-  await expect(page.locator('[data-remaked-catalog-revision]')).toContainText('ревизия 2');
+  await expect(page.locator('[data-remaked-catalog-revision]')).toContainText('revision 2');
   expect(await page.evaluate(() => PandoraRemaked.builds.getLatestCatalogImpactRevision())).toBe(0);
 });
 
