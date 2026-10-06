@@ -220,7 +220,7 @@ async function commitSnapshot(env, previous, entries, now, note, draft = null) {
   if (draft) statements.push(env.DB.prepare('UPDATE catalog_drafts SET is_dirty = 0, version = version + 1 WHERE id = ? AND version = ? AND EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND write_token = ?)').bind(draft.id, draft.version, token));
   const result = await env.DB.batch(statements);
   if (result[0].meta.changes !== 1) fail('Catalog or draft changed in another tab; reload before publishing', 409);
-  return jsonResponse({ ok: true, catalogRevision: next, impactRevision, message: 'Catalog published' });
+  return jsonResponse({ ok: true, catalogRevision: next, impactRevision: impactVersion, message: 'Catalog published' });
 }
 async function publish(request, env, now) {
   const input = await body(request); schema(input, ['id', 'expectedDraftVersion', 'expectedCatalogRevision']);
