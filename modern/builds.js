@@ -22,9 +22,9 @@
   var initialized = false;
   var suppressAutosave = false;
   var previousBodyOverflow = '';
-  var catalogRevision = null, catalogUpdate = null, catalogStatus = null;
+  var catalogRevision = null, catalogStatus = null;
   var catalogRequest = 0, catalogBusy = false, catalogMessage = null;
-  var catalogPollTimer = null, catalogHeadBusy = false, latestCatalogRevision = 0, catalogAutoBlockedKey = '';
+  var catalogPollTimer = null, catalogHeadBusy = false, latestCatalogRevision = 0, latestCatalogImpactRevision = 0, catalogAutoBlockedKey = '';
   var restorationFailed = false;
   var loadRequest = 0;
 
@@ -40,10 +40,10 @@
         jp: '更新の可能性あり', tw: '可能已過期'
       },
       possiblyOutdatedHelp: {
-        en: 'The catalog changed after this build was saved (saved revision {saved}, current {current}). It will be recalculated with current data when loaded; if incompatible, the historical revision is kept.',
-        ru: 'После сохранения этого билда каталог изменился (сохранённая ревизия {saved}, текущая {current}). При загрузке билд будет пересчитан на актуальных данных; если новая ревизия несовместима, сохранится историческая версия.',
-        jp: 'このビルドの保存後にカタログが更新されました（保存版 {saved}、現在 {current}）。読み込み時に最新データで再計算し、互換性がない場合は過去版を維持します。',
-        tw: '此配置儲存後目錄已更新（儲存版本 {saved}，目前 {current}）。載入時會以最新資料重新計算；若不相容則保留歷史版本。'
+        en: 'Build-affecting catalog data changed after this build was saved (saved revision {saved}, latest impact revision {current}). Names, descriptions and translations alone do not trigger this warning. The build will be recalculated when loaded; if incompatible, its historical revision is kept.',
+        ru: 'После сохранения этого билда изменились данные, влияющие на расчёт (сохранённая ревизия {saved}, последняя влияющая ревизия {current}). Одни только названия, описания и переводы эту метку не вызывают. При загрузке билд будет пересчитан; при несовместимости сохранится историческая версия.',
+        jp: 'このビルド保存後に計算へ影響するカタログデータが変更されました（保存版 {saved}、最新影響版 {current}）。名前・説明・翻訳だけの変更ではこの警告は表示されません。読み込み時に再計算し、互換性がなければ過去版を維持します。',
+        tw: '此配置儲存後有會影響計算的目錄資料變更（儲存版本 {saved}，最新影響版本 {current}）。僅名稱、說明或翻譯變更不會觸發此警告。載入時會重新計算；若不相容則保留歷史版本。'
       },
       loadedUpdated: {
         en: 'Loaded and updated “{name}” to the current catalog.',
@@ -64,10 +64,28 @@
         tw: '已自動套用目錄 {revision}。'
       },
       catalogHelp: {
-        en: 'Published catalog changes are detected automatically. The current character is updated safely; older named builds are marked and updated when loaded.',
-        ru: 'Опубликованные изменения каталога обнаруживаются автоматически. Текущий персонаж безопасно обновляется, а старые именованные билды помечаются и обновляются при загрузке.',
-        jp: '公開済みカタログの変更は自動検出されます。現在のキャラクターは安全に更新され、古い保存ビルドは印が付き、読み込み時に更新されます。',
-        tw: '已發布的目錄變更會自動偵測。目前角色會安全更新；較舊的已儲存配置會被標記，並在載入時更新。'
+        en: 'Changes are detected automatically. Saved builds are highlighted only when calculations or compatibility can change; text-only edits never mark them outdated.',
+        ru: 'Изменения обнаруживаются автоматически. Билды помечаются только при изменениях расчёта или совместимости; правки названий, описаний и переводов не считаются устареванием.',
+        jp: '変更は自動検出されます。保存ビルドは計算や互換性に影響する変更だけで警告され、名前・説明・翻訳だけの変更では古い扱いになりません。',
+        tw: '變更會自動偵測。只有可能影響計算或相容性的變更才會標記已儲存配置；僅名稱、說明或翻譯變更不算過期。'
+      },
+      catalogLine: {
+        en: 'Catalog: revision {revision} · updates automatically',
+        ru: 'Каталог: ревизия {revision} · обновляется автоматически',
+        jp: 'カタログ: リビジョン {revision} · 自動更新',
+        tw: '目錄：版本 {revision} · 自動更新'
+      },
+      catalogSourceLine: {
+        en: 'Catalog: source revision 0 · updates automatically',
+        ru: 'Каталог: исходная ревизия 0 · обновляется автоматически',
+        jp: 'カタログ: 元リビジョン 0 · 自動更新',
+        tw: '目錄：來源版本 0 · 自動更新'
+      },
+      catalogCheckingLine: {
+        en: 'Catalog: revision {revision} · checking for updates…',
+        ru: 'Каталог: ревизия {revision} · проверка обновлений…',
+        jp: 'カタログ: リビジョン {revision} · 更新を確認中…',
+        tw: '目錄：版本 {revision} · 正在檢查更新…'
       }
     };
     var text = (copy[key] && (copy[key][locale] || copy[key].en)) || key;
@@ -129,16 +147,22 @@
     catch { return 0; }
   }
 
-  function setLatestCatalogRevision(next) {
+  function setLatestCatalogRevision(next, impact) {
     next = Number(next);
-    if (!Number.isSafeInteger(next) || next < 0 || next === latestCatalogRevision) return;
+    impact = Number(impact);
+    if (!Number.isSafeInteger(next) || next < 0) return;
+    if (!Number.isSafeInteger(impact) || impact < 0 || impact > next) impact = next;
+    var changed = next !== latestCatalogRevision || impact !== latestCatalogImpactRevision;
     latestCatalogRevision = next;
-    if (managerOverlay && managerOverlay.open) renderBuilds();
-    window.dispatchEvent(new CustomEvent('pandora-remaked:buildcataloghead', { detail: { revision: next } }));
+    latestCatalogImpactRevision = impact;
+    if (changed && managerOverlay && managerOverlay.open) renderBuilds();
+    if (changed) window.dispatchEvent(new CustomEvent('pandora-remaked:buildcataloghead', {
+      detail: { revision: next, impactRevision: impact }
+    }));
   }
 
   function staleBuild(build) {
-    return Boolean(latestCatalogRevision > payloadRevision(build.payload));
+    return Boolean(latestCatalogImpactRevision > payloadRevision(build.payload));
   }
 
   async function latestNamedPayload(payload) {
@@ -150,7 +174,7 @@
     }
     if (location.origin !== 'https://bonaqu.github.io') return payload;
     var latest = await namespace.catalog.latestPayload(payload, { networkOnly: true });
-    setLatestCatalogRevision(namespace.catalog.getHeadRevision());
+    setLatestCatalogRevision(namespace.catalog.getHeadRevision(), namespace.catalog.getHeadImpactRevision());
     return latest;
   }
 
@@ -183,18 +207,14 @@
   function refreshCatalogControls() {
     if (!catalogRevision) return;
     var revision = namespace.catalog.getRevision();
-    catalogRevision.textContent = revision
-      ? t('builds.catalogRevision', { revision: revision }, 'Catalog revision: ' + revision)
-      : t('builds.catalogSource', null, 'Legacy source (revision 0)');
-    catalogUpdate.disabled = catalogBusy;
-    catalogUpdate.setAttribute('aria-busy', String(catalogBusy));
-    catalogUpdate.textContent = catalogBusy
-      ? t('builds.catalogChecking', null, 'Checking published catalog…')
-      : t('builds.catalogUpdate', null, 'Update current build');
+    catalogRevision.textContent = catalogBusy
+      ? liveText('catalogCheckingLine', { revision: revision })
+      : revision
+        ? liveText('catalogLine', { revision: revision })
+        : liveText('catalogSourceLine');
     catalogStatus.textContent = catalogMessage ? t(catalogMessage.key, catalogMessage.values, catalogMessage.fallback) : '';
     catalogStatus.dataset.state = catalogMessage?.state || 'ready';
   }
-
   function setCatalogStatus(key, state, values, fallback) {
     catalogMessage = { key: key, state: state, values: values, fallback: fallback };
     refreshCatalogControls();
@@ -294,7 +314,7 @@
     catalogHeadBusy = true;
     try {
       var head = await catalog.fetchHead({ networkOnly: true });
-      setLatestCatalogRevision(head);
+      setLatestCatalogRevision(head, catalog.getHeadImpactRevision());
       if (head > catalog.getRevision()) {
         var payload;
         try { payload = currentPayload(); }
@@ -325,7 +345,7 @@
       if (document.visibilityState === 'visible') checkCatalogHead();
     });
     window.addEventListener('pandora-remaked:cataloghead', function (event) {
-      if (event.detail) setLatestCatalogRevision(event.detail.revision);
+      if (event.detail) setLatestCatalogRevision(event.detail.revision, event.detail.impactRevision);
     });
     checkCatalogHead();
   }
@@ -708,7 +728,7 @@
         row.dataset.catalogStale = 'true';
         var staleLabel = liveText('possiblyOutdated');
         var staleHelp = liveText('possiblyOutdatedHelp', {
-          saved: payloadRevision(build.payload), current: latestCatalogRevision
+          saved: payloadRevision(build.payload), current: latestCatalogImpactRevision
         });
         row.title = staleHelp;
         name.title = staleHelp;
@@ -983,18 +1003,15 @@
     if (namespace.catalog) {
       var catalogSection = document.createElement('section');
       catalogSection.className = 'remaked-build-section remaked-build-catalog';
-      catalogRevision = document.createElement('h3');
+      catalogRevision = document.createElement('div');
+      catalogRevision.className = 'remaked-build-catalog-line';
       catalogRevision.dataset.remakedCatalogRevision = '';
       catalogSection.appendChild(catalogRevision);
       var catalogHelp = document.createElement('p');
       catalogHelp.id = 'remaked-catalog-update-help';
+      catalogHelp.className = 'remaked-build-catalog-help';
       catalogHelp.textContent = liveText('catalogHelp');
       catalogSection.appendChild(catalogHelp);
-      catalogUpdate = button('Update current build', null, 'builds.catalogUpdate');
-      catalogUpdate.dataset.remakedCatalogUpdate = '';
-      catalogUpdate.setAttribute('aria-describedby', catalogHelp.id);
-      catalogUpdate.addEventListener('click', updateCurrentCatalog);
-      catalogSection.appendChild(catalogUpdate);
       catalogStatus = document.createElement('p');
       catalogStatus.className = 'remaked-build-status'; catalogStatus.dataset.remakedCatalogStatus = '';
       catalogStatus.setAttribute('role', 'status'); catalogSection.appendChild(catalogStatus);
@@ -1086,6 +1103,7 @@
     updateCurrentCatalog: updateCurrentCatalog,
     checkCatalogHead: checkCatalogHead,
     getLatestCatalogRevision: function () { return latestCatalogRevision; },
+    getLatestCatalogImpactRevision: function () { return latestCatalogImpactRevision; },
     scheduleAutosave: scheduleAutosave,
     flushAutosave: flushAutosave,
     openManager: openManager,
