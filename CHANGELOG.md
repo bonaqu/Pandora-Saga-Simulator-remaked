@@ -2,6 +2,34 @@
 
 All notable player-facing changes to **Pandora Saga Simulator Remaked** are recorded here.
 
+## Modern 3.16 — production polish after RU layout review, 2026-10-06
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Исправлена кнопка сброса снаряжения: при временном рассинхроне PWA-кэша больше не может показываться сырой ключ `equipment.reset`; всегда используется человекочитаемый `Reset / Сброс / リセット / 重設`.
+- Ширина названий слотов снаряжения уменьшена с 80 до 74 px: `Перчатки` всё ещё помещается полностью, но лишнее пустое пространство сокращено.
+- `Сопр АНООМДУХ` исправлено на `Сопр АНОМДУХ`.
+- Новые hover-подсказки в «Результатах расчёта» теперь используют обычное сплошное подчёркивание, как существующие Legacy-подсказки, а не пунктир.
+- Сохранены исправления Modern 3.15: трёхзначные итоги базовых характеристик, русские подписи персонажа/навигации, переводы Equipment и компактные кнопки.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Equipment reset now has a safe locale fallback and can no longer expose the raw `equipment.reset` key during a mixed PWA-cache update.
+- Desktop/tablet Equipment slot-label width is tightened from 80px to 74px while keeping long RU labels visible.
+- Corrected the RU anomalous-spirit resistance abbreviation.
+- Newly added calculated-result hints now match the existing solid Legacy help underline.
+<!-- /release-notes:en -->
+
+### Project and delivery details
+
+- Reset fallback is resilient to a stale `locales.js` paired with a newer component script.
+- Regression coverage explicitly removes the RU reset key at runtime and verifies the fallback label.
+- Tooltip-style coverage compares newly added title-only hints with the established `.help` underline contract.
+- Translation remains workbook-driven; no calculator formulas, source arrays, item IDs, callbacks or build serialization are changed.
+
 ## Modern 3.15 — Russian result help and compact layout polish, 2026-10-06
 
 <!-- release-notes:ru -->
