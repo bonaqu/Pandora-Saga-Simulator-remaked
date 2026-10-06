@@ -2059,23 +2059,25 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   text-underline-offset: 2px;
 }
 
-.remaked-modern #body [data-remaked-picker-slot] {
-  display: flex;
-  align-items: center;
-}
-.remaked-modern #body [data-remaked-picker-slot] > [data-remaked-picker-slot-label] {
-  box-sizing: border-box;
-  width: 68px !important;
-  min-width: 68px;
-  padding-inline-end: 5px !important;
-  text-align: left !important;
-  white-space: nowrap;
-  overflow: visible;
-}
-.remaked-modern #body [data-remaked-picker-slot] > .input_gt {
-  box-sizing: border-box;
-  width: calc(100% - 68px) !important;
-  min-width: 0;
+@media (min-width: 621px) {
+  .remaked-modern #body [data-remaked-picker-slot] {
+    display: flex;
+    align-items: center;
+  }
+  .remaked-modern #body [data-remaked-picker-slot] > [data-remaked-picker-slot-label] {
+    box-sizing: border-box;
+    width: 80px !important;
+    min-width: 80px;
+    padding-inline-end: 5px !important;
+    text-align: left !important;
+    white-space: nowrap;
+    overflow: visible;
+  }
+  .remaked-modern #body [data-remaked-picker-slot] > .input_gt {
+    box-sizing: border-box;
+    width: calc(100% - 80px) !important;
+    min-width: 0;
+  }
 }
 .remaked-modern #body [data-remaked-equipment-reset] {
   box-sizing: border-box;
