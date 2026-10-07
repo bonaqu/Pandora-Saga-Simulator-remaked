@@ -99,7 +99,9 @@ function newEdit(kind, server, english) {
     patch.races = Array(6).fill(1);
     patch.classes = classFlags(server);
   } else {
-    patch.modifiers = { en: english?.n || '', ru: server.name || '' };
+    // The current data set has no separate Soul item-name modifier/prefix.
+    // Leave it empty instead of inventing one from the Soul's own name.
+    patch.modifiers = { en: '', ru: '', jp: '', tw: '' };
   }
   const base = draftFromSource(null, kind);
   base.id = id;
