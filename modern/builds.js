@@ -81,6 +81,18 @@
         jp: 'カタログ {revision} には安全な修復が必要ですが、バックアップを保存できませんでした。変更はありません。',
         tw: '目錄 {revision} 需要安全修復，但無法儲存備份。未進行任何變更。'
       },
+      autoRepairFailed: {
+        en: 'Catalog {revision} could not be applied safely. The previous build was restored.',
+        ru: 'Каталог {revision} не удалось применить безопасно. Предыдущий билд восстановлен.',
+        jp: 'カタログ {revision} を安全に適用できませんでした。以前のビルドを復元しました。',
+        tw: '無法安全套用目錄 {revision}。已還原先前的配置。'
+      },
+      autoAutosaveFailed: {
+        en: 'Catalog {revision} was not kept because the updated autosave could not be written. The previous build was restored.',
+        ru: 'Каталог {revision} не сохранён: не удалось записать обновлённый автосейв. Предыдущий билд восстановлен.',
+        jp: '更新済みオートセーブを書き込めなかったため、カタログ {revision} は保持されませんでした。以前のビルドを復元しました。',
+        tw: '因無法寫入更新後的自動儲存，未保留目錄 {revision}。已還原先前的配置。'
+      },
       catalogBackupName: {
         en: 'Backup before catalog {from}→{to}',
         ru: 'Автокопия перед каталогом {from}→{to}',
@@ -345,8 +357,10 @@
         repairBackup = backup.build;
         var repaired = applyCatalogRepairs(plan);
         if (!repaired.ok) {
-          rollback(before);
-          return { ok: false, reason: 'repair-failed', error: repaired.error, backup: repairBackup };
+          var repairRollback = rollback(before);
+          if (!repairRollback.ok) restorationFailed = true;
+          if (automatic) setAutosaveStatus(liveText('autoRepairFailed', { revision: snapshot.revision }), 'warning');
+          return { ok: false, reason: 'repair-failed', error: repaired.error, backup: repairBackup, restored: repairRollback.ok };
         }
         repairCount = repaired.cleared;
         working = repaired.payload;
@@ -354,10 +368,15 @@
 
       try { catalog.preflightSnapshot(snapshot); }
       catch (error) {
-        if (repairCount) rollback(before);
-        if (automatic) setAutosaveStatus(liveText('autoBlocked', { revision: snapshot.revision }), 'warning');
+        var preflightRestored = true;
+        if (repairCount) {
+          var preflightRollback = rollback(before);
+          preflightRestored = preflightRollback.ok;
+          if (!preflightRestored) restorationFailed = true;
+        }
+        if (automatic) setAutosaveStatus(liveText(repairCount ? 'autoRepairFailed' : 'autoBlocked', { revision: snapshot.revision }), 'warning');
         else setCatalogStatus('builds.catalogIncompatible', 'warning', null, 'Update incompatible with equipped items, Soul slots or class requirements. Current build and saves kept.');
-        return { ok: false, reason: 'incompatible', error: error, backup: repairBackup };
+        return { ok: false, reason: 'incompatible', error: error, backup: repairBackup, restored: preflightRestored };
       }
       var candidate = catalog.repinPayload(working, snapshot.revision);
       var loaded = loadPayloadSafely(candidate);
@@ -371,7 +390,9 @@
           } else restorationFailed = false;
         }
         loaded.reason = loaded.restored ? 'calculation-failed' : 'restore-failed';
-        if (!automatic) {
+        if (automatic) {
+          setAutosaveStatus(liveText('autoRepairFailed', { revision: snapshot.revision }), loaded.restored ? 'warning' : 'error');
+        } else {
           setCatalogStatus(loaded.restored ? 'builds.catalogCalculationFailed' : 'builds.catalogRestorationFailed', 'error', null,
             loaded.restored ? 'Recalculation failed. The previous catalog, character and saves were restored.' : 'Recalculation failed and restoration could not be verified. Autosave is paused; reload to recover the untouched saved build.');
         }
@@ -382,6 +403,7 @@
       if (repairCount && !saved.ok) {
         var saveRollback = rollback(before);
         if (!saveRollback.ok) restorationFailed = true;
+        if (automatic) setAutosaveStatus(liveText('autoAutosaveFailed', { revision: snapshot.revision }), saveRollback.ok ? 'warning' : 'error');
         return { ok: false, reason: 'autosave-failed', error: saved.error, backup: repairBackup, restored: saveRollback.ok };
       }
       var detached = detachLoadedShareLink();
