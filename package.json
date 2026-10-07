@@ -2,10 +2,10 @@
   "name": "pandora-saga-simulator-remaked",
   "private": true,
   "scripts": {
-    "test:admin": "node --test tests/admin/auth.test.mjs tests/admin/worker.test.mjs tests/admin/wrangler-json.test.mjs tests/admin/catalog-model.test.mjs tests/admin/character-model.test.mjs tests/admin/skill-model.test.mjs tests/admin/catalog.test.mjs tests/admin/racial-corrections.test.mjs tests/admin/current-elemental-skills.test.mjs tests/admin/current-active-profiles.test.mjs tests/admin/pandora-os-item-sync.test.mjs tests/admin/pandora-os-live-sync.test.mjs tests/admin/pandora-os-live-sync-hardening.test.mjs",
+    "test:admin": "node --test tests/admin/auth.test.mjs tests/admin/worker.test.mjs tests/admin/wrangler-json.test.mjs tests/admin/catalog-model.test.mjs tests/admin/character-model.test.mjs tests/admin/skill-model.test.mjs tests/admin/catalog.test.mjs tests/admin/racial-corrections.test.mjs tests/admin/current-elemental-skills.test.mjs tests/admin/current-active-profiles.test.mjs tests/admin/pandora-os-item-sync.test.mjs tests/admin/pandora-os-live-sync.test.mjs tests/admin/pandora-os-live-sync-hardening.test.mjs tests/admin/pandora-os-complete-sync.test.mjs",
     "admin:check": "wrangler deploy --config admin-api/wrangler.jsonc --dry-run",
     "admin:dev": "wrangler dev --config admin-api/wrangler.jsonc --ip 127.0.0.1 --port 18788 --inspector-port 19230",
-    "admin:migrate": "node scripts/materialize_pandora_os_sync.mjs && node scripts/materialize_pandora_os_live_sync.mjs && node scripts/materialize_pandora_os_live_sync_hardening.mjs && wrangler d1 migrations apply pandora-saga-simulator-remaked-admin-db --config admin-api/wrangler.jsonc --remote",
+    "admin:migrate": "node scripts/materialize_pandora_os_sync.mjs && node scripts/materialize_pandora_os_live_sync.mjs && node scripts/materialize_pandora_os_live_sync_hardening.mjs && node scripts/materialize_pandora_os_complete_sync.mjs && wrangler d1 migrations apply pandora-saga-simulator-remaked-admin-db --config admin-api/wrangler.jsonc --remote",
     "admin:deploy": "wrangler deploy --config admin-api/wrangler.jsonc",
     "admin:seed": "node scripts/create_first_admin.mjs",
     "test:ui": "playwright test",
@@ -37,7 +37,7 @@
     "test:source-audit": "node --test tests/tools/current-skill-audit.test.mjs",
     "test:ui:ci": "playwright test tests/ui/modern-foundation.spec.mjs tests/ui/adapter.spec.mjs tests/ui/summary-adapter.spec.mjs tests/ui/compare-differential.spec.mjs tests/ui/compare-builds.spec.mjs tests/ui/tooltips.spec.mjs tests/ui/search-builds.spec.mjs tests/ui/build-store.spec.mjs tests/ui/build-manager.spec.mjs tests/ui/mobile-polish.spec.mjs tests/ui/pwa-ui.spec.mjs tests/ui/pwa-offline.spec.mjs tests/ui/localization.spec.mjs tests/ui/data-projections.spec.mjs tests/ui/legacy-codecs.spec.mjs tests/ui/game-term-display.spec.mjs tests/ui/release-accessibility.spec.mjs tests/ui/ui-consistency.spec.mjs tests/ui/build-share.spec.mjs tests/ui/item-preview.spec.mjs tests/ui/equipment-picker.spec.mjs tests/ui/calculator-readability.spec.mjs tests/ui/skill-allocation.spec.mjs tests/ui/calculator-code.spec.mjs tests/ui/equipment-compatibility.spec.mjs tests/ui/compact-workspace.spec.mjs tests/ui/legacy-build-recovery.spec.mjs tests/ui/build-code-workspace.spec.mjs tests/ui/compact-inputs.spec.mjs tests/ui/panel-workspace.spec.mjs tests/ui/native-recovery.spec.mjs tests/ui/racial-corrections.spec.mjs tests/ui/skill-tooltips.spec.mjs",
     "test:ui:visual": "playwright test tests/ui/visual-capture.spec.mjs tests/ui/game-term-visual.spec.mjs",
-    "admin:materialize-sync": "node scripts/materialize_pandora_os_sync.mjs && node scripts/materialize_pandora_os_live_sync.mjs && node scripts/materialize_pandora_os_live_sync_hardening.mjs"
+    "admin:materialize-sync": "node scripts/materialize_pandora_os_sync.mjs && node scripts/materialize_pandora_os_live_sync.mjs && node scripts/materialize_pandora_os_live_sync_hardening.mjs && node scripts/materialize_pandora_os_complete_sync.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",
