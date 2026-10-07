@@ -272,8 +272,7 @@
     if (!window.Status) return;
     var definitions = [
       { key: 'StP', id: 'StatusStP_0' },
-      { key: 'SkP', id: 'StatusSkP_0' },
-      { key: 'UnP', id: 'StatusUnP_0' }
+      { key: 'SkP', id: 'StatusSkP_0' }
     ];
     var deficits = [];
     definitions.forEach(function (definition) {
