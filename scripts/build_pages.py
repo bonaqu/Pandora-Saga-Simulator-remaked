@@ -50,6 +50,7 @@ REQUIRED_MODERN = (
     "modern/skill-tooltips.js",
     "modern/adapter.js",
     "modern/catalog.js",
+    "modern/enhancement-effects.js",
     "modern/build-store.js",
     "modern/search.js",
     "modern/equipment-picker.js",
@@ -157,6 +158,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/build-store.js"></script>
 <script src="./modern/native-passives.js"></script>
 <script src="./modern/catalog.js"></script>
+<script src="./modern/enhancement-effects.js"></script>
 <script src="./modern/admin-entry.js"></script>
 <script src="./modern/search.js"></script>
 <script src="./modern/app-shell.js"></script>
