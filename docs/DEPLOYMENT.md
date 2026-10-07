@@ -15,9 +15,16 @@ The project keeps two user-facing modes:
 
 A normal user-facing change is developed on a branch, validated by Feature CI and merged into `bonaqu_projects`. GitHub Actions then builds the static Pages artifact and publishes it.
 
-For an exact merge whose PR head already passed Feature CI, deployment reuses that successful validation and runs a smaller production smoke gate. Direct pushes, manual runs and any case that cannot prove the exact successful PR head automatically use the full fallback validation path.
+Deployment uses a fail-closed change policy rather than one validation path for every push:
 
-This keeps normal releases fast without turning off the safety checks needed for unusual publication paths.
+- **Release notes only** — if everything since the last successful Pages deployment is allowlisted documentation and includes `CHANGELOG.md`, the workflow runs focused changelog/build tests, rebuilds the site, validates the generated **What’s new** payload and deploys without installing browsers.
+- **Documentation only** — documentation that does not affect the public Pages artifact skips the Pages build entirely; Wiki inputs can still synchronize independently.
+- **Validated runtime** — runtime commits that are all traceable to merged PR heads with successful Feature CI reuse that validation and run the smaller production smoke gate. This also covers a documentation follow-up that cancels an in-progress deploy after an already validated merge.
+- **Full fallback** — direct runtime pushes, unknown history, failed provenance checks, manual runs and deployment/build infrastructure changes run the complete validation matrix.
+
+The classifier is deny-by-default. A mixed documentation/runtime change cannot enter the documentation fast path, and deployment-sensitive files are checked before the repository-owned classifier is executed.
+
+Deployments check out the exact triggering commit and never import or push source material from inside the publication job. This keeps the artifact deterministic and avoids recursive or race-prone deployment pushes.
 
 ## What is validated
 
