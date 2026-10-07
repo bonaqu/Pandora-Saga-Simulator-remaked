@@ -81,18 +81,19 @@ class RepositoryDocsTests(unittest.TestCase):
                 self.assertIn(relative, self.read(readme))
             self.assertTrue((ROOT / relative).is_file())
 
-    def test_phase_four_release_is_documented_for_players(self):
+    def test_current_readmes_document_online_only_delivery_and_history_keeps_phase_four(self):
         english = self.read("README.md")
         russian = self.read("README.ru.md")
         changelog = self.read("CHANGELOG.md")
 
-        self.assertIn("install", english.lower())
-        self.assertIn("offline", english.lower())
-        self.assertIn("PWA", russian)
+        self.assertIn("online-only", english.lower())
+        self.assertIn("only online", english.lower())
+        self.assertIn("только онлайн", russian.lower())
+        self.assertIn("без установки", russian.lower())
         self.assertIn("Legacy Mode", russian)
         self.assertIn("2026.09.4", changelog)
         self.assertIn("New version available — Reload", changelog)
-        self.assertIn("local", changelog.lower())
+        self.assertIn("PWA", changelog)
 
     def test_phase_four_roadmap_records_verified_production_release(self):
         roadmap = self.read("docs/superpowers/plans/2026-09-27-modernization-roadmap.md")
@@ -152,8 +153,10 @@ class RepositoryDocsTests(unittest.TestCase):
 
         for document in (changelog, plan):
             self.assertIn("2026.09.7", document)
-        self.assertIn("3.11", english)
-        self.assertIn("3.11", russian)
+        latest_heading = next(line for line in changelog.splitlines() if line.startswith("## Modern "))
+        latest_version = latest_heading.split()[2]
+        self.assertIn(f"Modern **{latest_version}**", english)
+        self.assertIn(f"Modern **{latest_version}**", russian)
         self.assertIn("## Modern 3.11", changelog)
         self.assertIn("LOCALIZATION_FOR_BEGINNERS.ru.md", russian)
         self.assertIn("translations.xlsx", english)
