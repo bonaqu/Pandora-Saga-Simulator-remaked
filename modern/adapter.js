@@ -40,6 +40,15 @@
     return node && node.textContent ? node.textContent.trim() : '';
   }
 
+  function normalizeUntranslatedItemName(value) {
+    var text = String(value == null ? '' : value).trim();
+    if (!text || text.charAt(0) !== '(') return text;
+    while (text.length > 2 && text.charAt(0) === '(' && text.charAt(text.length - 1) === ')') text = text.slice(1, -1).trim();
+    if (text.charAt(0) === '(' && !/[()]/.test(text.slice(1))) text = text.slice(1).trim();
+    if (text.charAt(text.length - 1) === ')' && !/[()]/.test(text.slice(0, -1))) text = text.slice(0, -1).trim();
+    return text;
+  }
+
   function hasOption(select, value) {
     if (!select) return false;
     for (var index = 0; index < select.options.length; index += 1) {
@@ -58,7 +67,7 @@
     var match = raw.match(/^Lv:\s*(\d+)\s+(.*)$/);
     return {
       value: String(option.value),
-      name: match ? match[2] : raw,
+      name: normalizeUntranslatedItemName(match ? match[2] : raw),
       level: match ? Number(match[1]) : null
     };
   }
@@ -300,7 +309,7 @@
       for (var index = 0; index < select.options.length; index += 1) {
         options.push({
           value: String(select.options[index].value),
-          name: select.options[index]._remakedGameDisplay ? select.options[index]._remakedGameDisplay.sourceText : textOf(select.options[index])
+          name: normalizeUntranslatedItemName(select.options[index]._remakedGameDisplay ? select.options[index]._remakedGameDisplay.sourceText : textOf(select.options[index]))
         });
       }
       return options;
@@ -380,7 +389,7 @@
     if (kind === 'equipment') {
       for (var socket = 0; socket < canonical[5]; socket++) {
         var soulId = equipped ? Number(current[socket + 4]) : 0;
-        souls.push({ id: soulId, name: soulId ? text(window.SoulData[language]?.[soulId]?.[0]) : '' });
+        souls.push({ id: soulId, name: soulId ? normalizeUntranslatedItemName(text(window.SoulData[language]?.[soulId]?.[0])) : '' });
       }
     }
     var baseStats = [];
@@ -398,12 +407,13 @@
     var overrideName = namespace.catalog?.itemText(kind, value, 'names');
     var descriptions = columns.map(function (column) { return text(record[column]); }).filter(Boolean);
     if (namespace.catalog?.item(kind, value)) descriptions = ['description', 'notes', 'acquisition'].map(function (field) { return namespace.catalog.itemText(kind, value, field); }).filter(Boolean);
-    return { name: overrideName || text(record[0]), level: kind === 'equipment' ? canonical[4] : null,
+    var displayName = overrideName || normalizeUntranslatedItemName(text(record[0]));
+    return { name: displayName, level: kind === 'equipment' ? canonical[4] : null,
       sockets: kind === 'equipment' ? canonical[5] : null,
       souls: souls, baseStats: baseStats, classes: classes,
       category: kind === 'equipment' ? text(window.EquipData[language][category][0][0]).replace(/^\+?-+\s*/, '') : '',
       equipped: equipped,
-      equippedName: equipped ? text(window.EquipOption.apply(null, current)).replace(text(record[0]), function () { return overrideName || text(record[0]); }) : '',
+      equippedName: equipped ? text(window.EquipOption.apply(null, current)).replace(text(record[0]), function () { return displayName; }) : '',
       gem: equipped && Number(current[3]) > 0 ? text(window.Name.Gem[0][current[1]][language]) + ' · ' + text(window.Name.Gem[1][current[2]][language]) : '',
       descriptions: descriptions,
       calculationWarning: kind === 'equipment' ? adapter.equipmentCalculationWarning(id) : '' };
