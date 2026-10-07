@@ -911,6 +911,14 @@ body.remaked-modern {
   text-align: center;
   font: 600 11px/1.12 var(--rm-font);
 }
+/* On touch screens use the same accessible target size for every language,
+   including the separate Horsemanship button. */
+@media (max-width: 620px) {
+  .remaked-modern #body [data-remaked-calculator-actions] [data-remaked-calculator-action] {
+    height: 44px;
+    min-height: 44px;
+  }
+}
 
 .remaked-modern #body [data-remaked-calculator-attributes] {
   display: grid;

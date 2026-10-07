@@ -205,12 +205,17 @@ test('calculator action and riding geometry is locale-invariant', async ({ page 
         const container = document.querySelector('[data-remaked-calculator-actions]');
         const actions = ['Text_3', 'Text_5', 'Text_6', 'Text_7', 'Text_8', 'Text_9']
           .map(id => document.querySelector('[data-remaked-calculator-action="' + id + '"]'));
+        const parent = container.getBoundingClientRect();
         const rect = node => {
           const r = node.getBoundingClientRect();
-          return [r.x, r.y, r.width, r.height].map(value => Math.round(value * 10) / 10);
+          // Text above the component may have different heights by language.
+          // Compare geometry *inside* the component, not document position.
+          return [
+            r.x - parent.x, r.y - parent.y, r.width, r.height
+          ].map(value => Math.round(value * 10) / 10);
         };
         return {
-          container: rect(container),
+          container: [parent.width, parent.height].map(value => Math.round(value * 10) / 10),
           actions: actions.map(rect),
           fontSizes: actions.map(node => getComputedStyle(node).fontSize),
           fontWeights: actions.map(node => getComputedStyle(node).fontWeight),
