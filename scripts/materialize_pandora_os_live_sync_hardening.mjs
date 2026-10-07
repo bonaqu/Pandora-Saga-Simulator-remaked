@@ -99,19 +99,27 @@ export const EFFECT_MAP = {
   EP_DAMAGERATE_SCALE: [18, 'percent'],
   EP_SKILL_EQUIP_DAMAGERATE: [18, 'flat'],
   EP_ELEMENT_DAMAGE_SCALE: [42, 'flat'],
+  EP_AURADAMAGE_CONST: [33, 'flat'],
+  EP_AURADAMAGE_SCALE: [33, 'percent'],
   EP_ARMORCLASS_CONST: [49, 'flat'],
+  EP_ARMORCLASS_SCALE: [49, 'percent'],
   EP_ONDAMAGE_FIN_DAMAGE_CONST: [52, 'flat'],
   EP_ONDAMAGE_FIN_DAMAGE_SCALE: [52, 'percent'],
   EP_ONDAMAGE_ELEM_SCALE: [60, 'percent'],
   EP_TOHIT_CONST: [62, 'flat'],
+  EP_TOHIT_SCALE: [62, 'percent'],
   EP_AVOIDANCE_CONST: [65, 'flat'],
   EP_CRITICALRATE_CONST: [69, 'flat'],
+  EP_CRITICAL_REGIST: [70, 'flat', 'negate'],
   EP_ATTACKINTERVAL_SCALE: [73, 'flat'],
   EP_MOVESPEED_SCALE: [74, 'flat'],
+  EP_RESTMAP_MOVESPEED_SCALE: [75, 'flat'],
   EP_RACE_MANA_COSTCUT: [76, 'flat', 'negate'],
   EP_SKILL_DELAY: [77, 'flat', 'negate'],
   EP_SKILL_DELAY_FIN: [77, 'flat'],
   EP_SKILL_BENCH: [79, 'flat'],
+  EP_BADEFFECT_TIME_CAST_SCALE: [80, 'flat'],
+  EP_VOLUME_EXP: [82, 'flat'],
   EP_ONHIT_STUN: [91, 'flat', 'chanceB'],
   EP_BLOCK_BREAK_RESIST: [133, 'flat'],
   EP_CASTINGCANCEL_RESISTANCE_CONST: [134, 'flat'],
@@ -135,7 +143,9 @@ export const EFFECT_MAP = {
   EP_IMMUNE_SILENCE: [158, 'flat'],
   EP_IMMUNE_EVIL: [159, 'flat'],
   EP_IMMUNE_CURSE: [160, 'flat'],
-  EP_BADEFFECT_TIME_SCALE: [162, 'flat', 'negate']
+  EP_BADEFFECT_TIME_SCALE: [162, 'flat', 'negate'],
+  EP_BUFF_TOHIT_SCALE: [181, 'flat'],
+  EP_SPECIAL_WARDING_TYPE2: [182, 'flat']
 };
 
 export function serverCategory(item) {
