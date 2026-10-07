@@ -1667,20 +1667,24 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     float: none; width: auto !important; margin: 0; height: auto !important;
   }
   .remaked-modern #body [data-remaked-calculator-actions] {
-    /* The action grid keeps the same compact proportions for all locales. */
+    /* Shared compact layout: same button geometry and text size in every locale. */
     grid-template-columns: minmax(0, .8fr) repeat(2, minmax(0, 1.1fr)); align-content: start;
   }
-  html[lang="ru"] body.remaked-modern #body [data-remaked-calculator-action] {
-    height: 30px;
-    min-height: 30px;
+  .remaked-modern #body [data-remaked-calculator-action] {
+    height: 32px;
+    min-height: 32px;
     padding: 1px 2px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    font: 700 10px/1.05 var(--rm-font);
-    letter-spacing: -0.01em;
-    text-wrap: balance;
+    font: 600 12px/1.08 var(--rm-font);
+  }
+  html[lang="ru"] body.remaked-modern #body [data-remaked-calculator-action] {
+    /* Keep the same readable font height: condensed Cyrillic faces fit long
+       labels without squeezing every language's buttons or shrinking to 9px. */
+    font-family: "Arial Narrow", "Liberation Sans Narrow", "Noto Sans Condensed", "DejaVu Sans Condensed", var(--rm-font);
+    font-weight: 700;
   }
   .remaked-modern #body [data-remaked-calculator-actions] > ul { display: contents; }
   .remaked-modern #body [data-remaked-calculator-horse-container] { grid-column: 1 / -1; }

@@ -195,7 +195,7 @@ test('RU calculator actions and riding labels use the requested wording without 
   }
 });
 
-test('RU calculator actions use readable bold text without losing the compact layout', async ({ page }) => {
+test('RU and EN calculator buttons preserve readable full-size typography in compact layout', async ({ page }) => {
   for (const width of [1366, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     const inspect = () => page.evaluate(() =>
@@ -224,9 +224,15 @@ test('RU calculator actions use readable bold text without losing the compact la
     const russian = await inspect();
 
     expect(russian.map(item => Math.round(item.width))).toEqual(english.map(item => Math.round(item.width)));
+    expect(russian.map(item => item.height)).toEqual(english.map(item => item.height));
+    for (const item of english) {
+      expect(item.height, item.id).toBe(32);
+      expect(item.fontSize, item.id).toBe(12);
+      expect(item.fontWeight, item.id).toBe('600');
+    }
     for (const item of russian) {
-      expect(item.height, item.id).toBe(30);
-      expect(item.fontSize, item.id).toBe(10);
+      expect(item.height, item.id).toBe(32);
+      expect(item.fontSize, item.id).toBe(12);
       expect(item.fontWeight, item.id).toBe('700');
       expect(item.lines, item.id).toBeLessThanOrEqual(2);
       expect(item.scrollHeight, item.id).toBeLessThanOrEqual(item.clientHeight + 1);
