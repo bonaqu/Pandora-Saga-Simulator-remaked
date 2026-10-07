@@ -17,18 +17,24 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
-env:
-  SOURCE_REPOSITORY: https://github.com/palver1/Pandora_saga_tools.git
-  SOURCE_COMMIT: 2a2417335f8dd8145c4558f663ca6a0746ca70c6
-  SOURCE_PATH: ps_simulator/PSS_original
-
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      mode: ${{ steps.gate.outputs.mode }}
+      pages_required: ${{ steps.gate.outputs.pages_required }}
+      wiki_required: ${{ steps.gate.outputs.wiki_required }}
+      full_validation: ${{ steps.gate.outputs.full_validation }}
 
     steps:
-      - name: Reuse exact successful PR validation when possible
+      - name: Checkout exact deployment commit
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Determine deployment and validation mode
         id: gate
         shell: bash
         env:
@@ -38,126 +44,130 @@ jobs:
           DEPLOY_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
+
+          mode=full
+          pages_required=true
+          wiki_required=false
           full_validation=true
+          force_full_deploy=true
           source_pr=""
           source_head=""
+          baseline_sha=""
+          policy_json='{"mode":"full","reason":"manual-or-unresolved","pages_required":true,"wiki_required":false,"full_validation":true,"force_full_deploy":true}'
 
           if [[ "$EVENT_NAME" == "push" ]]; then
-            prs="$(gh api \
-              -H 'Accept: application/vnd.github+json' \
-              "repos/$REPOSITORY/commits/$DEPLOY_SHA/pulls")"
-
-            source_pr="$(jq -r '
-              map(select(.merged_at != null and .base.ref == "bonaqu_projects"))
+            successful_runs="$(gh api               "repos/$REPOSITORY/actions/workflows/pages.yml/runs?branch=bonaqu_projects&event=push&status=success&per_page=30")"
+            baseline_sha="$(jq -r --arg head "$DEPLOY_SHA" '
+              .workflow_runs
+              | map(select(.head_sha != $head))
               | first
-              | .number // empty
-            ' <<<"$prs")"
+              | .head_sha // empty
+            ' <<<"$successful_runs")"
 
-            if [[ -n "$source_pr" ]]; then
-              pr="$(gh api "repos/$REPOSITORY/pulls/$source_pr")"
-              source_head="$(jq -r '.head.sha' <<<"$pr")"
+            if [[ -n "$baseline_sha" ]] && git merge-base --is-ancestor "$baseline_sha" "$DEPLOY_SHA"; then
+              mapfile -t changed_files < <(git diff --name-only "$baseline_sha" "$DEPLOY_SHA")
+              policy_json="$(printf '%s\n' "${changed_files[@]}" | python3 scripts/deploy_change_policy.py --stdin)"
+              mode="$(jq -r '.mode' <<<"$policy_json")"
+              pages_required="$(jq -r '.pages_required' <<<"$policy_json")"
+              wiki_required="$(jq -r '.wiki_required' <<<"$policy_json")"
+              full_validation="$(jq -r '.full_validation' <<<"$policy_json")"
+              force_full_deploy="$(jq -r '.force_full_deploy' <<<"$policy_json")"
 
-              runs="$(gh api \
-                "repos/$REPOSITORY/actions/workflows/feature-ci.yml/runs?head_sha=$source_head&event=pull_request&status=completed&per_page=20")"
-
-              if jq -e '.workflow_runs | any(.conclusion == "success")' <<<"$runs" >/dev/null; then
-                full_validation=false
-                echo "Exact PR head $source_head already passed Feature CI; using the fast production gate."
-              else
-                echo "No successful Feature CI found for exact PR head $source_head; keeping full production validation."
-              fi
+              echo "Last successful Pages deployment: $baseline_sha"
+              printf 'Changed since deployed baseline (%d):\n' "${#changed_files[@]}"
+              printf ' - %s\n' "${changed_files[@]}"
+              echo "Policy: $policy_json"
             else
-              echo "No merged PR is associated with $DEPLOY_SHA; keeping full production validation."
+              echo "::notice::No trustworthy successful deployed ancestor was found; failing closed to full validation."
+            fi
+
+            if [[ "$mode" == "full" && "$force_full_deploy" != "true" ]]; then
+              prs="$(gh api                 -H 'Accept: application/vnd.github+json'                 "repos/$REPOSITORY/commits/$DEPLOY_SHA/pulls")"
+
+              source_pr="$(jq -r '
+                map(select(.merged_at != null and .base.ref == "bonaqu_projects"))
+                | first
+                | .number // empty
+              ' <<<"$prs")"
+
+              if [[ -n "$source_pr" ]]; then
+                pr="$(gh api "repos/$REPOSITORY/pulls/$source_pr")"
+                source_head="$(jq -r '.head.sha' <<<"$pr")"
+                runs="$(gh api                   "repos/$REPOSITORY/actions/workflows/feature-ci.yml/runs?head_sha=$source_head&event=pull_request&status=completed&per_page=20")"
+
+                if jq -e '.workflow_runs | any(.conclusion == "success")' <<<"$runs" >/dev/null; then
+                  full_validation=false
+                  echo "Exact PR head $source_head passed Feature CI; reusing it and keeping only the production smoke gate."
+                else
+                  echo "No successful Feature CI found for exact PR head $source_head; keeping full production validation."
+                fi
+              else
+                echo "No merged PR is associated with $DEPLOY_SHA; keeping full production validation."
+              fi
+            elif [[ "$mode" != "full" ]]; then
+              echo "Safe documentation policy selected mode=$mode."
+            elif [[ "$force_full_deploy" == "true" ]]; then
+              echo "Deployment/build infrastructure changed; full production validation is mandatory."
             fi
           else
             echo "Manual deployment requested; keeping full production validation."
           fi
 
           {
+            echo "mode=$mode"
+            echo "pages_required=$pages_required"
+            echo "wiki_required=$wiki_required"
             echo "full_validation=$full_validation"
+            echo "force_full_deploy=$force_full_deploy"
             echo "source_pr=$source_pr"
             echo "source_head=$source_head"
+            echo "baseline_sha=$baseline_sha"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Checkout preservation repository
-        uses: actions/checkout@v7
-        with:
-          ref: bonaqu_projects
-          fetch-depth: 0
-
       - name: Set up Python
+        if: steps.gate.outputs.pages_required == 'true'
         uses: actions/setup-python@v7
         with:
           python-version: '3.13'
 
       - name: Set up project Node runtime
+        if: steps.gate.outputs.pages_required == 'true'
         uses: actions/setup-node@v6
         with:
           node-version: '24'
           cache: npm
 
-      - name: Import recovered simulator once
+      - name: Verify committed preservation snapshot
+        if: steps.gate.outputs.pages_required == 'true'
         shell: bash
         run: |
           set -euo pipefail
+          test -f .source-imported
+          test -f SOURCE.lock
+          test -f index.html
+          test -d js
+          test -d css
+          test -d image
+          echo "Preservation source is already committed; deployment will never mutate the source branch."
 
-          if [[ -f .source-imported ]]; then
-            echo "Recovered simulator is already committed locally; skipping upstream import."
-            exit 0
-          fi
+      - name: Run release-note fast checks
+        if: steps.gate.outputs.mode == 'release-notes'
+        run: >
+          python -m unittest -v
+          tests.test_repository_docs
+          tests.test_build_pages
+          tests.test_deploy_change_policy
 
-          workdir="$(mktemp -d)"
-          source_dir="$workdir/source"
-
-          git init "$source_dir"
-          git -C "$source_dir" remote add origin "$SOURCE_REPOSITORY"
-          git -C "$source_dir" sparse-checkout init --cone
-          git -C "$source_dir" sparse-checkout set "$SOURCE_PATH"
-          git -C "$source_dir" fetch --depth 1 origin "$SOURCE_COMMIT"
-          git -C "$source_dir" checkout --detach FETCH_HEAD
-
-          recovered="$source_dir/$SOURCE_PATH"
-          test -f "$recovered/Pandora Saga Simulator.htm"
-          test -d "$recovered/js"
-          test -d "$recovered/css"
-          test -d "$recovered/image"
-
-          rm -rf css js image
-          cp -a "$recovered/css" ./css
-          cp -a "$recovered/js" ./js
-          cp -a "$recovered/image" ./image
-          cp "$recovered/Pandora Saga Simulator.htm" ./index.html
-
-          python3 scripts/strip_fc2_injection.py index.html
-
-          cat > SOURCE.lock <<EOF
-          source_repository=$SOURCE_REPOSITORY
-          source_commit=$SOURCE_COMMIT
-          source_path=$SOURCE_PATH
-          original_url=http://pansaga3.web.fc2.com/simu/
-          imported_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          EOF
-
-          touch .source-imported
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .source-imported SOURCE.lock index.html css js image
-
-          if git diff --cached --quiet; then
-            echo "Nothing to commit after import."
-          else
-            git commit -m "preservation: import original Pandora Saga Simulator snapshot"
-            git push origin HEAD:bonaqu_projects
-          fi
-
-      - name: Run fast production unit checks
+      - name: Run production unit checks
+        if: steps.gate.outputs.pages_required == 'true' && steps.gate.outputs.mode != 'release-notes'
         run: python -m unittest discover -s tests -v
 
       - name: Validate preservation snapshot
+        if: steps.gate.outputs.pages_required == 'true' && steps.gate.outputs.mode != 'release-notes'
         run: python3 scripts/validate_site.py
 
       - name: Syntax-check legacy and Modern JavaScript
+        if: steps.gate.outputs.pages_required == 'true' && steps.gate.outputs.mode != 'release-notes'
         shell: bash
         run: |
           set -euo pipefail
@@ -167,21 +177,46 @@ jobs:
           done
 
       - name: Build Modern and Legacy Pages routes
+        if: steps.gate.outputs.pages_required == 'true'
         run: python3 scripts/build_pages.py --output _site
 
       - name: Verify Pages defaults to English
+        if: steps.gate.outputs.pages_required == 'true'
         run: python3 scripts/check_default_language.py _site/index.html
 
+      - name: Validate generated What's new payload
+        if: steps.gate.outputs.pages_required == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check _site/modern/release-notes.js
+          node <<'NODE'
+          global.window = {};
+          require('./_site/modern/release-notes.js');
+          const release = global.window.PandoraRemakedRelease;
+          if (!release || !release.version || !release.notes?.ru || !release.notes?.en) {
+            throw new Error('Generated release notes are incomplete.');
+          }
+          const publicText = JSON.stringify(release);
+          for (const token of ['Pandora Saga OS', 'itemForth', 'unison', 'gamedata/', '.json']) {
+            if (publicText.includes(token)) throw new Error('Public release notes expose internal data source: ' + token);
+          }
+          console.log('Generated release notes OK:', release.version);
+          NODE
+
       - name: Syntax-check recovered archived codecs
+        if: steps.gate.outputs.pages_required == 'true' && steps.gate.outputs.mode != 'release-notes'
         run: |
           node --check _site/js/base64.js
           node --check _site/js/rawinflate.js
           node --check _site/js/rawdeflate.js
 
       - name: Install browser test dependencies
+        if: steps.gate.outputs.pages_required == 'true' && steps.gate.outputs.mode != 'release-notes'
         run: npm ci --no-audit --no-fund
 
       - name: Run lightweight production smoke gate with runner Chrome
+        if: steps.gate.outputs.pages_required == 'true' && steps.gate.outputs.mode != 'release-notes'
         env:
           PW_USE_SYSTEM_CHROME: '1'
         run: >
@@ -240,20 +275,27 @@ jobs:
 
       - name: Report validation path
         run: |
+          echo "mode=${{ steps.gate.outputs.mode }}"
+          echo "pages_required=${{ steps.gate.outputs.pages_required }}"
+          echo "wiki_required=${{ steps.gate.outputs.wiki_required }}"
           echo "full_validation=${{ steps.gate.outputs.full_validation }}"
+          echo "baseline_sha=${{ steps.gate.outputs.baseline_sha }}"
           echo "source_pr=${{ steps.gate.outputs.source_pr }}"
           echo "source_head=${{ steps.gate.outputs.source_head }}"
 
       - name: Configure GitHub Pages
+        if: steps.gate.outputs.pages_required == 'true'
         uses: actions/configure-pages@v6
 
       - name: Upload Pages artifact
+        if: steps.gate.outputs.pages_required == 'true'
         uses: actions/upload-pages-artifact@v5
         with:
           path: _site
 
   deploy:
     needs: build
+    if: needs.build.result == 'success' && needs.build.outputs.pages_required == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -265,7 +307,14 @@ jobs:
         uses: actions/deploy-pages@v5
 
   wiki:
-    needs: deploy
+    needs:
+      - build
+      - deploy
+    if: >-
+      always() &&
+      needs.build.result == 'success' &&
+      needs.build.outputs.wiki_required == 'true' &&
+      (needs.build.outputs.pages_required != 'true' || needs.deploy.result == 'success')
     runs-on: ubuntu-latest
     continue-on-error: true
 
@@ -273,7 +322,7 @@ jobs:
       - name: Checkout documentation
         uses: actions/checkout@v7
         with:
-          ref: bonaqu_projects
+          ref: ${{ github.sha }}
 
       - name: Best-effort sync documentation to GitHub Wiki
         env:
