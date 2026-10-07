@@ -101,7 +101,7 @@ test('locale refresh, reset/load and repeat enhancement preserve source nodes an
 });
 
 test('unavailable enhancement leaves original calculator input callbacks working', async ({ page }) => {
-  await page.route('**/modern/calculator-controls.js', route => route.abort());
+  await page.route('**/modern/calculator-controls.js**', route => route.abort());
   await page.goto('/');
   await expect(page.locator('[data-remaked-step]')).toHaveCount(0);
   const up = page.locator('#Status input[alt="+1"]').nth(1);

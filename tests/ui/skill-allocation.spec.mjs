@@ -310,7 +310,7 @@ test('locale, approved long names, reset/load and repeat enhancement preserve so
 });
 
 test('unavailable skill enhancement retains the source controls and museum is unaffected', async ({ page }) => {
-  await page.route('**/modern/skill-controls.js', route => route.abort()); await page.goto('/');
+  await page.route('**/modern/skill-controls.js**', route => route.abort()); await page.goto('/');
   await expect(page.locator('[data-remaked-skill-number]')).toHaveCount(0);
   await expect(page.locator('#SkillSet input[type="image"]').first()).toBeVisible();
   await page.evaluate(() => { StatusMove('Lev', 54); CalcSet('Lev'); });
