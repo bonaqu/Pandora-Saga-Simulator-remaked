@@ -1,18 +1,18 @@
 # Changelog
 
-## Modern 3.32 — consistent calculator button typography, 2026-10-08
+## Modern 3.32 — refined Russian calculator button typography, 2026-10-08
 
 <!-- release-notes:ru -->
 ### Кратко для игроков
 
-- Русские и английские кнопки учёта и сброса теперь используют одинаковый размер и насыщенность шрифта, высоту и пропорции колонок.
-- Длинные надписи аккуратно размещаются в две строки без мелкого текста и переполнения.
+- У русских кнопок учёта и сброса более выразительное полужирное начертание при сохранении компактных размеров всего блока.
+- Длинные подписи остаются читаемыми и не растягивают кнопки на три строки.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
 ### Player highlights
 
-- Unified the calculator action buttons' font size, weight and sizing across languages; longer labels wrap neatly without tiny text.
+- Improved Russian calculator button legibility with stronger text weight while retaining a compact, stable layout.
 <!-- /release-notes:en -->
 
 ## Modern 3.31 — balanced Russian calculator controls, 2026-10-08

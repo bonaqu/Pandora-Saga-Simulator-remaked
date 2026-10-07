@@ -195,7 +195,7 @@ test('RU calculator actions and riding labels use the requested wording without 
   }
 });
 
-test('calculator action typography and button geometry stay consistent across EN and RU', async ({ page }) => {
+test('RU calculator actions use readable bold text without losing the compact layout', async ({ page }) => {
   for (const width of [1366, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     const inspect = () => page.evaluate(() =>
@@ -224,15 +224,12 @@ test('calculator action typography and button geometry stay consistent across EN
     const russian = await inspect();
 
     expect(russian.map(item => Math.round(item.width))).toEqual(english.map(item => Math.round(item.width)));
-    expect(russian.map(item => item.height)).toEqual(english.map(item => item.height));
-    for (const set of [english, russian]) {
-      for (const item of set) {
-        expect(item.height, item.id).toBe(32);
-        expect(item.fontSize, item.id).toBe(12);
-        expect(item.fontWeight, item.id).toBe('600');
-        expect(item.lines, item.id).toBeLessThanOrEqual(2);
-        expect(item.scrollHeight, item.id).toBeLessThanOrEqual(item.clientHeight + 1);
-      }
+    for (const item of russian) {
+      expect(item.height, item.id).toBe(30);
+      expect(item.fontSize, item.id).toBe(10);
+      expect(item.fontWeight, item.id).toBe('700');
+      expect(item.lines, item.id).toBeLessThanOrEqual(2);
+      expect(item.scrollHeight, item.id).toBeLessThanOrEqual(item.clientHeight + 1);
     }
   }
 });

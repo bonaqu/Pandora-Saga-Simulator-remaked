@@ -1667,19 +1667,19 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     float: none; width: auto !important; margin: 0; height: auto !important;
   }
   .remaked-modern #body [data-remaked-calculator-actions] {
-    /* Use one layout and one readable typographic scale for every language.
-       Longer labels can take two balanced lines without shrinking the font. */
+    /* The action grid keeps the same compact proportions for all locales. */
     grid-template-columns: minmax(0, .8fr) repeat(2, minmax(0, 1.1fr)); align-content: start;
   }
-  .remaked-modern #body [data-remaked-calculator-action] {
-    height: 32px;
-    min-height: 32px;
+  html[lang="ru"] body.remaked-modern #body [data-remaked-calculator-action] {
+    height: 30px;
+    min-height: 30px;
     padding: 1px 2px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    font: 600 12px/1.08 var(--rm-font);
+    font: 700 10px/1.05 var(--rm-font);
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
   .remaked-modern #body [data-remaked-calculator-actions] > ul { display: contents; }
