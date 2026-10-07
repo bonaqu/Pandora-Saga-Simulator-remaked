@@ -9,7 +9,8 @@ import {
   buildMigration,
   buildReleaseInsertStatements,
   buildReleaseRows,
-  loadInputs
+  loadInputs,
+  stripOuterParentheses
 } from '../../scripts/materialize_pandora_os_live_sync.mjs';
 
 function database() {
@@ -75,6 +76,32 @@ test('live Pandora OS mapping is one-to-one, equipment-only and fully compilable
     assert.equal(compiled.names.en.startsWith('(') && compiled.names.en.endsWith(')'), false,
       'outer-parenthesized English name survived: ' + row.identity.id);
   }
+});
+
+test('live server stats use verified conversions without inventing unsupported proc mechanics', () => {
+  const rows = buildReleaseRows(loadInputs());
+  const byId = new Map(rows.map(row => [row.identity.id, row.fallback.edit]));
+
+  const wizard = byId.get('equipment.30.42');
+  assert.ok(wizard);
+  assert.ok(wizard.effects.some(effect => effect.stat === 77 && effect.value === 5));
+
+  const shadow = byId.get('equipment.31.81');
+  assert.ok(shadow);
+  assert.ok(shadow.effects.some(effect => effect.stat === 20 && effect.value === 10));
+  assert.ok(shadow.effects.some(effect => effect.stat === 76 && effect.value === -5));
+
+  const virgo = byId.get('equipment.42.16');
+  assert.ok(virgo);
+  assert.ok(virgo.effects.some(effect => effect.stat === 11 && effect.value === 4));
+  assert.ok(virgo.effects.some(effect => effect.stat === 160 && effect.value === 3));
+
+  const iron = byId.get('equipment.13.3');
+  assert.ok(iron.effects.some(effect => effect.stat === 91 && effect.value === 4));
+
+  const mirror = byId.get('soul.163');
+  assert.equal(mirror.effectMode, 'patch');
+  assert.ok(mirror.effects.some(effect => effect.stat === 135 && effect.value === 3));
 });
 
 test('revision 82 merge-patches revision 81 without clobbering unrelated manual admin fields', () => {
