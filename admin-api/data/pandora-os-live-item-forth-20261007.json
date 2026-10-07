@@ -1,0 +1,7638 @@
+{
+  "2": {
+    "2": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 80,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 80,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 100,
+        "b": 0
+      }
+    ]
+  },
+  "3": {
+    "2": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 80,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 80,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 100,
+        "b": 0
+      }
+    ]
+  },
+  "4": {
+    "2": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 80,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 80,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 100,
+        "b": 0
+      }
+    ]
+  },
+  "242": {
+    "2": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "243": {
+    "2": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "244": {
+    "2": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "404": {
+    "2": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "405": {
+    "2": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "406": {
+    "2": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "833": {
+    "3": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ]
+  },
+  "834": {
+    "3": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ]
+  },
+  "835": {
+    "3": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ]
+  },
+  "1015": {
+    "2": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 45,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 45,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 75,
+        "b": 0
+      }
+    ]
+  },
+  "1016": {
+    "2": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 45,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 45,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 75,
+        "b": 0
+      }
+    ]
+  },
+  "1017": {
+    "2": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 45,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 45,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 75,
+        "b": 0
+      }
+    ]
+  },
+  "1232": {
+    "2": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "1233": {
+    "2": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "1234": {
+    "2": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "1483": {
+    "2": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 45,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 45,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 75,
+        "b": 0
+      }
+    ]
+  },
+  "1484": {
+    "2": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 45,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 45,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 75,
+        "b": 0
+      }
+    ]
+  },
+  "1485": {
+    "2": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 45,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 45,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 75,
+        "b": 0
+      }
+    ]
+  },
+  "1632": {
+    "2": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "1633": {
+    "2": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "1634": {
+    "2": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "1641": {
+    "7": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 10,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 10,
+        "b": 0
+      },
+      {
+        "func": "EP_ARMORCLASS_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "1803": {
+    "2": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 80,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 80,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 100,
+        "b": 0
+      }
+    ]
+  },
+  "1804": {
+    "2": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "1805": {
+    "2": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 80,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 80,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 100,
+        "b": 0
+      }
+    ]
+  },
+  "2023": {
+    "2": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "2024": {
+    "2": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "2025": {
+    "2": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "2225": {
+    "2": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 50,
+        "b": 0
+      }
+    ]
+  },
+  "2226": {
+    "2": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 50,
+        "b": 0
+      }
+    ]
+  },
+  "2227": {
+    "2": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 50,
+        "b": 0
+      }
+    ]
+  },
+  "2422": {
+    "2": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "2423": {
+    "2": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "2424": {
+    "2": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "2642": {
+    "2": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_SPIRITUAL_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_SPIRITUAL_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 80,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_SPIRITUAL_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 80,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_SPIRITUAL_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 100,
+        "b": 0
+      }
+    ]
+  },
+  "2643": {
+    "2": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "2644": {
+    "2": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -3,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_DEXTERITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_DEXTERITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -4,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_DEXTERITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_DEXTERITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -5,
+        "b": 0
+      }
+    ]
+  },
+  "2651": {
+    "6": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "2653": {
+    "1": [
+      {
+        "func": "EP_DARK_RESISTANCE_CONST",
+        "a": 0,
+        "b": 0
+      }
+    ],
+    "2": [
+      {
+        "func": "EP_DARK_RESISTANCE_CONST",
+        "a": 0,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_DARK_RESISTANCE_CONST",
+        "a": 0,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_DARK_RESISTANCE_CONST",
+        "a": 0,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_DARK_RESISTANCE_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_DARK_RESISTANCE_CONST",
+        "a": 3,
+        "b": 0
+      },
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_DARK_RESISTANCE_CONST",
+        "a": 6,
+        "b": 0
+      },
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_DARK_RESISTANCE_CONST",
+        "a": 10,
+        "b": 0
+      },
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_DARK_RESISTANCE_CONST",
+        "a": 20,
+        "b": 0
+      },
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_DARK_RESISTANCE_CONST",
+        "a": 35,
+        "b": 0
+      },
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ]
+  },
+  "2655": {
+    "5": [
+      {
+        "func": "EP_BUFF_TOHIT_SCALE",
+        "a": 3,
+        "b": 0
+      },
+      {
+        "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_BUFF_TOHIT_SCALE",
+        "a": 9,
+        "b": 0
+      },
+      {
+        "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+        "a": 9,
+        "b": 0
+      },
+      {
+        "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_BUFF_TOHIT_SCALE",
+        "a": 14,
+        "b": 0
+      },
+      {
+        "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+        "a": 14,
+        "b": 0
+      },
+      {
+        "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_BUFF_TOHIT_SCALE",
+        "a": 20,
+        "b": 0
+      },
+      {
+        "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+        "a": 20,
+        "b": 0
+      },
+      {
+        "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+        "a": 25,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_BUFF_TOHIT_SCALE",
+        "a": 29,
+        "b": 0
+      },
+      {
+        "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+        "a": 29,
+        "b": 0
+      },
+      {
+        "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_BUFF_TOHIT_SCALE",
+        "a": 41,
+        "b": 0
+      },
+      {
+        "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+        "a": 41,
+        "b": 0
+      },
+      {
+        "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+        "a": 55,
+        "b": 0
+      }
+    ]
+  },
+  "2823": {
+    "2": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 80,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 80,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 100,
+        "b": 0
+      }
+    ]
+  },
+  "2824": {
+    "2": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "2825": {
+    "2": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -3,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_DEXTERITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_DEXTERITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -4,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_DEXTERITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_DEXTERITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -5,
+        "b": 0
+      }
+    ]
+  },
+  "2855": {
+    "5": [
+      {
+        "func": "EP_BUFF_TOHIT_SCALE",
+        "a": 3,
+        "b": 0
+      },
+      {
+        "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_BUFF_TOHIT_SCALE",
+        "a": 9,
+        "b": 0
+      },
+      {
+        "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+        "a": 9,
+        "b": 0
+      },
+      {
+        "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_BUFF_TOHIT_SCALE",
+        "a": 14,
+        "b": 0
+      },
+      {
+        "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+        "a": 14,
+        "b": 0
+      },
+      {
+        "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_BUFF_TOHIT_SCALE",
+        "a": 20,
+        "b": 0
+      },
+      {
+        "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+        "a": 20,
+        "b": 0
+      },
+      {
+        "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+        "a": 25,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_BUFF_TOHIT_SCALE",
+        "a": 29,
+        "b": 0
+      },
+      {
+        "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+        "a": 29,
+        "b": 0
+      },
+      {
+        "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+        "a": 40,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_BUFF_TOHIT_SCALE",
+        "a": 41,
+        "b": 0
+      },
+      {
+        "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+        "a": 41,
+        "b": 0
+      },
+      {
+        "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+        "a": 55,
+        "b": 0
+      }
+    ]
+  },
+  "2857": {
+    "1": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "2": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_SPECIAL_WARDING_TYPE2",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 11,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_SPECIAL_WARDING_TYPE2",
+        "a": 5,
+        "b": 0
+      },
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_SPECIAL_WARDING_TYPE2",
+        "a": 8,
+        "b": 0
+      },
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 21,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_SPECIAL_WARDING_TYPE2",
+        "a": 13,
+        "b": 0
+      },
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 27,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_SPECIAL_WARDING_TYPE2",
+        "a": 19,
+        "b": 0
+      },
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 33,
+        "b": 0
+      }
+    ]
+  },
+  "11073": {
+    "5": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 10,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 20,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 25,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 30,
+        "b": 0
+      }
+    ]
+  },
+  "11080": {
+    "6": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ]
+  },
+  "11083": {
+    "7": [
+      {
+        "func": "EP_CHARM_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "11086": {
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 50,
+        "b": 0
+      }
+    ]
+  },
+  "11096": {
+    "3": [
+      {
+        "func": "EP_CHARM_RESISTANCE_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_CHARM_RESISTANCE_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_CHARM_RESISTANCE_CONST",
+        "a": 9,
+        "b": 0
+      }
+    ]
+  },
+  "11100": {
+    "3": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 100,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 200,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 300,
+        "b": 0
+      }
+    ]
+  },
+  "11122": {
+    "7": [
+      {
+        "func": "EP_IMMUNE_STUN",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "11123": {
+    "7": [
+      {
+        "func": "EP_IMMUNE_BURN",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "11212": {
+    "4": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ]
+  },
+  "11222": {
+    "3": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 100,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 100,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 200,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 200,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 300,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 300,
+        "b": 0
+      }
+    ]
+  },
+  "11282": {
+    "3": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -3,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -6,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -9,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ]
+  },
+  "12034": {
+    "6": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ]
+  },
+  "12043": {
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 50,
+        "b": 0
+      },
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ]
+  },
+  "12092": {
+    "6": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ]
+  },
+  "12101": {
+    "7": [
+      {
+        "func": "EP_IMMUNE_STUN",
+        "a": 4,
+        "b": 0
+      }
+    ]
+  },
+  "12103": {
+    "5": [
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -4,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -10,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -12,
+        "b": 0
+      }
+    ]
+  },
+  "12601": {
+    "1": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "2": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 45,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 75,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 90,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 105,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 120,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 135,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 150,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "12602": {
+    "1": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "2": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 7,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 9,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "12603": {
+    "2": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -5,
+        "b": 0
+      }
+    ]
+  },
+  "12604": {
+    "2": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "12605": {
+    "2": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "12606": {
+    "2": [
+      {
+        "func": "EP_AURADAMAGE_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_AURADAMAGE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_AURADAMAGE_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_AURADAMAGE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_AURADAMAGE_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "12607": {
+    "2": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -5,
+        "b": 0
+      }
+    ]
+  },
+  "12608": {
+    "2": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "12611": {
+    "1": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ],
+    "2": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 45,
+        "b": 0
+      },
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 60,
+        "b": 0
+      },
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 75,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      },
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 90,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      },
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 105,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      },
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 120,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      },
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 135,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      },
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -3,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 150,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      },
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -3,
+        "b": 0
+      }
+    ]
+  },
+  "12612": {
+    "1": [
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "2": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 3,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 3,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 7,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 4,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 4,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 9,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 5,
+        "b": 0
+      },
+      {
+        "func": "EP_TOHIT_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "12613": {
+    "2": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -1,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -2,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -3,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -4,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -5,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -5,
+        "b": 0
+      }
+    ]
+  },
+  "12614": {
+    "2": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 3,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 3,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 4,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 4,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 5,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ]
+  },
+  "12615": {
+    "2": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 3,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 4,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 5,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -5,
+        "b": 0
+      }
+    ]
+  },
+  "12616": {
+    "2": [
+      {
+        "func": "EP_AURADAMAGE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_AURADAMAGE_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_AURADAMAGE_CONST",
+        "a": 3,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_AURADAMAGE_CONST",
+        "a": 4,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_AURADAMAGE_CONST",
+        "a": 5,
+        "b": 0
+      },
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "12617": {
+    "2": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -1,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -2,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -3,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -4,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_SKILL_DELAY",
+        "a": -5,
+        "b": 0
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -5,
+        "b": 0
+      }
+    ]
+  },
+  "12618": {
+    "2": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 9,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 12,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 15,
+        "b": 0
+      }
+    ]
+  },
+  "12701": {
+    "3": [
+      {
+        "func": "EP_IMMUNE_SLEEP",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_IMMUNE_SLEEP",
+        "a": 10,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_IMMUNE_SLEEP",
+        "a": 15,
+        "b": 0
+      }
+    ]
+  },
+  "13046": {
+    "6": [
+      {
+        "func": "EP_SPIRITUAL_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "a": 25,
+        "b": 0
+      }
+    ]
+  },
+  "13081": {
+    "7": [
+      {
+        "func": "EP_IMMUNE_STUN",
+        "a": 4,
+        "b": 0
+      }
+    ]
+  },
+  "13083": {
+    "5": [
+      {
+        "func": "EP_ONDAMAGE_ELEM_SCALE",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ONDAMAGE_ELEM_SCALE",
+        "a": -4,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_ONDAMAGE_ELEM_SCALE",
+        "a": -6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_ONDAMAGE_ELEM_SCALE",
+        "a": -8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_ONDAMAGE_ELEM_SCALE",
+        "a": -10,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_ONDAMAGE_ELEM_SCALE",
+        "a": -12,
+        "b": 0
+      }
+    ]
+  },
+  "13111": {
+    "3": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 4,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 6,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 15,
+        "b": 0
+      }
+    ]
+  },
+  "13601": {
+    "3": [
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -3,
+        "b": 0
+      }
+    ]
+  },
+  "13602": {
+    "2": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "13603": {
+    "2": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -5,
+        "b": 0
+      }
+    ]
+  },
+  "13604": {
+    "3": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_MAXLIFE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ]
+  },
+  "13605": {
+    "2": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -5,
+        "b": 0
+      }
+    ]
+  },
+  "13606": {
+    "2": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_ATTACKINTERVAL_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "13607": {
+    "2": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_SKILL_BENCH",
+        "a": -5,
+        "b": 0
+      }
+    ]
+  },
+  "13608": {
+    "2": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "13701": {
+    "3": [
+      {
+        "func": "EP_IMMUNE_NUMB",
+        "a": 3,
+        "b": 0
+      },
+      {
+        "func": "EP_IMMUNE_TUMBLE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_IMMUNE_NUMB",
+        "a": 6,
+        "b": 0
+      },
+      {
+        "func": "EP_IMMUNE_TUMBLE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_IMMUNE_NUMB",
+        "a": 9,
+        "b": 0
+      },
+      {
+        "func": "EP_IMMUNE_TUMBLE",
+        "a": 9,
+        "b": 0
+      }
+    ]
+  },
+  "14006": {
+    "7": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ]
+  },
+  "14007": {
+    "7": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ]
+  },
+  "14017": {
+    "4": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ]
+  },
+  "14022": {
+    "7": [
+      {
+        "func": "EP_DEXTERITY_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_SPIRITUAL_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ]
+  },
+  "14034": {
+    "7": [
+      {
+        "func": "EP_STRENGTH_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ]
+  },
+  "14036": {
+    "1": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 25,
+        "b": 0
+      }
+    ],
+    "2": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 50,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 75,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 100,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 125,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 150,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 175,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 200,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 225,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 250,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ]
+  },
+  "14063": {
+    "5": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 10,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 12,
+        "b": 0
+      }
+    ]
+  },
+  "14074": {
+    "7": [
+      {
+        "func": "EP_AGILITY_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ]
+  },
+  "14094": {
+    "3": [
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -2,
+        "b": 0
+      },
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -4,
+        "b": 0
+      },
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+        "a": -6,
+        "b": 0
+      },
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 6,
+        "b": 0
+      }
+    ]
+  },
+  "14601": {
+    "2": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 90,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 120,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 150,
+        "b": 0
+      }
+    ]
+  },
+  "14602": {
+    "2": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "14603": {
+    "2": [
+      {
+        "func": "EP_IMMUNE_SILENCE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_IMMUNE_SILENCE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_IMMUNE_SILENCE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_IMMUNE_SILENCE",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_IMMUNE_SILENCE",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "14604": {
+    "1": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "2": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 7,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 9,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "14605": {
+    "2": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "14606": {
+    "2": [
+      {
+        "func": "EP_AURADAMAGE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_AURADAMAGE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_AURADAMAGE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_AURADAMAGE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_AURADAMAGE_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "14607": {
+    "2": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "14608": {
+    "3": [
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ]
+  },
+  "14611": {
+    "2": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 30,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 60,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 90,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 120,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 150,
+        "b": 0
+      }
+    ]
+  },
+  "14612": {
+    "2": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "14613": {
+    "2": [
+      {
+        "func": "EP_IMMUNE_SILENCE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_IMMUNE_SILENCE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_IMMUNE_SILENCE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_IMMUNE_SILENCE",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_IMMUNE_SILENCE",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "14614": {
+    "1": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "2": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 7,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 9,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_MAXMANA_SCALE",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "14615": {
+    "2": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_ELEMENT_DAMAGE_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "14616": {
+    "2": [
+      {
+        "func": "EP_AURADAMAGE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_AURADAMAGE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_AURADAMAGE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_AURADAMAGE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_AURADAMAGE_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "14617": {
+    "2": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "14618": {
+    "3": [
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ]
+  },
+  "15004": {
+    "2": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 65,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 130,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 195,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 195,
+        "b": 0
+      },
+      {
+        "func": "EP_IMMUNE_NUMB",
+        "a": 4,
+        "b": 0
+      },
+      {
+        "func": "EP_IMMUNE_TUMBLE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 260,
+        "b": 0
+      },
+      {
+        "func": "EP_IMMUNE_NUMB",
+        "a": 4,
+        "b": 0
+      },
+      {
+        "func": "EP_IMMUNE_TUMBLE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_MAXLIFE_CONST",
+        "a": 325,
+        "b": 0
+      },
+      {
+        "func": "EP_IMMUNE_NUMB",
+        "a": 4,
+        "b": 0
+      },
+      {
+        "func": "EP_IMMUNE_TUMBLE",
+        "a": 4,
+        "b": 0
+      }
+    ]
+  },
+  "15008": {
+    "7": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ]
+  },
+  "15013": {
+    "7": [
+      {
+        "func": "EP_MOVESPEED_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "15014": {
+    "7": [
+      {
+        "func": "EP_MOVESPEED_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "15024": {
+    "7": [
+      {
+        "func": "EP_IMMUNE_KNOCKBACK",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "15025": {
+    "2": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 3,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 6,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 9,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 12,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 15,
+        "b": 0
+      },
+      {
+        "func": "EP_MAGIC_RESISTANCE_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "15032": {
+    "7": [
+      {
+        "func": "EP_IMMUNE_BURN",
+        "a": 6,
+        "b": 0
+      },
+      {
+        "func": "EP_VITARITY_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ]
+  },
+  "15053": {
+    "5": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_CRITICALRATE_CONST",
+        "a": 12,
+        "b": 0
+      }
+    ]
+  },
+  "15077": {
+    "3": [
+      {
+        "func": "EP_BLOCK_BREAK_RESIST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_BLOCK_BREAK_RESIST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_BLOCK_BREAK_RESIST",
+        "a": 6,
+        "b": 0
+      }
+    ]
+  },
+  "15081": {
+    "3": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_DAMAGERATE_SCALE",
+        "a": 6,
+        "b": 0
+      }
+    ]
+  },
+  "15092": {
+    "3": [
+      {
+        "func": "EP_SPIRITUAL_CONST",
+        "a": 1,
+        "b": 0
+      },
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_HEAL_TIME_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_SPIRITUAL_CONST",
+        "a": 2,
+        "b": 0
+      },
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 4,
+        "b": 0
+      },
+      {
+        "func": "EP_HEAL_TIME_SCALE",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_SPIRITUAL_CONST",
+        "a": 3,
+        "b": 0
+      },
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 6,
+        "b": 0
+      },
+      {
+        "func": "EP_HEAL_TIME_SCALE",
+        "a": 9,
+        "b": 0
+      }
+    ]
+  },
+  "15601": {
+    "3": [
+      {
+        "func": "EP_ONDAMAGE_ELEM_SCALE",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ONDAMAGE_ELEM_SCALE",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ONDAMAGE_ELEM_SCALE",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_ONDAMAGE_ELEM_SCALE",
+        "a": -3,
+        "b": 0
+      }
+    ]
+  },
+  "15602": {
+    "2": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "15603": {
+    "2": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "15604": {
+    "1": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "2": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 7,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 9,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "15605": {
+    "5": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ]
+  },
+  "15606": {
+    "2": [
+      {
+        "func": "EP_CRITICAL_REGIST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_CRITICAL_REGIST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_CRITICAL_REGIST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_CRITICAL_REGIST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_CRITICAL_REGIST",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "15607": {
+    "5": [
+      {
+        "func": "EP_SPIRITUAL_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ]
+  },
+  "15608": {
+    "2": [
+      {
+        "func": "EP_MOVESPEED_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MOVESPEED_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MOVESPEED_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_MOVESPEED_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_MOVESPEED_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "15611": {
+    "3": [
+      {
+        "func": "EP_ONDAMAGE_ELEM_SCALE",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ONDAMAGE_ELEM_SCALE",
+        "a": -1,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ONDAMAGE_ELEM_SCALE",
+        "a": -2,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_ONDAMAGE_ELEM_SCALE",
+        "a": -3,
+        "b": 0
+      }
+    ]
+  },
+  "15612": {
+    "2": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_DAMAGERATE_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "15613": {
+    "2": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_RACE_MANA_COSTCUT",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "15614": {
+    "1": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "2": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "3": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "5": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 5,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "7": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 7,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 8,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 9,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "15615": {
+    "5": [
+      {
+        "func": "EP_INTELIGENCE_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ]
+  },
+  "15616": {
+    "2": [
+      {
+        "func": "EP_CRITICAL_REGIST",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_CRITICAL_REGIST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_CRITICAL_REGIST",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_CRITICAL_REGIST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_CRITICAL_REGIST",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "15617": {
+    "5": [
+      {
+        "func": "EP_SPIRITUAL_CONST",
+        "a": 1,
+        "b": 0
+      }
+    ]
+  },
+  "15618": {
+    "2": [
+      {
+        "func": "EP_MOVESPEED_SCALE",
+        "a": 1,
+        "b": 0
+      }
+    ],
+    "4": [
+      {
+        "func": "EP_MOVESPEED_SCALE",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_MOVESPEED_SCALE",
+        "a": 3,
+        "b": 0
+      }
+    ],
+    "8": [
+      {
+        "func": "EP_MOVESPEED_SCALE",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "10": [
+      {
+        "func": "EP_MOVESPEED_SCALE",
+        "a": 5,
+        "b": 0
+      }
+    ]
+  },
+  "17033": {
+    "7": [
+      {
+        "func": "EP_CAST_HEAL_LIFE_SCALE",
+        "a": 10,
+        "b": 0
+      }
+    ]
+  },
+  "17034": {
+    "3": [
+      {
+        "func": "EP_FIRE_RESISTANCE_CONST",
+        "a": 3,
+        "b": 0
+      },
+      {
+        "func": "EP_COLD_RESISTANCE_CONST",
+        "a": 2,
+        "b": 0
+      }
+    ],
+    "6": [
+      {
+        "func": "EP_FIRE_RESISTANCE_CONST",
+        "a": 6,
+        "b": 0
+      },
+      {
+        "func": "EP_COLD_RESISTANCE_CONST",
+        "a": 4,
+        "b": 0
+      }
+    ],
+    "9": [
+      {
+        "func": "EP_FIRE_RESISTANCE_CONST",
+        "a": 9,
+        "b": 0
+      },
+      {
+        "func": "EP_COLD_RESISTANCE_CONST",
+        "a": 6,
+        "b": 0
+      }
+    ]
+  }
+}
