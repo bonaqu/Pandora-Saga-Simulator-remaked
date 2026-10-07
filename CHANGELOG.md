@@ -5,34 +5,35 @@
 <!-- release-notes:ru -->
 ### Кратко для игроков
 
-- Актуализирована база предметов и Souls по проверенным данным текущей версии игры.
-- В обновление включены только экипируемые категории: оружие, броня, щиты, плащи, бижутерия и Souls; ресурсы и стрелы не затрагиваются.
-- **344 актуальные записи** применены к существующим ID симулятора: 247 предметов экипировки/оружия и 97 Souls. Ещё 24 уверенно сопоставленных предмета, которые сейчас недоступны, сохранены для проверки, но пока не применяются.
-- Для безопасно сопоставленных записей обновлены актуальные EN/RU названия и описания, уровень, Soul slots, W/AC и те эффекты, которые модель симулятора умеет представить без догадок.
+- Полностью актуализирована Modern-база экипируемых предметов и Souls: **599 записей** — 488 предметов экипировки/оружия/бижутерии и 111 Souls.
+- 368 уже существующих ID симулятора обновлены на месте, а для 231 отсутствовавшей записи созданы отдельные стабильные Modern-ID. Legacy-каталог и старые save-коды не меняются.
+- Добавлены ранее отсутствовавшие варианты снаряжения, в том числе полный набор астирских вещей с EN/RU названиями и описаниями.
+- В Modern-каталог также заранее включены позиции, которые сейчас недоступны или относятся к декоративному/будущему контенту; они больше не отбрасываются только из-за статуса доступности.
+- Для записей актуализированы EN/RU названия и описания, уровень, Soul slots, W/AC и поддерживаемые движком эффекты. Условные или неподдерживаемые механики не угадываются и остаются описательными, пока для них нет отдельной модели расчёта.
 - Старые непереведённые английские названия вида `(Gradius)` нормализуются без внешних скобок: в админке — на уровне baseline-каталога, а в Modern UI — только на уровне отображения. Legacy-данные и сохранённые массивы не мутируются.
-- Предметы, которые есть в симуляторе, но не входят в актуальный набор, не удаляются и не изменяются: они могут относиться к будущему контенту.
 - PEN, Range, базовый Attack Speed и Block не подменяются другими параметрами: в текущей модели каталога для них нет отдельных рассчитываемых полей.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
 ### Player highlights
 
-- Refreshed the item and Soul catalog against verified current game data.
-- Only equippable weapons, armor, shields, cloaks, accessories and Souls are included; resources and arrows are excluded.
-- **344 current records** are applied one-to-one to existing simulator identities: 247 equipment/weapon records and 97 Souls. Another 24 confidently matched but currently unavailable items are retained for review and are not applied yet.
-- Safely matched records receive current EN/RU names/descriptions and supported mechanical values, while future simulator-only items remain intact.
-- Legacy untranslated English names wrapped only in unnecessary outer parentheses are normalized in the Admin baseline and in the Modern presentation adapter; preserved Legacy arrays remain unchanged.
+- The Modern equippable-item and Soul catalog is now fully refreshed: **599 records** — 488 equipment/weapon/accessory records and 111 Souls.
+- 368 existing simulator identities are updated in place, while 231 previously missing records receive separate stable Modern identities. The Legacy catalog and existing save-code identities remain unchanged.
+- Previously missing equipment variants are now included, including the complete Astir equipment set with EN/RU names and descriptions.
+- Records that are currently unavailable or belong to decorative/future content are also retained in Modern instead of being discarded solely because of availability status.
+- EN/RU names/descriptions, levels, Soul slots, W/AC and supported mechanics are refreshed. Conditional or unsupported mechanics are not guessed into calculation fields and remain descriptive until the engine has a dedicated representation.
+- Legacy untranslated English names wrapped only in unnecessary outer parentheses are normalized in the Admin baseline and in the Modern presentation layer; preserved Legacy arrays remain unchanged.
 - PEN, Range, base Attack Speed and Block are not guessed into unrelated simulator fields because the current item model has no dedicated calculated fields for them.
 <!-- /release-notes:en -->
 
 ### Project and delivery details
 
-- The update is materialized deterministically and advances the catalog to revision/impact revision 83 while preserving the already-published revision 82.
-- Revision 83 merge-patches the 344 matched identities while preserving unrelated manual Admin fields. It also removes unchanged cosmetic-only revision-82 overrides now handled by the Admin baseline + Modern presentation layer.
-- The 24 equipment rows currently marked unavailable are safely restored to their revision-79/baseline state only when their revision-82 entry is still exactly automation-produced; any later manual edit is preserved.
-- Supported effects are converted only through verified typed-stat mappings. Unknown proc mechanics and semantically ambiguous encodings are left unchanged rather than guessed into unrelated calculation fields.
-- Souls are applied only where the retained simulator identity can be matched unambiguously; deliberately ambiguous candidates remain untouched.
-- Regression coverage validates identity uniqueness, availability filtering, codec compilation, D1 statement limits, revision-history restoration, cosmetic compaction and manual-edit preservation.
+- Catalog revision/impact revision **84** completes the Modern item/Soul synchronization while preserving revision 83 as a historical snapshot.
+- 368 mapped identities are merge-patched in place and 231 missing identities receive collision-safe Modern allocations without reinterpreting any existing Legacy item index.
+- Allocation indexes are chosen against the current catalog sequence/allocation state at migration time, so later manual Admin additions remain collision-safe.
+- All 488 equippable records and all 111 Souls are covered by regression tests, including unavailable/decorative equipment and 58 Astir-related equippable records.
+- Supported mechanics are converted only through verified typed-stat mappings. Unknown conditional/proc mechanics remain descriptive rather than being invented as calculator tokens.
+- Unrelated simulator-only/future records are not deleted or rewritten.
 
 ## Modern 3.20 — item catalog sync, 2026-10-06
 
