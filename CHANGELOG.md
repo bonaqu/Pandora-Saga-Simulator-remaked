@@ -1,5 +1,34 @@
 # Changelog
 
+## Modern 3.23 — safe automatic catalog updates, 2026-10-07
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Текущий автосохранённый персонаж теперь безопасно переходит на свежую ревизию игровых данных даже тогда, когда у старой версии экипированного предмета было больше Soul-слотов.
+- Если новая версия предмета больше не вмещает часть установленных Souls или Soul больше не совместима со слотом, перед обновлением автоматически создаётся полная резервная копия старого билда, а из текущего билда снимаются только конфликтующие Souls.
+- Новые предметы, варианты оружия, переводы и остальные актуальные данные больше не должны целиком оставаться недоступными только из-за устаревших Soul-слотов одного экипированного предмета.
+- Настоящие несовместимости — отсутствующий предмет или предмет, который больше нельзя использовать текущей расой/классом — по-прежнему не исправляются разрушительно: текущий билд сохраняется без изменений и показывается явное предупреждение.
+- Если резервную копию, пересчёт или обновлённый autosave сохранить не удаётся, переход на новую ревизию отменяется или откатывается к исходному билду вместо частично применённого состояния.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- The current autosaved character now safely adopts fresh game-data revisions even when an older version of an equipped item had more Soul sockets.
+- If the new item version can no longer hold an equipped Soul, or a Soul is no longer compatible with that slot, a complete backup of the old build is created first and only the conflicting Souls are removed from the current build.
+- New items, weapon variants, translations and other current catalog data should no longer remain entirely unavailable just because one equipped legacy item has outdated Soul sockets.
+- True incompatibilities — a missing equipped item or an item no longer usable by the current race/class — are still never repaired destructively: the current build is kept unchanged and a visible warning is shown.
+- If the backup, recalculation or updated autosave cannot be written safely, catalog adoption is cancelled or rolled back to the original build instead of leaving a partially applied state.
+<!-- /release-notes:en -->
+
+### Project and delivery details
+
+- Catalog adoption now classifies incompatibilities before the strict snapshot preflight: Soul overflow/missing/incompatible-slot cases are repairable, while missing equipment and race/class incompatibility remain blocking.
+- Repairable adoption is transactional from the player's perspective: an exact named backup is written before mutation, only planned Soul cells are cleared, the target snapshot still passes the original strict preflight, and failures restore the previous payload.
+- Automatic failures are surfaced in the autosave status instead of silently leaving the current character pinned to an older catalog.
+- Regression coverage includes a stale startup autosave whose equipped item loses a Soul socket, successful adoption of the newer revision, visibility of newly added catalog variants, backup preservation, and separate blocking-vs-repairable conflict tests.
+
 ## Modern 3.22 — Astir equipment identity cleanup, 2026-10-07
 
 <!-- release-notes:ru -->
