@@ -28,11 +28,12 @@
 ### Project and delivery details
 
 - The exact 2026-10-07 live JSON inputs and the explicit one-to-one identity map are retained under `admin-api/data/` for reproducibility and review.
-- D1 migration `0006_pandora_os_live_item_sync.sql` is generated deterministically during deployment and advances the catalog to revision/impact revision 82.
-- Existing revision-81 overrides are JSON merge-patched, so unrelated manual admin fields survive the bulk sync; bracket-only cleanup is handled by the shared baseline layer instead of materializing hundreds of extra D1 overrides.
+- The already-deployed `0006_pandora_os_live_item_sync.sql` remains immutable as revision 82. Follow-up migration `0007_pandora_os_live_item_sync_hardening.sql` deterministically advances the catalog to revision/impact revision 83.
+- Revision 83 merge-patches the 344 current server identities while preserving unrelated manual Admin fields. It also removes unchanged cosmetic-only revision-82 overrides now handled by the shared baseline layer.
+- The 24 equipment rows currently marked unavailable are safely restored to their revision-79/baseline state only when their revision-82 entry is still exactly automation-produced; any later manual edit is preserved.
 - Supported server effects are converted only through verified typed-stat mappings. Unknown proc mechanics and semantically ambiguous encodings remain in the frozen source snapshot and retain the existing calculation tokens.
 - Souls are applied only where the retained simulator identity and server record were matched one-to-one; deliberately ambiguous candidates remain untouched.
-- Regression coverage validates identity uniqueness, category restrictions, codec compilation, D1 statement limits, revision-history preservation and merge behavior.
+- Regression coverage validates identity uniqueness, obtainable-only filtering, codec compilation, D1 statement limits, revision-history restoration, cosmetic compaction and manual-edit preservation.
 
 ## Modern 3.20 — Pandora Saga OS item data sync, 2026-10-06
 
