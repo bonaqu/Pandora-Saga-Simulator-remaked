@@ -25,6 +25,7 @@ jobs:
       ci_profile: ${{ steps.changes.outputs.ci_profile }}
       translation_only: ${{ steps.changes.outputs.translation_only }}
       catalog_data: ${{ steps.changes.outputs.catalog_data }}
+      admin_only: ${{ steps.changes.outputs.admin_only }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -54,9 +55,11 @@ jobs:
 
           translation_only=false
           catalog_data=false
+          admin_only=false
           case "$policy_profile" in
             translation) translation_only=true ;;
             catalog) catalog_data=true ;;
+            admin) admin_only=true ;;
           esac
 
           css_only=true
@@ -92,23 +95,23 @@ jobs:
             exit 1
           fi
 
-          if [[ "$docs_only" == "true" || "$css_only" == "true" || "$translation_only" == "true" || "$catalog_data" == "true" ]]; then
+          if [[ "$docs_only" == "true" || "$css_only" == "true" || "$translation_only" == "true" || "$catalog_data" == "true" || "$admin_only" == "true" ]]; then
             full_required=false
           else
             full_required=true
           fi
 
-          printf 'docs_only=%s\ncss_only=%s\nfull_required=%s\nci_profile=%s\ntranslation_only=%s\ncatalog_data=%s\n' \
-            "$docs_only" "$css_only" "$full_required" "$policy_profile" "$translation_only" "$catalog_data" >> "$GITHUB_OUTPUT"
+          printf 'docs_only=%s\ncss_only=%s\nfull_required=%s\nci_profile=%s\ntranslation_only=%s\ncatalog_data=%s\nadmin_only=%s\n' \
+            "$docs_only" "$css_only" "$full_required" "$policy_profile" "$translation_only" "$catalog_data" "$admin_only" >> "$GITHUB_OUTPUT"
 
           printf 'Changed files (%d):\n' "${#files[@]}"
           printf ' - %s\n' "${files[@]}"
           echo "policy=$policy_json"
-          echo "docs_only=$docs_only css_only=$css_only ci_profile=$policy_profile translation_only=$translation_only catalog_data=$catalog_data full_required=$full_required release_notes_required=$release_notes_required changelog_changed=$changelog_changed"
+          echo "docs_only=$docs_only css_only=$css_only ci_profile=$policy_profile translation_only=$translation_only catalog_data=$catalog_data admin_only=$admin_only full_required=$full_required release_notes_required=$release_notes_required changelog_changed=$changelog_changed"
 
   browser_site:
     needs: classify
-    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -192,7 +195,7 @@ jobs:
 
   workspace_visual:
     needs: classify
-    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -244,7 +247,7 @@ jobs:
 
   browser_core:
     needs: classify
-    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -388,9 +391,33 @@ jobs:
           npm run test:data
           npm run test:source-audit
 
+  admin_contract:
+    needs: classify
+    if: needs.classify.outputs.admin_only == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify Admin API contracts
+        run: npm run test:admin
+
+      - name: Verify Wrangler build
+        run: npm run admin:check
+
   cross_browser:
     needs: classify
-    if: needs.classify.outputs.docs_only != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.admin_only != 'true'
     runs-on: ubuntu-latest
     env:
       PW_USE_SYSTEM_CHROME: '1'
@@ -424,7 +451,7 @@ jobs:
     needs:
       - classify
       - browser_site
-    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     container:
@@ -459,7 +486,7 @@ jobs:
     needs:
       - classify
       - browser_site
-    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     container:
@@ -498,6 +525,7 @@ jobs:
       - catalog_audit
       - catalog_contract
       - data_integrity
+      - admin_contract
       - cross_browser
       - cross_browser_firefox
       - cross_browser_webkit
@@ -513,12 +541,13 @@ jobs:
           CATALOG_AUDIT: ${{ needs.catalog_audit.result }}
           CATALOG_CONTRACT: ${{ needs.catalog_contract.result }}
           DATA_INTEGRITY: ${{ needs.data_integrity.result }}
+          ADMIN_CONTRACT: ${{ needs.admin_contract.result }}
           CROSS_BROWSER: ${{ needs.cross_browser.result }}
           CROSS_BROWSER_FIREFOX: ${{ needs.cross_browser_firefox.result }}
           CROSS_BROWSER_WEBKIT: ${{ needs.cross_browser_webkit.result }}
         run: |
           set -euo pipefail
-          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE" "$CATALOG_AUDIT" "$CATALOG_CONTRACT" "$DATA_INTEGRITY" "$CROSS_BROWSER" "$CROSS_BROWSER_FIREFOX" "$CROSS_BROWSER_WEBKIT"; do
+          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE" "$CATALOG_AUDIT" "$CATALOG_CONTRACT" "$DATA_INTEGRITY" "$ADMIN_CONTRACT" "$CROSS_BROWSER" "$CROSS_BROWSER_FIREFOX" "$CROSS_BROWSER_WEBKIT"; do
             if [[ "$result" != "success" && "$result" != "skipped" ]]; then
               echo "A required CI partition ended as: $result"
               exit 1
