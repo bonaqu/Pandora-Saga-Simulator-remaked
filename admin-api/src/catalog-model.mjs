@@ -129,6 +129,19 @@ function skillProfiles(input) {
   return profiles;
 }
 const texts = source => Object.fromEntries(LANGUAGES.map(language => [language, source?.[language] || '']));
+export function normalizeUntranslatedItemName(value) {
+  let text = String(value || '').trim();
+  if (!text || !text.startsWith('(')) return text;
+  while (text.startsWith('(') && text.endsWith(')') && text.length > 2) text = text.slice(1, -1).trim();
+  if (text.startsWith('(') && !/[()]/.test(text.slice(1))) text = text.slice(1).trim();
+  if (text.endsWith(')') && !/[()]/.test(text.slice(0, -1))) text = text.slice(0, -1).trim();
+  return text;
+}
+function itemTexts(source) {
+  const result = texts(source);
+  result.en = normalizeUntranslatedItemName(result.en);
+  return result;
+}
 function effects(input) {
   check(Array.isArray(input) && input.length <= EFFECTS.reduce((count, effect) => count + effect.units.length, 0), 'Too many effects');
   const seen = new Set();
@@ -166,7 +179,7 @@ export function draftFromSource(source, kind) {
   }
   return {
     id: source?.id || '', kind, category: kind === 'equipment' ? source?.legacy_category_id ?? 0 : null,
-    names: texts(source?.name), description: texts(source?.option), notes: texts(source?.special_option),
+    names: itemTexts(source?.name), description: texts(source?.option), notes: texts(source?.special_option),
     acquisition: texts(source?.acquisition), modifiers: texts(source?.modifier),
     level: source ? Number(source.level_requirement ?? 1) : 1, sockets: Number(source?.soul_socket_count ?? 0),
     races: kind === 'equipment' && source ? source.compatibility_flags.slice(2, 8) : Array(6).fill(1),
