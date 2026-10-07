@@ -1,5 +1,39 @@
 # Changelog
 
+## Modern 3.24 — server enhancement mechanics audit, 2026-10-07
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Исправлены характеристики, зависящие от заточки предмета. Modern теперь использует актуальную таблицу `itemForth` сервера Pandora Saga OS вместо того, чтобы ограничиваться только статическими бонусами предмета.
+- Полностью проверены **148 предметов с серверными бонусами улучшения** и **1 136 отдельных эффектов по уровням заточки**. Для 118 предметов, которых не покрывала старая механика Legacy, добавлен серверный расчёт; 30 уже существующих Legacy-механик оставлены без двойного начисления.
+- Исправлено семейство военных арбалетов: у **Прочного/Разящего военного арбалета** скорость атаки теперь растёт на +2/+4/+6/+8/+10 по соответствующим порогам, а на +7 появляется дополнительный +1 ПРВ; у **Сильного военного арбалета** на +7 применяется +2 ПРВ.
+- Подключены текущие серверные комплектные эффекты `unison` (3 набора), включая комбинации, где часть предметов существует только как Modern-записи.
+- Исправлены две Souls с эффектом, зависящим от заточки предмета-хоста: **Душа парада** получает дополнительное сопротивление слабости на +8, а **Душа зеркала** меняет отражение с 3% на 5% на +8.
+- Восстановлены безопасно рассчитываемые базовые эффекты, которые прежняя плоская синхронизация пропускала: +10% точности Берета охотника, EXP/Town Move Speed Плаща новичка, Aura Damage Серьги жреца и расовые снижения урона шести новых Souls.
+- Исторические каталоги до ревизии 85 не меняются: новые серверные механики применяются только к актуализированным ревизиям 85+.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Fixed item effects that depend on enhancement level. Modern now consumes Pandora Saga OS's current `itemForth` table instead of carrying only each item's static bonuses.
+- Audited all **148 items with server enhancement mechanics** and **1,136 enhancement-level effects**. 118 items that were not covered by retained Legacy logic now use server-backed calculations; 30 existing Legacy implementations are kept without double-counting.
+- Fixed the War Crossbow family: **War Crossbow D/A** now gain the server attack-speed steps (+2/+4/+6/+8/+10) and the +7 AGI bonus; **War Crossbow S** gains its +2 AGI threshold at +7.
+- Added all current server `unison` set mechanics (3 sets), including sets containing Modern-only item identities.
+- Fixed the two Souls whose effect depends on the host item's enhancement: **Soul of the Parade** gains its extra weakness resistance at +8 and **Soul of the Mirror** changes reflection from 3% to 5% at +8.
+- Restored safely representable base effects omitted by the previous flat sync: Bullseye Cap accuracy, Novice's Cloak EXP/town movement speed, Priest's Earring aura damage, and the six new race-damage reduction Souls.
+- Historical catalog revisions below 85 are unchanged; current server mechanics are enabled only for synchronized revisions 85+.
+<!-- /release-notes:en -->
+
+### Project and delivery details
+
+- Pinned `itemForth.json` and `unison.json` snapshots alongside the existing live item/Soul source snapshots.
+- Added a Modern enhancement runtime that supplements the retained engine after `EquipCheck`, then recalculates through the original calculator functions instead of reimplementing displayed statistics.
+- Enhancement coverage is partitioned explicitly: every live `itemForth` server ID is covered exactly once by either retained native logic or the server-backed supplement.
+- Added regression coverage for the +2/+4/+6/+7/+8 War Crossbow thresholds, conditional Souls, unison sets, safe omitted base effects, source-table coverage and effect-function mappings.
+- Proc/trigger mechanics and range/carry mechanics that the retained calculator has no trustworthy numerical model for remain descriptive rather than being mapped to unrelated stats.
+
 ## Modern 3.23 — safe automatic catalog adoption, 2026-10-07
 
 <!-- release-notes:ru -->
