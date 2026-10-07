@@ -2100,13 +2100,27 @@ html[lang="ru"] body.remaked-modern #body [data-remaked-effect-tabs] .remaked-ca
   letter-spacing: -0.01em;
 }
 
-/* The RU Adeptness label is longer than the narrow desktop value track. Allow
-   its natural space break instead of making SkillSet horizontally scroll. */
-@media (min-width: 861px) and (max-width: 1365px) {
+/* Russian skill headings are longer than the compact numeric controls. Keep
+   their boxes inside the existing 80px tracks: Adeptness may break at its
+   natural space, while Potential stays whole at a slightly smaller size. */
+@media (min-width: 861px) {
   html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(2),
-  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(3) {
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(3),
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(5),
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(6) {
+    width: 60px;
+  }
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(2),
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(5) {
     white-space: normal;
     line-height: 1.15;
+    font-size: 10px;
+  }
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(3),
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(6) {
+    white-space: nowrap;
+    font-size: 9px;
+    letter-spacing: -0.01em;
   }
 }
 
