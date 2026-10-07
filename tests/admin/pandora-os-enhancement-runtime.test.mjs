@@ -21,7 +21,6 @@ const effectMap = jsonVar('EFFECT_MAP');
 const runtimeForth = jsonVar('ITEM_FORTH');
 const runtimeUnison = jsonVar('UNISON');
 const nativeIds = jsonVar('NATIVE_SERVER_IDS');
-const conditionalSouls = jsonVar('SOUL_CONDITIONAL');
 
 test('every live itemForth item is covered exactly once by native Legacy or Modern server runtime', () => {
   const sourceIds = Object.keys(forth).map(Number).sort((a, b) => a - b);
@@ -79,15 +78,15 @@ test('all current live unison tables are represented by the runtime', () => {
   }
 });
 
-test('the only enhancement-ranged live Souls are explicitly modeled', () => {
+test('the only enhancement-ranged live Souls remain covered by retained native logic', () => {
   const ranged = [];
   for (const soul of Object.values(souls)) {
     const effects = (soul.effects || []).filter(effect => Number(effect.min || 0) > 0 || (effect.max != null && Number(effect.max) < 10));
     if (effects.length) ranged.push({ id: Number(soul.id), effects });
   }
   assert.deepEqual(ranged.map(row => row.id).sort((a, b) => a - b), [102025, 103001]);
-  assert.deepEqual(conditionalSouls['164'], [{ min: 8, max: 10, effects: [{ func: 'EP_IMMUNE_CURSE', a: 25, b: 0 }] }]);
-  assert.deepEqual(conditionalSouls['163'], [{ min: 8, max: 10, effects: [{ func: 'EP_ONDAMAGE_REFLECTION', a: 2, b: 0 }] }]);
+  assert.match(runtime, /nativeServerIds/);
+  assert.doesNotMatch(runtime, /SOUL_CONDITIONAL/);
 });
 
 test('known safe base stats omitted by the old flat sync are explicitly supplemented', () => {
