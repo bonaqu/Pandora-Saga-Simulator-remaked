@@ -37,7 +37,7 @@ function snapshot(sqlite) {
 test('live Pandora OS mapping is one-to-one, equipment-only and fully compilable', () => {
   const inputs = loadInputs();
   assert.equal(inputs.mapping.equipment.length, 271);
-  assert.equal(inputs.mapping.souls.length, 74);
+  assert.equal(inputs.mapping.souls.length, 97);
 
   const serverIds = new Set();
   const projectIds = new Set();
@@ -56,7 +56,7 @@ test('live Pandora OS mapping is one-to-one, equipment-only and fully compilable
 
   const rows = buildReleaseRows(inputs);
   assert.ok(rows.length > 1000, 'expected broad legacy English normalization plus server sync');
-  assert.equal(rows.filter(row => row.mode === 'server').length, 345);
+  assert.equal(rows.filter(row => row.mode === 'server').length, 368);
   assert.equal(new Set(rows.map(row => row.identity.id)).size, rows.length);
   assert.ok(rows.some(row => row.mode === 'normalize' &&
     /^\([^()]+\)$/.test(row.expectedEnglish || '') &&
@@ -102,6 +102,26 @@ test('live server stats use verified conversions without inventing unsupported p
   const mirror = byId.get('soul.163');
   assert.equal(mirror.effectMode, 'patch');
   assert.ok(mirror.effects.some(effect => effect.stat === 135 && effect.value === 3));
+
+  const steady = byId.get('soul.122');
+  assert.ok(steady);
+  assert.ok(steady.effects.some(effect => effect.stat === 149 && effect.value === 5));
+  assert.ok(steady.effects.some(effect => effect.stat === 151 && effect.value === 5));
+  assert.ok(steady.effects.some(effect => effect.stat === 153 && effect.value === 20));
+
+  const changeRow = rows.find(row => row.identity.id === 'soul.121');
+  assert.ok(changeRow);
+  const changeSource = baselineById.get('soul.121');
+  const changeCompiled = compileRecord(validateDraft(changeRow.fallback.edit, changeRow.identity), changeRow.identity, changeSource);
+  assert.match(changeCompiled.calculationCode, /(?:^|_)162=-2(?:_|$)/,
+    'ambiguous server debuff-duration encoding must preserve the verified Legacy -2% token');
+
+  const steadfastRow = rows.find(row => row.identity.id === 'soul.148');
+  assert.ok(steadfastRow);
+  assert.equal(steadfastRow.fallback.edit.names.en, 'Steadfast Soul');
+  const steadfastSource = baselineById.get('soul.148');
+  const steadfastCompiled = compileRecord(validateDraft(steadfastRow.fallback.edit, steadfastRow.identity), steadfastRow.identity, steadfastSource);
+  assert.match(steadfastCompiled.calculationCode, /(?:^|_)151=20(?:_|$)/);
 });
 
 test('revision 82 merge-patches revision 81 without clobbering unrelated manual admin fields', () => {
