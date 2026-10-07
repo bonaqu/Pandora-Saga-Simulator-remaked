@@ -2,10 +2,10 @@ name: Cloudflare Admin API
 
 on:
   pull_request:
-    paths: ['admin-api/**', 'tests/admin/**', 'data/generated/**', 'data/native-passive-hooks.v1.json', 'data/current-active-profiles.v1.json', 'localization/game-terms.ru.json', 'scripts/create_first_admin.mjs', 'scripts/materialize_pandora_os_sync.mjs', 'scripts/materialize_pandora_os_live_sync.mjs', 'scripts/materialize_pandora_os_live_sync_hardening.mjs', 'scripts/materialize_pandora_os_complete_sync.mjs', 'scripts/materialize_pandora_os_identity_reconcile.mjs', 'scripts/lib/wrangler-json.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
+    paths: ['admin-api/**', 'tests/admin/**', 'data/generated/**', 'data/native-passive-hooks.v1.json', 'data/current-active-profiles.v1.json', 'localization/game-terms.ru.json', 'scripts/create_first_admin.mjs', 'scripts/materialize_pandora_os_sync.mjs', 'scripts/materialize_pandora_os_live_sync.mjs', 'scripts/materialize_pandora_os_live_sync_hardening.mjs', 'scripts/materialize_pandora_os_complete_sync.mjs', 'scripts/materialize_pandora_os_identity_reconcile.mjs', 'scripts/materialize_decorative_equipment_prune.mjs', 'scripts/lib/wrangler-json.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
   push:
     branches: [bonaqu_projects]
-    paths: ['admin-api/**', 'tests/admin/**', 'data/generated/**', 'data/native-passive-hooks.v1.json', 'data/current-active-profiles.v1.json', 'localization/game-terms.ru.json', 'scripts/create_first_admin.mjs', 'scripts/materialize_pandora_os_sync.mjs', 'scripts/materialize_pandora_os_live_sync.mjs', 'scripts/materialize_pandora_os_live_sync_hardening.mjs', 'scripts/materialize_pandora_os_complete_sync.mjs', 'scripts/materialize_pandora_os_identity_reconcile.mjs', 'scripts/lib/wrangler-json.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
+    paths: ['admin-api/**', 'tests/admin/**', 'data/generated/**', 'data/native-passive-hooks.v1.json', 'data/current-active-profiles.v1.json', 'localization/game-terms.ru.json', 'scripts/create_first_admin.mjs', 'scripts/materialize_pandora_os_sync.mjs', 'scripts/materialize_pandora_os_live_sync.mjs', 'scripts/materialize_pandora_os_live_sync_hardening.mjs', 'scripts/materialize_pandora_os_complete_sync.mjs', 'scripts/materialize_pandora_os_identity_reconcile.mjs', 'scripts/materialize_decorative_equipment_prune.mjs', 'scripts/lib/wrangler-json.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
   workflow_dispatch:
 
 permissions:
@@ -65,7 +65,7 @@ jobs:
           const base = "https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev";
           const headResponse = await fetch(base + "/api/catalog/head");
           const head = await headResponse.json();
-          if (!headResponse.ok || head.ok !== true || head.revision < 85 || head.impactRevision < 85)
+          if (!headResponse.ok || head.ok !== true || head.revision < 86 || head.impactRevision < 86)
             throw new Error("Unexpected deployed catalog head: " + JSON.stringify(head));
           const catalogResponse = await fetch(base + "/api/catalog");
           const catalog = await catalogResponse.json();
@@ -80,5 +80,16 @@ jobs:
             record?.names?.en === "Adept Glasses" && record?.names?.ru === "Очки");
           if (astir.length < 58 || !scarlet || !unavailableAstir)
             throw new Error("Astir localization/catalog verification failed: " + JSON.stringify({ count: astir.length, scarlet: !!scarlet, unavailableAstir: !!unavailableAstir }));
-          console.log(JSON.stringify({ revision: head.revision, impactRevision: head.impactRevision, records: catalog.records.length, astirRecords: astir.length }));
+          const decorativeIds = new Set([
+            "modern.equipment.fb8f9028-d194-43c2-a143-89048e89fd0f",
+            "modern.equipment.3db45d2c-5301-46f4-a9de-7438e57018f8",
+            "modern.equipment.1fe290c8-9bbb-40fe-aa40-055cef1e7ab0",
+            "modern.equipment.a7145ba2-78ab-47c8-a863-5a024873522c",
+            "modern.equipment.9c66a663-f7e8-4677-a7fb-02b57fd1736f",
+            "modern.equipment.218e08bb-1154-4c9a-a6f6-365805690ccc"
+          ]);
+          const decorative = catalog.records.filter(record => decorativeIds.has(record?.id));
+          if (decorative.length)
+            throw new Error("Decorative equipment is still published: " + decorative.map(record => record.id).join(", "));
+          console.log(JSON.stringify({ revision: head.revision, impactRevision: head.impactRevision, records: catalog.records.length, astirRecords: astir.length, decorativeRecords: decorative.length }));
           NODE

@@ -89,6 +89,7 @@ class DeployChangePolicyTests(unittest.TestCase):
             "tests/admin/catalog.test.mjs",
             "scripts/create_first_admin.mjs",
             "scripts/materialize_pandora_os_complete_sync.mjs",
+            "scripts/materialize_decorative_equipment_prune.mjs",
             "scripts/lib/wrangler-json.mjs",
             ".github/workflows/admin-api.yml",
         ):
