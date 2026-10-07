@@ -1,5 +1,34 @@
 # Changelog
 
+## Modern 3.23 — safe automatic catalog adoption, 2026-10-07
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Исправлено автообновление игровых данных для уже существующего текущего autosave: старый открытый билд больше не должен незаметно оставаться на прошлой ревизии каталога только из-за изменений Soul slots.
+- Если новая ревизия уменьшила число Soul slots или сделала установленную Soul несовместимой со слотом, Modern **сначала сохраняет отдельную резервную копию старого билда**, затем снимает только конфликтующие Souls и переводит текущий autosave на актуальный каталог.
+- Более опасные конфликты — исчезнувший экипированный предмет или новая несовместимость предмета с расой/классом — по-прежнему не исправляются догадкой: автообновление останавливается, билд остаётся без изменений, а пользователь получает явное предупреждение.
+- Неудача создания резервной копии, пересчёта или записи autosave теперь означает полный отказ от изменения текущего билда; промежуточное состояние не должно сохраняться.
+- Добавлены регрессионные сценарии для старого autosave с уменьшившимся числом Soul slots, отказа записи резервной копии и жёсткой несовместимости оборудования.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Fixed automatic game-data adoption for an existing current autosave: an open build should no longer remain silently pinned to an old catalog solely because Soul slot rules changed.
+- When a newer catalog reduces Soul slots or makes an equipped Soul incompatible with its slot, Modern **first stores a separate backup of the old build**, then clears only the conflicting Souls and moves the current autosave to the latest catalog.
+- More destructive conflicts — a missing equipped item or new race/class incompatibility — are still never guessed away: automatic adoption stops, keeps the build unchanged and shows an explicit warning.
+- If the backup, recalculation or autosave write fails, the current build is left/restored unchanged instead of persisting a partial migration.
+- Regression coverage now includes stale autosaves with reduced Soul slots, backup-write failure and hard equipment incompatibility.
+<!-- /release-notes:en -->
+
+### Project and delivery details
+
+- Catalog adoption now computes a non-mutating compatibility/repair plan before touching character state.
+- Repairable Soul conflicts are guarded by a deduplicated named-build backup keyed by the source/target catalog revisions and exact payload.
+- Automatic catalog polling surfaces blocked migrations instead of silently retrying the same incompatible payload every ten seconds.
+- Existing historical named-build pinning remains unchanged; only the active autosave is automatically advanced when safe.
+
 ## Modern 3.23 — safe automatic catalog updates, 2026-10-07
 
 <!-- release-notes:ru -->
