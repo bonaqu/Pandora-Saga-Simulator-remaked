@@ -143,7 +143,7 @@ jobs:
           python-version: '3.13'
 
       - name: Set up project Node runtime
-        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
         uses: actions/setup-node@v6
         with:
           node-version: '24'
@@ -157,8 +157,8 @@ jobs:
           tests.test_build_pages
           tests.test_deploy_change_policy
 
-      - name: Run focused data policy checks
-        if: needs.classify.outputs.translation_only == 'true' || needs.classify.outputs.catalog_data == 'true'
+      - name: Run focused change-policy checks
+        if: needs.classify.outputs.translation_only == 'true' || needs.classify.outputs.catalog_data == 'true' || needs.classify.outputs.admin_only == 'true'
         run: >
           python -m unittest -v
           tests.test_repository_docs
@@ -166,15 +166,15 @@ jobs:
           tests.test_deploy_change_policy
 
       - name: Run full Python tests
-        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
         run: python -m unittest discover -s tests -v
 
       - name: Validate restored simulator
-        if: needs.classify.outputs.docs_only != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.admin_only != 'true'
         run: python3 scripts/validate_site.py
 
       - name: Syntax-check core JavaScript
-        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
         shell: bash
         run: |
           set -euo pipefail
