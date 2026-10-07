@@ -71,6 +71,15 @@ class CIWorkflowArchitectureTests(unittest.TestCase):
         self.assertIn("Verify Admin API contracts", workflow)
         self.assertIn("needs.classify.outputs.admin_only != 'true'", workflow)
 
+    def test_feature_ci_deduplicates_push_when_open_pr_exists(self):
+        workflow = self.read(".github/workflows/feature-ci.yml")
+        self.assertIn("pull-requests: read", workflow)
+        self.assertIn("Detect open PR for feature push", workflow)
+        self.assertIn("Open PR already validates $BRANCH; skipping duplicate push matrix.", workflow)
+        self.assertIn("duplicate_pr:", workflow)
+        self.assertIn("if: needs.classify.outputs.duplicate_pr != 'true'", workflow)
+        self.assertIn("ci_profile=duplicate-pr", workflow)
+
     def test_admin_workflow_is_not_pages_deployment_infrastructure(self):
         workflow = self.read(".github/workflows/pages.yml")
         sensitive_case = ".github/workflows/pages.yml|.github/workflows/feature-ci.yml|.github/actions/*|scripts/build_pages.py|scripts/deploy_change_policy.py"
