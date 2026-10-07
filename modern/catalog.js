@@ -48,11 +48,20 @@
     // the effective Modern catalog.
     for (var category = 0; category < baselineEquipment[1].length; category++) {
       for (var itemIndex = 1; itemIndex < baselineEquipment[1][category].length; itemIndex++) {
-        if (baselineEquipment[1][category][itemIndex]) baselineEquipment[1][category][itemIndex][0] = normalizeUntranslatedItemName(baselineEquipment[1][category][itemIndex][0]);
+        if (!baselineEquipment[1][category][itemIndex]) continue;
+        var equipmentName = normalizeUntranslatedItemName(baselineEquipment[1][category][itemIndex][0]);
+        baselineEquipment[1][category][itemIndex][0] = equipmentName;
+        // Keep the live source array aligned with the captured baseline so a
+        // failed catalog adoption can roll back byte-for-byte to the same UI
+        // state instead of introducing a cosmetic name-only difference.
+        if (window.EquipData[1]?.[category]?.[itemIndex]) window.EquipData[1][category][itemIndex][0] = equipmentName;
       }
     }
     for (var soulIndex = 1; soulIndex < baselineSouls[1].length; soulIndex++) {
-      if (baselineSouls[1][soulIndex]) baselineSouls[1][soulIndex][0] = normalizeUntranslatedItemName(baselineSouls[1][soulIndex][0]);
+      if (!baselineSouls[1][soulIndex]) continue;
+      var soulName = normalizeUntranslatedItemName(baselineSouls[1][soulIndex][0]);
+      baselineSouls[1][soulIndex][0] = soulName;
+      if (window.SoulData[1]?.[soulIndex]) window.SoulData[1][soulIndex][0] = soulName;
     }
     baselineClassMods = window.Status.Mod.map(function (row) { return row.slice(); });
     baselineSkills = cloneSkills(window.Skill.slice(0, 3));
