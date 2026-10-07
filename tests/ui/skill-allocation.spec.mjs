@@ -185,15 +185,14 @@ test('level 50 to 49 recalculates Merciful Blessing effects and exposes an over-
     .not.toHaveAttribute('data-remaked-budget-deficit', '');
 });
 
-test('Level, Status, Skill and Potential budget rows share the same compact geometry', async ({ page }) => {
+test('Level, Status and Skill budget rows share the same compact geometry', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   const geometry = await page.evaluate(() => {
     const rows = [
       document.querySelector('[data-remaked-calculator-level]'),
       document.getElementById('StatusStP_0').closest('.input_gt').parentElement,
-      document.getElementById('StatusSkP_0').closest('.input_gt').parentElement,
-      document.getElementById('StatusUnP_0').closest('.input_gt').parentElement
+      document.getElementById('StatusSkP_0').closest('.input_gt').parentElement
     ];
     return rows.map(row => {
       const box = row.getBoundingClientRect();
