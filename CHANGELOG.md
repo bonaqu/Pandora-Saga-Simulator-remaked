@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 3.27 — clearer Russian skill and effect labels, 2026-10-07
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- В разделе «Умения» русские подписи уточнены: Adeptness теперь отображается как «Изучено (ОЧ)», а Potential — как «Потенциал.».
+- В разделе «Эффекты» вкладки переименованы в «Эффекты умений» и «Эффекты зелий». Длинные русские подписи адаптированы так, чтобы оставаться в одну строку.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Clarified the Russian skill-column labels while keeping the underlying skill mechanics unchanged.
+- Renamed the Russian effect tabs and adjusted their compact layout so both labels remain on one line.
+<!-- /release-notes:en -->
+
 ## Modern 3.26 — seamless online updates and catalog cleanup, 2026-10-07
 
 <!-- release-notes:ru -->
