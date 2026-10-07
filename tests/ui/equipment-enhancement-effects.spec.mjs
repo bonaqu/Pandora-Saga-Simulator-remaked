@@ -9,8 +9,8 @@ function publication(records) {
     schemaVersion: 1,
     sourceFingerprint: equipment.metadata.generated_from[0].sha256,
     characterSourceFingerprint: character.sourceFingerprint,
-    revision: 1,
-    impactRevision: 1,
+    revision: 85,
+    impactRevision: 85,
     records
   };
 }
