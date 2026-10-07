@@ -140,8 +140,10 @@ test('RU uses compact skill and effect terminology without wrapping effect tabs'
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/?ui=ru');
 
-    const skillHeaders = (await page.locator('[data-remaked-skill-column-header] > span').allTextContents())
-      .map(text => text.trim()).filter(Boolean);
+    const skillHeaders = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('[data-remaked-skill-column-header] > span'))
+        .map(node => node.textContent.trim()).filter(Boolean)
+    );
     expect(skillHeaders).toEqual(['Изучено (ОЧ)', 'Потенциал.', 'Изучено (ОЧ)', 'Потенциал.']);
 
     await expect(page.locator('[data-remaked-effect="0"]')).toHaveText('Эффекты умений');

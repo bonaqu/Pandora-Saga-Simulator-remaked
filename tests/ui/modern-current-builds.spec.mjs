@@ -66,7 +66,7 @@ for (const width of [390, 1440]) {
     expect(await page.locator('#StatusUnP_0').evaluate(node => node.closest('.input_gt').parentElement.hidden)).toBe(true);
     const labels = await page.evaluate(() => ['StatusStP_0', 'StatusSkP_0'].map(id => document.getElementById(id).closest('.input_gt').previousElementSibling.textContent));
     expect(labels).toEqual(['Хар-ки', 'Умения']);
-    await expect(page.locator('[data-remaked-skill-column-header]')).toContainText('Potential');
+    await expect(page.locator('[data-remaked-skill-column-header]')).toContainText('Потенциал.');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
     expect(errors).toEqual([]);
     await page.screenshot({ path: info.outputPath('modern-character-' + width + '.png') });
