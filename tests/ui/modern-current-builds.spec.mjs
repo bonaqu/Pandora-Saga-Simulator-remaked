@@ -103,3 +103,22 @@ test('new share code is substantially shorter and malformed code cannot replace 
   await expect(page.locator('[data-remaked-autosave-status]')).toContainText('Invalid share link');
   expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(before);
 });
+
+for (const conflict of ['changed stats','deleted canonical','disabled canonical']) {
+  test('reviewed Golden Mantle identity remains stable after '+conflict,async({page})=>{
+    await page.goto('/');
+    const data=snapshot(87,structuredClone(records));
+    const canonical=data.records.find(record=>record.engineId===350051);
+    if(conflict==='changed stats'){canonical.names.en='Updated golden mantle';canonical.calculationCode='49=0_6=50';}
+    if(conflict==='deleted canonical') data.records=data.records.filter(record=>record!==canonical);
+    if(conflict==='disabled canonical') canonical.disabled=true;
+    const result=await page.evaluate(data=>{
+      PandoraRemaked.adapter.selectEquipment(7,350003);const old=PandoraRemaked.adapter.serialize();
+      const migrated=PandoraRemaked.catalog.migratePayload(old,data);PandoraRemaked.catalog.applySnapshot(data,{rebuild:false});PandoraRemaked.adapter.load(migrated.payload);
+      return {selected:Number(Status.Equip[7][0]),options:PandoraRemaked.adapter.listEquipmentOptions(7).map(item=>Number(item.value)),changes:migrated.changes};
+    },data);
+    expect(result.selected).toBe(conflict==='changed stats'?350051:350000);
+    expect(result.options).not.toContain(350003);expect(result.options).toContain(350038);
+    expect(result.changes).toContainEqual(expect.objectContaining({kind:'equipment',type:conflict==='changed stats'?'changed':'removed'}));
+  });
+}

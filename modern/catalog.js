@@ -220,15 +220,12 @@
     return null;
   }
   function goldenAlias(snapshot) {
-    var record = snapshot.records.find(function (candidate) { return candidate.id === 'modern.equipment.218e08bb-1154-4c9a-a6f6-365805690ccc' && !candidate.disabled; });
-    var source = baselineEquipment?.[0]?.[35]?.[3];
-    // A reviewed cosmetic identity: same cloak, no effects, same requirements.
-    // The functional Golden Cloak with HP/MP bonuses is deliberately excluded.
-    if (!record || !source || record.category !== 35 || record.level !== source[4] || record.sockets !== source[5] ||
-        record.compatibility.some(function (flag, index) { return flag !== source[8 + index]; }) ||
-        record.calculationCode.split('_').filter(function (token) { return token && token !== '49=0'; }).length || source[7]) return null;
-    return record;
+    // Identity was verified against publication 86: the decorative source cloak
+    // and this stable record are the same entity. Future stat/name/slot changes
+    // must follow that identity; the HP/MP Golden Cloak remains a different ID.
+    return snapshot.records.find(function (candidate) { return candidate.id === 'modern.equipment.218e08bb-1154-4c9a-a6f6-365805690ccc'; }) || null;
   }
+  function retiredGoldenSource(snapshot) { return snapshot.revision >= 86 || Boolean(goldenAlias(snapshot)); }
   function selectedStateExists(equipment, souls) {
     for (var slot = 0; slot < window.Status.Equip.length; slot++) {
       var state = window.Status.Equip[slot], id = Number(state[0]); var category = Math.floor(id / 10000), index = id % 10000;
@@ -344,7 +341,8 @@
     function changed(kind, id, previousId) {
       if (parsed.revision === snapshot.revision) return;
       var current = recordAt(kind, id, next), previous = recordAt(kind, previousId === undefined ? id : previousId, old), source = sourceAt(kind, id);
-      var beforeCode = previous?.calculationCode ?? source?.[7], afterCode = current?.calculationCode ?? source?.[7];
+      var beforeSource = sourceAt(kind, previousId === undefined ? id : previousId);
+      var beforeCode = previous?.calculationCode ?? beforeSource?.[7], afterCode = current?.calculationCode ?? source?.[7];
       if (beforeCode === undefined) return; // Missing old metadata is not a zero stat.
       function stats(code) {
         var values = Object.create(null);
@@ -365,7 +363,7 @@
       var beforeDescription = previous?.description?.[locale] || previous?.description?.en, afterDescription = current?.description?.[locale] || current?.description?.en;
       if (beforeDescription !== undefined && afterDescription !== undefined && namespace.catalogText.lines(beforeDescription) !== namespace.catalogText.lines(afterDescription)) differences.push(locale === 'ru' ? 'описание обновлено' : 'description updated');
       if (kind === 'equipment') {
-        var beforeSlots = previous?.sockets ?? source?.[5], afterSlots = current?.sockets ?? source?.[5];
+        var beforeSlots = previous?.sockets ?? beforeSource?.[5], afterSlots = current?.sockets ?? source?.[5];
         if (beforeSlots !== undefined && beforeSlots !== afterSlots) differences.push((namespace.i18n?.getLocale() === 'ru' ? 'слоты душ ' : 'Soul slots ') + beforeSlots + '→' + afterSlots);
       }
       if (differences.length) changes.push({ type: 'changed', kind: kind, id: id, name: name(kind, id), details: differences });
@@ -403,12 +401,14 @@
       var previousEquipmentId = id, choice = resolved('equipment', id);
       fields[offset] = id = choice.id; category = Math.floor(id / 10000); index = id % 10000;
       var alias = id === 350003 ? goldenAlias(snapshot) : null;
-      if (alias) { fields[offset] = id = alias.engineId; category = Math.floor(id / 10000); index = id % 10000; }
+      if (alias || id === 350003 && retiredGoldenSource(snapshot)) {
+        fields[offset] = id = alias ? alias.engineId : 350051; category = Math.floor(id / 10000); index = id % 10000;
+      }
       var item = recordAt('equipment', id, next), source = sourceAt('equipment', id);
       var compatible = item ? item.compatibility[2 + fields[0]] && item.compatibility[8 + fields[2]] : source?.[10 + fields[0]] && source?.[16 + fields[2]];
       var sockets = item?.sockets ?? source?.[5] ?? 0;
       if (index && (choice.replaced || !available('equipment', id) || !compatible)) {
-        changes.push({ type: 'removed', kind: 'equipment', id: id, name: name('equipment', choice.replaced ? previousEquipmentId : id, choice.replaced), reason: choice.replaced || !available('equipment', id) ? 'missing' : 'incompatible' });
+        changes.push({ type: 'removed', kind: 'equipment', id: id, name: name('equipment', choice.replaced || !item ? previousEquipmentId : id, choice.replaced), reason: choice.replaced || !available('equipment', id) ? 'missing' : 'incompatible' });
         fields[offset] = category * 10000;
         for (var field = 1; field < window.Status.Equip[slot].length; field++) fields[offset + field] = 0;
       } else {
@@ -492,7 +492,7 @@
     });
     // Deduplicate only the Modern projection; canonical Legacy arrays/files
     // remain untouched. Existing source selections migrate via the alias above.
-    if (goldenAlias(snapshot)) {
+    if (retiredGoldenSource(snapshot)) {
       for (var language = 0; language < 3; language++) equipment[language][35][3] = placeholder(equipment[language][35][3]);
     }
     if (options.rebuild !== false || options.preflightOnly) selectedStateExists(equipment, souls);
@@ -749,7 +749,7 @@
   }
   namespace.catalog = { applySnapshot, validateSnapshot: validate, refreshAvailability, adoptionPlan, migratePayload, prepareCurrentPayload,
     isAlias: function (kind, id) {
-      return kind === 'equipment' && Number(id) === 350003 && Boolean(goldenAlias(snapshots[revision] || sourceSnapshot()));
+      return kind === 'equipment' && Number(id) === 350003 && retiredGoldenSource(snapshots[revision] || sourceSnapshot());
     },
     variantSkills: function () {
       if (!variantRecords.length) return [];
