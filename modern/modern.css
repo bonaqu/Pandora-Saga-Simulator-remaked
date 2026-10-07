@@ -2100,3 +2100,13 @@ html[lang="ru"] body.remaked-modern #body [data-remaked-effect-tabs] .remaked-ca
   letter-spacing: -0.01em;
 }
 
+/* The RU Adeptness label is longer than the narrow desktop value track. Allow
+   its natural space break instead of making SkillSet horizontally scroll. */
+@media (min-width: 861px) and (max-width: 1365px) {
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(2),
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(3) {
+    white-space: normal;
+    line-height: 1.15;
+  }
+}
+
