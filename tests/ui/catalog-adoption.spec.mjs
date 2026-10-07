@@ -267,6 +267,58 @@ for (const conflict of ['fewer sockets', 'Soul slot']) {
   });
 }
 
+test('automatic repair never mutates the build when its safety backup cannot be written', async ({ page }) => {
+  const original = socketItems(1), next = structuredClone(original);
+  next.revision = 2; next.impactRevision = 2; next.records[0].sockets = 0;
+  await page.route(publicApi + '**', route => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/head')) {
+      const { records, ...head } = next;
+      return route.fulfill({ json: head });
+    }
+    return route.fulfill({ json: next });
+  });
+  await openManager(page);
+  await page.evaluate(data => {
+    PandoraRemaked.catalog.applySnapshot(data);
+    PandoraRemaked.adapter.selectEquipment(0, data.records[0].engineId);
+    PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 4 }, data.records[1].engineId);
+    PandoraRemaked.builds.flushAutosave();
+    PandoraRemaked.buildStore.saveBuild = () => ({ ok: false, error: { code: 'quota-exceeded' } });
+  }, original);
+  const before = await state(page);
+  const result = await page.evaluate(() => PandoraRemaked.builds.checkCatalogHead());
+  expect(result.ok).toBe(false);
+  expect(result.reason).toBe('backup-failed');
+  expect(await state(page)).toEqual(before);
+  await expect(page.locator('[data-remaked-autosave-status]')).toContainText(/backup|резерв/i);
+});
+
+test('automatic blocking conflict stays visible instead of silently pinning an old catalog', async ({ page }) => {
+  const original = socketItems(1), next = structuredClone(original);
+  next.revision = 2; next.impactRevision = 2; next.records = [];
+  await page.route(publicApi + '**', route => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/head')) {
+      const { records, ...head } = next;
+      return route.fulfill({ json: head });
+    }
+    return route.fulfill({ json: next });
+  });
+  await openManager(page);
+  await page.evaluate(data => {
+    PandoraRemaked.catalog.applySnapshot(data);
+    PandoraRemaked.adapter.selectEquipment(0, data.records[0].engineId);
+    PandoraRemaked.builds.flushAutosave();
+  }, original);
+  const before = await state(page);
+  const result = await page.evaluate(() => PandoraRemaked.builds.checkCatalogHead());
+  expect(result.ok).toBe(false);
+  expect(result.reason).toBe('incompatible');
+  expect(await state(page)).toEqual(before);
+  await expect(page.locator('[data-remaked-autosave-status]')).toContainText(/incompatible|несовместим/i);
+});
+
 test('offline update refuses a cached head and never calls it current', async ({ page }) => {
   let offline = false;
   await page.route(publicApi + '**', route => offline ? route.abort() : route.fulfill({ json: editedWarrior() }));
