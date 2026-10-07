@@ -67,7 +67,7 @@
     var match = raw.match(/^Lv:\s*(\d+)\s+(.*)$/);
     return {
       value: String(option.value),
-      name: normalizeUntranslatedItemName(match ? match[2] : raw),
+      name: match ? match[2] : raw,
       level: match ? Number(match[1]) : null
     };
   }
@@ -309,7 +309,7 @@
       for (var index = 0; index < select.options.length; index += 1) {
         options.push({
           value: String(select.options[index].value),
-          name: normalizeUntranslatedItemName(select.options[index]._remakedGameDisplay ? select.options[index]._remakedGameDisplay.sourceText : textOf(select.options[index]))
+          name: select.options[index]._remakedGameDisplay ? select.options[index]._remakedGameDisplay.sourceText : textOf(select.options[index])
         });
       }
       return options;
