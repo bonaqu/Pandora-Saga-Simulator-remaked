@@ -100,27 +100,57 @@ jobs:
             fi
 
             if [[ "$mode" == "full" && "$force_full_deploy" != "true" ]]; then
-              prs="$(gh api                 -H 'Accept: application/vnd.github+json'                 "repos/$REPOSITORY/commits/$DEPLOY_SHA/pulls")"
+              all_runtime_validated=true
+              runtime_seen=false
+              validated_prs=0
 
-              source_pr="$(jq -r '
-                map(select(.merged_at != null and .base.ref == "bonaqu_projects"))
-                | first
-                | .number // empty
-              ' <<<"$prs")"
+              while IFS= read -r commit; do
+                parent="$(git rev-parse "$commit^1")"
+                mapfile -t commit_files < <(git diff --name-only "$parent" "$commit")
+                commit_policy="$(printf '%s\n' "${commit_files[@]}" | python3 scripts/deploy_change_policy.py --stdin)"
+                commit_mode="$(jq -r '.mode' <<<"$commit_policy")"
 
-              if [[ -n "$source_pr" ]]; then
-                pr="$(gh api "repos/$REPOSITORY/pulls/$source_pr")"
-                source_head="$(jq -r '.head.sha' <<<"$pr")"
-                runs="$(gh api                   "repos/$REPOSITORY/actions/workflows/feature-ci.yml/runs?head_sha=$source_head&event=pull_request&status=completed&per_page=20")"
-
-                if jq -e '.workflow_runs | any(.conclusion == "success")' <<<"$runs" >/dev/null; then
-                  full_validation=false
-                  echo "Exact PR head $source_head passed Feature CI; reusing it and keeping only the production smoke gate."
-                else
-                  echo "No successful Feature CI found for exact PR head $source_head; keeping full production validation."
+                if [[ "$commit_mode" == "docs-only" || "$commit_mode" == "release-notes" ]]; then
+                  continue
                 fi
+
+                runtime_seen=true
+                prs="$(gh api                   -H 'Accept: application/vnd.github+json'                   "repos/$REPOSITORY/commits/$commit/pulls")"
+                pr_number="$(jq -r '
+                  map(select(.merged_at != null and .base.ref == "bonaqu_projects"))
+                  | first
+                  | .number // empty
+                ' <<<"$prs")"
+
+                if [[ -z "$pr_number" ]]; then
+                  echo "Runtime commit $commit has no merged PR provenance."
+                  all_runtime_validated=false
+                  break
+                fi
+
+                pr="$(gh api "repos/$REPOSITORY/pulls/$pr_number")"
+                pr_head="$(jq -r '.head.sha' <<<"$pr")"
+                runs="$(gh api                   "repos/$REPOSITORY/actions/workflows/feature-ci.yml/runs?head_sha=$pr_head&event=pull_request&status=completed&per_page=20")"
+
+                if ! jq -e '.workflow_runs | any(.conclusion == "success")' <<<"$runs" >/dev/null; then
+                  echo "Runtime commit $commit comes from PR #$pr_number, but exact head $pr_head has no successful Feature CI."
+                  all_runtime_validated=false
+                  break
+                fi
+
+                source_pr="$pr_number"
+                source_head="$pr_head"
+                validated_prs=$((validated_prs + 1))
+                echo "Runtime commit $commit is covered by successful Feature CI for PR #$pr_number ($pr_head)."
+              done < <(git rev-list --first-parent --reverse "$baseline_sha..$DEPLOY_SHA")
+
+              if [[ "$runtime_seen" == "true" && "$all_runtime_validated" == "true" ]]; then
+                full_validation=false
+                mode=validated-runtime
+                pages_required=true
+                echo "All $validated_prs runtime commit(s) since the last successful deployment are PR-validated; using the production smoke gate."
               else
-                echo "No merged PR is associated with $DEPLOY_SHA; keeping full production validation."
+                echo "At least one runtime change since the deployed baseline lacks reusable validation; keeping full production validation."
               fi
             elif [[ "$mode" != "full" ]]; then
               echo "Safe documentation policy selected mode=$mode."
