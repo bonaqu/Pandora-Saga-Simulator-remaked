@@ -24,6 +24,11 @@ function stripOuterParentheses(value) {
   const match = text.match(/^\(([^()]*)\)$/);
   return match ? match[1].trim() : text;
 }
+function sourceKind(source) {
+  if (source?.id?.startsWith('equipment.')) return 'equipment';
+  if (source?.id?.startsWith('soul.')) return 'soul';
+  return null;
+}
 function identityFor(source, kind) {
   return kind === 'equipment'
     ? { id: source.id, kind, category: source.legacy_category_id, index: source.legacy_item_index }
@@ -188,10 +193,11 @@ function addPatch(rows, source, kind, editPatch, mode, expectedEnglish = null, m
 export function buildReleaseRows(inputs = loadInputs()) {
   const rows = new Map();
   for (const source of baselineById.values()) {
-    if (!['equipment', 'soul'].includes(source.kind)) continue;
+    const kind = sourceKind(source);
+    if (!kind) continue;
     const english = source.name?.en || '';
     if (!/^\([^()]+\)$/.test(english)) continue;
-    addPatch(rows, source, source.kind, { names: { en: stripOuterParentheses(english) } }, 'normalize', english);
+    addPatch(rows, source, kind, { names: { en: stripOuterParentheses(english) } }, 'normalize', english);
   }
 
   const seenServerItems = new Set(), seenServerSouls = new Set(), seenProject = new Set();
@@ -201,7 +207,7 @@ export function buildReleaseRows(inputs = loadInputs()) {
     seenServerItems.add(match.serverId); seenProject.add(match.projectId);
     const server = inputs.items[String(match.serverId)] || inputs.items[match.serverId];
     const source = baselineById.get(match.projectId);
-    invariant(server && source?.kind === 'equipment', 'Invalid equipment mapping: ' + JSON.stringify(match));
+    invariant(server && sourceKind(source) === 'equipment', 'Invalid equipment mapping: ' + JSON.stringify(match));
     invariant(server.slot && server.slot !== 'arrow', 'Resource/arrow must not enter equipment sync: ' + match.serverId);
     invariant(serverCategory(server) === source.legacy_category_id,
       'Server/project equipment category mismatch for ' + match.projectId);
@@ -214,7 +220,7 @@ export function buildReleaseRows(inputs = loadInputs()) {
     seenServerSouls.add(match.serverId); seenProject.add(match.projectId);
     const server = inputs.souls[String(match.serverId)] || inputs.souls[match.serverId];
     const source = baselineById.get(match.projectId);
-    invariant(server && source?.kind === 'soul', 'Invalid Soul mapping: ' + JSON.stringify(match));
+    invariant(server && sourceKind(source) === 'soul', 'Invalid Soul mapping: ' + JSON.stringify(match));
     addPatch(rows, source, 'soul', serverPatch('soul', server, inputs.english.souls?.[String(match.serverId)] || inputs.english.souls?.[match.serverId]),
       'server', null, { serverId: match.serverId, match: match.match });
   }
