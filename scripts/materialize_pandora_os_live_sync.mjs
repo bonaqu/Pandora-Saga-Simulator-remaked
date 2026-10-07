@@ -133,7 +133,8 @@ const EFFECT_MAP = {
   EP_IMMUNE_SLEEP: [156, 'flat'],
   EP_IMMUNE_SILENCE: [158, 'flat'],
   EP_IMMUNE_EVIL: [159, 'flat'],
-  EP_IMMUNE_CURSE: [160, 'flat']
+  EP_IMMUNE_CURSE: [160, 'flat'],
+  EP_BADEFFECT_TIME_SCALE: [162, 'flat', 'negate']
 };
 
 function serverCategory(item) {
@@ -240,15 +241,10 @@ function addPatch(rows, source, kind, editPatch, mode, expectedEnglish = null, m
 
 export function buildReleaseRows(inputs = loadInputs()) {
   const rows = new Map();
-  for (const source of baselineById.values()) {
-    const kind = sourceKind(source);
-    if (!kind) continue;
-    const english = source.name?.en || '';
-    const normalized = stripOuterParentheses(english);
-    if (!normalized || normalized === english) continue;
-    addPatch(rows, source, kind, { names: { en: normalized } }, 'normalize', english);
-  }
-
+  // Parenthesized untranslated baseline names are normalized by the shared
+  // source/client data layer, not materialized as hundreds of D1 overrides.
+  // This keeps the public catalog compact and still makes Admin + Modern UI
+  // display the normalized names consistently.
   const seenServerItems = new Set(), seenServerSouls = new Set(), seenProject = new Set();
   for (const match of inputs.mapping.equipment) {
     invariant(!seenServerItems.has(match.serverId), 'Duplicate mapped equipment server ID: ' + match.serverId);
@@ -347,7 +343,7 @@ FROM (
 
 INSERT INTO catalog_revisions (version, impact_version, snapshot_json, created_at, note)
 SELECT 82, 82, payload_json, CAST(strftime('%s', 'now') AS INTEGER),
-  'Pandora Saga OS live equipment/Soul sync + legacy English name normalization'
+  'Pandora Saga OS live equipment/Soul sync'
 FROM _pandora_os_live_snapshot;
 
 UPDATE catalog_head
