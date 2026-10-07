@@ -9,7 +9,7 @@
 - Из серверного каталога рассматриваются только оружие, броня, щиты, плащи, бижутерия и Souls; ресурсы без слота и стрелы в синхронизацию не входят.
 - **344 актуальные серверные записи** применяются к существующим ID симулятора: 247 предметов экипировки/оружия и 97 Souls. Ещё 24 уверенно сопоставленных предмета с `unobtainable=true` сохранены в аудите, но намеренно не применяются до их появления в доступном каталоге сервера.
 - Для безопасно сопоставленных записей обновляются актуальные EN/RU названия и описания, уровень, Soul slots, W/AC и те эффекты, которые модель симулятора умеет представить без догадок.
-- Старые непереведённые английские названия вида `(Gradius)` нормализуются без внешних скобок прямо в базовом data-layer сайта и админки. Опубликованные вручную записи каталога по-прежнему имеют приоритет над baseline.
+- Старые непереведённые английские названия вида `(Gradius)` нормализуются без внешних скобок: в админке — на уровне baseline-каталога, а в Modern UI — только на уровне отображения. Legacy-данные и сохранённые массивы не мутируются.
 - Предметы, которые есть в симуляторе, но отсутствуют на текущем сервере, не удаляются и не изменяются: они могут относиться к будущему контенту.
 - PEN, Range, базовый Attack Speed и Block сохраняются в замороженном серверном снимке, но не подменяются другими параметрами: в текущей модели каталога для них нет отдельных рассчитываемых полей.
 <!-- /release-notes:ru -->
@@ -21,7 +21,7 @@
 - Only equippable weapons, armor, shields, cloaks, accessories and Souls are eligible; resources and arrows are excluded.
 - **344 current server records** are applied one-to-one to existing simulator identities: 247 equipment/weapon records and 97 Souls. Another 24 confidently matched equipment rows are flagged `unobtainable=true`; they remain in the audit snapshot but are deliberately not applied yet.
 - Safely matched records receive current EN/RU names/descriptions and supported mechanical values, while future simulator-only items remain intact.
-- Legacy untranslated English names wrapped only in unnecessary outer parentheses are normalized in the shared baseline data layer; published admin overrides still take precedence.
+- Legacy untranslated English names wrapped only in unnecessary outer parentheses are normalized in the Admin baseline and in the Modern presentation adapter; preserved Legacy arrays remain unchanged.
 - PEN, Range, base Attack Speed and Block remain preserved in the frozen source snapshot rather than being guessed into unrelated simulator fields.
 <!-- /release-notes:en -->
 
@@ -29,7 +29,7 @@
 
 - The exact 2026-10-07 live JSON inputs and the explicit one-to-one identity map are retained under `admin-api/data/` for reproducibility and review.
 - The already-deployed `0006_pandora_os_live_item_sync.sql` remains immutable as revision 82. Follow-up migration `0007_pandora_os_live_item_sync_hardening.sql` deterministically advances the catalog to revision/impact revision 83.
-- Revision 83 merge-patches the 344 current server identities while preserving unrelated manual Admin fields. It also removes unchanged cosmetic-only revision-82 overrides now handled by the shared baseline layer.
+- Revision 83 merge-patches the 344 current server identities while preserving unrelated manual Admin fields. It also removes unchanged cosmetic-only revision-82 overrides now handled by the Admin baseline + Modern presentation layer.
 - The 24 equipment rows currently marked unavailable are safely restored to their revision-79/baseline state only when their revision-82 entry is still exactly automation-produced; any later manual edit is preserved.
 - Supported server effects are converted only through verified typed-stat mappings. Unknown proc mechanics and semantically ambiguous encodings remain in the frozen source snapshot and retain the existing calculation tokens.
 - Souls are applied only where the retained simulator identity and server record were matched one-to-one; deliberately ambiguous candidates remain untouched.
