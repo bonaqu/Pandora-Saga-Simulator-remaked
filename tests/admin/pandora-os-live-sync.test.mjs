@@ -37,7 +37,7 @@ function snapshot(sqlite) {
 test('live Pandora OS mapping is one-to-one, compact and fully compilable', () => {
   const inputs = loadInputs();
   assert.equal(inputs.mapping.equipment.length, 271);
-  assert.equal(inputs.mapping.souls.length, 74);
+  assert.equal(inputs.mapping.souls.length, 97);
 
   const serverIds = new Set();
   const projectIds = new Set();
@@ -55,8 +55,9 @@ test('live Pandora OS mapping is one-to-one, compact and fully compilable', () =
   }
 
   const rows = buildReleaseRows(inputs);
-  assert.equal(rows.length, 345);
-  assert.equal(rows.filter(row => row.mode === 'server').length, 345);
+  assert.equal(rows.length, 344);
+  assert.equal(rows.filter(row => row.mode === 'server').length, 344);
+  assert.equal(rows.some(row => row.metadata.serverId === 11092), false, 'unobtainable Wizard Hat must not be applied');
   assert.equal(new Set(rows.map(row => row.identity.id)).size, rows.length);
 
   const statements = buildReleaseInsertStatements(rows);
@@ -84,9 +85,9 @@ test('live server stats use verified conversions without inventing unsupported p
   const rows = buildReleaseRows(loadInputs());
   const byId = new Map(rows.map(row => [row.identity.id, row.fallback.edit]));
 
-  const wizard = byId.get('equipment.30.42');
-  assert.ok(wizard);
-  assert.ok(wizard.effects.some(effect => effect.stat === 77 && effect.value === 5));
+  const arcana = byId.get('equipment.30.66');
+  assert.ok(arcana);
+  assert.ok(arcana.effects.some(effect => effect.stat === 77 && effect.value === 3));
 
   const shadow = byId.get('equipment.31.81');
   assert.ok(shadow);
@@ -159,7 +160,7 @@ test('revision 82 applies after revision 79 on a clean chain and refuses unexpec
   const head = sqlite.prepare('SELECT version, impact_version, json_array_length(snapshot_json) AS count FROM catalog_head WHERE id = 1').get();
   assert.equal(head.version, 82);
   assert.equal(head.impact_version, 82);
-  assert.ok(head.count >= 345);
+  assert.ok(head.count >= 344);
   assert.ok(head.count < 700, 'live sync must stay compact instead of materializing every baseline item');
 
   const unexpected = database();
