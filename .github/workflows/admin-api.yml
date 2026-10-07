@@ -5,7 +5,7 @@ on:
     paths: ['admin-api/**', 'tests/admin/**', 'data/generated/**', 'data/native-passive-hooks.v1.json', 'data/current-active-profiles.v1.json', 'localization/game-terms.ru.json', 'scripts/create_first_admin.mjs', 'scripts/materialize_pandora_os_sync.mjs', 'scripts/materialize_pandora_os_live_sync.mjs', 'scripts/lib/wrangler-json.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
   push:
     branches: [bonaqu_projects]
-    paths: ['admin-api/**', 'tests/admin/**', 'data/generated/**', 'data/native-passive-hooks.v1.json', 'data/current-active-profiles.v1.json', 'localization/game-terms.ru.json', 'scripts/create_first_admin.mjs', 'scripts/lib/wrangler-json.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
+    paths: ['admin-api/**', 'tests/admin/**', 'data/generated/**', 'data/native-passive-hooks.v1.json', 'data/current-active-profiles.v1.json', 'localization/game-terms.ru.json', 'scripts/create_first_admin.mjs', 'scripts/materialize_pandora_os_sync.mjs', 'scripts/materialize_pandora_os_live_sync.mjs', 'scripts/lib/wrangler-json.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
   workflow_dispatch:
 
 permissions:
