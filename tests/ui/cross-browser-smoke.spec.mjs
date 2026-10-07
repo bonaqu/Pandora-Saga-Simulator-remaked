@@ -204,7 +204,7 @@ test('a newer import wins over a delayed catalog response in every engine', asyn
   expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(values.original);
   expect(await page.evaluate(() => JSON.stringify(localStorage))).toBe(saved);
 });
-test('explicit public catalog adoption retains effect context and old named pin in every engine', async ({ page }) => {
+test('explicit public catalog adoption retains effect context and migrates the named build in every engine', async ({ page }) => {
   const source = character.records.find(item => item.id === 'job.0');
   const identity = { id: source.id, kind: 'class', category: null, index: 0 };
   const edit = draftFromSource(source, 'class'); edit.progression[0] += 100;
@@ -229,7 +229,10 @@ test('explicit public catalog adoption retains effect context and old named pin 
   await expect(page.locator('[data-remaked-catalog-status]')).toContainText('Catalog 2 applied');
   const after = await page.evaluate(() => ({ lp: Status.LP, raw: Store(), context: PandoraRemaked.catalog.captureContext(),
     revision: PandoraRemaked.catalog.getRevision(), named: localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY), hash: location.hash }));
-  expect(after).toEqual({ ...before, lp: before.lp + 100, revision: 2, hash: '' });
+  expect({ ...after, named: before.named }).toEqual({ ...before, lp: before.lp + 100, revision: 2, hash: '' });
+  const collection = JSON.parse(before.named);
+  collection.builds[0].payload = collection.builds[0].payload.replace(/^PS3:0:/, 'PS3:2:');
+  expect(JSON.parse(after.named)).toEqual(collection);
 });
 });
 

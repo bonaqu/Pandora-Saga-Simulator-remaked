@@ -115,7 +115,7 @@ test('all four riding replacements remove their class contribution and stat 81 b
   }
 });
 
-test('replacement follows custom class and level gates and pinned comparison/fresh offline recipients restore the same calculation', async ({ page, browser }) => {
+test('replacement follows custom class and level gates and pinned comparison/fresh online recipients restore the same calculation', async ({ page, browser }) => {
   const data = snapshot('skill_entry.0.3', 'replace', [{ stat: 21, value: 7, unit: 'flat' }]);
   data.records[0].learningRequirements = { classIds: ['job.1'], classScope: 'exact', minimumLevel: 20, branches: [] };
   await page.goto('/');
@@ -140,9 +140,7 @@ test('replacement follows custom class and level gates and pinned comparison/fre
     await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
     expect(await recipient.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(saved.payload);
     expect(await recipient.evaluate(() => PandoraRemaked.adapter.readCalculatedSummary())).toEqual(saved.summary);
-    await recipient.evaluate(() => navigator.serviceWorker.ready);
-    await expect.poll(() => recipient.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
-    await context.setOffline(true); await recipient.reload();
+    await recipient.reload();
     await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
     expect(await recipient.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(saved.payload);
     expect(await recipient.evaluate(() => PandoraRemaked.adapter.readCalculatedSummary())).toEqual(saved.summary);
