@@ -17,6 +17,7 @@ class DeployChangePolicyTests(unittest.TestCase):
         self.assertTrue(result["pages_required"])
         self.assertTrue(result["wiki_required"])
         self.assertFalse(result["full_validation"])
+        self.assertFalse(result["force_full_deploy"])
 
     def test_changelog_plus_docs_guard_test_stays_fast(self):
         result = POLICY.classify(["CHANGELOG.md", "tests/test_repository_docs.py"])
@@ -52,6 +53,18 @@ class DeployChangePolicyTests(unittest.TestCase):
                 self.assertTrue(result["pages_required"])
                 self.assertTrue(result["full_validation"])
                 self.assertIn(path, result["unsafe_files"])
+
+    def test_deployment_infrastructure_forces_full_production_validation(self):
+        for path in (
+            ".github/workflows/pages.yml",
+            "scripts/build_pages.py",
+            "scripts/deploy_change_policy.py",
+        ):
+            with self.subTest(path=path):
+                result = POLICY.classify([path])
+                self.assertEqual(result["mode"], "full")
+                self.assertTrue(result["full_validation"])
+                self.assertTrue(result["force_full_deploy"])
 
     def test_lookalike_and_traversal_paths_never_enter_fast_path(self):
         for path in ("modern/CHANGELOG.md", "../CHANGELOG.md", "/CHANGELOG.md", ""):
