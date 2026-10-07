@@ -19,10 +19,9 @@ for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
     await page.locator('[data-remaked-ui-locale="ru"]').click();
-    await page.evaluate(() => window.PandoraRemaked.pwa.captureInstallPrompt({ preventDefault() {}, prompt() {}, userChoice: Promise.resolve({ outcome: 'dismissed' }) }));
     const metrics = await page.evaluate(() => {
       function box(selector) {
-        const node = document.querySelector(selector), css = getComputedStyle(node);
+        const node = document.querySelector(selector); if (!node) return null; const css = getComputedStyle(node);
         return { height: node.getBoundingClientRect().height, size: css.fontSize, radius: css.borderRadius };
       }
       const toolbar = [];
@@ -33,7 +32,8 @@ for (const width of [320, 390, 768, 1440]) {
       return { toolbar, install: box('[data-remaked-install]'), language: box('[data-remaked-language-panel]'), overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth };
     });
     expect(metrics.overflow).toBeLessThanOrEqual(1);
-    expect(metrics.install.height).toBe(metrics.language.height);
+    expect(metrics.install).toBeNull();
+    expect(metrics.language.height).toBeGreaterThan(0);
     // Builds/Compare occupy the former FILE/LOG space; Equipment/Soul search lives in each slot picker.
     await expect(page.locator('[data-remaked-tools]')).toHaveCount(0);
     await expect(page.locator('[data-remaked-build-actions] button')).toHaveCount(2);

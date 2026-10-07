@@ -95,8 +95,7 @@ test('RU covers Modern surfaces and approved race names while unapproved classes
   expect(tooltip.source).toBe(await russianText(page, 'tooltip.source', { node: 'Status_6' }));
   expect(tooltip.definition).toBe(await russianText(page, 'tooltip.definition.lp'));
 
-  await page.evaluate(() => window.PandoraRemaked.pwa.showUpdateNotice({ postMessage() {} }));
-  await expect(page.locator('[data-remaked-update-notice]')).toContainText(await russianText(page, 'pwa.updateMessage') + await russianText(page, 'pwa.reload'));
+  await expect(page.locator('[data-remaked-update-notice]')).toHaveCount(0);
 });
 
 test('approved workbook game terms appear in Modern search without changing Legacy data', async ({ page }) => {

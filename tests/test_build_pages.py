@@ -93,6 +93,9 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             (modern / "skill-controls.js").write_text("// native skills", encoding="utf-8")
             (modern / "skill-tooltips.js").write_text("// skill tooltip surface", encoding="utf-8")
             (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
+            (modern / "share-codec.js").write_text("// share codec", encoding="utf-8")
+            (modern / "catalog-text.js").write_text("// text", encoding="utf-8")
+            (modern / "identity-aliases.js").write_text("// aliases", encoding="utf-8")
             (modern / "catalog.js").write_text("// versioned public catalog", encoding="utf-8")
             (modern / "enhancement-effects.js").write_text("// server enhancement mechanics", encoding="utf-8")
             (modern / "admin-entry.js").write_text("// hidden entry", encoding="utf-8")
@@ -196,9 +199,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
                 "modern/compare.css",
                 "modern/tooltips.css",
                 "modern/mobile.css",
-                "modern/pwa.css",
                 "modern/favicon.svg",
-                "modern/manifest.webmanifest",
                 "modern/version.js",
                 "modern/release-notes.js",
                 "modern/locales.js",
@@ -240,7 +241,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             self.assertLess(html.index("modern/compare.js"), html.index("modern/mobile.js"))
             self.assertLess(html.index("modern/mobile.js"), html.index("modern/pwa.js"))
             self.assertLess(html.index("modern/tooltips.css"), html.index("modern/mobile.css"))
-            self.assertLess(html.index("modern/mobile.css"), html.index("modern/pwa.css"))
+            self.assertNotIn('rel="manifest"', html)
             self.assertIn("   1 // [ 0]", html)
             self.assertIn(
                 'data-project-url="https://github.com/bonaqu/Pandora-Saga-Simulator-remaked"',
@@ -281,8 +282,6 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
                 "modern/compare.css",
                 "modern/tooltips.css",
                 "modern/mobile.css",
-                "modern/pwa.css",
-                "modern/manifest.webmanifest",
             ):
                 self.assertNotIn(relative, legacy)
 
@@ -333,9 +332,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
                 "modern/compare.css",
                 "modern/tooltips.css",
                 "modern/mobile.css",
-                "modern/pwa.css",
                 "modern/favicon.svg",
-                "modern/manifest.webmanifest",
                 "modern/icon-192.svg",
                 "modern/icon-512.svg",
                 "modern/version.js",
@@ -436,8 +433,8 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
         with tempfile.TemporaryDirectory() as td:
             root = self.make_root(pathlib.Path(td))
             (root / "modern" / "manifest.webmanifest").unlink()
-            with self.assertRaisesRegex(FileNotFoundError, "modern/manifest.webmanifest"):
-                build_pages(root, root / "_site")
+            build_pages(root, root / "_site")
+            self.assertFalse((root / "_site/modern/manifest.webmanifest").exists())
 
     def test_missing_pwa_runtime_fails_clearly(self):
         with tempfile.TemporaryDirectory() as td:

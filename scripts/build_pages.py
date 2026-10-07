@@ -29,11 +29,9 @@ REQUIRED_MODERN = (
     "modern/compare.css",
     "modern/tooltips.css",
     "modern/mobile.css",
-    "modern/pwa.css",
     "modern/admin-entry.css",
     "modern/admin-entry.js",
     "modern/favicon.svg",
-    "modern/manifest.webmanifest",
     "modern/icon-192.svg",
     "modern/icon-512.svg",
     "modern/icon-192.png",
@@ -50,12 +48,15 @@ REQUIRED_MODERN = (
     "modern/skill-tooltips.js",
     "modern/adapter.js",
     "modern/catalog.js",
+    "modern/catalog-text.js",
+    "modern/identity-aliases.js",
     "modern/enhancement-effects.js",
     "modern/build-store.js",
     "modern/search.js",
     "modern/equipment-picker.js",
     "modern/app-shell.js",
     "modern/builds.js",
+    "modern/share-codec.js",
     "modern/tooltips.js",
     "modern/compare.js",
     "modern/mobile.js",
@@ -95,52 +96,12 @@ HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="icon" type="image/svg+xml" href="./modern/favicon.svg" />
 <link rel="apple-touch-icon" sizes="180x180" href="./modern/apple-touch-icon.png" />
-<link rel="manifest" href="./modern/manifest.webmanifest" />
-<script>
-(function () {
-  if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) return;
-  var reloading = false;
-  navigator.serviceWorker.addEventListener('controllerchange', function () {
-    if (reloading || window.__pandoraPwaReloading) return;
-    var builds = window.PandoraRemaked && window.PandoraRemaked.builds;
-    if (builds && typeof builds.flushAutosave === 'function') {
-      var saved = builds.flushAutosave();
-      if (saved && saved.ok === false) return;
-    }
-    reloading = true;
-    window.__pandoraPwaReloading = true;
-    window.location.reload();
-  });
-  navigator.serviceWorker.getRegistration().then(function (registration) {
-    if (!registration) return;
-    function activateWaiting() {
-      if (registration.waiting && typeof registration.waiting.postMessage === 'function') {
-        window.__pandoraPwaBootstrapUpdating = true;
-        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-      }
-    }
-    function watchInstalling(worker) {
-      if (!worker) return;
-      worker.addEventListener('statechange', function () {
-        if (worker.state === 'installed') activateWaiting();
-      });
-    }
-    activateWaiting();
-    watchInstalling(registration.installing);
-    registration.addEventListener('updatefound', function () {
-      watchInstalling(registration.installing);
-    });
-    registration.update().then(activateWaiting).catch(function () {});
-  }).catch(function () {});
-})();
-</script>
 <link rel="stylesheet" href="./modern/modern.css" />
 <link rel="stylesheet" href="./modern/search.css" />
 <link rel="stylesheet" href="./modern/builds.css" />
 <link rel="stylesheet" href="./modern/compare.css" />
 <link rel="stylesheet" href="./modern/tooltips.css" />
 <link rel="stylesheet" href="./modern/mobile.css" />
-<link rel="stylesheet" href="./modern/pwa.css" />
 <link rel="stylesheet" href="./modern/admin-entry.css" />
 <!-- /REMAKED:HEAD -->'''
 
@@ -157,6 +118,8 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/adapter.js"></script>
 <script src="./modern/build-store.js"></script>
 <script src="./modern/native-passives.js"></script>
+<script src="./modern/catalog-text.js"></script>
+<script src="./modern/identity-aliases.js"></script>
 <script src="./modern/catalog.js"></script>
 <script src="./modern/enhancement-effects.js"></script>
 <script src="./modern/admin-entry.js"></script>
@@ -164,6 +127,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/app-shell.js"></script>
 <script src="./modern/calculator-labels.js"></script>
 <script src="./modern/game-term-display.js"></script>
+<script src="./modern/share-codec.js"></script>
 <script src="./modern/builds.js"></script>
 <script src="./modern/tooltips.js"></script>
 <script src="./modern/compare.js"></script>
@@ -474,50 +438,15 @@ def _read_ui_version(root: pathlib.Path) -> str:
     return str(_read_latest_release(root)["version"])
 
 
-def _relative_urls(base: pathlib.Path, directory: pathlib.Path) -> list[str]:
-    if not directory.is_dir():
-        return []
-    return [
-        "./" + path.relative_to(base).as_posix()
-        for path in directory.rglob("*")
-        if path.is_file()
-    ]
-
-
-def _precache_urls(output: pathlib.Path) -> list[str]:
-    urls = {"./index.html", "./legacy/index.html"}
-    for relative in ("css", "js", "image/interface", "modern"):
-        urls.update(_relative_urls(output, output / relative))
-    for relative in ("legacy/css", "legacy/js", "legacy/image/interface"):
-        urls.update(_relative_urls(output, output / relative))
-    urls.discard("./modern/service-worker.js")
-    # Link-preview crawlers fetch this online; it is not needed to use the app.
-    urls.discard("./modern/social-preview.png")
-    return sorted(urls)
-
-
 def _materialize_service_worker(root: pathlib.Path, output: pathlib.Path) -> None:
-    template = (root / SERVICE_WORKER_SOURCE).read_text(encoding="utf-8")
-    if "__CACHE_VERSION__" not in template or "__PRECACHE_URLS__" not in template:
-        raise ValueError("modern/service-worker.js is missing build placeholders")
-    urls = _precache_urls(output)
-    fingerprint = hashlib.sha256()
-    fingerprint.update(template.encode("utf-8"))
-    fingerprint.update(b"\0")
-    for url in urls:
-        fingerprint.update(url.encode("utf-8"))
-        fingerprint.update(b"\0")
-        fingerprint.update(hashlib.sha256((output / url.removeprefix("./")).read_bytes()).digest())
-    cache_version = _read_ui_version(root) + "-" + fingerprint.hexdigest()[:16]
-    worker = template.replace("__CACHE_VERSION__", cache_version)
-    worker = worker.replace(
-        "__PRECACHE_URLS__",
-        json.dumps(urls, ensure_ascii=False, indent=2),
-    )
-    (output / SERVICE_WORKER_TARGET).write_text(worker, encoding="utf-8")
+    # The old URL must serve the retirement worker for existing clients.
+    shutil.copyfile(root / SERVICE_WORKER_SOURCE, output / SERVICE_WORKER_TARGET)
     copied_template = output / SERVICE_WORKER_SOURCE
     if copied_template.exists():
         copied_template.unlink()
+    manifest = output / "modern/manifest.webmanifest"
+    if manifest.exists():
+        manifest.unlink()
 
 
 def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:

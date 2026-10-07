@@ -177,7 +177,7 @@ test('frontend rejects malformed, ambiguous and unsupported profile records befo
   expect(result.invalid).toEqual(Array(12).fill(true)); expect(result.preserved).toBe(true);
 });
 
-test('comparison, fresh shared recipient and offline reload restore the exact derived profile without persisting a selected-profile token', async ({ page, browser }) => {
+test('comparison, fresh shared recipient and online reload restore the exact derived profile without persisting a selected-profile token', async ({ page, browser }) => {
   const data = publication();
   await page.goto('/');
   const saved = await page.evaluate(data => {
@@ -203,12 +203,8 @@ test('comparison, fresh shared recipient and offline reload restore the exact de
     recipient.on('pageerror', error => errors.push(error.message));
     recipient.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
     await recipient.goto('/#build=' + encodeURIComponent(saved.payload));
-    for (const offline of [false, true]) {
-      if (offline) {
-        await recipient.evaluate(() => navigator.serviceWorker.ready);
-        await expect.poll(() => recipient.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
-        await context.setOffline(true); await recipient.reload();
-      }
+    for (const reload of [false, true]) {
+      if (reload) await recipient.reload();
       await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
       expect(await recipient.evaluate(() => ({ payload: PandoraRemaked.adapter.serialize(), summary: PandoraRemaked.adapter.readCalculatedSummary(),
         name: PandoraRemaked.catalog.gameLabel('skill_entry.5.3'), timing: Skill[1][5][3].slice(5, 9) }))).toEqual({

@@ -73,7 +73,7 @@
         if (maxLevel != null && option.level > maxLevel) return false;
       }
       return true;
-    });
+    }).sort(function (a, b) { return (a.level ?? -1) - (b.level ?? -1) || Number(a.value) - Number(b.value); });
   }
 
   function element(tag, className, text) {
@@ -325,6 +325,11 @@
     var currentCategory = '';
     var categories = [];
     var entries = [];
+    var categoryLabels = Object.create(null);
+    (options || []).forEach(function (option) {
+      var heading = equipmentCategory(option);
+      if (heading) categoryLabels[Math.floor(Number(option.value) / 10000)] = heading;
+    });
     (options || []).forEach(function (option) {
       var heading = equipmentCategory(option);
       if (heading) {
@@ -333,11 +338,17 @@
         entries.push({ option: option, category: heading, isCategory: true });
         return;
       }
-      entries.push({ option: option, category: currentCategory, isCategory: false });
+      entries.push({ option: option, category: categoryLabels[Math.floor(Number(option.value) / 10000)] || '', isCategory: false });
     });
     categories = categories.filter(function (category) {
       return entries.some(function (entry) { return !entry.isCategory && entry.category === category; });
     });
+    var empty = entries.find(function (entry) { return entry.isCategory; });
+    if (empty) empty.option = Object.assign({}, empty.option, { name: '—', level: null });
+    entries = entries.filter(function (entry) { return !entry.isCategory; }).sort(function (a, b) {
+      return (a.option.level ?? -1) - (b.option.level ?? -1) || Number(a.option.value) - Number(b.option.value);
+    });
+    if (empty) entries.unshift(empty);
     return { entries: entries, categories: categories };
   }
 

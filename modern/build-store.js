@@ -4,6 +4,8 @@
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
   var AUTOSAVE_KEY = 'pandora-remaked.autosave.v1';
   var BUILDS_KEY = 'pandora-remaked.builds.v1';
+  var RECOVERY_KEY = 'pandora-remaked.recovery.v1';
+  var RETIRED_BACKUPS_KEY = 'pandora-remaked.retired-repair-backups.v1';
   var SCHEMA = 1;
   var ENGINE = 'legacy-2.00';
   var MAX_NAME_CODEPOINTS = 60;
@@ -119,7 +121,8 @@
       name: build.name,
       createdAt: build.createdAt,
       updatedAt: build.updatedAt,
-      payload: build.payload
+      payload: build.payload,
+      migrationReport: Array.isArray(build.migrationReport) ? structuredClone(build.migrationReport) : []
     };
   }
 
@@ -317,6 +320,7 @@
 
     var current = collection.builds[index];
     var next = cloneBuild(current);
+    if (Array.isArray(patch.migrationReport)) next.migrationReport = structuredClone(patch.migrationReport);
     patch = patch && typeof patch === 'object' ? patch : {};
     if (Object.prototype.hasOwnProperty.call(patch, 'name')) {
       var normalized = normalizeName(patch.name);
@@ -419,6 +423,52 @@
   }
 
   namespace.buildStore = {
+    RECOVERY_KEY: RECOVERY_KEY,
+    RETIRED_BACKUPS_KEY: RETIRED_BACKUPS_KEY,
+    archiveRepairBackups: function () {
+      var listed = cleanCollectionForMutation(); if (!listed.ok) return listed;
+      var retired = listed.builds.filter(function (build) {
+        var match = build.name.match(/^(?:Backup before catalog |Автокопия перед каталогом |カタログ )(\d+)→(\d+)(?: 前のバックアップ)?$/) || build.name.match(/^目錄 (\d+)→(\d+) 前的備份$/);
+        return match && Number(match[2]) > Number(match[1]) && build.payload.indexOf('PS3:' + match[1] + ':') === 0;
+      });
+      if (!retired.length) return { ok: true, unchanged: true };
+      var previous = storageGet(RETIRED_BACKUPS_KEY); if (!previous.ok) return previous;
+      try {
+        var archive = previous.value ? JSON.parse(previous.value) : { schema: 1, builds: [] };
+        if (archive.schema !== 1 || !Array.isArray(archive.builds) || !archive.builds.every(validateBuildRecord)) throw new Error('Invalid backup archive');
+        retired.forEach(function (build) { if (!archive.builds.some(function (saved) { return saved.id === build.id; })) archive.builds.push(build); });
+        var written = storageSet(RETIRED_BACKUPS_KEY, JSON.stringify(archive)); if (!written.ok) return written;
+        // Preserve the exact old records internally before removing visible rows.
+        return writeBuildCollection(listed.builds.filter(function (build) { return !retired.some(function (saved) { return saved.id === build.id; }); }));
+      } catch (error) { return { ok: false, error: resultError('archive-failed', 'Original saved builds were kept.', error) }; }
+    },
+    readRecovery: function () {
+      var stored = storageGet(RECOVERY_KEY); if (!stored.ok || !stored.value) return null;
+      try {
+        var record = JSON.parse(stored.value);
+        return record.schema === 1 && typeof record.payload === 'string' && record.payload.length <= 20000 &&
+          validIso(record.createdAt) && Array.isArray(record.builds) && record.builds.every(validateBuildRecord) ? record : null;
+      } catch { return null; }
+    },
+    beginRecovery: function (payload, builds) {
+      // One bounded, internal transaction journal; never a named build and
+      // never a source of calculator data. Retained only when a write fails.
+      return storageSet(RECOVERY_KEY, JSON.stringify({ schema: 1, payload: payload, builds: builds || [], createdAt: new Date().toISOString() }));
+    },
+    finishRecovery: function () { try { window.localStorage.removeItem(RECOVERY_KEY); return { ok: true }; } catch (error) { return { ok: false, error: classifyStorageError(error) }; } },
+    migrateBuilds: function (migrate) {
+      var listed = cleanCollectionForMutation(); if (!listed.ok) return listed;
+      var changed = false;
+      try {
+        var builds = listed.builds.map(function (build) {
+          var result = migrate(build.payload);
+          if (result.payload === build.payload && !result.changes.length) return build;
+          changed = true;
+          return Object.assign(cloneBuild(build), { payload: result.payload, migrationReport: result.changes.length ? result.changes : build.migrationReport });
+        });
+        return changed ? writeBuildCollection(builds) : { ok: true, unchanged: true };
+      } catch (error) { return { ok: false, error: resultError('migration-failed', 'Saved builds were kept.', error) }; }
+    },
     AUTOSAVE_KEY: AUTOSAVE_KEY,
     BUILDS_KEY: BUILDS_KEY,
     SCHEMA: SCHEMA,

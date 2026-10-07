@@ -204,13 +204,10 @@ async function captureMobileCollapsedCard(page, testInfo) {
   await page.screenshot({ path: testInfo.outputPath('modern-mobile-collapsed-card.png'), fullPage: false });
 }
 
-async function captureMobileUpdateNotice(page, testInfo) {
+async function captureMobileOnlineChrome(page, testInfo) {
   await openModern(page, mobile);
-  await page.evaluate(() => {
-    window.PandoraRemaked.pwa.showUpdateNotice({ postMessage() {} });
-  });
-  await expect(page.locator('[data-remaked-update-notice]')).toBeVisible();
-  await page.screenshot({ path: testInfo.outputPath('modern-mobile-update-notice.png'), fullPage: false });
+  await expect(page.locator('[data-remaked-update-notice]')).toHaveCount(0);
+  await page.screenshot({ path: testInfo.outputPath('modern-mobile-online-chrome.png'), fullPage: false });
 }
 
 test('capture Modern desktop QA screenshot', async ({ page }, testInfo) => {
@@ -258,7 +255,7 @@ test('capture Phase 4 collapsed card QA screenshot', async ({ page }, testInfo) 
 });
 
 test('capture Phase 4 update notice QA screenshot', async ({ page }, testInfo) => {
-  await captureMobileUpdateNotice(page, testInfo);
+  await captureMobileOnlineChrome(page, testInfo);
 });
 
 test('capture Russian Modern desktop QA screenshot', async ({ page }, testInfo) => {

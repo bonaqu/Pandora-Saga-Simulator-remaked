@@ -245,7 +245,8 @@
     if (!root.hasAttribute('data-remaked-skill-controls')) {
       root.setAttribute('data-remaked-skill-controls', '');
       var potentialLabel = byId('StatusUnP_0').closest('.input_gt').previousElementSibling;
-      potentialLabel.id = 'remaked-potential-budget-label'; i18n.bindText(potentialLabel, 'skills.potential');
+      potentialLabel.id = 'remaked-potential-budget-label'; i18n.bindText(potentialLabel, 'character.potential');
+      i18n.bindAttribute(potentialLabel, 'title', 'character.potentialHelp');
       var tools = document.createElement('div'); tools.className = 'remaked-skill-tools';
       var actions = document.createElement('div'); actions.className = 'remaked-skill-tools-actions';
       var title = document.createElement('h2'); title.id = 'remaked-workbench-skills-title';

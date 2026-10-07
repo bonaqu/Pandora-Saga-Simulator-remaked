@@ -1,5 +1,28 @@
 # Changelog
 
+## Modern 3.25 — current builds and online calculator, 2026-10-07
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Все сохранённые Modern-билды используют текущие игровые данные. Переименованные предметы остаются выбранными; исчезнувшие или несовместимые предметы, души и умения снимаются точечно. Изменения характеристик и снятые элементы показываются в компактном отчёте.
+- Убраны отметка «Возможно устарел» и видимые резервные билды. Автосохранение сохраняет последние изменения и при закрытии страницы.
+- Ссылки на билды стали значительно короче; прежние ссылки продолжают работать.
+- Возвращена сортировка снаряжения по возрастанию уровня, устранён подтверждённый дубль декоративного золотого плаща с сохранением старых выборов, восстановлены переносы строк в описаниях.
+- Уточнены русские подписи раздела «Персонаж» и термин «слоты душ». Для потенциала добавлено пояснение.
+- Убраны установка приложения и офлайн-режим. Legacy остаётся без изменений.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Saved Modern builds now use current game data. Renamed items stay selected; unavailable or incompatible items, Souls and skills are removed individually. A compact report explains removals and stat changes.
+- Removed outdated badges and visible backup builds. Autosave also saves the last changes when leaving the page.
+- Build links are much shorter; existing links remain readable.
+- Restored ascending equipment-level sorting and description line breaks, reconciled the confirmed cosmetic Golden Mantle duplicate while preserving old choices, and clarified Russian character labels and Soul slots.
+- Removed app installation and offline mode. Legacy remains unchanged.
+<!-- /release-notes:en -->
+
 ## Modern 3.24 — enhancement mechanics audit, 2026-10-07
 
 <!-- release-notes:ru -->

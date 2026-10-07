@@ -430,6 +430,11 @@
       mark(levelRow, 'level');
       var levelLabel = levelRow.firstElementChild;
       levelLabel.id = 'remaked-level-label';
+      namespace.i18n.bindText(levelLabel, 'character.level');
+      [['StatusStP_0', 'character.status'], ['StatusSkP_0', 'character.skill']].forEach(function (entry) {
+        var label = byId(entry[0]).closest('.input_gt').previousElementSibling;
+        namespace.i18n.bindText(label, entry[1]);
+      });
       level.parentElement.hidden = true;
       numberControl('Lev', levelLabel, level, level.parentElement.parentElement);
       levelRow.querySelector('input[type="image"]').closest('li').parentElement.parentElement.hidden = true;

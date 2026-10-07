@@ -81,9 +81,6 @@ test('reload restores the last compatible autosave and reports recovery', async 
   expect(savedPayload).not.toBe(defaultPayload);
   await page.evaluate(() => window.PandoraRemaked.builds.flushAutosave());
 
-  await page.evaluate((payload) => window.PandoraRemaked.adapter.load(payload), defaultPayload);
-  expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(defaultPayload);
-
   await page.reload();
   await expect(page.locator('[data-remaked-shell]')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(savedPayload);

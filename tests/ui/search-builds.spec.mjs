@@ -196,7 +196,7 @@ test('Soul Search explains missing sockets then rebuilds targets after equipping
   await expect(page.locator('[data-remaked-search-panel][data-search-kind="soul"]')).toBeVisible();
   const initialTargets = await page.evaluate(() => window.PandoraRemaked.adapter.listSoulTargets());
   if (!initialTargets.length) {
-    await expect(page.getByText('No available Soul sockets', { exact: true })).toBeVisible();
+    await expect(page.getByText('No available Soul slots', { exact: true })).toBeVisible();
   }
   await page.getByRole('button', { name: 'Close search', exact: true }).click();
 
@@ -274,14 +274,10 @@ test('picker search uses the full control width when no type filter is available
     .map((candidate) => {
       const options = window.PandoraRemaked.adapter.listEquipmentOptions(candidate.slotIndex);
       const categories = [];
-      let currentCategory = '';
       for (const option of options) {
-        const heading = String(option.name || '').match(/^\+-----\s*(.+?)\s*$/)?.[1]?.trim() || '';
-        if (heading) {
-          currentCategory = heading;
-          continue;
-        }
-        if (currentCategory && !categories.includes(currentCategory)) categories.push(currentCategory);
+        if (option.level === null) continue;
+        const category = Math.floor(Number(option.value) / 10000);
+        if (!categories.includes(category)) categories.push(category);
       }
       return { candidate, categories };
     })
@@ -300,43 +296,29 @@ test('picker search uses the full control width when no type filter is available
   expect(fieldBox.width).toBeGreaterThanOrEqual(controlsBox.width - 2);
 });
 
-test('equipment picker renders native type separators as headings and can filter by type', async ({ page }) => {
+test('equipment picker keeps ascending levels and filters by type without regrouping', async ({ page }) => {
   await openModern(page);
   const target = await page.evaluate(() => window.PandoraRemaked.adapter.listEquipmentTargets()
-    .map((candidate) => {
+    .map(candidate => {
       const options = window.PandoraRemaked.adapter.listEquipmentOptions(candidate.slotIndex);
-      let currentCategory = '';
       const categories = [];
-      const groupHeadings = [];
       for (const option of options) {
-        const heading = String(option.name || '').match(/^\+-----\s*(.+?)\s*$/)?.[1]?.trim() || '';
-        if (heading) {
-          currentCategory = heading;
-          groupHeadings.push(heading);
-          continue;
-        }
-        if (currentCategory && !categories.includes(currentCategory)) categories.push(currentCategory);
+        if (option.level === null) continue;
+        const category = Math.floor(Number(option.value) / 10000);
+        if (!categories.includes(category)) categories.push(category);
       }
-      return { candidate, categories, groupHeadings };
-    })
-    .find((entry) => entry.categories.length >= 2));
+      return { candidate, categories };
+    }).find(entry => entry.categories.length >= 2));
   expect(target).toBeTruthy();
-
-  const opener = page.locator(`[data-remaked-equipment-picker="${target.candidate.selectId}"]`);
-  await opener.click();
+  await page.locator(`[data-remaked-equipment-picker="${target.candidate.selectId}"]`).click();
   const panel = page.locator('[data-remaked-search-panel]');
   const filter = panel.locator('[data-remaked-picker-type-filter]');
   await expect(filter).toBeVisible();
-  await expect(panel.locator('[data-remaked-picker-group]')).toHaveCount(target.groupHeadings.length);
-
-  const selectedType = target.categories[1];
-  await filter.selectOption({ label: selectedType });
-  const expectedGroupCount = target.groupHeadings.filter((heading) => heading === selectedType).length;
-  await expect(panel.locator('[data-remaked-picker-group]')).toHaveCount(expectedGroupCount);
-  await expect(panel.locator('[data-remaked-picker-group]')).toHaveText(
-    Array(expectedGroupCount).fill(selectedType)
-  );
-
+  await expect(panel.locator('[data-remaked-picker-group]')).toHaveCount(1); // Clear-equipment row only.
+  const types = await filter.evaluate(node => Array.from(node.options).map(option => option.textContent));
+  await filter.selectOption({ label: types[2] });
+  await expect(panel.locator('[data-remaked-picker-group]')).toHaveCount(0);
+  expect(await panel.locator('[data-remaked-search-result]').count()).toBeGreaterThan(0);
   await panel.locator('[data-remaked-search-query]').fill('__definitely_no_such_picker_item__');
   await expect(panel.locator('[data-remaked-search-empty-reset]')).toHaveText('Reset filter');
   await panel.locator('[data-remaked-search-empty-reset]').click();

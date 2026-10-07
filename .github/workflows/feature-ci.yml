@@ -202,6 +202,10 @@ jobs:
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
         run: python -m unittest discover -s tests -v
 
+      - name: Verify compact Modern build code and catalog descriptions
+        if: needs.classify.outputs.docs_only != 'true'
+        run: npm run test:modern-build-code
+
       - name: Validate restored simulator
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.admin_only != 'true'
         run: python3 scripts/validate_site.py
@@ -211,7 +215,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for file in             js/calc.js js/equip.js js/item.js js/skill.js js/ini.js             modern/version.js modern/i18n.js modern/adapter.js modern/catalog.js modern/enhancement-effects.js             modern/admin-entry.js modern/calculator-labels.js modern/game-term-display.js             modern/build-store.js modern/search.js modern/equipment-picker.js             modern/calculator-controls.js modern/skill-controls.js modern/skill-tooltips.js             modern/builds.js modern/app-shell.js modern/tooltips.js modern/compare.js             modern/mobile.js modern/pwa.js modern/service-worker.js             scripts/lib/legacy-runtime.mjs scripts/serve_pages.mjs             scripts/extract_legacy_terms.mjs scripts/extract_legacy_data.mjs
+          for file in             js/calc.js js/equip.js js/item.js js/skill.js js/ini.js             modern/version.js modern/i18n.js modern/adapter.js modern/catalog.js modern/catalog-text.js modern/identity-aliases.js modern/share-codec.js modern/enhancement-effects.js             modern/admin-entry.js modern/calculator-labels.js modern/game-term-display.js             modern/build-store.js modern/search.js modern/equipment-picker.js             modern/calculator-controls.js modern/skill-controls.js modern/skill-tooltips.js             modern/builds.js modern/app-shell.js modern/tooltips.js modern/compare.js             modern/mobile.js modern/pwa.js modern/service-worker.js             scripts/lib/legacy-runtime.mjs scripts/serve_pages.mjs             scripts/extract_legacy_terms.mjs scripts/extract_legacy_data.mjs
           do
             node --check "$file"
           done
@@ -381,6 +385,7 @@ jobs:
           npm run test:ui --
           tests/ui/catalog-adapter.spec.mjs
           tests/ui/catalog-adoption.spec.mjs
+          tests/ui/modern-current-builds.spec.mjs
           tests/ui/equipment-enhancement-effects.spec.mjs
           tests/ui/data-projections.spec.mjs
           tests/ui/item-preview.spec.mjs
