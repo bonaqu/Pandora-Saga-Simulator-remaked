@@ -103,6 +103,9 @@ test('new records use explicit replacement mechanics and runtime-safe allocation
     assert.equal(row.edit.disabled, false);
     assert.ok(row.edit.names.en.trim());
     assert.ok(row.edit.names.ru.trim());
+    if (row.kind === 'soul') {
+      assert.deepEqual(row.edit.modifiers, { en: '', ru: '', jp: '', tw: '' });
+    }
   }
 
   const sql = buildMigration();
