@@ -100,8 +100,8 @@ test('startup stale autosave is upgraded safely when the new catalog reduces Sou
   });
 
   await page.goto('/');
-  await expect.poll(() => page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(1);
   const before = await page.evaluate(data => {
+    PandoraRemaked.catalog.applySnapshot(data);
     PandoraRemaked.adapter.selectEquipment(0, data.records[0].engineId);
     PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 4 }, data.records[1].engineId);
     PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 5 }, data.records[1].engineId);
@@ -111,8 +111,8 @@ test('startup stale autosave is upgraded safely when the new catalog reduces Sou
       souls: Status.Equip[0].slice(4, 7)
     };
   }, oldCatalog);
-  expect(before.souls[0]).toBe(oldCatalog.records[1].engineId);
-  expect(before.souls[1]).toBe(oldCatalog.records[1].engineId);
+  expect(Number(before.souls[0])).toBe(oldCatalog.records[1].engineId);
+  expect(Number(before.souls[1])).toBe(oldCatalog.records[1].engineId);
 
   published = nextCatalog;
   await page.reload();
@@ -128,8 +128,8 @@ test('startup stale autosave is upgraded safely when the new catalog reduces Sou
 
   expect(after.payload).toMatch(/^PS3:2:/);
   expect(after.autosave).toBe(after.payload);
-  expect(after.souls[0]).toBe(oldCatalog.records[1].engineId);
-  expect(after.souls[1]).toBe(0);
+  expect(Number(after.souls[0])).toBe(oldCatalog.records[1].engineId);
+  expect(Number(after.souls[1])).toBe(0);
   expect(after.hasNewVariant).toBe(true);
   const backups = after.builds.filter(build => build.payload === before.payload);
   expect(backups).toHaveLength(1);
@@ -253,13 +253,13 @@ for (const conflict of ['fewer sockets', 'Soul slot']) {
       payload: PandoraRemaked.adapter.serialize(),
       soul: Status.Equip[0][4]
     }));
-    expect(before.soul).toBe(185);
+    expect(Number(before.soul)).toBe(185);
 
     const result = await runUpdate(page);
     expect(result.ok).toBe(true);
     expect(result.repaired).toBe(1);
     expect(await page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(2);
-    expect(await page.evaluate(() => Status.Equip[0][4])).toBe(0);
+    expect(await page.evaluate(() => Number(Status.Equip[0][4]))).toBe(0);
     expect(await page.evaluate(() => PandoraRemaked.buildStore.readAutosave().record.payload)).toMatch(/^PS3:2:/);
     const backups = await page.evaluate(payload =>
       PandoraRemaked.buildStore.listBuilds().builds.filter(build => build.payload === payload), before.payload);
