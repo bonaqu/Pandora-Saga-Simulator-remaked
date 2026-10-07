@@ -219,7 +219,9 @@
     var listed = store.listBuilds();
     if (!listed.ok) return listed;
     var existing = listed.builds.find(function (build) {
-      return build.name === name && build.payload === payload;
+      // Any named build with the exact payload already protects the old state;
+      // do not create another backup merely because the UI locale changed.
+      return build.payload === payload;
     });
     if (existing) return { ok: true, build: existing, reused: true };
     return store.saveBuild(name, payload);
