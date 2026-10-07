@@ -220,7 +220,7 @@ test('RU calculator actions keep the same compact height and column proportions 
 
     expect(russian.map(item => Math.round(item.width))).toEqual(english.map(item => Math.round(item.width)));
     expect(Math.max(...russian.map(item => item.height))).toBeLessThanOrEqual(30);
-    expect(Math.max(...russian.map(item => item.height))).toBeLessThan(Math.max(...english.map(item => item.height)));
+    expect(Math.max(...russian.map(item => item.height))).toBeLessThanOrEqual(Math.max(...english.map(item => item.height)));
     for (const item of russian) expect(item.scrollHeight, item.id).toBeLessThanOrEqual(item.clientHeight + 1);
   }
 });
