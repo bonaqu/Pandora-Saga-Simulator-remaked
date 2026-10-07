@@ -200,6 +200,9 @@ test('name, description and translation-only publications never mark saved build
   await expect(row).not.toHaveAttribute('data-catalog-stale', 'true');
   await expect(row.locator('[data-remaked-build-stale]')).toHaveCount(0);
   await expect(page.locator('[data-remaked-catalog-revision]')).toContainText('version 2');
+  expect(await page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(2);
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toMatch(/^PS3:2:/);
+  expect(await page.evaluate(() => PandoraRemaked.buildStore.readAutosave().record.payload)).toMatch(/^PS3:2:/);
   expect(await page.evaluate(() => PandoraRemaked.builds.getLatestCatalogImpactRevision())).toBe(0);
 });
 
