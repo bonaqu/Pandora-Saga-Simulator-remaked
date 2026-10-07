@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """Classify repository changes for CI/deployment.
 
-The safe path is intentionally deny-by-default.  Only documentation surfaces
-that cannot modify simulator/runtime output are allowed to bypass full
-validation. CHANGELOG.md is special because it is compiled into the public
-"What's new" payload, so it still requires a Pages build/deploy, just not the
-browser/catalog matrix.
+Deployment stays fail-closed: every runtime/data/localization change still
+requires full production validation unless the exact merged PR head already
+passed Feature CI. The granular ci_profile only controls which Feature CI
+partitions are relevant for a change set.
+
+This lets translation/catalog-only pull requests avoid browser matrices that
+cannot add useful coverage, while direct pushes remain protected by the
+production validation gate.
 """
 
 from __future__ import annotations
@@ -22,12 +25,29 @@ SAFE_EXACT = {
     "README.ru.md",
     "LICENSE",
     "NOTICE.md",
+    "data/README.md",
+    "localization/README.md",
     "tests/test_repository_docs.py",
 }
 
 SAFE_PREFIXES = (
     "docs/",
     ".github/ISSUE_TEMPLATE/",
+)
+
+TRANSLATION_RUNTIME_EXACT = {
+    "localization/game-terms.ru.json",
+    "localization/translations.xlsx",
+    "localization/ui.en.json",
+}
+
+CATALOG_RUNTIME_EXACT = {
+    "data/current-active-profiles.v1.json",
+    "data/native-passive-hooks.v1.json",
+}
+
+CATALOG_RUNTIME_PREFIXES = (
+    "data/generated/",
 )
 
 # These files are copied by the wiki sync job.
@@ -72,11 +92,40 @@ def is_safe_documentation(path: str) -> bool:
     return any(path.startswith(prefix) for prefix in SAFE_PREFIXES)
 
 
+def is_translation_runtime(path: str) -> bool:
+    path = _normalise(path)
+    return bool(path and path in TRANSLATION_RUNTIME_EXACT)
+
+
+def is_catalog_runtime(path: str) -> bool:
+    path = _normalise(path)
+    if not path:
+        return False
+    if path in CATALOG_RUNTIME_EXACT:
+        return True
+    return any(path.startswith(prefix) for prefix in CATALOG_RUNTIME_PREFIXES)
+
+
+def _runtime_ci_profile(runtime_files: list[str]) -> str:
+    """Return the narrowest safe Feature CI profile for runtime files."""
+    if runtime_files and all(is_translation_runtime(path) for path in runtime_files):
+        return "translation"
+
+    if runtime_files and all(
+        is_translation_runtime(path) or is_catalog_runtime(path)
+        for path in runtime_files
+    ):
+        return "catalog"
+
+    return "runtime"
+
+
 def classify(paths: Iterable[str]) -> dict[str, object]:
     files = sorted({_normalise(path) for path in paths if _normalise(path)})
     if not files:
         return {
             "mode": "full",
+            "ci_profile": "runtime",
             "pages_required": True,
             "wiki_required": False,
             "full_validation": True,
@@ -86,26 +135,36 @@ def classify(paths: Iterable[str]) -> dict[str, object]:
             "reason": "empty-or-unknown-change-set",
         }
 
-    unsafe = [path for path in files if not is_safe_documentation(path)]
-    if unsafe:
+    runtime_files = [path for path in files if not is_safe_documentation(path)]
+    if runtime_files:
+        profile = _runtime_ci_profile(runtime_files)
+        force_full = any(
+            path in DEPLOYMENT_SENSITIVE_EXACT
+            or any(path.startswith(prefix) for prefix in DEPLOYMENT_SENSITIVE_PREFIXES)
+            for path in files
+        )
         return {
             "mode": "full",
+            "ci_profile": profile,
             "pages_required": True,
             "wiki_required": any(path in WIKI_INPUTS for path in files),
+            # Runtime/data/localization changes stay fail-closed for production.
+            # pages.yml may downgrade this only after proving exact PR CI success.
             "full_validation": True,
             "files": files,
-            "unsafe_files": unsafe,
-            "force_full_deploy": any(
-                path in DEPLOYMENT_SENSITIVE_EXACT
-                or any(path.startswith(prefix) for prefix in DEPLOYMENT_SENSITIVE_PREFIXES)
-                for path in files
-            ),
-            "reason": "runtime-or-unclassified-files",
+            "unsafe_files": runtime_files,
+            "force_full_deploy": force_full,
+            "reason": {
+                "translation": "translation-runtime-files",
+                "catalog": "catalog-or-translation-runtime-files",
+                "runtime": "runtime-or-unclassified-files",
+            }[profile],
         }
 
     release_notes = "CHANGELOG.md" in files
     return {
         "mode": "release-notes" if release_notes else "docs-only",
+        "ci_profile": "docs",
         "pages_required": release_notes,
         "wiki_required": any(path in WIKI_INPUTS for path in files),
         "full_validation": False,
