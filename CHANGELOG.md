@@ -1,5 +1,20 @@
 # Changelog
 
+## Modern 3.31 — balanced Russian calculator controls, 2026-10-08
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Русские кнопки учёта и сброса получили промежуточный компактный размер: заметно меньше прежних 44 px, но без слишком мелкого текста.
+- Все шесть кнопок выровнены по высоте, а длинные подписи остаются читаемыми максимум в две строки.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Rebalanced the Russian calculator action buttons for a compact but readable size, avoiding both oversized controls and tiny text.
+<!-- /release-notes:en -->
+
 ## Modern 3.30 — compact Russian calculator controls, 2026-10-08
 
 <!-- release-notes:ru -->
