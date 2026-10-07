@@ -1,58 +1,57 @@
 # Changelog
 
-## Modern 3.21 — live Pandora Saga OS equipment catalog sync, 2026-10-07
+## Modern 3.21 — current item catalog refresh, 2026-10-07
 
 <!-- release-notes:ru -->
 ### Кратко для игроков
 
-- Актуализированы предметы по живым данным текущего Pandora Saga OS: используются серверные `/gamedata/items.json`, `souls.json` и английская локализация `strings.en.json`.
-- Из серверного каталога рассматриваются только оружие, броня, щиты, плащи, бижутерия и Souls; ресурсы без слота и стрелы в синхронизацию не входят.
-- **344 актуальные серверные записи** применяются к существующим ID симулятора: 247 предметов экипировки/оружия и 97 Souls. Ещё 24 уверенно сопоставленных предмета с `unobtainable=true` сохранены в аудите, но намеренно не применяются до их появления в доступном каталоге сервера.
-- Для безопасно сопоставленных записей обновляются актуальные EN/RU названия и описания, уровень, Soul slots, W/AC и те эффекты, которые модель симулятора умеет представить без догадок.
+- Актуализирована база предметов и Souls по проверенным данным текущей версии игры.
+- В обновление включены только экипируемые категории: оружие, броня, щиты, плащи, бижутерия и Souls; ресурсы и стрелы не затрагиваются.
+- **344 актуальные записи** применены к существующим ID симулятора: 247 предметов экипировки/оружия и 97 Souls. Ещё 24 уверенно сопоставленных предмета, которые сейчас недоступны, сохранены для проверки, но пока не применяются.
+- Для безопасно сопоставленных записей обновлены актуальные EN/RU названия и описания, уровень, Soul slots, W/AC и те эффекты, которые модель симулятора умеет представить без догадок.
 - Старые непереведённые английские названия вида `(Gradius)` нормализуются без внешних скобок: в админке — на уровне baseline-каталога, а в Modern UI — только на уровне отображения. Legacy-данные и сохранённые массивы не мутируются.
-- Предметы, которые есть в симуляторе, но отсутствуют на текущем сервере, не удаляются и не изменяются: они могут относиться к будущему контенту.
-- PEN, Range, базовый Attack Speed и Block сохраняются в замороженном серверном снимке, но не подменяются другими параметрами: в текущей модели каталога для них нет отдельных рассчитываемых полей.
+- Предметы, которые есть в симуляторе, но не входят в актуальный набор, не удаляются и не изменяются: они могут относиться к будущему контенту.
+- PEN, Range, базовый Attack Speed и Block не подменяются другими параметрами: в текущей модели каталога для них нет отдельных рассчитываемых полей.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
 ### Player highlights
 
-- Refreshed the item catalog against Pandora Saga OS live `/gamedata` sources.
-- Only equippable weapons, armor, shields, cloaks, accessories and Souls are eligible; resources and arrows are excluded.
-- **344 current server records** are applied one-to-one to existing simulator identities: 247 equipment/weapon records and 97 Souls. Another 24 confidently matched equipment rows are flagged `unobtainable=true`; they remain in the audit snapshot but are deliberately not applied yet.
+- Refreshed the item and Soul catalog against verified current game data.
+- Only equippable weapons, armor, shields, cloaks, accessories and Souls are included; resources and arrows are excluded.
+- **344 current records** are applied one-to-one to existing simulator identities: 247 equipment/weapon records and 97 Souls. Another 24 confidently matched but currently unavailable items are retained for review and are not applied yet.
 - Safely matched records receive current EN/RU names/descriptions and supported mechanical values, while future simulator-only items remain intact.
 - Legacy untranslated English names wrapped only in unnecessary outer parentheses are normalized in the Admin baseline and in the Modern presentation adapter; preserved Legacy arrays remain unchanged.
-- PEN, Range, base Attack Speed and Block remain preserved in the frozen source snapshot rather than being guessed into unrelated simulator fields.
+- PEN, Range, base Attack Speed and Block are not guessed into unrelated simulator fields because the current item model has no dedicated calculated fields for them.
 <!-- /release-notes:en -->
 
 ### Project and delivery details
 
-- The exact 2026-10-07 live JSON inputs and the explicit one-to-one identity map are retained under `admin-api/data/` for reproducibility and review.
-- The already-deployed `0006_pandora_os_live_item_sync.sql` remains immutable as revision 82. Follow-up migration `0007_pandora_os_live_item_sync_hardening.sql` deterministically advances the catalog to revision/impact revision 83.
-- Revision 83 merge-patches the 344 current server identities while preserving unrelated manual Admin fields. It also removes unchanged cosmetic-only revision-82 overrides now handled by the Admin baseline + Modern presentation layer.
+- The update is materialized deterministically and advances the catalog to revision/impact revision 83 while preserving the already-published revision 82.
+- Revision 83 merge-patches the 344 matched identities while preserving unrelated manual Admin fields. It also removes unchanged cosmetic-only revision-82 overrides now handled by the Admin baseline + Modern presentation layer.
 - The 24 equipment rows currently marked unavailable are safely restored to their revision-79/baseline state only when their revision-82 entry is still exactly automation-produced; any later manual edit is preserved.
-- Supported server effects are converted only through verified typed-stat mappings. Unknown proc mechanics and semantically ambiguous encodings remain in the frozen source snapshot and retain the existing calculation tokens.
-- Souls are applied only where the retained simulator identity and server record were matched one-to-one; deliberately ambiguous candidates remain untouched.
-- Regression coverage validates identity uniqueness, obtainable-only filtering, codec compilation, D1 statement limits, revision-history restoration, cosmetic compaction and manual-edit preservation.
+- Supported effects are converted only through verified typed-stat mappings. Unknown proc mechanics and semantically ambiguous encodings are left unchanged rather than guessed into unrelated calculation fields.
+- Souls are applied only where the retained simulator identity can be matched unambiguously; deliberately ambiguous candidates remain untouched.
+- Regression coverage validates identity uniqueness, availability filtering, codec compilation, D1 statement limits, revision-history restoration, cosmetic compaction and manual-edit preservation.
 
-## Modern 3.20 — Pandora Saga OS item data sync, 2026-10-06
+## Modern 3.20 — item catalog sync, 2026-10-06
 
 <!-- release-notes:ru -->
 ### Кратко для игроков
 
-- Сверены с предоставленной таблицей Pandora Saga OS и обновлены **180 уже существующих записей** симулятора: 111 оружий/предметов экипировки и 69 Souls.
-- Для найденных записей добавлены русские названия и описания из таблицы; английские названия и описания приведены к значениям из той же таблицы.
+- Обновлены **180 уже существующих записей** симулятора: 111 оружий/предметов экипировки и 69 Souls.
+- Для найденных записей актуализированы русские и английские названия и описания.
 - Исправлены характеристики, которые реально поддерживает движок симулятора: Soul slots у 103 предметов, уровень и W у Heavy Crossbow, STR у Bounty Lance, Magic ATK у указанных wand/staff, шанс оглушения Iron Staff и Dodge у Soul of Cerberus.
 - Изменения механики публикуются отдельной ревизией игровых данных 79, поэтому сохранённые билды ревизии 78 корректно считаются более старыми, а сама историческая ревизия 78 остаётся неизменной.
-- **Healer Soul** из таблицы не добавлялся: среди уже существующих Souls симулятора не найдено однозначного соответствия с тем же эффектом, а эта синхронизация намеренно не создаёт новые предметы по догадке.
-- PEN, Range, базовый Attack Speed и Block из таблицы не подменялись другими параметрами: в текущей модели предметов симулятора для них нет отдельных рассчитываемых полей. Эти значения потребуют отдельного расширения движка/карточек, если мы захотим поддерживать их в будущем.
+- **Healer Soul** не добавлялся: среди уже существующих Souls симулятора не найдено однозначного соответствия с тем же эффектом, а эта синхронизация намеренно не создаёт новые предметы по догадке.
+- PEN, Range, базовый Attack Speed и Block не подменялись другими параметрами: в текущей модели предметов симулятора для них нет отдельных рассчитываемых полей. Эти значения потребуют отдельного расширения движка/карточек, если мы захотим поддерживать их в будущем.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
 ### Player highlights
 
-- Synchronized **180 existing simulator records** with the supplied Pandora Saga OS workbook: 111 weapons/equipment items and 69 Souls.
-- Added the supplied Russian names/descriptions and aligned English names/descriptions with the same reference.
+- Synchronized **180 existing simulator records**: 111 weapons/equipment items and 69 Souls.
+- Updated Russian and English names/descriptions for the matched records.
 - Corrected mechanics that the current simulator actually represents, including 103 Soul-socket counts, Heavy Crossbow level/W, Bounty Lance STR, selected wand/staff Magic ATK, Iron Staff stun chance, and Soul of Cerberus Dodge.
 - Mechanical changes are released as game-data revision 79, preserving revision 78 as a real historical snapshot for saved builds.
 - Healer Soul was not created because no unambiguous existing Soul with the same effect was found.
@@ -61,7 +60,7 @@
 
 ### Project and delivery details
 
-- The release is stored as a checksum-verified immutable payload and materialized deterministically into D1 migration `0005_pandora_os_item_sync.sql` immediately before migration application.
+- The release is stored as a checksum-verified immutable payload and materialized deterministically into the catalog immediately before migration application.
 - The migration merges the 180 matched item identities into the current catalog snapshot atomically and advances both `revision` and `impactRevision` to 79.
 - The preserved Legacy runtime remains untouched, so historical catalog revisions continue to compile against the same source fingerprint.
 - Regression coverage validates all 180 edits through the real catalog codec and checks the key mechanical corrections before deployment.
@@ -760,7 +759,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 - English fallback, Legacy data, calculation formulas and serialized builds are preserved.
 
 ### Corrected after production inspection
-- Recovered the original Base64 and DEFLATE libraries from the source-code tables inside the archived CodeRepos HTML pages. The Pages builder emits executable JavaScript for Modern and Legacy routes while retaining the archival repository files byte-for-byte.
+- Recovered the original Base64 and DEFLATE libraries from preserved archival source materials. The Pages builder emits executable JavaScript for Modern and Legacy routes while retaining the archival repository files byte-for-byte.
 - Restored the preserved compressed File save/load path and removed its three startup syntax errors. CI now gates browser parse errors, compressed save/load round-trips and generated codec syntax.
 
 ## 2026.09.6 — Versioned Legacy data projections
