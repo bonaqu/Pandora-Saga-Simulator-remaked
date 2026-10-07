@@ -21,31 +21,6 @@
   var databasePromise;
   function check(condition, message) { if (!condition) throw new Error(message); }
   function escaped(value) { return String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
-  function normalizeUntranslatedItemName(value) {
-    var text = String(value == null ? '' : value).trim();
-    if (!text || text.charAt(0) !== '(') return text;
-    while (text.length > 2 && text.charAt(0) === '(' && text.charAt(text.length - 1) === ')') text = text.slice(1, -1).trim();
-    if (text.charAt(0) === '(' && !/[()]/.test(text.slice(1))) text = text.slice(1).trim();
-    if (text.charAt(text.length - 1) === ')' && !/[()]/.test(text.slice(0, -1))) text = text.slice(0, -1).trim();
-    return text;
-  }
-  function normalizeLiveUntranslatedItemNames() {
-    if (!window.EquipData?.[1] || !window.SoulData?.[1]) return;
-    for (var category = 0; category < window.EquipData[1].length; category++) {
-      for (var itemIndex = 1; itemIndex < window.EquipData[1][category].length; itemIndex++) {
-        if (window.EquipData[1][category][itemIndex]) window.EquipData[1][category][itemIndex][0] =
-          normalizeUntranslatedItemName(window.EquipData[1][category][itemIndex][0]);
-      }
-    }
-    for (var soulIndex = 1; soulIndex < window.SoulData[1].length; soulIndex++) {
-      if (window.SoulData[1][soulIndex]) window.SoulData[1][soulIndex][0] =
-        normalizeUntranslatedItemName(window.SoulData[1][soulIndex][0]);
-    }
-  }
-  // Legacy data scripts are loaded before this Modern adapter. Normalize the
-  // presentation marker immediately so pre-catalog state and every rollback
-  // observe the same source arrays.
-  normalizeLiveUntranslatedItemNames();
   function cloneEquipment(source) {
     var result = [];
     for (var language = 0; language < 3; language++) {
@@ -59,7 +34,6 @@
   function captureBaseline() {
     if (baselineEquipment) return;
     check(window.EquipData && window.SoulData, 'Legacy catalog not initialized');
-    normalizeLiveUntranslatedItemNames();
     baselineEquipment = cloneEquipment(window.EquipData); baselineSouls = cloneSouls(window.SoulData);
     baselineClassMods = window.Status.Mod.map(function (row) { return row.slice(); });
     baselineSkills = cloneSkills(window.Skill.slice(0, 3));
