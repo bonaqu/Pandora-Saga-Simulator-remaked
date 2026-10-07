@@ -25,7 +25,6 @@ function customEquipment(category, index, name, effects = [], extra = {}) {
     level: extra.level ?? 40,
     sockets: extra.sockets ?? 0,
     baseAttack: extra.baseAttack ?? null,
-    armorClass: extra.armorClass ?? null,
     effects
   });
   return compileRecord(validateDraft(edit, id), id, null);
@@ -94,7 +93,7 @@ test('Strong War Crossbow grants its full +2 enhancement stat at +7', async ({ p
   expect(p7.agiEquipmentBonus).toBe(3);
 });
 
-test('enhancement-ranged Souls use the enhancement level of their host item', async ({ page }) => {
+test('retained native enhancement-ranged Souls use the host item level exactly once', async ({ page }) => {
   await page.goto('/');
   await page.evaluate(snapshot => PandoraRemaked.catalog.applySnapshot(snapshot), publication([]));
   const result = await page.evaluate(() => {
@@ -160,7 +159,7 @@ test('server unison set effects work even when members use Modern-only identitie
 });
 
 test('safe omitted base stats are visible in the retained calculator', async ({ page }) => {
-  const bullseye = customEquipment(30, 111, 'Bullseye Cap', [{ stat: 3, unit: 'flat', value: 1 }], { armorClass: 7 });
+  const bullseye = customEquipment(30, 111, 'Bullseye Cap', [{ stat: 3, unit: 'flat', value: 1 }, { stat: 49, unit: 'flat', value: 7 }]);
   const cloak = customEquipment(35, 50, "Novice's Cloak");
   const earring = customEquipment(40, 61, "Priest's Earring");
 
