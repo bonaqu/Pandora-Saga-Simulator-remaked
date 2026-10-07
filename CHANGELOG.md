@@ -1,5 +1,38 @@
 # Changelog
 
+## Modern 3.21 — live Pandora Saga OS equipment catalog sync, 2026-10-07
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Актуализированы предметы по живым данным текущего Pandora Saga OS: используются серверные `/gamedata/items.json`, `souls.json` и английская локализация `strings.en.json`.
+- Из серверного каталога рассматриваются только оружие, броня, щиты, плащи, бижутерия и Souls; ресурсы без слота и стрелы в синхронизацию не входят.
+- **345 серверных записей** сопоставлены с существующими ID симулятора без повторного использования ID: 271 предмет экипировки/оружия и 74 Souls. Неоднозначные или неподтверждённые совпадения намеренно не применяются.
+- Для безопасно сопоставленных записей обновляются актуальные EN/RU названия и описания, уровень, Soul slots, W/AC и те эффекты, которые модель симулятора умеет представить без догадок.
+- Старые непереведённые английские названия вида `(Gradius)` нормализуются без внешних скобок. Уже сделанное вручную более свежее EN-переименование через админку имеет приоритет и не перезаписывается этой косметической нормализацией.
+- Предметы, которые есть в симуляторе, но отсутствуют на текущем сервере, не удаляются и не изменяются: они могут относиться к будущему контенту.
+- PEN, Range, базовый Attack Speed и Block сохраняются в замороженном серверном снимке, но не подменяются другими параметрами: в текущей модели каталога для них нет отдельных рассчитываемых полей.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Refreshed the item catalog against Pandora Saga OS live `/gamedata` sources.
+- Only equippable weapons, armor, shields, cloaks, accessories and Souls are eligible; resources and arrows are excluded.
+- **345 server records** are mapped one-to-one to existing simulator identities: 271 equipment/weapon records and 74 Souls. Ambiguous matches are deliberately left untouched.
+- Safely matched records receive current EN/RU names/descriptions and supported mechanical values, while future simulator-only items remain intact.
+- Legacy untranslated English names wrapped only in unnecessary outer parentheses are normalized without overwriting a later manual admin rename.
+- PEN, Range, base Attack Speed and Block remain preserved in the frozen source snapshot rather than being guessed into unrelated simulator fields.
+<!-- /release-notes:en -->
+
+### Project and delivery details
+
+- The exact 2026-10-07 live JSON inputs and the explicit one-to-one identity map are retained under `admin-api/data/` for reproducibility and review.
+- D1 migration `0006_pandora_os_live_item_sync.sql` is generated deterministically during deployment and advances the catalog to revision/impact revision 82.
+- Existing revision-81 overrides are JSON merge-patched, so unrelated manual admin fields survive the bulk sync; bracket-only normalization additionally refuses to overwrite a later manual English rename.
+- Supported server effects are converted only through verified typed-stat mappings. Unknown proc mechanics remain in the frozen source snapshot and retain the existing calculation tokens.
+- Regression coverage validates identity uniqueness, category restrictions, codec compilation, D1 statement limits, revision-history preservation and merge behavior.
+
 ## Modern 3.20 — Pandora Saga OS item data sync, 2026-10-06
 
 <!-- release-notes:ru -->
