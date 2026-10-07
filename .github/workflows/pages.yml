@@ -66,12 +66,30 @@ jobs:
 
             if [[ -n "$baseline_sha" ]] && git merge-base --is-ancestor "$baseline_sha" "$DEPLOY_SHA"; then
               mapfile -t changed_files < <(git diff --name-only "$baseline_sha" "$DEPLOY_SHA")
-              policy_json="$(printf '%s\n' "${changed_files[@]}" | python3 scripts/deploy_change_policy.py --stdin)"
-              mode="$(jq -r '.mode' <<<"$policy_json")"
-              pages_required="$(jq -r '.pages_required' <<<"$policy_json")"
-              wiki_required="$(jq -r '.wiki_required' <<<"$policy_json")"
-              full_validation="$(jq -r '.full_validation' <<<"$policy_json")"
-              force_full_deploy="$(jq -r '.force_full_deploy' <<<"$policy_json")"
+              deployment_sensitive=false
+              for file in "${changed_files[@]}"; do
+                case "$file" in
+                  .github/workflows/*|.github/actions/*|scripts/build_pages.py|scripts/deploy_change_policy.py)
+                    deployment_sensitive=true
+                    ;;
+                esac
+              done
+
+              if [[ "$deployment_sensitive" == "true" ]]; then
+                mode=full
+                pages_required=true
+                wiki_required=false
+                full_validation=true
+                force_full_deploy=true
+                policy_json='{"mode":"full","reason":"deployment-infrastructure-changed","pages_required":true,"wiki_required":false,"full_validation":true,"force_full_deploy":true}'
+              else
+                policy_json="$(printf '%s\n' "${changed_files[@]}" | python3 scripts/deploy_change_policy.py --stdin)"
+                mode="$(jq -r '.mode' <<<"$policy_json")"
+                pages_required="$(jq -r '.pages_required' <<<"$policy_json")"
+                wiki_required="$(jq -r '.wiki_required' <<<"$policy_json")"
+                full_validation="$(jq -r '.full_validation' <<<"$policy_json")"
+                force_full_deploy="$(jq -r '.force_full_deploy' <<<"$policy_json")"
+              fi
 
               echo "Last successful Pages deployment: $baseline_sha"
               printf 'Changed since deployed baseline (%d):\n' "${#changed_files[@]}"
