@@ -31,6 +31,16 @@ SAFE_PREFIXES = (
 )
 
 # These files are copied by the wiki sync job.
+DEPLOYMENT_SENSITIVE_EXACT = {
+    ".github/workflows/pages.yml",
+    "scripts/build_pages.py",
+    "scripts/deploy_change_policy.py",
+}
+
+DEPLOYMENT_SENSITIVE_PREFIXES = (
+    ".github/actions/",
+)
+
 WIKI_INPUTS = {
     "CHANGELOG.md",
     "docs/wiki/Home.md",
@@ -72,6 +82,7 @@ def classify(paths: Iterable[str]) -> dict[str, object]:
             "full_validation": True,
             "files": [],
             "unsafe_files": [],
+            "force_full_deploy": True,
             "reason": "empty-or-unknown-change-set",
         }
 
@@ -84,6 +95,11 @@ def classify(paths: Iterable[str]) -> dict[str, object]:
             "full_validation": True,
             "files": files,
             "unsafe_files": unsafe,
+            "force_full_deploy": any(
+                path in DEPLOYMENT_SENSITIVE_EXACT
+                or any(path.startswith(prefix) for prefix in DEPLOYMENT_SENSITIVE_PREFIXES)
+                for path in files
+            ),
             "reason": "runtime-or-unclassified-files",
         }
 
@@ -95,6 +111,7 @@ def classify(paths: Iterable[str]) -> dict[str, object]:
         "full_validation": False,
         "files": files,
         "unsafe_files": [],
+        "force_full_deploy": False,
         "reason": "allowlisted-documentation-only",
     }
 
