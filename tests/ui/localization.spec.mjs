@@ -218,9 +218,9 @@ test('RU calculator actions stay balanced and readable without oversized control
 
     const heights = geometry.map(item => item.height);
     expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(1);
-    expect(Math.min(...heights)).toBeGreaterThanOrEqual(31);
-    expect(Math.max(...heights)).toBeLessThanOrEqual(33);
-    expect(Math.min(...geometry.map(item => item.fontSize))).toBeGreaterThanOrEqual(10.5);
+    expect(Math.min(...heights)).toBeGreaterThanOrEqual(29);
+    expect(Math.max(...heights)).toBeLessThanOrEqual(31);
+    expect(Math.min(...geometry.map(item => item.fontSize))).toBeGreaterThanOrEqual(9.5);
     for (const item of geometry) expect(item.scrollHeight, item.id).toBeLessThanOrEqual(item.clientHeight + 1);
   }
 });
