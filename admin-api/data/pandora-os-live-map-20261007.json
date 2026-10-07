@@ -6,7 +6,7 @@
     "souls": "https://pandorasaga-os.com/gamedata/souls.json",
     "english": "https://pandorasaga-os.com/gamedata/strings.en.json"
   },
-  "policy": "one-to-one category-constrained matching; exact normalized names, high-confidence structural aliases, or unique Soul slot/base-effect fingerprints with semantic name confirmation; unmatched/ambiguous server items are not silently applied",
+  "policy": "one-to-one category-constrained matching; exact normalized names or high-confidence aliases with structural stat agreement; unmatched/ambiguous server items are not silently applied",
   "equipment": [
     {
       "serverId": 1,
@@ -1980,24 +1980,6 @@
       "nameSimilarity": 1
     },
     {
-      "serverId": 101015,
-      "projectId": "soul.154",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Indolent/Slow runner naming"
-    },
-    {
-      "serverId": 101016,
-      "projectId": "soul.153",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Blind naming"
-    },
-    {
-      "serverId": 101017,
-      "projectId": "soul.156",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Unintelligible/Lisp naming"
-    },
-    {
       "serverId": 101018,
       "projectId": "soul.115",
       "match": "exact",
@@ -2100,12 +2082,6 @@
       "nameSimilarity": 1
     },
     {
-      "serverId": 102013,
-      "projectId": "soul.120",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Harmony/Peace naming"
-    },
-    {
       "serverId": 102014,
       "projectId": "soul.32",
       "match": "exact",
@@ -2128,30 +2104,6 @@
       "projectId": "soul.124",
       "match": "exact",
       "nameSimilarity": 1
-    },
-    {
-      "serverId": 102022,
-      "projectId": "soul.10",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Ash/Embers naming"
-    },
-    {
-      "serverId": 102023,
-      "projectId": "soul.36",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Spirit/Kotodama naming"
-    },
-    {
-      "serverId": 102024,
-      "projectId": "soul.13",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Volcragg/Bokuraggu transliteration"
-    },
-    {
-      "serverId": 102025,
-      "projectId": "soul.164",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Parade naming"
     },
     {
       "serverId": 103001,
@@ -2250,24 +2202,6 @@
       "nameSimilarity": 1
     },
     {
-      "serverId": 103020,
-      "projectId": "soul.131",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Decay/Corruption naming"
-    },
-    {
-      "serverId": 103025,
-      "projectId": "soul.1",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Snow naming"
-    },
-    {
-      "serverId": 103028,
-      "projectId": "soul.121",
-      "match": "semantic-exact",
-      "evidence": "Change naming, exact slots and Dodge -1 / Debuff duration -2% legacy semantics"
-    },
-    {
       "serverId": 104001,
       "projectId": "soul.2",
       "match": "exact",
@@ -2286,12 +2220,6 @@
       "nameSimilarity": 1
     },
     {
-      "serverId": 104004,
-      "projectId": "soul.49",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Knight naming"
-    },
-    {
       "serverId": 104005,
       "projectId": "soul.114",
       "match": "exact",
@@ -2308,12 +2236,6 @@
       "projectId": "soul.69",
       "match": "high-confidence-alias",
       "nameSimilarity": 0.9231
-    },
-    {
-      "serverId": 104008,
-      "projectId": "soul.132",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Tundra/ice naming"
     },
     {
       "serverId": 104009,
@@ -2344,30 +2266,6 @@
       "projectId": "soul.26",
       "match": "exact",
       "nameSimilarity": 1
-    },
-    {
-      "serverId": 105006,
-      "projectId": "soul.106",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Dance/Dancing naming"
-    },
-    {
-      "serverId": 105007,
-      "projectId": "soul.35",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Clown naming"
-    },
-    {
-      "serverId": 105008,
-      "projectId": "soul.134",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Earth naming"
-    },
-    {
-      "serverId": 105009,
-      "projectId": "soul.122",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Steady/Hold naming"
     },
     {
       "serverId": 106001,
@@ -2406,12 +2304,6 @@
       "nameSimilarity": 1
     },
     {
-      "serverId": 106007,
-      "projectId": "soul.126",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Faerie/Fairy naming"
-    },
-    {
       "serverId": 106008,
       "projectId": "soul.82",
       "match": "exact",
@@ -2422,18 +2314,6 @@
       "projectId": "soul.88",
       "match": "exact",
       "nameSimilarity": 1
-    },
-    {
-      "serverId": 106010,
-      "projectId": "soul.97",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Exorcism/Exorcises naming"
-    },
-    {
-      "serverId": 107001,
-      "projectId": "soul.85",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Enticer/Temptation naming"
     },
     {
       "serverId": 107002,
@@ -2466,28 +2346,10 @@
       "nameSimilarity": 1
     },
     {
-      "serverId": 107008,
-      "projectId": "soul.125",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Sunlight/Sunshine naming"
-    },
-    {
-      "serverId": 107009,
-      "projectId": "soul.137",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; Nature/Natural naming"
-    },
-    {
       "serverId": 107010,
       "projectId": "soul.119",
       "match": "exact",
       "nameSimilarity": 1
-    },
-    {
-      "serverId": 107011,
-      "projectId": "soul.3",
-      "match": "exact-mechanics-alias",
-      "evidence": "unique slot/effect fingerprint; King naming"
     }
   ]
 }
