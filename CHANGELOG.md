@@ -1,5 +1,20 @@
 # Changelog
 
+## Modern 3.28 — clearer Russian calculator actions, 2026-10-07
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- В блоке персонажа переведены переключатели учёта умений и эффектов зелий, кнопки сброса и элементы верховой езды.
+- Используются формулировки «Учитывать умения», «Учитывать мастерство умений», «Учитывать эффекты зелий», «Сброс характеристик», «Сброс умений», «Сбросить все», «Верхом» и «Хар-ки верхом».
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Added the requested Russian labels for calculator action, reset and riding controls without changing their mechanics.
+<!-- /release-notes:en -->
+
 ## Modern 3.27 — clearer Russian skill and effect labels, 2026-10-07
 
 <!-- release-notes:ru -->
