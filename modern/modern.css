@@ -1691,7 +1691,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   .remaked-modern #body [data-remaked-calculator-actions] {
     /* All languages use the same three tracks: enough room for the reset
        label, the longest skill switch and the potion-effects switch. */
-    grid-template-columns: minmax(0, .88fr) minmax(0, 1.26fr) minmax(0, .86fr);
+    grid-template-columns: minmax(0, .90fr) minmax(0, .96fr) minmax(0, 1.14fr);
     align-content: start;
   }
   .remaked-modern #body [data-remaked-calculator-actions] > ul { display: contents; }
