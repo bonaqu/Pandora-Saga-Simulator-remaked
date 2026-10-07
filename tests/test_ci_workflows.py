@@ -26,6 +26,14 @@ class CIWorkflowArchitectureTests(unittest.TestCase):
         self.assertIn("Validate generated What's new payload", workflow)
         self.assertIn("steps.gate.outputs.mode != 'release-notes'", workflow)
 
+    def test_cancelled_deploy_followups_can_reuse_every_validated_runtime_commit(self):
+        workflow = self.read(".github/workflows/pages.yml")
+        self.assertIn('git rev-list --first-parent --reverse "$baseline_sha..$DEPLOY_SHA"', workflow)
+        self.assertIn("all_runtime_validated=true", workflow)
+        self.assertIn("Runtime commit $commit is covered by successful Feature CI", workflow)
+        self.assertIn("mode=validated-runtime", workflow)
+        self.assertIn("At least one runtime change since the deployed baseline lacks reusable validation", workflow)
+
     def test_expensive_production_matrix_only_runs_when_full_validation_is_required(self):
         workflow = self.read(".github/workflows/pages.yml")
         expensive = (
