@@ -1,0 +1,185 @@
+{
+  "12081": {
+    "id": 12081,
+    "members": [
+      11282,
+      13111,
+      14094,
+      15092
+    ],
+    "rows": [
+      {
+        "func": "EP_MAXMANA_CONST",
+        "minC": 4,
+        "maxC": 4,
+        "minL": 0,
+        "maxL": 10,
+        "a": {
+          "f": 0,
+          "p": 0,
+          "c": 200
+        },
+        "b": {
+          "f": 0,
+          "p": 0,
+          "c": 0
+        }
+      },
+      {
+        "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+        "minC": 4,
+        "maxC": 4,
+        "minL": 0,
+        "maxL": 10,
+        "a": {
+          "f": 0,
+          "p": 0,
+          "c": 12
+        },
+        "b": {
+          "f": 0,
+          "p": 0,
+          "c": 0
+        }
+      },
+      {
+        "func": "EP_SKILL_BENCH",
+        "minC": 4,
+        "maxC": 4,
+        "minL": 0,
+        "maxL": 10,
+        "a": {
+          "f": 0,
+          "p": 0,
+          "c": -8
+        },
+        "b": {
+          "f": 0,
+          "p": 0,
+          "c": 0
+        }
+      },
+      {
+        "func": "EP_MAXMANA_CONST",
+        "minC": 4,
+        "maxC": 4,
+        "minL": 5,
+        "maxL": 10,
+        "a": {
+          "f": 0,
+          "p": 40,
+          "c": -160
+        },
+        "b": {
+          "f": 0,
+          "p": 0,
+          "c": 0
+        }
+      },
+      {
+        "func": "EP_ARMORCLASS_CONST",
+        "minC": 4,
+        "maxC": 4,
+        "minL": 5,
+        "maxL": 10,
+        "a": {
+          "f": 0,
+          "p": 4,
+          "c": -16
+        },
+        "b": {
+          "f": 0,
+          "p": 0,
+          "c": 0
+        }
+      },
+      {
+        "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+        "minC": 4,
+        "maxC": 4,
+        "minL": 5,
+        "maxL": 10,
+        "a": {
+          "f": 0,
+          "p": 4,
+          "c": -16
+        },
+        "b": {
+          "f": 0,
+          "p": 0,
+          "c": 0
+        }
+      }
+    ]
+  },
+  "12103": {
+    "id": 12103,
+    "members": [
+      11073,
+      13083,
+      14063,
+      15053
+    ],
+    "rows": [
+      {
+        "func": "EP_PROTECTION_TUMBLE",
+        "minC": 4,
+        "maxC": 4,
+        "minL": 7,
+        "maxL": 10,
+        "a": {
+          "f": 0,
+          "p": 0,
+          "c": 0
+        },
+        "b": {
+          "f": 0,
+          "p": 0,
+          "c": 0
+        }
+      }
+    ]
+  },
+  "14094": {
+    "id": 14094,
+    "members": [
+      17034
+    ],
+    "rows": [
+      {
+        "func": "EP_VITARITY_CONST",
+        "minC": 1,
+        "maxC": 1,
+        "minL": 0,
+        "maxL": 10,
+        "a": {
+          "f": 0,
+          "p": 0,
+          "c": 2
+        },
+        "b": {
+          "f": 0,
+          "p": 0,
+          "c": 0
+        }
+      },
+      {
+        "func": "EP_ATTACK_BACKATK_RATE",
+        "minC": 1,
+        "maxC": 1,
+        "minL": 0,
+        "maxL": 10,
+        "a": {
+          "f": 0,
+          "p": 0,
+          "c": 15
+        },
+        "b": {
+          "f": 0,
+          "p": 0,
+          "c": 0
+        }
+      }
+    ]
+  }
+}
