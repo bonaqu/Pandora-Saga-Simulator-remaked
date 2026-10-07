@@ -63,6 +63,30 @@
         jp: 'カタログ {revision} を自動適用しました。',
         tw: '已自動套用目錄 {revision}。'
       },
+      autoRepaired: {
+        en: 'Catalog {revision} applied; {count} incompatible Soul slot(s) were cleared. Backup: “{name}”.',
+        ru: 'Каталог {revision} применён; снято несовместимых душ: {count}. Резервная копия: «{name}».',
+        jp: 'カタログ {revision} を適用し、互換性のないソウル {count} 個を外しました。バックアップ:「{name}」。',
+        tw: '已套用目錄 {revision}；已移除 {count} 個不相容的靈魂。備份：「{name}」。'
+      },
+      autoBlocked: {
+        en: 'Catalog {revision} is newer, but this build has an incompatible equipped item. The saved build was kept unchanged.',
+        ru: 'Есть каталог {revision}, но экипированный предмет несовместим с ним. Сохранённый билд оставлен без изменений.',
+        jp: 'カタログ {revision} がありますが、装備中のアイテムに互換性がありません。保存済みビルドは変更していません。',
+        tw: '已有目錄 {revision}，但目前裝備不相容。已儲存的配置保持不變。'
+      },
+      autoBackupFailed: {
+        en: 'Catalog {revision} needs a safe build repair, but the backup could not be saved. Nothing was changed.',
+        ru: 'Для каталога {revision} нужна безопасная коррекция билда, но резервную копию сохранить не удалось. Ничего не изменено.',
+        jp: 'カタログ {revision} には安全な修復が必要ですが、バックアップを保存できませんでした。変更はありません。',
+        tw: '目錄 {revision} 需要安全修復，但無法儲存備份。未進行任何變更。'
+      },
+      catalogBackupName: {
+        en: 'Backup before catalog {from}→{to}',
+        ru: 'Автокопия перед каталогом {from}→{to}',
+        jp: 'カタログ {from}→{to} 前のバックアップ',
+        tw: '目錄 {from}→{to} 前的備份'
+      },
       catalogHelp: {
         en: 'The site updates items, skills and other game data automatically. If an update can change a saved build, you will see a warning next to it.',
         ru: 'Сайт сам обновляет предметы, навыки и другие игровые данные. Если обновление может изменить сохранённый билд, рядом появится предупреждение.',
@@ -178,6 +202,43 @@
     return latest;
   }
 
+  function ensureCatalogRepairBackup(payload, fromRevision, toRevision) {
+    var name = liveText('catalogBackupName', { from: fromRevision, to: toRevision });
+    var listed = store.listBuilds();
+    if (!listed.ok) return listed;
+    var existing = listed.builds.find(function (build) {
+      return build.name === name && build.payload === payload;
+    });
+    if (existing) return { ok: true, build: existing, reused: true };
+    return store.saveBuild(name, payload);
+  }
+
+  function applyCatalogRepairs(plan) {
+    var repairs = plan && Array.isArray(plan.repairs) ? plan.repairs : [];
+    var cleared = 0;
+    try {
+      suppressAutosave = true;
+      repairs.forEach(function (repair) {
+        if (!repair || repair.type !== 'clear-soul') throw new Error('Unsupported catalog repair');
+        var state = window.Status.Equip[repair.slot];
+        if (!state || Number(state[repair.socket]) !== Number(repair.soulId)) {
+          throw new Error('Catalog repair target changed');
+        }
+        state[repair.socket] = 0;
+        cleared++;
+      });
+      if (typeof window.CalcSet === 'function') {
+        window.CalcSet('Equip');
+        window.CalcSet('ALL');
+      }
+      return { ok: true, cleared: cleared, payload: currentPayload() };
+    } catch (error) {
+      return { ok: false, error: error, cleared: cleared };
+    } finally {
+      suppressAutosave = false;
+    }
+  }
+
   function beginLoadIntent() {
     return { request: ++loadRequest, payload: currentPayload(), hash: location.hash };
   }
@@ -264,14 +325,51 @@
         if (!automatic) setCatalogStatus('builds.catalogCurrent', 'success', null, 'This catalog is already current. No build or save was changed.');
         return { ok: true, unchanged: true };
       }
+      var plan = typeof catalog.adoptionPlan === 'function'
+        ? catalog.adoptionPlan(snapshot)
+        : { compatible: true, repairable: true, repairs: [], blocking: [] };
+      if (plan.blocking.length) {
+        if (automatic) setAutosaveStatus(liveText('autoBlocked', { revision: snapshot.revision }), 'warning');
+        else setCatalogStatus('builds.catalogIncompatible', 'warning', null, 'Update incompatible with equipped items or class requirements. Current build and saves kept.');
+        return { ok: false, reason: 'incompatible', issues: plan.blocking };
+      }
+
+      var working = before, repairBackup = null, repairCount = 0;
+      if (plan.repairs.length) {
+        var backup = ensureCatalogRepairBackup(before, catalog.getRevision(), snapshot.revision);
+        if (!backup.ok) {
+          if (automatic) setAutosaveStatus(liveText('autoBackupFailed', { revision: snapshot.revision }), 'warning');
+          else setCatalogStatus('builds.catalogUnsaved', 'warning', null, 'The current build needs a safe repair, but its backup could not be saved. Nothing was changed.');
+          return { ok: false, reason: 'backup-failed', error: backup.error };
+        }
+        repairBackup = backup.build;
+        var repaired = applyCatalogRepairs(plan);
+        if (!repaired.ok) {
+          rollback(before);
+          return { ok: false, reason: 'repair-failed', error: repaired.error, backup: repairBackup };
+        }
+        repairCount = repaired.cleared;
+        working = repaired.payload;
+      }
+
       try { catalog.preflightSnapshot(snapshot); }
       catch (error) {
-        if (!automatic) setCatalogStatus('builds.catalogIncompatible', 'warning', null, 'Update incompatible with equipped items, Soul slots or class requirements. Current build and saves kept.');
-        return { ok: false, reason: 'incompatible', error: error };
+        if (repairCount) rollback(before);
+        if (automatic) setAutosaveStatus(liveText('autoBlocked', { revision: snapshot.revision }), 'warning');
+        else setCatalogStatus('builds.catalogIncompatible', 'warning', null, 'Update incompatible with equipped items, Soul slots or class requirements. Current build and saves kept.');
+        return { ok: false, reason: 'incompatible', error: error, backup: repairBackup };
       }
-      var candidate = catalog.repinPayload(before, snapshot.revision);
+      var candidate = catalog.repinPayload(working, snapshot.revision);
       var loaded = loadPayloadSafely(candidate);
       if (!loaded.ok) {
+        if (repairCount) {
+          var originalRestored = rollback(before);
+          if (!originalRestored.ok) {
+            loaded.restored = false;
+            loaded.restorationError = originalRestored.error;
+            restorationFailed = true;
+          } else restorationFailed = false;
+        }
         loaded.reason = loaded.restored ? 'calculation-failed' : 'restore-failed';
         if (!automatic) {
           setCatalogStatus(loaded.restored ? 'builds.catalogCalculationFailed' : 'builds.catalogRestorationFailed', 'error', null,
@@ -281,14 +379,23 @@
       }
       clearScheduledAutosave();
       var saved = persistLoadedPayload(loaded.payload);
+      if (repairCount && !saved.ok) {
+        var saveRollback = rollback(before);
+        if (!saveRollback.ok) restorationFailed = true;
+        return { ok: false, reason: 'autosave-failed', error: saved.error, backup: repairBackup, restored: saveRollback.ok };
+      }
       var detached = detachLoadedShareLink();
       if (shareUrl) { shareUrl.hidden = true; shareUrl.value = ''; }
       if (automatic && saved.ok && detached) {
         catalogMessage = null;
+        var appliedText = repairCount
+          ? liveText('autoRepaired', { revision: snapshot.revision, count: repairCount, name: repairBackup.name })
+          : liveText('autoApplied', { revision: snapshot.revision });
         if (catalogStatus) {
-          catalogStatus.textContent = liveText('autoApplied', { revision: snapshot.revision });
-          catalogStatus.dataset.state = 'success';
+          catalogStatus.textContent = appliedText;
+          catalogStatus.dataset.state = repairCount ? 'warning' : 'success';
         }
+        if (repairCount) setAutosaveStatus(appliedText, 'warning');
       } else {
         setCatalogStatus(
           !saved.ok ? 'builds.catalogUnsaved' : !detached ? 'builds.catalogUrlWarning' : 'builds.catalogApplied',
@@ -297,7 +404,8 @@
           'Catalog ' + snapshot.revision + ' applied. Saved builds are checked against the live catalog when used.'
         );
       }
-      return { ok: true, payload: loaded.payload, autosaved: saved.ok, detached: detached, automatic: automatic };
+      return { ok: true, payload: loaded.payload, autosaved: saved.ok, detached: detached, automatic: automatic,
+        repaired: repairCount, backup: repairBackup };
     } catch (error) {
       if (!automatic && request === catalogRequest) {
         setCatalogStatus('builds.catalogUnavailable', 'warning', null, 'Could not check the published catalog. Current build and saves kept; try again online.');
@@ -323,7 +431,8 @@
         if (catalogAutoBlockedKey === attemptKey) return { ok: false, reason: 'blocked-incompatible', revision: head };
         var result = await updateCurrentCatalog({ automatic: true });
         if (result.ok) catalogAutoBlockedKey = '';
-        else if (result.reason === 'incompatible' || result.reason === 'calculation-failed' || result.reason === 'restore-failed') {
+        else if (result.reason === 'incompatible' || result.reason === 'calculation-failed' || result.reason === 'restore-failed' ||
+          result.reason === 'backup-failed' || result.reason === 'repair-failed' || result.reason === 'autosave-failed') {
           catalogAutoBlockedKey = attemptKey;
         }
         return result;
