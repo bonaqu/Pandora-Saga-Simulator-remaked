@@ -36,18 +36,18 @@
     var stat = Number(effect.stat);
     if (!window.EquipOpt[stat]) window.EquipOpt[stat] = [];
     window.EquipOpt[stat].push(String(Number(effect.value)) + (effect.percent ? '%' : ''));
-    touched.add(stat);
+    touched[stat] = true;
     return true;
   }
   function pushMapped(effect, touched) {
     if (effect && effect.func === 'EP_PROTECTION_TUMBLE') {
-      window.EquipOpt[151].push('255'); touched.add(151); return true;
+      window.EquipOpt[151].push('255'); touched[151] = true; return true;
     }
     var mapped = mappedEffect(effect);
     if (!mapped) return false;
     if (!window.EquipOpt[mapped.stat]) window.EquipOpt[mapped.stat] = [];
     window.EquipOpt[mapped.stat].push(String(mapped.value) + (mapped.percent ? '%' : ''));
-    touched.add(mapped.stat);
+    touched[mapped.stat] = true;
     return true;
   }
   function applyBaseSupplement(touched) {
@@ -83,12 +83,16 @@
     });
   }
   function applyUnison(touched) {
-    var equipped = new Set(window.Status.Equip.map(function (state) { return Number(state[0]); }).filter(Boolean));
+    var equipped = Object.create(null);
+    window.Status.Equip.forEach(function (state) {
+      var engineId = Number(state[0]);
+      if (engineId) equipped[engineId] = true;
+    });
     window.Status.Equip.forEach(function (state) {
       var root = UNISON[String(Number(state[0]))];
       if (!root) return;
       var plus = Math.max(0, Math.min(10, Number(state[3]) || 0));
-      var count = root.members.reduce(function (total, engineId) { return total + (equipped.has(Number(engineId)) ? 1 : 0); }, 0);
+      var count = root.members.reduce(function (total, engineId) { return total + (equipped[Number(engineId)] ? 1 : 0); }, 0);
       root.rows.forEach(function (row) {
         if (count < Number(row.minC) || count > Number(row.maxC) || plus < Number(row.minL) || plus > Number(row.maxL)) return;
         var effect = {
@@ -101,7 +105,7 @@
     });
   }
   function recalculate(touched) {
-    if (!touched.size) return;
+    if (!Object.keys(touched).length) return;
     // Attribute changes can fan out into accuracy, critical, speed, HP/MP etc.
     // Re-run the retained calculators in their canonical option order without
     // invoking EquipCheck again (which would duplicate the injected effects).
@@ -113,7 +117,7 @@
     for (var index = 0; index < window.Name.Option.length; index++) window.Calc(window.Name.Option[index][2]);
   }
   function apply() {
-    var touched = new Set();
+    var touched = Object.create(null);
     if (!namespace.catalog || Number(namespace.catalog.getRevision()) < MIN_CATALOG_REVISION) return touched;
     applyBaseSupplement(touched);
     applyItemForth(touched);
