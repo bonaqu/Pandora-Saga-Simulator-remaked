@@ -223,12 +223,10 @@ test('catalog adoption is explicit, retains C1 and named pins, and reloads the a
   expect(await page.evaluate(() => Status.LP)).toBe(before.lp + 100);
 });
 
-for (const conflict of ['missing item', 'fewer sockets', 'Soul slot', 'class compatibility']) {
-  test('incompatible adoption keeps every character/storage value: ' + conflict, async ({ page }) => {
+for (const conflict of ['missing item', 'class compatibility']) {
+  test('blocking catalog conflict keeps every character/storage value: ' + conflict, async ({ page }) => {
     const original = socketItems(), next = structuredClone(original); next.revision = 2; next.impactRevision = 2;
     if (conflict === 'missing item') next.records = [];
-    if (conflict === 'fewer sockets') next.records[0].sockets = 0;
-    if (conflict === 'Soul slot') next.records[1].compatibility = [0, 0, 0, 1, 0, 0, 0, 0];
     // Source row has two leading equipment flags, six race flags, then jobs.
     if (conflict === 'class compatibility') next.records[0].compatibility[8] = 0;
     await page.route(publicApi + '**', route => route.fulfill({ json: next })); await openManager(page);
@@ -238,6 +236,34 @@ for (const conflict of ['missing item', 'fewer sockets', 'Soul slot', 'class com
     }, original);
     const before = await state(page); await runUpdate(page); await expect(status(page)).toContainText('incompatible');
     expect(await state(page)).toEqual(before);
+  });
+}
+
+for (const conflict of ['fewer sockets', 'Soul slot']) {
+  test('repairable Soul conflict creates a backup and adopts the latest catalog: ' + conflict, async ({ page }) => {
+    const original = socketItems(), next = structuredClone(original); next.revision = 2; next.impactRevision = 2;
+    if (conflict === 'fewer sockets') next.records[0].sockets = 0;
+    if (conflict === 'Soul slot') next.records[1].compatibility = [0, 0, 0, 1, 0, 0, 0, 0];
+    await page.route(publicApi + '**', route => route.fulfill({ json: next })); await openManager(page);
+    await page.evaluate(data => {
+      PandoraRemaked.catalog.applySnapshot(data); PandoraRemaked.adapter.selectEquipment(0, data.records[0].engineId);
+      PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 4 }, 185); PandoraRemaked.builds.flushAutosave();
+    }, original);
+    const before = await page.evaluate(() => ({
+      payload: PandoraRemaked.adapter.serialize(),
+      soul: Status.Equip[0][4]
+    }));
+    expect(before.soul).toBe(185);
+
+    const result = await runUpdate(page);
+    expect(result.ok).toBe(true);
+    expect(result.repaired).toBe(1);
+    expect(await page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(2);
+    expect(await page.evaluate(() => Status.Equip[0][4])).toBe(0);
+    expect(await page.evaluate(() => PandoraRemaked.buildStore.readAutosave().record.payload)).toMatch(/^PS3:2:/);
+    const backups = await page.evaluate(payload =>
+      PandoraRemaked.buildStore.listBuilds().builds.filter(build => build.payload === payload), before.payload);
+    expect(backups).toHaveLength(1);
   });
 }
 
