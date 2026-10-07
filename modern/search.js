@@ -24,6 +24,15 @@
     return String(value == null ? '' : value).normalize('NFKC').trim().toLowerCase();
   }
 
+  function normalizeUntranslatedItemName(value) {
+    var text = String(value == null ? '' : value).trim();
+    if (!text || text.charAt(0) !== '(') return text;
+    while (text.length > 2 && text.charAt(0) === '(' && text.charAt(text.length - 1) === ')') text = text.slice(1, -1).trim();
+    if (text.charAt(0) === '(' && !/[()]/.test(text.slice(1))) text = text.slice(1).trim();
+    if (text.charAt(text.length - 1) === ')' && !/[()]/.test(text.slice(0, -1))) text = text.slice(0, -1).trim();
+    return text;
+  }
+
   function parseOptionalLevel(value) {
     var text = String(value == null ? '' : value).trim();
     if (!text) return null;
@@ -32,7 +41,8 @@
   }
 
   function gameName(identifier, fallback) {
-    return i18n && typeof i18n.game === 'function' ? i18n.game(identifier, fallback) : fallback;
+    var displayFallback = normalizeUntranslatedItemName(fallback);
+    return i18n && typeof i18n.game === 'function' ? i18n.game(identifier, displayFallback) : displayFallback;
   }
 
   function equipmentTermId(value) {

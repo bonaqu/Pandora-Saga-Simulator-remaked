@@ -102,6 +102,7 @@ test('RU covers Modern surfaces and approved race names while unapproved classes
 test('approved workbook game terms appear in Modern search without changing Legacy data', async ({ page }) => {
   const before = await page.evaluate(() => ({ payload: window.Store(), language: window.Flag[0] }));
   const sourceName = await page.evaluate(() => window.PandoraRemaked.adapter.listEquipmentOptions(0).find(option => option.value === '1').name);
+  const displayName = sourceName.replace(/^\(+/, '').replace(/\)+$/, '');
   await page.evaluate(() => {
     window.PandoraRemakedGameTerms.ru['equipment.0.1'] = 'Проверочный меч';
   });
@@ -116,7 +117,7 @@ test('approved workbook game terms appear in Modern search without changing Lega
   await expect(page.locator('[data-remaked-search-result]')).toHaveAttribute('data-value', '1');
   await page.locator('[data-remaked-search-query]').fill('');
   await page.evaluate(() => window.PandoraRemaked.i18n.setLocale('en'));
-  await expect(page.locator('[data-remaked-search-result][data-value="1"] .remaked-search-result-name')).toHaveText(sourceName);
+  await expect(page.locator('[data-remaked-search-result][data-value="1"] .remaked-search-result-name')).toHaveText(displayName);
   const after = await page.evaluate(() => ({ payload: window.Store(), language: window.Flag[0] }));
   expect(after).toEqual(before);
 });
