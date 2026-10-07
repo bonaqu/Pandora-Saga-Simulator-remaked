@@ -2,10 +2,10 @@ name: Cloudflare Admin API
 
 on:
   pull_request:
-    paths: ['admin-api/**', 'tests/admin/**', 'data/generated/**', 'data/native-passive-hooks.v1.json', 'data/current-active-profiles.v1.json', 'localization/game-terms.ru.json', 'scripts/create_first_admin.mjs', 'scripts/materialize_pandora_os_sync.mjs', 'scripts/materialize_pandora_os_live_sync.mjs', 'scripts/materialize_pandora_os_live_sync_hardening.mjs', 'scripts/materialize_pandora_os_complete_sync.mjs', 'scripts/lib/wrangler-json.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
+    paths: ['admin-api/**', 'tests/admin/**', 'data/generated/**', 'data/native-passive-hooks.v1.json', 'data/current-active-profiles.v1.json', 'localization/game-terms.ru.json', 'scripts/create_first_admin.mjs', 'scripts/materialize_pandora_os_sync.mjs', 'scripts/materialize_pandora_os_live_sync.mjs', 'scripts/materialize_pandora_os_live_sync_hardening.mjs', 'scripts/materialize_pandora_os_complete_sync.mjs', 'scripts/materialize_pandora_os_complete_sync_polish.mjs', 'scripts/lib/wrangler-json.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
   push:
     branches: [bonaqu_projects]
-    paths: ['admin-api/**', 'tests/admin/**', 'data/generated/**', 'data/native-passive-hooks.v1.json', 'data/current-active-profiles.v1.json', 'localization/game-terms.ru.json', 'scripts/create_first_admin.mjs', 'scripts/materialize_pandora_os_sync.mjs', 'scripts/materialize_pandora_os_live_sync.mjs', 'scripts/materialize_pandora_os_live_sync_hardening.mjs', 'scripts/materialize_pandora_os_complete_sync.mjs', 'scripts/lib/wrangler-json.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
+    paths: ['admin-api/**', 'tests/admin/**', 'data/generated/**', 'data/native-passive-hooks.v1.json', 'data/current-active-profiles.v1.json', 'localization/game-terms.ru.json', 'scripts/create_first_admin.mjs', 'scripts/materialize_pandora_os_sync.mjs', 'scripts/materialize_pandora_os_live_sync.mjs', 'scripts/materialize_pandora_os_live_sync_hardening.mjs', 'scripts/materialize_pandora_os_complete_sync.mjs', 'scripts/materialize_pandora_os_complete_sync_polish.mjs', 'scripts/lib/wrangler-json.mjs', 'package.json', 'package-lock.json', '.github/workflows/admin-api.yml']
   workflow_dispatch:
 
 permissions:
@@ -59,3 +59,26 @@ jobs:
       - name: Verify deployed health route
         run: |
           node --input-type=module -e 'const r = await fetch("https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/health"); const j = await r.json(); if (!r.ok || j.ok !== true || j.service !== "pandora-admin-api") throw new Error("Worker health failed"); console.log("Worker health passed");'
+      - name: Verify deployed catalog revision and Astir localization
+        run: |
+          node --input-type=module <<'NODE'
+          const base = "https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev";
+          const headResponse = await fetch(base + "/api/catalog/head");
+          const head = await headResponse.json();
+          if (!headResponse.ok || head.ok !== true || head.revision < 85 || head.impactRevision < 84)
+            throw new Error("Unexpected deployed catalog head: " + JSON.stringify(head));
+          const catalogResponse = await fetch(base + "/api/catalog");
+          const catalog = await catalogResponse.json();
+          if (!catalogResponse.ok || catalog.ok !== true || catalog.revision !== head.revision || !Array.isArray(catalog.records))
+            throw new Error("Unexpected deployed catalog payload");
+          const astir = catalog.records.filter(record => /astir|астир/i.test([
+            record?.names?.en, record?.names?.ru, record?.description?.en, record?.description?.ru
+          ].filter(Boolean).join(" ")));
+          const scarlet = catalog.records.find(record =>
+            record?.names?.en === "Astian Scarlet Coat" && record?.names?.ru === "Алая астирская куртка");
+          const unavailableAstir = catalog.records.find(record =>
+            record?.names?.en === "Adept Glasses" && record?.names?.ru === "Очки");
+          if (astir.length < 58 || !scarlet || !unavailableAstir)
+            throw new Error("Astir localization/catalog verification failed: " + JSON.stringify({ count: astir.length, scarlet: !!scarlet, unavailableAstir: !!unavailableAstir }));
+          console.log(JSON.stringify({ revision: head.revision, impactRevision: head.impactRevision, records: catalog.records.length, astirRecords: astir.length }));
+          NODE
