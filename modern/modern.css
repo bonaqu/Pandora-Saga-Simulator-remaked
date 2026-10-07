@@ -2090,14 +2090,17 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
 
 /* Russian effect-tab labels are intentionally descriptive; keep both tabs on
    one line without widening the calculator or affecting other locales. */
+.remaked-modern #body [data-remaked-effect-tabs] li,
 .remaked-modern #body [data-remaked-effect-tabs] .remaked-calculator-action {
   min-width: 0;
+}
+.remaked-modern #body [data-remaked-effect-tabs] .remaked-calculator-action {
   white-space: nowrap;
 }
 html[lang="ru"] body.remaked-modern #body [data-remaked-effect-tabs] .remaked-calculator-action {
-  padding-inline: 3px;
-  font-size: 11px;
-  letter-spacing: -0.01em;
+  padding-inline: 2px;
+  font-size: 9.5px;
+  letter-spacing: -0.02em;
 }
 
 /* Russian skill headings are longer than the compact numeric controls. Keep
