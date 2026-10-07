@@ -3,6 +3,15 @@
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
   var timer = null;
 
+  function normalizeUntranslatedItemName(value) {
+    var text = String(value == null ? '' : value).trim();
+    if (!text || text.charAt(0) !== '(') return text;
+    while (text.length > 2 && text.charAt(0) === '(' && text.charAt(text.length - 1) === ')') text = text.slice(1, -1).trim();
+    if (text.charAt(0) === '(' && !/[()]/.test(text.slice(1))) text = text.slice(1).trim();
+    if (text.charAt(text.length - 1) === ')' && !/[()]/.test(text.slice(0, -1))) text = text.slice(0, -1).trim();
+    return text;
+  }
+
   function localizedResetLabel() {
     var locale = namespace.i18n && typeof namespace.i18n.getLocale === 'function'
       ? namespace.i18n.getLocale()
@@ -62,7 +71,7 @@
       var option = select.options[select.selectedIndex];
       // Native category placeholders start with +-----. Retain the exact source
       // option/value for the engine; display only its meaningful category name.
-      var text = option ? option.textContent.trim().replace(/^\+-----\s*/, '') : '—';
+      var text = option ? normalizeUntranslatedItemName(option.textContent.trim().replace(/^\+-----\s*/, '')) : '—';
       if (button.textContent !== text) button.textContent = text;
       var label = labels[Number(match[1])] || '';
       var soulLabel = namespace.i18n && typeof namespace.i18n.game === 'function' ? namespace.i18n.game('soul.0', 'Soul') : 'Soul';
