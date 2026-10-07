@@ -28,7 +28,8 @@
 
 ### Project and delivery details
 
-- Catalog revision/impact revision **84** completes the Modern item/Soul synchronization while preserving revision 83 as a historical snapshot.
+- Catalog revision **85** / impact revision **84** completes the Modern item/Soul synchronization while preserving earlier revisions as historical snapshots.
+- The final revision removes an inferred display-only modifier from 14 newly added Souls; no mechanics, calculations or saved-build impact changed.
 - 368 mapped identities are merge-patched in place and 231 missing identities receive collision-safe Modern allocations without reinterpreting any existing Legacy item index.
 - Allocation indexes are chosen against the current catalog sequence/allocation state at migration time, so later manual Admin additions remain collision-safe.
 - All 488 equippable records and all 111 Souls are covered by regression tests, including unavailable/decorative equipment and 58 Astir-related equippable records.
