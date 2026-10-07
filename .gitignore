@@ -24,3 +24,4 @@ Thumbs.db
 
 # Deterministically materialized from the checksum-verified Pandora Saga OS release payload.
 admin-api/migrations/0005_pandora_os_item_sync.sql
+admin-api/migrations/0006_pandora_os_live_item_sync.sql
