@@ -3,6 +3,439 @@ import { compileRecord, draftFromSource, validateDraft } from '../../admin-api/s
 import equipment from '../../data/generated/equipment.v1.json' with { type: 'json' };
 import character from '../../data/generated/character.v1.json' with { type: 'json' };
 
+const DIVINE_SET_RECORDS = [
+  {
+    "id": "equipment.30.70",
+    "kind": "equipment",
+    "category": 30,
+    "index": 70,
+    "engineId": 300070,
+    "engineKey": "ディバインハット",
+    "names": {
+      "en": "Divine Hat",
+      "ru": "Божественный шлем",
+      "jp": "ディバインハット",
+      "tw": "(神帽)"
+    },
+    "description": {
+      "en": "A headpiece upon which a blessing has been placed. It boasts excellent defense and can block enemy magic attacks.DEX +1Charm Resistance +6Per every 3 enhancement levels:Skill Casting Speed +3%Accuracy +5",
+      "ru": "Головной убор, на который наложено благословение. Обладает отличной защитой и может блокировать магические атаки врагов.ЛВК +1Сопротивляемость чарам +6За каждые 3 единицы улучшения:Скорость применения умений +3%Точность +5",
+      "jp": "器用+1、魅了耐性+6%",
+      "tw": "技巧+1¸ 魅惑抗性+6%"
+    },
+    "notes": {
+      "en": "The value of each discipline +3¸ Accuracy +5¸ +3% casting speed",
+      "ru": "",
+      "jp": "鍛錬値+3毎に、命中+5、詠唱速度+3%",
+      "tw": "每個學科的值+3¸準確 +5¸+3％施法速度"
+    },
+    "acquisition": {
+      "en": "",
+      "ru": "",
+      "jp": "",
+      "tw": ""
+    },
+    "modifiers": {
+      "en": "",
+      "ru": "",
+      "jp": "",
+      "tw": ""
+    },
+    "level": 40,
+    "sockets": 0,
+    "disabled": false,
+    "calculationCode": "3=1_49=8_142=6",
+    "compatibility": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "parameter6": 0,
+    "soulParameters": [
+      "",
+      ""
+    ],
+    "trailing": ""
+  },
+  {
+    "id": "equipment.31.66",
+    "kind": "equipment",
+    "category": 31,
+    "index": 66,
+    "engineId": 310066,
+    "engineKey": "ディバインキュイラス",
+    "names": {
+      "en": "Divine Cuirass",
+      "ru": "Божественная кираса",
+      "jp": "ディバインキュイラス",
+      "tw": "(神Kyuirasu)"
+    },
+    "description": {
+      "en": "A consecrated cuirass. It excels at protecting against damage and can neutralize magical attacks.HP +100Charm Resistance +6%When enhanced to +5 or higher, grants the following bonuses for each level of enhancement: MP +40, Defense +4, and Cast Interruption Resistance +4%. When used together with the Divine Helm, Divine Bracers, Divine Greaves, and Divine Boots, the following effects are activated:MP +200Cast Interruption Resistance +12%Skill Cooldown -8%",
+      "ru": "Освященная кираса. Отлично защищает от урона и способна нейтрализовать магические атаки.ОЗ +100Сопротивляемость чарам +6%При усовершенствовании до +5 и выше даёт следующие бонусы за каждую единицу усовершенствования: ОМ +40, защита +4 и сопротивляемость прерыванию чтения заклинаний +4%. При использовании с Божественным шлемом, Божественными нарукавниками, Божественными поножами и Божественными сапогами включаются следующие эффекты:ОМ +200Сопротивляемость прерыванию чтения заклинаний +12%Время перезарядки умений -8%",
+      "jp": "LP+100、魅了耐性+6%",
+      "tw": "LP+100¸ 魅惑抗性+6%"
+    },
+    "notes": {
+      "en": "",
+      "ru": "",
+      "jp": "",
+      "tw": ""
+    },
+    "acquisition": {
+      "en": "",
+      "ru": "",
+      "jp": "",
+      "tw": ""
+    },
+    "modifiers": {
+      "en": "",
+      "ru": "",
+      "jp": "",
+      "tw": ""
+    },
+    "level": 40,
+    "sockets": 1,
+    "disabled": false,
+    "calculationCode": "6=100_49=16_142=6",
+    "compatibility": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "parameter6": 0,
+    "soulParameters": [
+      "",
+      ""
+    ],
+    "trailing": ""
+  },
+  {
+    "id": "modern.equipment.10fa6b94-3b5c-4b66-a623-0a4a45bd2ce4",
+    "kind": "equipment",
+    "category": 32,
+    "index": 106,
+    "engineId": 320106,
+    "engineKey": "Modern:modern.equipment.10fa6b94-3b5c-4b66-a623-0a4a45bd2ce4",
+    "names": {
+      "en": "Divine Bracers",
+      "ru": "Божественные нарукавники",
+      "jp": "",
+      "tw": ""
+    },
+    "description": {
+      "en": "Consecrated bracers with a high level of defense, allowing them to reduce the physical damage dealt to their wearer.Casting Interruption Resistance +3%Physical Damage Taken -2% and Healing Spell Effectiveness +2% per 3 levels of enhancementWhen used with the Sentinel Shield, the following effects are activated:Sta +2Attack +15% when attacking from behind.",
+      "ru": "Освященные браслеты, обладающие высоким уровнем защиты, что позволяет им уменьшать физический урон, наносимый их владельцу.Сопротивляемость прерыванию чтения заклинаний +3%Снижение получаемого физического урона +2% и эффективность лечащих заклинаний +2% за каждые 3 единицы усовершенствованияПри использовании со щитом часового активируются следующие эффекты:ВЫН +2Атака +15% при атаке со спины.",
+      "jp": "",
+      "tw": ""
+    },
+    "notes": {
+      "en": "",
+      "ru": "",
+      "jp": "",
+      "tw": ""
+    },
+    "acquisition": {
+      "en": "",
+      "ru": "",
+      "jp": "",
+      "tw": ""
+    },
+    "modifiers": {
+      "en": "",
+      "ru": "",
+      "jp": "",
+      "tw": ""
+    },
+    "level": 40,
+    "sockets": 0,
+    "disabled": false,
+    "calculationCode": "49=7_134=3",
+    "compatibility": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "parameter6": "",
+    "soulParameters": [
+      "",
+      ""
+    ],
+    "trailing": ""
+  },
+  {
+    "id": "modern.equipment.3a3f900f-7e50-46a9-a6de-6a79ce236977",
+    "kind": "equipment",
+    "category": 33,
+    "index": 99,
+    "engineId": 330099,
+    "engineKey": "Modern:modern.equipment.3a3f900f-7e50-46a9-a6de-6a79ce236977",
+    "names": {
+      "en": "Divine Aloub",
+      "ru": "Божественные поножи",
+      "jp": "",
+      "tw": ""
+    },
+    "description": {
+      "en": "Consecrated leggings. They possess excellent defensive properties and can block ordinary attacks.STA +1, INT +1Per every 3 enhancement levels:MP Cost Reduction +2%Magic Resistance +5",
+      "ru": "Освященные поножи. Обладают отличными защитными свойствами и могут блокировать обычные атаки.ВЫН +1, ИНТ +1За каждые 3 единицы улучшения:Снижение расхода ОМ +2%Сопротивляемость магии +5",
+      "jp": "",
+      "tw": ""
+    },
+    "notes": {
+      "en": "",
+      "ru": "",
+      "jp": "",
+      "tw": ""
+    },
+    "acquisition": {
+      "en": "",
+      "ru": "",
+      "jp": "",
+      "tw": ""
+    },
+    "modifiers": {
+      "en": "",
+      "ru": "",
+      "jp": "",
+      "tw": ""
+    },
+    "level": 40,
+    "sockets": 1,
+    "disabled": false,
+    "calculationCode": "0=1_5=1_49=15",
+    "compatibility": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "parameter6": "",
+    "soulParameters": [
+      "",
+      ""
+    ],
+    "trailing": ""
+  },
+  {
+    "id": "equipment.34.72",
+    "kind": "equipment",
+    "category": 34,
+    "index": 72,
+    "engineId": 340072,
+    "engineKey": "ディバインブーツ",
+    "names": {
+      "en": "Divine Boots",
+      "ru": "Божественные сапоги",
+      "jp": "ディバインブーツ",
+      "tw": "(神靴)"
+    },
+    "description": {
+      "en": "Exceptionally durable boots that protect the owner from damage superbly.Spi +1Healing Item Effect +1%Spi +1, Healing Spell Effect +2%, and MP Recovery Rate +3% per 3 levels of enhancement",
+      "ru": "Прочнейшие башмаки, которые отлично защищают владельца от уронаСД +1Эффект от лечащих предметов +1%СД +1, эффект от лечащих заклинаний +2% и скорость восстановления ОМ +3% за каждые 3 единицы усовершенствования",
+      "jp": "霊感+1、LP回復スキルの効果量+1%",
+      "tw": "靈感+1¸ HP恢復技能的效果+1%"
+    },
+    "notes": {
+      "en": "The value of each discipline +3 +1 Inspiration¸ recovery skill effect size 2% LP¸ +3% MP recovery rate",
+      "ru": "",
+      "jp": "鍛錬値+3毎に、霊感+1、LP回復スキルの効果量+2%、MP回復速度+3%",
+      "tw": "每個學科的值+3 +1啟示¸恢復技能效果大小為 2％LP¸MP恢復速度+3％"
+    },
+    "acquisition": {
+      "en": "",
+      "ru": "",
+      "jp": "",
+      "tw": ""
+    },
+    "modifiers": {
+      "en": "",
+      "ru": "",
+      "jp": "",
+      "tw": ""
+    },
+    "level": 40,
+    "sockets": 0,
+    "disabled": false,
+    "calculationCode": "4=1_11=1_49=7",
+    "compatibility": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "parameter6": 0,
+    "soulParameters": [
+      "",
+      ""
+    ],
+    "trailing": ""
+  }
+];
+
 function publication(records) {
   return {
     ok: true,
@@ -123,13 +556,7 @@ test('retained native enhancement-ranged Souls use the host item level exactly o
 });
 
 test('server unison set effects work even when members use Modern-only identities', async ({ page }) => {
-  const records = [
-    customEquipment(30, 70, 'Divine Hat'),
-    customEquipment(31, 66, 'Divine Cuirass'),
-    customEquipment(32, 106, 'Divine Bracers'),
-    customEquipment(33, 99, 'Divine Aloub'),
-    customEquipment(34, 72, 'Divine Boots')
-  ];
+  const records = DIVINE_SET_RECORDS;
   const ids = Object.fromEntries(records.map(r => [r.category, r.engineId]));
 
   await page.goto('/');
