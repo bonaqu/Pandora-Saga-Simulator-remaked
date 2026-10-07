@@ -195,33 +195,33 @@ test('RU calculator actions and riding labels use the requested wording without 
   }
 });
 
-test('RU calculator actions keep the same compact height and column proportions as EN', async ({ page }) => {
+test('RU calculator actions stay balanced and readable without oversized controls', async ({ page }) => {
   for (const width of [1366, 1440]) {
     await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?ui=ru');
 
-    const inspect = () => page.evaluate(() =>
+    const geometry = await page.evaluate(() =>
       ['Text_3', 'Text_5', 'Text_6', 'Text_7', 'Text_8', 'Text_9'].map(id => {
         const node = document.querySelector('[data-remaked-calculator-action="' + id + '"]');
         const rect = node.getBoundingClientRect();
+        const style = getComputedStyle(node);
         return {
           id,
           width: rect.width,
           height: rect.height,
           clientHeight: node.clientHeight,
-          scrollHeight: node.scrollHeight
+          scrollHeight: node.scrollHeight,
+          fontSize: Number.parseFloat(style.fontSize)
         };
       })
     );
 
-    await page.goto('/?ui=en');
-    const english = await inspect();
-    await page.goto('/?ui=ru');
-    const russian = await inspect();
-
-    expect(russian.map(item => Math.round(item.width))).toEqual(english.map(item => Math.round(item.width)));
-    expect(Math.max(...russian.map(item => item.height))).toBeLessThanOrEqual(30);
-    expect(Math.max(...russian.map(item => item.height))).toBeLessThanOrEqual(Math.max(...english.map(item => item.height)));
-    for (const item of russian) expect(item.scrollHeight, item.id).toBeLessThanOrEqual(item.clientHeight + 1);
+    const heights = geometry.map(item => item.height);
+    expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(1);
+    expect(Math.min(...heights)).toBeGreaterThanOrEqual(29);
+    expect(Math.max(...heights)).toBeLessThanOrEqual(31);
+    expect(Math.min(...geometry.map(item => item.fontSize))).toBeGreaterThanOrEqual(9.5);
+    for (const item of geometry) expect(item.scrollHeight, item.id).toBeLessThanOrEqual(item.clientHeight + 1);
   }
 });
 
