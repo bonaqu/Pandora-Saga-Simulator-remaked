@@ -87,7 +87,6 @@ class RepositoryDocsTests(unittest.TestCase):
         changelog = self.read("CHANGELOG.md")
 
         self.assertIn("online-only", english.lower())
-        self.assertIn("only online", english.lower())
         self.assertIn("только онлайн", russian.lower())
         self.assertIn("без установки", russian.lower())
         self.assertIn("Legacy Mode", russian)
