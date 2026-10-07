@@ -8,7 +8,7 @@
   var languages = ['jp', 'en', 'tw'];
   // Typed option IDs/units are a data protocol, not copied game formulas.
   var effectIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 16, 18, 20, 42, 49, 50, 51, 52, 60, 62, 65, 69, 70, 71, 72, 73, 74, 76, 77, 79, 133, 134, 135, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162];
-  var percentEffectIds = [6, 7, 18, 49, 52, 62, 65];
+  var percentEffectIds = [6, 7, 18, 49, 52, 60, 62, 65];
   effectIds.push(21, 81);
   var baselineEquipment, baselineSouls, baselineClassMods, baselineSkills, revision = 0, recordsByTerm = Object.create(null);
   var passiveRecords = [], variantRecords = [], learningRecords = [], customLearningStates = Object.create(null);
