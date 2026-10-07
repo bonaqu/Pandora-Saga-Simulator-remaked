@@ -254,6 +254,10 @@ export function buildReleaseRows(inputs = loadInputs()) {
     const source = baselineById.get(match.projectId);
     invariant(server && sourceKind(source) === 'equipment', 'Invalid equipment mapping: ' + JSON.stringify(match));
     invariant(server.slot && server.slot !== 'arrow', 'Resource/arrow must not enter equipment sync: ' + match.serverId);
+    // Calculator/Wiki data contains historical rows flagged unavailable. They
+    // stay frozen in the audit snapshots but must not override the current
+    // playable catalog until the server exposes them as obtainable.
+    if (server.unobtainable || server.npcOnly || String(server.kind || '').startsWith('DECO_')) continue;
     invariant(serverCategory(server) === source.legacy_category_id,
       'Server/project equipment category mismatch for ' + match.projectId);
     addPatch(rows, source, 'equipment', serverPatch('equipment', server, inputs.english.items?.[String(match.serverId)] || inputs.english.items?.[match.serverId]),
