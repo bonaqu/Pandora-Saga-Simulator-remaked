@@ -21,6 +21,14 @@
   var databasePromise;
   function check(condition, message) { if (!condition) throw new Error(message); }
   function escaped(value) { return String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+  function normalizeUntranslatedItemName(value) {
+    var text = String(value == null ? '' : value).trim();
+    if (!text || text.charAt(0) !== '(') return text;
+    while (text.length > 2 && text.charAt(0) === '(' && text.charAt(text.length - 1) === ')') text = text.slice(1, -1).trim();
+    if (text.charAt(0) === '(' && !/[()]/.test(text.slice(1))) text = text.slice(1).trim();
+    if (text.charAt(text.length - 1) === ')' && !/[()]/.test(text.slice(0, -1))) text = text.slice(0, -1).trim();
+    return text;
+  }
   function cloneEquipment(source) {
     var result = [];
     for (var language = 0; language < 3; language++) {
@@ -35,6 +43,17 @@
     if (baselineEquipment) return;
     check(window.EquipData && window.SoulData, 'Legacy catalog not initialized');
     baselineEquipment = cloneEquipment(window.EquipData); baselineSouls = cloneSouls(window.SoulData);
+    // Legacy EN used outer parentheses as an untranslated-name marker. Keep
+    // the identity/index untouched, but remove that presentation marker from
+    // the effective Modern catalog.
+    for (var category = 0; category < baselineEquipment[1].length; category++) {
+      for (var itemIndex = 1; itemIndex < baselineEquipment[1][category].length; itemIndex++) {
+        if (baselineEquipment[1][category][itemIndex]) baselineEquipment[1][category][itemIndex][0] = normalizeUntranslatedItemName(baselineEquipment[1][category][itemIndex][0]);
+      }
+    }
+    for (var soulIndex = 1; soulIndex < baselineSouls[1].length; soulIndex++) {
+      if (baselineSouls[1][soulIndex]) baselineSouls[1][soulIndex][0] = normalizeUntranslatedItemName(baselineSouls[1][soulIndex][0]);
+    }
     baselineClassMods = window.Status.Mod.map(function (row) { return row.slice(); });
     baselineSkills = cloneSkills(window.Skill.slice(0, 3));
   }
