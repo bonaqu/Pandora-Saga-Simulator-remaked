@@ -22,6 +22,9 @@ jobs:
       docs_only: ${{ steps.changes.outputs.docs_only }}
       css_only: ${{ steps.changes.outputs.css_only }}
       full_required: ${{ steps.changes.outputs.full_required }}
+      ci_profile: ${{ steps.changes.outputs.ci_profile }}
+      translation_only: ${{ steps.changes.outputs.translation_only }}
+      catalog_data: ${{ steps.changes.outputs.catalog_data }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -43,10 +46,18 @@ jobs:
           mapfile -t files < <(git diff --name-only "$base"...HEAD)
           policy_json="$(printf '%s\n' "${files[@]}" | python3 scripts/deploy_change_policy.py --stdin)"
           policy_mode="$(jq -r '.mode' <<<"$policy_json")"
+          policy_profile="$(jq -r '.ci_profile' <<<"$policy_json")"
           docs_only=false
           if [[ "$policy_mode" == "docs-only" || "$policy_mode" == "release-notes" ]]; then
             docs_only=true
           fi
+
+          translation_only=false
+          catalog_data=false
+          case "$policy_profile" in
+            translation) translation_only=true ;;
+            catalog) catalog_data=true ;;
+          esac
 
           css_only=true
           release_notes_required=false
@@ -81,23 +92,23 @@ jobs:
             exit 1
           fi
 
-          if [[ "$docs_only" == "true" || "$css_only" == "true" ]]; then
+          if [[ "$docs_only" == "true" || "$css_only" == "true" || "$translation_only" == "true" || "$catalog_data" == "true" ]]; then
             full_required=false
           else
             full_required=true
           fi
 
-          printf 'docs_only=%s\ncss_only=%s\nfull_required=%s\n' \
-            "$docs_only" "$css_only" "$full_required" >> "$GITHUB_OUTPUT"
+          printf 'docs_only=%s\ncss_only=%s\nfull_required=%s\nci_profile=%s\ntranslation_only=%s\ncatalog_data=%s\n' \
+            "$docs_only" "$css_only" "$full_required" "$policy_profile" "$translation_only" "$catalog_data" >> "$GITHUB_OUTPUT"
 
           printf 'Changed files (%d):\n' "${#files[@]}"
           printf ' - %s\n' "${files[@]}"
           echo "policy=$policy_json"
-          echo "docs_only=$docs_only css_only=$css_only full_required=$full_required release_notes_required=$release_notes_required changelog_changed=$changelog_changed"
+          echo "docs_only=$docs_only css_only=$css_only ci_profile=$policy_profile translation_only=$translation_only catalog_data=$catalog_data full_required=$full_required release_notes_required=$release_notes_required changelog_changed=$changelog_changed"
 
   browser_site:
     needs: classify
-    if: needs.classify.outputs.docs_only != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -173,7 +184,7 @@ jobs:
 
   workspace_visual:
     needs: classify
-    if: needs.classify.outputs.docs_only != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -225,7 +236,7 @@ jobs:
 
   browser_core:
     needs: classify
-    if: needs.classify.outputs.docs_only != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -269,7 +280,7 @@ jobs:
 
   catalog_audit:
     needs: classify
-    if: needs.classify.outputs.full_required == 'true'
+    if: needs.classify.outputs.full_required == 'true' || needs.classify.outputs.catalog_data == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -298,7 +309,7 @@ jobs:
 
   catalog_contract:
     needs: classify
-    if: needs.classify.outputs.full_required == 'true'
+    if: needs.classify.outputs.full_required == 'true' || needs.classify.outputs.catalog_data == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -327,6 +338,9 @@ jobs:
           tests/ui/catalog-adapter.spec.mjs
           tests/ui/catalog-adoption.spec.mjs
           tests/ui/equipment-enhancement-effects.spec.mjs
+          tests/ui/data-projections.spec.mjs
+          tests/ui/item-preview.spec.mjs
+          tests/ui/equipment-picker.spec.mjs
           tests/ui/build-load-races.spec.mjs
           tests/ui/skill-catalog.spec.mjs
           tests/ui/skill-variants.spec.mjs
@@ -337,6 +351,35 @@ jobs:
           tests/ui/admin-entry.spec.mjs
           --project=chromium
           --shard=${{ matrix.shard }}/2
+
+  data_integrity:
+    needs: classify
+    if: needs.classify.outputs.translation_only == 'true' || needs.classify.outputs.catalog_data == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Verify deterministic translation projection
+        run: npm run test:translations
+
+      - name: Verify deterministic catalog projections
+        if: needs.classify.outputs.catalog_data == 'true'
+        run: |
+          npm run test:data
+          npm run test:source-audit
 
   cross_browser:
     needs: classify
@@ -362,11 +405,20 @@ jobs:
       - name: Run chromium smoke tests
         run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=chromium-smoke
 
+      - name: Run focused localization contract
+        if: needs.classify.outputs.translation_only == 'true'
+        run: >
+          npx playwright test
+          tests/ui/localization.spec.mjs
+          tests/ui/game-term-display.spec.mjs
+          tests/ui/data-projections.spec.mjs
+          --project=chromium
+
   cross_browser_firefox:
     needs:
       - classify
       - browser_site
-    if: needs.classify.outputs.docs_only != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     container:
@@ -401,7 +453,7 @@ jobs:
     needs:
       - classify
       - browser_site
-    if: needs.classify.outputs.docs_only != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     container:
@@ -439,6 +491,7 @@ jobs:
       - browser_core
       - catalog_audit
       - catalog_contract
+      - data_integrity
       - cross_browser
       - cross_browser_firefox
       - cross_browser_webkit
@@ -453,12 +506,13 @@ jobs:
           CORE: ${{ needs.browser_core.result }}
           CATALOG_AUDIT: ${{ needs.catalog_audit.result }}
           CATALOG_CONTRACT: ${{ needs.catalog_contract.result }}
+          DATA_INTEGRITY: ${{ needs.data_integrity.result }}
           CROSS_BROWSER: ${{ needs.cross_browser.result }}
           CROSS_BROWSER_FIREFOX: ${{ needs.cross_browser_firefox.result }}
           CROSS_BROWSER_WEBKIT: ${{ needs.cross_browser_webkit.result }}
         run: |
           set -euo pipefail
-          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE" "$CATALOG_AUDIT" "$CATALOG_CONTRACT" "$CROSS_BROWSER" "$CROSS_BROWSER_FIREFOX" "$CROSS_BROWSER_WEBKIT"; do
+          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE" "$CATALOG_AUDIT" "$CATALOG_CONTRACT" "$DATA_INTEGRITY" "$CROSS_BROWSER" "$CROSS_BROWSER_FIREFOX" "$CROSS_BROWSER_WEBKIT"; do
             if [[ "$result" != "success" && "$result" != "skipped" ]]; then
               echo "A required CI partition ended as: $result"
               exit 1
