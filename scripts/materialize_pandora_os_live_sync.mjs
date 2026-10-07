@@ -157,6 +157,11 @@ function serverPatch(kind, server, english) {
       patch.effects = effects;
       if (serverCategory(server) <= 13 && patch.baseAttack === undefined)
         throw new Error('Mapped weapon lacks W: ' + server.id);
+    } else if (patch.baseAttack !== undefined) {
+      // Unknown proc mechanics must stay untouched, but W is still a safe
+      // dedicated weapon field. Patch mode replaces only the weapon token.
+      patch.effectMode = 'patch';
+      patch.effects = [];
     }
   } else {
     patch.slots = soulSlots(server);
