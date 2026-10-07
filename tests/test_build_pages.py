@@ -94,6 +94,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             (modern / "skill-tooltips.js").write_text("// skill tooltip surface", encoding="utf-8")
             (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
             (modern / "catalog.js").write_text("// versioned public catalog", encoding="utf-8")
+            (modern / "enhancement-effects.js").write_text("// server enhancement mechanics", encoding="utf-8")
             (modern / "admin-entry.js").write_text("// hidden entry", encoding="utf-8")
             (modern / "admin-entry.css").write_text("/* terminal */", encoding="utf-8")
             (modern / "build-store.js").write_text("// build store", encoding="utf-8")
