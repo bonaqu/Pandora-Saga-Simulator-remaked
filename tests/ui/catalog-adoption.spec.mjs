@@ -27,6 +27,19 @@ function socketItems(revision = 1) {
   });
   return publication(revision, records);
 }
+function addedEquipmentVariant(index) {
+  const id = { id: 'modern.equipment.adoption-extra', kind: 'equipment', category: 0, index };
+  const edit = draftFromSource(null, 'equipment');
+  Object.assign(edit, {
+    id: id.id,
+    category: id.category,
+    names: { en: 'Latest catalog variant', ru: 'Новый вариант каталога', jp: '', tw: '' },
+    sockets: 1,
+    baseAttack: 75,
+    effects: []
+  });
+  return compileRecord(validateDraft(edit, id), id, null);
+}
 async function state(page) {
   return page.evaluate(() => ({ payload: PandoraRemaked.adapter.serialize(), revision: PandoraRemaked.catalog.getRevision(),
     context: PandoraRemaked.catalog.captureContext(), summary: PandoraRemaked.adapter.readCalculatedSummary(),
@@ -63,6 +76,72 @@ test('live catalog head updates the current character and autosave without openi
   expect(await page.evaluate(() => Status.LP)).toBe(before.lp + 100);
   expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toMatch(/^PS3:2:/);
   expect(await page.evaluate(() => PandoraRemaked.buildStore.readAutosave().record.payload)).toMatch(/^PS3:2:/);
+});
+
+test('startup stale autosave is upgraded safely when the new catalog reduces Soul sockets', async ({ page }) => {
+  const oldCatalog = socketItems(1);
+  const nextCatalog = structuredClone(oldCatalog);
+  nextCatalog.revision = 2;
+  nextCatalog.impactRevision = 2;
+  nextCatalog.records[0].sockets = 1;
+  const extra = addedEquipmentVariant(nextCatalog.records[0].index + 1);
+  nextCatalog.records.push(extra);
+  let published = oldCatalog;
+
+  await page.route(publicApi + '**', route => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/head')) {
+      const { records, ...head } = published;
+      return route.fulfill({ json: head });
+    }
+    const requested = Number(url.searchParams.get('revision'));
+    if (requested === 1) return route.fulfill({ json: oldCatalog });
+    return route.fulfill({ json: published });
+  });
+
+  await page.goto('/');
+  const before = await page.evaluate(data => {
+    PandoraRemaked.catalog.applySnapshot(data);
+    PandoraRemaked.adapter.selectEquipment(0, data.records[0].engineId);
+    PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 4 }, data.records[1].engineId);
+    PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 5 }, data.records[1].engineId);
+    PandoraRemaked.builds.flushAutosave();
+    return {
+      payload: PandoraRemaked.adapter.serialize(),
+      souls: Status.Equip[0].slice(4, 7)
+    };
+  }, oldCatalog);
+  expect(Number(before.souls[0])).toBe(oldCatalog.records[1].engineId);
+  expect(Number(before.souls[1])).toBe(oldCatalog.records[1].engineId);
+
+  published = nextCatalog;
+  await page.reload();
+  await expect(page.locator('[data-remaked-autosave-status]')).toContainText('Restored autosave');
+  expect(await page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(1);
+  // The production site invokes this from startCatalogPolling(); test pages run
+  // on localhost, where polling is intentionally disabled.
+  const adopted = await page.evaluate(() => PandoraRemaked.builds.checkCatalogHead());
+  expect(adopted.ok).toBe(true);
+  expect(adopted.automatic).toBe(true);
+  expect(adopted.repaired).toBe(1);
+  expect(await page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(2);
+
+  const after = await page.evaluate(extraId => ({
+    payload: PandoraRemaked.adapter.serialize(),
+    autosave: PandoraRemaked.buildStore.readAutosave().record.payload,
+    souls: Status.Equip[0].slice(4, 7),
+    builds: PandoraRemaked.buildStore.listBuilds().builds,
+    hasNewVariant: PandoraRemaked.adapter.listEquipmentOptions(0).some(option => option.value === String(extraId))
+  }), extra.engineId);
+
+  expect(after.payload).toMatch(/^PS3:2:/);
+  expect(after.autosave).toBe(after.payload);
+  expect(Number(after.souls[0])).toBe(oldCatalog.records[1].engineId);
+  expect(Number(after.souls[1])).toBe(0);
+  expect(after.hasNewVariant).toBe(true);
+  const backups = after.builds.filter(build => build.payload === before.payload);
+  expect(backups).toHaveLength(1);
+  expect(backups[0].name).toMatch(/Backup|Автокопия|バックアップ|備份/);
 });
 
 test('older named builds are visibly marked and safely upgraded when loaded', async ({ page }) => {
@@ -121,6 +200,9 @@ test('name, description and translation-only publications never mark saved build
   await expect(row).not.toHaveAttribute('data-catalog-stale', 'true');
   await expect(row.locator('[data-remaked-build-stale]')).toHaveCount(0);
   await expect(page.locator('[data-remaked-catalog-revision]')).toContainText('version 2');
+  expect(await page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(2);
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toMatch(/^PS3:2:/);
+  expect(await page.evaluate(() => PandoraRemaked.buildStore.readAutosave().record.payload)).toMatch(/^PS3:2:/);
   expect(await page.evaluate(() => PandoraRemaked.builds.getLatestCatalogImpactRevision())).toBe(0);
 });
 
@@ -152,12 +234,10 @@ test('catalog adoption is explicit, retains C1 and named pins, and reloads the a
   expect(await page.evaluate(() => Status.LP)).toBe(before.lp + 100);
 });
 
-for (const conflict of ['missing item', 'fewer sockets', 'Soul slot', 'class compatibility']) {
-  test('incompatible adoption keeps every character/storage value: ' + conflict, async ({ page }) => {
+for (const conflict of ['missing item', 'class compatibility']) {
+  test('blocking catalog conflict keeps every character/storage value: ' + conflict, async ({ page }) => {
     const original = socketItems(), next = structuredClone(original); next.revision = 2; next.impactRevision = 2;
     if (conflict === 'missing item') next.records = [];
-    if (conflict === 'fewer sockets') next.records[0].sockets = 0;
-    if (conflict === 'Soul slot') next.records[1].compatibility = [0, 0, 0, 1, 0, 0, 0, 0];
     // Source row has two leading equipment flags, six race flags, then jobs.
     if (conflict === 'class compatibility') next.records[0].compatibility[8] = 0;
     await page.route(publicApi + '**', route => route.fulfill({ json: next })); await openManager(page);
@@ -169,6 +249,86 @@ for (const conflict of ['missing item', 'fewer sockets', 'Soul slot', 'class com
     expect(await state(page)).toEqual(before);
   });
 }
+
+for (const conflict of ['fewer sockets', 'Soul slot']) {
+  test('repairable Soul conflict creates a backup and adopts the latest catalog: ' + conflict, async ({ page }) => {
+    const original = socketItems(), next = structuredClone(original); next.revision = 2; next.impactRevision = 2;
+    if (conflict === 'fewer sockets') next.records[0].sockets = 0;
+    if (conflict === 'Soul slot') next.records[1].compatibility = [0, 0, 0, 1, 0, 0, 0, 0];
+    await page.route(publicApi + '**', route => route.fulfill({ json: next })); await openManager(page);
+    await page.evaluate(data => {
+      PandoraRemaked.catalog.applySnapshot(data); PandoraRemaked.adapter.selectEquipment(0, data.records[0].engineId);
+      PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 4 }, 185); PandoraRemaked.builds.flushAutosave();
+    }, original);
+    const before = await page.evaluate(() => ({
+      payload: PandoraRemaked.adapter.serialize(),
+      soul: Status.Equip[0][4]
+    }));
+    expect(Number(before.soul)).toBe(185);
+
+    const result = await runUpdate(page);
+    expect(result.ok).toBe(true);
+    expect(result.repaired).toBe(1);
+    expect(await page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(2);
+    expect(await page.evaluate(() => Number(Status.Equip[0][4]))).toBe(0);
+    expect(await page.evaluate(() => PandoraRemaked.buildStore.readAutosave().record.payload)).toMatch(/^PS3:2:/);
+    const backups = await page.evaluate(payload =>
+      PandoraRemaked.buildStore.listBuilds().builds.filter(build => build.payload === payload), before.payload);
+    expect(backups).toHaveLength(1);
+  });
+}
+
+test('automatic repair never mutates the build when its safety backup cannot be written', async ({ page }) => {
+  const original = socketItems(1), next = structuredClone(original);
+  next.revision = 2; next.impactRevision = 2; next.records[0].sockets = 0;
+  await page.route(publicApi + '**', route => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/head')) {
+      const { records, ...head } = next;
+      return route.fulfill({ json: head });
+    }
+    return route.fulfill({ json: next });
+  });
+  await openManager(page);
+  await page.evaluate(data => {
+    PandoraRemaked.catalog.applySnapshot(data);
+    PandoraRemaked.adapter.selectEquipment(0, data.records[0].engineId);
+    PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 4 }, data.records[1].engineId);
+    PandoraRemaked.builds.flushAutosave();
+    PandoraRemaked.buildStore.saveBuild = () => ({ ok: false, error: { code: 'quota-exceeded' } });
+  }, original);
+  const before = await state(page);
+  const result = await page.evaluate(() => PandoraRemaked.builds.checkCatalogHead());
+  expect(result.ok).toBe(false);
+  expect(result.reason).toBe('backup-failed');
+  expect(await state(page)).toEqual(before);
+  await expect(page.locator('[data-remaked-autosave-status]')).toContainText(/backup|резерв/i);
+});
+
+test('automatic blocking conflict stays visible instead of silently pinning an old catalog', async ({ page }) => {
+  const original = socketItems(1), next = structuredClone(original);
+  next.revision = 2; next.impactRevision = 2; next.records = [];
+  await page.route(publicApi + '**', route => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/head')) {
+      const { records, ...head } = next;
+      return route.fulfill({ json: head });
+    }
+    return route.fulfill({ json: next });
+  });
+  await openManager(page);
+  await page.evaluate(data => {
+    PandoraRemaked.catalog.applySnapshot(data);
+    PandoraRemaked.adapter.selectEquipment(0, data.records[0].engineId);
+    PandoraRemaked.builds.flushAutosave();
+  }, original);
+  const before = await state(page);
+  const result = await page.evaluate(() => PandoraRemaked.builds.checkCatalogHead());
+  expect(result.ok).toBe(false);
+  expect(result.reason).toBe('incompatible');
+  expect(await state(page)).toEqual(before);
+  await expect(page.locator('[data-remaked-autosave-status]')).toContainText(/incompatible|несовместим/i);
+});
 
 test('offline update refuses a cached head and never calls it current', async ({ page }) => {
   let offline = false;

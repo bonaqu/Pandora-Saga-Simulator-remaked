@@ -229,6 +229,63 @@
       }
     }
   }
+  function adoptionPlan(snapshot) {
+    validate(snapshot); snapshot = structuredClone(snapshot);
+    var itemRecords = Object.create(null);
+    snapshot.records.forEach(function (record) {
+      if (record.kind === 'equipment' || record.kind === 'soul') itemRecords[termFor(record)] = record;
+    });
+
+    function equipmentState(category, index) {
+      var record = itemRecords['equipment.' + category + '.' + index];
+      if (record) return { exists: true, sockets: Number(record.sockets), compatibility: record.compatibility.slice() };
+      var row = baselineEquipment[0]?.[category]?.[index];
+      if (!row || row._pandoraPlaceholder) return { exists: false, sockets: 0, compatibility: [] };
+      return { exists: true, sockets: Number(row[5] || 0), compatibility: row.slice(8, 44) };
+    }
+    function soulState(index) {
+      var record = itemRecords['soul.' + index];
+      if (record) return { exists: true, compatibility: record.compatibility.slice() };
+      var row = baselineSouls[0]?.[index];
+      if (!row || row._pandoraPlaceholder) return { exists: false, compatibility: [] };
+      return { exists: true, compatibility: row.slice(8, 16) };
+    }
+
+    var repairs = [], blocking = [];
+    for (var slot = 0; slot < window.Status.Equip.length; slot++) {
+      var state = window.Status.Equip[slot], id = Number(state[0]);
+      var category = Math.floor(id / 10000), index = id % 10000;
+      var equipment = equipmentState(category, index);
+      if (!equipment.exists) {
+        blocking.push({ type: 'missing-equipment', slot: slot, equipmentId: id });
+        continue;
+      }
+      if (index && (!equipment.compatibility[2 + window.Status.Job[0]] || !equipment.compatibility[8 + window.Status.Job[2]])) {
+        blocking.push({ type: 'equipment-incompatible', slot: slot, equipmentId: id });
+        continue;
+      }
+      for (var socket = 4; socket <= 6; socket++) {
+        var soul = Number(state[socket]); if (!soul) continue;
+        var reason = '';
+        if (socket - 3 > equipment.sockets) reason = 'socket-count';
+        else {
+          var targetSoul = soulState(soul);
+          var soulSlot = slot <= 6 ? slot : slot === 11 ? 7 : -1;
+          if (!targetSoul.exists) reason = 'missing-soul';
+          else if (soulSlot < 0 || targetSoul.compatibility[soulSlot] !== 1) reason = 'slot-incompatible';
+        }
+        if (reason) repairs.push({ type: 'clear-soul', slot: slot, socket: socket, soulId: soul, reason: reason });
+      }
+    }
+    return {
+      revision: snapshot.revision,
+      compatible: blocking.length === 0 && repairs.length === 0,
+      repairable: blocking.length === 0,
+      repairs: repairs,
+      blocking: blocking
+    };
+  }
+
   function refreshAvailability() {
     document.querySelectorAll('select[id^="SelEquip_"]').forEach(function (select) {
       var match = select.id.match(/^SelEquip_\d+_(0|[4-6])$/); if (!match) return;
@@ -526,7 +583,7 @@
       catch { /* A first visit can always use the preserved source catalog. */ }
     }
   }
-  namespace.catalog = { applySnapshot, validateSnapshot: validate, refreshAvailability,
+  namespace.catalog = { applySnapshot, validateSnapshot: validate, refreshAvailability, adoptionPlan,
     variantSkills: function () {
       if (!variantRecords.length) return [];
       nativeLearnedEntries();
