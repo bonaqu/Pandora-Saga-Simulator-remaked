@@ -19,10 +19,26 @@ function invariant(value, message) {
 function readJson(name) {
   return JSON.parse(fs.readFileSync(path.join(DATA_DIR, name), 'utf8'));
 }
-function stripOuterParentheses(value) {
-  const text = String(value || '').trim();
-  const match = text.match(/^\(([^()]*)\)$/);
-  return match ? match[1].trim() : text;
+export function stripOuterParentheses(value) {
+  let text = String(value || '').trim();
+  if (!text) return text;
+  let changed = false;
+  while (text.length > 2 && text.startsWith('(') && text.endsWith(')')) {
+    text = text.slice(1, -1).trim();
+    changed = true;
+  }
+  // A few retained source names have only one surplus edge parenthesis
+  // (for example "((Steadfast Soul)" / "(Dimension oul))"). Remove that
+  // edge only when the remainder contains no opposite unmatched wrapper.
+  if (text.startsWith('(') && !/[()]/.test(text.slice(1))) {
+    text = text.slice(1).trim();
+    changed = true;
+  }
+  if (text.endsWith(')') && !/[()]/.test(text.slice(0, -1))) {
+    text = text.slice(0, -1).trim();
+    changed = true;
+  }
+  return changed && text ? text : String(value || '').trim();
 }
 function sourceKind(source) {
   if (source?.id?.startsWith('equipment.')) return 'equipment';
@@ -75,21 +91,30 @@ const EFFECT_MAP = {
   EP_MAXMANA_SCALE: [7, 'percent'],
   EP_MASTERY_POTION: [8, 'flat'],
   EP_HEAL_TIME_SCALE: [10, 'flat'],
+  EP_CAST_HEAL_LIFE_SCALE: [11, 'flat'],
+  EP_HEAL_LIFE_REGENERATOR: [16, 'flat'],
   EP_DAMAGERATE_CONST: [18, 'flat'],
+  EP_ATTACK_BACKATK_RATE: [20, 'flat'],
   EP_DAMAGERATE_SCALE: [18, 'percent'],
   EP_SKILL_EQUIP_DAMAGERATE: [18, 'flat'],
   EP_ELEMENT_DAMAGE_SCALE: [42, 'flat'],
   EP_ARMORCLASS_CONST: [49, 'flat'],
   EP_ONDAMAGE_FIN_DAMAGE_CONST: [52, 'flat'],
   EP_ONDAMAGE_FIN_DAMAGE_SCALE: [52, 'percent'],
+  EP_ONDAMAGE_ELEM_SCALE: [60, 'percent'],
   EP_TOHIT_CONST: [62, 'flat'],
   EP_AVOIDANCE_CONST: [65, 'flat'],
   EP_CRITICALRATE_CONST: [69, 'flat'],
   EP_ATTACKINTERVAL_SCALE: [73, 'flat'],
   EP_MOVESPEED_SCALE: [74, 'flat'],
+  EP_RACE_MANA_COSTCUT: [76, 'flat', 'negate'],
+  EP_SKILL_DELAY: [77, 'flat', 'negate'],
   EP_SKILL_DELAY_FIN: [77, 'flat'],
   EP_SKILL_BENCH: [79, 'flat'],
-  EP_ONHIT_STUN: [91, 'flat'],
+  EP_ONHIT_STUN: [91, 'flat', 'chanceB'],
+  EP_BLOCK_BREAK_RESIST: [133, 'flat'],
+  EP_CASTINGCANCEL_RESISTANCE_CONST: [134, 'flat'],
+  EP_ONDAMAGE_REFLECTION: [135, 'flat'],
   EP_FIRE_RESISTANCE_CONST: [138, 'flat'],
   EP_COLD_RESISTANCE_CONST: [139, 'flat'],
   EP_LIGHTNING_RESISTANCE_CONST: [140, 'flat'],
@@ -106,7 +131,9 @@ const EFFECT_MAP = {
   EP_IMMUNE_TUMBLE: [151, 'flat'],
   EP_IMMUNE_SLEEP: [156, 'flat'],
   EP_IMMUNE_SILENCE: [158, 'flat'],
-  EP_IMMUNE_CURSE: [159, 'flat']
+  EP_IMMUNE_EVIL: [159, 'flat'],
+  EP_IMMUNE_CURSE: [160, 'flat'],
+  EP_BADEFFECT_TIME_SCALE: [162, 'flat']
 };
 
 function serverCategory(item) {
@@ -114,22 +141,47 @@ function serverCategory(item) {
 }
 function convertedEffects(server, includeArmorClass) {
   const values = new Map();
+  let complete = true;
   for (const effect of server.effects || []) {
     const mapped = EFFECT_MAP[effect.func];
-    if (!mapped) return null;
-    const value = effect.a;
-    if (typeof value !== 'number' || !Number.isFinite(value)) return null;
-    const [stat, unit] = mapped;
+    if (!mapped) {
+      complete = false;
+      continue;
+    }
+    // Higher-enhancement variants cannot be represented by the current flat
+    // catalog row. Patch the base (min=0) effect and preserve the retained
+    // conditional mechanic rather than summing mutually exclusive tiers.
+    if (Number(effect.min || 0) > 0) {
+      complete = false;
+      continue;
+    }
+    const [stat, unit, transform] = mapped;
+    let value = transform === 'chanceB' ? effect.b : effect.a;
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      complete = false;
+      continue;
+    }
+    // These zero-valued server rows mean "derived from enhancement", not zero.
+    // Keep their native Legacy mechanic instead of replacing it with a fake 0.
+    if (value === 0 && (effect.func === 'EP_RACE_MANA_COSTCUT' || effect.func === 'EP_SKILL_EQUIP_DAMAGERATE')) {
+      complete = false;
+      continue;
+    }
+    if (transform === 'negate') value = -value;
     const key = stat + ':' + unit;
     values.set(key, (values.get(key) || 0) + value);
   }
   if (includeArmorClass && server.AC !== null && server.AC !== undefined) {
-    values.set('49:flat', Number(server.AC));
+    const key = '49:flat';
+    values.set(key, (values.get(key) || 0) + Number(server.AC));
   }
-  return [...values.entries()].map(([key, value]) => {
-    const [stat, unit] = key.split(':');
-    return { stat: Number(stat), unit, value };
-  }).sort((a, b) => a.stat - b.stat || a.unit.localeCompare(b.unit));
+  return {
+    complete,
+    effects: [...values.entries()].map(([key, value]) => {
+      const [stat, unit] = key.split(':');
+      return { stat: Number(stat), unit, value };
+    }).sort((a, b) => a.stat - b.stat || a.unit.localeCompare(b.unit))
+  };
 }
 function soulSlots(server) {
   const result = Array(8).fill(0);
@@ -151,25 +203,16 @@ function serverPatch(kind, server, english) {
     patch.sockets = Number(server.soulslot ?? 0);
     if (serverCategory(server) <= 13 && server.W !== null && server.W !== undefined)
       patch.baseAttack = Number(server.W);
-    const effects = convertedEffects(server, true);
-    if (effects) {
-      patch.effectMode = 'replace';
-      patch.effects = effects;
-      if (serverCategory(server) <= 13 && patch.baseAttack === undefined)
-        throw new Error('Mapped weapon lacks W: ' + server.id);
-    } else if (patch.baseAttack !== undefined) {
-      // Unknown proc mechanics must stay untouched, but W is still a safe
-      // dedicated weapon field. Patch mode replaces only the weapon token.
-      patch.effectMode = 'patch';
-      patch.effects = [];
-    }
+    const converted = convertedEffects(server, true);
+    patch.effectMode = converted.complete ? 'replace' : 'patch';
+    patch.effects = converted.effects;
+    if (serverCategory(server) <= 13 && patch.baseAttack === undefined)
+      throw new Error('Mapped weapon lacks W: ' + server.id);
   } else {
     patch.slots = soulSlots(server);
-    const effects = convertedEffects(server, false);
-    if (effects) {
-      patch.effectMode = 'replace';
-      patch.effects = effects;
-    }
+    const converted = convertedEffects(server, false);
+    patch.effectMode = converted.complete ? 'replace' : 'patch';
+    patch.effects = converted.effects;
   }
   return patch;
 }
@@ -201,8 +244,9 @@ export function buildReleaseRows(inputs = loadInputs()) {
     const kind = sourceKind(source);
     if (!kind) continue;
     const english = source.name?.en || '';
-    if (!/^\([^()]+\)$/.test(english)) continue;
-    addPatch(rows, source, kind, { names: { en: stripOuterParentheses(english) } }, 'normalize', english);
+    const normalized = stripOuterParentheses(english);
+    if (!normalized || normalized === english) continue;
+    addPatch(rows, source, kind, { names: { en: normalized } }, 'normalize', english);
   }
 
   const seenServerItems = new Set(), seenServerSouls = new Set(), seenProject = new Set();
