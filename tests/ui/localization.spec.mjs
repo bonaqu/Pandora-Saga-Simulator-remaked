@@ -219,7 +219,16 @@ test('calculator action and riding geometry is locale-invariant', async ({ page 
           actions: actions.map(rect),
           fontSizes: actions.map(node => getComputedStyle(node).fontSize),
           fontWeights: actions.map(node => getComputedStyle(node).fontWeight),
-          overflowing: actions.some(node => node.scrollHeight > node.clientHeight + 1),
+          overflowDetails: actions.filter(node =>
+            node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1
+          ).map(node => ({
+            id: node.getAttribute('data-remaked-calculator-action'),
+            text: node.textContent.trim(),
+            clientHeight: node.clientHeight,
+            scrollHeight: node.scrollHeight,
+            clientWidth: node.clientWidth,
+            scrollWidth: node.scrollWidth
+          })),
           documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
         };
       });
@@ -231,7 +240,7 @@ test('calculator action and riding geometry is locale-invariant', async ({ page 
       expect(value.actions, locale + ':' + width).toEqual(base.actions);
       expect(value.fontSizes, locale + ':' + width).toEqual(Array(6).fill('11px'));
       expect(value.fontWeights, locale + ':' + width).toEqual(Array(6).fill('600'));
-      expect(value.overflowing, locale + ':' + width).toBe(false);
+      expect(value.overflowDetails, locale + ':' + width).toEqual([]);
       expect(value.documentOverflow, locale + ':' + width).toBe(false);
     }
   }
