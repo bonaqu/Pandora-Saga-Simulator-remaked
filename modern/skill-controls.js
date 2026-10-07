@@ -244,9 +244,13 @@
     if (skillRow) skillRow.hidden = skillPanel.style.display === 'none';
     if (!root.hasAttribute('data-remaked-skill-controls')) {
       root.setAttribute('data-remaked-skill-controls', '');
-      var potentialLabel = byId('StatusUnP_0').closest('.input_gt').previousElementSibling;
-      potentialLabel.id = 'remaked-potential-budget-label'; i18n.bindText(potentialLabel, 'character.potential');
-      i18n.bindAttribute(potentialLabel, 'title', 'character.potentialHelp');
+      // The retained engine has a separate UnP budget, but the supported level
+      // range (1-55) never awards it. Keep the native nodes for save/engine
+      // compatibility while hiding the unreachable budget in Modern.
+      var potentialBudget = byId('StatusUnP_0').closest('.input_gt').parentElement;
+      potentialBudget.hidden = true;
+      potentialBudget.removeAttribute('title');
+      potentialBudget.removeAttribute('aria-describedby');
       var tools = document.createElement('div'); tools.className = 'remaked-skill-tools';
       var actions = document.createElement('div'); actions.className = 'remaked-skill-tools-actions';
       var title = document.createElement('h2'); title.id = 'remaked-workbench-skills-title';
