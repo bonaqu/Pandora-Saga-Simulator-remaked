@@ -69,7 +69,7 @@ jobs:
               deployment_sensitive=false
               for file in "${changed_files[@]}"; do
                 case "$file" in
-                  .github/workflows/*|.github/actions/*|scripts/build_pages.py|scripts/deploy_change_policy.py)
+                  .github/workflows/pages.yml|.github/workflows/feature-ci.yml|.github/actions/*|scripts/build_pages.py|scripts/deploy_change_policy.py)
                     deployment_sensitive=true
                     ;;
                 esac
@@ -153,7 +153,7 @@ jobs:
                 echo "At least one runtime change since the deployed baseline lacks reusable validation; keeping full production validation."
               fi
             elif [[ "$mode" != "full" ]]; then
-              echo "Safe documentation policy selected mode=$mode."
+              echo "Non-full deployment policy selected mode=$mode."
             elif [[ "$force_full_deploy" == "true" ]]; then
               echo "Deployment/build infrastructure changed; full production validation is mandatory."
             fi
