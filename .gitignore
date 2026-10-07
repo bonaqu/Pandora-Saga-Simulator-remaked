@@ -27,3 +27,4 @@ admin-api/migrations/0005_pandora_os_item_sync.sql
 admin-api/migrations/0006_pandora_os_live_item_sync.sql
 admin-api/migrations/0007_pandora_os_live_item_sync_hardening.sql
 admin-api/migrations/0008_pandora_os_complete_item_sync.sql
+admin-api/migrations/0009_pandora_os_complete_item_sync_polish.sql
