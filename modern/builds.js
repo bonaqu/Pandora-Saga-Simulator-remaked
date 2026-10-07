@@ -455,8 +455,12 @@
         if (catalogAutoBlockedKey === attemptKey) return { ok: false, reason: 'blocked-incompatible', revision: head };
         var result = await updateCurrentCatalog({ automatic: true });
         if (result.ok) catalogAutoBlockedKey = '';
-        else if (result.reason === 'incompatible' || result.reason === 'calculation-failed' || result.reason === 'restore-failed' ||
-          result.reason === 'backup-failed' || result.reason === 'repair-failed' || result.reason === 'autosave-failed') {
+        else if (result.reason === 'incompatible' || result.reason === 'calculation-failed' ||
+          result.reason === 'restore-failed' || result.reason === 'repair-failed') {
+          // Deterministic incompatibilities should not hammer the same payload.
+          // Storage failures are intentionally retried: freeing browser storage
+          // does not change the character payload, so caching those failures
+          // would otherwise pin the build forever.
           catalogAutoBlockedKey = attemptKey;
         }
         return result;
