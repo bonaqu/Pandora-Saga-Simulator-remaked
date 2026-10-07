@@ -12,7 +12,7 @@ export const EFFECTS = [
   [11, 'Healing spell effectiveness (percentage points)', FLAT], [16, 'HP regeneration per interval', FLAT],
   [18, 'Physical attack', BOTH], [20, 'Back attack bonus (percentage points)', FLAT], [42, 'Magic attack (percentage points)', FLAT], [49, 'Defense', BOTH],
   [50, 'Front damage resistance', FLAT], [51, 'Back damage resistance', FLAT], [52, 'Physical damage resistance', BOTH],
-  [60, 'Magic damage resistance (percentage points)', FLAT], [62, 'Accuracy', BOTH], [65, 'Dodge', BOTH],
+  [60, 'Magic damage resistance', BOTH], [62, 'Accuracy', BOTH], [65, 'Dodge', BOTH],
   [69, 'Critical chance (percentage points)', FLAT], [70, 'Incoming critical chance (percentage points)', FLAT], [91, 'Stun chance (percentage points)', FLAT],
   [71, 'Critical damage (percentage points)', FLAT], [72, 'Critical damage taken (percentage points)', FLAT],
   [73, 'Attack speed (percentage points)', FLAT], [74, 'Movement speed (percentage points)', FLAT],
