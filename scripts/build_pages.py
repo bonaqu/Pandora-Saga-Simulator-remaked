@@ -32,10 +32,6 @@ REQUIRED_MODERN = (
     "modern/admin-entry.css",
     "modern/admin-entry.js",
     "modern/favicon.svg",
-    "modern/icon-192.svg",
-    "modern/icon-512.svg",
-    "modern/icon-192.png",
-    "modern/icon-512.png",
     "modern/apple-touch-icon.png",
     "modern/social-preview.png",
     "modern/service-worker.js",
@@ -426,6 +422,10 @@ def _materialize_release_metadata(root: pathlib.Path, output: pathlib.Path) -> N
         + ");\n",
         encoding="utf-8",
     )
+    (output / "modern/version.json").write_text(
+        json.dumps(version_payload, ensure_ascii=False, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
     (output / "modern/release-notes.js").write_text(
         "window.PandoraRemakedRelease = Object.freeze("
         + json.dumps(release, ensure_ascii=False, separators=(",", ":"))
@@ -444,9 +444,6 @@ def _materialize_service_worker(root: pathlib.Path, output: pathlib.Path) -> Non
     copied_template = output / SERVICE_WORKER_SOURCE
     if copied_template.exists():
         copied_template.unlink()
-    manifest = output / "modern/manifest.webmanifest"
-    if manifest.exists():
-        manifest.unlink()
 
 
 def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
@@ -476,6 +473,12 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     source_bytes = (root / "index.html").read_bytes()
     source_text = source_bytes.decode("utf-8-sig")
     modern_html = _modernize_html(source_text)
+    ui_version = _read_ui_version(root)
+    modern_html = re.sub(
+        r'((?:src|href)="\./modern/[^"?]+\.(?:js|css))"',
+        lambda match: f'{match.group(1)}?v={ui_version}"',
+        modern_html,
+    )
     (output / "index.html").write_text(modern_html, encoding="utf-8")
 
     legacy = output / "legacy"

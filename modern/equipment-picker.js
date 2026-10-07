@@ -115,10 +115,8 @@
         resetText.parentElement.removeAttribute('onclick');
         resetText.hidden = true;
       }
-      // Do not bind the raw key directly: during a PWA update an older
-      // locales.js can briefly coexist with the newer component script. In that
-      // mixed-cache window i18n.t() returns the key itself. Keep a short,
-      // locale-specific fallback so users never see "equipment.reset".
+      // Keep a short locale-specific fallback so a transient localization
+      // load failure never exposes the raw "equipment.reset" key to users.
       reset.removeAttribute('data-remaked-i18n');
       var resetLabel = localizedResetLabel();
       if (reset.textContent !== resetLabel) reset.textContent = resetLabel;

@@ -132,3 +132,14 @@ test('long approved identity and stat labels wrap inside their pair without chan
   }
   expect(await page.evaluate(() => Store())).toBe(before);
 });
+
+
+test('Modern hides the unreachable character Potential budget but keeps skill Potential', async ({ page }) => {
+  await page.goto('/');
+  const hidden = await page.locator('#StatusUnP_0').evaluate(node => node.closest('.input_gt').parentElement.hidden);
+  expect(hidden).toBe(true);
+  await expect(page.locator('[data-remaked-skill-column-header]')).toContainText('Potential');
+  expect(await page.locator('[data-remaked-skill-potential-value]').count()).toBeGreaterThan(0);
+  await page.goto('/legacy/');
+  expect(await page.locator('#StatusUnP_0').evaluate(node => node.closest('.input_gt').parentElement.hidden)).toBe(false);
+});

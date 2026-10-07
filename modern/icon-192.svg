@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192" role="img" aria-label="Pandora Saga Simulator Remaked">
-  <rect width="192" height="192" rx="38" fill="#f4f6ed"/>
-  <path d="M26 41h140v110H26z" fill="#669b36"/>
-  <path d="M39 54h114v84H39z" fill="#eef3df"/>
-  <path d="M55 122V70h33c22 0 35 10 35 27s-13 25-35 25H72v16H55zm17-15h15c12 0 18-3 18-10s-6-11-18-11H72v21z" fill="#365627"/>
-  <path d="M124 69h14v69h-14z" fill="#b58a2a"/>
-  <circle cx="131" cy="61" r="8" fill="#b58a2a"/>
-</svg>
