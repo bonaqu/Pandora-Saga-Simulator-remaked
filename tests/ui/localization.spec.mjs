@@ -134,3 +134,32 @@ test('Russian shell remains usable without body overflow at 390px', async ({ pag
   }));
   expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 1);
 });
+
+test('RU uses compact skill and effect terminology without wrapping effect tabs', async ({ page }) => {
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?ui=ru');
+
+    const skillHeaders = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('[data-remaked-skill-column-header] > span'))
+        .map(node => node.textContent.trim()).filter(Boolean)
+    );
+    expect(skillHeaders).toEqual(['Изучено (ОЧ)', 'Потенциал.', 'Изучено (ОЧ)', 'Потенциал.']);
+
+    await expect(page.locator('[data-remaked-effect="0"]')).toHaveText('Эффекты умений');
+    await expect(page.locator('[data-remaked-effect="1"]')).toHaveText('Эффекты зелий');
+
+    const metrics = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('[data-remaked-effect]')).map(node => ({
+        whiteSpace: getComputedStyle(node).whiteSpace,
+        scrollWidth: node.scrollWidth,
+        clientWidth: node.clientWidth
+      }))
+    );
+    for (const metric of metrics) {
+      expect(metric.whiteSpace).toBe('nowrap');
+      expect(metric.scrollWidth).toBeLessThanOrEqual(metric.clientWidth + 1);
+    }
+  }
+});
+

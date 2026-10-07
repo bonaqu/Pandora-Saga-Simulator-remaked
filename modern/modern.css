@@ -2087,3 +2087,43 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   white-space: nowrap;
   text-align: center;
 }
+
+/* Russian effect-tab labels are intentionally descriptive; keep both tabs on
+   one line without widening the calculator or affecting other locales. */
+.remaked-modern #body [data-remaked-effect-tabs] li,
+.remaked-modern #body [data-remaked-effect-tabs] .remaked-calculator-action {
+  min-width: 0;
+}
+.remaked-modern #body [data-remaked-effect-tabs] .remaked-calculator-action {
+  white-space: nowrap;
+}
+html[lang="ru"] body.remaked-modern #body [data-remaked-effect-tabs] .remaked-calculator-action {
+  padding-inline: 2px;
+  font-size: 9.5px;
+  letter-spacing: -0.02em;
+}
+
+/* Russian skill headings are longer than the compact numeric controls. Keep
+   their boxes inside the existing 80px tracks: Adeptness may break at its
+   natural space, while Potential stays whole at a slightly smaller size. */
+@media (min-width: 861px) {
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(2),
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(3),
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(5),
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(6) {
+    width: 60px;
+  }
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(2),
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(5) {
+    white-space: normal;
+    line-height: 1.15;
+    font-size: 10px;
+  }
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(3),
+  html[lang="ru"] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(6) {
+    white-space: nowrap;
+    font-size: 9px;
+    letter-spacing: -0.01em;
+  }
+}
+

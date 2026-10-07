@@ -6,6 +6,21 @@
   var gameCatalogs = window.PandoraRemakedGameTerms || { ru: {} };
   var STORAGE_KEY = 'pandora.remaked.uiLocale.v1';
   var DEFAULT_LOCALE = 'en';
+  // Curated Modern terminology for currently blank workbook cells. Explicit
+  // workbook translations still win, so these fallbacks disappear naturally
+  // when the translator fills those rows.
+  var FALLBACK_TERMINOLOGY = Object.freeze({
+    ru: Object.freeze({
+      ui: Object.freeze({
+        'skills.adeptness': 'Изучено (ОЧ)',
+        'skills.potential': 'Потенциал.'
+      }),
+      game: Object.freeze({
+        'calculator.text.17': 'Эффекты умений',
+        'calculator.text.18': 'Эффекты зелий'
+      })
+    })
+  });
   var supported = Object.keys(catalogs).filter(function (locale) {
     return catalogs[locale] && typeof catalogs[locale] === 'object';
   });
@@ -33,6 +48,12 @@
 
   var currentLocale = normalizeLocale(requestedLocale());
 
+  function terminology(kind, key) {
+    var locale = FALLBACK_TERMINOLOGY[currentLocale];
+    var group = locale && locale[kind];
+    return group && Object.prototype.hasOwnProperty.call(group, key) ? group[key] : '';
+  }
+
   function interpolate(template, values) {
     values = values || {};
     return String(template).replace(/\{([A-Za-z0-9_]+)\}/g, function (match, key) {
@@ -43,7 +64,8 @@
   function translate(key, values) {
     var active = catalogs[currentLocale] || {};
     var english = catalogs[DEFAULT_LOCALE] || {};
-    var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : english[key];
+    var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : terminology('ui', key);
+    if (!value) value = english[key];
     return interpolate(typeof value === 'string' ? value : key, values);
   }
 
@@ -55,7 +77,7 @@
     // An English game-name override must not silently replace source languages.
     var useEnglish = !window.Flag || Number(window.Flag[0]) === 1;
     var active = currentLocale === 'en' && !useEnglish ? {} : gameCatalogs[currentLocale] || {};
-    var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : '';
+    var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : terminology('game', key);
     if (!value && currentLocale === 'ru' && useEnglish) value = (gameCatalogs.en || {})[key] || '';
     return typeof value === 'string' && value ? value : String(fallback == null ? '' : fallback);
   }
