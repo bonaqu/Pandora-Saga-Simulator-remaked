@@ -116,7 +116,15 @@ test('startup stale autosave is upgraded safely when the new catalog reduces Sou
 
   published = nextCatalog;
   await page.reload();
-  await expect.poll(() => page.evaluate(() => PandoraRemaked.catalog.getRevision()), { timeout: 10000 }).toBe(2);
+  await expect(page.locator('[data-remaked-autosave-status]')).toContainText('Restored autosave');
+  expect(await page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(1);
+  // The production site invokes this from startCatalogPolling(); test pages run
+  // on localhost, where polling is intentionally disabled.
+  const adopted = await page.evaluate(() => PandoraRemaked.builds.checkCatalogHead());
+  expect(adopted.ok).toBe(true);
+  expect(adopted.automatic).toBe(true);
+  expect(adopted.repaired).toBe(1);
+  expect(await page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(2);
 
   const after = await page.evaluate(extraId => ({
     payload: PandoraRemaked.adapter.serialize(),
