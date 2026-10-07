@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   group: feature-${{ github.ref }}
@@ -26,8 +27,33 @@ jobs:
       translation_only: ${{ steps.changes.outputs.translation_only }}
       catalog_data: ${{ steps.changes.outputs.catalog_data }}
       admin_only: ${{ steps.changes.outputs.admin_only }}
+      duplicate_pr: ${{ steps.changes.outputs.duplicate_pr }}
     steps:
+      - name: Detect open PR for feature push
+        id: dedupe
+        if: github.event_name == 'push'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          count="$(gh api --method GET "repos/$REPOSITORY/pulls" \
+            -f state=open \
+            -f base=bonaqu_projects \
+            -f head="$OWNER:$BRANCH" \
+            --jq 'length')"
+          if [[ "$count" -gt 0 ]]; then
+            echo "duplicate_pr=true" >> "$GITHUB_OUTPUT"
+            echo "Open PR already validates $BRANCH; skipping duplicate push matrix."
+          else
+            echo "duplicate_pr=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout
+        if: steps.dedupe.outputs.duplicate_pr != 'true'
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
@@ -35,8 +61,14 @@ jobs:
       - name: Classify changed files
         id: changes
         shell: bash
+        env:
+          DUPLICATE_PR: ${{ steps.dedupe.outputs.duplicate_pr }}
         run: |
           set -euo pipefail
+          if [[ "$DUPLICATE_PR" == "true" ]]; then
+            printf 'docs_only=true\ncss_only=false\nfull_required=false\nci_profile=duplicate-pr\ntranslation_only=false\ncatalog_data=false\nadmin_only=false\nduplicate_pr=true\n' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             base="${{ github.event.pull_request.base.sha }}"
           else
@@ -101,7 +133,7 @@ jobs:
             full_required=true
           fi
 
-          printf 'docs_only=%s\ncss_only=%s\nfull_required=%s\nci_profile=%s\ntranslation_only=%s\ncatalog_data=%s\nadmin_only=%s\n' \
+          printf 'docs_only=%s\ncss_only=%s\nfull_required=%s\nci_profile=%s\ntranslation_only=%s\ncatalog_data=%s\nadmin_only=%s\nduplicate_pr=false\n' \
             "$docs_only" "$css_only" "$full_required" "$policy_profile" "$translation_only" "$catalog_data" "$admin_only" >> "$GITHUB_OUTPUT"
 
           printf 'Changed files (%d):\n' "${#files[@]}"
@@ -131,6 +163,7 @@ jobs:
 
   static:
     needs: classify
+    if: needs.classify.outputs.duplicate_pr != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
