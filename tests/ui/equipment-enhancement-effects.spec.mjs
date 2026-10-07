@@ -96,6 +96,7 @@ test('Strong War Crossbow grants its full +2 enhancement stat at +7', async ({ p
 
 test('enhancement-ranged Souls use the enhancement level of their host item', async ({ page }) => {
   await page.goto('/');
+  await page.evaluate(snapshot => PandoraRemaked.catalog.applySnapshot(snapshot), publication([]));
   const result = await page.evaluate(() => {
     const sum = stat => (EquipOpt[stat] || []).reduce((total, token) => total + Number(String(token).replace('%', '')), 0);
 
