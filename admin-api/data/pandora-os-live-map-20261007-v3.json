@@ -1,0 +1,2871 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-07",
+  "source": {
+    "items": "https://pandorasaga-os.com/gamedata/items.json",
+    "souls": "https://pandorasaga-os.com/gamedata/souls.json",
+    "english": "https://pandorasaga-os.com/gamedata/strings.en.json"
+  },
+  "policy": "one-to-one category-constrained matching; exact normalized names, high-confidence structural aliases, or unique Soul slot/base-effect fingerprints with semantic name confirmation; unmatched/ambiguous server items are not silently applied; verified Astir/Astian legacy identities reconciled by retained JP identity/color semantics and category/gender structure",
+  "equipment": [
+    {
+      "serverId": 1,
+      "projectId": "equipment.0.12",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2,
+      "projectId": "equipment.0.19",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.875,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 3,
+      "projectId": "equipment.0.21",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 4,
+      "projectId": "equipment.0.20",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 11,
+      "projectId": "equipment.0.8",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 21,
+      "projectId": "equipment.0.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 22,
+      "projectId": "equipment.0.7",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 23,
+      "projectId": "equipment.0.10",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 24,
+      "projectId": "equipment.0.6",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 31,
+      "projectId": "equipment.0.4",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 51,
+      "projectId": "equipment.0.1",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.7857,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 201,
+      "projectId": "equipment.0.9",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 211,
+      "projectId": "equipment.0.3",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 221,
+      "projectId": "equipment.0.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 222,
+      "projectId": "equipment.0.11",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 231,
+      "projectId": "equipment.0.29",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 401,
+      "projectId": "equipment.1.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 402,
+      "projectId": "equipment.1.8",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 403,
+      "projectId": "equipment.1.6",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 404,
+      "projectId": "equipment.1.16",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9091,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 405,
+      "projectId": "equipment.1.18",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 406,
+      "projectId": "equipment.1.17",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 411,
+      "projectId": "equipment.1.3",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 421,
+      "projectId": "equipment.1.4",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 422,
+      "projectId": "equipment.1.25",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 431,
+      "projectId": "equipment.1.7",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 432,
+      "projectId": "equipment.1.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 601,
+      "projectId": "equipment.2.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 602,
+      "projectId": "equipment.2.1",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 603,
+      "projectId": "equipment.2.4",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 611,
+      "projectId": "equipment.2.3",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 621,
+      "projectId": "equipment.2.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 631,
+      "projectId": "equipment.2.6",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 641,
+      "projectId": "equipment.2.19",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 801,
+      "projectId": "equipment.3.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 811,
+      "projectId": "equipment.3.3",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 812,
+      "projectId": "equipment.3.4",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 821,
+      "projectId": "equipment.3.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 831,
+      "projectId": "equipment.3.6",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 832,
+      "projectId": "equipment.3.7",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 833,
+      "projectId": "equipment.3.14",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.875,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 834,
+      "projectId": "equipment.3.16",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 835,
+      "projectId": "equipment.3.15",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 1001,
+      "projectId": "equipment.10.4",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 1002,
+      "projectId": "equipment.10.1",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1011,
+      "projectId": "equipment.10.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1012,
+      "projectId": "equipment.10.6",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1014,
+      "projectId": "equipment.10.10",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.95
+    },
+    {
+      "serverId": 1015,
+      "projectId": "equipment.10.17",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9091,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 1016,
+      "projectId": "equipment.10.19",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 1017,
+      "projectId": "equipment.10.18",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 1021,
+      "projectId": "equipment.10.7",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1031,
+      "projectId": "equipment.10.9",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1041,
+      "projectId": "equipment.10.27",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 1201,
+      "projectId": "equipment.11.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 1211,
+      "projectId": "equipment.11.4",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1212,
+      "projectId": "equipment.11.6",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1221,
+      "projectId": "equipment.11.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 1231,
+      "projectId": "equipment.11.13",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9667
+    },
+    {
+      "serverId": 1232,
+      "projectId": "equipment.11.14",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.8,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 1233,
+      "projectId": "equipment.11.16",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 1234,
+      "projectId": "equipment.11.15",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 1241,
+      "projectId": "equipment.11.24",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 1401,
+      "projectId": "equipment.5.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 1411,
+      "projectId": "equipment.5.3",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 1421,
+      "projectId": "equipment.5.4",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 1431,
+      "projectId": "equipment.5.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 1441,
+      "projectId": "equipment.5.6",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1451,
+      "projectId": "equipment.5.8",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1482,
+      "projectId": "equipment.5.26",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.7833
+    },
+    {
+      "serverId": 1484,
+      "projectId": "equipment.5.27",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.8889,
+      "statSimilarity": 0.747
+    },
+    {
+      "serverId": 1485,
+      "projectId": "equipment.5.28",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9,
+      "statSimilarity": 0.7658
+    },
+    {
+      "serverId": 1601,
+      "projectId": "equipment.4.1",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1611,
+      "projectId": "equipment.4.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 1613,
+      "projectId": "equipment.4.4",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1621,
+      "projectId": "equipment.4.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 1631,
+      "projectId": "equipment.4.6",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6333
+    },
+    {
+      "serverId": 1641,
+      "projectId": "equipment.4.20",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 1801,
+      "projectId": "equipment.6.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1811,
+      "projectId": "equipment.6.4",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 1812,
+      "projectId": "equipment.6.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1813,
+      "projectId": "equipment.6.6",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1814,
+      "projectId": "equipment.6.7",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1821,
+      "projectId": "equipment.6.9",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 1822,
+      "projectId": "equipment.6.8",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1831,
+      "projectId": "equipment.6.10",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1841,
+      "projectId": "equipment.6.11",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 1851,
+      "projectId": "equipment.6.25",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 2001,
+      "projectId": "equipment.7.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 2002,
+      "projectId": "equipment.7.1",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2003,
+      "projectId": "equipment.7.4",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2004,
+      "projectId": "equipment.7.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2011,
+      "projectId": "equipment.7.6",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 2021,
+      "projectId": "equipment.7.7",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2022,
+      "projectId": "equipment.7.8",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2023,
+      "projectId": "equipment.7.16",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9167,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 2024,
+      "projectId": "equipment.7.18",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 2025,
+      "projectId": "equipment.7.17",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 2201,
+      "projectId": "equipment.8.4",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 2202,
+      "projectId": "equipment.8.3",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 2203,
+      "projectId": "equipment.8.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2211,
+      "projectId": "equipment.8.8",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2221,
+      "projectId": "equipment.8.6",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2222,
+      "projectId": "equipment.8.7",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2223,
+      "projectId": "equipment.8.10",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2224,
+      "projectId": "equipment.8.11",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2225,
+      "projectId": "equipment.8.18",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9167,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2226,
+      "projectId": "equipment.8.20",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2227,
+      "projectId": "equipment.8.19",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9918
+    },
+    {
+      "serverId": 2231,
+      "projectId": "equipment.8.9",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2401,
+      "projectId": "equipment.9.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2402,
+      "projectId": "equipment.9.1",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 2411,
+      "projectId": "equipment.9.3",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2421,
+      "projectId": "equipment.9.4",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.65
+    },
+    {
+      "serverId": 2431,
+      "projectId": "equipment.9.17",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 2601,
+      "projectId": "equipment.12.4",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 2602,
+      "projectId": "equipment.12.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 2611,
+      "projectId": "equipment.12.6",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2612,
+      "projectId": "equipment.12.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2621,
+      "projectId": "equipment.12.7",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2622,
+      "projectId": "equipment.12.8",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2631,
+      "projectId": "equipment.12.10",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2641,
+      "projectId": "equipment.12.18",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9833
+    },
+    {
+      "serverId": 2642,
+      "projectId": "equipment.12.19",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9231,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 2643,
+      "projectId": "equipment.12.21",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 2644,
+      "projectId": "equipment.12.20",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 2651,
+      "projectId": "equipment.12.13",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2653,
+      "projectId": "equipment.12.17",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2655,
+      "projectId": "equipment.12.15",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2801,
+      "projectId": "equipment.13.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2802,
+      "projectId": "equipment.13.3",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2811,
+      "projectId": "equipment.13.4",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2812,
+      "projectId": "equipment.13.6",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2821,
+      "projectId": "equipment.13.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2822,
+      "projectId": "equipment.13.7",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9667
+    },
+    {
+      "serverId": 2823,
+      "projectId": "equipment.13.15",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9167,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 2824,
+      "projectId": "equipment.13.17",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 2825,
+      "projectId": "equipment.13.16",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 2831,
+      "projectId": "equipment.13.8",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 2841,
+      "projectId": "equipment.13.24",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.8889,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 2857,
+      "projectId": "equipment.13.19",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11001,
+      "projectId": "equipment.30.13",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11011,
+      "projectId": "equipment.30.17",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11012,
+      "projectId": "equipment.30.18",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11021,
+      "projectId": "equipment.30.40",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11031,
+      "projectId": "equipment.30.62",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11041,
+      "projectId": "equipment.30.41",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11061,
+      "projectId": "equipment.30.92",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.875,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11073,
+      "projectId": "equipment.30.72",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.8,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11081,
+      "projectId": "equipment.30.14",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11082,
+      "projectId": "equipment.30.29",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11087,
+      "projectId": "equipment.30.63",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11091,
+      "projectId": "equipment.30.15",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 11092,
+      "projectId": "equipment.30.42",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11093,
+      "projectId": "equipment.30.58",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9091,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11094,
+      "projectId": "equipment.30.64",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11121,
+      "projectId": "equipment.30.2",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 11222,
+      "projectId": "equipment.30.66",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9231,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 11231,
+      "projectId": "equipment.30.9",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 11282,
+      "projectId": "equipment.30.70",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12001,
+      "projectId": "equipment.31.1",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 12002,
+      "projectId": "equipment.31.14",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12011,
+      "projectId": "equipment.31.2",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.7778,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12013,
+      "projectId": "equipment.31.13",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12021,
+      "projectId": "equipment.31.16",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 12022,
+      "projectId": "equipment.31.43",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12023,
+      "projectId": "equipment.31.44",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12031,
+      "projectId": "equipment.31.21",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12032,
+      "projectId": "equipment.31.50",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12033,
+      "projectId": "equipment.31.54",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12041,
+      "projectId": "equipment.31.46",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12042,
+      "projectId": "equipment.31.58",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12061,
+      "projectId": "equipment.31.59",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 12062,
+      "projectId": "equipment.31.82",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 12071,
+      "projectId": "equipment.31.67",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9833
+    },
+    {
+      "serverId": 12072,
+      "projectId": "equipment.31.71",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.9167
+    },
+    {
+      "serverId": 12073,
+      "projectId": "equipment.31.81",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 12081,
+      "projectId": "equipment.31.66",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.7857,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12091,
+      "projectId": "equipment.31.61",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 12101,
+      "projectId": "equipment.31.85",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 12103,
+      "projectId": "equipment.31.64",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12111,
+      "projectId": "equipment.31.15",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12112,
+      "projectId": "equipment.31.19",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12113,
+      "projectId": "equipment.31.18",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12114,
+      "projectId": "equipment.31.47",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12115,
+      "projectId": "equipment.31.48",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12118,
+      "projectId": "equipment.31.70",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12119,
+      "projectId": "equipment.31.69",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12121,
+      "projectId": "equipment.31.45",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 12122,
+      "projectId": "equipment.31.62",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12124,
+      "projectId": "equipment.31.63",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12561,
+      "projectId": "equipment.31.11",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 12601,
+      "projectId": "equipment.31.31",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9091,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12602,
+      "projectId": "equipment.31.41",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 12603,
+      "projectId": "equipment.31.33",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 12604,
+      "projectId": "equipment.31.94",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 12605,
+      "projectId": "equipment.31.96",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 12606,
+      "projectId": "equipment.31.37",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 12607,
+      "projectId": "equipment.31.35",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 12608,
+      "projectId": "equipment.31.39",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 12611,
+      "projectId": "equipment.31.32",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9167,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 12612,
+      "projectId": "equipment.31.42",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 12613,
+      "projectId": "equipment.31.34",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 12614,
+      "projectId": "equipment.31.95",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 12615,
+      "projectId": "equipment.31.97",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 12616,
+      "projectId": "equipment.31.38",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 12617,
+      "projectId": "equipment.31.36",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 12618,
+      "projectId": "equipment.31.40",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 13001,
+      "projectId": "equipment.33.1",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 13011,
+      "projectId": "equipment.33.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 13021,
+      "projectId": "equipment.33.14",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.8,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 13031,
+      "projectId": "equipment.33.18",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 13041,
+      "projectId": "equipment.33.37",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 13092,
+      "projectId": "equipment.33.19",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 13094,
+      "projectId": "equipment.33.43",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.7857,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 13104,
+      "projectId": "equipment.33.54",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 13601,
+      "projectId": "equipment.33.31",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 13602,
+      "projectId": "equipment.33.36",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 13603,
+      "projectId": "equipment.33.33",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 13604,
+      "projectId": "equipment.33.78",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 13605,
+      "projectId": "equipment.33.79",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 13606,
+      "projectId": "equipment.33.32",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 13607,
+      "projectId": "equipment.33.35",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 13608,
+      "projectId": "equipment.33.34",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14001,
+      "projectId": "equipment.32.1",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 14003,
+      "projectId": "equipment.32.11",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 14004,
+      "projectId": "equipment.32.12",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 14006,
+      "projectId": "equipment.32.81",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9,
+      "statSimilarity": 0.8333
+    },
+    {
+      "serverId": 14007,
+      "projectId": "equipment.32.82",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.8182,
+      "statSimilarity": 0.8333
+    },
+    {
+      "serverId": 14008,
+      "projectId": "equipment.32.42",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9167,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 14011,
+      "projectId": "equipment.32.3",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9091,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 14017,
+      "projectId": "equipment.32.64",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.8462,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 14021,
+      "projectId": "equipment.32.13",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 14031,
+      "projectId": "equipment.32.38",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 14041,
+      "projectId": "equipment.32.39",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.8889,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 14051,
+      "projectId": "equipment.32.59",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 14071,
+      "projectId": "equipment.32.83",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9091,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 14073,
+      "projectId": "equipment.32.40",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9231,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 14074,
+      "projectId": "equipment.32.61",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9231,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 14601,
+      "projectId": "equipment.32.24",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14602,
+      "projectId": "equipment.32.34",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14603,
+      "projectId": "equipment.32.28",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14604,
+      "projectId": "equipment.32.94",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14605,
+      "projectId": "equipment.32.96",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14606,
+      "projectId": "equipment.32.26",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14607,
+      "projectId": "equipment.32.32",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14608,
+      "projectId": "equipment.32.30",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14611,
+      "projectId": "equipment.32.25",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14612,
+      "projectId": "equipment.32.35",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14613,
+      "projectId": "equipment.32.29",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14614,
+      "projectId": "equipment.32.95",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14615,
+      "projectId": "equipment.32.97",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14616,
+      "projectId": "equipment.32.27",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14617,
+      "projectId": "equipment.32.33",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 14618,
+      "projectId": "equipment.32.31",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 15001,
+      "projectId": "equipment.34.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15003,
+      "projectId": "equipment.34.11",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15008,
+      "projectId": "equipment.34.66",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15011,
+      "projectId": "equipment.34.12",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15012,
+      "projectId": "equipment.34.42",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15013,
+      "projectId": "equipment.34.86",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15014,
+      "projectId": "equipment.34.87",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15021,
+      "projectId": "equipment.34.13",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15022,
+      "projectId": "equipment.34.45",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.8462,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15031,
+      "projectId": "equipment.34.43",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15032,
+      "projectId": "equipment.34.85",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15053,
+      "projectId": "equipment.34.71",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15061,
+      "projectId": "equipment.34.1",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15062,
+      "projectId": "equipment.34.46",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9167,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15077,
+      "projectId": "equipment.34.65",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15081,
+      "projectId": "equipment.34.52",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.8,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15092,
+      "projectId": "equipment.34.72",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15601,
+      "projectId": "equipment.34.27",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9167,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15602,
+      "projectId": "equipment.34.37",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 15603,
+      "projectId": "equipment.34.31",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 15604,
+      "projectId": "equipment.34.97",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 15605,
+      "projectId": "equipment.34.99",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 15606,
+      "projectId": "equipment.34.29",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 15607,
+      "projectId": "equipment.34.35",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 15608,
+      "projectId": "equipment.34.33",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 15611,
+      "projectId": "equipment.34.28",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9167,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 15612,
+      "projectId": "equipment.34.38",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 15613,
+      "projectId": "equipment.34.32",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 15614,
+      "projectId": "equipment.34.98",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 15615,
+      "projectId": "equipment.34.100",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 15616,
+      "projectId": "equipment.34.30",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 15617,
+      "projectId": "equipment.34.36",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 15618,
+      "projectId": "equipment.34.34",
+      "match": "verified-legacy-identity",
+      "nameSimilarity": null,
+      "statSimilarity": null
+    },
+    {
+      "serverId": 16001,
+      "projectId": "equipment.20.9",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 16011,
+      "projectId": "equipment.20.17",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 16021,
+      "projectId": "equipment.20.21",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 16031,
+      "projectId": "equipment.20.31",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 17001,
+      "projectId": "equipment.20.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 17011,
+      "projectId": "equipment.20.3",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 17021,
+      "projectId": "equipment.20.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 17031,
+      "projectId": "equipment.20.10",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 17041,
+      "projectId": "equipment.20.32",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 18009,
+      "projectId": "equipment.35.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 18018,
+      "projectId": "equipment.35.15",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 18029,
+      "projectId": "equipment.35.12",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.75,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 19001,
+      "projectId": "equipment.43.1",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 19002,
+      "projectId": "equipment.43.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 19004,
+      "projectId": "equipment.43.7",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 19006,
+      "projectId": "equipment.43.5",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 19020,
+      "projectId": "equipment.43.29",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 19021,
+      "projectId": "equipment.43.30",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 19022,
+      "projectId": "equipment.43.31",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 19036,
+      "projectId": "equipment.43.48",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 20001,
+      "projectId": "equipment.41.1",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 20006,
+      "projectId": "equipment.41.19",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 20008,
+      "projectId": "equipment.41.15",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 20010,
+      "projectId": "equipment.41.17",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 20011,
+      "projectId": "equipment.41.18",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 20013,
+      "projectId": "equipment.41.23",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 21001,
+      "projectId": "equipment.42.1",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 21002,
+      "projectId": "equipment.42.10",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 21003,
+      "projectId": "equipment.42.9",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 21004,
+      "projectId": "equipment.42.11",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.6667
+    },
+    {
+      "serverId": 21006,
+      "projectId": "equipment.42.13",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 21025,
+      "projectId": "equipment.42.2",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.5
+    },
+    {
+      "serverId": 21027,
+      "projectId": "equipment.42.41",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 0.5
+    },
+    {
+      "serverId": 21039,
+      "projectId": "equipment.42.16",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 22001,
+      "projectId": "equipment.40.1",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 22003,
+      "projectId": "equipment.40.10",
+      "match": "exact",
+      "nameSimilarity": 1,
+      "statSimilarity": 1
+    },
+    {
+      "serverId": 22009,
+      "projectId": "equipment.40.3",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9167,
+      "statSimilarity": 1
+    }
+  ],
+  "souls": [
+    {
+      "serverId": 101000,
+      "projectId": "soul.99",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101001,
+      "projectId": "soul.109",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101002,
+      "projectId": "soul.63",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101003,
+      "projectId": "soul.64",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101004,
+      "projectId": "soul.65",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101006,
+      "projectId": "soul.72",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101007,
+      "projectId": "soul.161",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101008,
+      "projectId": "soul.113",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101009,
+      "projectId": "soul.179",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101010,
+      "projectId": "soul.168",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101011,
+      "projectId": "soul.174",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101012,
+      "projectId": "soul.171",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101015,
+      "projectId": "soul.154",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Indolent/Slow runner naming"
+    },
+    {
+      "serverId": 101016,
+      "projectId": "soul.153",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Blind naming"
+    },
+    {
+      "serverId": 101017,
+      "projectId": "soul.156",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Unintelligible/Lisp naming"
+    },
+    {
+      "serverId": 101018,
+      "projectId": "soul.115",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101019,
+      "projectId": "soul.78",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101020,
+      "projectId": "soul.116",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101021,
+      "projectId": "soul.170",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 101022,
+      "projectId": "soul.175",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102001,
+      "projectId": "soul.150",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102002,
+      "projectId": "soul.151",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102003,
+      "projectId": "soul.146",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102004,
+      "projectId": "soul.147",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102005,
+      "projectId": "soul.145",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102006,
+      "projectId": "soul.149",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102007,
+      "projectId": "soul.7",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102008,
+      "projectId": "soul.22",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102009,
+      "projectId": "soul.33",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102010,
+      "projectId": "soul.30",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102011,
+      "projectId": "soul.44",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102012,
+      "projectId": "soul.136",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102013,
+      "projectId": "soul.120",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Harmony/Peace naming"
+    },
+    {
+      "serverId": 102014,
+      "projectId": "soul.32",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102015,
+      "projectId": "soul.101",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102016,
+      "projectId": "soul.111",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102017,
+      "projectId": "soul.124",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 102022,
+      "projectId": "soul.10",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Ash/Embers naming"
+    },
+    {
+      "serverId": 102023,
+      "projectId": "soul.36",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Spirit/Kotodama naming"
+    },
+    {
+      "serverId": 102024,
+      "projectId": "soul.13",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Volcragg/Bokuraggu transliteration"
+    },
+    {
+      "serverId": 102025,
+      "projectId": "soul.164",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Parade naming"
+    },
+    {
+      "serverId": 103001,
+      "projectId": "soul.163",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103002,
+      "projectId": "soul.102",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103004,
+      "projectId": "soul.41",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103005,
+      "projectId": "soul.43",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103006,
+      "projectId": "soul.45",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103007,
+      "projectId": "soul.46",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103008,
+      "projectId": "soul.52",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103009,
+      "projectId": "soul.53",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103010,
+      "projectId": "soul.54",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103011,
+      "projectId": "soul.51",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103012,
+      "projectId": "soul.76",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103014,
+      "projectId": "soul.34",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9231
+    },
+    {
+      "serverId": 103015,
+      "projectId": "soul.130",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103016,
+      "projectId": "soul.81",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103017,
+      "projectId": "soul.77",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103018,
+      "projectId": "soul.60",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 103020,
+      "projectId": "soul.131",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Decay/Corruption naming"
+    },
+    {
+      "serverId": 103025,
+      "projectId": "soul.1",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Snow naming"
+    },
+    {
+      "serverId": 103028,
+      "projectId": "soul.121",
+      "match": "semantic-exact",
+      "evidence": "Change naming, exact slots and Dodge -1 / Debuff duration -2% legacy semantics"
+    },
+    {
+      "serverId": 104001,
+      "projectId": "soul.2",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 104002,
+      "projectId": "soul.29",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 104003,
+      "projectId": "soul.11",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 104004,
+      "projectId": "soul.49",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Knight naming"
+    },
+    {
+      "serverId": 104005,
+      "projectId": "soul.114",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 104006,
+      "projectId": "soul.55",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9375
+    },
+    {
+      "serverId": 104007,
+      "projectId": "soul.69",
+      "match": "high-confidence-alias",
+      "nameSimilarity": 0.9231
+    },
+    {
+      "serverId": 104008,
+      "projectId": "soul.132",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Tundra/ice naming"
+    },
+    {
+      "serverId": 104009,
+      "projectId": "soul.24",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 105001,
+      "projectId": "soul.61",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 105002,
+      "projectId": "soul.31",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 105003,
+      "projectId": "soul.17",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 105004,
+      "projectId": "soul.26",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 105006,
+      "projectId": "soul.106",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Dance/Dancing naming"
+    },
+    {
+      "serverId": 105007,
+      "projectId": "soul.35",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Clown naming"
+    },
+    {
+      "serverId": 105008,
+      "projectId": "soul.134",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Earth naming"
+    },
+    {
+      "serverId": 105009,
+      "projectId": "soul.122",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Steady/Hold naming"
+    },
+    {
+      "serverId": 106001,
+      "projectId": "soul.128",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 106002,
+      "projectId": "soul.129",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 106003,
+      "projectId": "soul.135",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 106004,
+      "projectId": "soul.140",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 106005,
+      "projectId": "soul.139",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 106006,
+      "projectId": "soul.80",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 106007,
+      "projectId": "soul.126",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Faerie/Fairy naming"
+    },
+    {
+      "serverId": 106008,
+      "projectId": "soul.82",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 106009,
+      "projectId": "soul.88",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 106010,
+      "projectId": "soul.97",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Exorcism/Exorcises naming"
+    },
+    {
+      "serverId": 107001,
+      "projectId": "soul.85",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Enticer/Temptation naming"
+    },
+    {
+      "serverId": 107002,
+      "projectId": "soul.108",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 107003,
+      "projectId": "soul.9",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 107005,
+      "projectId": "soul.19",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 107006,
+      "projectId": "soul.23",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 107007,
+      "projectId": "soul.83",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 107008,
+      "projectId": "soul.125",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Sunlight/Sunshine naming"
+    },
+    {
+      "serverId": 107009,
+      "projectId": "soul.137",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; Nature/Natural naming"
+    },
+    {
+      "serverId": 107010,
+      "projectId": "soul.119",
+      "match": "exact",
+      "nameSimilarity": 1
+    },
+    {
+      "serverId": 107011,
+      "projectId": "soul.3",
+      "match": "exact-mechanics-alias",
+      "evidence": "unique slot/effect fingerprint; King naming"
+    }
+  ]
+}
