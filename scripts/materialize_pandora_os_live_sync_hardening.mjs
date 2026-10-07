@@ -63,23 +63,23 @@ function deepMerge(base, patch) {
   return result;
 }
 
-const EQUIPMENT_CATEGORY = {
+export const EQUIPMENT_CATEGORY = {
   '1H_SWORD': 0, '2H_SWORD': 1, '1H_AXE': 2, '2H_AXE': 3, LANCE: 4, POLE_ARM: 5,
   '1H_TRUMP_WEAPON': 6, '2H_TRUMP_WEAPON': 7, BOW: 8, CROSSBOW: 9,
   '1H_BLUNT_WEAPON': 10, '2H_BLUNT_WEAPON': 11, WAND: 12, STAFF: 13,
   FOOT_SHIELD: 20, HELMET: 30, TORSO: 31, GLOVES: 32, CUISSES: 33, BOOTS: 34,
   MANTLE: 35, EARRING: 40, NECKLACE: 41, BELT: 42, RING: 43
 };
-const SLOT_CATEGORY = {
+export const SLOT_CATEGORY = {
   head: 30, body: 31, gloves: 32, legs: 33, feet: 34, shield: 20,
   cloak: 35, ear: 40, neck: 41, belt: 42, ring: 43
 };
-const SOUL_SLOT = { weapon: 0, shield: 1, head: 2, body: 3, gloves: 4, legs: 5, feet: 6, belt: 7 };
+export const SOUL_SLOT = { weapon: 0, shield: 1, head: 2, body: 3, gloves: 4, legs: 5, feet: 6, belt: 7 };
 
 // Only mechanics that have a verified Modern stat representation are converted.
 // Unknown proc/formula effects remain in the frozen server snapshot and description;
 // they never cause an existing calculation token to be guessed away.
-const EFFECT_MAP = {
+export const EFFECT_MAP = {
   EP_VITARITY_CONST: [0, 'flat'],
   EP_STRENGTH_CONST: [1, 'flat'],
   EP_AGILITY_CONST: [2, 'flat'],
@@ -138,10 +138,10 @@ const EFFECT_MAP = {
   EP_BADEFFECT_TIME_SCALE: [162, 'flat', 'negate']
 };
 
-function serverCategory(item) {
+export function serverCategory(item) {
   return EQUIPMENT_CATEGORY[item.kind] ?? SLOT_CATEGORY[item.slot] ?? null;
 }
-function convertedEffects(server, includeArmorClass) {
+export function convertedEffects(server, includeArmorClass) {
   const values = new Map();
   let complete = true;
   for (const effect of server.effects || []) {
@@ -185,7 +185,7 @@ function convertedEffects(server, includeArmorClass) {
     }).sort((a, b) => a.stat - b.stat || a.unit.localeCompare(b.unit))
   };
 }
-function soulSlots(server) {
+export function soulSlots(server) {
   const result = Array(8).fill(0);
   for (const slot of server.slots || []) {
     invariant(Object.hasOwn(SOUL_SLOT, slot), 'Unknown Pandora OS Soul slot: ' + slot);
@@ -193,7 +193,7 @@ function soulSlots(server) {
   }
   return result;
 }
-function serverPatch(kind, server, english) {
+export function serverPatch(kind, server, english) {
   const englishText = english?.n || '';
   invariant(englishText, 'Missing Pandora OS English name for ' + server.id);
   const patch = {
