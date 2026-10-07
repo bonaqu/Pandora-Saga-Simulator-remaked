@@ -171,7 +171,7 @@ test('approved labels, repeated refresh and missing safe-import module keep cont
   const missingContext = await browser.newContext();
   try {
     const missing = await missingContext.newPage();
-    await missing.route('**/modern/builds.js', route => route.abort()); await missing.goto('/');
+    await missing.route('**/modern/builds.js**', route => route.abort()); await missing.goto('/');
     await missing.locator('#InCode').fill(payload); await missing.locator(codeAction('load')).click();
     expect(await missing.evaluate(() => Store())).toBe(payload);
     await expect(missing.locator('[data-remaked-code-status]')).toContainText(/unavailable|недоступ/i);

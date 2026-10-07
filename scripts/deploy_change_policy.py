@@ -59,6 +59,7 @@ ADMIN_RUNTIME_EXACT = {
     "scripts/materialize_pandora_os_live_sync_hardening.mjs",
     "scripts/materialize_pandora_os_complete_sync.mjs",
     "scripts/materialize_pandora_os_identity_reconcile.mjs",
+    "scripts/materialize_decorative_equipment_prune.mjs",
     "scripts/lib/wrangler-json.mjs",
 }
 

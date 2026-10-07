@@ -54,7 +54,7 @@ function classFlags(server) {
   if (!keys.length) return Array(28).fill(1);
   return CLASS_ORDER.map(key => classes[key] ? 1 : 0);
 }
-function stableCustomId(kind, serverId) {
+export function stableCustomId(kind, serverId) {
   const hex = crypto.createHash('sha256')
     .update('pandora-remaked-complete-item-sync:' + kind + ':' + String(serverId))
     .digest('hex');

@@ -101,7 +101,7 @@ test('locale refresh, reset/load and repeat enhancement preserve source nodes an
 });
 
 test('unavailable enhancement leaves original calculator input callbacks working', async ({ page }) => {
-  await page.route('**/modern/calculator-controls.js', route => route.abort());
+  await page.route('**/modern/calculator-controls.js**', route => route.abort());
   await page.goto('/');
   await expect(page.locator('[data-remaked-step]')).toHaveCount(0);
   const up = page.locator('#Status input[alt="+1"]').nth(1);
@@ -131,4 +131,15 @@ test('long approved identity and stat labels wrap inside their pair without chan
     expect(geometry.scroll).toBeLessThanOrEqual(geometry.width + 1);
   }
   expect(await page.evaluate(() => Store())).toBe(before);
+});
+
+
+test('Modern hides the unreachable character Potential budget but keeps skill Potential', async ({ page }) => {
+  await page.goto('/');
+  const hidden = await page.locator('#StatusUnP_0').evaluate(node => node.closest('.input_gt').parentElement.hidden);
+  expect(hidden).toBe(true);
+  await expect(page.locator('[data-remaked-skill-column-header]')).toContainText('Potential');
+  expect(await page.locator('[data-remaked-skill-potential-value]').count()).toBeGreaterThan(0);
+  await page.goto('/legacy/');
+  expect(await page.locator('#StatusUnP_0').evaluate(node => node.closest('.input_gt').parentElement.hidden)).toBe(false);
 });

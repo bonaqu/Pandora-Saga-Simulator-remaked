@@ -58,14 +58,15 @@ test('Breast Plate descriptions keep effect lines in both localized detail cards
 });
 
 for (const width of [390, 1440]) {
-  test('Russian character labels explain actual Potential mechanism at ' + width, async ({ page }, info) => {
+  test('Russian character labels omit the unreachable character Potential budget at ' + width, async ({ page }, info) => {
     const errors = []; page.on('pageerror', error => errors.push(error.message));
     await page.setViewportSize({ width, height: 900 }); await page.goto('/?ui=ru');
     await expect(page.locator('#remaked-level-label')).toHaveText('Уровень');
-    await expect(page.locator('#remaked-potential-budget-label')).toHaveText('Потенциал');
-    await expect(page.locator('#remaked-potential-budget-label')).toHaveAttribute('title', /предел развития веток/);
+    await expect(page.locator('#remaked-potential-budget-label')).toHaveCount(0);
+    expect(await page.locator('#StatusUnP_0').evaluate(node => node.closest('.input_gt').parentElement.hidden)).toBe(true);
     const labels = await page.evaluate(() => ['StatusStP_0', 'StatusSkP_0'].map(id => document.getElementById(id).closest('.input_gt').previousElementSibling.textContent));
     expect(labels).toEqual(['Хар-ки', 'Умения']);
+    await expect(page.locator('[data-remaked-skill-column-header]')).toContainText('Potential');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
     expect(errors).toEqual([]);
     await page.screenshot({ path: info.outputPath('modern-character-' + width + '.png') });

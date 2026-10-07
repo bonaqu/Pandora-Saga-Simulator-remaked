@@ -437,7 +437,7 @@ test('clean category captions retain native options and do not strip a real lead
 });
 
 test('without the enhancement script the original Equipment fields stay usable', async ({ page }) => {
-  await page.route('**/modern/equipment-picker.js', route => route.abort());
+  await page.route('**/modern/equipment-picker.js**', route => route.abort());
   await page.goto('/');
   const f = await fixture(page);
   await expect(page.locator('#SelEquip_0_0')).toBeVisible();

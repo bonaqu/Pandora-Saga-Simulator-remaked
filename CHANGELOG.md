@@ -1,5 +1,25 @@
 # Changelog
 
+## Modern 3.26 — seamless online updates and catalog cleanup, 2026-10-07
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Modern теперь сам замечает новую опубликованную версию: после короткой паузы в действиях сайт завершает ввод в активном поле, сохраняет текущий билд и перезагружается на свежие файлы. Обычно очищать кэш/cookie или использовать Ctrl+F5 не требуется.
+- Убрана строка «Потенциал» в блоке «Персонаж»: при текущем максимальном уровне этот отдельный бюджет очков не начисляется и всегда показывал 0/0. Потенциал веток в разделе «Умения» остаётся и продолжает работать.
+- Чисто декоративные предметы исключены из Modern-каталога экипировки и расчётов. Если такой предмет был сохранён в старом билде, актуализация билда снимет его как недоступный предмет, не затрагивая остальной выбор.
+- Удалены оставшиеся неиспользуемые ресурсы старого режима установки/офлайн-работы; Legacy Mode не изменён.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Modern now detects a newly published release automatically. After a short idle moment it commits the active field, flushes the current build and reloads fresh versioned assets; manual cache/cookie cleanup or Ctrl+F5 should not normally be necessary.
+- The Character-level Potential budget row is hidden because the supported level range never awards those separate points and it always displayed 0/0. Skill-branch Potential remains available and unchanged.
+- Decorative-only items are removed from Modern equipment and calculations. If an old build selected one, normal build migration clears that unavailable item without changing unrelated choices.
+- Remaining unused install/offline assets were removed; Legacy Mode is unchanged.
+<!-- /release-notes:en -->
+
 ## Modern 3.25 — current builds and online calculator, 2026-10-07
 
 <!-- release-notes:ru -->

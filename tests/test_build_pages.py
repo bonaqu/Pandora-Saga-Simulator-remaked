@@ -81,7 +81,6 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             (modern / "compare.css").write_text("/* compare */", encoding="utf-8")
             (modern / "tooltips.css").write_text("/* tooltips */", encoding="utf-8")
             (modern / "mobile.css").write_text("/* mobile */", encoding="utf-8")
-            (modern / "pwa.css").write_text("/* pwa */", encoding="utf-8")
             (modern / "version.js").write_text(
                 "window.PandoraRemakedVersion = { ui: '2026.09.4' };",
                 encoding="utf-8",
@@ -125,17 +124,8 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
                     encoding="utf-8",
                 )
             (modern / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
-            for name in ("icon-192.png", "icon-512.png", "apple-touch-icon.png", "social-preview.png"):
+            for name in ("apple-touch-icon.png", "social-preview.png"):
                 (modern / name).write_bytes(b"fixture-png")
-            (modern / "manifest.webmanifest").write_text(
-                json.dumps({"name": "fixture"}),
-                encoding="utf-8",
-            )
-            for size in (192, 512):
-                (modern / f"icon-{size}.svg").write_text(
-                    f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}'/>",
-                    encoding="utf-8",
-                )
             (modern / "service-worker.js").write_text(
                 "const CACHE_NAME = '__CACHE_VERSION__'; const PRECACHE_URLS = __PRECACHE_URLS__;",
                 encoding="utf-8",
@@ -253,8 +243,12 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             )
             self.assertIn('data-legacy-url="./legacy/"', html)
             version_js = (output / "modern" / "version.js").read_text(encoding="utf-8")
+            version_json = json.loads((output / "modern" / "version.json").read_text(encoding="utf-8"))
             release_js = (output / "modern" / "release-notes.js").read_text(encoding="utf-8")
             self.assertIn('"ui":"3.11"', version_js)
+            self.assertEqual(version_json, {"legacyEngine": "2.00", "ui": "3.11"})
+            self.assertIn('modern/modern.css?v=3.11', html)
+            self.assertIn('modern/pwa.js?v=3.11', html)
             self.assertIn('"version":"3.11"', release_js)
             self.assertIn("Fixture English release note.", release_js)
             self.assertIn("Проверка русского release note.", release_js)
@@ -333,9 +327,8 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
                 "modern/tooltips.css",
                 "modern/mobile.css",
                 "modern/favicon.svg",
-                "modern/icon-192.svg",
-                "modern/icon-512.svg",
                 "modern/version.js",
+                "modern/version.json",
                 "modern/release-notes.js",
                 "modern/locales.js",
                 "modern/game-terms.js",
@@ -429,12 +422,12 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             with self.assertRaisesRegex(FileNotFoundError, "modern/mobile.js"):
                 build_pages(root, root / "_site")
 
-    def test_missing_pwa_assets_fail_clearly(self):
+    def test_online_build_has_no_pwa_manifest(self):
         with tempfile.TemporaryDirectory() as td:
             root = self.make_root(pathlib.Path(td))
-            (root / "modern" / "manifest.webmanifest").unlink()
             build_pages(root, root / "_site")
             self.assertFalse((root / "_site/modern/manifest.webmanifest").exists())
+            self.assertTrue((root / "_site/modern/version.json").is_file())
 
     def test_missing_pwa_runtime_fails_clearly(self):
         with tempfile.TemporaryDirectory() as td:

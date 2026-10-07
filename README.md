@@ -23,7 +23,7 @@
 
 The project is made for players who want to experiment with classes, attributes, skills, equipment and other character settings without depending on the long-dead original FC2 page.
 
-The target server is [Pandora Saga: Weapons of Balance](https://pandorasaga-os.com/). Current calculations still use the preserved Legacy 2.00 engine; matching this server's current balance is a separate verification task, not an accuracy claim for every server-specific mechanic.
+Modern uses a continuously refreshed current game-data catalog on top of the preserved Legacy 2.00 calculation path. Saved Modern builds keep the player's choices but are migrated forward to current data; Legacy Mode remains the untouched historical reference.
 
 ## ✨ Modern Mode
 
@@ -43,8 +43,8 @@ The main site opens in **Modern Mode**:
 - a keyboard skip link and native modal dialogs that keep focus inside and return it to the opener on Escape;
 - an on-site **Updates** panel with separate Legacy/UI versions, release highlights and the full changelog;
 - a compact sticky character summary and collapsible detail cards on phone screens;
-- an installable PWA shell with reliable offline boot for both Modern and Legacy routes;
-- automatic PWA update checks and safe activation of fresh deployments without normally requiring Ctrl+F5; a fallback notice remains available if activation cannot complete;
+- online-only delivery with retired install/offline caches, keeping the calculator on one current web version;
+- automatic live release checks that wait for a short idle moment, flush autosave and reload fresh Modern assets without normally requiring Ctrl+F5;
 - one EN/RU/JP/TW language panel: RU with English fallback, or original JP/TW game data with the English Modern shell;
 - read-only item/Soul details in Modern search and a Share build link that restores the character in another browser;
 - all Remaked autosaves and named builds stay local to the current browser in this release.
@@ -87,9 +87,9 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 
 Translations are maintained in one [Excel workbook](localization/translations.xlsx): H (yellow) is Russian, I (green) is an editable English override. The original source columns stay read-only. See the [step-by-step Russian guide](docs/LOCALIZATION_FOR_BEGINNERS.ru.md). Approved translations appear throughout the Modern calculator, lists, search and skill descriptions. Blank game fields retain the selected source language; Legacy Mode stays unchanged.
 
-Modern **3.11** is published. Equipment and Soul discovery now lives directly in the relevant slot pickers instead of duplicate top-level search actions. Compatibility rules, calculations, builds and Legacy Mode are preserved.
+Modern **3.26** is published. Saved builds always use current catalog data, compact share links remain backward-compatible, equipment/Soul discovery stays inside the relevant slots, and decorative-only equipment is excluded from calculations.
 
-Modern now checks for a fresh deployment automatically. Normal navigation, F5, returning to the tab or coming back online can adopt the new Service Worker without requiring Ctrl+F5. Autosave and offline use remain supported.
+Modern checks a small no-cache release manifest on startup, when returning to the tab, after reconnecting and periodically while visible. A newer release waits for a short idle moment, commits the active field, flushes autosave and reloads versioned assets. The site is intentionally online-only; no manual cache or cookie cleanup should normally be needed.
 
 The on-site **Updates / What’s new** dialog is generated from the latest release in [CHANGELOG.md](CHANGELOG.md), and the visible Remaked UI version is derived from the same release during build. The visible version, short release notes and full changelog therefore share one source of truth.
 
@@ -103,7 +103,7 @@ Current directions include:
 - more verified Russian game terminology;
 - broader supported learning/effect data without inventing mechanics missing from the Legacy engine;
 - continued visual, touch, keyboard and cross-browser polish;
-- preserving old build/link reproducibility as catalogs evolve.
+- preserving old saved choices and links while recalculating them against current catalog data.
 
 See [CHANGELOG.md](CHANGELOG.md) for released changes and the [public roadmap](docs/TASK_QUEUE.ru.md) for current and future work.
 
@@ -116,7 +116,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** Modern 3.11
+- **Remaked UI:** Modern 3.26
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 

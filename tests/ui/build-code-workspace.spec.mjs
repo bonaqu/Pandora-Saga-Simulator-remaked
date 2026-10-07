@@ -66,7 +66,7 @@ for (const width of [320, 390, 768, 1440]) test(`single code workspace fits and 
 
 test('missing calculator enhancement never falls back to unsafe native CodeLoad in Modern Builds', async ({ page }) => {
   const errors = []; page.on('pageerror', error => errors.push(error.message));
-  await page.route('**/modern/calculator-controls.js', route => route.abort()); await page.goto('/');
+  await page.route('**/modern/calculator-controls.js**', route => route.abort()); await page.goto('/');
   const before = await page.evaluate(() => {
     StatusMove('Lev', 54); CalcSet('Lev'); document.getElementById('SwitchUse_4').click();
     PandoraRemaked.builds.flushAutosave();
