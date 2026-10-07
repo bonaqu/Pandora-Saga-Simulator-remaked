@@ -83,6 +83,40 @@ class DeployChangePolicyTests(unittest.TestCase):
         self.assertEqual(result["ci_profile"], "catalog")
         self.assertTrue(result["full_validation"])
 
+    def test_admin_only_changes_skip_pages_and_use_admin_profile(self):
+        for path in (
+            "admin-api/src/worker.js",
+            "tests/admin/catalog.test.mjs",
+            "scripts/create_first_admin.mjs",
+            "scripts/materialize_pandora_os_complete_sync.mjs",
+            "scripts/lib/wrangler-json.mjs",
+            ".github/workflows/admin-api.yml",
+        ):
+            with self.subTest(path=path):
+                result = POLICY.classify([path])
+                self.assertEqual(result["mode"], "admin-only")
+                self.assertEqual(result["ci_profile"], "admin")
+                self.assertFalse(result["pages_required"])
+                self.assertFalse(result["full_validation"])
+                self.assertFalse(result["force_full_deploy"])
+
+    def test_admin_plus_release_notes_only_deploys_pages_for_release_notes(self):
+        result = POLICY.classify(["admin-api/src/worker.js", "CHANGELOG.md"])
+        self.assertEqual(result["mode"], "admin-only")
+        self.assertEqual(result["ci_profile"], "admin")
+        self.assertTrue(result["pages_required"])
+        self.assertFalse(result["full_validation"])
+
+    def test_admin_mixed_with_shared_catalog_escalates_to_catalog(self):
+        result = POLICY.classify([
+            "admin-api/src/worker.js",
+            "data/generated/equipment.v1.json",
+        ])
+        self.assertEqual(result["mode"], "full")
+        self.assertEqual(result["ci_profile"], "runtime")
+        self.assertTrue(result["pages_required"])
+        self.assertTrue(result["full_validation"])
+
     def test_runtime_file_uses_full_runtime_feature_profile(self):
         for path in (
             "modern/app-shell.js",
@@ -111,6 +145,7 @@ class DeployChangePolicyTests(unittest.TestCase):
     def test_deployment_infrastructure_forces_full_production_validation(self):
         for path in (
             ".github/workflows/pages.yml",
+            ".github/workflows/feature-ci.yml",
             "scripts/build_pages.py",
             "scripts/deploy_change_policy.py",
         ):
