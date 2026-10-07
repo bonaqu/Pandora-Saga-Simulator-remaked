@@ -144,6 +144,149 @@ test('startup stale autosave is upgraded safely when the new catalog reduces Sou
   expect(backups[0].name).toMatch(/Backup|Автокопия|バックアップ|備份/);
 });
 
+test('automatic catalog adoption safely repairs reduced Soul sockets and preserves a byte-for-byte backup', async ({ page }) => {
+  const original = socketItems(1);
+  original.records[0].sockets = 3;
+  const next = structuredClone(original);
+  next.revision = 2;
+  next.impactRevision = 2;
+  next.records[0].sockets = 1;
+
+  await page.route(publicApi + '**', route => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/head')) {
+      const { records, ...head } = next;
+      return route.fulfill({ json: head });
+    }
+    return route.fulfill({ json: next });
+  });
+  await page.goto('/');
+  const before = await page.evaluate(data => {
+    PandoraRemaked.catalog.applySnapshot(data);
+    PandoraRemaked.adapter.selectEquipment(0, data.records[0].engineId);
+    PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 4 }, 185);
+    PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 5 }, 185);
+    PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 6 }, 185);
+    PandoraRemaked.builds.flushAutosave();
+    return {
+      payload: PandoraRemaked.adapter.serialize(),
+      autosave: PandoraRemaked.buildStore.readAutosave().record.payload,
+      builds: PandoraRemaked.buildStore.listBuilds().builds
+    };
+  }, original);
+  expect(before.payload).toBe(before.autosave);
+  expect(before.builds).toHaveLength(0);
+
+  const result = await page.evaluate(() => PandoraRemaked.builds.checkCatalogHead());
+  expect(result.ok).toBe(true);
+  expect(result.automatic).toBe(true);
+  expect(result.repaired).toBe(2);
+  expect(await page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(2);
+  expect(await page.evaluate(() => Status.Equip[0].slice(4, 7))).toEqual([185, 0, 0]);
+
+  const persisted = await page.evaluate(() => ({
+    payload: PandoraRemaked.adapter.serialize(),
+    autosave: PandoraRemaked.buildStore.readAutosave().record.payload,
+    builds: PandoraRemaked.buildStore.listBuilds().builds
+  }));
+  expect(persisted.payload).toMatch(/^PS3:2:/);
+  expect(persisted.autosave).toBe(persisted.payload);
+  expect(persisted.builds).toHaveLength(1);
+  expect(persisted.builds[0].name).toBe('Backup before catalog 1→2');
+  expect(persisted.builds[0].payload).toBe(before.payload);
+  await expect(page.locator('[data-remaked-autosave-status]')).toContainText(/Catalog 2 applied|Каталог 2 применён/);
+
+  await page.reload();
+  await expect(page.locator('[data-remaked-autosave-status]')).not.toContainText('Autosave…');
+  expect(await page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(2);
+  expect(await page.evaluate(() => Status.Equip[0].slice(4, 7))).toEqual([185, 0, 0]);
+});
+
+test('automatic catalog repair never mutates the build when its safety backup cannot be saved', async ({ page }) => {
+  const original = socketItems(1);
+  original.records[0].sockets = 3;
+  const next = structuredClone(original);
+  next.revision = 2;
+  next.impactRevision = 2;
+  next.records[0].sockets = 1;
+
+  await page.route(publicApi + '**', route => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/head')) {
+      const { records, ...head } = next;
+      return route.fulfill({ json: head });
+    }
+    return route.fulfill({ json: next });
+  });
+  await page.goto('/');
+  const before = await page.evaluate(data => {
+    PandoraRemaked.catalog.applySnapshot(data);
+    PandoraRemaked.adapter.selectEquipment(0, data.records[0].engineId);
+    PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 4 }, 185);
+    PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 5 }, 185);
+    PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 6 }, 185);
+    PandoraRemaked.builds.flushAutosave();
+    const snapshot = {
+      payload: PandoraRemaked.adapter.serialize(),
+      autosave: PandoraRemaked.buildStore.readAutosave().record.payload,
+      arrays: JSON.stringify([Status.Equip, EquipData, SoulData])
+    };
+    PandoraRemaked.buildStore.saveBuild = () => ({ ok: false, error: { code: 'quota-exceeded' } });
+    return snapshot;
+  }, original);
+
+  const result = await page.evaluate(() => PandoraRemaked.builds.checkCatalogHead());
+  expect(result.ok).toBe(false);
+  expect(result.reason).toBe('backup-failed');
+  expect(await page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(1);
+  const after = await page.evaluate(() => ({
+    payload: PandoraRemaked.adapter.serialize(),
+    autosave: PandoraRemaked.buildStore.readAutosave().record.payload,
+    arrays: JSON.stringify([Status.Equip, EquipData, SoulData]),
+    builds: JSON.parse(localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY) || '{"builds":[]}').builds || []
+  }));
+  expect(after.payload).toBe(before.payload);
+  expect(after.autosave).toBe(before.autosave);
+  expect(after.arrays).toBe(before.arrays);
+  expect(after.builds).toHaveLength(0);
+  await expect(page.locator('[data-remaked-autosave-status]')).toContainText(/backup|резерв/i);
+});
+
+test('automatic catalog adoption visibly refuses destructive equipment incompatibility instead of silently pinning old data', async ({ page }) => {
+  const original = socketItems(1);
+  const next = structuredClone(original);
+  next.revision = 2;
+  next.impactRevision = 2;
+  next.records = next.records.filter(record => record.kind !== 'equipment');
+
+  await page.route(publicApi + '**', route => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/head')) {
+      const { records, ...head } = next;
+      return route.fulfill({ json: head });
+    }
+    return route.fulfill({ json: next });
+  });
+  await page.goto('/');
+  const before = await page.evaluate(data => {
+    PandoraRemaked.catalog.applySnapshot(data);
+    PandoraRemaked.adapter.selectEquipment(0, data.records[0].engineId);
+    PandoraRemaked.builds.flushAutosave();
+    return {
+      payload: PandoraRemaked.adapter.serialize(),
+      autosave: PandoraRemaked.buildStore.readAutosave().record.payload
+    };
+  }, original);
+
+  const result = await page.evaluate(() => PandoraRemaked.builds.checkCatalogHead());
+  expect(result.ok).toBe(false);
+  expect(result.reason).toBe('incompatible');
+  expect(await page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(1);
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(before.payload);
+  expect(await page.evaluate(() => PandoraRemaked.buildStore.readAutosave().record.payload)).toBe(before.autosave);
+  await expect(page.locator('[data-remaked-autosave-status]')).toContainText(/incompatible|несовместим/i);
+});
+
 test('older named builds are visibly marked and safely upgraded when loaded', async ({ page }) => {
   const next = editedWarrior();
   await page.route(publicApi + '**', route => {
