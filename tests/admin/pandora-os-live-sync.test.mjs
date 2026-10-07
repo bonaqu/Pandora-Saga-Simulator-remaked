@@ -57,7 +57,10 @@ test('live Pandora OS mapping is one-to-one, equipment-only and fully compilable
   assert.ok(rows.length > 1000, 'expected broad legacy English normalization plus server sync');
   assert.equal(rows.filter(row => row.mode === 'server').length, 345);
   assert.equal(new Set(rows.map(row => row.identity.id)).size, rows.length);
-  assert.ok(rows.some(row => row.mode === 'normalize' && row.patch.edit.names.en === 'Gradius'));
+  assert.ok(rows.some(row => row.mode === 'normalize' &&
+    /^\([^()]+\)$/.test(row.expectedEnglish || '') &&
+    !/^\([^()]+\)$/.test(row.patch.edit.names.en || '')),
+    'expected at least one bracket-only English normalization');
 
   const statements = buildReleaseInsertStatements(rows);
   assert.equal(statements.length, rows.length);
@@ -107,7 +110,8 @@ test('revision 82 merge-patches revision 81 without clobbering unrelated manual 
   transaction(sqlite, buildMigration(rows));
 
   const head = sqlite.prepare('SELECT version, impact_version FROM catalog_head WHERE id = 1').get();
-  assert.deepEqual(head, { version: 82, impact_version: 82 });
+  assert.equal(head.version, 82);
+  assert.equal(head.impact_version, 82);
   const next = snapshot(sqlite);
   const updatedServer = next.find(entry => entry.identity.id === serverRow.identity.id);
   assert.equal(updatedServer.edit.notes.en, 'manual-note-must-survive');
