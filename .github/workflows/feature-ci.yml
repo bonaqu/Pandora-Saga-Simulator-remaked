@@ -41,13 +41,17 @@ jobs:
           fi
 
           mapfile -t files < <(git diff --name-only "$base"...HEAD)
-          docs_only=true
+          policy_json="$(printf '%s\n' "${files[@]}" | python3 scripts/deploy_change_policy.py --stdin)"
+          policy_mode="$(jq -r '.mode' <<<"$policy_json")"
+          docs_only=false
+          if [[ "$policy_mode" == "docs-only" || "$policy_mode" == "release-notes" ]]; then
+            docs_only=true
+          fi
+
           css_only=true
           release_notes_required=false
           changelog_changed=false
-
           if [[ ${#files[@]} -eq 0 ]]; then
-            docs_only=false
             css_only=false
           fi
 
@@ -61,20 +65,9 @@ jobs:
                 release_notes_required=true
                 ;;
             esac
-            case "$file" in
-              CHANGELOG.md)
-                # CHANGELOG now generates the visible UI version and What's new runtime data.
-                docs_only=false
-                ;;
-              *.md|docs/*|.github/ISSUE_TEMPLATE/*)
-                ;;
-              *)
-                docs_only=false
-                ;;
-            esac
 
             case "$file" in
-              modern/*.css|tests/ui/*.spec.mjs|tests/ui/helpers/*.mjs|*.md|docs/*|.github/ISSUE_TEMPLATE/*)
+              modern/*.css|tests/ui/*.spec.mjs|tests/ui/helpers/*.mjs|*.md|docs/*|.github/ISSUE_TEMPLATE/*|tests/test_repository_docs.py|tests/test_deploy_change_policy.py)
                 ;;
               *)
                 css_only=false
@@ -99,9 +92,12 @@ jobs:
 
           printf 'Changed files (%d):\n' "${#files[@]}"
           printf ' - %s\n' "${files[@]}"
+          echo "policy=$policy_json"
           echo "docs_only=$docs_only css_only=$css_only full_required=$full_required release_notes_required=$release_notes_required changelog_changed=$changelog_changed"
 
   browser_site:
+    needs: classify
+    if: needs.classify.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -133,18 +129,30 @@ jobs:
           python-version: '3.13'
 
       - name: Set up project Node runtime
+        if: needs.classify.outputs.docs_only != 'true'
         uses: actions/setup-node@v6
         with:
           node-version: '24'
           cache: npm
 
-      - name: Run Python tests
+      - name: Run documentation and release-note tests
+        if: needs.classify.outputs.docs_only == 'true'
+        run: >
+          python -m unittest -v
+          tests.test_repository_docs
+          tests.test_build_pages
+          tests.test_deploy_change_policy
+
+      - name: Run full Python tests
+        if: needs.classify.outputs.docs_only != 'true'
         run: python -m unittest discover -s tests -v
 
       - name: Validate restored simulator
+        if: needs.classify.outputs.docs_only != 'true'
         run: python3 scripts/validate_site.py
 
       - name: Syntax-check core JavaScript
+        if: needs.classify.outputs.docs_only != 'true'
         shell: bash
         run: |
           set -euo pipefail
