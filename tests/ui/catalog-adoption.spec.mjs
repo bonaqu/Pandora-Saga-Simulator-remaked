@@ -27,6 +27,19 @@ function socketItems(revision = 1) {
   });
   return publication(revision, records);
 }
+function addedEquipmentVariant(index) {
+  const id = { id: 'modern.equipment.adoption-extra', kind: 'equipment', category: 0, index };
+  const edit = draftFromSource(null, 'equipment');
+  Object.assign(edit, {
+    id: id.id,
+    category: id.category,
+    names: { en: 'Latest catalog variant', ru: 'Новый вариант каталога', jp: '', tw: '' },
+    sockets: 1,
+    baseAttack: 75,
+    effects: []
+  });
+  return compileRecord(validateDraft(edit, id), id, null);
+}
 async function state(page) {
   return page.evaluate(() => ({ payload: PandoraRemaked.adapter.serialize(), revision: PandoraRemaked.catalog.getRevision(),
     context: PandoraRemaked.catalog.captureContext(), summary: PandoraRemaked.adapter.readCalculatedSummary(),
@@ -63,6 +76,64 @@ test('live catalog head updates the current character and autosave without openi
   expect(await page.evaluate(() => Status.LP)).toBe(before.lp + 100);
   expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toMatch(/^PS3:2:/);
   expect(await page.evaluate(() => PandoraRemaked.buildStore.readAutosave().record.payload)).toMatch(/^PS3:2:/);
+});
+
+test('startup stale autosave is upgraded safely when the new catalog reduces Soul sockets', async ({ page }) => {
+  const oldCatalog = socketItems(1);
+  const nextCatalog = structuredClone(oldCatalog);
+  nextCatalog.revision = 2;
+  nextCatalog.impactRevision = 2;
+  nextCatalog.records[0].sockets = 1;
+  const extra = addedEquipmentVariant(nextCatalog.records[0].index + 1);
+  nextCatalog.records.push(extra);
+  let published = oldCatalog;
+
+  await page.route(publicApi + '**', route => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/head')) {
+      const { records, ...head } = published;
+      return route.fulfill({ json: head });
+    }
+    const requested = Number(url.searchParams.get('revision'));
+    if (requested === 1) return route.fulfill({ json: oldCatalog });
+    return route.fulfill({ json: published });
+  });
+
+  await page.goto('/');
+  await expect.poll(() => page.evaluate(() => PandoraRemaked.catalog.getRevision())).toBe(1);
+  const before = await page.evaluate(data => {
+    PandoraRemaked.adapter.selectEquipment(0, data.records[0].engineId);
+    PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 4 }, data.records[1].engineId);
+    PandoraRemaked.adapter.selectSoul({ slotIndex: 0, socketIndex: 5 }, data.records[1].engineId);
+    PandoraRemaked.builds.flushAutosave();
+    return {
+      payload: PandoraRemaked.adapter.serialize(),
+      souls: Status.Equip[0].slice(4, 7)
+    };
+  }, oldCatalog);
+  expect(before.souls[0]).toBe(oldCatalog.records[1].engineId);
+  expect(before.souls[1]).toBe(oldCatalog.records[1].engineId);
+
+  published = nextCatalog;
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => PandoraRemaked.catalog.getRevision()), { timeout: 10000 }).toBe(2);
+
+  const after = await page.evaluate(extraId => ({
+    payload: PandoraRemaked.adapter.serialize(),
+    autosave: PandoraRemaked.buildStore.readAutosave().record.payload,
+    souls: Status.Equip[0].slice(4, 7),
+    builds: PandoraRemaked.buildStore.listBuilds().builds,
+    hasNewVariant: PandoraRemaked.adapter.listEquipmentOptions(0).some(option => option.value === String(extraId))
+  }), extra.engineId);
+
+  expect(after.payload).toMatch(/^PS3:2:/);
+  expect(after.autosave).toBe(after.payload);
+  expect(after.souls[0]).toBe(oldCatalog.records[1].engineId);
+  expect(after.souls[1]).toBe(0);
+  expect(after.hasNewVariant).toBe(true);
+  const backups = after.builds.filter(build => build.payload === before.payload);
+  expect(backups).toHaveLength(1);
+  expect(backups[0].name).toMatch(/Backup|Автокопия|バックアップ|備份/);
 });
 
 test('older named builds are visibly marked and safely upgraded when loaded', async ({ page }) => {
