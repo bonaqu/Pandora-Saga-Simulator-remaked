@@ -10,7 +10,7 @@
 - Ссылки на билды стали значительно короче; прежние ссылки продолжают работать.
 - Возвращена сортировка снаряжения по возрастанию уровня, устранён подтверждённый дубль декоративного золотого плаща с сохранением старых выборов, восстановлены переносы строк в описаниях.
 - Уточнены русские подписи раздела «Персонаж» и термин «слоты душ». Для потенциала добавлено пояснение.
-- Убраны установка приложения и офлайн-режим. Legacy остаётся без изменений.
+- Убраны установка приложения и офлайн-режим. Старые установленные версии безопасно завершают обновление с сохранением билдов. Legacy остаётся без изменений.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
@@ -20,7 +20,7 @@
 - Removed outdated badges and visible backup builds. Autosave also saves the last changes when leaving the page.
 - Build links are much shorter; existing links remain readable.
 - Restored ascending equipment-level sorting and description line breaks, reconciled the confirmed cosmetic Golden Mantle duplicate while preserving old choices, and clarified Russian character labels and Soul slots.
-- Removed app installation and offline mode. Legacy remains unchanged.
+- Removed app installation and offline mode. Previously installed versions safely finish updating while preserving saved builds. Legacy remains unchanged.
 <!-- /release-notes:en -->
 
 ## Modern 3.24 — enhancement mechanics audit, 2026-10-07
