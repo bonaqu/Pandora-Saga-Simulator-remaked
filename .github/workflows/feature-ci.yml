@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   group: feature-${{ github.ref }}
@@ -22,8 +23,37 @@ jobs:
       docs_only: ${{ steps.changes.outputs.docs_only }}
       css_only: ${{ steps.changes.outputs.css_only }}
       full_required: ${{ steps.changes.outputs.full_required }}
+      ci_profile: ${{ steps.changes.outputs.ci_profile }}
+      translation_only: ${{ steps.changes.outputs.translation_only }}
+      catalog_data: ${{ steps.changes.outputs.catalog_data }}
+      admin_only: ${{ steps.changes.outputs.admin_only }}
+      duplicate_pr: ${{ steps.changes.outputs.duplicate_pr }}
     steps:
+      - name: Detect open PR for feature push
+        id: dedupe
+        if: github.event_name == 'push'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          count="$(gh api --method GET "repos/$REPOSITORY/pulls" \
+            -f state=open \
+            -f base=bonaqu_projects \
+            -f head="$OWNER:$BRANCH" \
+            --jq 'length')"
+          if [[ "$count" -gt 0 ]]; then
+            echo "duplicate_pr=true" >> "$GITHUB_OUTPUT"
+            echo "Open PR already validates $BRANCH; skipping duplicate push matrix."
+          else
+            echo "duplicate_pr=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout
+        if: steps.dedupe.outputs.duplicate_pr != 'true'
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
@@ -31,8 +61,14 @@ jobs:
       - name: Classify changed files
         id: changes
         shell: bash
+        env:
+          DUPLICATE_PR: ${{ steps.dedupe.outputs.duplicate_pr }}
         run: |
           set -euo pipefail
+          if [[ "$DUPLICATE_PR" == "true" ]]; then
+            printf 'docs_only=true\ncss_only=false\nfull_required=false\nci_profile=duplicate-pr\ntranslation_only=false\ncatalog_data=false\nadmin_only=false\nduplicate_pr=true\n' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             base="${{ github.event.pull_request.base.sha }}"
           else
@@ -43,10 +79,20 @@ jobs:
           mapfile -t files < <(git diff --name-only "$base"...HEAD)
           policy_json="$(printf '%s\n' "${files[@]}" | python3 scripts/deploy_change_policy.py --stdin)"
           policy_mode="$(jq -r '.mode' <<<"$policy_json")"
+          policy_profile="$(jq -r '.ci_profile' <<<"$policy_json")"
           docs_only=false
           if [[ "$policy_mode" == "docs-only" || "$policy_mode" == "release-notes" ]]; then
             docs_only=true
           fi
+
+          translation_only=false
+          catalog_data=false
+          admin_only=false
+          case "$policy_profile" in
+            translation) translation_only=true ;;
+            catalog) catalog_data=true ;;
+            admin) admin_only=true ;;
+          esac
 
           css_only=true
           release_notes_required=false
@@ -67,7 +113,7 @@ jobs:
             esac
 
             case "$file" in
-              modern/*.css|tests/ui/*.spec.mjs|tests/ui/helpers/*.mjs|*.md|docs/*|.github/ISSUE_TEMPLATE/*|tests/test_repository_docs.py|tests/test_deploy_change_policy.py)
+              modern/*.css|css/*|image/*|tests/ui/*.spec.mjs|tests/ui/helpers/*.mjs|*.md|docs/*|.github/ISSUE_TEMPLATE/*|tests/test_repository_docs.py|tests/test_deploy_change_policy.py)
                 ;;
               *)
                 css_only=false
@@ -75,29 +121,29 @@ jobs:
             esac
           done
 
-          if [[ "${{ github.event_name }}" == "pull_request" && "$release_notes_required" == "true" && "$changelog_changed" != "true" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" && "$docs_only" != "true" && "$release_notes_required" == "true" && "$changelog_changed" != "true" ]]; then
             echo "::error::User-facing runtime/UI changes require an accompanying CHANGELOG.md update."
             echo "Update the latest dated Modern release so the site version and What's new panel stay in sync."
             exit 1
           fi
 
-          if [[ "$docs_only" == "true" || "$css_only" == "true" ]]; then
+          if [[ "$docs_only" == "true" || "$css_only" == "true" || "$translation_only" == "true" || "$catalog_data" == "true" || "$admin_only" == "true" ]]; then
             full_required=false
           else
             full_required=true
           fi
 
-          printf 'docs_only=%s\ncss_only=%s\nfull_required=%s\n' \
-            "$docs_only" "$css_only" "$full_required" >> "$GITHUB_OUTPUT"
+          printf 'docs_only=%s\ncss_only=%s\nfull_required=%s\nci_profile=%s\ntranslation_only=%s\ncatalog_data=%s\nadmin_only=%s\nduplicate_pr=false\n' \
+            "$docs_only" "$css_only" "$full_required" "$policy_profile" "$translation_only" "$catalog_data" "$admin_only" >> "$GITHUB_OUTPUT"
 
           printf 'Changed files (%d):\n' "${#files[@]}"
           printf ' - %s\n' "${files[@]}"
           echo "policy=$policy_json"
-          echo "docs_only=$docs_only css_only=$css_only full_required=$full_required release_notes_required=$release_notes_required changelog_changed=$changelog_changed"
+          echo "docs_only=$docs_only css_only=$css_only ci_profile=$policy_profile translation_only=$translation_only catalog_data=$catalog_data admin_only=$admin_only full_required=$full_required release_notes_required=$release_notes_required changelog_changed=$changelog_changed"
 
   browser_site:
     needs: classify
-    if: needs.classify.outputs.docs_only != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -117,6 +163,7 @@ jobs:
 
   static:
     needs: classify
+    if: needs.classify.outputs.duplicate_pr != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -129,7 +176,7 @@ jobs:
           python-version: '3.13'
 
       - name: Set up project Node runtime
-        if: needs.classify.outputs.docs_only != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
         uses: actions/setup-node@v6
         with:
           node-version: '24'
@@ -143,16 +190,24 @@ jobs:
           tests.test_build_pages
           tests.test_deploy_change_policy
 
+      - name: Run focused change-policy checks
+        if: needs.classify.outputs.translation_only == 'true' || needs.classify.outputs.catalog_data == 'true' || needs.classify.outputs.admin_only == 'true'
+        run: >
+          python -m unittest -v
+          tests.test_repository_docs
+          tests.test_build_pages
+          tests.test_deploy_change_policy
+
       - name: Run full Python tests
-        if: needs.classify.outputs.docs_only != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
         run: python -m unittest discover -s tests -v
 
       - name: Validate restored simulator
-        if: needs.classify.outputs.docs_only != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.admin_only != 'true'
         run: python3 scripts/validate_site.py
 
       - name: Syntax-check core JavaScript
-        if: needs.classify.outputs.docs_only != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -173,7 +228,7 @@ jobs:
 
   workspace_visual:
     needs: classify
-    if: needs.classify.outputs.docs_only != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -225,7 +280,7 @@ jobs:
 
   browser_core:
     needs: classify
-    if: needs.classify.outputs.docs_only != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -269,7 +324,7 @@ jobs:
 
   catalog_audit:
     needs: classify
-    if: needs.classify.outputs.full_required == 'true'
+    if: needs.classify.outputs.full_required == 'true' || needs.classify.outputs.catalog_data == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -298,7 +353,7 @@ jobs:
 
   catalog_contract:
     needs: classify
-    if: needs.classify.outputs.full_required == 'true'
+    if: needs.classify.outputs.full_required == 'true' || needs.classify.outputs.catalog_data == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -327,6 +382,9 @@ jobs:
           tests/ui/catalog-adapter.spec.mjs
           tests/ui/catalog-adoption.spec.mjs
           tests/ui/equipment-enhancement-effects.spec.mjs
+          tests/ui/data-projections.spec.mjs
+          tests/ui/item-preview.spec.mjs
+          tests/ui/equipment-picker.spec.mjs
           tests/ui/build-load-races.spec.mjs
           tests/ui/skill-catalog.spec.mjs
           tests/ui/skill-variants.spec.mjs
@@ -338,10 +396,64 @@ jobs:
           --project=chromium
           --shard=${{ matrix.shard }}/2
 
+  data_integrity:
+    needs: classify
+    if: needs.classify.outputs.translation_only == 'true' || needs.classify.outputs.catalog_data == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Verify deterministic translation projection
+        run: npm run test:translations
+
+      - name: Verify deterministic catalog projections
+        if: needs.classify.outputs.catalog_data == 'true'
+        run: |
+          npm run test:data
+          npm run test:source-audit
+
+  admin_contract:
+    needs: classify
+    if: needs.classify.outputs.admin_only == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify Admin API contracts
+        run: npm run test:admin
+
+      - name: Verify Wrangler build
+        run: npm run admin:check
+
   cross_browser:
     needs: classify
-    if: needs.classify.outputs.docs_only != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.admin_only != 'true'
     runs-on: ubuntu-latest
+    env:
+      PW_USE_SYSTEM_CHROME: '1'
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -356,17 +468,23 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Install Chromium
-        run: npx playwright install chromium --with-deps --only-shell
-
       - name: Run chromium smoke tests
         run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=chromium-smoke
+
+      - name: Run focused localization contract
+        if: needs.classify.outputs.translation_only == 'true'
+        run: >
+          npx playwright test
+          tests/ui/localization.spec.mjs
+          tests/ui/game-term-display.spec.mjs
+          tests/ui/data-projections.spec.mjs
+          --project=chromium
 
   cross_browser_firefox:
     needs:
       - classify
       - browser_site
-    if: needs.classify.outputs.docs_only != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     container:
@@ -401,7 +519,7 @@ jobs:
     needs:
       - classify
       - browser_site
-    if: needs.classify.outputs.docs_only != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     container:
@@ -439,6 +557,8 @@ jobs:
       - browser_core
       - catalog_audit
       - catalog_contract
+      - data_integrity
+      - admin_contract
       - cross_browser
       - cross_browser_firefox
       - cross_browser_webkit
@@ -453,12 +573,14 @@ jobs:
           CORE: ${{ needs.browser_core.result }}
           CATALOG_AUDIT: ${{ needs.catalog_audit.result }}
           CATALOG_CONTRACT: ${{ needs.catalog_contract.result }}
+          DATA_INTEGRITY: ${{ needs.data_integrity.result }}
+          ADMIN_CONTRACT: ${{ needs.admin_contract.result }}
           CROSS_BROWSER: ${{ needs.cross_browser.result }}
           CROSS_BROWSER_FIREFOX: ${{ needs.cross_browser_firefox.result }}
           CROSS_BROWSER_WEBKIT: ${{ needs.cross_browser_webkit.result }}
         run: |
           set -euo pipefail
-          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE" "$CATALOG_AUDIT" "$CATALOG_CONTRACT" "$CROSS_BROWSER" "$CROSS_BROWSER_FIREFOX" "$CROSS_BROWSER_WEBKIT"; do
+          for result in "$CLASSIFY" "$STATIC" "$WORKSPACE" "$CORE" "$CATALOG_AUDIT" "$CATALOG_CONTRACT" "$DATA_INTEGRITY" "$ADMIN_CONTRACT" "$CROSS_BROWSER" "$CROSS_BROWSER_FIREFOX" "$CROSS_BROWSER_WEBKIT"; do
             if [[ "$result" != "success" && "$result" != "skipped" ]]; then
               echo "A required CI partition ended as: $result"
               exit 1

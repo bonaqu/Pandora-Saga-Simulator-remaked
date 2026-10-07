@@ -21,7 +21,8 @@ class CIWorkflowArchitectureTests(unittest.TestCase):
         self.assertIn("Last successful Pages deployment", workflow)
         self.assertIn("scripts/deploy_change_policy.py --stdin", workflow)
         self.assertIn("deployment_sensitive=true", workflow)
-        self.assertIn(".github/workflows/*|.github/actions/*|scripts/build_pages.py|scripts/deploy_change_policy.py", workflow)
+        self.assertIn(".github/workflows/pages.yml|.github/workflows/feature-ci.yml|.github/actions/*|scripts/build_pages.py|scripts/deploy_change_policy.py", workflow)
+        self.assertNotIn(".github/workflows/*|.github/actions/*", workflow)
         self.assertIn("Run release-note fast checks", workflow)
         self.assertIn("Validate generated What's new payload", workflow)
         self.assertIn("release.highlights?.ru", workflow)
@@ -58,6 +59,32 @@ class CIWorkflowArchitectureTests(unittest.TestCase):
         self.assertIn("if: needs.classify.outputs.docs_only != 'true'", workflow)
         self.assertIn("Run documentation and release-note tests", workflow)
         self.assertIn("tests.test_deploy_change_policy", workflow)
+
+    def test_feature_ci_routes_focused_change_profiles(self):
+        workflow = self.read(".github/workflows/feature-ci.yml")
+        self.assertIn("translation_only:", workflow)
+        self.assertIn("catalog_data:", workflow)
+        self.assertIn("admin_only:", workflow)
+        self.assertIn("Run focused localization contract", workflow)
+        self.assertIn("Audit source catalog shard", workflow)
+        self.assertIn("admin_contract:", workflow)
+        self.assertIn("Verify Admin API contracts", workflow)
+        self.assertIn("needs.classify.outputs.admin_only != 'true'", workflow)
+
+    def test_feature_ci_deduplicates_push_when_open_pr_exists(self):
+        workflow = self.read(".github/workflows/feature-ci.yml")
+        self.assertIn("pull-requests: read", workflow)
+        self.assertIn("Detect open PR for feature push", workflow)
+        self.assertIn("Open PR already validates $BRANCH; skipping duplicate push matrix.", workflow)
+        self.assertIn("duplicate_pr:", workflow)
+        self.assertIn("if: needs.classify.outputs.duplicate_pr != 'true'", workflow)
+        self.assertIn("ci_profile=duplicate-pr", workflow)
+
+    def test_admin_workflow_is_not_pages_deployment_infrastructure(self):
+        workflow = self.read(".github/workflows/pages.yml")
+        sensitive_case = ".github/workflows/pages.yml|.github/workflows/feature-ci.yml|.github/actions/*|scripts/build_pages.py|scripts/deploy_change_policy.py"
+        self.assertIn(sensitive_case, workflow)
+        self.assertNotIn(".github/workflows/admin-api.yml|.github/actions/*", workflow)
 
 
 if __name__ == "__main__":
