@@ -148,7 +148,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for file in             js/calc.js js/equip.js js/item.js js/skill.js js/ini.js             modern/version.js modern/i18n.js modern/adapter.js modern/catalog.js             modern/admin-entry.js modern/calculator-labels.js modern/game-term-display.js             modern/build-store.js modern/search.js modern/equipment-picker.js             modern/calculator-controls.js modern/skill-controls.js modern/skill-tooltips.js             modern/builds.js modern/app-shell.js modern/tooltips.js modern/compare.js             modern/mobile.js modern/pwa.js modern/service-worker.js             scripts/lib/legacy-runtime.mjs scripts/serve_pages.mjs             scripts/extract_legacy_terms.mjs scripts/extract_legacy_data.mjs
+          for file in             js/calc.js js/equip.js js/item.js js/skill.js js/ini.js             modern/version.js modern/i18n.js modern/adapter.js modern/catalog.js modern/enhancement-effects.js             modern/admin-entry.js modern/calculator-labels.js modern/game-term-display.js             modern/build-store.js modern/search.js modern/equipment-picker.js             modern/calculator-controls.js modern/skill-controls.js modern/skill-tooltips.js             modern/builds.js modern/app-shell.js modern/tooltips.js modern/compare.js             modern/mobile.js modern/pwa.js modern/service-worker.js             scripts/lib/legacy-runtime.mjs scripts/serve_pages.mjs             scripts/extract_legacy_terms.mjs scripts/extract_legacy_data.mjs
           do
             node --check "$file"
           done
