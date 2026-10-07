@@ -1667,9 +1667,23 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     float: none; width: auto !important; margin: 0; height: auto !important;
   }
   .remaked-modern #body [data-remaked-calculator-actions] {
-    /* Size for both rows: Status reset leads the second, while the two value
-       switches need more room in the first. Keep all six labels readable. */
+    /* Default desktop proportions leave a little more room for the two value
+       switches; Russian uses an equal 3-column grid below for visual balance. */
     grid-template-columns: minmax(0, .8fr) repeat(2, minmax(0, 1.1fr)); align-content: start;
+  }
+  html[lang="ru"] body.remaked-modern #body [data-remaked-calculator-actions] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: 44px;
+  }
+  html[lang="ru"] body.remaked-modern #body [data-remaked-calculator-action-source] {
+    height: 44px !important;
+  }
+  html[lang="ru"] body.remaked-modern #body [data-remaked-calculator-action] {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
   }
   .remaked-modern #body [data-remaked-calculator-actions] > ul { display: contents; }
   .remaked-modern #body [data-remaked-calculator-horse-container] { grid-column: 1 / -1; }

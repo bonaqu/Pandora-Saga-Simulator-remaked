@@ -1,5 +1,20 @@
 # Changelog
 
+## Modern 3.29 — aligned Russian calculator controls, 2026-10-08
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Русские кнопки учёта и сброса в блоке персонажа выровнены в аккуратную сетку 3×2.
+- Все шесть кнопок теперь имеют одинаковую высоту и равные колонки; многострочные подписи центрируются внутри кнопок без визуальной «ступеньки».
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Polished the Russian calculator action area into an even 3×2 grid with equal button heights and balanced columns.
+<!-- /release-notes:en -->
+
 ## Modern 3.28 — clearer Russian calculator actions, 2026-10-07
 
 <!-- release-notes:ru -->
