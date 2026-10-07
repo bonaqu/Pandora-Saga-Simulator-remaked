@@ -847,13 +847,20 @@ body.remaked-modern {
 @media (max-width: 360px) { .remaked-modern #body :is(#ATKView, #RESView, #BUFFView) { grid-template-columns: 1fr; } }
 
 .remaked-modern #body [data-remaked-calculator-actions] {
+  /* Identical two-column, three-row action grid in every locale. The longest
+     translations fit without language-specific font scaling. */
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4px;
+  align-content: start;
 }
 
 .remaked-modern #body [data-remaked-calculator-actions] > ul {
-  display: flex;
-  gap: 4px;
+  display: contents;
+}
+
+.remaked-modern #body [data-remaked-calculator-horse-container] {
+  grid-column: 1 / -1;
 }
 
 .remaked-modern #body [data-remaked-calculator-action-source] {
@@ -898,21 +905,18 @@ body.remaked-modern {
   outline-offset: 2px;
 }
 
-/* Identical control geometry and typography for every UI language. Longer
-   translated labels use the same available two-line space as English. */
+/* Same legible controls in EN, RU, JP and TW; only their text changes. */
 .remaked-modern #body [data-remaked-calculator-actions] [data-remaked-calculator-action] {
   box-sizing: border-box;
-  height: 34px;
-  min-height: 34px;
+  height: 32px;
+  min-height: 32px;
   padding: 2px 3px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  font: 600 11px/1.12 var(--rm-font);
+  font: 600 12px/1.1 var(--rm-font);
 }
-/* On touch screens use the same accessible target size for every language,
-   including the separate Horsemanship button. */
 @media (max-width: 620px) {
   .remaked-modern #body [data-remaked-calculator-actions] [data-remaked-calculator-action] {
     height: 44px;
@@ -1688,14 +1692,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   .remaked-modern #body [data-remaked-calculator-budget] > ul:not([data-remaked-calculator-level]) > li {
     float: none; width: auto !important; margin: 0; height: auto !important;
   }
-  .remaked-modern #body [data-remaked-calculator-actions] {
-    /* The middle action carries the longest label across languages. Allocate
-       slightly more of the same total width without locale-specific sizing. */
-    grid-template-columns: minmax(0, .72fr) minmax(0, 1.24fr) minmax(0, 1.04fr);
-    align-content: start;
-  }
-  .remaked-modern #body [data-remaked-calculator-actions] > ul { display: contents; }
-  .remaked-modern #body [data-remaked-calculator-horse-container] { grid-column: 1 / -1; }
+
   .remaked-modern #body [data-remaked-calculator-horse] {
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4px; margin-top: 0;
   }

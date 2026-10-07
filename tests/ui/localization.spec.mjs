@@ -238,9 +238,11 @@ test('calculator action and riding geometry is locale-invariant', async ({ page 
       const value = locales[locale];
       expect(value.container, locale + ':' + width).toEqual(base.container);
       expect(value.actions, locale + ':' + width).toEqual(base.actions);
-      expect(value.fontSizes, locale + ':' + width).toEqual(Array(6).fill('11px'));
+      expect(value.fontSizes, locale + ':' + width).toEqual(Array(6).fill('12px'));
       expect(value.fontWeights, locale + ':' + width).toEqual(Array(6).fill('600'));
       expect(value.overflowDetails, locale + ':' + width).toEqual([]);
+      expect(value.actions.map(action => action[3]), locale + ':' + width)
+        .toEqual(Array(6).fill(width <= 620 ? 44 : 32));
       expect(value.documentOverflow, locale + ':' + width).toBe(false);
     }
   }

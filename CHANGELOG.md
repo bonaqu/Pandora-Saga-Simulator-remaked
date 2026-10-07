@@ -5,15 +5,15 @@
 <!-- release-notes:ru -->
 ### Кратко для игроков
 
-- Кнопки учёта и сброса сохраняют одинаковые размеры, расположение и читаемый шрифт при переключении любого языка интерфейса.
-- Ширина колонок перераспределена для длинных переводов без увеличения размеров всего блока.
+- Кнопки учёта и сброса сохраняют одинаковую геометрию и размер шрифта при переключении любого языка интерфейса.
+- Единая компактная сетка из двух колонок позволяет разместить длинные переводы без уменьшения букв и обрезания текста.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
 ### Player highlights
 
-- Calculator action controls now keep identical sizes, layout and readable text across every UI language.
-- Column spacing accommodates longer translations without language-specific font scaling.
+- Calculator action controls keep identical dimensions and type sizes across all UI languages.
+- A shared compact two-column layout accommodates long translations without shrinking or clipping labels.
 <!-- /release-notes:en -->
 
 ## Modern 3.31 — balanced Russian calculator controls, 2026-10-08
