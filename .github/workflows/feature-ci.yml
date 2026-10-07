@@ -78,7 +78,7 @@ jobs:
             esac
 
             case "$file" in
-              modern/*.css|tests/ui/*.spec.mjs|tests/ui/helpers/*.mjs|*.md|docs/*|.github/ISSUE_TEMPLATE/*|tests/test_repository_docs.py|tests/test_deploy_change_policy.py)
+              modern/*.css|css/*|image/*|tests/ui/*.spec.mjs|tests/ui/helpers/*.mjs|*.md|docs/*|.github/ISSUE_TEMPLATE/*|tests/test_repository_docs.py|tests/test_deploy_change_policy.py)
                 ;;
               *)
                 css_only=false
@@ -140,7 +140,7 @@ jobs:
           python-version: '3.13'
 
       - name: Set up project Node runtime
-        if: needs.classify.outputs.docs_only != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
         uses: actions/setup-node@v6
         with:
           node-version: '24'
@@ -154,8 +154,16 @@ jobs:
           tests.test_build_pages
           tests.test_deploy_change_policy
 
+      - name: Run focused data policy checks
+        if: needs.classify.outputs.translation_only == 'true' || needs.classify.outputs.catalog_data == 'true'
+        run: >
+          python -m unittest -v
+          tests.test_repository_docs
+          tests.test_build_pages
+          tests.test_deploy_change_policy
+
       - name: Run full Python tests
-        if: needs.classify.outputs.docs_only != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
         run: python -m unittest discover -s tests -v
 
       - name: Validate restored simulator
@@ -163,7 +171,7 @@ jobs:
         run: python3 scripts/validate_site.py
 
       - name: Syntax-check core JavaScript
-        if: needs.classify.outputs.docs_only != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -186,6 +194,8 @@ jobs:
     needs: classify
     if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
     runs-on: ubuntu-latest
+    env:
+      PW_USE_SYSTEM_CHROME: '1'
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -199,9 +209,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
-
-      - name: Install Chromium
-        run: npx playwright install chromium --with-deps --only-shell
 
 
       - name: Run complete desktop workspace contract
@@ -238,6 +245,8 @@ jobs:
     needs: classify
     if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
     runs-on: ubuntu-latest
+    env:
+      PW_USE_SYSTEM_CHROME: '1'
     timeout-minutes: 10
     strategy:
       fail-fast: false
@@ -255,9 +264,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
-
-      - name: Install Chromium
-        run: npx playwright install chromium --with-deps --only-shell
 
 
       - name: Run browser contract shard ${{ matrix.shard }}/3
@@ -370,7 +376,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '24'
-          cache: npm
 
       - name: Verify deterministic translation projection
         run: npm run test:translations
@@ -385,6 +390,8 @@ jobs:
     needs: classify
     if: needs.classify.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
+    env:
+      PW_USE_SYSTEM_CHROME: '1'
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -398,9 +405,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
-
-      - name: Install Chromium
-        run: npx playwright install chromium --with-deps --only-shell
 
       - name: Run chromium smoke tests
         run: npx playwright test tests/ui/cross-browser-smoke.spec.mjs --project=chromium-smoke
