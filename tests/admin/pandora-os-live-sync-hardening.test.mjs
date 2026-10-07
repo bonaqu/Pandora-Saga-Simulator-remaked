@@ -166,7 +166,8 @@ test('revision 83 compacts revision 82, reverts unchanged unavailable rows and p
   transaction(sqlite, buildMigration(rows, cosmeticRows, unavailableRows));
 
   const head = sqlite.prepare('SELECT version, impact_version FROM catalog_head WHERE id = 1').get();
-  assert.deepEqual(head, { version: 83, impact_version: 83 });
+  assert.equal(head.version, 83);
+  assert.equal(head.impact_version, 83);
   const next = headSnapshot(sqlite);
   assert.ok(next.length < beforeCount, 'revision 83 should remove pure cosmetic revision-82 overrides');
 
@@ -185,7 +186,8 @@ test('revision 83 compacts revision 82, reverts unchanged unavailable rows and p
   else assert.equal(revertedUnavailable, undefined);
 
   const release = sqlite.prepare('SELECT impact_version, note FROM catalog_revisions WHERE version = 83').get();
-  assert.deepEqual(release, { impact_version: 83, note: 'Pandora Saga OS live sync hardening' });
+  assert.equal(release.impact_version, 83);
+  assert.equal(release.note, 'Pandora Saga OS live sync hardening');
 });
 
 test('revision 83 refuses any head other than the already-deployed revision 82', () => {
