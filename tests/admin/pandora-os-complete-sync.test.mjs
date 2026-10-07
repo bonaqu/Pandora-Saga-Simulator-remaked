@@ -117,3 +117,42 @@ test('new records use explicit replacement mechanics and runtime-safe allocation
   assert.match(sql, /SET version = 84,/);
   assert.doesNotMatch(sql, /unobtainable.*continue/i);
 });
+
+test('military crossbow family stays four distinct server-backed records', () => {
+  const inputs = loadInputs();
+  const existing = buildExistingRows(inputs);
+  const added = buildNewRows(inputs);
+  const allEquipment = [
+    ...existing.filter(row => row.identity.kind === 'equipment').map(row => ({
+      serverId: row.serverId,
+      edit: row.fallback.edit,
+      custom: false
+    })),
+    ...added.filter(row => row.kind === 'equipment').map(row => ({
+      serverId: row.serverId,
+      edit: row.edit,
+      custom: true
+    }))
+  ];
+
+  const expected = [
+    { id: 2421, en: 'War Crossbow', ru: 'Военный арбалет', attack: 70, sockets: 1, custom: false },
+    { id: 2422, en: 'War Crossbow D', ru: 'Прочный военный арбалет', attack: 70, sockets: 2, custom: true },
+    { id: 2423, en: 'War Crossbow A', ru: 'Разящий военный арбалет', attack: 84, sockets: 1, custom: true },
+    { id: 2424, en: 'War Crossbow S', ru: 'Сильный военный арбалет', attack: 75, sockets: 1, custom: true }
+  ];
+
+  const family = expected.map(item => {
+    const row = allEquipment.find(candidate => candidate.serverId === item.id);
+    assert.ok(row, 'Missing military crossbow server ID ' + item.id);
+    assert.equal(row.edit.names.en, item.en);
+    assert.equal(row.edit.names.ru, item.ru);
+    assert.equal(row.edit.baseAttack, item.attack);
+    assert.equal(row.edit.sockets, item.sockets);
+    assert.equal(row.custom, item.custom);
+    return row;
+  });
+
+  assert.equal(new Set(family.map(row => row.serverId)).size, 4);
+});
+
