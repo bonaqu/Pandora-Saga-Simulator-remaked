@@ -163,3 +163,35 @@ test('RU uses compact skill and effect terminology without wrapping effect tabs'
   }
 });
 
+test('RU calculator actions and riding labels use the requested wording without horizontal overflow', async ({ page }) => {
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?ui=ru');
+
+    const labels = await page.evaluate(() => ({
+      text3: document.querySelector('[data-remaked-calculator-action="Text_3"]')?.textContent.trim(),
+      text5: document.querySelector('[data-remaked-calculator-action="Text_5"]')?.textContent.trim(),
+      text6: document.querySelector('[data-remaked-calculator-action="Text_6"]')?.textContent.trim(),
+      text7: document.querySelector('[data-remaked-calculator-action="Text_7"]')?.textContent.trim(),
+      text8: document.querySelector('[data-remaked-calculator-action="Text_8"]')?.textContent.trim(),
+      text9: document.querySelector('[data-remaked-calculator-action="Text_9"]')?.textContent.trim(),
+      text16: document.querySelector('[data-remaked-calculator-action="Text_16"]')?.textContent.trim(),
+      text19: document.getElementById('Text_19')?.textContent.trim(),
+      clientWidth: document.documentElement.clientWidth,
+      scrollWidth: document.documentElement.scrollWidth
+    }));
+
+    expect(labels).toMatchObject({
+      text3: 'Учитывать умения',
+      text5: 'Учитывать мастерство умений',
+      text6: 'Учитывать эффекты зелий',
+      text7: 'Сброс характеристик',
+      text8: 'Сброс умений',
+      text9: 'Сбросить все',
+      text16: 'Верхом',
+      text19: 'Хар-ки верхом'
+    });
+    expect(labels.scrollWidth).toBeLessThanOrEqual(labels.clientWidth + 1);
+  }
+});
+

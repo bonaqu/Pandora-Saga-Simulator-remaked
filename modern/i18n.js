@@ -16,8 +16,16 @@
         'skills.potential': 'Потенциал.'
       }),
       game: Object.freeze({
+        'calculator.text.3': 'Учитывать умения',
+        'calculator.text.5': 'Учитывать мастерство умений',
+        'calculator.text.6': 'Учитывать эффекты зелий',
+        'calculator.text.7': 'Сброс характеристик',
+        'calculator.text.8': 'Сброс умений',
+        'calculator.text.9': 'Сбросить все',
+        'calculator.text.16': 'Верхом',
         'calculator.text.17': 'Эффекты умений',
-        'calculator.text.18': 'Эффекты зелий'
+        'calculator.text.18': 'Эффекты зелий',
+        'calculator.text.19': 'Хар-ки верхом'
       })
     })
   });

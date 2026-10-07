@@ -87,7 +87,7 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 
 Translations are maintained in one [Excel workbook](localization/translations.xlsx): H (yellow) is Russian, I (green) is an editable English override. The original source columns stay read-only. See the [step-by-step Russian guide](docs/LOCALIZATION_FOR_BEGINNERS.ru.md). Approved translations appear throughout the Modern calculator, lists, search and skill descriptions. Blank game fields retain the selected source language; Legacy Mode stays unchanged.
 
-Modern **3.27** is published. Saved builds always use current catalog data, compact share links remain backward-compatible, equipment/Soul discovery stays inside the relevant slots, decorative-only equipment is excluded from calculations, and Russian skill/effect labels use the clarified compact wording.
+Modern **3.28** is published. Saved builds always use current catalog data, compact share links remain backward-compatible, equipment/Soul discovery stays inside the relevant slots, decorative-only equipment is excluded from calculations, and Russian skill/effect labels use the clarified compact wording.
 
 Modern checks a small no-cache release manifest on startup, when returning to the tab, after reconnecting and periodically while visible. A newer release waits for a short idle moment, commits the active field, flushes autosave and reloads versioned assets. The site is intentionally online-only; no manual cache or cookie cleanup should normally be needed.
 
@@ -116,7 +116,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** Modern 3.27
+- **Remaked UI:** Modern 3.28
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 
