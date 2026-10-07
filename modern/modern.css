@@ -898,6 +898,20 @@ body.remaked-modern {
   outline-offset: 2px;
 }
 
+/* Identical control geometry and typography for every UI language. Longer
+   translated labels use the same available two-line space as English. */
+.remaked-modern #body [data-remaked-calculator-actions] [data-remaked-calculator-action] {
+  box-sizing: border-box;
+  height: 34px;
+  min-height: 34px;
+  padding: 2px 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font: 600 11px/1.12 var(--rm-font);
+}
+
 .remaked-modern #body [data-remaked-calculator-attributes] {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1667,21 +1681,10 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     float: none; width: auto !important; margin: 0; height: auto !important;
   }
   .remaked-modern #body [data-remaked-calculator-actions] {
-    /* Keep the same compact proportions for every locale; longer Russian
-       wording is handled by typography, not by enlarging the controls. */
-    grid-template-columns: minmax(0, .8fr) repeat(2, minmax(0, 1.1fr)); align-content: start;
-  }
-  html[lang="ru"] body.remaked-modern #body [data-remaked-calculator-action] {
-    height: 30px;
-    min-height: 30px;
-    padding: 1px 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 9.5px;
-    line-height: 1.05;
-    letter-spacing: 0;
+    /* The middle action carries the longest label across languages. Allocate
+       slightly more of the same total width without locale-specific sizing. */
+    grid-template-columns: minmax(0, .72fr) minmax(0, 1.24fr) minmax(0, 1.04fr);
+    align-content: start;
   }
   .remaked-modern #body [data-remaked-calculator-actions] > ul { display: contents; }
   .remaked-modern #body [data-remaked-calculator-horse-container] { grid-column: 1 / -1; }

@@ -195,33 +195,40 @@ test('RU calculator actions and riding labels use the requested wording without 
   }
 });
 
-test('RU calculator actions stay balanced and readable without oversized controls', async ({ page }) => {
-  for (const width of [1366, 1440]) {
+test('calculator action and riding geometry is locale-invariant', async ({ page }) => {
+  for (const width of [390, 1024, 1366, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto('/?ui=ru');
-
-    const geometry = await page.evaluate(() =>
-      ['Text_3', 'Text_5', 'Text_6', 'Text_7', 'Text_8', 'Text_9'].map(id => {
-        const node = document.querySelector('[data-remaked-calculator-action="' + id + '"]');
-        const rect = node.getBoundingClientRect();
-        const style = getComputedStyle(node);
-        return {
-          id,
-          width: rect.width,
-          height: rect.height,
-          clientHeight: node.clientHeight,
-          scrollHeight: node.scrollHeight,
-          fontSize: Number.parseFloat(style.fontSize)
+    const locales = {};
+    for (const locale of ['en', 'ru', 'jp', 'tw']) {
+      await page.goto('/?ui=' + locale);
+      locales[locale] = await page.evaluate(() => {
+        const container = document.querySelector('[data-remaked-calculator-actions]');
+        const actions = ['Text_3', 'Text_5', 'Text_6', 'Text_7', 'Text_8', 'Text_9']
+          .map(id => document.querySelector('[data-remaked-calculator-action="' + id + '"]'));
+        const rect = node => {
+          const r = node.getBoundingClientRect();
+          return [r.x, r.y, r.width, r.height].map(value => Math.round(value * 10) / 10);
         };
-      })
-    );
-
-    const heights = geometry.map(item => item.height);
-    expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(1);
-    expect(Math.min(...heights)).toBeGreaterThanOrEqual(29);
-    expect(Math.max(...heights)).toBeLessThanOrEqual(31);
-    expect(Math.min(...geometry.map(item => item.fontSize))).toBeGreaterThanOrEqual(9.5);
-    for (const item of geometry) expect(item.scrollHeight, item.id).toBeLessThanOrEqual(item.clientHeight + 1);
+        return {
+          container: rect(container),
+          actions: actions.map(rect),
+          fontSizes: actions.map(node => getComputedStyle(node).fontSize),
+          fontWeights: actions.map(node => getComputedStyle(node).fontWeight),
+          overflowing: actions.some(node => node.scrollHeight > node.clientHeight + 1),
+          documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
+        };
+      });
+    }
+    const base = locales.en;
+    for (const locale of ['en', 'ru', 'jp', 'tw']) {
+      const value = locales[locale];
+      expect(value.container, locale + ':' + width).toEqual(base.container);
+      expect(value.actions, locale + ':' + width).toEqual(base.actions);
+      expect(value.fontSizes, locale + ':' + width).toEqual(Array(6).fill('11px'));
+      expect(value.fontWeights, locale + ':' + width).toEqual(Array(6).fill('600'));
+      expect(value.overflowing, locale + ':' + width).toBe(false);
+      expect(value.documentOverflow, locale + ':' + width).toBe(false);
+    }
   }
 });
 
