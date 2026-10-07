@@ -86,7 +86,7 @@ jobs:
             esac
           done
 
-          if [[ "${{ github.event_name }}" == "pull_request" && "$release_notes_required" == "true" && "$changelog_changed" != "true" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" && "$docs_only" != "true" && "$release_notes_required" == "true" && "$changelog_changed" != "true" ]]; then
             echo "::error::User-facing runtime/UI changes require an accompanying CHANGELOG.md update."
             echo "Update the latest dated Modern release so the site version and What's new panel stay in sync."
             exit 1
@@ -194,8 +194,6 @@ jobs:
     needs: classify
     if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
     runs-on: ubuntu-latest
-    env:
-      PW_USE_SYSTEM_CHROME: '1'
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -209,6 +207,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install chromium --with-deps --only-shell
 
 
       - name: Run complete desktop workspace contract
@@ -245,8 +246,6 @@ jobs:
     needs: classify
     if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true'
     runs-on: ubuntu-latest
-    env:
-      PW_USE_SYSTEM_CHROME: '1'
     timeout-minutes: 10
     strategy:
       fail-fast: false
@@ -264,6 +263,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install chromium --with-deps --only-shell
 
 
       - name: Run browser contract shard ${{ matrix.shard }}/3
