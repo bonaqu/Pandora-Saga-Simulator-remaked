@@ -195,29 +195,33 @@ test('RU calculator actions and riding labels use the requested wording without 
   }
 });
 
-test('RU calculator action grid keeps all six buttons equal and aligned on desktop', async ({ page }) => {
+test('RU calculator actions keep the same compact height and column proportions as EN', async ({ page }) => {
   for (const width of [1366, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto('/?ui=ru');
-    const geometry = await page.evaluate(() =>
+
+    const inspect = () => page.evaluate(() =>
       ['Text_3', 'Text_5', 'Text_6', 'Text_7', 'Text_8', 'Text_9'].map(id => {
         const node = document.querySelector('[data-remaked-calculator-action="' + id + '"]');
         const rect = node.getBoundingClientRect();
-        return { id, x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+        return {
+          id,
+          width: rect.width,
+          height: rect.height,
+          clientHeight: node.clientHeight,
+          scrollHeight: node.scrollHeight
+        };
       })
     );
 
-    const heights = geometry.map(item => item.height);
-    const widths = geometry.map(item => item.width);
-    expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(1);
-    expect(Math.max(...widths) - Math.min(...widths)).toBeLessThanOrEqual(1);
-    expect(heights[0]).toBeGreaterThanOrEqual(43);
+    await page.goto('/?ui=en');
+    const english = await inspect();
+    await page.goto('/?ui=ru');
+    const russian = await inspect();
 
-    const firstRowY = geometry.slice(0, 3).map(item => item.y);
-    const secondRowY = geometry.slice(3, 6).map(item => item.y);
-    expect(Math.max(...firstRowY) - Math.min(...firstRowY)).toBeLessThanOrEqual(1);
-    expect(Math.max(...secondRowY) - Math.min(...secondRowY)).toBeLessThanOrEqual(1);
-    expect(secondRowY[0]).toBeGreaterThan(firstRowY[0]);
+    expect(russian.map(item => item.height)).toEqual(english.map(item => item.height));
+    expect(russian.map(item => Math.round(item.width))).toEqual(english.map(item => Math.round(item.width)));
+    expect(Math.max(...russian.map(item => item.height))).toBeLessThanOrEqual(29);
+    for (const item of russian) expect(item.scrollHeight, item.id).toBeLessThanOrEqual(item.clientHeight + 1);
   }
 });
 
