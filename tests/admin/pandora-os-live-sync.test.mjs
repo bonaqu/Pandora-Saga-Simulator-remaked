@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import { baselineById } from '../../admin-api/src/catalog-baseline.mjs';
-import { compileRecord, validateDraft } from '../../admin-api/src/catalog-model.mjs';
+import { compileRecord, normalizeUntranslatedItemName, validateDraft } from '../../admin-api/src/catalog-model.mjs';
 import { buildMigration as buildPreviousMigration } from '../../scripts/materialize_pandora_os_sync.mjs';
 import {
   buildMigration,
@@ -34,10 +34,10 @@ function snapshot(sqlite) {
   return JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head WHERE id = 1').get().snapshot_json);
 }
 
-test('live Pandora OS mapping is one-to-one, equipment-only and fully compilable', () => {
+test('live Pandora OS mapping is one-to-one, compact and fully compilable', () => {
   const inputs = loadInputs();
   assert.equal(inputs.mapping.equipment.length, 271);
-  assert.equal(inputs.mapping.souls.length, 97);
+  assert.equal(inputs.mapping.souls.length, 74);
 
   const serverIds = new Set();
   const projectIds = new Set();
@@ -55,13 +55,9 @@ test('live Pandora OS mapping is one-to-one, equipment-only and fully compilable
   }
 
   const rows = buildReleaseRows(inputs);
-  assert.ok(rows.length > 1000, 'expected broad legacy English normalization plus server sync');
-  assert.equal(rows.filter(row => row.mode === 'server').length, 368);
+  assert.equal(rows.length, 345);
+  assert.equal(rows.filter(row => row.mode === 'server').length, 345);
   assert.equal(new Set(rows.map(row => row.identity.id)).size, rows.length);
-  assert.ok(rows.some(row => row.mode === 'normalize' &&
-    /^\([^()]+\)$/.test(row.expectedEnglish || '') &&
-    !/^\([^()]+\)$/.test(row.patch.edit.names.en || '')),
-    'expected at least one bracket-only English normalization');
 
   const statements = buildReleaseInsertStatements(rows);
   assert.equal(statements.length, rows.length);
@@ -73,9 +69,15 @@ test('live Pandora OS mapping is one-to-one, equipment-only and fully compilable
     const edit = validateDraft(row.fallback.edit, row.identity);
     const compiled = compileRecord(edit, row.identity, source);
     assert.equal(compiled.id, row.identity.id);
-    assert.equal(compiled.names.en.startsWith('(') && compiled.names.en.endsWith(')'), false,
-      'outer-parenthesized English name survived: ' + row.identity.id);
   }
+});
+
+test('legacy untranslated-name markers are normalized without touching normal inner parentheses', () => {
+  assert.equal(stripOuterParentheses('(Gradius)'), 'Gradius');
+  assert.equal(stripOuterParentheses('((Steadfast Soul)'), 'Steadfast Soul');
+  assert.equal(normalizeUntranslatedItemName('(Chaos Sword)'), 'Chaos Sword');
+  assert.equal(normalizeUntranslatedItemName('Vest (Male Elf)'), 'Vest (Male Elf)');
+  assert.equal(normalizeUntranslatedItemName('Ring (A)'), 'Ring (A)');
 });
 
 test('live server stats use verified conversions without inventing unsupported proc mechanics', () => {
@@ -97,9 +99,15 @@ test('live server stats use verified conversions without inventing unsupported p
   assert.ok(virgo.effects.some(effect => effect.stat === 160 && effect.value === 3));
 
   const iron = byId.get('equipment.13.3');
+  assert.ok(iron);
   assert.ok(iron.effects.some(effect => effect.stat === 91 && effect.value === 4));
 
+  const exorcism = byId.get('equipment.31.70');
+  assert.ok(exorcism);
+  assert.ok(exorcism.effects.some(effect => effect.stat === 162 && effect.value === -15));
+
   const mirror = byId.get('soul.163');
+  assert.ok(mirror);
   assert.equal(mirror.effectMode, 'patch');
   assert.ok(mirror.effects.some(effect => effect.stat === 135 && effect.value === 3));
 
@@ -108,48 +116,21 @@ test('live server stats use verified conversions without inventing unsupported p
   assert.ok(steady.effects.some(effect => effect.stat === 149 && effect.value === 5));
   assert.ok(steady.effects.some(effect => effect.stat === 151 && effect.value === 5));
   assert.ok(steady.effects.some(effect => effect.stat === 153 && effect.value === 20));
-
-  const changeRow = rows.find(row => row.identity.id === 'soul.121');
-  assert.ok(changeRow);
-  const changeSource = baselineById.get('soul.121');
-  const changeCompiled = compileRecord(validateDraft(changeRow.fallback.edit, changeRow.identity), changeRow.identity, changeSource);
-  assert.match(changeCompiled.calculationCode, /(?:^|_)162=-2(?:_|$)/,
-    'ambiguous server debuff-duration encoding must preserve the verified Legacy -2% token');
-
-  const steadfastRow = rows.find(row => row.identity.id === 'soul.148');
-  assert.ok(steadfastRow);
-  assert.equal(steadfastRow.fallback.edit.names.en, 'Steadfast Soul');
-  const steadfastSource = baselineById.get('soul.148');
-  const steadfastCompiled = compileRecord(validateDraft(steadfastRow.fallback.edit, steadfastRow.identity), steadfastRow.identity, steadfastSource);
-  assert.match(steadfastCompiled.calculationCode, /(?:^|_)151=20(?:_|$)/);
 });
 
 test('revision 82 merge-patches revision 81 without clobbering unrelated manual admin fields', () => {
   const sqlite = database();
   transaction(sqlite, buildPreviousMigration());
 
-  const inputs = loadInputs();
-  const rows = buildReleaseRows(inputs);
-  const serverRow = rows.find(row => row.mode === 'server' && row.identity.id === 'equipment.0.10')
-    || rows.find(row => row.mode === 'server');
-  const normalizeOnly = rows.find(row => row.mode === 'normalize');
-  assert.ok(serverRow && normalizeOnly);
-
+  const rows = buildReleaseRows(loadInputs());
+  const serverRow = rows.find(row => row.identity.id === 'equipment.31.70') || rows[0];
   const current = snapshot(sqlite);
-  const serverExisting = current.find(entry => entry.identity.id === serverRow.identity.id);
-  if (serverExisting) {
-    serverExisting.edit.notes = { ...(serverExisting.edit.notes || {}), en: 'manual-note-must-survive' };
-  } else {
-    const seeded = structuredClone(serverRow.fallback);
-    seeded.edit.notes.en = 'manual-note-must-survive';
-    current.push(seeded);
-  }
-
-  const manualNormalize = structuredClone(normalizeOnly.fallback);
-  manualNormalize.edit.names.en = 'Manual English Name';
-  const existingNormalize = current.findIndex(entry => entry.identity.id === normalizeOnly.identity.id);
-  if (existingNormalize >= 0) current[existingNormalize] = manualNormalize;
-  else current.push(manualNormalize);
+  const existingIndex = current.findIndex(entry => entry.identity.id === serverRow.identity.id);
+  const seeded = existingIndex >= 0 ? current[existingIndex] : structuredClone(serverRow.fallback);
+  seeded.edit.notes = { ...(seeded.edit.notes || {}), en: 'manual-note-must-survive' };
+  seeded.edit.acquisition = { ...(seeded.edit.acquisition || {}), ru: 'ручная заметка о получении' };
+  if (existingIndex >= 0) current[existingIndex] = seeded;
+  else current.push(seeded);
 
   sqlite.prepare('UPDATE catalog_head SET version = 81, impact_version = 79, snapshot_json = ? WHERE id = 1')
     .run(JSON.stringify(current));
@@ -160,26 +141,26 @@ test('revision 82 merge-patches revision 81 without clobbering unrelated manual 
   assert.equal(head.version, 82);
   assert.equal(head.impact_version, 82);
   const next = snapshot(sqlite);
-  const updatedServer = next.find(entry => entry.identity.id === serverRow.identity.id);
-  assert.equal(updatedServer.edit.notes.en, 'manual-note-must-survive');
-  assert.equal(updatedServer.edit.names.en, serverRow.patch.edit.names.en);
-
-  const preservedManual = next.find(entry => entry.identity.id === normalizeOnly.identity.id);
-  assert.equal(preservedManual.edit.names.en, 'Manual English Name');
+  const updated = next.find(entry => entry.identity.id === serverRow.identity.id);
+  assert.equal(updated.edit.notes.en, 'manual-note-must-survive');
+  assert.equal(updated.edit.acquisition.ru, 'ручная заметка о получении');
+  assert.equal(updated.edit.names.en, serverRow.patch.edit.names.en);
+  assert.equal(updated.edit.description.ru, serverRow.patch.edit.description.ru);
 
   const release = sqlite.prepare('SELECT impact_version, note FROM catalog_revisions WHERE version = 82').get();
   assert.equal(release.impact_version, 82);
-  assert.match(release.note, /Pandora Saga OS live/);
+  assert.equal(release.note, 'Pandora Saga OS live equipment/Soul sync');
 });
 
-test('revision 82 also applies after the deterministic revision-79 migration chain', () => {
+test('revision 82 applies after revision 79 on a clean chain and refuses unexpected heads', () => {
   const sqlite = database();
   transaction(sqlite, buildPreviousMigration());
   transaction(sqlite, buildMigration());
   const head = sqlite.prepare('SELECT version, impact_version, json_array_length(snapshot_json) AS count FROM catalog_head WHERE id = 1').get();
   assert.equal(head.version, 82);
   assert.equal(head.impact_version, 82);
-  assert.ok(head.count > 1000);
+  assert.ok(head.count >= 345);
+  assert.ok(head.count < 700, 'live sync must stay compact instead of materializing every baseline item');
 
   const unexpected = database();
   unexpected.prepare('UPDATE catalog_head SET version = 80, impact_version = 79 WHERE id = 1').run();
