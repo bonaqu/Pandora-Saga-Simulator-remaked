@@ -48,6 +48,19 @@ class RepositoryDocsTests(unittest.TestCase):
         self.assertIn("Remaked", notice)
         self.assertIn("LICENSE", notice)
 
+    def test_latest_release_notes_do_not_expose_internal_data_sources(self):
+        changelog = self.read("CHANGELOG.md")
+        latest = changelog.split("\n## Modern ", 2)[1]
+        blocked = (
+            "Pandora Saga OS",
+            "itemForth",
+            "unison",
+            "gamedata/",
+            ".json",
+        )
+        for token in blocked:
+            self.assertNotIn(token, latest, token)
+
     def test_changelog_has_first_modern_release(self):
         changelog = self.read("CHANGELOG.md")
         self.assertIn("2026.09.1", changelog)
