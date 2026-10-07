@@ -8,7 +8,9 @@ export const LANGUAGES = ['en', 'ru', 'jp', 'tw'];
 export const EQUIPMENT_CATEGORIES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 20, 30, 31, 32, 33, 34, 35, 40, 41, 42, 43];
 export const EFFECTS = [
   [0, 'STA', FLAT], [1, 'STR', FLAT], [2, 'AGI', FLAT], [3, 'DEX', FLAT], [4, 'SPR', FLAT], [5, 'INT', FLAT],
-  [6, 'LP', BOTH], [7, 'MP', BOTH], [8, 'Potion effectiveness (percentage points)', FLAT], [10, 'MP recovery speed bonus (percentage points)', FLAT], [18, 'Physical attack', BOTH], [42, 'Magic attack (percentage points)', FLAT], [49, 'Defense', BOTH],
+  [6, 'LP', BOTH], [7, 'MP', BOTH], [8, 'Potion effectiveness (percentage points)', FLAT], [10, 'MP recovery speed bonus (percentage points)', FLAT],
+  [11, 'Healing spell effectiveness (percentage points)', FLAT], [16, 'HP regeneration per interval', FLAT],
+  [18, 'Physical attack', BOTH], [20, 'Back attack bonus (percentage points)', FLAT], [42, 'Magic attack (percentage points)', FLAT], [49, 'Defense', BOTH],
   [50, 'Front damage resistance', FLAT], [51, 'Back damage resistance', FLAT], [52, 'Physical damage resistance', BOTH],
   [60, 'Magic damage resistance (percentage points)', FLAT], [62, 'Accuracy', BOTH], [65, 'Dodge', BOTH],
   [69, 'Critical chance (percentage points)', FLAT], [70, 'Incoming critical chance (percentage points)', FLAT], [91, 'Stun chance (percentage points)', FLAT],
@@ -19,10 +21,12 @@ export const EFFECTS = [
   [138, 'Fire resistance', FLAT], [139, 'Ice resistance', FLAT], [140, 'Lightning resistance', FLAT],
   [141, 'Poison resistance', FLAT], [142, 'Charm resistance', FLAT], [143, 'Light resistance', FLAT],
   [144, 'Dark resistance', FLAT], [145, 'Magic resistance', FLAT], [146, 'Physical abnormal status resistance', FLAT], [147, 'Mental abnormal status resistance', FLAT], [148, 'Burn resistance', FLAT],
+  [133, 'Block break resistance', FLAT], [134, 'Cast cancel resistance', FLAT], [135, 'Physical damage reflection', FLAT],
   [149, 'Stun resistance', FLAT], [150, 'Freeze resistance', FLAT], [151, 'Knockdown resistance', FLAT],
   [153, 'Knockback resistance', FLAT], [154, 'Bleeding resistance', FLAT], [155, 'Immobile resistance', FLAT],
   [156, 'Sleep resistance', FLAT], [157, 'Confusion resistance', FLAT], [158, 'Silence resistance', FLAT],
-  [159, 'Curse resistance', FLAT], [160, 'Weakening resistance', FLAT], [161, 'Disease resistance', FLAT]
+  [159, 'Curse resistance', FLAT], [160, 'Weakening resistance', FLAT], [161, 'Disease resistance', FLAT],
+  [162, 'Negative effect duration (percentage points)', FLAT]
 ].map(([id, label, units]) => ({ id, label, units }));
 const effectById = new Map(EFFECTS.map(effect => [effect.id, effect]));
 const fields = ['id', 'kind', 'category', 'names', 'description', 'notes', 'acquisition', 'modifiers', 'level', 'sockets', 'races', 'classes', 'slots', 'baseAttack', 'effectMode', 'effects', 'disabled'];
