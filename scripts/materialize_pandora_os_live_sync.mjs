@@ -129,11 +129,11 @@ const EFFECT_MAP = {
   EP_IMMUNE_STUN: [149, 'flat'],
   EP_IMMUNE_NUMB: [150, 'flat'],
   EP_IMMUNE_TUMBLE: [151, 'flat'],
+  EP_IMMUNE_KNOCKBACK: [153, 'flat'],
   EP_IMMUNE_SLEEP: [156, 'flat'],
   EP_IMMUNE_SILENCE: [158, 'flat'],
   EP_IMMUNE_EVIL: [159, 'flat'],
-  EP_IMMUNE_CURSE: [160, 'flat'],
-  EP_BADEFFECT_TIME_SCALE: [162, 'flat']
+  EP_IMMUNE_CURSE: [160, 'flat']
 };
 
 function serverCategory(item) {
