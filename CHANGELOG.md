@@ -1,5 +1,34 @@
 # Changelog
 
+## Modern 3.22 — Astir equipment identity cleanup, 2026-10-07
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Астирские комплекты в Modern теперь используют актуальные **RU/EN названия и описания** на уже существующих идентичностях симулятора там, где соответствие подтверждено.
+- Исправлены старые варианты с устаревшими или искажёнными английскими названиями Astian/Asutian: вместо дублирующих записей Modern показывает актуализированные существующие предметы.
+- Полный Modern-каталог по-прежнему включает **599 записей**: 488 предметов экипировки/оружия/бижутерии и 111 Souls, включая заранее подготовленные недоступные и будущие позиции.
+- Legacy-каталог не меняется; историческая версия каталога 84 сохраняется для старых сохранённых билдов.
+- Для новых Souls убрана автоматически созданная приставка из полного названия души: если отдельная корректная приставка неизвестна, она остаётся пустой и не выдумывается.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Astir equipment in Modern now uses current **RU/EN names and descriptions** on retained simulator identities wherever the match is verified.
+- Older Astian/Asutian entries with outdated or distorted English names are reconciled instead of being shown alongside duplicate Modern records.
+- The complete Modern catalog still covers **599 records**: 488 equipment/weapon/accessory records and 111 Souls, including unavailable and future-ready entries.
+- Legacy remains unchanged, and historical catalog revision 84 is preserved for pinned saved builds.
+- Newly added Souls no longer invent an equipment-name prefix from the full Soul name; when no verified prefix exists, it stays empty.
+<!-- /release-notes:en -->
+
+### Project and delivery details
+
+- Catalog revision/impact revision **85** reconciles 54 verified retained Astir-related equipment identities while preserving revision 84 unchanged in history.
+- Automatically created duplicate Modern records are removed only when they still exactly match the generated revision-84 state and have no manual draft; later Admin edits are preserved.
+- The correction keeps stable saved-item identities and does not mutate Legacy source arrays.
+- Regression coverage verifies all 58 Astir-related equippable records, the 54 identity reconciliations, and the Soul-name-prefix cleanup.
+
 ## Modern 3.21 — current item catalog refresh, 2026-10-07
 
 <!-- release-notes:ru -->
