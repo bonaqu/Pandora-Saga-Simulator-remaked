@@ -24,6 +24,8 @@ class CIWorkflowArchitectureTests(unittest.TestCase):
         self.assertIn(".github/workflows/*|.github/actions/*|scripts/build_pages.py|scripts/deploy_change_policy.py", workflow)
         self.assertIn("Run release-note fast checks", workflow)
         self.assertIn("Validate generated What's new payload", workflow)
+        self.assertIn("release.highlights?.ru", workflow)
+        self.assertNotIn("release.notes?.ru", workflow)
         self.assertIn("steps.gate.outputs.mode != 'release-notes'", workflow)
 
     def test_cancelled_deploy_followups_can_reuse_every_validated_runtime_commit(self):

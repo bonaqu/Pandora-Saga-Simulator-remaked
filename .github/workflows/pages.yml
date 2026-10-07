@@ -242,7 +242,7 @@ jobs:
           global.window = {};
           require('./_site/modern/release-notes.js');
           const release = global.window.PandoraRemakedRelease;
-          if (!release || !release.version || !release.notes?.ru || !release.notes?.en) {
+          if (!release || !release.version || !release.highlights?.ru || !release.highlights?.en) {
             throw new Error('Generated release notes are incomplete.');
           }
           const publicText = JSON.stringify(release);
