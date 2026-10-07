@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { baselineById } from '../admin-api/src/catalog-baseline.mjs';
 import { draftFromSource, validateDraft } from '../admin-api/src/catalog-model.mjs';
+import { buildReleaseRows as buildOriginalReleaseRows, loadInputs as loadOriginalInputs } from './materialize_pandora_os_live_sync.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const MIGRATION_NAME = '0007_pandora_os_live_item_sync_hardening.sql';
@@ -275,6 +276,58 @@ export function buildReleaseRows(inputs = loadInputs()) {
   }
   return [...rows.values()].sort((a, b) => a.identity.id.localeCompare(b.identity.id, 'en', { numeric: true }));
 }
+export function buildUnavailableRows(originalInputs = loadOriginalInputs()) {
+  const rows = [];
+  for (const row of buildOriginalReleaseRows(originalInputs)) {
+    if (row.mode !== 'server' || row.identity.kind !== 'equipment') continue;
+    const serverId = row.metadata?.serverId;
+    const server = originalInputs.items[String(serverId)] || originalInputs.items[serverId];
+    if (!server || !(server.unobtainable || server.npcOnly || String(server.kind || '').startsWith('DECO_'))) continue;
+    rows.push({ identity: row.identity, serverId, patch: row.patch, fallback: row.fallback });
+  }
+  return rows.sort((a, b) => a.identity.id.localeCompare(b.identity.id, 'en', { numeric: true }));
+}
+
+export function buildCosmeticPruneRows(releaseRows = buildReleaseRows()) {
+  const releaseIds = new Set(releaseRows.map(row => row.identity.id));
+  const originalServerIds = new Set(
+    buildOriginalReleaseRows(loadOriginalInputs()).filter(row => row.mode === 'server').map(row => row.identity.id)
+  );
+  const rows = [];
+  for (const source of baselineById.values()) {
+    const kind = sourceKind(source);
+    if (!kind || releaseIds.has(source.id) || originalServerIds.has(source.id)) continue;
+    const raw = String(source.name?.en || '').trim();
+    const normalized = stripOuterParentheses(raw);
+    if (!normalized || normalized === raw) continue;
+    const identity = identityFor(source, kind);
+    const edit = validateDraft(draftFromSource(source, kind), identity);
+    rows.push({ identity, expected: { identity, edit } });
+  }
+  return rows.sort((a, b) => a.identity.id.localeCompare(b.identity.id, 'en', { numeric: true }));
+}
+
+export function buildCosmeticPruneInsertStatements(rows = buildCosmeticPruneRows()) {
+  return rows.map((row, index) => {
+    const statement =
+      'INSERT INTO _pandora_os_live_cosmetic_prune (release_order, identity_id, expected_json) VALUES (' +
+      index + ', ' + sqlQuote(row.identity.id) + ', ' + sqlQuote(JSON.stringify(row.expected)) + ');';
+    invariant(Buffer.byteLength(statement) < 16384, 'Pandora OS cosmetic prune row exceeds safe D1 statement size: ' + row.identity.id);
+    return statement;
+  });
+}
+
+export function buildUnavailableInsertStatements(rows = buildUnavailableRows()) {
+  return rows.map((row, index) => {
+    const statement =
+      'INSERT INTO _pandora_os_live_unavailable (release_order, identity_id, patch_json, fallback_json) VALUES (' +
+      index + ', ' + sqlQuote(row.identity.id) + ', ' + sqlQuote(JSON.stringify(row.patch)) + ', ' +
+      sqlQuote(JSON.stringify(row.fallback)) + ');';
+    invariant(Buffer.byteLength(statement) < 16384, 'Pandora OS unavailable revert row exceeds safe D1 statement size: ' + row.identity.id);
+    return statement;
+  });
+}
+
 function sqlQuote(value) {
   return "'" + String(value).replaceAll("'", "''") + "'";
 }
@@ -290,15 +343,27 @@ export function buildReleaseInsertStatements(rows = buildReleaseRows()) {
   });
 }
 
-export function buildMigration(rows = buildReleaseRows()) {
-  const statements = buildReleaseInsertStatements(rows).join('\n');
-  return `-- Generated deterministically by scripts/materialize_pandora_os_live_sync.mjs.
+export function buildMigration(
+  rows = buildReleaseRows(),
+  cosmeticRows = buildCosmeticPruneRows(rows),
+  unavailableRows = buildUnavailableRows()
+) {
+  const releaseStatements = buildReleaseInsertStatements(rows).join('\n');
+  const cosmeticStatements = buildCosmeticPruneInsertStatements(cosmeticRows).join('\n');
+  const unavailableStatements = buildUnavailableInsertStatements(unavailableRows).join('\n');
+  return `-- Generated deterministically by scripts/materialize_pandora_os_live_sync_hardening.mjs.
 -- Frozen source: pandorasaga-os.com /gamedata snapshots captured 2026-10-07.
--- Hardening follows the already deployed revision 82 and must apply only to that exact head.
--- Existing override entries are merge-patched so unrelated manual/admin fields survive.
+-- Revision 83 hardens the already deployed revision 82:
+--  * applies only current/obtainable one-to-one server matches;
+--  * safely reverts unchanged revision-82 overrides for unavailable equipment to revision 79/baseline;
+--  * removes unchanged cosmetic-only parenthesis overrides now handled by the shared baseline layer.
+-- Any entry edited after revision 82 is retained unless it is an intentional current-server field patch.
 CREATE TABLE _pandora_os_live_guard (ok INTEGER NOT NULL CHECK (ok = 1));
 INSERT INTO _pandora_os_live_guard (ok)
-SELECT CASE WHEN (SELECT version FROM catalog_head WHERE id = 1) = 82 THEN 1 ELSE 0 END;
+SELECT CASE
+  WHEN (SELECT version FROM catalog_head WHERE id = 1) = 82
+   AND EXISTS (SELECT 1 FROM catalog_revisions WHERE version = 79)
+  THEN 1 ELSE 0 END;
 
 CREATE TABLE _pandora_os_live_release (
   release_order INTEGER PRIMARY KEY,
@@ -308,21 +373,39 @@ CREATE TABLE _pandora_os_live_release (
   patch_json TEXT NOT NULL CHECK (json_valid(patch_json)),
   fallback_json TEXT NOT NULL CHECK (json_valid(fallback_json))
 );
-${statements}
+${releaseStatements}
+
+CREATE TABLE _pandora_os_live_cosmetic_prune (
+  release_order INTEGER PRIMARY KEY,
+  identity_id TEXT NOT NULL UNIQUE,
+  expected_json TEXT NOT NULL CHECK (json_valid(expected_json))
+);
+${cosmeticStatements}
+
+CREATE TABLE _pandora_os_live_unavailable (
+  release_order INTEGER PRIMARY KEY,
+  identity_id TEXT NOT NULL UNIQUE,
+  patch_json TEXT NOT NULL CHECK (json_valid(patch_json)),
+  fallback_json TEXT NOT NULL CHECK (json_valid(fallback_json))
+);
+${unavailableStatements}
 
 CREATE TABLE _pandora_os_live_snapshot (
   payload_json TEXT NOT NULL CHECK (json_valid(payload_json))
 );
+
 INSERT INTO _pandora_os_live_snapshot (payload_json)
 SELECT COALESCE(json_group_array(json(entry)), '[]')
 FROM (
   SELECT
     CASE
-      WHEN incoming.identity_id IS NULL THEN existing.value
-      WHEN incoming.mode = 'normalize'
-        AND COALESCE(json_extract(existing.value, '$.edit.names.en'), '') <> incoming.expected_en
-        THEN existing.value
-      ELSE json_patch(existing.value, incoming.patch_json)
+      WHEN incoming.identity_id IS NOT NULL
+        THEN json_patch(existing.value, incoming.patch_json)
+      WHEN unavailable.identity_id IS NOT NULL
+       AND previous.value IS NOT NULL
+       AND json(existing.value) = json(json_patch(previous.value, unavailable.patch_json))
+        THEN previous.value
+      ELSE existing.value
     END AS entry,
     0 AS release_group,
     CAST(existing.key AS INTEGER) AS release_order
@@ -330,7 +413,25 @@ FROM (
   JOIN json_each(head.snapshot_json) AS existing
   LEFT JOIN _pandora_os_live_release AS incoming
     ON incoming.identity_id = json_extract(existing.value, '$.identity.id')
+  LEFT JOIN _pandora_os_live_cosmetic_prune AS cosmetic
+    ON cosmetic.identity_id = json_extract(existing.value, '$.identity.id')
+  LEFT JOIN _pandora_os_live_unavailable AS unavailable
+    ON unavailable.identity_id = json_extract(existing.value, '$.identity.id')
+  LEFT JOIN json_each((SELECT snapshot_json FROM catalog_revisions WHERE version = 79)) AS previous
+    ON json_extract(previous.value, '$.identity.id') = json_extract(existing.value, '$.identity.id')
   WHERE head.id = 1
+    AND NOT (
+      incoming.identity_id IS NULL
+      AND unavailable.identity_id IS NOT NULL
+      AND previous.value IS NULL
+      AND json(existing.value) = json(unavailable.fallback_json)
+    )
+    AND NOT (
+      incoming.identity_id IS NULL
+      AND unavailable.identity_id IS NULL
+      AND cosmetic.identity_id IS NOT NULL
+      AND json(existing.value) = json(cosmetic.expected_json)
+    )
 
   UNION ALL
 
@@ -358,6 +459,8 @@ SET version = 83,
 WHERE id = 1;
 
 DROP TABLE _pandora_os_live_snapshot;
+DROP TABLE _pandora_os_live_unavailable;
+DROP TABLE _pandora_os_live_cosmetic_prune;
 DROP TABLE _pandora_os_live_release;
 DROP TABLE _pandora_os_live_guard;
 `;
@@ -365,15 +468,21 @@ DROP TABLE _pandora_os_live_guard;
 
 export function materializeMigration(root = ROOT) {
   const rows = buildReleaseRows(loadInputs(root));
+  const cosmeticRows = buildCosmeticPruneRows(rows);
+  const unavailableRows = buildUnavailableRows();
   const destination = path.join(root, 'admin-api', 'migrations', MIGRATION_NAME);
-  const content = buildMigration(rows);
+  const content = buildMigration(rows, cosmeticRows, unavailableRows);
   fs.writeFileSync(destination, content, 'utf8');
-  const serverRows = rows.filter(row => row.mode === 'server').length;
-  return { destination, bytes: Buffer.byteLength(content), entries: rows.length, serverRows };
+  return {
+    destination,
+    bytes: Buffer.byteLength(content),
+    entries: rows.length,
+    cosmeticPrunes: cosmeticRows.length,
+    unavailableReverts: unavailableRows.length
+  };
 }
-
 const invoked = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (invoked) {
   const result = materializeMigration();
-  console.log(`Materialized ${MIGRATION_NAME}: ${result.entries} overrides, ${result.serverRows} server-matched, ${result.bytes} bytes`);
+  console.log(`Materialized ${MIGRATION_NAME}: ${result.entries} current server overrides, ${result.cosmeticPrunes} cosmetic prune candidates, ${result.unavailableReverts} unavailable revert candidates, ${result.bytes} bytes`);
 }
