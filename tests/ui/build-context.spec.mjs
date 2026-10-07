@@ -31,16 +31,14 @@ test('Modern code restores riding, effects, honor, clan and caster data without 
   await expect(page.locator('#InCode')).toHaveValue(saved.payload);
 });
 
-test('fresh shared recipient and offline reload calculate the same complete context, not current local switches', async ({ page, browser }) => {
+test('fresh shared recipient and online reload calculate the same complete context, not current local switches', async ({ page, browser }) => {
   await page.goto('/'); const saved = await withEffects(page);
   const context = await browser.newContext(); const recipient = await context.newPage();
   await recipient.goto('http://127.0.0.1:8000/#build=' + encodeURIComponent(saved.payload));
   await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
   expect(await recipient.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(saved.payload);
   expect(await recipient.evaluate(() => window.PandoraRemaked.adapter.readCalculatedSummary())).toEqual(saved.summary);
-  await recipient.evaluate(() => navigator.serviceWorker.ready);
-  await expect.poll(() => recipient.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
-  await context.setOffline(true); await recipient.reload();
+  await recipient.reload();
   await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
   expect(await recipient.evaluate(() => window.PandoraRemaked.adapter.readCalculatedSummary())).toEqual(saved.summary);
   await context.close();

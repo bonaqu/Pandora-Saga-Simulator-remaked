@@ -5,7 +5,7 @@ import test from 'node:test';
 const forth = JSON.parse(fs.readFileSync(new URL('../../admin-api/data/pandora-os-live-item-forth-20261007.json', import.meta.url)));
 const unison = JSON.parse(fs.readFileSync(new URL('../../admin-api/data/pandora-os-live-unison-20261007.json', import.meta.url)));
 const souls = JSON.parse(fs.readFileSync(new URL('../../admin-api/data/pandora-os-live-souls-20261007.json', import.meta.url)));
-const runtime = fs.readFileSync(new URL('../../modern/enhancement-effects.js', import.meta.url), 'utf8');
+const runtime = fs.readFileSync(new URL('../../modern/enhancement-effects.js', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
 function jsonVar(name) {
   const marker = 'var ' + name + ' = ';

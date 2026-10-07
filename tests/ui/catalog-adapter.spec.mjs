@@ -226,22 +226,22 @@ test('a slow obsolete shared-link request cannot replace a newer character or it
     api.adapter.selectEquipment(0, data.records[0].engineId); const payload = api.adapter.serialize(); api.adapter.load(original); return payload;
   }, first);
   const result = await page.evaluate(async ({ versioned, original }) => {
-    const api = window.PandoraRemaked; const prepare = api.catalog.preparePayload; let release;
+    const api = window.PandoraRemaked; const prepare = api.catalog.prepareCurrentPayload; let release;
     const gate = new Promise(resolve => { release = resolve; });
-    api.catalog.preparePayload = async payload => { if (payload === versioned) await gate; return prepare(payload); };
+    api.catalog.prepareCurrentPayload = async payload => { if (payload === versioned) await gate; return prepare(payload); };
     let started, finished; const slowStarted = new Promise(resolve => { started = resolve; });
     const slowFinished = new Promise(resolve => { finished = resolve; });
-    api.catalog.preparePayload = async payload => { if (payload === versioned) { started(); await gate; } const result = await prepare(payload); if (payload === versioned) finished(); return result; };
+    api.catalog.prepareCurrentPayload = async payload => { if (payload === versioned) { started(); await gate; } const result = await prepare(payload); if (payload === versioned) finished(); return result; };
     location.hash = 'build=' + encodeURIComponent(versioned); await slowStarted;
     location.hash = 'build=' + encodeURIComponent(original);
     await new Promise(resolve => setTimeout(resolve, 50)); const saved = localStorage.getItem(api.buildStore.AUTOSAVE_KEY);
-    release(); await slowFinished; await new Promise(resolve => setTimeout(resolve, 50)); api.catalog.preparePayload = prepare;
+    release(); await slowFinished; await new Promise(resolve => setTimeout(resolve, 50)); api.catalog.prepareCurrentPayload = prepare;
     return { payload: api.adapter.serialize(), saved, afterSaved: localStorage.getItem(api.buildStore.AUTOSAVE_KEY) };
   }, { versioned, original });
   expect(result.payload).toBe(original); expect(result.afterSaved).toBe(result.saved);
 });
 
-test('versioned codes round-trip through calculator and Build Manager, while original codes still restore exact source state', async ({ page }) => {
+test('versioned codes round-trip through calculator and Build Manager, while original codes use current catalog data', async ({ page }) => {
   await open(page);
   const original = await page.evaluate(() => window.PandoraRemaked.adapter.serialize());
   const next = equipment.records.filter(item => item.legacy_category_id === 0).length + 1;
@@ -254,13 +254,14 @@ test('versioned codes round-trip through calculator and Build Manager, while ori
   await expect(page.locator('#InCode')).toHaveValue(payload);
   const restored = await page.evaluate(code => window.PandoraRemaked.builds.importPayload(code), original);
   expect(restored.ok).toBe(true);
-  expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(original);
+  expect(await page.evaluate(() => window.PandoraRemaked.catalog.unpackPayload(window.PandoraRemaked.adapter.serialize()).payload)).toBe(original);
+  expect(await page.evaluate(() => window.PandoraRemaked.catalog.getRevision())).toBe(1);
   const imported = await page.evaluate(code => window.PandoraRemaked.builds.importPreparedPayload(code), payload);
   expect(imported.ok).toBe(true);
   expect(await page.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(payload);
 });
 
-test('comparison evaluates each pinned revision and restores the active catalog, character and stored records', async ({ page }) => {
+test('comparison uses current mechanics for both builds and restores active character and stored records', async ({ page }) => {
   await open(page);
   const next = equipment.records.filter(item => item.legacy_category_id === 0).length + 1;
   const weapon = record('equipment', 0, next, [], 'Compared sword');
@@ -286,12 +287,12 @@ test('comparison evaluates each pinned revision and restores the active catalog,
   await page.locator('[data-remaked-compare-a]').selectOption(result.a);
   await page.locator('[data-remaked-compare-b]').selectOption(result.b);
   await expect(page.locator('[data-remaked-compare-table]')).toBeVisible();
-  await expect(page.locator('[data-remaked-compare-row][data-stat-key="physicalAttack"] [data-remaked-delta]')).toHaveText('+25');
+  await expect(page.locator('[data-remaked-compare-row][data-stat-key="physicalAttack"] [data-remaked-delta]')).toHaveText('0');
   const state = await page.evaluate(() => ({ active: PandoraRemaked.adapter.serialize(), revision: PandoraRemaked.catalog.getRevision(), saved: localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY), autosave: localStorage.getItem(PandoraRemaked.buildStore.AUTOSAVE_KEY) }));
   expect(state).toEqual({ active: result.active, revision: 2, saved: result.saved, autosave: result.autosave });
 });
 
-test('fresh recipient loads pinned catalog revision, not newer stats; reload can use cached public catalog offline', async ({ page, browser }) => {
+test('local catalog fixture shares and reloads online with no offline installation', async ({ page, browser }) => {
   await open(page);
   const next = equipment.records.filter(item => item.legacy_category_id === 0).length + 1;
   const weapon = record('equipment', 0, next, [], 'Pinned sword');
@@ -312,13 +313,10 @@ test('fresh recipient loads pinned catalog revision, not newer stats; reload can
   expect(await recipient.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(payload);
   expect(await recipient.evaluate(() => Number(document.getElementById('Status_18').textContent))).toBe(90);
   expect(requests).not.toContain(2);
-  await recipient.evaluate(() => navigator.serviceWorker.ready);
-  await expect.poll(() => recipient.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
-  await context.setOffline(true);
   await recipient.reload();
   await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
   expect(await recipient.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(payload);
-  expect(await recipient.evaluate(() => Number(document.getElementById('Status_18').textContent))).toBe(90);
+  expect(await recipient.evaluate(() => navigator.serviceWorker.getRegistrations().then(r => r.length))).toBe(0);
   await context.close();
 });
 
@@ -330,7 +328,7 @@ test('missing catalog never replaces protected autosave; failed import leaves a 
   await context.route(publicApi + '**', route => route.abort());
   await context.addInitScript(value => localStorage.setItem('pandora-remaked.autosave.v1', JSON.stringify(value)), stored);
   const offline = await context.newPage(); await offline.goto('http://127.0.0.1:8000/');
-  await expect(offline.locator('[data-remaked-autosave-status]')).toContainText('Autosave warning');
+  await expect(offline.locator('[data-remaked-autosave-status]')).toContainText('Current catalog unavailable');
   const result = await offline.evaluate(async () => {
     const before = window.PandoraRemaked.adapter.serialize(); const saved = localStorage.getItem('pandora-remaked.autosave.v1');
     const flushed = window.PandoraRemaked.builds.flushAutosave();

@@ -334,7 +334,7 @@ test('all fourteen actual slots have correct source labels and usable selection 
     await page.locator(`[data-remaked-equipment-picker="${target.selectId}"]`).click();
     const panel = page.locator('[data-remaked-picker-panel]');
     await expect(panel.locator('h2')).toHaveText(target.label);
-    const expected = await page.evaluate(slot => PandoraRemaked.adapter.listEquipmentOptions(slot).length, target.slotIndex);
+    const expected = await page.evaluate(slot => PandoraRemaked.adapter.listEquipmentOptions(slot).filter(option => Number(option.value) % 10000 !== 0).length + 1, target.slotIndex);
     await expect(panel.locator('[data-remaked-search-result]')).toHaveCount(expected);
     await panel.locator('.remaked-search-close').click();
   }

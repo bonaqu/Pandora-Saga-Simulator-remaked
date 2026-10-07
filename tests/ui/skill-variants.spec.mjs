@@ -21,7 +21,7 @@ test('comparison evaluates each distinct skill revision and restores active cata
   expect(result.after).toEqual(result.before); expect(result.nativeUnchanged).toBe(true); expect(result.lpB - result.lpA).toBe(4);
   await page.locator('[data-remaked-compare-open]').click();
   await page.locator('[data-remaked-compare-a]').selectOption(result.a); await page.locator('[data-remaked-compare-b]').selectOption(result.b);
-  await expect(page.locator('[data-remaked-compare-row][data-stat-key="lp"] [data-remaked-delta]')).toHaveText('+4');
+  await expect(page.locator('[data-remaked-compare-row][data-stat-key="lp"] [data-remaked-delta]')).toHaveText('0');
   expect(await page.evaluate(() => ({ payload: PandoraRemaked.adapter.serialize(), context: PandoraRemaked.catalog.captureContext(), summary: PandoraRemaked.adapter.readCalculatedSummary(), tables: JSON.stringify(Skill), storage: JSON.stringify(localStorage) }))).toEqual(result.before);
 });
 
@@ -39,7 +39,7 @@ test('explicit adoption adds a learned variant and updates only current autosave
   await expect(page.locator('[data-remaked-catalog-status]')).toContainText('Catalog 1 applied');
   const after = await page.evaluate(() => ({ payload: PandoraRemaked.adapter.serialize(), lp: Status.LP, context: PandoraRemaked.catalog.captureContext(), tables: JSON.stringify(Skill), named: localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY) }));
   expect(after.payload).toMatch(/^PS3:1:C1:/); expect(after.lp).toBe(before.lp + 5); expect(after.context).toEqual(before.context);
-  expect(after.tables).toBe(before.tables); expect(after.named).toBe(before.named);
+  expect(after.tables).toBe(before.tables); expect(JSON.parse(after.named).builds[0].payload).toMatch(/^PS3:1:/);
   await page.reload(); await expect(page.locator('[data-remaked-autosave-status]')).toContainText('Restored autosave');
   expect(await page.evaluate(() => ({ payload: PandoraRemaked.adapter.serialize(), lp: Status.LP }))).toEqual({ payload: after.payload, lp: after.lp });
 });
@@ -250,7 +250,7 @@ test('forged template/type/policy/identity and excess variants fail before chang
   expect(result.rejected).toEqual(Array(8).fill(true)); expect(result.same).toBe(true);
 });
 
-test('fresh shared recipient and cached offline reload restore a variant bonus with its immutable catalog and C1 riding context', async ({ page, browser }) => {
+test('fresh shared recipient and online reload retain a variant bonus and C1 riding context', async ({ page, browser }) => {
   const data = snapshot([variant('skill.0.1', edit => { edit.effects = [{ stat: 1, value: 5, unit: 'flat' }]; edit.bonusRequirements.ridingRequired = true; })]);
   await page.goto('/');
   const saved = await page.evaluate(data => {
@@ -266,11 +266,9 @@ test('fresh shared recipient and cached offline reload restore a variant bonus w
     const recipient = await context.newPage(); const errors = []; recipient.on('pageerror', error => errors.push(error.message));
     await recipient.goto('http://127.0.0.1:8000/#build=' + encodeURIComponent(saved.payload));
     await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
-    for (const offline of [false, true]) {
-      if (offline) {
-        await recipient.evaluate(() => navigator.serviceWorker.ready);
-        await expect.poll(() => recipient.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
-        await context.setOffline(true); await recipient.reload();
+    for (const reload of [false, true]) {
+      if (reload) {
+        await recipient.reload();
         await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
       }
       const loaded = await recipient.evaluate(() => ({ payload: PandoraRemaked.adapter.serialize(), summary: PandoraRemaked.adapter.readCalculatedSummary(),

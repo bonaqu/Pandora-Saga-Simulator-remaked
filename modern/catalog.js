@@ -213,6 +213,19 @@
     for (var index = 8; index < row.length; index++) row[index] = 0;
     row._pandoraPlaceholder = true; return row;
   }
+  function identityAlias(record, snapshot) {
+    var aliases = window.PandoraRemakedIdentityAliases || {};
+    var term = record && aliases[record.id];
+    if (term) return snapshot.records.find(function (candidate) { return termFor(candidate) === term && !candidate.disabled; });
+    return null;
+  }
+  function goldenAlias(snapshot) {
+    // Identity was verified against publication 86: the decorative source cloak
+    // and this stable record are the same entity. Future stat/name/slot changes
+    // must follow that identity; the HP/MP Golden Cloak remains a different ID.
+    return snapshot.records.find(function (candidate) { return candidate.id === 'modern.equipment.218e08bb-1154-4c9a-a6f6-365805690ccc'; }) || null;
+  }
+  function retiredGoldenSource(snapshot) { return snapshot.revision >= 86 || Boolean(goldenAlias(snapshot)); }
   function selectedStateExists(equipment, souls) {
     for (var slot = 0; slot < window.Status.Equip.length; slot++) {
       var state = window.Status.Equip[slot], id = Number(state[0]); var category = Math.floor(id / 10000), index = id % 10000;
@@ -257,11 +270,11 @@
       var category = Math.floor(id / 10000), index = id % 10000;
       var equipment = equipmentState(category, index);
       if (!equipment.exists) {
-        blocking.push({ type: 'missing-equipment', slot: slot, equipmentId: id });
+        repairs.push({ type: 'clear-equipment', slot: slot, equipmentId: id, reason: 'missing-equipment' });
         continue;
       }
       if (index && (!equipment.compatibility[2 + window.Status.Job[0]] || !equipment.compatibility[8 + window.Status.Job[2]])) {
-        blocking.push({ type: 'equipment-incompatible', slot: slot, equipmentId: id });
+        repairs.push({ type: 'clear-equipment', slot: slot, equipmentId: id, reason: 'equipment-incompatible' });
         continue;
       }
       for (var socket = 4; socket <= 6; socket++) {
@@ -284,6 +297,152 @@
       repairs: repairs,
       blocking: blocking
     };
+  }
+
+  // Migrate numeric choices before Expand/ListCreate can silently discard them.
+  // Historical snapshots are read only as descriptions for the change report.
+  function migratePayload(payload, snapshot) {
+    var parsed = unpackPayload(payload);
+    snapshot = snapshot || snapshots[revision] || sourceSnapshot();
+    validate(snapshot);
+    var csv = parsed.payload;
+    if (csv.indexOf(',') === -1) csv = window.Base64.btou(window.RawDeflate.inflate(window.Base64.fromBase64(csv)));
+    var fields = csv.split(',');
+    check(fields.length === String(window.Store()).split(',').length && fields.every(function (value) {
+      return value.trim() !== '' && Number.isFinite(Number(value));
+    }), 'Invalid build fields');
+    fields = fields.map(Number);
+    check(Number.isInteger(fields[0]) && fields[0] >= 0 && fields[0] < 6 && Number.isInteger(fields[2]) && fields[2] >= 0 && fields[2] < 28, 'Invalid character');
+    var next = Object.create(null), old = Object.create(null), changes = [];
+    snapshot.records.forEach(function (record) { next[termFor(record)] = record; });
+    (snapshots[parsed.revision]?.records || []).forEach(function (record) { old[termFor(record)] = record; });
+    function recordAt(kind, id, records) {
+      return records[kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id];
+    }
+    function sourceAt(kind, id) { return kind === 'equipment' ? baselineEquipment[0]?.[Math.floor(id / 10000)]?.[id % 10000] : baselineSouls[0]?.[id]; }
+    function name(kind, id, previousOnly) {
+      var record = previousOnly ? recordAt(kind, id, old) : recordAt(kind, id, next) || recordAt(kind, id, old);
+      var locale = namespace.i18n?.getLocale() || 'en';
+      return record?.names?.[locale] || record?.names?.en || namespace.i18n?.game(kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id, sourceAt(kind, id)?.[0] || String(id)) || String(id);
+    }
+    function available(kind, id) {
+      var record = recordAt(kind, id, next), source = sourceAt(kind, id);
+      return record ? !record.disabled : Boolean(source && !source._pandoraPlaceholder);
+    }
+    function resolved(kind, id) {
+      var previous = recordAt(kind, id, old);
+      if (!previous) return { id: id, replaced: false };
+      var alias = identityAlias(previous, snapshot);
+      var same = alias || snapshot.records.find(function (record) { return record.kind === kind && record.id === previous.id; });
+      if (same) return { id: same.engineId, replaced: false };
+      var current = recordAt(kind, id, next);
+      return { id: id, replaced: Boolean(current && current.id !== previous.id) };
+    }
+    function changed(kind, id, previousId) {
+      if (parsed.revision === snapshot.revision) return;
+      var current = recordAt(kind, id, next), previous = recordAt(kind, previousId === undefined ? id : previousId, old), source = sourceAt(kind, id);
+      var beforeSource = sourceAt(kind, previousId === undefined ? id : previousId);
+      var beforeCode = previous?.calculationCode ?? beforeSource?.[7], afterCode = current?.calculationCode ?? source?.[7];
+      if (beforeCode === undefined) return; // Missing old metadata is not a zero stat.
+      function stats(code) {
+        var values = Object.create(null);
+        String(code || '').split('_').filter(Boolean).forEach(function (token) { var parts = token.split('='); if (parts.length === 2) values[parts[0]] = parts[1]; });
+        return values;
+      }
+      var before = stats(beforeCode), after = stats(afterCode);
+      var keys = Object.keys(before).concat(Object.keys(after));
+      var differences = keys.filter(function (key, index) { return keys.indexOf(key) === index; }).filter(function (key) { return (before[key] || '0') !== (after[key] || '0'); }).map(function (key) {
+        var stat = Number(key.split(',')[0]), label = window.Name.Option?.[stat]?.[2] || window.Name.Text.Status?.[stat]?.[1] || key;
+        label = String(label).replace(/<[^>]*>/g, '');
+        if (stat === 2 && namespace.i18n?.getLocale() === 'ru') label = 'ПРВ';
+        return label + ' ' + (before[key] || '0') + '→' + (after[key] || '0');
+      });
+      var locale = namespace.i18n?.getLocale() || 'en';
+      var beforeName = previous?.names?.[locale] || previous?.names?.en, afterName = current?.names?.[locale] || current?.names?.en;
+      if (beforeName && afterName && beforeName !== afterName) differences.unshift(beforeName + '→' + afterName);
+      var beforeDescription = previous?.description?.[locale] || previous?.description?.en, afterDescription = current?.description?.[locale] || current?.description?.en;
+      if (beforeDescription !== undefined && afterDescription !== undefined && namespace.catalogText.lines(beforeDescription) !== namespace.catalogText.lines(afterDescription)) differences.push(locale === 'ru' ? 'описание обновлено' : 'description updated');
+      if (kind === 'equipment') {
+        var beforeSlots = previous?.sockets ?? beforeSource?.[5], afterSlots = current?.sockets ?? source?.[5];
+        if (beforeSlots !== undefined && beforeSlots !== afterSlots) differences.push((namespace.i18n?.getLocale() === 'ru' ? 'слоты душ ' : 'Soul slots ') + beforeSlots + '→' + afterSlots);
+      }
+      if (differences.length) changes.push({ type: 'changed', kind: kind, id: id, name: name(kind, id), details: differences });
+    }
+    // Skills are derived from class/level/branch choices, not frozen skill rows.
+    // Probe only the selected character's gates, restoring every native reference.
+    function wasLearned(record) {
+      var job = window.Status.Job, level = window.Status.Lev, branches = window.Status.Skill;
+      try {
+        window.Status.Job = fields.slice(0, 3); window.Status.Lev = [fields[3]];
+        var position = 10;
+        for (var stat = 0; stat < 6; stat++) position += window.Status[window.Name.Option[stat][2]].length;
+        var selected = [];
+        for (var branch = 0; branch < window.Name.Skill.length; branch++) {
+          selected.push(fields.slice(position, position + branches[branch].length)); position += branches[branch].length;
+        }
+        window.Status.Skill = selected;
+        return (record.learningRequirements ? customEligibility(record.learningRequirements) : nativeGate(record.prerequisiteCode)).learned;
+      } finally { window.Status.Job = job; window.Status.Lev = level; window.Status.Skill = branches; }
+    }
+    if (parsed.revision !== snapshot.revision) Object.keys(old).forEach(function (key) {
+      var record = old[key];
+      if (!record.templateId || !wasLearned(record)) return;
+      var current = next[key];
+      if (!current || !wasLearned(current)) changes.push({ type: 'removed', kind: 'skill', id: record.id,
+        name: record.names[namespace.i18n?.getLocale() || 'en'] || record.names.en, reason: current ? 'incompatible' : 'missing' });
+    });
+    var offset = 10;
+    for (var option = 0; option < 6; option++) offset += window.Status[window.Name.Option[option][2]].length;
+    for (var skill = 0; skill < window.Name.Skill.length; skill++) offset += window.Status.Skill[skill].length;
+    for (var slot = 0; slot < window.Status.Equip.length; slot++) {
+      var id = fields[offset], category = Math.floor(id / 10000), index = id % 10000;
+      check(Number.isInteger(id) && id >= 0 && allowedCategories.indexOf(category) !== -1, 'Invalid equipment choice');
+      // Explicit, reviewed identity aliases; never merge by matching stats alone.
+      var previousEquipmentId = id, choice = resolved('equipment', id);
+      fields[offset] = id = choice.id; category = Math.floor(id / 10000); index = id % 10000;
+      var alias = id === 350003 ? goldenAlias(snapshot) : null;
+      if (alias || id === 350003 && retiredGoldenSource(snapshot)) {
+        fields[offset] = id = alias ? alias.engineId : 350051; category = Math.floor(id / 10000); index = id % 10000;
+      }
+      var item = recordAt('equipment', id, next), source = sourceAt('equipment', id);
+      var compatible = item ? item.compatibility[2 + fields[0]] && item.compatibility[8 + fields[2]] : source?.[10 + fields[0]] && source?.[16 + fields[2]];
+      var sockets = item?.sockets ?? source?.[5] ?? 0;
+      if (index && (choice.replaced || !available('equipment', id) || !compatible)) {
+        changes.push({ type: 'removed', kind: 'equipment', id: id, name: name('equipment', choice.replaced || !item ? previousEquipmentId : id, choice.replaced), reason: choice.replaced || !available('equipment', id) ? 'missing' : 'incompatible' });
+        fields[offset] = category * 10000;
+        for (var field = 1; field < window.Status.Equip[slot].length; field++) fields[offset + field] = 0;
+      } else {
+        if (index) changed('equipment', id, previousEquipmentId);
+        for (var socket = 4; socket <= 6; socket++) {
+          var soul = fields[offset + socket]; if (!soul) continue;
+          check(Number.isInteger(soul) && soul >= 0 && soul < 10000, 'Invalid Soul choice');
+          var previousSoulId = soul, soulChoice = resolved('soul', soul); fields[offset + socket] = soul = soulChoice.id;
+          var soulRecord = recordAt('soul', soul, next), soulSource = sourceAt('soul', soul), soulSlot = slot <= 6 ? slot : slot === 11 ? 7 : -1;
+          var fits = soulSlot >= 0 && (soulRecord ? soulRecord.compatibility[soulSlot] : soulSource?.[8 + soulSlot]) === 1;
+          if (soulChoice.replaced || !available('soul', soul) || socket - 3 > sockets || !fits) {
+            changes.push({ type: 'removed', kind: 'soul', id: soul, name: name('soul', soulChoice.replaced ? previousSoulId : soul, soulChoice.replaced), reason: soulChoice.replaced || !available('soul', soul) ? 'missing' : socket - 3 > sockets ? 'slots' : 'incompatible' });
+            fields[offset + socket] = 0;
+          } else changed('soul', soul, previousSoulId);
+        }
+      }
+      offset += window.Status.Equip[slot].length;
+    }
+    return { payload: packWithContext(fields.join(','), snapshot.revision, parsed.context), changes: changes };
+  }
+
+  async function prepareCurrentPayload(payload) {
+    var parsed = unpackPayload(payload), target = Math.max(revision, headRevision);
+    if (location.origin === 'https://bonaqu.github.io') {
+      var current = await fetchSnapshot(null, { networkOnly: true }); target = current.revision;
+    } else {
+      target = Math.max(target, parsed.revision);
+      await fetchSnapshot(target);
+    }
+    // Old metadata is optional and cannot block adoption of the current data.
+    if (parsed.revision !== target && !snapshots[parsed.revision]) {
+      try { await fetchSnapshot(parsed.revision); } catch { /* No historical calculation fallback. */ }
+    }
+    return migratePayload(payload, target === 0 ? sourceSnapshot() : snapshots[target]);
   }
 
   function refreshAvailability() {
@@ -324,13 +483,18 @@
         var code = languages[language], original = sourceRow(record), key = original?.[0] || record.engineKey;
         var name = language === 0 ? key : escaped(record.names[code] || record.names.en);
         var row = record.kind === 'equipment'
-          ? [name, escaped(record.description[code] || record.description.en), escaped(record.notes[code] || record.notes.en), escaped(record.acquisition[code] || record.acquisition.en), record.level, record.sockets, record.parameter6, record.calculationCode, ...record.compatibility, record.trailing]
-          : [name, escaped(record.modifiers[code] || record.modifiers.en || record.names.en), escaped(record.description[code] || record.description.en), escaped(record.notes[code] || record.notes.en), escaped(record.acquisition[code] || record.acquisition.en), ...record.soulParameters, record.calculationCode, ...record.compatibility, record.trailing];
+          ? [name, escaped(namespace.catalogText.lines(record.description[code] || record.description.en)).replace(/\n/g, '<br />'), escaped(namespace.catalogText.lines(record.notes[code] || record.notes.en)).replace(/\n/g, '<br />'), escaped(namespace.catalogText.lines(record.acquisition[code] || record.acquisition.en)).replace(/\n/g, '<br />'), record.level, record.sockets, record.parameter6, record.calculationCode, ...record.compatibility, record.trailing]
+          : [name, escaped(record.modifiers[code] || record.modifiers.en || record.names.en), escaped(namespace.catalogText.lines(record.description[code] || record.description.en)).replace(/\n/g, '<br />'), escaped(namespace.catalogText.lines(record.notes[code] || record.notes.en)).replace(/\n/g, '<br />'), escaped(namespace.catalogText.lines(record.acquisition[code] || record.acquisition.en)).replace(/\n/g, '<br />'), ...record.soulParameters, record.calculationCode, ...record.compatibility, record.trailing];
         var group = record.kind === 'equipment' ? equipment[language][record.category] : souls[language];
         while (group.length < record.index) group.push(placeholder(group[0]));
         group[record.index] = row;
       }
     });
+    // Deduplicate only the Modern projection; canonical Legacy arrays/files
+    // remain untouched. Existing source selections migrate via the alias above.
+    if (retiredGoldenSource(snapshot)) {
+      for (var language = 0; language < 3; language++) equipment[language][35][3] = placeholder(equipment[language][35][3]);
+    }
     if (options.rebuild !== false || options.preflightOnly) selectedStateExists(equipment, souls);
     if (options.preflightOnly) return snapshot.revision;
     // A pinned revision switch must not leave explicitly controlled source
@@ -367,7 +531,8 @@
     var record = recordsByTerm[term]; if (!record) return '';
     if (record.profiles) { nativeLearnedEntries(); record = selectedProfiles[record.id] || record; }
     var language = namespace.i18n?.getLocale() === 'ru' ? 'ru' : languages[Number(window.Flag[0])];
-    return record[field]?.[language] || record[field]?.en || '';
+    var text = record[field]?.[language] || record[field]?.en || '';
+    return ['description', 'notes', 'acquisition'].indexOf(field) !== -1 ? namespace.catalogText.lines(text) : text;
   }
   function learningText(required) {
     var i18n = namespace.i18n, language = Number(window.Flag[0]);
@@ -566,24 +731,26 @@
     applySnapshot(snapshot, { rebuild: false });
   }
   async function bootstrap() {
-    // Public Pages only. Local development cannot bypass the strict production
-    // CORS policy; tests exercise this public loader with explicit mock routes.
     var autosave = namespace.buildStore?.readAutosave();
-    if (autosave?.ok && autosave.record) {
-      try { await preparePayload(autosave.record.payload); }
-      catch { recovery = true; }
-    }
-    var shared = location.hash.indexOf('#build=') === 0;
-    if (shared) {
-      try { await preparePayload(decodeURIComponent(location.hash.slice(7))); }
-      catch { /* Builds owns the visible error; no partial character load. */ }
-    }
-    if (!autosave?.record && !shared && location.origin === 'https://bonaqu.github.io') {
-      try { applySnapshot(await fetchSnapshot(null)); }
-      catch { /* A first visit can always use the preserved source catalog. */ }
-    }
+    try {
+      if (location.origin === 'https://bonaqu.github.io') {
+        applySnapshot(await fetchSnapshot(null, { networkOnly: true }));
+      } else if (autosave?.record) {
+        var parsed = await preparePayload(autosave.record.payload);
+        useRevision(parsed.revision);
+      }
+      if (autosave?.record) {
+        var old = unpackPayload(autosave.record.payload);
+        if (old.revision !== revision) {
+          try { await fetchSnapshot(old.revision); } catch { /* Optional report metadata. */ }
+        }
+      }
+    } catch { if (autosave?.record) recovery = true; }
   }
-  namespace.catalog = { applySnapshot, validateSnapshot: validate, refreshAvailability, adoptionPlan,
+  namespace.catalog = { applySnapshot, validateSnapshot: validate, refreshAvailability, adoptionPlan, migratePayload, prepareCurrentPayload,
+    isAlias: function (kind, id) {
+      return kind === 'equipment' && Number(id) === 350003 && retiredGoldenSource(snapshots[revision] || sourceSnapshot());
+    },
     variantSkills: function () {
       if (!variantRecords.length) return [];
       nativeLearnedEntries();

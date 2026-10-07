@@ -161,7 +161,7 @@ test('source tooltip and added skill show the actual custom requirements in EN/R
   expect(errors).toEqual([]);
 });
 
-test('comparison of different custom learning revisions restores the active character, learned bonus, C1 and named pins', async ({ page }) => {
+test('comparison applies current custom learning rules to both builds and restores the active character, learned bonus, C1 and named pins', async ({ page }) => {
   await page.goto('/');
   const one = variant('skill.0.1', edit => { edit.learningRequirements = rules(); edit.effects = [{ stat: 6, value: 5, unit: 'flat' }]; edit.bonusRequirements.ridingRequired = true; });
   const two = structuredClone(one); two.learningRequirements.minimumLevel = 55;
@@ -178,11 +178,11 @@ test('comparison of different custom learning revisions restores the active char
   expect(result.after).toEqual(result.before); expect(result.lpA - result.lpB).toBe(5);
   await page.locator('[data-remaked-compare-open]').click();
   await page.locator('[data-remaked-compare-a]').selectOption(result.a); await page.locator('[data-remaked-compare-b]').selectOption(result.b);
-  await expect(page.locator('[data-remaked-compare-row][data-stat-key="lp"] [data-remaked-delta]')).toHaveText('-5');
+  await expect(page.locator('[data-remaked-compare-row][data-stat-key="lp"] [data-remaked-delta]')).toHaveText('0');
   expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(result.before.payload);
 });
 
-test('fresh shared recipient and cached offline reload retain explicit learning rules, bonus, catalog pin and C1 context', async ({ page, browser }) => {
+test('fresh shared recipient and online reload retain explicit learning rules, bonus, catalog pin and C1 context', async ({ page, browser }) => {
   const data = snapshot([variant('skill.0.1', edit => { edit.learningRequirements = rules(); edit.effects = [{ stat: 1, value: 5, unit: 'flat' }]; edit.bonusRequirements.ridingRequired = true; })]);
   await page.goto('/');
   const saved = await page.evaluate(data => {
@@ -196,11 +196,9 @@ test('fresh shared recipient and cached offline reload retain explicit learning 
     const recipient = await context.newPage(); const errors = []; recipient.on('pageerror', error => errors.push(error.message));
     await recipient.goto('http://127.0.0.1:8000/#build=' + encodeURIComponent(saved.payload));
     await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
-    for (const offline of [false, true]) {
-      if (offline) {
-        await recipient.evaluate(() => navigator.serviceWorker.ready);
-        await expect.poll(() => recipient.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
-        await context.setOffline(true); await recipient.reload();
+    for (const reload of [false, true]) {
+      if (reload) {
+        await recipient.reload();
         await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
       }
       expect(await recipient.evaluate(() => ({ payload: PandoraRemaked.adapter.serialize(), summary: PandoraRemaked.adapter.readCalculatedSummary(), strength: Status.STR[2], learned: PandoraRemaked.catalog.variantSkills()[0].learned }))).toEqual(saved);

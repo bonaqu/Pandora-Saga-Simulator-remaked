@@ -99,7 +99,7 @@ test('adapter load round-trips build state without touching legacy localStorage.
   expect(await page.evaluate(() => localStorage.getItem('file'))).toBe('legacy-sentinel-do-not-touch');
 });
 
-test('Equipment targets/options mirror current legacy selects exactly', async ({ page }) => {
+test('Equipment options preserve select membership and sort by level then stable ID', async ({ page }) => {
   await openModern(page);
   const target = await page.evaluate(() => window.PandoraRemaked.adapter.listEquipmentTargets()[0]);
   expect(target.slotIndex).toBe(0);
@@ -107,7 +107,7 @@ test('Equipment targets/options mirror current legacy selects exactly', async ({
   expect(target.label.trim().length).toBeGreaterThan(0);
 
   const adapterOptions = await page.evaluate(() => window.PandoraRemaked.adapter.listEquipmentOptions(0));
-  const legacyOptions = await optionRecords(page, '#SelEquip_0_0');
+  const legacyOptions = (await optionRecords(page, '#SelEquip_0_0')).sort((a, b) => (Number(a.text.match(/^Lv:\s*(\d+)/)?.[1] ?? -1) - Number(b.text.match(/^Lv:\s*(\d+)/)?.[1] ?? -1)) || Number(a.value) - Number(b.value));
   expect(adapterOptions.map((option) => option.value)).toEqual(legacyOptions.map((option) => option.value));
   expect(adapterOptions.length).toBe(legacyOptions.length);
 

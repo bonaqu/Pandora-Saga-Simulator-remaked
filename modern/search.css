@@ -586,3 +586,5 @@
   .remaked-modern #body [data-remaked-picker-slot] { background: #fbfdf7; border-bottom: 1px solid #e2e9d8; }
   .remaked-modern #body [data-remaked-picker-slot]:nth-of-type(even) { background: #f3f7ed; }
 }
+
+.remaked-item-description p { white-space: pre-line; }

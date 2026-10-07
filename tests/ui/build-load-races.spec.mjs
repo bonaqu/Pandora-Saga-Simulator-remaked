@@ -58,7 +58,7 @@ async function observePreparation(page) {
         }
       };
     };
-    wrap('latestPayload');
+    wrap('prepareCurrentPayload');
     wrap('preparePayload');
   });
 }

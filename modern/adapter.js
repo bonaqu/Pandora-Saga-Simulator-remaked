@@ -265,7 +265,9 @@
       for (var index = 0; index < select.options.length; index += 1) {
         options.push(parseEquipmentOption(select.options[index]));
       }
-      return options;
+      return options.filter(function (option) { return !namespace.catalog?.isAlias?.('equipment', option.value) && !namespace.catalog?.item('equipment', option.value)?.disabled; }).sort(function (a, b) {
+        return (a.level ?? -1) - (b.level ?? -1) || Number(a.value) - Number(b.value);
+      });
     },
 
     selectEquipment: function (slotIndex, value) {
@@ -312,7 +314,7 @@
           name: select.options[index]._remakedGameDisplay ? select.options[index]._remakedGameDisplay.sourceText : textOf(select.options[index])
         });
       }
-      return options;
+      return options.filter(function (option) { return !namespace.catalog?.item('soul', option.value)?.disabled; }).sort(function (a, b) { return Number(a.value) - Number(b.value); });
     },
 
     selectSoul: function (target, value) {
