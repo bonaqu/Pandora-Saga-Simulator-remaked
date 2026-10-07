@@ -318,6 +318,7 @@ jobs:
           npm run test:ui --
           tests/ui/catalog-adapter.spec.mjs
           tests/ui/catalog-adoption.spec.mjs
+          tests/ui/equipment-enhancement-effects.spec.mjs
           tests/ui/build-load-races.spec.mjs
           tests/ui/skill-catalog.spec.mjs
           tests/ui/skill-variants.spec.mjs
