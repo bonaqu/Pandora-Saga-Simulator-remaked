@@ -85,7 +85,27 @@
     'calculator.status.17': ['ШАНС КРИТ', 'Шанс крита'],
     'calculator.status.18': ['Крит УРОН', 'Крит. урон'],
     'calculator.status.20': ['Сопр КРИТ', 'Сопр. криту'],
-    'calculator.status.21': ['Сопр КРурон', 'Получ. крит. урон']
+    'calculator.status.21': ['Сопр КРурон', 'Получ. крит. урон'],
+    'calculator.status.22': ['Ближ УКЛОН', 'Укл. ближ. атак'],
+    'calculator.status.23': ['Дальн АТК УКЛОН', 'Укл. дальн. атак'],
+    'calculator.status.24': ['МАГУКЛОН', 'Укл. от магии'],
+    'calculator.status.25': ['Дист ближ АТК', 'Дальн. АТК ближ. боя'],
+    'calculator.status.26': ['Дист дальн АТК', 'Дальн. АТК дальн. боя'],
+    'calculator.status.27': ['Сопр ОГН', 'Сопр. огню'],
+    'calculator.status.28': ['СКР АТК', 'Скор. атаки'],
+    'calculator.status.29': ['Сопр ЛЕД', 'Сопр. льду'],
+    'calculator.status.30': ['СКР Каста', 'Скор. каста'],
+    'calculator.status.31': ['ВремяКаст', 'Сокрщ. времени каста'],
+    'calculator.status.32': ['Сопр МОЛН', 'Сопр. молнии'],
+    'calculator.status.34': ['Сопр ЯД', 'Сопр. яду'],
+    'calculator.status.35': ['СКР Движ', 'Скор. движения'],
+    'calculator.status.36': ['СКР Движ Астир', 'Скор. в городе'],
+    'calculator.status.37': ['Сопр ЧАР', 'Сопр. чарам'],
+    'calculator.status.38': ['Сопр СВЕТ', 'Сопр. свету'],
+    'calculator.status.39': ['Сопр ТЬМ', 'Сопр. тьмы'],
+    'calculator.status.40': ['Сопр АНОМТЕЛ', 'Сопр. аном. тел.'],
+    'calculator.status.41': ['Сопр АНОМДУХ', 'Сопр. аном. дух.'],
+    'calculator.status.42': ['Сопр МАГ', 'Сопр. магии']
   });
   function compactActionLabel(key, value) {
     var entry = currentLocale === 'ru' && (RU_RESULT_LABELS[key] || COMPACT_RU_ACTIONS[key]);
