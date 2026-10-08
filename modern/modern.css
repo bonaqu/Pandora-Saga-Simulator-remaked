@@ -2217,6 +2217,15 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     min-height: 32px;
     align-items: center;
   }
+  /* The Potential text was right-aligned as an 8px glyph box, 12px away
+     from its 32px heading track. Make both use the same numeric cell center. */
+  .remaked-modern #body #SkillSet[data-remaked-skill-controls] [data-remaked-skill-potential-value] {
+    display: block;
+    box-sizing: border-box;
+    width: 32px;
+    max-width: 32px;
+    text-align: center;
+  }
   html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(2),
   html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(3),
   html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(5),
