@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 3.34 — aligned riding control, 2026-10-08
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Кнопка «Верхом» теперь той же компактной высоты, что и соседнее поле «Хар-ки верхом / %», во всех языках интерфейса.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Riding toggle now matches the compact height of the adjacent riding-stat field in every language.
+<!-- /release-notes:en -->
+
 ## Modern 3.33 — compact calculator actions, 2026-10-08
 
 <!-- release-notes:ru -->
