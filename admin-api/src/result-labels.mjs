@@ -80,7 +80,7 @@ export async function adminResultLabels(request, env) {
       typeof input.value !== 'string') fail('Invalid result translation request');
 
   const value = input.value.trim();
-  if (value.length > 100 || /[\x00-\x1f\x7f]/.test(value)) fail('Invalid translation text');
+  if (value.length > 100 || /[\x00-\x1f\x7f<>]/.test(value)) fail('Invalid translation text');
   const row = await env.DB.prepare('SELECT ru, version FROM result_label_overrides WHERE id = ?')
     .bind(input.id).first();
   const version = row?.version || 0;
