@@ -204,7 +204,7 @@ test('effect tabs have matching geometry and readable unclipped typography in ev
       expect(actual.map(item => item.typography), locale + ':' + width)
         .toEqual(baseline.map(item => item.typography));
       for (const item of actual) {
-        expect(item.typography[0], locale + ':' + width + ':' + item.text).toBe('12px');
+        expect(item.typography[0], locale + ':' + width + ':' + item.text).toBe('11px');
         expect(item.typography[2], locale + ':' + width + ':' + item.text).toBe('nowrap');
         expect(item.clipped, locale + ':' + width + ':' + item.text).toBe(false);
       }
