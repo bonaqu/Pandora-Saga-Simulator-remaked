@@ -183,8 +183,8 @@ test('RU calculator actions and riding labels use the requested wording without 
 
     expect(labels).toMatchObject({
       text3: 'Учитывать умения',
-      text5: 'Учитывать мастерство умений',
-      text6: 'Учитывать эффекты зелий',
+      text5: 'Учитывать мастерство',
+      text6: 'Учитывать эфф. зелий',
       text7: 'Сброс характеристик',
       text8: 'Сброс умений',
       text9: 'Сбросить все',
@@ -215,7 +215,7 @@ test('calculator action geometry and typography match in EN, RU, JP and TW', asy
           }),
           typography: actions.map(node => {
             const s = getComputedStyle(node);
-            return [s.fontSize, s.fontWeight];
+            return [s.fontSize, s.fontWeight, s.whiteSpace];
           }),
           overflow: actions.filter(node =>
             node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1
@@ -234,8 +234,17 @@ test('calculator action geometry and typography match in EN, RU, JP and TW', asy
       expect(result.geometry, locale + ':' + width).toEqual(locales.en.geometry);
       expect(result.typography, locale + ':' + width).toEqual(locales.en.typography);
       expect(result.typography, locale + ':' + width)
-        .toEqual(Array.from({ length: 6 }, () => [width <= 620 ? '11px' : '10.5px', '700']));
+        .toEqual(Array.from({ length: 6 }, () => [width <= 620 ? '11px' : '10.5px', '700', 'normal']));
       expect(result.overflow, locale + ':' + width).toEqual([]);
+      if (width >= 1366) {
+        // Equal columns for the six compact actions, regardless of language.
+        const firstRow = result.geometry.slice(0, 3);
+        const secondRow = result.geometry.slice(3, 6);
+        expect(Math.max(...firstRow.map(rect => rect[2])) - Math.min(...firstRow.map(rect => rect[2]))).toBeLessThanOrEqual(0.2);
+        expect(firstRow.map(rect => rect[1])).toEqual([firstRow[0][1], firstRow[0][1], firstRow[0][1]]);
+        expect(secondRow.map(rect => rect[1])).toEqual([secondRow[0][1], secondRow[0][1], secondRow[0][1]]);
+        expect(secondRow[0][1]).toBeGreaterThan(firstRow[0][1]);
+      }
     }
   }
 });
