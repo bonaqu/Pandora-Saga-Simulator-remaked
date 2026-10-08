@@ -404,6 +404,7 @@ test('Russian skills help and Enhancement buffs show full names and localized na
     const hover = await button.locator('.help').first().getAttribute('title');
     expect(hover).toContain(name);
     expect(hover).toContain(description);
+    await expect(button).toHaveAttribute('title', hover);
   }
 
   const translated = await page.evaluate(() => {
@@ -431,5 +432,6 @@ test('Russian skills help and Enhancement buffs show full names and localized na
   await expect(page.locator('#Text_23')).toHaveText('Hymn');
   await expect(page.locator('#Buff_0_7')).toContainText('War Cry');
   await expect(page.locator('#Buff_0_7 .help')).toHaveAttribute('title', /Increases Physical Attack Power/);
+  await expect(page.locator('#Buff_0_7 [data-remaked-buff]')).not.toHaveAttribute('title');
   expect(await page.evaluate(() => window.Store())).toBe(before);
 });
