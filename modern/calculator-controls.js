@@ -110,7 +110,7 @@
         });
         var mobileBar = card.querySelector(':scope > .remaked-mobile-card-bar'); if (mobileBar) mobileBar.remove();
         card.style.setProperty('--rm-native-panel-width', card.style.width);
-        panel.style.setProperty('--rm-native-panel-width', tab === 0 ? '400px' : card.style.width);
+        panel.style.setProperty('--rm-native-panel-width', tab === 0 ? '400px' : tab === 4 ? '880px' : card.style.width);
         var bar = document.createElement('div'); bar.className = 'remaked-native-panel-bar';
         var title = document.createElement('strong'); title.id = 'remaked-native-panel-title-' + tab;
         panel.setAttribute('aria-labelledby', title.id);

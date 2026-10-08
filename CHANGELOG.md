@@ -1,5 +1,25 @@
 # Changelog
 
+## Modern 3.42 — русские гильдейские бонусы и точный расчёт сопротивления, 2026-10-09
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Полные названия «Благословение» и «Песнопения» помещаются в одной строке; числовые поля стали компактнее, а подпись «ДУХ» заменена на «СД».
+- Переведены все названия гильдейских усилений и уровни в выпадающих списках («Гильдия Ур. 1» и далее).
+- Исправлен учёт снижения получаемого физического и магического урона от гильдейских навыков: −3% и −6% на соответствующих уровнях.
+- Сохранены исходные игровые данные, настройки других языков и совместимость билдов.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Fit full Blessing and Hymn labels on one line with smaller numeric fields and a compact Russian spirit caption.
+- Localized guild bonus names and level choices for Russian.
+- Restored guild physical and magical incoming-damage reduction at 3% and 6%, respectively, in the Modern calculator.
+- Preserved source Legacy behavior and other-language build compatibility.
+<!-- /release-notes:en -->
+
 ## Modern 3.41 — русский перевод усилений и подсказок, 2026-10-09
 
 <!-- release-notes:ru -->

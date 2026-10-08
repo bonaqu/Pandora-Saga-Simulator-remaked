@@ -234,6 +234,37 @@ def _patch_runtime_browser_compatibility(destination: pathlib.Path) -> None:
     simulator.write_text(patched, encoding="utf-8")
 
 
+def _materialize_modern_guild_resistance(root: pathlib.Path, output: pathlib.Path) -> None:
+    """Restore verified guild damage reductions in Modern's runtime copy only.
+
+    Legacy Mode remains byte-for-byte compatible with its original calc.js.
+    The existing received-damage outputs already model percentage reduction,
+    so don't invent a new DEF or magic-resistance statistic.
+    """
+    source = (root / "js" / "calc.js").read_text(encoding="utf-8-sig")
+    original = (output / "js" / "calc.js").read_text(encoding="utf-8-sig")
+    replacements = (
+        (
+            "tmp[3] += (Flag['Honor'] == 11) ? -5: 0; // 頑強なる肉体",
+            "tmp[3] += ($('SelBuffClan_5').selectedIndex == 1) ? -3: "
+            "($('SelBuffClan_5').selectedIndex == 2) ? -6: 0; // ギルド：物理ダメージ軽減",
+        ),
+        (
+            "tmp[2] += (Status['Job'][0] == 5 && Status['Job'][1] == 0) ? -10: 0; // ラピン：魔抵抗体",
+            "tmp[2] += ($('SelBuffClan_6').selectedIndex == 1) ? -3: "
+            "($('SelBuffClan_6').selectedIndex == 2) ? -6: 0; // ギルド：魔法ダメージ軽減",
+        ),
+    )
+    if source != original:
+        # The source-copy contract must still be intact before applying a patch.
+        raise ValueError("Modern guild resistance expected an unmodified calc.js source copy")
+    for anchor, addition in replacements:
+        if original.count(anchor) != 1:
+            raise ValueError("cannot safely locate the guild resistance anchor in the Legacy calculator")
+        original = original.replace(anchor, anchor + "\n        " + addition, 1)
+    (output / "js" / "calc.js").write_text(original, encoding="utf-8")
+
+
 def _copy_runtime(root: pathlib.Path, destination: pathlib.Path) -> None:
     for dirname in RUNTIME_DIRS:
         shutil.copytree(root / dirname, destination / dirname)
@@ -455,6 +486,7 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     output.mkdir(parents=True)
 
     _copy_runtime(root, output)
+    _materialize_modern_guild_resistance(root, output)
     _materialize_modern_assets(root, output)
     _materialize_release_metadata(root, output)
     _materialize_locales(

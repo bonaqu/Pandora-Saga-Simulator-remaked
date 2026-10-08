@@ -124,7 +124,14 @@
                 help._remakedGameHint = Boolean(translated);
                 if (translated) hasDecorated = true;
               }
-            } else decorate(node, row.id, (target.prefix || '') + sourceHtml + (target.suffix || ''), target.prefix, target.suffix, target.alwaysSource);
+            } else {
+              // Guild level is a localized visible suffix. Preserve the stable
+              // numeric OPTION value and all Legacy source names/handlers.
+              var suffix = target.clanLevel && i18n.getLocale() === 'ru'
+                ? ' Ур. ' + target.clanLevel : target.suffix;
+              decorate(node, row.id, (target.prefix || '') + sourceHtml + (target.suffix || ''),
+                target.prefix, suffix, target.alwaysSource);
+            }
           });
         });
       });

@@ -391,7 +391,7 @@ test('Russian skills help and Enhancement buffs show full names and localized na
   }
 
   await page.locator('[data-remaked-tab="4"]').click();
-  for (const [id, text] of [['Text_21', 'ДУХ'], ['Text_22', 'Благословение'], ['Text_23', 'Песнопения']]) {
+  for (const [id, text] of [['Text_21', 'СД'], ['Text_22', 'Благословение'], ['Text_23', 'Песнопения']]) {
     await expect(page.locator('#' + id)).toHaveText(text);
   }
   for (const id of ['Buff_0_7', 'Buff_14_3', 'Buff_18_8']) {
@@ -436,4 +436,80 @@ test('Russian skills help and Enhancement buffs show full names and localized na
   await expect(page.locator('#Buff_0_7 .help')).toHaveAttribute('title', /Increases Physical Attack Power/);
   await expect(page.locator('#Buff_0_7 [data-remaked-buff]')).not.toHaveAttribute('title');
   expect(await page.evaluate(() => window.Store())).toBe(before);
+});
+
+test('full guild localization and real damage reduction keep stats and selection IDs consistent', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?ui=ru');
+  await page.locator('[data-remaked-tab="4"]').click();
+
+  for (const [id, text] of [['Text_21', 'СД'], ['Text_22', 'Благословение'], ['Text_23', 'Песнопения'], ['Text_24', 'Гильдия']]) {
+    await expect(page.locator('#' + id)).toHaveText(text);
+  }
+  const russianNames = [
+    'Гильдия', 'Сила гильдии', 'Дух гильдии', 'Восстановление силы',
+    'Восстановление духа', 'Физическая устойчивость', 'Магическая устойчивость',
+    'Опыт', 'Магистр исцеления', 'Магистр битвы', 'Магистр магии'
+  ];
+  for (const [index, text] of russianNames.entries()) {
+    const select = page.locator('#SelBuffClan_' + index);
+    await expect(select.locator('option[value="0"]')).toHaveText(text);
+    await expect(select.locator('option[value="1"]')).toHaveText(text + ' Ур. 1');
+    expect(await select.locator('option[value="1"]').getAttribute('value')).toBe('1');
+  }
+  await expect(page.locator('#SelBuffClan_0 option[value="12"]')).toHaveText('Гильдия Ур. 12');
+
+  // The captions are single-line: no forced wrap, clipping or ellipsis.
+  const geometry = await page.evaluate(() => [21, 22, 23].map(id => {
+    const label = document.getElementById('Text_' + id);
+    const input = document.getElementById('InBuff_' + (id - 21));
+    const line = label.getBoundingClientRect();
+    const range = document.createRange(); range.selectNodeContents(label);
+    const textBox = range.getBoundingClientRect();
+    return {
+      label: label.textContent.trim(), whiteSpace: getComputedStyle(label).whiteSpace,
+      textWidth: textBox.width, availableWidth: line.width,
+      inputWidth: input.getBoundingClientRect().width, height: line.height, textHeight: textBox.height
+    };
+  }));
+  for (const entry of geometry) {
+    expect(entry.whiteSpace, entry.label).toBe('nowrap');
+    expect(entry.textWidth, JSON.stringify(entry)).toBeLessThanOrEqual(entry.availableWidth + 1);
+    expect(entry.textHeight, JSON.stringify(entry)).toBeLessThan(entry.height + 1);
+  }
+  expect(geometry[0].inputWidth).toBeLessThanOrEqual(44);
+  expect(geometry[1].inputWidth).toBeLessThanOrEqual(38);
+  expect(geometry[2].inputWidth).toBeLessThanOrEqual(38);
+
+  const currentStats = () => page.evaluate(() => ({
+    physical: Number(document.getElementById('Status_52_2').textContent),
+    magical: Number(document.getElementById('Status_60').textContent),
+    defense: document.getElementById('Status_49').textContent
+  }));
+  const base = await currentStats();
+  await page.locator('#SelBuffClan_5').selectOption('1');
+  let current = await currentStats();
+  expect(current.physical).toBe(base.physical - 3);
+  expect(current.magical).toBe(base.magical);
+  expect(current.defense).toBe(base.defense);
+
+  await page.locator('#SelBuffClan_5').selectOption('2');
+  current = await currentStats();
+  expect(current.physical).toBe(base.physical - 6);
+  await page.locator('#SelBuffClan_6').selectOption('1');
+  current = await currentStats();
+  expect(current.physical).toBe(base.physical - 6);
+  expect(current.magical).toBe(base.magical - 3);
+
+  await page.locator('#SelBuffClan_6').selectOption('2');
+  current = await currentStats();
+  expect(current.magical).toBe(base.magical - 6);
+  await page.locator('#SelBuffClan_5').selectOption('0');
+  await page.locator('#SelBuffClan_6').selectOption('0');
+  expect(await currentStats()).toEqual(base);
+
+  await page.locator('[data-remaked-ui-locale="en"]').click();
+  await expect(page.locator('#Text_21')).toHaveText('SPR');
+  await expect(page.locator('#SelBuffClan_0 option[value="12"]')).toHaveText('Clan Lv12');
+  await expect(page.locator('#SelBuffClan_5 option[value="1"]')).toHaveText('Physical Resist Lv1');
 });
