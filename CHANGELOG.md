@@ -6,7 +6,7 @@
 ### Кратко для игроков
 
 - В «Результатах расчёта» уточнены русские названия характеристик, чтобы различать похожие показатели.
-- Для длинных названий на широких экранах выделено больше места, сохранив общие размеры интерфейса для разных языков.
+- Подписи результатов сохраняют единую сетку для всех языков и переносятся при недостатке места, не сжимая блок «Умения».
 - При вводе значения ниже минимума или выше максимума поле автоматически выбирает ближайшее допустимое значение.
 - Исправлено отображение недоступной скорости атаки верхом и применение бонусов восстановления здоровья и маны.
 <!-- /release-notes:ru -->
@@ -15,7 +15,7 @@
 ### Player highlights
 
 - Clearer Russian result labels distinguish closely related stats.
-- Desktop result columns have more room while preserving shared multilingual layout.
+- Result columns retain consistent tracks across languages; longer labels wrap without shrinking the skills panel.
 - Out-of-range attribute and skill edits now clamp to their allowed bounds.
 - Fixed unavailable mounted attack-speed display and regeneration effect bonuses.
 <!-- /release-notes:en -->
