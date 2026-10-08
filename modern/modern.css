@@ -2131,7 +2131,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   white-space: nowrap;
   padding-inline: 2px;
   font-size: 11px;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.06em;
 }
 
 /* Russian skill headings are longer than the compact numeric controls. Keep
