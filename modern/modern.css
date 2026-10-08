@@ -2201,8 +2201,8 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
    target height or gameplay behavior. */
 @media (min-width: 1366px) {
   .remaked-modern #body [data-remaked-calculator-columns] {
-    grid-template-columns: minmax(0, 1fr) 448px 232px;
-    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) 442px 232px;
+    gap: 6px;
   }
   .remaked-modern #body #SkillSet[data-remaked-skill-controls] > ul:not(.remaked-skill-heading) {
     grid-template-columns: minmax(112px, 1.25fr) 58px 32px;
@@ -2244,5 +2244,5 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   padding-inline: 1px;
 }
 .remaked-modern #body [data-remaked-calculator-results] [data-remaked-calculator-pair] :is([id^="TextStatus_"], [id^="TextStatus_"] .help, .input_gt) {
-  font-size: 11px;
+  font-size: 10.75px;
 }
