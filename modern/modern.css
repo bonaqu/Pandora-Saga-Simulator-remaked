@@ -2187,36 +2187,45 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   overflow-wrap: normal;
   white-space: nowrap !important;
 }
-/* On compact desktops the two-branch skill panel needs its full usable width.
-   Move the independent Effects card below it, freeing the former third
-   column for full-width character results. Preserve the existing 3-column
-   result matrix at 1366px+, and the same tracks in every locale. */
-@media (min-width: 1100px) {
-  .remaked-modern #body [data-remaked-calculator-columns] {
-    grid-template-columns: minmax(0, 1fr) 358px;
-    grid-template-rows: auto auto;
-    align-items: start;
-  }
-  .remaked-modern #body [data-remaked-calculator-character] {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-  }
-  .remaked-modern #body #SkillSet[data-remaked-skill-controls] {
-    grid-column: 2;
-    grid-row: 1;
-  }
-  .remaked-modern #body [data-remaked-calculator-effects] {
-    grid-column: 2;
-    grid-row: 2;
+/* Phone screens are too narrow for two simultaneous full captions.
+   One shared responsive track keeps the complete name and numeric value. */
+@media (max-width: 620px) {
+  .remaked-modern #body [data-remaked-calculator-results] {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
+/* Keep Character, Skills and Effects alongside each other, including the
+   equipment-above-the-fold desktop contract. Skill input and Potential do not
+   need the original 80px tracks: their actual input is 58px and the number
+   is smaller. Reclaim unused track space without changing any skill text,
+   target height or gameplay behavior. */
 @media (min-width: 1366px) {
   .remaked-modern #body [data-remaked-calculator-columns] {
-    grid-template-columns: minmax(0, 1fr) 582px;
+    grid-template-columns: minmax(0, 1fr) 448px 232px;
+  }
+  .remaked-modern #body #SkillSet[data-remaked-skill-controls] > ul:not(.remaked-skill-heading) {
+    grid-template-columns: minmax(98px, 1.25fr) minmax(62px, .7fr) minmax(38px, .45fr);
+  }
+  .remaked-modern #body [data-remaked-skill-column-header] {
+    grid-template-columns:
+      minmax(98px, 1.25fr) minmax(62px, .7fr) minmax(38px, .45fr)
+      4px
+      minmax(98px, 1.25fr) minmax(62px, .7fr) minmax(38px, .45fr);
+  }
+  .remaked-modern #body [data-remaked-calculator-results] {
+    grid-template-columns: minmax(0, .88fr) minmax(0, 1.06fr) minmax(0, 1.06fr);
   }
   .remaked-modern #body [data-remaked-calculator-results] [data-remaked-calculator-pair] > ul {
     height: 20px;
     min-height: 20px;
     max-height: 20px;
   }
+}
+/* One common compact font/spacing across all four result localizations. */
+.remaked-modern #body [data-remaked-calculator-results] [data-remaked-calculator-pair] > ul {
+  gap: 2px;
+  padding-inline: 1px;
+}
+.remaked-modern #body [data-remaked-calculator-results] [data-remaked-calculator-pair] :is([id^="TextStatus_"], [id^="TextStatus_"] .help, .input_gt) {
+  font-size: 11px;
 }
