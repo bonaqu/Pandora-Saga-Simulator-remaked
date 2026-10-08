@@ -1,5 +1,23 @@
 # Changelog
 
+## Modern 3.39 — balanced result and skill columns, 2026-10-08
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Убраны излишние промежутки между названиями характеристик и значениями в «Результатах расчёта».
+- «Умения» получили больше пространства: подписи «Изучено» и «Потенциал» остаются на одной строке.
+- Все четыре языка используют одинаковые размеры панелей и строк; полные названия характеристик не обрезаются.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Reduced empty space between calculated result names and values.
+- Allocated more room to skill headings so learned and potential captions stay on one line.
+- Identical panel geometry across languages; result captions remain complete.
+<!-- /release-notes:en -->
+
 ## Modern 3.38 — full result names in every language, 2026-10-08
 
 <!-- release-notes:ru -->
