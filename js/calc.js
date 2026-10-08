@@ -991,7 +991,7 @@ function Calc(a,b) {
         for (i=0;i<tmp[0].length;i++) {
           if (EquipOpt[tmp[0][i]])
             for (j=0;j<EquipOpt[tmp[0][i]].length;j++)
-              tmp[1] += Number(EquipOpt[tmp[0]][j]);
+              tmp[1] += Number(EquipOpt[tmp[0][i]][j]);
         }
         $('Status_' + tmp[0][0]).innerHTML = tmp[1];
         $('Status_' + tmp[0][1]).innerHTML = '---';
@@ -1002,7 +1002,7 @@ function Calc(a,b) {
         for (i=0;i<tmp[0].length;i++) {
           if (EquipOpt[tmp[0][i]])
             for (j=0;j<EquipOpt[tmp[0][i]].length;j++)
-              tmp[1] += Number(EquipOpt[tmp[0]][j]);
+              tmp[1] += Number(EquipOpt[tmp[0][i]][j]);
         }
         $('Status_' + tmp[0][0]).innerHTML = tmp[1];
         $('Status_' + tmp[0][1]).innerHTML = '---';
