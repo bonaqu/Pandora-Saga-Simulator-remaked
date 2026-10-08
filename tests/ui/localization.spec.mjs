@@ -391,7 +391,7 @@ test('Russian skills help and Enhancement buffs show full names and localized na
   }
 
   await page.locator('[data-remaked-tab="4"]').click();
-  for (const [id, text] of [['Text_21', 'ДУХ'], ['Text_22', 'Благословение'], ['Text_23', 'Песнопения']]) {
+  for (const [id, text] of [['Text_21', 'СД'], ['Text_22', 'Благословение'], ['Text_23', 'Песнопения']]) {
     await expect(page.locator('#' + id)).toHaveText(text);
   }
   for (const id of ['Buff_0_7', 'Buff_14_3', 'Buff_18_8']) {
