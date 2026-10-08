@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 3.34 — aligned riding control, 2026-10-08
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Кнопка «Верхом» выровнена по высоте с «Хар-ки верхом / %» на широких экранах во всех языках; на телефонах сохранена удобная область нажатия.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Riding toggle matches the adjacent stat field on wider screens in every language; larger mobile touch targets remain.
+<!-- /release-notes:en -->
+
 ## Modern 3.33 — compact calculator actions, 2026-10-08
 
 <!-- release-notes:ru -->

@@ -1966,6 +1966,15 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   justify-content: flex-end;
 }
 
+/* Riding is the 28px companion of "Re Horse / %" on non-phone
+   layouts, not a seventh 35px action. Preserve the 44px mobile touch target. */
+@media (min-width: 621px) {
+  .remaked-modern #body [data-remaked-calculator-horse] [data-remaked-calculator-action="Text_16"] {
+    height: 28px;
+    min-height: 28px;
+  }
+}
+
 /* Headings follow the actual right-aligned value tracks, not the center of the
    flexible 80px source columns. This keeps Adeptness/Potential centered over
    their controls while the panel narrows. */
