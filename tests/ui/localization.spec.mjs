@@ -380,3 +380,60 @@ test('riding toggle matches its neighboring stat field in every language and vie
     }
   }
 });
+
+test('Russian skills help and Enhancement buffs show full names and localized native hover descriptions', async ({ page }) => {
+  await page.goto('/?ui=ru');
+  const before = await page.evaluate(() => window.Store());
+  const help = page.locator('[data-remaked-i18n="skills.help"]');
+  await expect(help).toContainText('Изучение расходует очки умений');
+  for (const foreign of ['Adeptness', 'Potential', 'Skill', 'Legacy']) {
+    await expect(help).not.toContainText(foreign);
+  }
+
+  await page.locator('[data-remaked-tab="4"]').click();
+  for (const [id, text] of [['Text_21', 'ДУХ'], ['Text_22', 'Благословение'], ['Text_23', 'Песнопения']]) {
+    await expect(page.locator('#' + id)).toHaveText(text);
+  }
+  for (const id of ['Buff_0_7', 'Buff_14_3', 'Buff_18_8']) {
+    const button = page.locator('#' + id + ' [data-remaked-buff]');
+    const expected = await page.evaluate(id => {
+      const [, category, index] = id.split('_');
+      return {
+        name: PandoraRemaked.i18n.game('skill_entry.' + category + '.' + index, ''),
+        description: PandoraRemaked.i18n.game('skill_detail.' + category + '.' + index + '.3', '')
+      };
+    }, id);
+    await expect(button).toContainText(expected.name);
+    const hover = await button.locator('.help').first().getAttribute('title');
+    expect(hover).toBe(expected.name + String.fromCharCode(10) + expected.description);
+    await expect(button).toHaveAttribute('title', hover);
+  }
+
+  const translated = await page.evaluate(() => {
+    const labels = [...document.querySelectorAll('#BUFFView [id^="Buff_"]:not([id^="Buff_30_"]) [id^="TextBuff_"]')];
+    return labels.map(label => {
+      const [, category, index] = label.closest('[id^="Buff_"]').id.split('_');
+      const name = PandoraRemaked.i18n.game('skill_entry.' + category + '.' + index, '');
+      const description = PandoraRemaked.i18n.game('skill_detail.' + category + '.' + index + '.3', '');
+      const hover = (label.querySelector('.help') || label).getAttribute('title');
+      return { visible: label.textContent.trim(), name, description, hover };
+    });
+  });
+  expect(translated).toHaveLength(36);
+  for (const entry of translated) {
+    expect(entry.name).toBeTruthy();
+    expect(entry.description).toBeTruthy();
+    expect(entry.visible).toBe(entry.name);
+    expect(entry.hover).toBe(entry.name + String.fromCharCode(10) + entry.description);
+  }
+  expect(await page.evaluate(() => window.Store())).toBe(before);
+
+  await page.locator('[data-remaked-ui-locale="en"]').click();
+  await expect(page.locator('#Text_21')).toHaveText('SPR');
+  await expect(page.locator('#Text_22')).toHaveText('Blessing');
+  await expect(page.locator('#Text_23')).toHaveText('Hymn');
+  await expect(page.locator('#Buff_0_7')).toContainText('War Cry');
+  await expect(page.locator('#Buff_0_7 .help')).toHaveAttribute('title', /Increases Physical Attack Power/);
+  await expect(page.locator('#Buff_0_7 [data-remaked-buff]')).not.toHaveAttribute('title');
+  expect(await page.evaluate(() => window.Store())).toBe(before);
+});

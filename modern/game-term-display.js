@@ -219,10 +219,29 @@
         decorate(byId('ViewOther_' + index + '_0'), 'skill_entry.' + term[0] + '.' + term[1], names.Text.Skill.Other[index][language + 1]);
       });
       document.querySelectorAll('[id^="Buff_"] [id^="TextBuff_"]').forEach(function (label) {
-        var match = label.parentElement.id.match(/^Buff_(\d+)_(\d+)$/);
+        var match = label.closest('[id^="Buff_"]')?.id.match(/^Buff_(\d+)_(\d+)$/);
         if (!match || Number(match[1]) === 30) return; // Rune names belong to interface export.
         var index = Number(label.id.split('_')[1]);
-        decorate(label, 'skill_entry.' + match[1] + '.' + match[2], names.Text.Buff[index][language]);
+        var skillKey = 'skill_entry.' + match[1] + '.' + match[2];
+        decorate(label, skillKey, names.Text.Buff[index][language]);
+        // Legacy puts the skill description in the native title of its .help
+        // span. The name and the hover description are distinct workbook keys.
+        // Localize the description only on this display surface, never Skill[].
+        var button = label.closest('[data-remaked-buff]');
+        if (i18n.getLocale() === 'ru') {
+          var description = i18n.game('skill_detail.' + match[1] + '.' + match[2] + '.3', '');
+          if (description) {
+            var translatedName = i18n.game(skillKey, '');
+            var hint = (translatedName || label.textContent.trim()) + '\n' + description;
+            // The whole button should reveal the description, not only the
+            // characters directly below the mouse on its nested text span.
+            (label.querySelector('.help') || label).title = hint;
+            label.title = hint;
+            if (button) button.title = hint;
+          }
+        } else if (button) {
+          button.removeAttribute('title');
+        }
       });
       document.querySelectorAll('.remaked-mobile-card-label').forEach(function (label) {
         var head = label.closest('.sub_win')?.querySelector('.head');
