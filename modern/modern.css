@@ -1647,7 +1647,9 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
    width comes from readable character + two complete branch + effect columns.
    No fixed panel heights, hidden stats, smaller targets or source DOM rewrites. */
 @media (min-width: 1366px) {
-  .remaked-shell { width: min(1440px, calc(100% - 24px)); margin-top: 10px; }
+  /* Recover the old readable Effects width from outer margins rather than
+     re-compressing tabs, narrowing Skills or losing any calculated labels. */
+  .remaked-shell { width: min(1440px, calc(100% - 8px)); margin-top: 10px; }
   .remaked-header { margin-bottom: 8px; }
   /* The product/version is already present in the real header. Keep the
      source node for its callbacks, without a second decorative desktop title. */
@@ -2131,7 +2133,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   white-space: nowrap;
   padding-inline: 2px;
   font-size: 11px;
-  letter-spacing: -0.12em;
+  letter-spacing: -0.06em;
 }
 
 /* Russian skill headings are longer than the compact numeric controls. Keep
@@ -2203,7 +2205,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   .remaked-modern #body [data-remaked-calculator-columns] {
     /* Results use only the width they need; the reclaimed space stays in Skills.
        This exact desktop geometry is shared by RU/EN/JP/TW. */
-    grid-template-columns: 600px minmax(0, 1fr) 216px;
+    grid-template-columns: 600px minmax(0, 1fr) 232px;
     gap: 4px;
   }
   /* Base inputs retain their 44px fields and cost badges within a tighter
