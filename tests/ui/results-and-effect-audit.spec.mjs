@@ -71,14 +71,25 @@ test('results keep fixed single-line geometry in every language at responsive wi
           const pair = label.closest('[data-remaked-calculator-pair]');
           const pairBox = pair.getBoundingClientRect();
           const box = label.getBoundingClientRect();
+          const value = pair.querySelector('.input_gt').getBoundingClientRect();
+          const textNode = label.querySelector('.help') || label;
+          const textRange = document.createRange();
+          textRange.selectNodeContents(textNode);
+          const textBox = textRange.getBoundingClientRect();
           const style = getComputedStyle(label);
+          const textStyle = getComputedStyle(textNode);
           return {
             geometry: [pairBox.x - origin.x, pairBox.y - origin.y, pairBox.width, pairBox.height]
               .map(n => Math.round(n * 10) / 10),
             name: label.textContent.trim(),
             accessible: label.getAttribute('aria-label'),
             fitsInPair: box.left >= pairBox.left - 1 && box.right <= pairBox.right + 1,
-            style: [style.whiteSpace, style.overflowX, style.textOverflow, style.fontSize]
+            fullTextFits: textBox.left >= pairBox.left - 1 &&
+              textBox.right <= value.left - 1 &&
+              textBox.top >= pairBox.top - 1 &&
+              textBox.bottom <= pairBox.bottom + 1,
+            style: [style.whiteSpace, style.overflowX, style.textOverflow, style.fontSize,
+              textStyle.whiteSpace, textStyle.textOverflow]
           };
         });
       });
@@ -87,10 +98,13 @@ test('results keep fixed single-line geometry in every language at responsive wi
     for (const locale of ['en', 'ru', 'jp', 'tw']) {
       const rows = variants[locale];
       expect(rows.map(row => row.geometry), locale + ':' + width).toEqual(baseline);
-      expect(rows.every(row => row.fitsInPair), locale + ':' + width).toBe(true);
+      expect(rows.every(row => row.fitsInPair && row.fullTextFits),
+        locale + ':' + width + ':' + JSON.stringify(rows.filter(row => !row.fullTextFits || !row.fitsInPair)))
+        .toBe(true);
       for (const row of rows) {
         expect(row.accessible, locale + ':' + width).toBe(row.name);
-        expect(row.style.slice(0, 3), locale + ':' + width).toEqual(['nowrap', 'hidden', 'ellipsis']);
+        expect(row.style.slice(0, 3), locale + ':' + width).toEqual(['nowrap', 'visible', 'clip']);
+        expect(row.style.slice(4), locale + ':' + width).toEqual(['nowrap', 'clip']);
       }
       expect(rows.map(row => row.style[3]), locale + ':' + width).toEqual(variants.en.map(row => row.style[3]));
     }
