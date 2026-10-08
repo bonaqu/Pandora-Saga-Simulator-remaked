@@ -55,6 +55,7 @@
   }
 
   var currentLocale = normalizeLocale(requestedLocale());
+  var publishedResultLabels = Object.create(null);
 
   function terminology(kind, key) {
     var locale = FALLBACK_TERMINOLOGY[currentLocale];
@@ -128,6 +129,7 @@
   }
 
   function translateGameTerm(key, fallback) {
+    if (currentLocale === 'ru' && Object.prototype.hasOwnProperty.call(publishedResultLabels, key)) return publishedResultLabels[key];
     var published = namespace.catalog && namespace.catalog.gameLabel(key);
     if (published) return compactActionLabel(key, published);
     // JP/TW keep the original game's language for Legacy game terms while the
@@ -213,8 +215,24 @@
     return currentLocale;
   }
 
+  function applyPublishedResultLabels(payload) {
+    if (!payload || payload.ok !== true || payload.schemaVersion !== 1 || !payload.overrides ||
+        typeof payload.overrides !== 'object' || Array.isArray(payload.overrides)) return false;
+    var changed = Object.create(null);
+    for (var key of Object.keys(payload.overrides)) {
+      if (!/^calculator\\.status\\.(?:[0-9]|[1-3][0-9]|4[0-2])$/.test(key)) return false;
+      var text = payload.overrides[key];
+      if (typeof text !== 'string' || !text.trim() || text.length > 100 || /[\\x00-\\x1f\\x7f]/.test(text)) return false;
+      changed[key] = text;
+    }
+    publishedResultLabels = changed;
+    if (namespace.gameTermDisplay) namespace.gameTermDisplay.refresh();
+    return true;
+  }
+
   namespace.i18n = {
     apply: apply,
+    applyPublishedResultLabels: applyPublishedResultLabels,
     bindAttribute: bindAttribute,
     bindText: bindText,
     game: translateGameTerm,
@@ -226,4 +244,16 @@
   };
 
   document.documentElement.lang = currentLocale;
+  // Editor customizations are deliberately independent from workbook updates.
+  // Fetch only explicit published overrides, never rewrite base translations.
+  if (location.origin === 'https://bonaqu.github.io') {
+    fetch('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/result-labels', {
+      credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(4000)
+    }).then(function (response) {
+      if (!response.ok) throw new Error('Result translations unavailable');
+      return response.json();
+    }).then(applyPublishedResultLabels).catch(function () {
+      // Offline and older Workers continue using bundled approved Excel text.
+    });
+  }
 })();
