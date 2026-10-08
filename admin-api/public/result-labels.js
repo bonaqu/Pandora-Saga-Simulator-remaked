@@ -56,7 +56,7 @@
     try {
       var response = await api('GET');
       if (token !== generation) return;
-      for (var item of response.items) {
+      response.items.forEach(function (item) {
         var row = element('tr');
         row.dataset.resultLabelId = item.id;
         var id = element('td', item.id);
@@ -105,7 +105,7 @@
         });
         row.append(id, baseline, editor, state, saveCell);
         body.appendChild(row);
-      }
+      });
       report('Загружено ' + response.items.length + ' подписей. База Excel и опубликованные правки админки показаны отдельно.');
     } catch (error) {
       if (token === generation) report(error.message, true);
