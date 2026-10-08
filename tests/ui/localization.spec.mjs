@@ -163,6 +163,55 @@ test('RU uses compact skill and effect terminology without wrapping effect tabs'
   }
 });
 
+test('effect tabs have matching geometry and readable unclipped typography in every language', async ({ page }) => {
+  for (const width of [320, 390, 1024, 1366, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const variants = {};
+    for (const locale of ['en', 'ru', 'jp', 'tw']) {
+      await page.goto('/?ui=' + locale);
+      variants[locale] = await page.evaluate(() => {
+        const parent = document.querySelector('[data-remaked-effect-tabs]');
+        const origin = parent.getBoundingClientRect();
+        return Array.from(parent.querySelectorAll('[data-remaked-effect]')).map(button => {
+          const bounds = button.getBoundingClientRect();
+          const text = document.createRange();
+          text.selectNodeContents(button);
+          const textBounds = text.getBoundingClientRect();
+          const style = getComputedStyle(button);
+          return {
+            text: button.textContent.trim(),
+            geometry: [bounds.x - origin.x, bounds.y - origin.y, bounds.width, bounds.height]
+              .map(value => Math.round(value * 10) / 10),
+            typography: [style.fontSize, style.fontWeight, style.whiteSpace,
+              style.paddingLeft, style.paddingRight, style.letterSpacing],
+            clipped: button.scrollWidth > button.clientWidth + 1 ||
+              button.scrollHeight > button.clientHeight + 1 ||
+              textBounds.left < bounds.left - 1 ||
+              textBounds.right > bounds.right + 1 ||
+              textBounds.top < bounds.top - 1 ||
+              textBounds.bottom > bounds.bottom + 1
+          };
+        });
+      });
+    }
+    const baseline = variants.en;
+    expect(baseline).toHaveLength(2);
+    for (const locale of ['en', 'ru', 'jp', 'tw']) {
+      const actual = variants[locale];
+      expect(actual, locale + ':' + width).toHaveLength(2);
+      expect(actual.map(item => item.geometry), locale + ':' + width)
+        .toEqual(baseline.map(item => item.geometry));
+      expect(actual.map(item => item.typography), locale + ':' + width)
+        .toEqual(baseline.map(item => item.typography));
+      for (const item of actual) {
+        expect(item.typography[0], locale + ':' + width + ':' + item.text).toBe('12px');
+        expect(item.typography[2], locale + ':' + width + ':' + item.text).toBe('nowrap');
+        expect(item.clipped, locale + ':' + width + ':' + item.text).toBe(false);
+      }
+    }
+  }
+});
+
 test('RU calculator actions and riding labels use the requested wording without horizontal overflow', async ({ page }) => {
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
