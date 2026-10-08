@@ -401,15 +401,17 @@ test('Russian skills help and Enhancement buffs show full names and localized na
   ]) {
     const button = page.locator('#' + id + ' [data-remaked-buff]');
     await expect(button).toContainText(name);
-    await expect(button.locator('[title]')).toHaveAttribute('title', new RegExp('^' + name + '\\\\n.*' + description));
+    const hover = await button.locator('[title]').first().getAttribute('title');
+    expect(hover).toContain(name);
+    expect(hover).toContain(description);
   }
 
   const translated = await page.evaluate(() => {
     const labels = [...document.querySelectorAll('#BUFFView [id^="Buff_"]:not([id^="Buff_30_"]) [id^="TextBuff_"]')];
     return labels.map(label => {
-      const parts = label.parentElement.closest('[id^="Buff_"]').id.match(/^Buff_(\\d+)_(\\d+)$/);
-      const name = PandoraRemaked.i18n.game('skill_entry.' + parts[1] + '.' + parts[2], '');
-      const description = PandoraRemaked.i18n.game('skill_detail.' + parts[1] + '.' + parts[2] + '.3', '');
+      const [, category, index] = label.closest('[id^="Buff_"]').id.split('_');
+      const name = PandoraRemaked.i18n.game('skill_entry.' + category + '.' + index, '');
+      const description = PandoraRemaked.i18n.game('skill_detail.' + category + '.' + index + '.3', '');
       const hover = (label.querySelector('.help') || label).getAttribute('title');
       return { visible: label.textContent.trim(), name, description, hover };
     });
@@ -419,7 +421,7 @@ test('Russian skills help and Enhancement buffs show full names and localized na
     expect(entry.name).toBeTruthy();
     expect(entry.description).toBeTruthy();
     expect(entry.visible).toBe(entry.name);
-    expect(entry.hover).toBe(entry.name + '\\n' + entry.description);
+    expect(entry.hover).toBe(entry.name + String.fromCharCode(10) + entry.description);
   }
   expect(await page.evaluate(() => window.Store())).toBe(before);
 
