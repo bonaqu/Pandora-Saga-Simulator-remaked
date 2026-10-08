@@ -5,14 +5,14 @@
 <!-- release-notes:ru -->
 ### Кратко для игроков
 
-- Подписи кнопок «Учитывать мастерство» и «Учитывать эфф. зелий» стали короче и помещаются в одну строку.
+- Подписи кнопок «Учитывать мастерство» и «Учитывать эфф. зелий» стали короче и занимают одну строку там, где хватает ширины.
 - Шесть кнопок учёта и сброса теперь расположены ровными колонками с одинаковыми размерами во всех языках интерфейса.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
 ### Player highlights
 
-- Shorter Russian labels keep the skill mastery and potion-effect toggles on one line.
+- Shorter Russian labels fit on one line when the available width allows.
 - Calculator actions use evenly sized columns and consistent button dimensions across languages.
 <!-- /release-notes:en -->
 
