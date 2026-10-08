@@ -1,5 +1,25 @@
 # Changelog
 
+## Modern 3.36 — clearer result names and smarter numeric entry, 2026-10-08
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- В «Результатах расчёта» уточнены русские названия характеристик, чтобы различать похожие показатели.
+- Подписи результатов сохраняют единую сетку для всех языков и переносятся при недостатке места, не сжимая блок «Умения».
+- При вводе значения ниже минимума или выше максимума поле автоматически выбирает ближайшее допустимое значение.
+- Исправлено отображение недоступной скорости атаки верхом и применение бонусов восстановления здоровья и маны.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Clearer Russian result labels distinguish closely related stats.
+- Result columns retain consistent tracks across languages; longer labels wrap without shrinking the skills panel.
+- Out-of-range attribute and skill edits now clamp to their allowed bounds.
+- Fixed unavailable mounted attack-speed display and regeneration effect bonuses.
+<!-- /release-notes:en -->
+
 ## Modern 3.35 — readable effect buttons across languages, 2026-10-08
 
 <!-- release-notes:ru -->

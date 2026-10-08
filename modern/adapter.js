@@ -97,6 +97,9 @@
   function readCalculatedSummary() {
     return SUMMARY_FIELDS.map(function (field) {
       var parsed = parseCalculatedValue(textOf(byId(field.sourceId)));
+      // Legacy sometimes concatenates the riding placeholder with a bonus.
+      // Shared builds may be projected before the Modern display correction runs.
+      if (field.key === 'attackSpeed' && window.Flag?.[7]) parsed = { display: '---', value: null };
       return {
         key: field.key,
         label: field.label,

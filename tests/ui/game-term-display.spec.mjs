@@ -229,16 +229,16 @@ test('requested Russian calculator labels, skill groups and effect hints render 
     expect(item.line).toContain('underline');
     expect(item.style).toBe('solid');
   }
-  await expect(page.locator('#TextStatus_11')).toHaveText('Сопр УРОНСПИН');
-  await expect(page.locator('#TextStatus_12')).toHaveText('Сопр ФИЗ');
-  await expect(page.locator('#TextStatus_21')).toHaveText('Сопр КРУРОН');
-  await expect(page.locator('#TextStatus_40')).toHaveText('Сопр АНОМТЕЛ');
-  await expect(page.locator('#TextStatus_41')).toHaveText('Сопр АНОМДУХ');
-  await expect(page.locator('#TextStatus_3')).toHaveText('% исцел ОЗ');
+  await expect(page.locator('#TextStatus_11')).toHaveText('Сопр. АТК сзади');
+  await expect(page.locator('#TextStatus_12')).toHaveText('Сопр. физ (ед.)');
+  await expect(page.locator('#TextStatus_21')).toHaveText('Получ. крит. урон');
+  await expect(page.locator('#TextStatus_40')).toHaveText('Сопр. аном. тел.');
+  await expect(page.locator('#TextStatus_41')).toHaveText('Сопр. аном. дух.');
+  await expect(page.locator('#TextStatus_3')).toHaveText('Леч. умениями');
   await expect(page.locator('#TextStatus_3 [title]')).toHaveAttribute('title', '% исцеленного ОЗ');
-  await expect(page.locator('#TextStatus_25')).toHaveText('Дист ближ АТК');
+  await expect(page.locator('#TextStatus_25')).toHaveText('Дальн. АТК ближ. боя');
   await expect(page.locator('#TextStatus_25 [title]')).toHaveAttribute('title', 'Дальность атак ближнего боя');
-  await expect(page.locator('#TextStatus_26')).toHaveText('Дист дальн АТК');
+  await expect(page.locator('#TextStatus_26')).toHaveText('Дальн. АТК дальн. боя');
   await expect(page.locator('#TextStatus_26 [title]')).toHaveAttribute('title', 'Дальность атак дальнего боя');
 
   await expect(page.locator('#Text_0')).toHaveText('Раса');

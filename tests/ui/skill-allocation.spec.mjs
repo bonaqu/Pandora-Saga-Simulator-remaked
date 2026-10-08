@@ -51,13 +51,17 @@ test('all leaf branches use direct Adeptness numbers while Potential stays read-
     addedPotential: Status.Skill[3][3]
   }))).toEqual({ adeptness: 8, potential: 15, addedPotential: 0 });
 
-  const beforeInvalid = await page.evaluate(() => Store());
+  // The skill field is bounded by its current Potential; out-of-range
+  // values clamp on commit instead of showing a native validation popup.
   await cleave.fill('16');
   await cleave.press('Enter');
-  await expect(cleave).toHaveAttribute('aria-invalid', 'true');
-  expect(await page.evaluate(() => Store())).toBe(beforeInvalid);
-  await cleave.press('Escape');
-  await expect(cleave).toHaveValue('8');
+  await expect(cleave).toHaveValue('15');
+  await expect(cleave).not.toHaveAttribute('aria-invalid', 'true');
+  expect(await page.evaluate(() => Status.Skill[3][0] + Status.Skill[3][1])).toBe(15);
+  await cleave.fill('-1');
+  await cleave.press('Enter');
+  await expect(cleave).toHaveValue('0');
+  await expect(cleave).not.toHaveAttribute('aria-invalid', 'true');
 });
 
 test('Clobber is gray below Cleave 8 and active at 8 after direct edits', async ({ page }) => {

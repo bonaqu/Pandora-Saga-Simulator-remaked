@@ -190,12 +190,14 @@
     }
     function commit() {
       syncSkillBounds(input);
-      if (input.value === '' || input.validity.badInput || !Number.isInteger(input.valueAsNumber) || !input.checkValidity()) {
+      if (input.value === '' || input.validity.badInput || !Number.isInteger(input.valueAsNumber)) {
         input.setAttribute('aria-invalid', 'true');
         input.reportValidity();
         return;
       }
-      var requested = input.valueAsNumber, delta = requested - currentAdeptness(index);
+      // Clamp only when the edit is committed; keep intermediate keystrokes free.
+      var requested = Math.max(Number(input.min), Math.min(Number(input.max), input.valueAsNumber));
+      var delta = requested - currentAdeptness(index);
       if (delta) window.CalcSet('Skill', index, delta, 'Adeptness');
       rebuildLearningList();
       input.value = String(currentAdeptness(index));
