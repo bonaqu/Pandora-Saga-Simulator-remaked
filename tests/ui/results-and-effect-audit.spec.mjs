@@ -97,6 +97,40 @@ test('results keep fixed single-line geometry in every language at responsive wi
   }
 });
 
+
+test('admin publication overrides Excel only for selected RU term and never changes the build', async ({ page }) => {
+  await page.goto('/?ui=ru');
+  const before = await page.evaluate(() => Store());
+  await expect(page.locator('#TextStatus_25')).toHaveText('Дальн. АТК ближ. боя');
+  const applied = await page.evaluate(() => PandoraRemaked.i18n.applyPublishedResultLabels({
+    ok: true, schemaVersion: 1,
+    overrides: { 'calculator.status.25': 'Дальность ближнего боя' }
+  }));
+  expect(applied).toBe(true);
+  await expect(page.locator('#TextStatus_25')).toHaveText('Дальность ближнего боя');
+  await expect(page.locator('#TextStatus_25')).toHaveAttribute('aria-label', 'Дальность ближнего боя');
+  await page.evaluate(() => PandoraRemaked.i18n.setLocale('en'));
+  await expect(page.locator('#TextStatus_25')).toHaveText('Melee');
+  await page.evaluate(() => PandoraRemaked.i18n.setLocale('ru'));
+  await expect(page.locator('#TextStatus_25')).toHaveText('Дальность ближнего боя');
+  expect(await page.evaluate(() => Store())).toBe(before);
+  await page.evaluate(() => PandoraRemaked.i18n.applyPublishedResultLabels({
+    ok: true, schemaVersion: 1, overrides: {}
+  }));
+  await expect(page.locator('#TextStatus_25')).toHaveText('Дальн. АТК ближ. боя');
+});
+
+test('malformed public labels are ignored without losing the approved workbook baseline', async ({ page }) => {
+  await page.goto('/?ui=ru');
+  const baseline = await page.locator('#TextStatus_13').textContent();
+  const accepted = await page.evaluate(() => PandoraRemaked.i18n.applyPublishedResultLabels({
+    ok: true, schemaVersion: 1,
+    overrides: { 'calculator.status.43': 'Поддельный параметр' }
+  }));
+  expect(accepted).toBe(false);
+  await expect(page.locator('#TextStatus_13')).toHaveText(baseline.trim());
+});
+
 test('all visible result and effect slots remain finite or explicit unavailable after recalc', async ({ page }) => {
   await page.goto('/?ui=ru');
   const snapshots = [];
