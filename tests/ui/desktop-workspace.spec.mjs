@@ -146,7 +146,7 @@ test('long approved translations and larger steps grow naturally across the desk
     Object.assign(PandoraRemakedGameTerms.ru, {
       'race.0': 'Проверочное очень длинное название расы персонажа',
       'calculator.text.16': 'Верховая езда персонажа',
-      'calculator.status.0': 'Проверочное длинное имя характеристики',
+      'calculator.status.0': 'Дальн. АТК дальн. боя',
       'skill.1': 'Проверочное очень длинное название ветки умений',
       'skill.7': 'Проверочная очень длинная ветка стрелкового оружия',
       'calculator.qualified_buff.5': 'Проверочные чары магической атаки персонажа'
