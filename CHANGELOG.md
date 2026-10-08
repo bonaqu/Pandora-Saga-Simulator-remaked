@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 3.33 — compact calculator actions, 2026-10-08
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Подписи кнопок «Учитывать мастерство» и «Учитывать эфф. зелий» стали короче и помещаются в одну строку.
+- Шесть кнопок учёта и сброса теперь расположены ровными колонками с одинаковыми размерами во всех языках интерфейса.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Shorter Russian labels keep the skill mastery and potion-effect toggles on one line.
+- Calculator actions use evenly sized columns and consistent button dimensions across languages.
+<!-- /release-notes:en -->
+
 ## Modern 3.32 — consistent action button sizing across languages, 2026-10-08
 
 <!-- release-notes:ru -->
