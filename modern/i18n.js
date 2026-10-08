@@ -68,8 +68,27 @@
     'calculator.text.5': ['Учитывать мастерство умений', 'Учитывать мастерство'],
     'calculator.text.6': ['Учитывать эффекты зелий', 'Учитывать эфф. зелий']
   });
+  var RU_RESULT_LABELS = Object.freeze({
+    'calculator.status.2': ['УВЕЛИЧЗЕЛ', 'Леч. зельями'],
+    'calculator.status.3': ['% исцел ОЗ', 'Леч. умениями'],
+    'calculator.status.4': ['Восст ОМ', 'Расход ОМ'],
+    'calculator.status.5': ['МаксАТК', 'АТК'],
+    'calculator.status.6': ['Фронт+', 'АТК. спереди'],
+    'calculator.status.7': ['Спина+', 'АТК сзади'],
+    'calculator.status.9': ['ЗАЩИТА', 'Защита'],
+    'calculator.status.10': ['Сопр ФРОНТ', 'Сопр. АТК спереди'],
+    'calculator.status.11': ['Сопр УРОНСПИН', 'Сопр. АТК сзади'],
+    'calculator.status.12': ['Сопр ФИЗ', 'Сопр. физ (ед.)'],
+    'calculator.status.13': ['Сопр ФИЗ', 'Сопр. физ (%)'],
+    'calculator.status.14': ['Сопр МАГ', 'Сопр. маг. урону'],
+    'calculator.status.16': ['ТОЧН', 'Точн. спереди'],
+    'calculator.status.17': ['ШАНС КРИТ', 'Шанс крита'],
+    'calculator.status.18': ['Крит УРОН', 'Крит. урон'],
+    'calculator.status.20': ['Сопр КРИТ', 'Сопр. криту'],
+    'calculator.status.21': ['Сопр КРурон', 'Получ. крит. урон']
+  });
   function compactActionLabel(key, value) {
-    var entry = currentLocale === 'ru' && COMPACT_RU_ACTIONS[key];
+    var entry = currentLocale === 'ru' && (RU_RESULT_LABELS[key] || COMPACT_RU_ACTIONS[key]);
     return entry && value === entry[0] ? entry[1] : value;
   }
 
