@@ -2158,3 +2158,19 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   }
 }
 
+/* Allocate more of the fixed desktop width to the three result columns.
+   All locales share these tracks and the existing result-row line height. */
+@media (min-width: 1366px) {
+  .remaked-modern #body [data-remaked-calculator-columns] {
+    grid-template-columns: minmax(0, 1fr) 480px 232px;
+  }
+  .remaked-modern #body #SkillSet[data-remaked-skill-controls] > ul:not(.remaked-skill-heading),
+  .remaked-modern #body [data-remaked-skill-column-header] {
+    grid-template-columns: minmax(94px, 1.25fr) repeat(2, minmax(66px, 1fr));
+  }
+  .remaked-modern #body [data-remaked-calculator-results] [id^="TextStatus_"],
+  .remaked-modern #body [data-remaked-calculator-results] [id^="TextStatus_"] .help {
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+}
