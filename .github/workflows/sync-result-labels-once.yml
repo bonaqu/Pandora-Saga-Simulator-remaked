@@ -1,0 +1,45 @@
+name: One-time workbook result translation synchronization
+
+on:
+  push:
+    branches:
+      - feature/sync-result-labels-excel-admin-20261008
+    paths:
+      - localization/calculator-results.ru.json
+      - scripts/sync_calculator_results_excel.py
+      - .github/workflows/sync-result-labels-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: workbook-sync-once
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Apply only approved result-label changes to the Excel workbook
+        run: python scripts/sync_calculator_results_excel.py
+      - name: Validate unchanged workbook row identities and translations
+        run: python scripts/translation_workbook.py
+      - name: Verify synchronization is idempotent
+        run: python scripts/sync_calculator_results_excel.py --check
+      - name: Commit workbook binary back to this feature branch
+        run: |
+          if git diff --quiet -- localization/translations.xlsx; then
+            echo "No workbook changes needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add localization/translations.xlsx
+          git commit -m "data(i18n): synchronize approved RU result labels in translations.xlsx"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
