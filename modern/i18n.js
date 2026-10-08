@@ -220,9 +220,9 @@
         typeof payload.overrides !== 'object' || Array.isArray(payload.overrides)) return false;
     var changed = Object.create(null);
     for (var key of Object.keys(payload.overrides)) {
-      if (!/^calculator\\.status\\.(?:[0-9]|[1-3][0-9]|4[0-2])$/.test(key)) return false;
+      if (!/^calculator\.status\.(?:[0-9]|[1-3][0-9]|4[0-2])$/.test(key)) return false;
       var text = payload.overrides[key];
-      if (typeof text !== 'string' || !text.trim() || text.length > 100 || /[\\x00-\\x1f\\x7f]/.test(text)) return false;
+      if (typeof text !== 'string' || !text.trim() || text.length > 100 || /[\x00-\x1f\x7f]/.test(text)) return false;
       changed[key] = text;
     }
     publishedResultLabels = changed;
