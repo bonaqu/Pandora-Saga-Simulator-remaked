@@ -2203,7 +2203,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   .remaked-modern #body [data-remaked-calculator-columns] {
     /* Results use only the width they need; the reclaimed space stays in Skills.
        This exact desktop geometry is shared by RU/EN/JP/TW. */
-    grid-template-columns: 604px minmax(0, 1fr) 216px;
+    grid-template-columns: 600px minmax(0, 1fr) 216px;
     gap: 4px;
   }
   .remaked-modern #body #SkillSet[data-remaked-skill-controls] > ul:not(.remaked-skill-heading) {
