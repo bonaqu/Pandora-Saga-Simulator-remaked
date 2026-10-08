@@ -551,8 +551,56 @@
     if (timer) return;
     timer = window.setTimeout(function () { timer = null; refresh(); }, 16);
   }
+  // Repair two rendering/calculation defects only for the Modern adapter.
+  // The archived Legacy engine must remain byte-for-byte unchanged.
+  function installCalculatorCorrections() {
+    if (typeof window.Calc !== 'function' || window.Calc._remakedCorrected) return;
+    var sourceCalc = window.Calc;
+    function correctedCalc(code, mode) {
+      if ((code === 'LPRec' || code === 'MPRec') && !mode && Number(window.Flag[2]) === 4 && window.EquipOpt) {
+        var ids = code === 'LPRec' ? [12, 14] : [13, 15];
+        var entries = ids.map(function (id) {
+          return { id: id, present: Object.prototype.hasOwnProperty.call(window.EquipOpt, id), items: window.EquipOpt[id] };
+        });
+        var bonus = 0;
+        entries.forEach(function (entry) {
+          (entry.items || []).forEach(function (modifier) {
+            var value = Number(modifier);
+            if (Number.isFinite(value)) bonus += value;
+          });
+          // Native recovery calculation reads an array key formed by [12,14]
+          // instead of each individual ID when a modifier is present.
+          window.EquipOpt[entry.id] = [];
+        });
+        var result;
+        try { result = sourceCalc.apply(this, arguments); }
+        finally {
+          entries.forEach(function (entry) {
+            if (entry.present) window.EquipOpt[entry.id] = entry.items;
+            else delete window.EquipOpt[entry.id];
+          });
+        }
+        var output = byId(code === 'LPRec' ? 'Status_12' : 'Status_13');
+        if (output && bonus) {
+          var current = Number(output.textContent.replace(/,/g, ''));
+          if (Number.isFinite(current)) output.textContent = String(current + bonus);
+        }
+        return result;
+      }
+      var response = sourceCalc.apply(this, arguments);
+      if (code === 'ATKSPD' && window.Flag[7]) {
+        var speed = byId('Status_73');
+        if (speed) speed.textContent = '---';
+      }
+      return response;
+    }
+    correctedCalc._remakedCorrected = true;
+    window.Calc = correctedCalc;
+  }
+
   function init() {
     if (!byId('body')) return;
+    installCalculatorCorrections();
     observer = new MutationObserver(schedule); refresh();
     window.addEventListener('resize', schedule);
   }
