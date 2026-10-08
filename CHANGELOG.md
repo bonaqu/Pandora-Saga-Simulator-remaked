@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 3.35 — readable effect buttons across languages, 2026-10-08
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Подписи «Эффекты умений» и «Эффекты зелий» стали крупнее и лучше читаются.
+- Кнопки эффектов сохранили прежнюю ширину, высоту и одинаковую типографику во всех языках.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Skill and potion effect buttons now share readable, consistent text sizing across languages.
+- Both buttons retain their existing compact dimensions.
+<!-- /release-notes:en -->
+
 ## Modern 3.34 — aligned riding control, 2026-10-08
 
 <!-- release-notes:ru -->
