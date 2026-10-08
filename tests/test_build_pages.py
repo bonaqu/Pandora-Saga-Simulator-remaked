@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from scripts.build_pages import build_pages
+from scripts.build_pages import build_pages, _materialize_modern_guild_resistance
 from scripts.translation_workbook import load_editable_catalogs, load_translation_catalogs
 
 
@@ -24,6 +24,30 @@ HERO_WEBP_FIXTURE = b"RIFF\x04\x00\x00\x00WEBP"
 
 
 class BuildPagesTests(unittest.TestCase):
+    def test_guild_damage_reduction_only_patches_modern_calculator(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary) / "repo"
+            source = pathlib.Path(__file__).resolve().parents[1] / "js/calc.js"
+            (root / "js").mkdir(parents=True)
+            shutil.copy2(source, root / "js/calc.js")
+            output = root / "_site"
+            (output / "js").mkdir(parents=True)
+            shutil.copy2(source, output / "js/calc.js")
+            original = source.read_bytes()
+            _materialize_modern_guild_resistance(root, output)
+            patched = (output / "js/calc.js").read_text(encoding="utf-8")
+            self.assertIn("SelBuffClan_5').selectedIndex == 1) ? -3", patched)
+            self.assertIn("SelBuffClan_5').selectedIndex == 2) ? -6", patched)
+            self.assertIn("SelBuffClan_6').selectedIndex == 1) ? -3", patched)
+            self.assertIn("SelBuffClan_6').selectedIndex == 2) ? -6", patched)
+            self.assertEqual(source.read_bytes(), original)
+            # Drift in a source anchor fails closed instead of silently
+            # deploying broken damage-reduction behavior.
+            (root / "js/calc.js").write_text("corrupted source", encoding="utf-8")
+            with self.assertRaises(ValueError):
+                _materialize_modern_guild_resistance(root, output)
+
+
     def test_modern_omits_only_obsolete_hidden_counter_and_preserves_legacy(self):
         with tempfile.TemporaryDirectory() as temporary:
             base = pathlib.Path(temporary)
