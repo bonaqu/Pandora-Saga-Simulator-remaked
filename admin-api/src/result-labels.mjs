@@ -52,7 +52,7 @@ export async function publicResultLabels(env) {
   const overrides = await stored(env);
   return jsonResponse({
     ok: true, schemaVersion: 1,
-    overrides: Object.fromEntries([...overrides].map(([id, row]) => [id, row.ru]))
+    overrides: Object.fromEntries([...overrides].filter(([, row]) => Boolean(row.ru)).map(([id, row]) => [id, row.ru]))
   });
 }
 
@@ -65,7 +65,7 @@ export async function adminResultLabels(request, env) {
         const row = overrides.get(id);
         return {
           id, baseline: labels[id], value: row?.ru || labels[id],
-          overridden: Boolean(row), version: row?.version || 0,
+          overridden: Boolean(row?.ru), version: row?.version || 0,
           updatedAt: row?.updated_at || null
         };
       })
@@ -87,12 +87,15 @@ export async function adminResultLabels(request, env) {
   if (version !== input.expectedVersion) fail('Translation changed in another session. Reload before saving.', 409);
 
   if (!value || value === labels[input.id]) {
-    if (row) {
-      const result = await env.DB.prepare('DELETE FROM result_label_overrides WHERE id = ? AND version = ?')
-        .bind(input.id, version).run();
-      if (result.meta.changes !== 1) fail('Translation changed during save', 409);
-    }
-    return jsonResponse({ ok: true, id: input.id, value: labels[input.id], baseline: labels[input.id], version: 0, overridden: false });
+    if (!row) return jsonResponse({ ok: true, id: input.id, value: labels[input.id], baseline: labels[input.id], version: 0, overridden: false });
+    if (row.ru === '') return jsonResponse({ ok: true, id: input.id, value: labels[input.id], baseline: labels[input.id], version, overridden: false });
+    // Keep a versioned empty tombstone to protect against a stale write in
+    // another browser tab racing with a reset to the Excel baseline.
+    const result = await env.DB.prepare(
+      "UPDATE result_label_overrides SET ru = '', version = version + 1, updated_at = ? WHERE id = ? AND version = ?"
+    ).bind(Math.floor(Date.now() / 1000), input.id, version).run();
+    if (result.meta.changes !== 1) fail('Translation changed during save', 409);
+    return jsonResponse({ ok: true, id: input.id, value: labels[input.id], baseline: labels[input.id], version: version + 1, overridden: false });
   }
 
   if (row?.ru === value) return jsonResponse({
