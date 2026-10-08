@@ -28,7 +28,7 @@ export async function assertWorkspaceFits(page) {
   // bound without thousands of tracing/IPC steps in the font/locale matrix.
   expect(geometry.sections.filter(box => box.left < 0 || box.right > width + 1 || box.scroll > box.client + 1)).toEqual([]);
   expect(geometry.targets.filter(box => box.width < minimum || box.height < minimum || box.left < 0 || box.right > width + 1)).toEqual([]);
-  expect(geometry.labels.filter(box => box.left < box.parent.left - 1 || box.right > box.parent.right + 1 || box.scroll > box.client + 1 && !box.ellipsized)).toEqual([]);
+  expect(geometry.labels.filter(box => box.left < box.parent.left - 1 || box.right > box.parent.right + 1 || box.scroll > box.client + 1)).toEqual([]);
   const { first, second } = geometry;
   if (width >= 1366) {
     expect(second.left).toBeGreaterThan(first.right);
