@@ -1,5 +1,23 @@
 # Changelog
 
+## Modern 3.41 — русский перевод усилений и подсказок, 2026-10-09
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Подсказка по изучению умений полностью переведена на русский язык.
+- Во вкладке «Усиления» переведены названия параметров, кнопки умений и описания при наведении.
+- Переключение языков, расчёт характеристик и сохранённые билды работают как прежде.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Completed the Russian skills allocation help text.
+- Localized Enhancement parameter labels, skill names and hover descriptions in Russian.
+- Kept language switching, calculations and existing builds unchanged.
+<!-- /release-notes:en -->
+
 ## Modern 3.40 — readable Effects buttons restored, 2026-10-08
 
 <!-- release-notes:ru -->
