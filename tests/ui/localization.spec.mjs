@@ -212,6 +212,56 @@ test('effect tabs have matching geometry and readable unclipped typography in ev
   }
 });
 
+test('desktop Effects buttons retain their readable pre-rebalance typography without narrowing Skills', async ({ page }) => {
+  for (const width of [1366, 1440, 1600]) {
+    await page.setViewportSize({ width, height: 900 });
+    let reference = null;
+    for (const locale of ['ru', 'en', 'jp', 'tw']) {
+      await page.goto('/?ui=' + locale);
+      const metrics = await page.evaluate(() => {
+        const box = node => node.getBoundingClientRect();
+        const effects = document.querySelector('[data-remaked-calculator-effects]');
+        const skills = document.querySelector('#SkillSet[data-remaked-skill-controls]');
+        const character = document.querySelector('[data-remaked-calculator-character]');
+        const buttons = [...document.querySelectorAll('[data-remaked-effect-tabs] [data-remaked-effect]')];
+        return {
+          panelWidth: box(effects).width, skillWidth: box(skills).width,
+          skillsOverflow: skills.scrollWidth > skills.clientWidth + 1,
+          characterWidth: box(character).width,
+          buttonMetrics: buttons.map(node => {
+            const b = box(node);
+            const range = document.createRange(); range.selectNodeContents(node);
+            const text = range.getBoundingClientRect();
+            const style = getComputedStyle(node);
+            return {
+              width: b.width, height: b.height, fontSize: style.fontSize,
+              letterSpacing: parseFloat(style.letterSpacing),
+              lineHeight: style.lineHeight, whiteSpace: style.whiteSpace,
+              fits: text.left >= b.left - 1 && text.right <= b.right + 1 &&
+                text.top >= b.top - 1 && text.bottom <= b.bottom + 1
+            };
+          })
+        };
+      });
+      expect(metrics.panelWidth, locale + ':' + width).toBeCloseTo(232, 1);
+      // Match the previous compact workbench: the real guarantee is that the
+      // Skills panel remains usable and never introduces internal overflow.
+      expect(metrics.skillWidth, locale + ':' + width).toBeGreaterThanOrEqual(488);
+      expect(metrics.skillsOverflow, locale + ':' + width).toBe(false);
+      expect(metrics.characterWidth, locale + ':' + width).toBeCloseTo(600, 1);
+      expect(metrics.buttonMetrics).toHaveLength(2);
+      for (const item of metrics.buttonMetrics) {
+        expect(item.fontSize).toBe('11px');
+        expect(item.letterSpacing).toBeCloseTo(-0.66, 2);
+        expect(item.whiteSpace).toBe('nowrap');
+        expect(item.fits, locale + ':' + width).toBe(true);
+      }
+      if (reference) expect(metrics, locale + ':' + width).toEqual(reference);
+      else reference = metrics;
+    }
+  }
+});
+
 test('RU calculator actions and riding labels use the requested wording without horizontal overflow', async ({ page }) => {
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 900 });

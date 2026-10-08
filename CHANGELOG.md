@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 3.40 — readable Effects buttons restored, 2026-10-08
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Вернули прежнюю ширину панели «Эффекты» и нормальную читаемость кнопок эффектов во всех языках.
+- «Персонаж» и «Умения» сохраняют уже согласованную компактную компоновку; полные названия характеристик не сокращаются и не обрезаются.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Restored the readable Effects tab spacing and original panel width across all languages.
+- Kept the balanced Character/Skills layout and complete result labels unchanged.
+<!-- /release-notes:en -->
+
 ## Modern 3.39 — balanced result and skill columns, 2026-10-08
 
 <!-- release-notes:ru -->
