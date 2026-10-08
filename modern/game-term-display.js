@@ -232,7 +232,7 @@
           if (description) {
             var translatedName = i18n.game(skillKey, '');
             var hoverTarget = label.querySelector('.help') || label;
-            hoverTarget.title = (translatedName || label.textContent.trim()) + '\\n' + description;
+            hoverTarget.title = (translatedName || label.textContent.trim()) + '\n' + description;
           }
         }
       });
