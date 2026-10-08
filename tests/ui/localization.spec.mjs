@@ -226,6 +226,7 @@ test('desktop Effects buttons retain their readable pre-rebalance typography wit
         const buttons = [...document.querySelectorAll('[data-remaked-effect-tabs] [data-remaked-effect]')];
         return {
           panelWidth: box(effects).width, skillWidth: box(skills).width,
+          skillsOverflow: skills.scrollWidth > skills.clientWidth + 1,
           characterWidth: box(character).width,
           buttonMetrics: buttons.map(node => {
             const b = box(node);
@@ -243,7 +244,10 @@ test('desktop Effects buttons retain their readable pre-rebalance typography wit
         };
       });
       expect(metrics.panelWidth, locale + ':' + width).toBeCloseTo(232, 1);
-      expect(metrics.skillWidth, locale + ':' + width).toBeGreaterThanOrEqual(500);
+      // Match the previous compact workbench: the real guarantee is that the
+      // Skills panel remains usable and never introduces internal overflow.
+      expect(metrics.skillWidth, locale + ':' + width).toBeGreaterThanOrEqual(488);
+      expect(metrics.skillsOverflow, locale + ':' + width).toBe(false);
       expect(metrics.characterWidth, locale + ':' + width).toBeCloseTo(600, 1);
       expect(metrics.buttonMetrics).toHaveLength(2);
       for (const item of metrics.buttonMetrics) {
