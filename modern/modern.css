@@ -2238,6 +2238,13 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     font-size: 9px;
     line-height: 1.1;
   }
+  /* The condensed Potential column sits 2px right of the shared heading
+     track because the paired skill rows and the six-cell header have distinct
+     grid gap accounting. Match the actual numerical value center. */
+  .remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(3),
+  .remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(6) {
+    transform: translateX(2px);
+  }
   .remaked-modern #body [data-remaked-calculator-results] {
     grid-template-columns: minmax(0, .88fr) minmax(0, 1.06fr) minmax(0, 1.06fr);
   }
