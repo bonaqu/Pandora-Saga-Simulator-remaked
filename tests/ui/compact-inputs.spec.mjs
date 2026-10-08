@@ -1,47 +1,53 @@
 import { test, expect } from '@playwright/test';
 
-test('numeric feedback names each field and its actual limit; cancel clears it without changing the build', async ({ page }, testInfo) => {
-  testInfo.setTimeout(60_000);
+test('out-of-range entries clamp on commit; non-integers and empty edits remain rejectable', async ({ page }) => {
   await page.goto('/');
-  const before = await page.evaluate(() => Store());
-  const status = page.locator('#remaked-number-status');
   for (const locale of ['en', 'ru']) {
     await page.locator(`[data-remaked-ui-locale="${locale}"]`).click();
+    const fixture = await page.evaluate(() => Store());
     for (const key of ['Lev', 'STA', 'STR', 'AGI', 'DEX', 'SPR', 'INT']) {
       const input = page.locator(`[data-remaked-number="${key}"]`);
-      const field = await input.evaluate(node => document.getElementById(node.getAttribute('aria-labelledby')).textContent.trim());
-      const max = await input.getAttribute('max'), min = await input.getAttribute('min');
-      for (const [value, expected] of [
-        [String(Number(max) + 1), locale === 'ru' ? `Максимальное значение поля «${field}» — ${max}. Esc отменяет ввод.` : `${field}: maximum ${max}. Esc cancels your edit.`],
-        [String(Number(min) - 1), locale === 'ru' ? `Минимальное значение поля «${field}» — ${min}. Esc отменяет ввод.` : `${field}: minimum ${min}. Esc cancels your edit.`],
-        [String(Number(min) + 0.5), locale === 'ru' ? `Для поля «${field}» введите целое число от ${min} до ${max}. Esc отменяет ввод.` : `${field}: enter a whole number from ${min} to ${max}. Esc cancels your edit.`],
-        ['', locale === 'ru' ? `Заполните поле «${field}»: целое число от ${min} до ${max}. Esc отменяет ввод.` : `${field}: enter a value from ${min} to ${max}. Esc cancels your edit.`]
-      ]) {
-        await input.fill(value); await input.press('Enter');
-        await expect(status).toHaveText(expected); await expect(input).toHaveAttribute('aria-invalid', 'true');
-        if (key === 'Lev' && value === '56') await page.locator('[data-remaked-calculator-character]').screenshot({ path: testInfo.outputPath('numeric-limit-' + locale + '.png') });
-        expect(await page.evaluate(() => Store())).toBe(before);
+      const max = Number(await input.getAttribute('max'));
+      const min = Number(await input.getAttribute('min'));
+      await input.fill(String(min - 1)); await input.press('Enter');
+      await expect(input).toHaveValue(String(min));
+      await expect(input).not.toHaveAttribute('aria-invalid', 'true');
+      await expect(page.locator('#remaked-number-status')).toBeEmpty();
+      await page.evaluate(code => PandoraRemaked.adapter.load(code), fixture);
+      await input.fill(String(max + 1)); await input.press('Enter');
+      const actual = Number(await input.inputValue());
+      expect(actual, key + ' ' + locale).toBeGreaterThanOrEqual(min);
+      expect(actual, key + ' ' + locale).toBeLessThanOrEqual(max);
+      await expect(input).not.toHaveAttribute('aria-invalid', 'true');
+      // The retained engine may hit its remaining point budget before max.
+      await page.evaluate(code => PandoraRemaked.adapter.load(code), fixture);
+      for (const malformed of [String(min + 0.5), '']) {
+        await input.fill(malformed); await input.press('Enter');
+        await expect(input).toHaveAttribute('aria-invalid', 'true');
+        expect(await page.evaluate(() => Store())).toBe(fixture);
         await input.press('Escape');
-        await expect(status).toBeEmpty(); await expect(input).not.toHaveAttribute('aria-invalid');
+        await expect(page.locator('#remaked-number-status')).toBeEmpty();
       }
     }
   }
 });
 
-test('invalid edits survive blur and feedback follows language changes; loading a build clears stale errors', async ({ page }) => {
+test('invalid fractional edit feedback follows locale changes and build load clears it', async ({ page }) => {
   await page.goto('/');
   const before = await page.evaluate(() => Store());
   const input = page.locator('[data-remaked-number="Lev"]'), status = page.locator('#remaked-number-status');
-  await input.fill('56'); await input.press('Enter'); await input.press('Tab');
-  await expect(input).toHaveValue('56'); await expect(status).toContainText('maximum 55');
+  await input.fill('2.5'); await input.press('Enter'); await input.press('Tab');
+  await expect(input).toHaveAttribute('aria-invalid', 'true');
+  await expect(status).toContainText('whole number');
   await page.locator('[data-remaked-ui-locale="ru"]').click();
-  await expect(status).toContainText('Максимальное значение поля'); await expect(status).toContainText('55');
+  await expect(status).toContainText('целое число');
   expect(await page.evaluate(() => Store())).toBe(before);
   await page.evaluate(code => PandoraRemaked.adapter.load(code), before);
-  await expect(input).toHaveValue('1'); await expect(status).toBeEmpty(); await expect(input).not.toHaveAttribute('aria-invalid');
+  await expect(input).toHaveValue('1'); await expect(status).toBeEmpty();
+  await expect(input).not.toHaveAttribute('aria-invalid');
 });
 
-test('insufficient points report the named field and exact native allocation, and race minima stay source-owned', async ({ page }) => {
+test('insufficient points still report their actual applied allocation; racial minima clamp', async ({ page }) => {
   await page.goto('/');
   const input = page.locator('[data-remaked-number="STA"]'), status = page.locator('#remaked-number-status');
   for (const locale of ['en', 'ru']) {
@@ -57,7 +63,8 @@ test('insufficient points report the named field and exact native allocation, an
     await expect(status).toHaveText(locale === 'ru'
       ? `Для поля «${field}» не хватает очков характеристик. Применено значение: ${expected.value}.`
       : `${field}: not enough attribute points. Applied value: ${expected.value}.`);
-    expect(await page.evaluate(() => Store())).toBe(expected.code); await expect(input).toHaveValue(String(expected.value));
+    expect(await page.evaluate(() => Store())).toBe(expected.code);
+    await expect(input).toHaveValue(String(expected.value));
     await input.press('Escape'); await expect(status).toBeEmpty();
     await page.evaluate(code => PandoraRemaked.adapter.load(code), before);
   }
@@ -66,12 +73,11 @@ test('insufficient points report the named field and exact native allocation, an
     await page.locator('#SelRace').selectOption({ index: race });
     const minimum = await page.evaluate(() => String(Status.STA[0]));
     await expect(input).toHaveAttribute('min', minimum);
-    const before = await page.evaluate(() => Store());
     await page.locator('[data-remaked-tab="0"]').click();
     await input.fill(String(Number(minimum) - 1)); await input.press('Enter');
-    await expect(status).toContainText('— ' + minimum + '.');
-    expect(await page.evaluate(() => Store())).toBe(before);
-    await input.press('Escape');
+    await expect(input).toHaveValue(minimum);
+    await expect(status).toBeEmpty();
+    await expect(input).not.toHaveAttribute('aria-invalid', 'true');
     await page.locator('[data-remaked-tab="0"]').click();
   }
 });
@@ -100,13 +106,16 @@ test('seven bounded numeric controls delegate allocation and limits to the retai
     await input.fill(String(minimum)); await input.press('Tab');
     expect(await page.evaluate(key => Status[key][1], key)).toBe(0);
   }
+  await level.fill('0'); await level.press('Enter'); await expect(level).toHaveValue('1');
+  await level.fill('56'); await level.press('Enter'); await expect(level).toHaveValue('55');
   const before = await page.evaluate(() => Store());
-  for (const value of ['0', '56', '2.5', '']) {
+  for (const value of ['2.5', '']) {
     await level.fill(value); await level.press('Enter');
     expect(await page.evaluate(() => Store())).toBe(before);
     await expect(level).toHaveAttribute('aria-invalid', 'true');
+    await level.press('Escape');
   }
-  await level.press('Escape'); await expect(level).toHaveValue('55');
+  await expect(level).toHaveValue('55');
 });
 
 test('Russian base-stat abbreviations fit beside compact number fields without clipping', async ({ page }) => {
