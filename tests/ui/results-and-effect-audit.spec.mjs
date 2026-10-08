@@ -75,7 +75,8 @@ test('result rows preserve shared compact geometry without truncated labels', as
           const textRight = textBox.getBoundingClientRect().right;
           return {
             id: index,
-            geometry: [box.x - origin.x, box.y - origin.y, box.width, box.height].map(n => Math.round(n * 10) / 10),
+            columns: [box.x - origin.x, box.width].map(n => Math.round(n * 10) / 10),
+            height: box.height,
             textFits: label.scrollWidth <= label.clientWidth + 1 &&
               textRight <= value.getBoundingClientRect().left + 1,
             label: label.textContent.trim()
@@ -83,10 +84,13 @@ test('result rows preserve shared compact geometry without truncated labels', as
         });
       });
     }
-    const reference = variants.en.map(item => item.geometry);
+    const reference = variants.en.map(item => item.columns);
     for (const lang of ['en', 'ru', 'jp', 'tw']) {
-      expect(variants[lang].map(item => item.geometry), lang + ':' + width).toEqual(reference);
+      // Shared column tracks must remain identical; long approved translations
+      // are allowed to wrap rather than hide text or widen the skills panel.
+      expect(variants[lang].map(item => item.columns), lang + ':' + width).toEqual(reference);
       expect(variants[lang].filter(item => !item.textFits), lang + ':' + width).toEqual([]);
+      expect(variants[lang].every(item => item.height >= 16), lang + ':' + width).toBe(true);
     }
   }
 });
