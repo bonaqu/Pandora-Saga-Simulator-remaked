@@ -13,6 +13,7 @@
     // initial asynchronous session check catches up with an already typed form.
     var leavingWorkspace = !workspace.hidden;
     if (window.PandoraCatalogConsole) window.PandoraCatalogConsole.clear();
+    if (window.PandoraResultLabelConsole) window.PandoraResultLabelConsole.clear();
     csrf = null; form.hidden = false; workspace.hidden = true;
     title.textContent = 'GOD MODE REQUIRES AUTHENTICATION';
     message.textContent = text; message.classList.toggle('denied', text.indexOf('DENIED') !== -1);
@@ -34,7 +35,9 @@
       message.classList.remove('denied');
       document.getElementById('password').value = '';
       history.replaceState(null, '', '/admin');
-      if (window.PandoraCatalogConsole) await window.PandoraCatalogConsole.start(function () { return csrf; }, function () { showLogin('Session expired. Sign in again.'); });
+      var expired = function () { showLogin('Session expired. Sign in again.'); };
+      if (window.PandoraCatalogConsole) await window.PandoraCatalogConsole.start(function () { return csrf; }, expired);
+      if (window.PandoraResultLabelConsole) await window.PandoraResultLabelConsole.start(function () { return csrf; }, expired);
     } catch { showLogin('Secure service unavailable. Please try again later.'); }
   }
   logout.addEventListener('click', async function () {
