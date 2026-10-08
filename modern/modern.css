@@ -2158,36 +2158,62 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   }
 }
 
-/* Results keep identical one-line rows across RU/EN/JP/TW. Long captions
-   never resize the 3-column matrix or steal width from skill allocation.
-   The original caption and description remain available to assistive tech. */
+/* Never shorten, ellipsize or wrap calculated result names. Result rows
+   keep their compact height; the shared column layout must provide sufficient
+   room for every text and its corresponding value in all four languages. */
 .remaked-modern #body [data-remaked-calculator-results] [data-remaked-calculator-pair] > ul {
   box-sizing: border-box;
   height: 26px;
   min-height: 26px;
   max-height: 26px;
-  overflow: hidden;
+  overflow: visible;
 }
 .remaked-modern #body [data-remaked-calculator-results] [id^="TextStatus_"] {
   display: block;
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex: 0 0 auto;
+  min-width: max-content;
+  max-width: none;
+  overflow: visible;
+  text-overflow: clip;
   overflow-wrap: normal;
   white-space: nowrap !important;
   line-height: 1.45;
 }
 .remaked-modern #body [data-remaked-calculator-results] [id^="TextStatus_"] .help {
-  display: block;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: inline;
+  max-width: none;
+  overflow: visible;
+  text-overflow: clip;
   overflow-wrap: normal;
   white-space: nowrap !important;
 }
+/* On compact desktops the two-branch skill panel needs its full usable width.
+   Move the independent Effects card below it, freeing the former third
+   column for full-width character results. Preserve the existing 3-column
+   result matrix at 1366px+, and the same tracks in every locale. */
+@media (min-width: 1100px) {
+  .remaked-modern #body [data-remaked-calculator-columns] {
+    grid-template-columns: minmax(0, 1fr) 358px;
+    grid-template-rows: auto auto;
+    align-items: start;
+  }
+  .remaked-modern #body [data-remaked-calculator-character] {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+  .remaked-modern #body #SkillSet[data-remaked-skill-controls] {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .remaked-modern #body [data-remaked-calculator-effects] {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
 @media (min-width: 1366px) {
+  .remaked-modern #body [data-remaked-calculator-columns] {
+    grid-template-columns: minmax(0, 1fr) 582px;
+  }
   .remaked-modern #body [data-remaked-calculator-results] [data-remaked-calculator-pair] > ul {
     height: 20px;
     min-height: 20px;
