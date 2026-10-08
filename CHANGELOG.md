@@ -1,5 +1,23 @@
 # Changelog
 
+## Modern 3.37 — согласованные переводы результатов, 2026-10-08
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Русские названия всех характеристик в «Результатах расчёта» теперь согласованы с переводами проекта.
+- Длинные подписи не увеличивают ширину и высоту строк: полный текст доступен в подсказках и средствах доступности.
+- В админке появился редактор переводов результатов с возможностью вернуть исходную подпись.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Russian calculated-result names now match the project's approved translations.
+- Long captions stay on one line without resizing the result grid, with full names preserved for accessibility.
+- The admin console can edit result labels and restore their original workbook values.
+<!-- /release-notes:en -->
+
 ## Modern 3.36 — clearer result names and smarter numeric entry, 2026-10-08
 
 <!-- release-notes:ru -->
