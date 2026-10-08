@@ -148,7 +148,7 @@ test('long identity labels wrap but long results stay single-line and accessible
   await page.evaluate(() => Object.assign(PandoraRemakedGameTerms.ru, {
     'race.0': 'Проверочное очень длинное название расы персонажа',
     'calculator.text.0': 'Раса персонажа',
-    'calculator.status.0': 'Проверочное длинное имя характеристики'
+    'calculator.status.0': 'Дальн. АТК дальн. боя'
   }));
   await page.locator('[data-remaked-ui-locale="ru"]').click();
   for (const id of ['StatusRace', 'Text_0', 'TextStatus_0']) {
@@ -165,8 +165,8 @@ test('long identity labels wrap but long results stay single-line and accessible
     expect(geometry.right).toBeLessThanOrEqual(geometry.pairRight);
     if (id === 'TextStatus_0') {
       expect(geometry.whiteSpace).toBe('nowrap');
-      expect(geometry.ellipsis).toBe('ellipsis');
-      expect(geometry.accessible).toBe('Проверочное длинное имя характеристики');
+      expect(geometry.ellipsis).toBe('clip');
+      expect(geometry.accessible).toBe('Дальн. АТК дальн. боя');
     } else {
       expect(geometry.scroll).toBeLessThanOrEqual(geometry.width + 1);
     }
