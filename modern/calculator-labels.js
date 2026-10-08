@@ -118,7 +118,7 @@
     names.Clan.forEach(function (entry, index) {
       var targets = [];
       for (var level = 0; level <= entry[0]; level++) targets.push({
-        selector: '#SelBuffClan_' + index + ' option[value="' + level + '"]', suffix: level ? ' Lv' + level : ''
+        selector: '#SelBuffClan_' + index + ' option[value="' + level + '"]', suffix: level ? ' Lv' + level : '', clanLevel: level
       });
       add('calculator.clan.' + index, 'Name.Clan[' + index + ']', entry.slice(1, 4), targets);
     });
