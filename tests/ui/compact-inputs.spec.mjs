@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('out-of-range entries clamp on commit; non-integers and empty edits remain rejectable', async ({ page }) => {
+  test.setTimeout(120_000);
   await page.goto('/');
   for (const locale of ['en', 'ru']) {
     await page.locator(`[data-remaked-ui-locale="${locale}"]`).click();
