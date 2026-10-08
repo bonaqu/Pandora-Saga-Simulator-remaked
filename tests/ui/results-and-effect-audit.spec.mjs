@@ -56,41 +56,43 @@ test('all 43 result labels match the supplied RU terminology', async ({ page }) 
   expect(actual[14]).not.toBe(actual[42]); // magic damage vs magic resistance
 });
 
-test('result rows preserve shared compact geometry without truncated labels', async ({ page }) => {
-  for (const width of [1366, 1440, 1920]) {
+test('results keep fixed single-line geometry in every language at responsive widths', async ({ page }) => {
+  test.setTimeout(120_000);
+  for (const width of [320, 390, 1024, 1366, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
     const variants = {};
-    for (const lang of ['en', 'ru', 'jp', 'tw']) {
-      await page.goto('/?ui=' + lang);
-      variants[lang] = await page.evaluate(() => {
+    for (const locale of ['en', 'ru', 'jp', 'tw']) {
+      await page.goto('/?ui=' + locale);
+      variants[locale] = await page.evaluate(() => {
         const parent = document.querySelector('#StatusView');
         const origin = parent.getBoundingClientRect();
         return Array.from({ length: 43 }, (_, index) => {
           const label = document.getElementById('TextStatus_' + index);
           const pair = label.closest('[data-remaked-calculator-pair]');
-          const value = pair.querySelector('.input_gt');
-          const box = pair.getBoundingClientRect();
-          const textBox = document.createRange();
-          textBox.selectNodeContents(label);
-          const textRight = textBox.getBoundingClientRect().right;
+          const pairBox = pair.getBoundingClientRect();
+          const box = label.getBoundingClientRect();
+          const style = getComputedStyle(label);
           return {
-            id: index,
-            columns: [box.x - origin.x, box.width].map(n => Math.round(n * 10) / 10),
-            height: box.height,
-            textFits: label.scrollWidth <= label.clientWidth + 1 &&
-              textRight <= value.getBoundingClientRect().left + 1,
-            label: label.textContent.trim()
+            geometry: [pairBox.x - origin.x, pairBox.y - origin.y, pairBox.width, pairBox.height]
+              .map(n => Math.round(n * 10) / 10),
+            name: label.textContent.trim(),
+            accessible: label.getAttribute('aria-label'),
+            fitsInPair: box.left >= pairBox.left - 1 && box.right <= pairBox.right + 1,
+            style: [style.whiteSpace, style.overflowX, style.textOverflow, style.fontSize]
           };
         });
       });
     }
-    const reference = variants.en.map(item => item.columns);
-    for (const lang of ['en', 'ru', 'jp', 'tw']) {
-      // Shared column tracks must remain identical; long approved translations
-      // are allowed to wrap rather than hide text or widen the skills panel.
-      expect(variants[lang].map(item => item.columns), lang + ':' + width).toEqual(reference);
-      expect(variants[lang].filter(item => !item.textFits), lang + ':' + width).toEqual([]);
-      expect(variants[lang].every(item => item.height >= 16), lang + ':' + width).toBe(true);
+    const baseline = variants.en.map(item => item.geometry);
+    for (const locale of ['en', 'ru', 'jp', 'tw']) {
+      const rows = variants[locale];
+      expect(rows.map(row => row.geometry), locale + ':' + width).toEqual(baseline);
+      expect(rows.every(row => row.fitsInPair), locale + ':' + width).toBe(true);
+      for (const row of rows) {
+        expect(row.accessible, locale + ':' + width).toBe(row.name);
+        expect(row.style.slice(0, 3), locale + ':' + width).toEqual(['nowrap', 'hidden', 'ellipsis']);
+      }
+      expect(rows.map(row => row.style[3]), locale + ':' + width).toEqual(variants.en.map(row => row.style[3]));
     }
   }
 });
