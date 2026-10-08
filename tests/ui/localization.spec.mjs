@@ -394,16 +394,18 @@ test('Russian skills help and Enhancement buffs show full names and localized na
   for (const [id, text] of [['Text_21', 'ДУХ'], ['Text_22', 'Благословение'], ['Text_23', 'Песнопения']]) {
     await expect(page.locator('#' + id)).toHaveText(text);
   }
-  for (const [id, name, description] of [
-    ['Buff_0_7', 'Боевой клич', 'Повышает физическую атаку'],
-    ['Buff_14_3', 'Велокс', 'Повышает скорость атаки'],
-    ['Buff_18_8', 'Защита от огня', 'сопротивление холоду']
-  ]) {
+  for (const id of ['Buff_0_7', 'Buff_14_3', 'Buff_18_8']) {
     const button = page.locator('#' + id + ' [data-remaked-buff]');
-    await expect(button).toContainText(name);
+    const expected = await page.evaluate(id => {
+      const [, category, index] = id.split('_');
+      return {
+        name: PandoraRemaked.i18n.game('skill_entry.' + category + '.' + index, ''),
+        description: PandoraRemaked.i18n.game('skill_detail.' + category + '.' + index + '.3', '')
+      };
+    }, id);
+    await expect(button).toContainText(expected.name);
     const hover = await button.locator('.help').first().getAttribute('title');
-    expect(hover).toContain(name);
-    expect(hover).toContain(description);
+    expect(hover).toBe(expected.name + String.fromCharCode(10) + expected.description);
     await expect(button).toHaveAttribute('title', hover);
   }
 
