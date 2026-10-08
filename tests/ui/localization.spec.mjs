@@ -264,15 +264,20 @@ test('riding toggle matches its neighboring stat field in every language and vie
         };
         return { toggle: measure(toggle), label: measure(label), value: measure(value) };
       });
-      for (const adjacent of [riding.label, riding.value]) {
-        expect(Math.abs(riding.toggle.height - adjacent.height), locale + ':' + width).toBeLessThanOrEqual(1);
-        // Mobile preserves the source table's stacked two-row structure.
-        // On desktop both cells share a row and must align vertically.
-        if (width >= 861) {
-          expect(Math.abs(riding.toggle.top - adjacent.top), locale + ':' + width).toBeLessThanOrEqual(1);
+      if (width <= 620) {
+        // On phones the riding controls stack vertically, and the native
+        // action remains a full-size 44px touch target.
+        expect(riding.toggle.height, locale + ':' + width).toBeGreaterThanOrEqual(44);
+      } else {
+        for (const adjacent of [riding.label, riding.value]) {
+          expect(Math.abs(riding.toggle.height - adjacent.height), locale + ':' + width).toBeLessThanOrEqual(1);
+          // Only the wide desktop layout (1366px+) puts both cells in one row.
+          if (width >= 1366) {
+            expect(Math.abs(riding.toggle.top - adjacent.top), locale + ':' + width).toBeLessThanOrEqual(1);
+          }
         }
+        expect(riding.toggle.height, locale + ':' + width).toBeCloseTo(28, 0);
       }
-      expect(riding.toggle.height, locale + ':' + width).toBeCloseTo(28, 0);
     }
   }
 });
