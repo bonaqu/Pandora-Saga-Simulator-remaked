@@ -219,7 +219,7 @@
         decorate(byId('ViewOther_' + index + '_0'), 'skill_entry.' + term[0] + '.' + term[1], names.Text.Skill.Other[index][language + 1]);
       });
       document.querySelectorAll('[id^="Buff_"] [id^="TextBuff_"]').forEach(function (label) {
-        var match = label.parentElement.id.match(/^Buff_(\d+)_(\d+)$/);
+        var match = label.closest('[id^="Buff_"]')?.id.match(/^Buff_(\d+)_(\d+)$/);
         if (!match || Number(match[1]) === 30) return; // Rune names belong to interface export.
         var index = Number(label.id.split('_')[1]);
         var skillKey = 'skill_entry.' + match[1] + '.' + match[2];
