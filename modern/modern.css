@@ -898,8 +898,8 @@ body.remaked-modern {
   outline-offset: 2px;
 }
 
-/* Shared action dimensions and single-line captions across EN/RU/JP/TW.
-   Mobile retains its larger 44px touch target at every locale. */
+/* Shared action dimensions across EN/RU/JP/TW. Short labels stay on one
+   line when space permits; narrow panels and custom terms wrap safely. */
 .remaked-modern #body [data-remaked-calculator-actions] [data-remaked-calculator-action] {
   box-sizing: border-box;
   height: 35px;
@@ -910,7 +910,7 @@ body.remaked-modern {
   justify-content: center;
   text-align: center;
   font: 700 10.5px/1.02 var(--rm-font);
-  white-space: nowrap;
+  white-space: normal;
 }
 @media (max-width: 620px) {
   .remaked-modern #body [data-remaked-calculator-actions] [data-remaked-calculator-action] {
