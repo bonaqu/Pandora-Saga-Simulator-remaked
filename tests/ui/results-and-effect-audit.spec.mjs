@@ -117,3 +117,36 @@ test('all visible result and effect slots remain finite or explicit unavailable 
   expect(snapshots[1].attackSpeed).toBe('---');
   expect(snapshots[0].attackSpeed).toMatch(/^\d+$/);
 });
+
+test('defense inspector regeneration effects read each equipped stat modifier without throwing', async ({ page }) => {
+  await page.goto('/?ui=ru');
+  const actual = await page.evaluate(() => {
+    const previous = Flag[2];
+    const original = [12, 13].map(id => ({ id, value: EquipOpt[id] }));
+    const result = {};
+    try {
+      Flag[2] = 4;
+      for (const [id, mode, field] of [[12, 'LPRec', 'Status_12'], [13, 'MPRec', 'Status_13']]) {
+        EquipOpt[id] = [];
+        Calc(mode);
+        const before = Number(document.getElementById(field).textContent);
+        EquipOpt[id] = ['5'];
+        Calc(mode);
+        const after = Number(document.getElementById(field).textContent);
+        result[mode] = [before, after];
+      }
+      return result;
+    } finally {
+      for (const entry of original) {
+        if (entry.value === undefined) delete EquipOpt[entry.id];
+        else EquipOpt[entry.id] = entry.value;
+      }
+      Flag[2] = previous;
+      CalcSet('ALL');
+    }
+  });
+  for (const pair of Object.values(actual)) {
+    expect(pair[0]).toBeGreaterThanOrEqual(0);
+    expect(pair[1] - pair[0]).toBe(5);
+  }
+});
