@@ -3,6 +3,9 @@ import { CatalogError } from './catalog-model.mjs';
 import { jsonResponse } from './auth.mjs';
 
 const labels = baseline.labels;
+// Reserved value fits the already-deployed 0005 D1 CHECK constraint (length >= 1).
+// It cannot be supplied via the admin input because angle brackets are rejected.
+const BASELINE_TOMBSTONE = '<excel-baseline>';
 const IDS = Array.from({ length: 43 }, (_, index) => 'calculator.status.' + index);
 if (baseline.schemaVersion !== 1 || baseline.locale !== 'ru' ||
     Object.keys(labels).length !== 43 || IDS.some(id => typeof labels[id] !== 'string' || !labels[id])) {
@@ -52,7 +55,7 @@ export async function publicResultLabels(env) {
   const overrides = await stored(env);
   return jsonResponse({
     ok: true, schemaVersion: 1,
-    overrides: Object.fromEntries([...overrides].filter(([, row]) => Boolean(row.ru)).map(([id, row]) => [id, row.ru]))
+    overrides: Object.fromEntries([...overrides].filter(([, row]) => row.ru !== BASELINE_TOMBSTONE).map(([id, row]) => [id, row.ru]))
   });
 }
 
@@ -64,8 +67,8 @@ export async function adminResultLabels(request, env) {
       items: IDS.map(id => {
         const row = overrides.get(id);
         return {
-          id, baseline: labels[id], value: row?.ru || labels[id],
-          overridden: Boolean(row?.ru), version: row?.version || 0,
+          id, baseline: labels[id], value: row?.ru && row.ru !== BASELINE_TOMBSTONE ? row.ru : labels[id],
+          overridden: Boolean(row?.ru && row.ru !== BASELINE_TOMBSTONE), version: row?.version || 0,
           updatedAt: row?.updated_at || null
         };
       })
@@ -88,12 +91,12 @@ export async function adminResultLabels(request, env) {
 
   if (!value || value === labels[input.id]) {
     if (!row) return jsonResponse({ ok: true, id: input.id, value: labels[input.id], baseline: labels[input.id], version: 0, overridden: false });
-    if (row.ru === '') return jsonResponse({ ok: true, id: input.id, value: labels[input.id], baseline: labels[input.id], version, overridden: false });
+    if (row.ru === BASELINE_TOMBSTONE) return jsonResponse({ ok: true, id: input.id, value: labels[input.id], baseline: labels[input.id], version, overridden: false });
     // Keep a versioned empty tombstone to protect against a stale write in
     // another browser tab racing with a reset to the Excel baseline.
     const result = await env.DB.prepare(
-      "UPDATE result_label_overrides SET ru = '', version = version + 1, updated_at = ? WHERE id = ? AND version = ?"
-    ).bind(Math.floor(Date.now() / 1000), input.id, version).run();
+      'UPDATE result_label_overrides SET ru = ?, version = version + 1, updated_at = ? WHERE id = ? AND version = ?'
+    ).bind(BASELINE_TOMBSTONE, Math.floor(Date.now() / 1000), input.id, version).run();
     if (result.meta.changes !== 1) fail('Translation changed during save', 409);
     return jsonResponse({ ok: true, id: input.id, value: labels[input.id], baseline: labels[input.id], version: version + 1, overridden: false });
   }
