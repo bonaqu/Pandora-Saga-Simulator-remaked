@@ -2206,6 +2206,13 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     grid-template-columns: 600px minmax(0, 1fr) 216px;
     gap: 4px;
   }
+  /* Base inputs retain their 44px fields and cost badges within a tighter
+     left track. Give the freed pixels to the three result-label columns
+     rather than shrinking the skill panel or hiding translated text. */
+  .remaked-modern #body [data-remaked-calculator-attribute-results],
+  .remaked-modern #body [data-remaked-calculator-settings] {
+    grid-template-columns: 134px minmax(0, 1fr);
+  }
   .remaked-modern #body #SkillSet[data-remaked-skill-controls] > ul:not(.remaked-skill-heading) {
     grid-template-columns: minmax(102px, 1fr) 68px 54px;
     column-gap: 3px;
@@ -2249,6 +2256,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   }
   .remaked-modern #body [data-remaked-calculator-results] {
     grid-template-columns: minmax(0, .88fr) minmax(0, 1.06fr) minmax(0, 1.06fr);
+    gap: 1px;
   }
   .remaked-modern #body [data-remaked-calculator-results] [data-remaked-calculator-pair] > ul {
     height: 20px;
