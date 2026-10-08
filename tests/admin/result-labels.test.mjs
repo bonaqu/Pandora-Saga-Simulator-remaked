@@ -20,10 +20,10 @@ function environment() {
         },
         async run() {
           if (sql.startsWith('UPDATE result_label_overrides SET ru')) {
-            const [updated_at, id, expectedVersion] = params;
+            const [ru, updated_at, id, expectedVersion] = params;
             const row = rows.get(id);
             if (!row || row.version !== expectedVersion) return { meta: { changes: 0 } };
-            rows.set(id, { ...row, ru: '', version: row.version + 1, updated_at });
+            rows.set(id, { ...row, ru, version: row.version + 1, updated_at });
             return { meta: { changes: 1 } };
           }
           if (sql.startsWith('INSERT INTO result_label_overrides')) {
