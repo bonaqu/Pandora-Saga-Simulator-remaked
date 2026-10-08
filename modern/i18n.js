@@ -17,8 +17,8 @@
       }),
       game: Object.freeze({
         'calculator.text.3': 'Учитывать умения',
-        'calculator.text.5': 'Учитывать мастерство умений',
-        'calculator.text.6': 'Учитывать эффекты зелий',
+        'calculator.text.5': 'Учитывать мастерство',
+        'calculator.text.6': 'Учитывать эфф. зелий',
         'calculator.text.7': 'Сброс характеристик',
         'calculator.text.8': 'Сброс умений',
         'calculator.text.9': 'Сбросить все',
@@ -62,6 +62,17 @@
     return group && Object.prototype.hasOwnProperty.call(group, key) ? group[key] : '';
   }
 
+  // Presentation-only abbreviations for two legacy Russian captions.
+  // Apply only to their previous exact text, so other catalog/admin edits win.
+  var COMPACT_RU_ACTIONS = Object.freeze({
+    'calculator.text.5': ['Учитывать мастерство умений', 'Учитывать мастерство'],
+    'calculator.text.6': ['Учитывать эффекты зелий', 'Учитывать эфф. зелий']
+  });
+  function compactActionLabel(key, value) {
+    var entry = currentLocale === 'ru' && COMPACT_RU_ACTIONS[key];
+    return entry && value === entry[0] ? entry[1] : value;
+  }
+
   function interpolate(template, values) {
     values = values || {};
     return String(template).replace(/\{([A-Za-z0-9_]+)\}/g, function (match, key) {
@@ -79,7 +90,7 @@
 
   function translateGameTerm(key, fallback) {
     var published = namespace.catalog && namespace.catalog.gameLabel(key);
-    if (published) return published;
+    if (published) return compactActionLabel(key, published);
     // JP/TW keep the original game's language for Legacy game terms while the
     // Modern shell uses its sparse JP/TW catalog with English fallback.
     // An English game-name override must not silently replace source languages.
@@ -87,7 +98,7 @@
     var active = currentLocale === 'en' && !useEnglish ? {} : gameCatalogs[currentLocale] || {};
     var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : terminology('game', key);
     if (!value && currentLocale === 'ru' && useEnglish) value = (gameCatalogs.en || {})[key] || '';
-    return typeof value === 'string' && value ? value : String(fallback == null ? '' : fallback);
+    return compactActionLabel(key, typeof value === 'string' && value ? value : String(fallback == null ? '' : fallback));
   }
 
   function storedValues(node) {
