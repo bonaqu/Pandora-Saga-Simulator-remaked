@@ -5,13 +5,13 @@
 <!-- release-notes:ru -->
 ### Кратко для игроков
 
-- Кнопка «Верхом» теперь той же компактной высоты, что и соседнее поле «Хар-ки верхом / %», во всех языках интерфейса.
+- Кнопка «Верхом» выровнена по высоте с «Хар-ки верхом / %» на широких экранах во всех языках; на телефонах сохранена удобная область нажатия.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
 ### Player highlights
 
-- Riding toggle now matches the compact height of the adjacent riding-stat field in every language.
+- Riding toggle matches the adjacent stat field on wider screens in every language; larger mobile touch targets remain.
 <!-- /release-notes:en -->
 
 ## Modern 3.33 — compact calculator actions, 2026-10-08
