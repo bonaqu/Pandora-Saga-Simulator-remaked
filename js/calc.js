@@ -493,9 +493,8 @@ function Calc(a,b) {
           else                                                     tmp[4] += (10 + tmp[4] + Status['Skill'][24][0] + Status['Skill'][24][1] >= 100) ? 100: 10 + tmp[4] + Status['Skill'][24][0] + Status['Skill'][24][1];
         } else tmp[4] = 100;
 //        tmp[2] = (Flag[7]) ? Math.ceil(tmp[2] * tmp[4] / 100): tmp[2];
-        // Riding-speed computation is intentionally unavailable in this engine.
-        // Do not concatenate a placeholder with a real bonus (e.g. '---8').
-        $('Status_' + tmp[0]).innerHTML = Flag[7] ? '---' : tmp[2] + tmp[3];
+        tmp[2] = (Flag[7]) ? '---': tmp[2];
+        $('Status_' + tmp[0]).innerHTML = tmp[2] + tmp[3];
       break;
       case 'MoveSPD':       // [ 74] 移動速度                       [ 75] 街での移動速度
         tmp[0]  = new Array(74,75);
@@ -991,7 +990,7 @@ function Calc(a,b) {
         for (i=0;i<tmp[0].length;i++) {
           if (EquipOpt[tmp[0][i]])
             for (j=0;j<EquipOpt[tmp[0][i]].length;j++)
-              tmp[1] += Number(EquipOpt[tmp[0][i]][j]);
+              tmp[1] += Number(EquipOpt[tmp[0]][j]);
         }
         $('Status_' + tmp[0][0]).innerHTML = tmp[1];
         $('Status_' + tmp[0][1]).innerHTML = '---';
@@ -1002,7 +1001,7 @@ function Calc(a,b) {
         for (i=0;i<tmp[0].length;i++) {
           if (EquipOpt[tmp[0][i]])
             for (j=0;j<EquipOpt[tmp[0][i]].length;j++)
-              tmp[1] += Number(EquipOpt[tmp[0][i]][j]);
+              tmp[1] += Number(EquipOpt[tmp[0]][j]);
         }
         $('Status_' + tmp[0][0]).innerHTML = tmp[1];
         $('Status_' + tmp[0][1]).innerHTML = '---';
