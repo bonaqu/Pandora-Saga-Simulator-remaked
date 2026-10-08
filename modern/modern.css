@@ -898,6 +898,28 @@ body.remaked-modern {
   outline-offset: 2px;
 }
 
+/* Shared control dimensions across EN/RU/JP/TW. Keep the original 3x2 rows;
+   readable bold captions may wrap within the reserved row height. */
+.remaked-modern #body [data-remaked-calculator-actions] [data-remaked-calculator-action] {
+  box-sizing: border-box;
+  height: 35px;
+  min-height: 35px;
+  padding: 0 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font: 700 10.5px/1.02 var(--rm-font);
+}
+@media (max-width: 620px) {
+  .remaked-modern #body [data-remaked-calculator-actions] [data-remaked-calculator-action] {
+    height: 44px;
+    min-height: 44px;
+    font-size: 11px;
+    line-height: 1.1;
+  }
+}
+
 .remaked-modern #body [data-remaked-calculator-attributes] {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1667,21 +1689,10 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     float: none; width: auto !important; margin: 0; height: auto !important;
   }
   .remaked-modern #body [data-remaked-calculator-actions] {
-    /* Keep the same compact proportions for every locale; longer Russian
-       wording is handled by typography, not by enlarging the controls. */
-    grid-template-columns: minmax(0, .8fr) repeat(2, minmax(0, 1.1fr)); align-content: start;
-  }
-  html[lang="ru"] body.remaked-modern #body [data-remaked-calculator-action] {
-    height: 30px;
-    min-height: 30px;
-    padding: 1px 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 9.5px;
-    line-height: 1.05;
-    letter-spacing: 0;
+    /* All languages use the same three tracks: enough room for the reset
+       label, the longest skill switch and the potion-effects switch. */
+    grid-template-columns: minmax(0, .90fr) minmax(0, .96fr) minmax(0, 1.14fr);
+    align-content: start;
   }
   .remaked-modern #body [data-remaked-calculator-actions] > ul { display: contents; }
   .remaked-modern #body [data-remaked-calculator-horse-container] { grid-column: 1 / -1; }

@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 3.32 — consistent action button sizing across languages, 2026-10-08
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Кнопки учёта и сброса получили одинаковые размеры, расположение и насыщенность шрифта во всех языках интерфейса.
+- Сохранена компактная сетка 3×2; длинные русские подписи больше не меняют высоту кнопок и соседних элементов.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Calculator action buttons now use consistent size, placement and typography across every language.
+- The original compact 3×2 layout remains stable with longer translated labels.
+<!-- /release-notes:en -->
+
 ## Modern 3.31 — balanced Russian calculator controls, 2026-10-08
 
 <!-- release-notes:ru -->

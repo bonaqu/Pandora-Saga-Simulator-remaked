@@ -195,33 +195,48 @@ test('RU calculator actions and riding labels use the requested wording without 
   }
 });
 
-test('RU calculator actions stay balanced and readable without oversized controls', async ({ page }) => {
-  for (const width of [1366, 1440]) {
+test('calculator action geometry and typography match in EN, RU, JP and TW', async ({ page }) => {
+  for (const width of [390, 1024, 1366, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto('/?ui=ru');
-
-    const geometry = await page.evaluate(() =>
-      ['Text_3', 'Text_5', 'Text_6', 'Text_7', 'Text_8', 'Text_9'].map(id => {
-        const node = document.querySelector('[data-remaked-calculator-action="' + id + '"]');
-        const rect = node.getBoundingClientRect();
-        const style = getComputedStyle(node);
+    const locales = {};
+    for (const locale of ['en', 'ru', 'jp', 'tw']) {
+      await page.goto('/?ui=' + locale);
+      locales[locale] = await page.evaluate(() => {
+        const container = document.querySelector('[data-remaked-calculator-actions]');
+        const outer = container.getBoundingClientRect();
+        const actions = ['Text_3', 'Text_5', 'Text_6', 'Text_7', 'Text_8', 'Text_9']
+          .map(id => document.querySelector('[data-remaked-calculator-action="' + id + '"]'));
         return {
-          id,
-          width: rect.width,
-          height: rect.height,
-          clientHeight: node.clientHeight,
-          scrollHeight: node.scrollHeight,
-          fontSize: Number.parseFloat(style.fontSize)
+          containerSize: [outer.width, outer.height].map(n => Math.round(n * 10) / 10),
+          geometry: actions.map(node => {
+            const r = node.getBoundingClientRect();
+            return [r.x - outer.x, r.y - outer.y, r.width, r.height]
+              .map(n => Math.round(n * 10) / 10);
+          }),
+          typography: actions.map(node => {
+            const s = getComputedStyle(node);
+            return [s.fontSize, s.fontWeight];
+          }),
+          overflow: actions.filter(node =>
+            node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1
+          ).map(node => ({
+            id: node.getAttribute('data-remaked-calculator-action'),
+            label: node.textContent.trim(),
+            height: [node.clientHeight, node.scrollHeight],
+            width: [node.clientWidth, node.scrollWidth]
+          }))
         };
-      })
-    );
-
-    const heights = geometry.map(item => item.height);
-    expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(1);
-    expect(Math.min(...heights)).toBeGreaterThanOrEqual(29);
-    expect(Math.max(...heights)).toBeLessThanOrEqual(31);
-    expect(Math.min(...geometry.map(item => item.fontSize))).toBeGreaterThanOrEqual(9.5);
-    for (const item of geometry) expect(item.scrollHeight, item.id).toBeLessThanOrEqual(item.clientHeight + 1);
+      });
+    }
+    for (const locale of ['en', 'ru', 'jp', 'tw']) {
+      const result = locales[locale];
+      expect(result.containerSize, locale + ':' + width).toEqual(locales.en.containerSize);
+      expect(result.geometry, locale + ':' + width).toEqual(locales.en.geometry);
+      expect(result.typography, locale + ':' + width).toEqual(locales.en.typography);
+      expect(result.typography, locale + ':' + width)
+        .toEqual(Array.from({ length: 6 }, () => [width <= 620 ? '11px' : '10.5px', '700']));
+      expect(result.overflow, locale + ':' + width).toEqual([]);
+    }
   }
 });
 
