@@ -401,7 +401,7 @@ test('Russian skills help and Enhancement buffs show full names and localized na
   ]) {
     const button = page.locator('#' + id + ' [data-remaked-buff]');
     await expect(button).toContainText(name);
-    const hover = await button.locator('[title]').first().getAttribute('title');
+    const hover = await button.locator('.help').first().getAttribute('title');
     expect(hover).toContain(name);
     expect(hover).toContain(description);
   }
@@ -430,6 +430,6 @@ test('Russian skills help and Enhancement buffs show full names and localized na
   await expect(page.locator('#Text_22')).toHaveText('Blessing');
   await expect(page.locator('#Text_23')).toHaveText('Hymn');
   await expect(page.locator('#Buff_0_7')).toContainText('War Cry');
-  await expect(page.locator('#Buff_0_7 [title]')).toHaveAttribute('title', /Increases Physical Attack Power/);
+  await expect(page.locator('#Buff_0_7 .help')).toHaveAttribute('title', /Increases Physical Attack Power/);
   expect(await page.evaluate(() => window.Store())).toBe(before);
 });
