@@ -112,6 +112,54 @@ test('results keep fixed single-line geometry in every language at responsive wi
 });
 
 
+test('desktop results remain compact and all skill headings fit one line across languages', async ({ page }) => {
+  test.setTimeout(120_000);
+  for (const width of [1366, 1440, 1600, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    let baseline;
+    for (const locale of ['ru', 'en', 'jp', 'tw']) {
+      await page.goto('/?ui=' + locale);
+      const layout = await page.evaluate(() => {
+        const rect = node => {
+          const r = node.getBoundingClientRect();
+          return { x: r.left, y: r.top, width: r.width, height: r.height, right: r.right };
+        };
+        const panels = [...document.querySelectorAll('[data-remaked-calculator-columns] > :is([data-remaked-calculator-character], #SkillSet, [data-remaked-calculator-effects])')]
+          .map(node => rect(node));
+        const heads = [...document.querySelectorAll('[data-remaked-skill-column-header] > span')].map(node => {
+          const textRange = document.createRange(); textRange.selectNodeContents(node);
+          const lineRects = [...textRange.getClientRects()].filter(box => box.width > 0 && box.height > 0);
+          const bounds = rect(node);
+          return { text: node.textContent.trim(), bounds, lines: lineRects.length,
+            overflow: lineRects.some(box => box.left < bounds.x - 1 || box.right > bounds.right + 1) };
+        });
+        const track = Array.from({ length: 43 }, (_, id) => {
+          const label = document.getElementById('TextStatus_' + id);
+          const pair = label.closest('[data-remaked-calculator-pair]');
+          const numeric = pair.querySelector('.input_gt');
+          const range = document.createRange(); range.selectNodeContents(label);
+          const text = range.getBoundingClientRect();
+          return { column: id % 3, text: label.textContent.trim(), pair: rect(pair),
+            textRight: text.right, valueLeft: rect(numeric).x };
+        });
+        return { panels, heads, track, scrollWidth: document.documentElement.scrollWidth };
+      });
+      expect(layout.scrollWidth, locale + ':' + width).toBeLessThanOrEqual(width + 1);
+      expect(layout.panels).toHaveLength(3);
+      expect(layout.panels[1].width, locale + ':' + width).toBeGreaterThanOrEqual(490);
+      expect(layout.panels[1].y, locale + ':' + width).toBe(layout.panels[0].y);
+      expect(layout.panels[2].y, locale + ':' + width).toBe(layout.panels[0].y);
+      expect(layout.heads).toHaveLength(6);
+      expect(layout.heads.filter(h => h.lines !== 1 || h.overflow),
+        locale + ':' + width + ': ' + JSON.stringify(layout.heads)).toEqual([]);
+      expect(layout.track.filter(r => r.textRight > r.valueLeft - 1),
+        locale + ':' + width).toEqual([]);
+      if (!baseline) baseline = layout.panels.map(({ x, y, width, height }) => [x, y, width]);
+      else expect(layout.panels.map(({ x, y, width }) => [x, y, width]), locale + ':' + width).toEqual(baseline);
+    }
+  }
+});
+
 test('admin publication overrides Excel only for selected RU term and never changes the build', async ({ page }) => {
   await page.goto('/?ui=ru');
   const before = await page.evaluate(() => Store());

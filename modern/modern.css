@@ -2131,7 +2131,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   white-space: nowrap;
   padding-inline: 2px;
   font-size: 11px;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.12em;
 }
 
 /* Russian skill headings are longer than the compact numeric controls. Keep
@@ -2201,29 +2201,49 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
    target height or gameplay behavior. */
 @media (min-width: 1366px) {
   .remaked-modern #body [data-remaked-calculator-columns] {
-    grid-template-columns: minmax(0, 1fr) 442px 232px;
-    gap: 6px;
+    /* Results use only the width they need; the reclaimed space stays in Skills.
+       This exact desktop geometry is shared by RU/EN/JP/TW. */
+    grid-template-columns: 600px minmax(0, 1fr) 216px;
+    gap: 4px;
+  }
+  /* Base inputs retain their 44px fields and cost badges within a tighter
+     left track. Give the freed pixels to the three result-label columns
+     rather than shrinking the skill panel or hiding translated text. */
+  .remaked-modern #body [data-remaked-calculator-attribute-results],
+  .remaked-modern #body [data-remaked-calculator-settings] {
+    grid-template-columns: 134px minmax(0, 1fr);
+  }
+  /* Keep the 2P cost badge clear of three-digit final stats even inside
+     the 134px attribute track; the number fields themselves stay unchanged. */
+  .remaked-modern #body [data-remaked-calculator-attribute] [data-remaked-number-total] {
+    min-width: 30px;
+    margin-inline-start: 2px;
   }
   .remaked-modern #body #SkillSet[data-remaked-skill-controls] > ul:not(.remaked-skill-heading) {
-    grid-template-columns: minmax(112px, 1.25fr) 58px 32px;
+    grid-template-columns: minmax(102px, 1fr) 68px 54px;
     column-gap: 3px;
+  }
+  /* Keep the numeric input centered beneath its Learned heading rather
+     than right-aligning a 52px field within a wider 68px value track. */
+  .remaked-modern #body #SkillSet[data-remaked-skill-controls] .remaked-skill-number {
+    justify-self: center;
   }
   .remaked-modern #body [data-remaked-skill-column-header] {
     grid-template-columns:
-      minmax(112px, 1.25fr) 58px 32px
+      minmax(102px, 1fr) 68px 54px
       4px
-      minmax(112px, 1.25fr) 58px 32px;
+      minmax(102px, 1fr) 68px 54px;
     column-gap: 3px;
-    min-height: 32px;
+    min-height: 28px;
     align-items: center;
   }
-  /* The Potential text was right-aligned as an 8px glyph box, 12px away
-     from its 32px heading track. Make both use the same numeric cell center. */
+  /* The headings and read-only potential values share stable tracks.
+     In particular, "Потенциал" must remain one line in every language. */
   .remaked-modern #body #SkillSet[data-remaked-skill-controls] [data-remaked-skill-potential-value] {
     display: block;
     box-sizing: border-box;
-    width: 32px;
-    max-width: 32px;
+    width: 54px;
+    max-width: 54px;
     text-align: center;
   }
   html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(2),
@@ -2233,20 +2253,23 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     box-sizing: border-box;
     width: 100%;
     transform: none;
-    overflow-wrap: anywhere;
-    white-space: normal;
+    overflow-wrap: normal;
+    white-space: nowrap;
+    text-align: center;
     font-size: 9px;
+    letter-spacing: -0.02em;
     line-height: 1.1;
   }
-  /* The condensed Potential column sits 2px right of the shared heading
-     track because the paired skill rows and the six-cell header have distinct
-     grid gap accounting. Match the actual numerical value center. */
+  /* The paired row has a two-pixel grid-gap offset from the combined header. */
+  html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(2),
   html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(3),
+  html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(5),
   html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(6) {
     transform: translateX(-2px);
   }
   .remaked-modern #body [data-remaked-calculator-results] {
     grid-template-columns: minmax(0, .88fr) minmax(0, 1.06fr) minmax(0, 1.06fr);
+    gap: 1px;
   }
   .remaked-modern #body [data-remaked-calculator-results] [data-remaked-calculator-pair] > ul {
     height: 20px;
@@ -2261,4 +2284,10 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
 }
 .remaked-modern #body [data-remaked-calculator-results] [data-remaked-calculator-pair] :is([id^="TextStatus_"], [id^="TextStatus_"] .help, .input_gt) {
   font-size: 10.75px;
+}
+/* Save the last few pixels for full-length translations without shrinking
+   their font or the numeric-value cells. All locales share this tracking. */
+.remaked-modern #body [data-remaked-calculator-results] [id^="TextStatus_"],
+.remaked-modern #body [data-remaked-calculator-results] [id^="TextStatus_"] .help {
+  letter-spacing: -0.03em;
 }
