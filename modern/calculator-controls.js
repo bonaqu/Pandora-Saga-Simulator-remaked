@@ -336,6 +336,11 @@
     }
     function commit() {
       var issue = numberIssue(input);
+      if (issue === 'minimum' || issue === 'maximum') {
+        // Clamp on commit, not on every keystroke: typing remains uninterrupted.
+        input.value = issue === 'minimum' ? input.min : input.max;
+        issue = null;
+      }
       if (issue) {
         input.setAttribute('aria-invalid', 'true');
         numberFeedback = { input: input, kind: issue }; refreshNumberFeedback();
