@@ -222,7 +222,19 @@
         var match = label.parentElement.id.match(/^Buff_(\d+)_(\d+)$/);
         if (!match || Number(match[1]) === 30) return; // Rune names belong to interface export.
         var index = Number(label.id.split('_')[1]);
-        decorate(label, 'skill_entry.' + match[1] + '.' + match[2], names.Text.Buff[index][language]);
+        var skillKey = 'skill_entry.' + match[1] + '.' + match[2];
+        decorate(label, skillKey, names.Text.Buff[index][language]);
+        // Legacy puts the skill description in the native title of its .help
+        // span. The name and the hover description are distinct workbook keys.
+        // Localize the description only on this display surface, never Skill[].
+        if (i18n.getLocale() === 'ru') {
+          var description = i18n.game('skill_detail.' + match[1] + '.' + match[2] + '.3', '');
+          if (description) {
+            var translatedName = i18n.game(skillKey, '');
+            var hoverTarget = label.querySelector('.help') || label;
+            hoverTarget.title = (translatedName || label.textContent.trim()) + '\\n' + description;
+          }
+        }
       });
       document.querySelectorAll('.remaked-mobile-card-label').forEach(function (label) {
         var head = label.closest('.sub_win')?.querySelector('.head');
