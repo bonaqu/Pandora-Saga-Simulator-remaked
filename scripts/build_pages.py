@@ -261,7 +261,7 @@ def _materialize_modern_guild_resistance(root: pathlib.Path, output: pathlib.Pat
     for anchor, addition in replacements:
         if original.count(anchor) != 1:
             raise ValueError("cannot safely locate the guild resistance anchor in the Legacy calculator")
-        original = original.replace(anchor, anchor + "\\n        " + addition, 1)
+        original = original.replace(anchor, anchor + "\n        " + addition, 1)
     (output / "js" / "calc.js").write_text(original, encoding="utf-8")
 
 
