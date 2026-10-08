@@ -2131,7 +2131,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   white-space: nowrap;
   padding-inline: 2px;
   font-size: 11px;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.095em;
 }
 
 /* Russian skill headings are longer than the compact numeric controls. Keep
@@ -2209,6 +2209,11 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   .remaked-modern #body #SkillSet[data-remaked-skill-controls] > ul:not(.remaked-skill-heading) {
     grid-template-columns: minmax(102px, 1fr) 68px 54px;
     column-gap: 3px;
+  }
+  /* Keep the numeric input centered beneath its Learned heading rather
+     than right-aligning a 52px field within a wider 68px value track. */
+  .remaked-modern #body #SkillSet[data-remaked-skill-controls] .remaked-skill-number {
+    justify-self: center;
   }
   .remaked-modern #body [data-remaked-skill-column-header] {
     grid-template-columns:
