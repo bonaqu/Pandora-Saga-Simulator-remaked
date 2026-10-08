@@ -141,7 +141,7 @@ test('unavailable enhancement leaves original calculator input callbacks working
   expect(await page.evaluate(() => Store())).not.toBe(initial);
 });
 
-test('long approved identity and stat labels wrap inside their pair without changing values', async ({ page }) => {
+test('long identity labels wrap but long results stay single-line and accessible without affecting values', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto('/');
   const before = await page.evaluate(() => Store());
@@ -154,10 +154,22 @@ test('long approved identity and stat labels wrap inside their pair without chan
   for (const id of ['StatusRace', 'Text_0', 'TextStatus_0']) {
     const geometry = await page.locator('#' + id).evaluate(node => {
       const box = node.getBoundingClientRect(), pair = node.closest('[data-remaked-calculator-pair]').getBoundingClientRect();
-      return { right: box.right, pairRight: pair.right, scroll: node.scrollWidth, width: node.clientWidth };
+      const style = getComputedStyle(node);
+      return {
+        right: box.right, pairRight: pair.right,
+        scroll: node.scrollWidth, width: node.clientWidth,
+        whiteSpace: style.whiteSpace, ellipsis: style.textOverflow,
+        accessible: node.getAttribute('aria-label')
+      };
     });
     expect(geometry.right).toBeLessThanOrEqual(geometry.pairRight);
-    expect(geometry.scroll).toBeLessThanOrEqual(geometry.width + 1);
+    if (id === 'TextStatus_0') {
+      expect(geometry.whiteSpace).toBe('nowrap');
+      expect(geometry.ellipsis).toBe('ellipsis');
+      expect(geometry.accessible).toBe('Проверочное длинное имя характеристики');
+    } else {
+      expect(geometry.scroll).toBeLessThanOrEqual(geometry.width + 1);
+    }
   }
   expect(await page.evaluate(() => Store())).toBe(before);
 });
