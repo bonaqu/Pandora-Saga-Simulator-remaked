@@ -19,10 +19,11 @@ function environment() {
           return { results: [...rows].map(([id, value]) => ({ id, ...value })) };
         },
         async run() {
-          if (sql.startsWith('DELETE FROM result_label_overrides')) {
-            const row = rows.get(params[0]);
-            if (!row || row.version !== params[1]) return { meta: { changes: 0 } };
-            rows.delete(params[0]);
+          if (sql.startsWith('UPDATE result_label_overrides SET ru')) {
+            const [ru, updated_at, id, expectedVersion] = params;
+            const row = rows.get(id);
+            if (!row || row.version !== expectedVersion) return { meta: { changes: 0 } };
+            rows.set(id, { ...row, ru, version: row.version + 1, updated_at });
             return { meta: { changes: 1 } };
           }
           if (sql.startsWith('INSERT INTO result_label_overrides')) {
@@ -69,8 +70,15 @@ test('admin save, publish and revert never mutate Excel baseline or build impact
   const two = await adminResultLabels(request({ id, value: ' Дальн. ближ. атаки ', expectedVersion: 1 }), env);
   assert.equal((await two.json()).version, 2);
   const revert = await adminResultLabels(request({ id, value: baseline.labels[id], expectedVersion: 2 }), env);
-  assert.equal((await revert.json()).overridden, false);
+  const reverted = await revert.json();
+  assert.equal(reverted.overridden, false);
+  assert.equal(reverted.version, 3);
   assert.deepEqual((await (await publicResultLabels(env)).json()).overrides, {});
+  // Stale tabs cannot bypass a reset by re-inserting over a deleted row.
+  await assert.rejects(() => adminResultLabels(request({ id, value: 'Старая вкладка', expectedVersion: 1 }), env));
+  const published = await adminResultLabels(request({ id, value: 'Новая правка', expectedVersion: 3 }), env);
+  assert.equal((await published.json()).version, 4);
+  assert.equal((await (await publicResultLabels(env)).json()).overrides[id], 'Новая правка');
 });
 
 test('stale versions and malformed labels fail closed', async () => {
