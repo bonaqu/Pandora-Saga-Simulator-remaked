@@ -493,8 +493,9 @@ function Calc(a,b) {
           else                                                     tmp[4] += (10 + tmp[4] + Status['Skill'][24][0] + Status['Skill'][24][1] >= 100) ? 100: 10 + tmp[4] + Status['Skill'][24][0] + Status['Skill'][24][1];
         } else tmp[4] = 100;
 //        tmp[2] = (Flag[7]) ? Math.ceil(tmp[2] * tmp[4] / 100): tmp[2];
-        tmp[2] = (Flag[7]) ? '---': tmp[2];
-        $('Status_' + tmp[0]).innerHTML = tmp[2] + tmp[3];
+        // Riding-speed computation is intentionally unavailable in this engine.
+        // Do not concatenate a placeholder with a real bonus (e.g. '---8').
+        $('Status_' + tmp[0]).innerHTML = Flag[7] ? '---' : tmp[2] + tmp[3];
       break;
       case 'MoveSPD':       // [ 74] 移動速度                       [ 75] 街での移動速度
         tmp[0]  = new Array(74,75);
