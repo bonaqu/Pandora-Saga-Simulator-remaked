@@ -49,6 +49,35 @@ test('numeric level and attribute controls execute retained callbacks exactly on
   }
 });
 
+test('attribute and level edits clamp to current race-dependent bounds on commit', async ({ page }) => {
+  await page.goto('/?ui=ru');
+  const stamina = page.locator('[data-remaked-number="STA"]');
+  const minimum = Number(await stamina.getAttribute('min'));
+  expect(minimum).toBeGreaterThan(1);
+  await stamina.fill('1');
+  await stamina.press('Enter');
+  await expect(stamina).toHaveValue(String(minimum));
+  await expect(stamina).not.toHaveAttribute('aria-invalid', 'true');
+  await expect(page.locator('#remaked-number-status')).toBeEmpty();
+  const level = page.locator('[data-remaked-number="Lev"]');
+  const max = Number(await level.getAttribute('max'));
+  await level.fill(String(max + 50));
+  await level.press('Enter');
+  await expect(level).toHaveValue(String(max));
+  await expect(level).not.toHaveAttribute('aria-invalid', 'true');
+  await level.fill('-10');
+  await level.press('Enter');
+  await expect(level).toHaveValue('1');
+  await expect(level).not.toHaveAttribute('aria-invalid', 'true');
+  const intelligence = page.locator('[data-remaked-number="INT"]');
+  await intelligence.fill('105');
+  await intelligence.press('Enter');
+  const actual = Number(await intelligence.inputValue());
+  expect(actual).toBeGreaterThanOrEqual(Number(await intelligence.getAttribute('min')));
+  expect(actual).toBeLessThanOrEqual(Number(await intelligence.getAttribute('max')));
+  await expect(intelligence).not.toHaveAttribute('aria-invalid', 'true');
+});
+
 for (const width of [320, 390, 768, 1440]) test(`primary calculator sections and native targets fit at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
   await page.goto('/');
