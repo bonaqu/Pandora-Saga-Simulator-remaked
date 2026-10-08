@@ -81,6 +81,7 @@ test('stale versions and malformed labels fail closed', async () => {
     { id: 'calculator.status.43', value: 'Несуществующая', expectedVersion: 0 },
     { id, value: 'Некорректно\nзначение', expectedVersion: 1 },
     { id, value: 'x'.repeat(101), expectedVersion: 1 },
+    { id, value: '<script>alert(1)</script>', expectedVersion: 1 },
     { id, value: 'Другой текст', expectedVersion: -1 }
   ]) {
     let caught = null;
