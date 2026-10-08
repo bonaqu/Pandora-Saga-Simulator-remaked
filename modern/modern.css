@@ -2130,7 +2130,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
 .remaked-modern #body [data-remaked-effect-tabs] .remaked-calculator-action {
   white-space: nowrap;
   padding-inline: 2px;
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: -0.02em;
 }
 
