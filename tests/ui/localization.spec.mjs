@@ -234,7 +234,7 @@ test('calculator action geometry and typography match in EN, RU, JP and TW', asy
       expect(result.geometry, locale + ':' + width).toEqual(locales.en.geometry);
       expect(result.typography, locale + ':' + width).toEqual(locales.en.typography);
       expect(result.typography, locale + ':' + width)
-        .toEqual(Array.from({ length: 6 }, () => [width <= 620 ? '11px' : '10.5px', '700', 'nowrap']));
+        .toEqual(Array.from({ length: 6 }, () => [width <= 620 ? '11px' : '10.5px', '700', 'normal']));
       expect(result.overflow, locale + ':' + width).toEqual([]);
       if (width >= 1366) {
         // Equal columns for the six compact actions, regardless of language.
