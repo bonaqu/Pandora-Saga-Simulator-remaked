@@ -2,13 +2,14 @@
 
 `translations.xlsx` is the only file a translator edits. It contains 2,920 data rows:
 
-- 226 Modern interface strings;
-- 1,617 stable Legacy game terms, including races, classes, equipment, Souls, skill groups and all 211 actual skill names;
-- 417 calculator labels/hints and 633 skill detail/requirement rows.
+- 242 Modern interface labels;
+- 2,678 game-term rows, including calculator labels/hints, races, classes, items, Souls and skills.
 
 The yellow **Русский — заполнять здесь** (H) and green **English — редактировать здесь** (I) columns are editable. A–G are validated source data. Rows may be filtered or sorted; IDs, source columns, worksheet name and header row must not be changed. A blank Russian cell safely falls back to English. Published admin-record names take precedence over workbook aliases; edit those names in the admin record. Unpublished source records use H/I, without changing Legacy.
 
-The 43 calculator result captions also have a generated administrative baseline in `calculator-results.ru.json`. Its values must match the stable IDs in column H; `tests/test_translation_workbook.py` checks this invariant. The source workbook is the base, while explicit published D1 edits take precedence at runtime; reverting an admin edit returns to the exact Excel value. Admin edits do not silently write back to Git, and future workbook updates do not erase admin overrides.\n\n`ui.en.json` and `game-terms.ru.json` are machine-maintained source indexes. Do not enter translations there.
+The 43 calculator result captions also have a generated administrative baseline in `calculator-results.ru.json`. Its values must match the stable IDs in column H; `tests/test_translation_workbook.py` checks this invariant. The source workbook is the base, while explicit published D1 edits take precedence at runtime; reverting an admin edit returns to the exact Excel value. Admin edits do not silently write back to Git, and future workbook updates do not erase admin overrides.
+
+`ui.en.json` and `game-terms.ru.json` are machine-maintained source indexes. Do not enter translations there.
 
 During every Pages build, `scripts/translation_workbook.py` validates the workbook and generates:
 
