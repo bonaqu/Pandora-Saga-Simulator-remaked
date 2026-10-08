@@ -2157,3 +2157,40 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     letter-spacing: -0.01em;
   }
 }
+
+/* Results keep identical one-line rows across RU/EN/JP/TW. Long captions
+   never resize the 3-column matrix or steal width from skill allocation.
+   The original caption and description remain available to assistive tech. */
+.remaked-modern #body [data-remaked-calculator-results] [data-remaked-calculator-pair] > ul {
+  box-sizing: border-box;
+  height: 26px;
+  min-height: 26px;
+  max-height: 26px;
+  overflow: hidden;
+}
+.remaked-modern #body [data-remaked-calculator-results] [id^="TextStatus_"] {
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: normal;
+  white-space: nowrap !important;
+  line-height: 1.45;
+}
+.remaked-modern #body [data-remaked-calculator-results] [id^="TextStatus_"] .help {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: normal;
+  white-space: nowrap !important;
+}
+@media (min-width: 1366px) {
+  .remaked-modern #body [data-remaked-calculator-results] [data-remaked-calculator-pair] > ul {
+    height: 20px;
+    min-height: 20px;
+    max-height: 20px;
+  }
+}
