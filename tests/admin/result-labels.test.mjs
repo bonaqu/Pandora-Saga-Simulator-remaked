@@ -79,7 +79,7 @@ test('stale versions and malformed labels fail closed', async () => {
   for (const edit of [
     { id, value: 'Чужая правка', expectedVersion: 0 },
     { id: 'calculator.status.43', value: 'Несуществующая', expectedVersion: 0 },
-    { id, value: 'Некорректно\\n', expectedVersion: 1 },
+    { id, value: 'Некорректно\nзначение', expectedVersion: 1 },
     { id, value: 'x'.repeat(101), expectedVersion: 1 },
     { id, value: 'Другой текст', expectedVersion: -1 }
   ]) {
