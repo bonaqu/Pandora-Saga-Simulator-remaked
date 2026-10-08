@@ -227,13 +227,20 @@
         // Legacy puts the skill description in the native title of its .help
         // span. The name and the hover description are distinct workbook keys.
         // Localize the description only on this display surface, never Skill[].
+        var button = label.closest('[data-remaked-buff]');
         if (i18n.getLocale() === 'ru') {
           var description = i18n.game('skill_detail.' + match[1] + '.' + match[2] + '.3', '');
           if (description) {
             var translatedName = i18n.game(skillKey, '');
-            var hoverTarget = label.querySelector('.help') || label;
-            hoverTarget.title = (translatedName || label.textContent.trim()) + '\n' + description;
+            var hint = (translatedName || label.textContent.trim()) + '\n' + description;
+            // The whole button should reveal the description, not only the
+            // characters directly below the mouse on its nested text span.
+            (label.querySelector('.help') || label).title = hint;
+            label.title = hint;
+            if (button) button.title = hint;
           }
+        } else if (button) {
+          button.removeAttribute('title');
         }
       });
       document.querySelectorAll('.remaked-mobile-card-label').forEach(function (label) {
