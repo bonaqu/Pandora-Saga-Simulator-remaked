@@ -25,7 +25,7 @@ test('Worker-owned admin URL does not conflict with Assets HTML canonical redire
 
 test('every private route rejects missing sessions, independent of hidden UI', async () => {
   for (const method of ['GET', 'POST', 'PUT', 'DELETE']) {
-    for (const path of ['/api/session', '/api/admin/items', '/api/admin/publish', '/api/admin/preview', '/api/admin/unknown']) {
+    for (const path of ['/api/session', '/api/admin/items', '/api/admin/publish', '/api/admin/preview', '/api/admin/result-labels', '/api/admin/unknown']) {
       const result = await worker.fetch(new Request(origin + path, { method }), env);
       assert.equal(result.status, 401);
       assert.equal(result.headers.get('Cache-Control'), 'no-store');
@@ -34,7 +34,7 @@ test('every private route rejects missing sessions, independent of hidden UI', a
 });
 
 test('CORS grants only the exact production Pages origin, no wildcard or credentials', async () => {
-  for (const path of ['/api/catalog', '/api/catalog/head']) {
+  for (const path of ['/api/catalog', '/api/catalog/head', '/api/result-labels']) {
     for (const requestOrigin of [pages, 'https://evil.test', pages + '.evil.test', 'null']) {
       const result = await worker.fetch(new Request(origin + path, { method: 'OPTIONS', headers: { Origin: requestOrigin, 'Access-Control-Request-Method': 'GET' } }), env);
       assert.equal(result.status, requestOrigin === pages ? 204 : 403);
