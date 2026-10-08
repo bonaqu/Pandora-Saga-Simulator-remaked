@@ -898,8 +898,8 @@ body.remaked-modern {
   outline-offset: 2px;
 }
 
-/* Shared control dimensions across EN/RU/JP/TW. Keep the original 3x2 rows;
-   readable bold captions may wrap within the reserved row height. */
+/* Shared action dimensions and single-line captions across EN/RU/JP/TW.
+   Mobile retains its larger 44px touch target at every locale. */
 .remaked-modern #body [data-remaked-calculator-actions] [data-remaked-calculator-action] {
   box-sizing: border-box;
   height: 35px;
@@ -910,6 +910,7 @@ body.remaked-modern {
   justify-content: center;
   text-align: center;
   font: 700 10.5px/1.02 var(--rm-font);
+  white-space: nowrap;
 }
 @media (max-width: 620px) {
   .remaked-modern #body [data-remaked-calculator-actions] [data-remaked-calculator-action] {
@@ -1689,9 +1690,8 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     float: none; width: auto !important; margin: 0; height: auto !important;
   }
   .remaked-modern #body [data-remaked-calculator-actions] {
-    /* All languages use the same three tracks: enough room for the reset
-       label, the longest skill switch and the potion-effects switch. */
-    grid-template-columns: minmax(0, .90fr) minmax(0, .96fr) minmax(0, 1.14fr);
+    /* Equal tracks keep the compact 3x2 action matrix aligned in every locale. */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     align-content: start;
   }
   .remaked-modern #body [data-remaked-calculator-actions] > ul { display: contents; }
