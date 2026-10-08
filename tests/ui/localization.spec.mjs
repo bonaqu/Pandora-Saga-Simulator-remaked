@@ -249,3 +249,26 @@ test('calculator action geometry and typography match in EN, RU, JP and TW', asy
   }
 });
 
+test('riding toggle matches its neighboring stat field in every language and viewport', async ({ page }) => {
+  for (const width of [390, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const locale of ['ru', 'en', 'jp', 'tw']) {
+      await page.goto('/?ui=' + locale);
+      const riding = await page.evaluate(() => {
+        const toggle = document.querySelector('[data-remaked-calculator-action="Text_16"]');
+        const label = document.getElementById('Text_19');
+        const value = document.querySelector('[data-remaked-calculator-horse] tr:last-child .input_gt');
+        const measure = node => {
+          const r = node.getBoundingClientRect();
+          return { top: r.top, height: r.height, bottom: r.bottom };
+        };
+        return { toggle: measure(toggle), label: measure(label), value: measure(value) };
+      });
+      for (const adjacent of [riding.label, riding.value]) {
+        expect(Math.abs(riding.toggle.height - adjacent.height), locale + ':' + width).toBeLessThanOrEqual(1);
+        expect(Math.abs(riding.toggle.top - adjacent.top), locale + ':' + width).toBeLessThanOrEqual(1);
+      }
+      expect(riding.toggle.height, locale + ':' + width).toBeCloseTo(28, 0);
+    }
+  }
+});
