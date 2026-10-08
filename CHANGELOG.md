@@ -1,5 +1,23 @@
 # Changelog
 
+## Modern 3.38 — full result names in every language, 2026-10-08
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Названия параметров в «Результатах расчёта» больше не обрезаются многоточием и не переносятся на вторую строку.
+- Рабочее пространство перераспределяет ширину для полных названий, не сужая элементы «Умений».
+- Размеры и расположение элементов одинаковы во всех языках интерфейса.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Calculated result names are shown in full on a single line, without ellipses.
+- The workbench provides enough room for result labels while keeping skill inputs readable.
+- All languages use the same responsive panel layout.
+<!-- /release-notes:en -->
+
 ## Modern 3.37 — согласованные переводы результатов, 2026-10-08
 
 <!-- release-notes:ru -->
