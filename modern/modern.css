@@ -2213,6 +2213,12 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
   .remaked-modern #body [data-remaked-calculator-settings] {
     grid-template-columns: 134px minmax(0, 1fr);
   }
+  /* Keep the 2P cost badge clear of three-digit final stats even inside
+     the 134px attribute track; the number fields themselves stay unchanged. */
+  .remaked-modern #body [data-remaked-calculator-attribute] [data-remaked-number-total] {
+    min-width: 30px;
+    margin-inline-start: 2px;
+  }
   .remaked-modern #body #SkillSet[data-remaked-skill-controls] > ul:not(.remaked-skill-heading) {
     grid-template-columns: minmax(102px, 1fr) 68px 54px;
     column-gap: 3px;
@@ -2253,6 +2259,11 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     font-size: 9px;
     letter-spacing: -0.02em;
     line-height: 1.1;
+  }
+  /* The paired row has a two-pixel grid-gap offset from the combined header. */
+  html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(2),
+  html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(5) {
+    transform: translateX(-2px);
   }
   .remaked-modern #body [data-remaked-calculator-results] {
     grid-template-columns: minmax(0, .88fr) minmax(0, 1.06fr) minmax(0, 1.06fr);
