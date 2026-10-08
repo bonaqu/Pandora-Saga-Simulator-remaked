@@ -2243,7 +2243,7 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
      grid gap accounting. Match the actual numerical value center. */
   html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(3),
   html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(6) {
-    transform: translateX(2px);
+    transform: translateX(-2px);
   }
   .remaked-modern #body [data-remaked-calculator-results] {
     grid-template-columns: minmax(0, .88fr) minmax(0, 1.06fr) minmax(0, 1.06fr);
