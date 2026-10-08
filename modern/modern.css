@@ -2272,3 +2272,9 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
 .remaked-modern #body [data-remaked-calculator-results] [data-remaked-calculator-pair] :is([id^="TextStatus_"], [id^="TextStatus_"] .help, .input_gt) {
   font-size: 10.75px;
 }
+/* Save the last few pixels for full-length translations without shrinking
+   their font or the numeric-value cells. All locales share this tracking. */
+.remaked-modern #body [data-remaked-calculator-results] [id^="TextStatus_"],
+.remaked-modern #body [data-remaked-calculator-results] [id^="TextStatus_"] .help {
+  letter-spacing: -0.03em;
+}
