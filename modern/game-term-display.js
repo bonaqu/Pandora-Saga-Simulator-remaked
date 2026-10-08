@@ -128,6 +128,16 @@
           });
         });
       });
+      // The compact results grid may visually ellipsize long captions.
+      // Keep the entire translated name available to assistive technology;
+      // existing detailed game-mechanic title hints are not overwritten.
+      document.querySelectorAll('#StatusView [id^="TextStatus_"]').forEach(function (label) {
+        var full = label.textContent.trim();
+        if (!full) return;
+        if (label.getAttribute('aria-label') !== full) label.setAttribute('aria-label', full);
+        if (!label.hasAttribute('title') && !label.querySelector('[title]'))
+          label.title = full;
+      });
       names.Skill.forEach(function (entry, index) {
         var node = byId('TextSkill_' + index), full = entry[language + 1];
         var expanded = Boolean(node?.closest('[data-remaked-skill-controls]'));

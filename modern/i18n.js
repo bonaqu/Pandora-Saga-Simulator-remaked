@@ -55,6 +55,7 @@
   }
 
   var currentLocale = normalizeLocale(requestedLocale());
+  var publishedResultLabels = Object.create(null);
 
   function terminology(kind, key) {
     var locale = FALLBACK_TERMINOLOGY[currentLocale];
@@ -68,47 +69,8 @@
     'calculator.text.5': ['Учитывать мастерство умений', 'Учитывать мастерство'],
     'calculator.text.6': ['Учитывать эффекты зелий', 'Учитывать эфф. зелий']
   });
-  var RU_RESULT_LABELS = Object.freeze({
-    'calculator.status.2': ['УВЕЛИЧЗЕЛ', 'Леч. зельями'],
-    'calculator.status.3': ['% исцел ОЗ', 'Леч. умениями'],
-    'calculator.status.4': ['Восст ОМ', 'Расход ОМ'],
-    'calculator.status.5': ['МаксАТК', 'АТК'],
-    'calculator.status.6': ['Фронт+', 'АТК. спереди'],
-    'calculator.status.7': ['Спина+', 'АТК сзади'],
-    'calculator.status.9': ['ЗАЩИТА', 'Защита'],
-    'calculator.status.10': ['Сопр ФРОНТ', 'Сопр. АТК спереди'],
-    'calculator.status.11': ['Сопр УРОНСПИН', 'Сопр. АТК сзади'],
-    'calculator.status.12': ['Сопр ФИЗ', 'Сопр. физ (ед.)'],
-    'calculator.status.13': ['Сопр ФИЗ', 'Сопр. физ (%)'],
-    'calculator.status.14': ['Сопр МАГ', 'Сопр. маг. урону'],
-    'calculator.status.16': ['ТОЧН', 'Точн. спереди'],
-    'calculator.status.17': ['ШАНС КРИТ', 'Шанс крита'],
-    'calculator.status.18': ['Крит УРОН', 'Крит. урон'],
-    'calculator.status.20': ['Сопр КРИТ', 'Сопр. криту'],
-    'calculator.status.21': ['Сопр КРУРОН', 'Получ. крит. урон'],
-    'calculator.status.22': ['Ближ УКЛОН', 'Укл. ближ. атак'],
-    'calculator.status.23': ['Дальн АТК УКЛОН', 'Укл. дальн. атак'],
-    'calculator.status.24': ['МАГУКЛОН', 'Укл. от магии'],
-    'calculator.status.25': ['Дист ближ АТК', 'Дальн. АТК ближ. боя'],
-    'calculator.status.26': ['Дист дальн АТК', 'Дальн. АТК дальн. боя'],
-    'calculator.status.27': ['Сопр ОГН', 'Сопр. огню'],
-    'calculator.status.28': ['СКР АТК', 'Скор. атаки'],
-    'calculator.status.29': ['Сопр ЛЕД', 'Сопр. льду'],
-    'calculator.status.30': ['СКР Каста', 'Скор. каста'],
-    'calculator.status.31': ['ВремяКаст', 'Сокрщ. времени каста'],
-    'calculator.status.32': ['Сопр МОЛН', 'Сопр. молнии'],
-    'calculator.status.34': ['Сопр ЯД', 'Сопр. яду'],
-    'calculator.status.35': ['СКР Движ', 'Скор. движения'],
-    'calculator.status.36': ['СКР Движ Астир', 'Скор. в городе'],
-    'calculator.status.37': ['Сопр ЧАР', 'Сопр. чарам'],
-    'calculator.status.38': ['Сопр СВЕТ', 'Сопр. свету'],
-    'calculator.status.39': ['Сопр ТЬМ', 'Сопр. тьмы'],
-    'calculator.status.40': ['Сопр АНОМТЕЛ', 'Сопр. аном. тел.'],
-    'calculator.status.41': ['Сопр АНОМДУХ', 'Сопр. аном. дух.'],
-    'calculator.status.42': ['Сопр МАГ', 'Сопр. магии']
-  });
   function compactActionLabel(key, value) {
-    var entry = currentLocale === 'ru' && (RU_RESULT_LABELS[key] || COMPACT_RU_ACTIONS[key]);
+    var entry = currentLocale === 'ru' && COMPACT_RU_ACTIONS[key];
     return entry && value === entry[0] ? entry[1] : value;
   }
 
@@ -128,6 +90,7 @@
   }
 
   function translateGameTerm(key, fallback) {
+    if (currentLocale === 'ru' && Object.prototype.hasOwnProperty.call(publishedResultLabels, key)) return publishedResultLabels[key];
     var published = namespace.catalog && namespace.catalog.gameLabel(key);
     if (published) return compactActionLabel(key, published);
     // JP/TW keep the original game's language for Legacy game terms while the
@@ -213,8 +176,24 @@
     return currentLocale;
   }
 
+  function applyPublishedResultLabels(payload) {
+    if (!payload || payload.ok !== true || payload.schemaVersion !== 1 || !payload.overrides ||
+        typeof payload.overrides !== 'object' || Array.isArray(payload.overrides)) return false;
+    var changed = Object.create(null);
+    for (var key of Object.keys(payload.overrides)) {
+      if (!/^calculator\.status\.(?:[0-9]|[1-3][0-9]|4[0-2])$/.test(key)) return false;
+      var text = payload.overrides[key];
+      if (typeof text !== 'string' || !text.trim() || text.length > 100 || /[\x00-\x1f\x7f<>]/.test(text)) return false;
+      changed[key] = text;
+    }
+    publishedResultLabels = changed;
+    if (namespace.gameTermDisplay) namespace.gameTermDisplay.refresh();
+    return true;
+  }
+
   namespace.i18n = {
     apply: apply,
+    applyPublishedResultLabels: applyPublishedResultLabels,
     bindAttribute: bindAttribute,
     bindText: bindText,
     game: translateGameTerm,
@@ -226,4 +205,16 @@
   };
 
   document.documentElement.lang = currentLocale;
+  // Editor customizations are deliberately independent from workbook updates.
+  // Fetch only explicit published overrides, never rewrite base translations.
+  if (location.origin === 'https://bonaqu.github.io') {
+    fetch('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/result-labels', {
+      credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(4000)
+    }).then(function (response) {
+      if (!response.ok) throw new Error('Result translations unavailable');
+      return response.json();
+    }).then(applyPublishedResultLabels).catch(function () {
+      // Offline and older Workers continue using bundled approved Excel text.
+    });
+  }
 })();

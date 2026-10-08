@@ -106,33 +106,42 @@ class TranslationWorkbookTests(unittest.TestCase):
         self.assertEqual(ui_russian, {row[1]: row[7] for row in rows if row[0] == "Интерфейс" and row[7].strip()})
         self.assertEqual(game_russian, {row[1]: row[7].strip() for row in rows if row[0] == "Игра" and row[7].strip()})
 
+
+    def test_admin_result_label_baseline_matches_approved_excel(self):
+        import json
+        expected = json.loads((ROOT / "localization/calculator-results.ru.json").read_text(encoding="utf-8"))
+        rows = read_rows(ROOT / "localization/translations.xlsx")[1:]
+        actual = {row[1]: row[7] for row in rows if row[1] in expected["labels"]}
+        self.assertEqual(len(actual), 43)
+        self.assertEqual(actual, expected["labels"])
+
     def test_requested_russian_calculator_labels_and_hints_are_exact(self):
         from scripts.translation_workbook import load_editable_catalogs
         catalog = load_editable_catalogs(ROOT)
         expected = {
             "calculator.text.10": "ВЫН", "calculator.text.11": "СИЛ", "calculator.text.12": "ПРВ",
             "calculator.text.13": "ЛВК", "calculator.text.14": "СД", "calculator.text.15": "ИНТ",
-            "calculator.status.0": "ОЗ", "calculator.status.1": "ОМ", "calculator.status.2": "УВЕЛИЧЗЕЛ",
-            "calculator.status.3": "% исцел ОЗ", "calculator.status.4": "Восст ОМ",
-            "calculator.status.5": "МаксАТК", "calculator.status.6": "Фронт+", "calculator.status.7": "Спина+",
-            "calculator.status.8": "МАТК", "calculator.status.9": "ЗАЩИТА",
-            "calculator.status.10": "Сопр ФРОНТ", "calculator.status.11": "Сопр УРОНСПИН",
-            "calculator.status.12": "Сопр ФИЗ", "calculator.status.13": "Сопр ФИЗ",
-            "calculator.status.14": "Сопр МАГ", "calculator.status.15": "Точность",
-            "calculator.status.16": "ТОЧН", "calculator.status.17": "ШАНС КРИТ",
-            "calculator.status.18": "Крит УРОН", "calculator.status.19": "Уклонение",
-            "calculator.status.20": "Сопр КРИТ", "calculator.status.21": "Сопр КРУРОН",
-            "calculator.status.22": "Ближ УКЛОН", "calculator.status.23": "Дальн АТК УКЛОН",
-            "calculator.status.24": "МАГУКЛОН", "calculator.status.25": "Дист ближ АТК",
-            "calculator.status.26": "Дист дальн АТК", "calculator.status.27": "Сопр ОГН",
-            "calculator.status.28": "СКР АТК", "calculator.status.29": "Сопр ЛЕД",
-            "calculator.status.30": "СКР Каста", "calculator.status.31": "ВремяКаст",
-            "calculator.status.32": "Сопр МОЛН", "calculator.status.33": "Откат",
-            "calculator.status.34": "Сопр ЯД", "calculator.status.35": "СКР Движ",
-            "calculator.status.36": "СКР Движ Астир", "calculator.status.37": "Сопр ЧАР",
-            "calculator.status.38": "Сопр СВЕТ", "calculator.status.39": "Сопр ТЬМ",
-            "calculator.status.40": "Сопр АНОМТЕЛ", "calculator.status.41": "Сопр АНОМДУХ",
-            "calculator.status.42": "Сопр МАГ",
+            "calculator.status.0": "ОЗ", "calculator.status.1": "ОМ", "calculator.status.2": "Леч. зельями",
+            "calculator.status.3": "Леч. умениями", "calculator.status.4": "Расход ОМ",
+            "calculator.status.5": "АТК", "calculator.status.6": "АТК. спереди", "calculator.status.7": "АТК сзади",
+            "calculator.status.8": "МАТК", "calculator.status.9": "Защита",
+            "calculator.status.10": "Сопр. АТК спереди", "calculator.status.11": "Сопр. АТК сзади",
+            "calculator.status.12": "Сопр. физ (ед.)", "calculator.status.13": "Сопр. физ (%)",
+            "calculator.status.14": "Сопр. маг. урону", "calculator.status.15": "Точность",
+            "calculator.status.16": "Точн. спереди", "calculator.status.17": "Шанс крита",
+            "calculator.status.18": "Крит. урон", "calculator.status.19": "Уклонение",
+            "calculator.status.20": "Сопр. криту", "calculator.status.21": "Получ. крит. урон",
+            "calculator.status.22": "Укл. ближ. атак", "calculator.status.23": "Укл. дальн. атак",
+            "calculator.status.24": "Укл. от магии", "calculator.status.25": "Дальн. АТК ближ. боя",
+            "calculator.status.26": "Дальн. АТК дальн. боя", "calculator.status.27": "Сопр. огню",
+            "calculator.status.28": "Скор. атаки", "calculator.status.29": "Сопр. льду",
+            "calculator.status.30": "Скор. каста", "calculator.status.31": "Сокрщ. времени каста",
+            "calculator.status.32": "Сопр. молнии", "calculator.status.33": "Откат",
+            "calculator.status.34": "Сопр. яду", "calculator.status.35": "Скор. движения",
+            "calculator.status.36": "Скор. в городе", "calculator.status.37": "Сопр. чарам",
+            "calculator.status.38": "Сопр. свету", "calculator.status.39": "Сопр. тьмы",
+            "calculator.status.40": "Сопр. аном. тел.", "calculator.status.41": "Сопр. аном. дух.",
+            "calculator.status.42": "Сопр. магии",
             "skill.0": "Ближний бой", "skill.1": "Секущий удар", "skill.2": "Колющий удар",
             "skill.3": "Рубящий удар", "skill.4": "Тяжелый удар", "skill.5": "Оборона",
             "skill.6": "Тактика", "skill.7": "Стрельба", "skill.8": "Ремесло",

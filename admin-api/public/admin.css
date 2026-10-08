@@ -69,3 +69,25 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
 @media (max-width: 600px) { .basic-fields, .translation-fields { grid-template-columns: 1fr; } .effect-row { grid-template-columns: minmax(0, 1fr) 90px; } .catalog-controls { flex-direction: column; } .catalog-controls input { flex-basis: auto; } .flag-label { min-height: 44px; } .revision-row { flex-wrap: wrap; } }
 @media (max-width: 600px) { body { padding: 20px 10px; } .terminal-body { padding: 18px; } .terminal-header { flex-direction: column; } input, button, select { min-height: 44px; font-size: 16px; } }
 @media (prefers-reduced-motion: no-preference) { .bootline { animation: boot 360ms ease-out both; } @keyframes boot { from { opacity: .3; transform: translateY(2px); } to { opacity: 1; transform: none; } } }
+
+/* Workbook baseline and published edits intentionally remain visually distinct. */
+#result-label-editor { margin: 16px 0 22px; font: 12px/1.5 system-ui, sans-serif; }
+#result-label-editor details { border: 1px solid var(--border); padding: 10px 12px; }
+#result-label-editor summary { cursor: pointer; color: var(--green); font-weight: 700; padding: 5px 0; }
+#result-label-editor .result-label-help { color: #c6cdbb; max-width: 74ch; }
+#result-label-editor .result-label-status { color: #c6cdbb; min-height: 18px; }
+#result-label-editor .result-label-status[data-error="true"] { color: #ffcf9b; }
+#result-label-editor .result-label-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+#result-label-editor th, #result-label-editor td {
+  padding: 8px 6px; border-top: 1px solid var(--border);
+  text-align: left; vertical-align: middle; overflow-wrap: anywhere;
+}
+#result-label-editor th:nth-child(1) { width: 135px; }
+#result-label-editor th:nth-child(4) { width: 115px; }
+#result-label-editor th:nth-child(5) { width: 190px; }
+#result-label-editor td input { display: block; width: 100%; box-sizing: border-box; min-width: 0; }
+#result-label-editor td button { min-height: 32px; padding: 5px 7px; margin: 2px; }
+@media (max-width: 850px) {
+  #result-label-editor details { overflow-x: auto; }
+  #result-label-editor .result-label-table { min-width: 680px; }
+}
