@@ -2157,11 +2157,3 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     letter-spacing: -0.01em;
   }
 }
-
-/* Preserve the skill-table tracks while allocating a modest amount of desktop
-   space to the three result columns. Identical layout in every locale. */
-@media (min-width: 1366px) {
-  .remaked-modern #body [data-remaked-calculator-columns] {
-    grid-template-columns: minmax(0, 1fr) 562px 232px;
-  }
-}
