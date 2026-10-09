@@ -5,11 +5,12 @@ import { DatabaseSync } from 'node:sqlite';
 import { adminCatalog, publicCatalog, publicCatalogHead } from '../../admin-api/src/catalog.mjs';
 import { draftFromSource } from '../../admin-api/src/catalog-model.mjs';
 import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs';
+import {adminLocalization,publicLocalization} from '../../admin-api/src/localization.mjs';
 
 const origin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
 function fixture() {
   const sqlite = new DatabaseSync(':memory:');
-  for (const name of ['0002_catalog.sql', '0003_skill_variants.sql', '0004_catalog_impact_revision.sql']) sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
+  for (const name of ['0002_catalog.sql', '0003_skill_variants.sql', '0004_catalog_impact_revision.sql','0005_result_labels.sql','0006_ui_translation_overrides.sql','0007_unified_localization.sql','0008_localization_workflow.sql']) sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
   const DB = { prepare(sql) {
     let params = [];
     return {
@@ -533,4 +534,40 @@ test('batch publish keeps mechanically relevant impact revision and leaves unsel
   const pending=await call(env,'drafts');
   assert.equal(pending.count,1);assert.equal(pending.items[0].id,other.identity.id);
   assert.equal((await detail(env,other.identity.id)).hasDraft,true);
+});
+
+
+test('new numbered item is editable on all four languages through unified localization',async()=>{
+  const {env}=fixture();
+  const draft=draftFromSource(null,'equipment');
+  draft.names.en='New Test Weapon';draft.baseAttack=30;
+  draft.effects=[{stat:11,value:1,unit:'flat'}];
+  let created=await save(env,{edit:draft,draftVersion:0,catalogRevision:0});
+  assert.match(created.identity.id,/^equipment\.0\.\d+$/);
+  await publish(env,created);
+  const id=created.identity.id;
+  for(const locale of ['ru','en','jp','tw']){
+    const list=await (await adminLocalization(new Request(origin+'/api/admin/localization?scope=game&group=equipment&locale='+locale+'&q='+id),env)).json();
+    const item=list.items.find(row=>row.id===id);
+    assert.ok(item,'dynamic item should appear in admin '+locale);
+    assert.equal(item.source.en,'New Test Weapon');
+    assert.equal(item.version,0);
+    const content=locale==='ru'?'Оружие на проверке':locale==='jp'?'試験武器':locale==='tw'?'測試武器':'New Test Weapon (custom)';
+    const input={scope:'game',id,locale,value:content,expectedVersion:0,expectedEffective:item.effective};
+    const r=await adminLocalization(new Request(origin+'/api/admin/localization',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(input)
+    }),env);
+    assert.equal(r.status,200,'dynamic translation must be writable '+locale);
+  }
+  const publicMap=(await (await publicLocalization(env)).json()).overrides;
+  assert.equal(publicMap.game.ru[id],'Оружие на проверке');
+  assert.equal(publicMap.game.jp[id],'試験武器');
+  assert.equal(publicMap.game.tw[id],'測試武器');
+  const description=id+'.description';
+  const item=await detail(env,id);
+  item.edit.description.en='Original custom description';
+  const after=await save(env,item);
+  await publish(env,after);
+  const list=await (await adminLocalization(new Request(origin+'/api/admin/localization?scope=game&locale=ru&q='+description),env)).json();
+  assert.ok(list.items.some(x=>x.id===description),'custom description must be in the same admin');
 });
