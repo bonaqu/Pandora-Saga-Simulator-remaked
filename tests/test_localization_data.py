@@ -3,7 +3,7 @@ import pathlib
 import re
 import unittest
 
-from scripts.translation_workbook import load_translation_catalogs
+from scripts.localization_catalog import load_migrated_catalogs
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -16,7 +16,7 @@ class LocalizationDataTests(unittest.TestCase):
 
     def test_ui_catalogs_have_complete_english_and_safe_russian_placeholders(self):
         english = self.read_json("ui.en.json")
-        russian, _, _ = load_translation_catalogs(ROOT)
+        russian = load_migrated_catalogs(ROOT).ui_russian
         self.assertTrue(english)
         self.assertTrue(set(russian).issubset(english))
         self.assertTrue(all(isinstance(value, str) and value for value in english.values()))
@@ -52,9 +52,9 @@ class LocalizationDataTests(unittest.TestCase):
             self.assertEqual(term["ru_proposed"], "", term["id"])
             self.assertIsInstance(term["ru_approved"], str)
 
-    def test_machine_export_points_approved_translations_to_workbook(self):
+    def test_historic_machine_export_is_retained_but_runtime_uses_validated_json(self):
         export = self.read_json("game-terms.ru.json")
-        self.assertIn("localization/translations.xlsx", export["source"]["policy"])
+        self.assertTrue((LOCALIZATION / "approved-translations.v1.json").exists())
         self.assertTrue(all(not term["ru_approved"] for term in export["terms"]))
 
 
