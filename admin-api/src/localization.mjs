@@ -110,16 +110,16 @@ async function legacyOverrides(env,scope=null,locale=null) {
       : Promise.resolve(null)
   ]);
   const values=new Map();
-  for(const row of ui.results)values.set(keyOf('ui',row.id)+'\\0'+row.locale,row.text);
+  for(const row of ui.results)values.set(keyOf('ui',row.id)+'\0'+row.locale,row.text);
   for(const row of result.results) if(row.ru&&row.ru!=='<excel-baseline>')
-    values.set(keyOf('game',row.id)+'\\0ru',row.ru);
+    values.set(keyOf('game',row.id)+'\0ru',row.ru);
   for(const entry of JSON.parse(head?.snapshot_json||'[]')){
     const edit=entry.edit||{},id=entry.identity?.id;
     if(!id)continue;
     const add=(term,fields)=>{
       const locales=locale?[locale]:LOCALES;
       for(const lang of locales)if(fields?.[lang])
-        values.set(keyOf('game',term)+'\\0'+lang,fields[lang]);
+        values.set(keyOf('game',term)+'\0'+lang,fields[lang]);
     };
     add(id,edit.names);
     if(entry.identity.kind==='active'||entry.identity.kind==='passive')
