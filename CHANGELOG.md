@@ -1,5 +1,22 @@
 # Changelog
 
+## Modern 3.50 — надёжный сброс переводов, 2026-10-09
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Кнопка «Вернуть базовый текст» корректно восстанавливает исходное утверждённое значение, сохраняет сброс в админке и показывает явное подтверждение.
+- Исправлена ошибка, из-за которой старый опубликованный перевод мог повторно появляться как черновик после сброса и следующего действия с другой строкой.
+- Добавлены проверки последовательного сброса названий предметов, перезагрузки админки и защиты от параллельных правок; английский оригинал и игровые характеристики не меняются.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Fixed the admin translation editor restoring stale drafts after resetting published entries. Reset now immediately shows the persisted baseline and clear feedback, including after the next edit or page reload.
+- Added consecutive equipment-reset and conflict-safety regression tests. English source strings, game mechanics, and saved builds remain unchanged.
+<!-- /release-notes:en -->
+
 ## Modern 3.49 — ручное редактирование в массовом предпросмотре, 2026-10-09
 
 <!-- release-notes:ru -->
