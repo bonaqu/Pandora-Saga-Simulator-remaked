@@ -35,6 +35,16 @@ for (const record of baselineRecords) {
   }
 }
 const RECORDS=[...registry.values()].sort((a,b)=>a.scope.localeCompare(b.scope)||a.id.localeCompare(b.id));
+const GROUPS=new Set(['all','skills','equipment','souls','classes','races','stats','other']);
+function groupOf(kind) {
+  if(kind==='skill'||kind==='skill_entry'||kind==='skill_detail'||kind.startsWith('active.')||kind.startsWith('passive.'))return 'skills';
+  if(kind==='equipment'||kind.startsWith('equipment.')||kind==='equipment_category')return 'equipment';
+  if(kind==='soul'||kind.startsWith('soul.'))return 'souls';
+  if(kind==='job'||kind==='class')return 'classes';
+  if(kind==='race'||kind==='racial_skill')return 'races';
+  if(kind.startsWith('calculator'))return 'stats';
+  return 'other';
+}
 const isText=s=>typeof s==='string' && s.length<=4000 && !/[\x00-\x09\x0b-\x1f\x7f<>]/.test(s);
 const slots=s=>(s.match(/\{[A-Za-z0-9_]+\}/g)||[]).sort().join('|');
 async function overrides(env) {
@@ -97,8 +107,8 @@ export async function adminLocalization(request,env) {
   if(request.method==='GET'){
     const url=new URL(request.url),scope=url.searchParams.get('scope')||'game',
       locale=url.searchParams.get('locale')||'ru',q=(url.searchParams.get('q')||'').trim().toLocaleLowerCase(),
-      pageText=url.searchParams.get('page')||'0';
-    if(!['game','ui'].includes(scope)||!LOCALES.includes(locale)||q.length>120||
+      pageText=url.searchParams.get('page')||'0',group=url.searchParams.get('group')||'all';
+    if(!['game','ui'].includes(scope)||!LOCALES.includes(locale)||q.length>120||!GROUPS.has(group)||
        !/^\d{1,5}$/.test(pageText))fail('Invalid search filters');
     const page=Number(pageText),pageSize=40;
     const [newRows,legacy]=await Promise.all([overrides(env),legacyOverrides(env)]);
@@ -113,11 +123,12 @@ export async function adminLocalization(request,env) {
         effective,legacyValue:older,override:override?.text||'',version:override?.version||0,
         updatedAt:override?.updated_at||null,origin};
     };
-    const matched=RECORDS.filter(row=>row.scope===scope).map(displayRow).filter(row=>
+    const matched=RECORDS.filter(row=>row.scope===scope&&(group==='all'||groupOf(row.kind)===group))
+      .map(displayRow).filter(row=>
       !q || [row.id,row.kind,row.source.en,row.effective,row.legacyValue].some(value=>
         String(value||'').toLocaleLowerCase().includes(q)));
     const items=matched.slice(page*pageSize,(page+1)*pageSize);
-    return jsonResponse({ok:true,schemaVersion:1,locale,scope,page,pageSize,total:matched.length,
+    return jsonResponse({ok:true,schemaVersion:1,locale,scope,group,page,pageSize,total:matched.length,
       counts:{ui:RECORDS.filter(r=>r.scope==='ui').length,game:RECORDS.filter(r=>r.scope==='game').length},
       items});
   }
