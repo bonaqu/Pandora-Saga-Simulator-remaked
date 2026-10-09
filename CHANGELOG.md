@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 3.53 — усиленная надёжность внутренних переводческих операций, 2026-10-09
+
+<!-- admin-notes:ru -->
+- Облачные черновики текстов на четырёх языках, журнал версий и восстановление отдельных формулировок.
+- Атомарная массовая публикация переводов с проверками версий и подтверждением результата при сетевых сбоях.
+- Сводный прогресс локализации, единый публичный API для ранее опубликованных переводов и уменьшение числа сетевых запросов без изменения формул калькулятора.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Persisted four-language translation drafts, per-entry history and safe recovery of prior wording.
+- Atomic multi-row translation publishing with conflict guards, receipts and uncertain-network reconciliation.
+- Compact localization progress and consolidated public translation reads; simulator calculations remain unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 3.52 — раздельные обновления для игроков и администратора, 2026-10-09
 
 <!-- admin-notes:ru -->
