@@ -18,7 +18,7 @@ test('admin UI drafts survive search, pagination and locale changes, then save s
     if(path==='/api/admin/localization') return route.fulfill({json:{ok:true,schemaVersion:1,scope:'game',locale:'ru',page:0,pageSize:40,total:0,counts:{ui:242,game:2920},items:[]}});
     if(path==='/api/admin/ui-translations') {
       if(route.request().method()==='GET') return route.fulfill({json:{
-        ok:true,schemaVersion:1,source:'translations.xlsx',items:records
+        ok:true,schemaVersion:1,source:'approved-translations.v1.json',items:records
       }});
       const input=route.request().postDataJSON();
       if(conflict) return route.fulfill({status:409,json:{ok:false,message:'Translation changed in another session'}});
