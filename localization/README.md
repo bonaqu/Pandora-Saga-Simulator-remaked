@@ -9,6 +9,8 @@
 - `approved-translations.v1.json`: verified and immutable migration snapshot preserving all historical approved source translations (2,920 IDs), with sparse language-specific values.
 - Cloudflare D1 `localization_overrides`: authenticated per-ID and per-locale changes, versioned and conflict-safe.
 - Older D1 overrides and catalog revisions remain readable during compatibility cutover so manually published terms are not silently lost.
+- `curated-runtime-defaults.ru.v1.json`: 27 already-visible Russian display defaults reconciled with the editor without changing the immutable approved snapshot; they are editable via D1 like other strings.
+- The editor differentiates a real localized text from an untranslated fallback and can filter missing or manually published texts.
 
 Modern's builder uses only these checked-in JSON sources; **Excel is not read, built, or published**. The last approved spreadsheet is still recoverable through earlier Git commits if a disaster recovery audit needs it, but it is not an editable or live translation source.
 
