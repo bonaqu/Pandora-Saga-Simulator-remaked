@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {adminLocalization,publicLocalization} from '../../admin-api/src/localization.mjs';
+import {readFileSync} from 'node:fs';
+import curated from '../../localization/curated-runtime-defaults.ru.v1.json' with {type:'json'};
 
 function fixture({legacyUi=[]}={}){
   const updates=new Map();
@@ -165,4 +167,13 @@ test('previously visible Russian curated translations are present in unified adm
     assert.equal(found.baselineOrigin,'import');
     assert.equal(found.origin,'import');
   }
+});
+
+test('curated approved-display defaults stay identical to visible Modern fallback text',()=>{
+  const runtime=readFileSync(new URL('../../modern/i18n.js',import.meta.url),'utf8');
+  for(const scope of ['ui','game'])for(const [id,value] of Object.entries(curated.ru[scope])){
+    assert.ok(runtime.includes("'"+id+"': '"+value+"'")||runtime.includes("'"+id+"': \""+value+"\""),
+      'Runtime fallback drift for '+id);
+  }
+  assert.equal(Object.keys(curated.ru.ui).length+Object.keys(curated.ru.game).length,27);
 });
