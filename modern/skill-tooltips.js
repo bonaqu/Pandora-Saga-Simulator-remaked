@@ -144,7 +144,6 @@
         icon.removeAttribute('onmouseover'); icon.removeAttribute('onmouseout');
         node.removeAttribute('onmouseover'); node.removeAttribute('onmouseout');
       }
-      renderTranslatedTooltip(node,Number(parts[1]),Number(parts[2]));
       var label = node.firstElementChild?.textContent.trim();
       if (icon.getAttribute('aria-label') !== label) icon.setAttribute('aria-label', label);
     });
