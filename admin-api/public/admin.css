@@ -33,6 +33,13 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
 .catalog-entry-meta { display: block; font-size: 11px; font-weight: normal; margin-top: 5px; }
 .catalog-editor { min-width: 0; }
 .catalog-editor h3 { color: var(--green); overflow-wrap: anywhere; }
+.workspace-jump { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.workspace-jump a { display: inline-flex; align-items: center; min-height: 38px; padding: 8px 12px; border: 1px solid #667e55; border-radius: 5px; background: #283923; color: #e4f0d5; text-decoration: none; font: 600 12px/1.4 system-ui, sans-serif; }
+.workspace-jump a:hover { background: #33492c; border-color: #c4df9e; }
+.workspace-jump a:focus-visible { outline: 2px solid #e8dfa5; outline-offset: 2px; }
+#localization-console, #catalog-console { scroll-margin-top: 16px; }
+.catalog-language-coverage { margin: 8px 0 14px; padding: 8px 12px; border-left: 3px solid #a8d286; background: #1a3019; color: #dde9d0; font: 12px/1.5 system-ui, sans-serif; }
+@media (max-width: 600px) { .workspace-jump a { flex: 1 1 100%; min-height: 44px; } }
 .catalog-editor h4 { margin: 0 0 10px; font: 600 13px/1.4 system-ui, sans-serif; color: var(--green); }
 .editor-workflow { padding: 12px; border-left: 3px solid var(--green); background: #182016; font: 13px/1.55 system-ui, sans-serif; }
 .record-review { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 10px; }
