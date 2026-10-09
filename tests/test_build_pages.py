@@ -89,6 +89,81 @@ class BuildPagesTests(unittest.TestCase):
                 _read_latest_release(root)
 
 
+    def test_new_user_release_is_selected_over_historical_player_tags(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            (root / "CHANGELOG.md").write_text("""# Changelog
+
+## Modern 3.58 — Admin only, 2026-10-09
+
+<!-- admin-notes:ru -->
+- Только техническая запись.
+<!-- /admin-notes:ru -->
+
+## Modern 3.57 — Users, 2026-10-09
+
+<!-- release-notes:user:ru -->
+- Изменение для пользователей.
+<!-- /release-notes:user:ru -->
+<!-- release-notes:user:en -->
+- User-visible change.
+<!-- /release-notes:user:en -->
+
+## Modern 3.54 — Historical, 2026-10-08
+
+<!-- release-notes:player:ru -->
+- Старое описание.
+<!-- /release-notes:player:ru -->
+<!-- release-notes:player:en -->
+- Historical wording.
+<!-- /release-notes:player:en -->
+""", encoding="utf-8")
+            notes = _read_latest_release(root)
+            self.assertEqual(notes["version"], "3.58")
+            self.assertEqual(notes["userVersion"], "3.57")
+            self.assertEqual(notes["highlights"]["ru"], ["Изменение для пользователей."])
+            self.assertNotIn("техническая запись", str(notes))
+
+    def test_new_versions_reject_obsolete_or_incomplete_user_markers(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            source = root / "CHANGELOG.md"
+            source.write_text("""# Changelog
+
+## Modern 3.57 — Outdated audience, 2026-10-09
+
+<!-- release-notes:player:ru -->
+- Старый формат.
+<!-- /release-notes:player:ru -->
+<!-- release-notes:player:en -->
+- Old format.
+<!-- /release-notes:player:en -->
+""", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "requires release-notes:user"):
+                _read_latest_release(root)
+            source.write_text("""# Changelog
+
+## Modern 3.57 — Missing locale, 2026-10-09
+
+<!-- release-notes:user:ru -->
+- Есть только русский текст.
+<!-- /release-notes:user:ru -->
+""", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "both en and ru"):
+                _read_latest_release(root)
+            source.write_text("""# Changelog
+
+## Modern 3.57 — Empty English, 2026-10-09
+
+<!-- release-notes:user:ru -->
+- Изменение для пользователей.
+<!-- /release-notes:user:ru -->
+<!-- release-notes:user:en -->
+<!-- /release-notes:user:en -->
+""", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "both en and ru"):
+                _read_latest_release(root)
+
     def test_guild_damage_reduction_only_patches_modern_calculator(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = pathlib.Path(temporary) / "repo"
