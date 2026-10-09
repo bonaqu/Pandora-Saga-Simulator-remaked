@@ -55,6 +55,8 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
 .catalog-draft-entries { display: grid; gap: 6px; max-height: 360px; overflow-y: auto; }
 .catalog-draft-entry { display: flex; gap: 10px; align-items: start; padding: 9px 11px; border: 1px solid #4b6542; border-radius: 5px; cursor: pointer; background: #243323; overflow-wrap: anywhere; }
 .catalog-draft-entry:has(input:checked) { border-color: #d4ba77; }
+.catalog-draft-entry-label { flex: 1 1 auto; display: flex; align-items: start; gap: 10px; min-width: 0; cursor: pointer; }
+.catalog-draft-entry > button { flex: 0 0 auto; padding: 5px 9px; min-height: 30px; font-size: 12px; align-self: center; }
 .catalog-draft-entry input { margin-top: 3px; accent-color: #c5d99a; }
 .catalog-draft-entry-info { display: grid; min-width: 0; }
 .catalog-draft-entry-info small { color: #b6c8a7; }
