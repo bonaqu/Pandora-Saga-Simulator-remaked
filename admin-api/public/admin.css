@@ -206,3 +206,11 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
 .localization-history-entry p { overflow-wrap: anywhere; }
 .localization-history-entry button { font-size: 12px; padding: 6px; }
 @media (max-width: 600px) { .localization-queue-toolbar button { flex: 1 1 140px; } }
+
+.localization-queue-filters { display: flex; align-items: stretch; gap: 8px; margin: 10px 0;
+  flex-wrap: wrap; }
+.localization-queue-filters input[type=search] { flex: 2 1 190px; min-width: 0; }
+.localization-queue-filters select { flex: 1 1 130px; min-width: 0; }
+@media(max-width:600px) {
+  .localization-queue-filters { display:grid; grid-template-columns:minmax(0,1fr); }
+}
