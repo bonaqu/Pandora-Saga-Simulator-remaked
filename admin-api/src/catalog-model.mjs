@@ -1,4 +1,5 @@
 import nativePassives from '../../data/native-passive-hooks.v1.json' with { type: 'json' };
+import approved from '../../localization/approved-translations.v1.json' with { type: 'json' };
 export const NATIVE_PASSIVES = nativePassives.definitions;
 // This is a validated data codec, not a game calculator. IDs and unit suffixes
 // come from preserved Name.Option / Calc. Actual formulas stay in js/calc.js.
@@ -129,6 +130,22 @@ function skillProfiles(input) {
   return profiles;
 }
 const texts = source => Object.fromEntries(LANGUAGES.map(language => [language, source?.[language] || '']));
+function approvedTexts(source, id) {
+  const result = texts(source);
+  if (!id) return result;
+  // Show the same approved translations as the simulator even when a skill,
+  // equipment or class was never individually published through the catalog.
+  for (const locale of LANGUAGES) {
+    const value = approved.game[locale]?.[id];
+    if (typeof value === 'string' && value) result[locale] = value;
+  }
+  return result;
+}
+function sourceNameId(source,kind) {
+  if (kind === 'class') return 'job.' + source.index;
+  return source.id;
+}
+
 export function normalizeUntranslatedItemName(value) {
   let text = String(value || '').trim();
   if (!text || !text.startsWith('(')) return text;
@@ -159,7 +176,7 @@ function effects(input) {
 export function draftFromSource(source, kind) {
   if (kind === 'active' || kind === 'passive') {
     check(source?.kind === kind, 'Only existing skill slots and native skill types are supported');
-    const edit = { id: source.id, kind, category: source.legacy_category_id, names: texts(source.name), description: texts(source.description) };
+    const edit = { id: source.id, kind, category: source.legacy_category_id, names: approvedTexts(source.name, source.id), description: approvedTexts(source.description, 'skill_detail.' + source.legacy_category_id + '.' + source.legacy_entry_index + '.3') };
     if (kind === 'active') Object.assign(edit, { mpCost: source.mp_cost, castSeconds: source.cast_seconds, cooldownSeconds: source.cooldown_seconds, durationSeconds: source.duration_seconds });
     else {
       const requirements = source.equipment_requirements.en;
@@ -171,15 +188,15 @@ export function draftFromSource(source, kind) {
   }
   if (kind === 'racial') {
     check(source?.kind === 'racial', 'Only existing racial passive slots are supported');
-    return { id: source.id, kind, category: source.category, names: texts(source.name), description: texts(null), effectMode: 'preserve', effects: [] };
+    return { id: source.id, kind, category: source.category, names: approvedTexts(source.name, source.id), description: texts(null), effectMode: 'preserve', effects: [] };
   }
   if (kind === 'class') {
     check(source?.kind === 'class', 'Only the 28 existing class slots are supported');
-    return { id: source.id, kind, category: null, names: texts(source.name), description: texts(null), progression: [...source.progression] };
+    return { id: source.id, kind, category: null, names: approvedTexts(source.name, sourceNameId(source, kind)), description: texts(null), progression: [...source.progression] };
   }
   return {
     id: source?.id || '', kind, category: kind === 'equipment' ? source?.legacy_category_id ?? 0 : null,
-    names: itemTexts(source?.name), description: texts(source?.option), notes: texts(source?.special_option),
+    names: approvedTexts(itemTexts(source?.name), source?.id), description: texts(source?.option), notes: texts(source?.special_option),
     acquisition: texts(source?.acquisition), modifiers: texts(source?.modifier),
     level: source ? Number(source.level_requirement ?? 1) : 1, sockets: Number(source?.soul_socket_count ?? 0),
     races: kind === 'equipment' && source ? source.compatibility_flags.slice(2, 8) : Array(6).fill(1),
