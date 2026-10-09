@@ -53,6 +53,33 @@ for (const record of baselineRecords) {
   }
 }
 const RECORDS=[...registry.values()].sort((a,b)=>a.scope.localeCompare(b.scope)||a.id.localeCompare(b.id));
+
+// Dynamic catalog items retain stable engine indices but have no checked-in
+// Legacy terminology entry. Expose only published custom items/variants, never
+// private drafts or numerical characteristics.
+async function dynamicEntries(env){
+  const row=await env.DB.prepare('SELECT snapshot_json FROM catalog_head WHERE id=1').first();
+  const entries=new Map();
+  for(const item of JSON.parse(row?.snapshot_json||'[]')){
+    const identity=item.identity||{},edit=item.edit||{},id=identity.id;
+    if(typeof id!=='string'||!id||registry.has(keyOf('game',id))||
+       !['equipment','soul','active','passive'].includes(identity.kind))continue;
+    const fields=(identity.kind==='equipment'||identity.kind==='soul')
+      ? {names:edit.names,description:edit.description,notes:edit.notes,acquisition:edit.acquisition,modifiers:edit.modifiers}
+      : {names:edit.names,description:edit.description};
+    for(const [field,values] of Object.entries(fields)){
+      if(!values||typeof values!=='object'||!Object.values(values).some(Boolean))continue;
+      const term=field==='names'?id:id+'.'+field;
+      if(registry.has(keyOf('game',term)))continue;
+      const source={en:values.en||'',jp:values.jp||'',tw:values.tw||''};
+      entries.set(keyOf('game',term),{scope:'game',id:term,
+        kind:identity.kind+(field==='names'?'':'.'+field),
+        source,baseline:src(source),baselineOrigin:originOf(source)});
+    }
+  }
+  return entries;
+}
+
 const GROUPS=new Set(['all','skills','equipment','souls','classes','races','stats','other']);
 function groupOf(kind) {
   if(kind==='skill'||kind==='skill_entry'||kind==='skill_detail'||kind.startsWith('active.')||kind.startsWith('passive.'))return 'skills';
@@ -73,10 +100,11 @@ function overlayMap(rows) {
 }
 export const localizationEntry=(scope,id)=>registry.get(keyOf(scope,id))||null;
 export async function localizationEffectiveSnapshot(env){
-  const [recent,legacy]=await Promise.all([overrides(env),legacyOverrides(env)]);
-  return {recent:overlayMap(recent),legacy,
+  const [recent,legacy,dynamic]=await Promise.all([overrides(env),legacyOverrides(env),dynamicEntries(env)]);
+  return {recent:overlayMap(recent),legacy,dynamic,
+    entry(scope,id){return dynamic.get(keyOf(scope,id))||registry.get(keyOf(scope,id))||null;},
     get(scope,id,locale){
-      const entry=localizationEntry(scope,id);
+      const entry=this.entry(scope,id);
       if(!entry)return null;
       const key=keyOf(scope,id)+'\0'+locale;
       const row=this.recent.get(key);
@@ -115,7 +143,7 @@ async function legacyOverrides(env) {
 }
 
 export async function publicLocalization(env) {
-  const [published,legacy]=await Promise.all([overrides(env),legacyOverrides(env)]);
+  const [published,legacy,dynamic]=await Promise.all([overrides(env),legacyOverrides(env),dynamicEntries(env)]);
   const data={ui:{ru:{},en:{},jp:{},tw:{}},game:{ru:{},en:{},jp:{},tw:{}}};
   // The player reads the same effective values as the editor. Older D1
   // publications are folded into one read-only API response, with a new
@@ -123,11 +151,11 @@ export async function publicLocalization(env) {
   for(const [key,text] of legacy){
     const parts=key.split('\0'),scope=parts[0],locale=parts.at(-1),id=parts.slice(1,-1).join('\0');
     if(['ui','game'].includes(scope)&&LOCALES.includes(locale)&&
-       registry.has(keyOf(scope,id))&&isText(text)&&text)
+       (registry.has(keyOf(scope,id))||dynamic.has(keyOf(scope,id)))&&isText(text)&&text)
       data[scope][locale][id]=text;
   }
   for(const row of published) {
-    const term=registry.get(keyOf(row.scope,row.term_id));
+    const term=registry.get(keyOf(row.scope,row.term_id))||dynamic.get(keyOf(row.scope,row.term_id));
     if(!term || !LOCALES.includes(row.locale) || !isText(row.text))continue;
     // Versioned reset must suppress old public UI/catalog overrides too.
     // Publishing the approved baseline preserves that precedence without
@@ -156,7 +184,7 @@ export async function adminLocalization(request,env) {
     if(!['game','ui'].includes(scope)||!LOCALES.includes(locale)||q.length>120||!GROUPS.has(group)||
        !/^\d{1,5}$/.test(pageText)||!['all','missing','published'].includes(status))fail('Invalid search filters');
     const page=Number(pageText),pageSize=40;
-    const [newRows,legacy]=await Promise.all([overrides(env),legacyOverrides(env)]);
+    const [newRows,legacy,dynamic]=await Promise.all([overrides(env),legacyOverrides(env),dynamicEntries(env)]);
     const index=overlayMap(newRows);
     const displayRow=row=>{
       const key=keyOf(scope,row.id)+'\0'+locale,override=index.get(key),older=legacy.get(key)||'';
@@ -179,7 +207,7 @@ export async function adminLocalization(request,env) {
         String(value||'').toLocaleLowerCase().includes(q))));
     const items=matched.slice(page*pageSize,(page+1)*pageSize);
     return jsonResponse({ok:true,schemaVersion:1,locale,scope,group,status,coverage,page,pageSize,total:matched.length,
-      counts:{ui:RECORDS.filter(r=>r.scope==='ui').length,game:RECORDS.filter(r=>r.scope==='game').length},
+      counts:{ui:RECORDS.filter(r=>r.scope==='ui').length,game:RECORDS.filter(r=>r.scope==='game').length+dynamic.size},
       items});
   }
   if(request.method!=='POST')return jsonResponse({ok:false,message:'Method not allowed'},405);
@@ -188,11 +216,11 @@ export async function adminLocalization(request,env) {
      !['expectedVersion,id,locale,scope,value',
       'expectedEffective,expectedVersion,id,locale,scope,value'].includes(Object.keys(input).sort().join(','))||
     !['ui','game'].includes(input.scope)||!LOCALES.includes(input.locale)||
-    !registry.has(keyOf(input.scope,input.id))||!isText(input.value)||
+    !(registry.has(keyOf(input.scope,input.id))||(await dynamicEntries(env)).has(keyOf(input.scope,input.id)))||!isText(input.value)||
     (Object.hasOwn(input,'expectedEffective')&&!isText(input.expectedEffective))||
     !Number.isSafeInteger(input.expectedVersion)||input.expectedVersion<0||input.expectedVersion>1000000000)
     fail('Invalid translation edit');
-  const entry=registry.get(keyOf(input.scope,input.id)),value=input.value.trim();
+  const entry=registry.get(keyOf(input.scope,input.id))||(await dynamicEntries(env)).get(keyOf(input.scope,input.id)),value=input.value.trim();
   if(input.scope==='ui' && value && slots(value)!==slots(entry.source.en))
     fail('Template placeholders must match the source');
   const existing=await env.DB.prepare('SELECT text,version FROM localization_overrides WHERE scope=? AND term_id=? AND locale=?')
