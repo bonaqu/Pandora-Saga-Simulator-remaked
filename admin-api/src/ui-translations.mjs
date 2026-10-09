@@ -73,7 +73,7 @@ export async function adminUiTranslations(request, env) {
   if (value && templateSlots(value) !== templateSlots(english[input.id]))
     fail('Translation placeholders must match the source');
   // English source text is a reset to the workbook baseline, never a new override.
-  const wanted = value === english[input.id] ? '' : value;
+  const wanted = input.locale === 'en' && value === english[input.id] ? '' : value;
   const found = await env.DB.prepare('SELECT text, version FROM ui_translation_overrides WHERE locale = ? AND id = ?')
     .bind(input.locale, input.id).first();
   const version = found?.version || 0;
