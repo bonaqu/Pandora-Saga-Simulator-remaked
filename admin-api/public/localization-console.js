@@ -81,7 +81,7 @@
     bulk=window.PandoraBulkLocalization.mount(bulkHost,{
       api,
       getContext:()=>({scope,locale,group}),
-      hasDraft:record=>drafts.has(key(record)),
+      hasDraft:record=>drafts.has(key(record))||Boolean(queued?.get(record.scope,record.id,record.locale)),
       onPublished:()=>load()
     });
     scopeInput.value=scope;localeInput.value=locale;groupInput.value=group;
