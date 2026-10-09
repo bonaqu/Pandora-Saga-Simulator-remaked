@@ -61,7 +61,7 @@ class BuildPagesTests(unittest.TestCase):
             self.assertEqual(_read_ui_version(root), "3.52")
             notes = _read_latest_release(root)
             self.assertEqual(notes["version"], "3.52")
-            self.assertEqual(notes["playerVersion"], "3.47")
+            self.assertEqual(notes["userVersion"], "3.47")
             self.assertEqual(notes["highlights"]["ru"], ["Исправлены описания душ."])
             self.assertNotIn("админ", str(notes))
 
