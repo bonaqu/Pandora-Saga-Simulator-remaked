@@ -3,6 +3,7 @@
 
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
   var catalogs = window.PandoraRemakedLocales || { en: {} };
+  var publishedUi = { ru: {}, en: {} };
   var gameCatalogs = window.PandoraRemakedGameTerms || { ru: {} };
   var STORAGE_KEY = 'pandora.remaked.uiLocale.v1';
   var DEFAULT_LOCALE = 'en';
@@ -31,6 +32,7 @@
         'calculator.text.22': "Благословение",
         'calculator.text.23': "Песнопения",
         'calculator.text.24': "Гильдия",
+        'calculator.text.25': "Честь",
         'calculator.clan.0': "Гильдия",
         'calculator.clan.1': "Сила гильдии",
         'calculator.clan.2': "Дух гильдии",
@@ -181,9 +183,25 @@
   function translate(key, values) {
     var active = catalogs[currentLocale] || {};
     var english = catalogs[DEFAULT_LOCALE] || {};
-    var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : terminology('ui', key);
+    var override = publishedUi[currentLocale] && publishedUi[currentLocale][key];
+    var value = override || (Object.prototype.hasOwnProperty.call(active, key) ? active[key] : terminology('ui', key));
     if (!value) value = english[key];
     return interpolate(typeof value === 'string' ? localizedUiValue(key, value) : key, values);
+  }
+
+  // Older workbook labels are normalized only when they still match that exact
+  // approved old wording. Independently published/admin-customized text wins.
+  var RU_LABEL_RENAMES = Object.freeze({
+    'skill_entry.18.8': ['Сопротивляемость огню', 'Сопр. огню'],
+    'skill_entry.18.9': ['Сопротивляемость льду', 'Сопр. льду'],
+    'skill_entry.18.10': ['Сопротивляемость молниям', 'Сопр. молнии'],
+    'skill_entry.20.7': ['Сопротивляемость магии тьмы', 'Сопр. тьме'],
+    'skill_entry.21.7': ['Сопротивляемость чарам', 'Сопр. чарам'],
+    'calculator.status.39': ['Сопр. тьмы', 'Сопр. тьме']
+  });
+  function normalizeRussianLabel(key, value) {
+    var replacement = RU_LABEL_RENAMES[key];
+    return currentLocale === 'ru' && replacement && value === replacement[0] ? replacement[1] : value;
   }
 
   function translateGameTerm(key, fallback) {
@@ -197,7 +215,7 @@
     var active = currentLocale === 'en' && !useEnglish ? {} : gameCatalogs[currentLocale] || {};
     var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : terminology('game', key);
     if (!value && currentLocale === 'ru' && useEnglish) value = (gameCatalogs.en || {})[key] || '';
-    return compactActionLabel(key, typeof value === 'string' && value ? value : String(fallback == null ? '' : fallback));
+    return compactActionLabel(key, normalizeRussianLabel(key, typeof value === 'string' && value ? value : String(fallback == null ? '' : fallback)));
   }
 
   function storedValues(node) {
@@ -288,9 +306,29 @@
     return true;
   }
 
+  function applyPublishedUi(payload) {
+    if (!payload || payload.ok !== true || payload.schemaVersion !== 1 ||
+        !payload.overrides || typeof payload.overrides !== 'object') return false;
+    var next = { ru: {}, en: {} };
+    for (var locale of ['ru', 'en']) {
+      var words = payload.overrides[locale];
+      if (!words || typeof words !== 'object' || Array.isArray(words)) return false;
+      for (var [key, value] of Object.entries(words)) {
+        if (!Object.prototype.hasOwnProperty.call(catalogs.en || {}, key) ||
+            typeof value !== 'string' || !value.trim() || value.length > 300 ||
+            /[\x00-\x1f\x7f<>]/.test(value)) return false;
+        next[locale][key] = value;
+      }
+    }
+    publishedUi = next;
+    apply(document);
+    return true;
+  }
+
   namespace.i18n = {
     apply: apply,
     applyPublishedResultLabels: applyPublishedResultLabels,
+    applyPublishedUi: applyPublishedUi,
     bindAttribute: bindAttribute,
     bindText: bindText,
     game: translateGameTerm,
@@ -305,6 +343,14 @@
   // Editor customizations are deliberately independent from workbook updates.
   // Fetch only explicit published overrides, never rewrite base translations.
   if (location.origin === 'https://bonaqu.github.io') {
+    fetch('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/ui-translations', {
+      credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(4000)
+    }).then(function (response) {
+      if (!response.ok) throw new Error('UI translation overrides unavailable');
+      return response.json();
+    }).then(applyPublishedUi).catch(function () {
+      // Offline users always receive the bundled approved workbook catalog.
+    });
     fetch('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/result-labels', {
       credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(4000)
     }).then(function (response) {

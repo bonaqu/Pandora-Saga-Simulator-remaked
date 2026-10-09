@@ -82,7 +82,11 @@
         while (source.firstChild) button.appendChild(source.firstChild);
         source.appendChild(button);
       }
-      var enabled = key.indexOf('Honor_') === 0 ? Number(window.Flag.Honor) === Number(key.slice(6)) : Boolean(window.Flag[key]);
+      // BuffHonor_0 maps to Flag.Honor=1. Zero means NONE selected.
+      // Refresh aria-pressed on every calculation/change (not only on mount).
+      var enabled = key.indexOf('Honor_') === 0
+        ? Number(window.Flag.Honor) === Number(key.slice(6)) + 1
+        : Boolean(window.Flag[key]);
       button.setAttribute('aria-pressed', String(enabled));
     });
   }

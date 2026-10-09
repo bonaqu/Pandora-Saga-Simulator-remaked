@@ -249,6 +249,21 @@
         } else if (button) {
           button.removeAttribute('title');
         }
+        // The museum strikethrough is not a disabled state: the player can
+        // choose the effect, but Legacy does not necessarily calculate it.
+        // Keep the full name and explain that limitation on hover instead.
+        if (button && label.style.textDecoration.includes('line-through')) {
+          var caveat = i18n.getLocale() === 'ru'
+            ? 'Возможность выбрать усиление не означает, что его эффект полностью рассчитан в симуляторе.'
+            : 'Selectable effect; the calculator may not model all of its effects.';
+          var currentHint = button.getAttribute('title') || (label.querySelector('.help') || label).title;
+          button.title = [currentHint, caveat].filter(Boolean).join('\n');
+          var helpNode = label.querySelector('.help');
+          if (helpNode) helpNode.title = [helpNode.title, caveat].filter(Boolean).join('\n');
+          button.setAttribute('aria-description', caveat);
+        } else if (button) {
+          button.removeAttribute('aria-description');
+        }
       });
       document.querySelectorAll('.remaked-mobile-card-label').forEach(function (label) {
         var head = label.closest('.sub_win')?.querySelector('.head');

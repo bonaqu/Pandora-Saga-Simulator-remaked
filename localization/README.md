@@ -7,6 +7,8 @@
 
 The yellow **Русский — заполнять здесь** (H) and green **English — редактировать здесь** (I) columns are editable. A–G are validated source data. Rows may be filtered or sorted; IDs, source columns, worksheet name and header row must not be changed. A blank Russian cell safely falls back to English. Published admin-record names take precedence over workbook aliases; edit those names in the admin record. Unpublished source records use H/I, without changing Legacy.
 
+Modern UI labels (242 keys) may also be edited on the secure Cloudflare admin page in RU or EN without changing the workbook. Each published D1 override is version-checked; reset returns to the workbook text. Public pages safely fall back to the bundled workbook while offline. These UI overrides are kept separate from character and build revisions. Only published overrides are exposed publicly, never a login token or admin session.
+
 The 43 calculator result captions also have a generated administrative baseline in `calculator-results.ru.json`. Its values must match the stable IDs in column H; `tests/test_translation_workbook.py` checks this invariant. The source workbook is the base, while explicit published D1 edits take precedence at runtime; reverting an admin edit returns to the exact Excel value. Admin edits do not silently write back to Git, and future workbook updates do not erase admin overrides.
 
 `ui.en.json` and `game-terms.ru.json` are machine-maintained source indexes. Do not enter translations there.
