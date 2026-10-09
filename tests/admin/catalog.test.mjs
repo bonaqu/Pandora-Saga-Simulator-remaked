@@ -544,3 +544,30 @@ test('catalog list limits draft payload reads to the selected item kind',async()
     assert.ok(response.count>=0);
   }
 });
+
+
+test('catalog batch receipts are committed with revision and safely recover a lost HTTP response',async()=>{
+  const {env,sqlite}=fixture();
+  const entry=await detail(env,'equipment.0.1');
+  entry.edit.names.ru='Проверка квитанции';
+  const staged=await save(env,entry);
+  const operationId='91577c0e-7844-41d8-81cb-98d7e2477746';
+  const input={operationId,expectedCatalogRevision:0,
+    items:[{id:entry.identity.id,expectedDraftVersion:staged.draftVersion}]};
+  const before=await call(env,'publish-batch-status?operationId='+operationId);
+  assert.equal(before.found,false);
+  const published=await call(env,'publish-batch',input);
+  assert.equal(published.ok,true);
+  assert.equal(published.catalogRevision,1);
+  assert.equal(published.operationId,operationId);
+  const receipt=await call(env,'publish-batch-status?operationId='+operationId);
+  assert.equal(receipt.found,true);
+  assert.equal(receipt.receipt.catalogRevision,1);
+  assert.equal(receipt.receipt.count,1);
+  assert.equal(receipt.receipt.operationId,operationId);
+  const retry=await call(env,'publish-batch',input);
+  assert.equal(retry.catalogRevision,1,'same request ID cannot publish again');
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_revisions').get().n,1);
+  assert.equal((await call(env,'drafts')).count,0);
+  await assert.rejects(()=>call(env,'publish-batch-status?operationId=bad'),/Invalid catalog operation ID/);
+});
