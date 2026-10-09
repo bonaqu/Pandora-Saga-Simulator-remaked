@@ -529,3 +529,18 @@ test('batch publish keeps mechanically relevant impact revision and leaves unsel
   assert.equal(pending.count,1);assert.equal(pending.items[0].id,other.identity.id);
   assert.equal((await detail(env,other.identity.id)).hasDraft,true);
 });
+
+
+test('catalog list limits draft payload reads to the selected item kind',async()=>{
+  const {env}=fixture(),calls=[];
+  const original=env.DB.prepare.bind(env.DB);
+  env.DB.prepare=sql=>{calls.push(sql);return original(sql);};
+  for(const kind of ['equipment','soul','class','racial','active','passive']){
+    calls.length=0;
+    const response=await call(env,'catalog?kind='+kind);
+    assert.equal(response.status,200);
+    assert.ok(calls.some(sql=>sql.includes('FROM catalog_drafts WHERE id LIKE ?')),
+      kind+' must not fetch unrelated catalog draft payloads');
+    assert.ok(response.count>=0);
+  }
+});
