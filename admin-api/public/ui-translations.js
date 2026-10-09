@@ -100,6 +100,7 @@
         var start=page*pageSize;
         found.slice(start,start+pageSize).forEach(function(item){
           var row=element('div',null,'ui-translation-row');
+          row.dataset.uiTranslationId=item.id; row.dataset.uiLocale=item.locale;
           var identity=element('div',null,'ui-translation-identity');
           identity.append(element('strong',item.id),element('small','EN: '+item.source));
           var editor=element('input'); editor.type='text'; editor.maxLength=300;
