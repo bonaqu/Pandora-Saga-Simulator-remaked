@@ -57,7 +57,7 @@ As a result, users should not normally need Ctrl+F5 after a release. An already-
 
 Translations are edited through the protected four-language admin console, not a spreadsheet. Pages builds validate `localization/approved-translations.v1.json` and generate immutable runtime catalogs; Cloudflare D1 publishes per-ID edits without a Pages release. The old spreadsheet is absent from the repository tree and recoverable only through Git history.
 
-See [the Russian translation guide](LOCALIZATION_FOR_BEGINNERS.ru.md).
+Administrator-only workflows are documented privately and are not published in this repository.
 
 ## Version and changelog
 
