@@ -1,0 +1,34 @@
+name: One-time approved localization baseline
+on:
+  push:
+    branches: ['feat/unified-localization-foundation-20261009']
+    paths: ['.github/workflows/oneoff-translation-baseline.yml']
+permissions:
+  contents: write
+jobs:
+  migrate:
+    if: github.repository == 'bonaqu/Pandora-Saga-Simulator-remaked'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export all approved workbook values for 4 locales
+        run: python3 -m scripts.export_approved_translation_baseline
+      - name: Verify approved values and stable keys
+        run: |
+          python3 scripts/translation_workbook.py
+          python3 - <<'PY'
+          import json
+          m=json.load(open("localization/approved-translations.v1.json",encoding="utf8"))
+          assert m["schemaVersion"] == 1 and m["count"] > 2500
+          assert len(m["game"]["ru"]) > 20
+          assert set(m["ui"]) == {"en","ru","jp","tw"}
+          PY
+      - name: Commit source-baseline snapshot to feature branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add localization/approved-translations.v1.json
+          git diff --cached --quiet && exit 1
+          git commit -m 'data(i18n): preserve all approved 4-locale translations before D1 migration'
+          git push origin HEAD:feat/unified-localization-foundation-20261009
