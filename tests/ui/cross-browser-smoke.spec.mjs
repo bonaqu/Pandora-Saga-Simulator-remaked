@@ -443,6 +443,9 @@ test('item preview and shared build link work without mutating Legacy data', asy
   expect(await page.evaluate(() => ({ code: Store(), data: JSON.stringify(EquipData) }))).toEqual(before);
   await page.locator('[data-remaked-builds-open]').click();
   await page.locator('[data-remaked-share-build]').click();
+  // Short links are resolved asynchronously (or use the offline-compatible
+  // full S1 fallback). Wait for generation before opening a fresh browser.
+  await expect(page.locator('[data-remaked-share-url]')).toHaveValue(/#(?:b|build)=/);
   const url = await page.locator('[data-remaked-share-url]').inputValue();
   const recipientContext = await browser.newContext();
   try {
