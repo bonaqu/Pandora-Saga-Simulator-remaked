@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.62 — 2026-10-10
+
+### For users
+
+- Fixed gear refinement bonuses, including Astir sets: bonuses earned at +2, +4 and other milestones now remain active at intermediate refinement levels.
+- Recalculating the build preserves the latest reached milestone without double-counting effects.
+
+### Development and technical changes
+
+- Treat server Forth milestone rows as complete active snapshots and retain the nearest reached snapshot when an intermediate enhancement level has no row; explicit empty snapshots still clear previous bonuses.
+- Keep the D1 catalog, Legacy formulas and item identities untouched. Cover all +0…+10 levels across multiple Astir items, including idempotent recalculation.
+
 ## Modern 3.61 — 2026-10-09
 
 ### For users
