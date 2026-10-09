@@ -4,11 +4,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.58 — 2026-10-09
 
-### For users
-
-- Admin translation search now includes newly published equipment, Souls and skill variants alongside existing terms.
-- These entries open the canonical catalog editor for RU / EN / JP / TW rather than creating a second writable copy of their text.
-
 ### Development and technical changes
 
 - Project published catalog item/skill text into the unified admin search without exposing unpublished drafts.
