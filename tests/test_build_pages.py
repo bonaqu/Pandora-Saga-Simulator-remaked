@@ -311,8 +311,8 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             build_pages(root, output)
             locales = (output / "modern" / "locales.js").read_text(encoding="utf-8")
             self.assertIn('"controls.interfaceLanguage": "Interface language"', locales)
-            ui_russian, game_russian, _ = load_translation_catalogs(root)
-            editable = load_editable_catalogs(root)
+            editable = load_migrated_catalogs(root)
+            ui_russian, game_russian = editable.ui_russian, editable.game_russian
             parsed_locales = json.loads(locales.split("Object.freeze(", 1)[1].removesuffix(");\n"))
             self.assertEqual(parsed_locales["ru"], ui_russian)
             self.assertEqual(parsed_locales["jp"], editable.ui_japanese)
