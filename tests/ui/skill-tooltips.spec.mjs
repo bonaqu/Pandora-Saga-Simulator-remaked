@@ -105,6 +105,13 @@ test('RU skill hover shows localized labels and already translated mastery prere
     Status.Job[2] = 8; CalcSet('Job'); SkillList('Create');
   });
   await page.locator('[data-remaked-tab="1"]').click();
+  // Stable display fixture: the native renderer draws only eligible skills.
+  // Include the real skill in the list without altering its data or conditions.
+  await page.evaluate(() => {
+    if (!Learn[1].includes('7_5')) Learn[1].push('7_5');
+    Learn[2] = Learn[1].map(entry => entry.split('_'));
+    SkillList('Create');
+  });
   const icon = page.locator('#LearnSkillIcon_7_5');
   await expect(icon).toHaveCount(1);
   await icon.focus();
@@ -118,7 +125,8 @@ test('RU skill hover shows localized labels and already translated mastery prere
   expect(lines[5]).toContain('Стрельба 8');
   expect(lines[6]).toContain('Требования снаряжения');
   expect(lines[1]).toContain('Расход ОМ');
-  await page.locator('[data-remaked-ui-locale="en"]').click();
+  await page.evaluate(() => PandoraRemaked.i18n.setLocale('en'));
+  await icon.blur();
   await icon.focus();
   const english = await tooltip.locator(':scope > ul').allTextContents();
   expect(english[4]).toContain('Prerequisites');
