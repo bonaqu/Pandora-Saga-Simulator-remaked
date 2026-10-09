@@ -345,6 +345,350 @@
         ""
       ],
       "trailing": ""
+    },
+    {
+      "id": "equipment.32.34",
+      "kind": "equipment",
+      "category": 32,
+      "index": 34,
+      "engineId": 320034,
+      "engineKey": "緋色アスティアングローブ",
+      "names": {
+        "en": "Astian Scarlet Gloves",
+        "ru": "Алые астирские краги",
+        "jp": "緋色アスティアングローブ",
+        "tw": "(紅色艾斯提亞手套(男))"
+      },
+      "description": {
+        "en": "Dawn-colored gauntlets. Favored by the men of Astir.DEX +1, HP +20Per every 2 enhancement levels:Attack +1",
+        "ru": "Краги цвета зари. Такие любят носить мужчины Астира.ЛВК +1, ОЗ +20За каждые 2 единицы улучшения:Атака +1",
+        "jp": "LP+6、攻撃力+1、クリティカル発生率+2%",
+        "tw": "LP+6¸ 攻擊力+1¸ 暴擊率+2%"
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 20,
+      "sockets": 1,
+      "disabled": false,
+      "calculationCode": "3=1_6=20_49=8",
+      "compatibility": [
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.34.37",
+      "kind": "equipment",
+      "category": 34,
+      "index": 37,
+      "engineId": 340037,
+      "engineKey": "緋色アスティアンブーツ",
+      "names": {
+        "en": "Astian Scarlet Boots",
+        "ru": "Алые астирские башмаки",
+        "jp": "緋色アスティアンブーツ",
+        "tw": "(紅色艾斯提亞鞋子)"
+      },
+      "description": {
+        "en": "Boots the color of dawn. The men of Astir love to wear them.STR +1, MP +20Per every 2 enhancement levels:Attack +1",
+        "ru": "Башмаки цвета зари. Такие любят носить мужчины Астира.СИЛ +1, ОМ +20За каждые 2 единицы улучшения:Атака +1",
+        "jp": "MP+3、攻撃力+1",
+        "tw": "MP+3¸ 攻擊力+1"
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 20,
+      "sockets": 1,
+      "disabled": false,
+      "calculationCode": "1=1_7=20_49=7",
+      "compatibility": [
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.32.35",
+      "kind": "equipment",
+      "category": 32,
+      "index": 35,
+      "engineId": 320035,
+      "engineKey": "緋色アスティアンケイリス",
+      "names": {
+        "en": "Astian Scarlet Kariss",
+        "ru": "Алые астирские перчатки",
+        "jp": "緋色アスティアンケイリス",
+        "tw": "(紅色艾斯提亞手套(女))"
+      },
+      "description": {
+        "en": "Dawn-colored gloves. Favored by the women of Astir.DEX +1, HP +30Per every 2 enhancement levels:Attack +1",
+        "ru": "Перчатки цвета зари. Такие любят носить женщины Астира.ЛВК +1, ОЗ +30За каждые 2 единицы улучшения:Атака +1",
+        "jp": "LP+6、攻撃力+1、クリティカル発生率+2%",
+        "tw": "LP+6¸ 攻擊力+1¸ 暴擊率+2%"
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 20,
+      "sockets": 1,
+      "disabled": false,
+      "calculationCode": "3=1_6=30_49=8",
+      "compatibility": [
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.34.38",
+      "kind": "equipment",
+      "category": 34,
+      "index": 38,
+      "engineId": 340038,
+      "engineKey": "緋色アスティアンパンプ",
+      "names": {
+        "en": "Astian Scarlet Pumps",
+        "ru": "Алые астирские туфли",
+        "jp": "緋色アスティアンパンプ",
+        "tw": "(紅色艾斯提亞水泵)"
+      },
+      "description": {
+        "en": "Dawn-colored pumps. Favored by the women of Astir.STR +1, MP +20Per every 2 enhancement levels:Attack +1Per every 2 enhancement levels:",
+        "ru": "Туфли цвета зари. Такие любят носить женщины Астира.СИЛ +1, ОМ +20За каждые 2 единицы улучшения:Атака +1",
+        "jp": "MP+3、攻撃力+1",
+        "tw": "MP+3¸ 攻擊力+1"
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 20,
+      "sockets": 1,
+      "disabled": false,
+      "calculationCode": "1=1_7=20_49=7",
+      "compatibility": [
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
     }
   ]
 }
