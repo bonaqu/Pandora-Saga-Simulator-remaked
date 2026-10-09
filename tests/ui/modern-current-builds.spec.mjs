@@ -97,8 +97,11 @@ test('new share code is substantially shorter and malformed code cannot replace 
   await page.goto('/'); await page.locator('[data-remaked-builds-open]').click();
   const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
   await page.locator('[data-remaked-share-build]').click();
+  // The short-link POST is asynchronous; CI intentionally has no trusted IP
+  // so an offline-compatible S1 fallback is also a valid, working result.
+  await expect(page.locator('[data-remaked-share-url]')).toHaveValue(/#(?:b=[A-Za-z0-9_-]{12}|build=S1\.)/);
   const url = await page.locator('[data-remaked-share-url]').inputValue();
-  expect(url).toContain('#build=S1.');
+  expect(url).toMatch(/#(?:b=[A-Za-z0-9_-]{12}|build=S1\.)/);
   expect(url.length).toBeLessThan(('http://127.0.0.1:8000/#build=' + encodeURIComponent(before)).length / 2);
   await page.evaluate(() => { location.hash = 'build=S1.AQ'; });
   await expect(page.locator('[data-remaked-autosave-status]')).toContainText('Invalid share link');
