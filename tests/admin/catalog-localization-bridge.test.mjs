@@ -66,7 +66,8 @@ test('only published new equipment and Souls enter unified search; texts have on
   const id=queued.identity.id;
   assert.match(id,/^modern\.equipment\./);
   assert.equal((await search(env,'equipment','ru',id)).total,0,'draft must never leak into localization search');
-  assert.equal((await publicLocalization(env)).ok,undefined,'avoid asserting catalog text through the independent override API');
+  const beforeOverrides=(await (await publicLocalization(env)).json()).overrides;
+  assert.equal(beforeOverrides.game.ru[id],undefined,'unpublished drafts are never public localization overrides');
   const published=await publish(env,queued);
   assert.equal(published.catalogRevision,1);
   for(const locale of ['en','ru','jp','tw']){
