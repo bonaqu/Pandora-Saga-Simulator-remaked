@@ -571,3 +571,22 @@ test('new numbered item is editable on all four languages through unified locali
   const list=await (await adminLocalization(new Request(origin+'/api/admin/localization?scope=game&locale=ru&q='+description),env)).json();
   assert.ok(list.items.some(x=>x.id===description),'custom description must be in the same admin');
 });
+
+
+test('per-refinement healing effectiveness bonus compiles without rewriting base item effects',async()=>{
+  const {env}=fixture();
+  let item=await detail(env,'equipment.0.1');
+  const original=item.edit.effects.map(x=>({...x}));
+  item.edit.refinementEffects=[{stat:11,value:1,unit:'flat',start:2,step:2,cap:10}];
+  item=await save(env,item);
+  assert.equal(item.edit.refinementEffects.length,1);
+  const released=await publish(env,item);
+  assert.equal(released.catalogRevision,1);
+  const records=(await publicData(env)).records;
+  const record=records.find(x=>x.id==='equipment.0.1');
+  assert.deepEqual(record.refinementEffects,[{stat:11,value:1,unit:'flat',start:2,step:2,cap:10}]);
+  assert.deepEqual((await detail(env,'equipment.0.1')).edit.effects,original);
+  const invalid=await detail(env,'equipment.0.1');
+  invalid.edit.refinementEffects=[{stat:11,value:1,unit:'flat',start:5,step:2,cap:4}];
+  await assert.rejects(()=>save(env,invalid),/cap precedes/);
+});
