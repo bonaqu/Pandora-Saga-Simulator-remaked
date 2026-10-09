@@ -54,7 +54,8 @@ test('Breast Plate descriptions keep effect lines in both localized detail cards
   const row = page.locator(`[data-remaked-picker-panel] [data-remaked-search-row][data-value="${plate.engineId}"]`);
   await row.locator('summary').click();
   await expect(row.locator('.remaked-item-description')).toContainText('Слоты душ:');
-  expect(await row.locator('.remaked-item-description p').first().evaluate(node => getComputedStyle(node).whiteSpace)).toBe('pre-line');
+  // The upgraded game tooltip uses pre-wrap to preserve exact spacing as well as line breaks.
+  expect(await row.locator('.remaked-item-description p').first().evaluate(node => getComputedStyle(node).whiteSpace)).toBe('pre-wrap');
 });
 
 for (const width of [390, 1440]) {

@@ -155,3 +155,29 @@ test('a published Soul modifier replaces only its own description field', async 
   expect(result.after.filter(line=>line.includes('UNIQUE SOUL MODIFIER'))).toHaveLength(1);
   expect(result.unchanged).toBe(true);
 });
+
+
+test('equipment hover card uses in-game inspired dark legible sections while preserving data',async({page})=>{
+  await page.goto('/');
+  const before=await page.evaluate(()=>JSON.stringify([EquipData,SoulData,Store()]));
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
+  const row=page.locator('[data-remaked-search-row]').filter({
+    has:page.locator('[data-remaked-item-description]')
+  }).first();
+  await expect(row).toBeVisible();
+  await row.locator('summary').click();
+  const tip=row.locator('[data-remaked-item-description]');
+  await expect(tip).toBeVisible();
+  await expect(tip.locator('.remaked-item-title')).toBeVisible();
+  await expect(tip.locator('.remaked-item-metadata')).toBeVisible();
+  const css=await tip.evaluate(node=>{
+    const style=getComputedStyle(node);
+    return {background:style.backgroundImage,color:style.color,border:style.borderStyle,
+      paragraphs:[...node.querySelectorAll('.remaked-item-prose')].map(x=>getComputedStyle(x).whiteSpace)};
+  });
+  expect(css.background).toContain('linear-gradient');
+  expect(css.border).toBe('ridge');
+  expect(css.paragraphs.every(x=>x==='pre-wrap')).toBe(true);
+  await page.keyboard.press('Escape');
+  expect(await page.evaluate(()=>JSON.stringify([EquipData,SoulData,Store()]))).toBe(before);
+});

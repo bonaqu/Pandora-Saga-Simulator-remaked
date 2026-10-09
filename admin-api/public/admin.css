@@ -42,10 +42,31 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
 @media (max-width: 600px) { .workspace-jump a { flex: 1 1 100%; min-height: 44px; } }
 .catalog-editor h4 { margin: 0 0 10px; font: 600 13px/1.4 system-ui, sans-serif; color: var(--green); }
 .editor-workflow { padding: 12px; border-left: 3px solid var(--green); background: #182016; font: 13px/1.55 system-ui, sans-serif; }
+/* Editor-only, non-publishing visual preview. Colors mirror the readable
+   in-game description panel; no preview text is written to D1. */
+.catalog-item-game-preview {
+  min-width: 0; margin: 18px 0; padding: 13px;
+  border: 1px solid #77866d; border-radius: 10px; background: #1c271d;
+}
+.catalog-item-preview-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 11px; }
+.catalog-item-preview-header strong { font: 650 13px/1.4 system-ui,sans-serif; color: #cce3b7; }
+.catalog-item-preview-header select { min-height: 34px; width: 78px; }
+.catalog-item-preview-surface {
+  color: #f4ead4; padding: 13px 15px; border: 2px ridge #95816b;
+  border-radius: 5px; background: linear-gradient(170deg,#191a17,#10110f);
+  box-shadow: inset 0 0 0 2px #32312b;
+  text-shadow: 0 1px #080909;
+}
+.catalog-item-preview-name { display: block; padding-bottom: 9px; margin-bottom: 10px; border-bottom: 1px solid #766b58; color: #fff3d9; font-size: 14px; overflow-wrap: anywhere; }
+.catalog-item-preview-facts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 3px 10px; font-size: 12px; color: #e0dac8; }
+.catalog-item-preview-sockets { display: flex; gap: 7px; margin-top: 10px; }
+.catalog-item-preview-socket { display: inline-block; width: 14px; height: 14px; border: 2px solid #b39a52; border-radius: 50%; background: #29251a; box-shadow: inset 0 1px 2px #000; }
+.catalog-item-preview-description { margin: 12px 0 0; padding-top: 10px; border-top: 1px solid #655f4a; white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.55 system-ui,sans-serif; }
+.catalog-item-preview-note { color: #bfc9ad; margin: 9px 0 0; font-size: 12px; line-height: 1.55; }
 .record-review { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 10px; }
 .record-panel { border: 1px solid var(--border); padding: 12px; min-width: 0; overflow-wrap: anywhere; font: 13px/1.5 system-ui, sans-serif; }
 .record-name { font: 600 14px/1.4 system-ui, sans-serif; margin: 6px 0; }
-.record-description { font: 13px/1.5 system-ui, sans-serif; margin: 8px 0; white-space: pre-line; }
+.record-description { font: 13px/1.5 system-ui, sans-serif; margin: 8px 0; white-space: pre-wrap; }
 .record-values { padding-left: 18px; margin: 10px 0 0; }
 .record-values li { margin: 4px 0; }
 .extra-languages { grid-column: 1 / -1; }

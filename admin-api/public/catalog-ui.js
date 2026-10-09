@@ -177,6 +177,63 @@
     panels.append(live, preview); editor.append(panels, button('Проверить изменения', checkChanges, 'secondary'));
     editor.appendChild(node('h4', 'Редактируемые поля'));
   }
+  function refreshItemPreview(){
+    var panel=editor?.querySelector('[data-catalog-item-live-preview]');
+    if(!panel)return;
+    var display=panel.querySelector('[data-catalog-preview-content]'),
+      locale=panel.querySelector('[data-catalog-preview-locale]')?.value||'ru';
+    if(!display)return;
+    var value=field=>editor.querySelector('[data-field="'+field+'"][data-language="'+locale+'"]')?.value||'';
+    var original=field=>editor.querySelector('[data-field="'+field+'"][data-language="en"]')?.value||'';
+    var name=value('names')||original('names')||'Без названия';
+    var text=value('description')||original('description');
+    var notes=value('notes')||original('notes');
+    var n=Math.max(0,Math.min(3,Number(editor.querySelector('[data-field="sockets"]')?.value)||0));
+    display.replaceChildren(node('strong',name,'catalog-item-preview-name'));
+    if(current.edit.kind==='equipment'){
+      var facts=node('div',undefined,'catalog-item-preview-facts');
+      var type=editor.querySelector('[data-field="category"]');
+      var kind=type?.selectedOptions[0]?.textContent||'Снаряжение';
+      var level=editor.querySelector('[data-field="level"]')?.value||'0';
+      [kind,'Уровень: '+level,'Слоты душ: '+n].forEach(function(t){facts.append(node('span',t));});
+      display.append(facts);
+      if(n){
+        var circles=node('div',undefined,'catalog-item-preview-sockets');
+        circles.setAttribute('aria-label','Свободные слоты душ: '+n);
+        for(var i=0;i<n;i++)circles.append(node('span',undefined,'catalog-item-preview-socket'));
+        display.append(circles);
+      }
+    } else {
+      display.append(node('p','Душа · пригодность к слотам задаётся в карточке','catalog-item-preview-facts'));
+    }
+    [text,notes].filter(Boolean).forEach(function(t){
+      display.append(node('p',t,'catalog-item-preview-description'));
+    });
+    if(!text&&!notes)display.append(node('p','Описание пока не заполнено.','catalog-item-preview-note'));
+  }
+  function mountItemPreview(){
+    if(!current||!['equipment','soul'].includes(current.edit.kind))return;
+    var panel=node('section',undefined,'catalog-item-game-preview');
+    panel.dataset.catalogItemLivePreview='';
+    var top=node('div',undefined,'catalog-item-preview-header');
+    top.append(node('strong','Как карточка будет выглядеть на сайте'));
+    var languagesSelect=node('select');
+    languagesSelect.dataset.catalogPreviewLocale='';
+    languagesSelect.setAttribute('aria-label','Язык предпросмотра предмета');
+    [['ru','RU'],['en','EN'],['jp','JP'],['tw','TW']].forEach(function(pair){
+      var option=node('option',pair[1]);option.value=pair[0];languagesSelect.append(option);
+    });
+    languagesSelect.addEventListener('change',refreshItemPreview);
+    top.append(languagesSelect);
+    var surface=node('div',undefined,'catalog-item-preview-surface');
+    surface.dataset.catalogPreviewContent='';
+    panel.append(top,surface,node('p',
+      'Предварительный вид текста и слотов обновляется при вводе. Числовые эффекты и совместимость проверяются только кнопкой «Проверить изменения» выше.',
+      'catalog-item-preview-note'));
+    var actions=editor.querySelector('.editor-actions');
+    if(actions)editor.insertBefore(panel,actions);else editor.append(panel);
+    refreshItemPreview();
+  }
   function finishEditor() {
     // Put the calculation controls before the optional translated prose.
     var calculations = editor.querySelector('.numeric-effects'), translations = editor.querySelector('.translation-fields');
@@ -188,6 +245,7 @@
     }
     var actions = editor.querySelector('.editor-actions'); if (actions) editor.appendChild(actions);
     editor.dataset.unsaved = dirty ? 'true' : 'false';
+    mountItemPreview();
     updateLocaleCoverage();
   }
   function compatibility(label, field, values, labels, parent) {
@@ -469,6 +527,7 @@
     });
     indicator.textContent = groups.join(' · ') +
       ' · Проверяй корректность каждого языка перед публикацией.';
+    refreshItemPreview();
   }
   function renderEditor() {
     editor.replaceChildren(); readProfiles = null; var edit = current.edit;

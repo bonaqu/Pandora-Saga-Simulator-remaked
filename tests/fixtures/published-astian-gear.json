@@ -1,0 +1,350 @@
+{
+  "_source": "Published public Cloudflare catalog, snapshot retrieved for deterministic test fixture",
+  "_catalogRevision": 87,
+  "records": [
+    {
+      "id": "equipment.31.41",
+      "kind": "equipment",
+      "category": 31,
+      "index": 41,
+      "engineId": 310041,
+      "engineKey": "緋色アスティアンコート",
+      "names": {
+        "en": "Astian Scarlet Coat",
+        "ru": "Алая астирская куртка",
+        "jp": "緋色アスティアンコート",
+        "tw": "(紅色艾斯提亞外衣)"
+      },
+      "description": {
+        "en": "A beautiful coat the color of dawn.The men of Astir love to wear these.STR +1, HP +50Per every enhancement level:Accuracy +1",
+        "ru": "Красивая куртка цвета зари.Такие любят носить мужчины Астира.СИЛ +1, ОЗ +50За каждую единицу улучшения:Точность +1",
+        "jp": "LP+12、被物理ダメージ-1%",
+        "tw": "LP+12¸ 物理傷害-1%"
+      },
+      "notes": {
+        "en": "Ann Asti scarlet coat¸ pants¸ gloves¸ boots and a set of equipment¸ Defense +2¸ +3% resistance to burn. + 6 + 1 since every discipline of the court¸ Attack +1¸ +1% burn-resistant",
+        "ru": "",
+        "jp": "緋色アスティアンコート、パンツ、グローブ、ブーツをセットで装備すると、防御力+2、火傷耐性+3%。コートの鍛錬値+6以降+1毎に、攻撃力+1、火傷耐性+1%",
+        "tw": "安阿斯蒂大紅外套¸褲子¸手套¸靴子和一組設備¸防禦 +2¸+3％耐燃燒。 + 6 + 1¸因為每個學科的法院¸攻擊 +1¸+1％燒傷耐"
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 20,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "1=1_6=50_49=20",
+      "compatibility": [
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.31.33",
+      "kind": "equipment",
+      "category": 31,
+      "index": 33,
+      "engineId": 310033,
+      "engineKey": "碧色アスティアンコート",
+      "names": {
+        "en": "Astian Azure Coat",
+        "ru": "Голубая астирская куртка",
+        "jp": "碧色アスティアンコート",
+        "tw": "(碧色艾斯提亞外衣)"
+      },
+      "description": {
+        "en": "A beautiful coat the color of the sea. The men of Astir love to wear these.INT +1, MP +40Per every 2 enhancement levels:Skill Casting Speed +1%",
+        "ru": "Красивая куртка цвета моря. Такие любят носить мужчины Астира.ИНТ +1, ОМ +40За каждые 2 единицы улучшения:Скорость применения умений +1%",
+        "jp": "霊感+1、再使用時間-3%",
+        "tw": "靈感+1¸ 冷卻時間-3%"
+      },
+      "notes": {
+        "en": "Maple Ann color coat Asti¸ pants¸ gloves¸ boots and a set of features¸ +3% potion recovery volume. Over time the discipline of the court +6 +1 intelligence. Since each +1¸ MP +10",
+        "ru": "",
+        "jp": "碧色アスティアンコート、パンツ、グローブ、ブーツをセットで装備すると、ポーション回復量+3%。コートの鍛錬値が+6以上の時、知性+1。以降+1毎に、MP+10",
+        "tw": "楓安色外套阿斯蒂¸褲子¸手套¸靴子和一組特徵¸+3％藥水恢復卷。隨著時間的推移紀律法庭+6 +1情報。由於每個 +1¸MP +10"
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 20,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "5=1_7=40_49=14",
+      "compatibility": [
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.31.42",
+      "kind": "equipment",
+      "category": 31,
+      "index": 42,
+      "engineId": 310042,
+      "engineKey": "緋色アスティアンドレス",
+      "names": {
+        "en": "Astian Scarlet Dress",
+        "ru": "Алое астирское платье",
+        "jp": "緋色アスティアンドレス",
+        "tw": "(紅色艾斯提亞連衣裙)"
+      },
+      "description": {
+        "en": "Body part: torso and legs.A beautiful dress the color of dawn.The women of Astir love to wear these.STR +1, DEX +1, HP +80Per every enhancement level:Accuracy +1Per every 2 enhancement levels:Attack +1%",
+        "ru": "Часть тела: корпус и ноги.Красивое платье цвета зари.Такие любят носить женщины Астира.СИЛ +1, ЛВК +1, ОЗ +80За каждую единицу улучшения:Точность +1За каждые 2 единицы улучшения:Атака +1%",
+        "jp": "LP+12、MP+7、攻撃力+2、被物理ダメージ-1%",
+        "tw": "LP+12¸ MP+7¸ 攻擊力+2¸ 物理傷害-1%"
+      },
+      "notes": {
+        "en": "Andres scarlet Asti¸ Keirisu¸ when equipped with a pump set¸ 3% burn-resistant. + 6 + 1 since every discipline of the dress¸ Attack +1¸ +1% burn-resistant",
+        "ru": "",
+        "jp": "緋色アスティアンドレス、ケイリス、パンプをセットで装備すると、火傷耐性+3%。ドレスの鍛錬値+6以降+1毎に、攻撃力+1、火傷耐性+1%",
+        "tw": "安德烈斯猩紅阿斯蒂¸Keirisu¸當配備了水泵組¸3％的老化性。 + 6 + 1¸因為每個學科的裝扮¸攻擊 +1¸+1％燒傷耐"
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 20,
+      "sockets": 3,
+      "disabled": false,
+      "calculationCode": "1=1_3=1_6=80_49=36",
+      "compatibility": [
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.33.36",
+      "kind": "equipment",
+      "category": 33,
+      "index": 36,
+      "engineId": 330036,
+      "engineKey": "緋色アスティアンパンツ",
+      "names": {
+        "en": "Astian Scarlet Leggings",
+        "ru": "Алые астирские штаны",
+        "jp": "緋色アスティアンパンツ",
+        "tw": "(紅色艾斯提亞褲子)"
+      },
+      "description": {
+        "en": "Dawn-colored trousers favored by the men of Astir.DEX +1, HP +30Per every 2 enhancement levels:Attack +1%",
+        "ru": "Штаны цвета зари. Такие любят носить мужчины Астира.ЛВК +1, ОЗ +30За каждые 2 единицы улучшения:Атака +1%",
+        "jp": "MP+7、攻撃力+2",
+        "tw": "MP+7¸ 攻擊力+2"
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 20,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "3=1_6=30_49=16",
+      "compatibility": [
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    }
+  ]
+}

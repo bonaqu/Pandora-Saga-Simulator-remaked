@@ -51,3 +51,20 @@ test('glued catalog effects restore line breaks without splitting ordinary prose
   assert.equal(lines('AGI +1<br />DEF +5\nA normal sentence.'), 'AGI +1\nDEF +5\nA normal sentence.');
   assert.equal(lines('Ordinary equipment description. It has no effect clause.'), 'Ordinary equipment description. It has no effect clause.');
 });
+
+
+test('Astir game descriptions regain sentence, stat and refinement boundaries without numeric edits', () => {
+  const lines = runtime().catalogText.lines;
+  const cases = [
+    ['Красивая куртка цвета зари.Такие любят носить мужчины Астира.СИЛ +1, ОЗ +50За каждую единицу улучшения:Точность +1',
+      'Красивая куртка цвета зари.\nТакие любят носить мужчины Астира.\nСИЛ +1, ОЗ +50\nЗа каждую единицу улучшения:\nТочность +1'],
+    ['Красивая куртка цвета моря. Такие любят носить мужчины Астира.ИНТ +1, ОМ +40За каждые 2 единицы улучшения:Скорость применения умений +1%',
+      'Красивая куртка цвета моря. Такие любят носить мужчины Астира.\nИНТ +1, ОМ +40\nЗа каждые 2 единицы улучшения:\nСкорость применения умений +1%'],
+    ['Красивые башмаки. Такие любят носить мужчины Астира.ВЫН +1За каждые 3 единицы улучшения:Получаемый магический урон -1%',
+      'Красивые башмаки. Такие любят носить мужчины Астира.\nВЫН +1\nЗа каждые 3 единицы улучшения:\nПолучаемый магический урон -1%']
+  ];
+  for (const [before, after] of cases) {
+    assert.equal(lines(before), after);
+    assert.equal(lines(before).replace(/\s/g, ''), before.replace(/\s/g, ''));
+  }
+});
