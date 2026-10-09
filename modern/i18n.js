@@ -31,6 +31,7 @@
         'calculator.text.22': "Благословение",
         'calculator.text.23': "Песнопения",
         'calculator.text.24': "Гильдия",
+        'calculator.text.25': "Честь",
         'calculator.clan.0': "Гильдия",
         'calculator.clan.1': "Сила гильдии",
         'calculator.clan.2': "Дух гильдии",
@@ -186,6 +187,21 @@
     return interpolate(typeof value === 'string' ? localizedUiValue(key, value) : key, values);
   }
 
+  // Older workbook labels are normalized only when they still match that exact
+  // approved old wording. Independently published/admin-customized text wins.
+  var RU_LABEL_RENAMES = Object.freeze({
+    'skill_entry.18.8': ['Сопротивляемость огню', 'Сопр. огню'],
+    'skill_entry.18.9': ['Сопротивляемость льду', 'Сопр. льду'],
+    'skill_entry.18.10': ['Сопротивляемость молниям', 'Сопр. молнии'],
+    'skill_entry.20.7': ['Сопротивляемость магии тьмы', 'Сопр. тьме'],
+    'skill_entry.21.7': ['Сопротивляемость чарам', 'Сопр. чарам'],
+    'calculator.status.39': ['Сопр. тьмы', 'Сопр. тьме']
+  });
+  function normalizeRussianLabel(key, value) {
+    var replacement = RU_LABEL_RENAMES[key];
+    return currentLocale === 'ru' && replacement && value === replacement[0] ? replacement[1] : value;
+  }
+
   function translateGameTerm(key, fallback) {
     if (currentLocale === 'ru' && Object.prototype.hasOwnProperty.call(publishedResultLabels, key)) return publishedResultLabels[key];
     var published = namespace.catalog && namespace.catalog.gameLabel(key);
@@ -197,7 +213,7 @@
     var active = currentLocale === 'en' && !useEnglish ? {} : gameCatalogs[currentLocale] || {};
     var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : terminology('game', key);
     if (!value && currentLocale === 'ru' && useEnglish) value = (gameCatalogs.en || {})[key] || '';
-    return compactActionLabel(key, typeof value === 'string' && value ? value : String(fallback == null ? '' : fallback));
+    return compactActionLabel(key, normalizeRussianLabel(key, typeof value === 'string' && value ? value : String(fallback == null ? '' : fallback)));
   }
 
   function storedValues(node) {
