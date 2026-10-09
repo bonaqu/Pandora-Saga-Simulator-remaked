@@ -118,36 +118,69 @@
       const save=tag('button','Опубликовать');save.type='button';
       const reset=tag('button','Вернуть базовый текст');reset.type='button';reset.className='secondary';
       const length=tag('small');
+      reset.title='Восстановить базовый текст и сохранить: '+(record.baseline||'—');
       function sync(){
         const isDirty=input.value!==(record.effective||'');
+        if(isDirty)record.justReset=false;
         if(isDirty)drafts.set(id,input.value);else drafts.delete(id);
-        card.dataset.dirty=String(isDirty);dirty.textContent=isDirty?'Не опубликовано':'Сохранено';
-        save.disabled=!isDirty;reset.disabled=record.origin==='import';
+        const published=record.origin==='admin'||record.origin==='previous-admin';
+        card.dataset.dirty=String(isDirty);
+        dirty.textContent=isDirty?'Не опубликовано':
+          record.justReset?'Базовый текст восстановлен · сохранено':'Сохранено';
+        // Even an untranslated fallback may have an unsaved draft that can
+        // be discarded locally; resetting a published value needs a D1 write.
+        save.disabled=Boolean(record.pending)||!isDirty;
+        reset.disabled=Boolean(record.pending)||(!published&&!isDirty);
+        input.disabled=Boolean(record.pending);
         length.textContent=input.value.length+' / 4000';
         updateDrafts();
       }
       input.addEventListener('input',sync);
-      async function commit(value){
-        if(value===record.effective)return;
-        save.disabled=true;reset.disabled=true;
+      async function commit(value,resetToBaseline=false){
+        if(record.pending || (!resetToBaseline&&value===record.effective))return;
+        const published=record.origin==='admin'||record.origin==='previous-admin';
+        if(resetToBaseline&&!published&&record.effective===record.baseline){
+          // Nothing has been published over this baseline. A reset just
+          // discards the local draft, without writing an unnecessary D1 row.
+          drafts.delete(id);
+          input.value=record.effective||'';
+          record.justReset=true;
+          render();
+          report('Базовый текст для '+record.id+' восстановлен. Неопубликованный черновик отменён.');
+          return;
+        }
+        record.pending=true;sync();
         const requestVersion=record.version, viewToken=generation;
+        let saved=false;
         try{
           const result=await api('POST',{scope:record.scope,id:record.id,locale:record.locale,
-            value,expectedVersion:requestVersion});
+            value:resetToBaseline?'':value,expectedVersion:requestVersion,expectedEffective:record.effective});
           if(viewToken!==generation)return;
           record.version=result.version;record.override=result.override;
           record.origin=result.override?'admin':(record.baselineOrigin||'import');
           record.effective=result.override||record.baseline;
+          record.justReset=resetToBaseline;
+          input.value=record.effective||'';
           drafts.delete(id);
-          report('Перевод '+record.id+' сохранён. Проверь его после обновления страницы симулятора.');
-          render();
+          saved=true;
+          report(resetToBaseline
+            ? 'Базовый текст для '+record.id+' восстановлен и сохранён: '+(record.effective||'—')
+            : 'Перевод '+record.id+' опубликован и сохранён.');
         }catch(error){
-          if(viewToken===generation){report(error.message+'. Черновик сохранён здесь; не закрывай вкладку до разрешения конфликта.',true);
-          sync();}
-        }finally{if(viewToken===generation){save.disabled=false;sync();}}
+          if(viewToken===generation)
+            report(error.message+'. Изменение не подтверждено; проверь строку перед повторной попыткой.',true);
+        }finally{
+          record.pending=false;
+          if(viewToken===generation){
+            // Do not call sync() on a detached textarea: it may still contain
+            // the OLD published value and resurrect a draft after a reset.
+            if(saved || !card.isConnected)render();
+            else sync();
+          }
+        }
       }
       save.addEventListener('click',()=>commit(input.value));
-      reset.addEventListener('click',()=>commit(''));
+      reset.addEventListener('click',()=>commit('',true));
       input.addEventListener('keydown',event=>{
         if(event.key==='Escape'){input.value=record.effective||'';sync();}
         if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){event.preventDefault();commit(input.value);}
