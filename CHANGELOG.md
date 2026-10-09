@@ -2,15 +2,6 @@
 
 ## Modern 3.58 — единый поиск переводов новых записей, 2026-10-09
 
-<!-- release-notes:user:ru -->
-- Поиск переводов в админке теперь показывает опубликованные новые предметы, души и умения вместе с существующими переводами.
-- Для этих записей открывается одна исходная карточка каталога: все языки RU / EN / JP / TW редактируются и публикуются без второй копии текста.
-<!-- /release-notes:user:ru -->
-
-<!-- release-notes:user:en -->
-- Admin translation search now includes newly published equipment, Souls and skill variants alongside existing terms.
-- These entries open the canonical catalog editor for RU / EN / JP / TW rather than creating a second writable copy of their text.
-<!-- /release-notes:user:en -->
 
 <!-- admin-notes:ru -->
 - В индекс переводов добавлена доступная только после публикации проекция из действующего снимка каталога; неопубликованные черновики не раскрываются в поиске.
