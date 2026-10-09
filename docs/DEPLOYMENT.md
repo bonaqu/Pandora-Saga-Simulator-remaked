@@ -61,13 +61,11 @@ Administrator-only workflows are documented privately and are not published in t
 
 ## Version and changelog
 
-The latest dated `## Modern X.Y — ...` entry in [CHANGELOG.md](../CHANGELOG.md) is the canonical public release record. During build, the site derives from it:
+One canonical [CHANGELOG.md](../CHANGELOG.md) holds separately marked **player RU/EN** and **development RU/EN** release records. Its latest dated Modern heading determines the deployed UI version, while the latest explicitly player-tagged heading supplies the **What’s new / Что нового** highlights and their distinct player version. Unmarked development-only releases never become game news.
 
-- the visible Remaked UI version;
-- the PWA cache version prefix;
-- the RU/EN highlights shown in the on-site **What’s new / Что нового** dialog.
+Deterministic [English](../CHANGELOG.en.md) and [Russian](../CHANGELOG.ru.md) changelogs show separate player/development headings and are checked against that source in CI. The popup's full history link follows the UI language; both languages use the same underlying release history. Historic entries without audience tags are labeled as unclassified rather than silently promoted to player news.
 
-That prevents the visible version, popup and full changelog from drifting apart.
+The normal PWA/Pages build still derives its version prefix and release manifest from the canonical source, avoiding a second editable set of player highlights.
 
 ## Wiki synchronization
 
