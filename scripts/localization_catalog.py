@@ -7,7 +7,10 @@ compatibility parity test while the XLSX backup is present in source control.
 from __future__ import annotations
 import json
 import pathlib
-from scripts.translation_workbook import TranslationCatalogs
+try:
+    from scripts.translation_workbook import TranslationCatalogs
+except ModuleNotFoundError:
+    from translation_workbook import TranslationCatalogs
 
 def load_migrated_catalogs(root: pathlib.Path) -> TranslationCatalogs:
     source = root / "localization" / "approved-translations.v1.json"
