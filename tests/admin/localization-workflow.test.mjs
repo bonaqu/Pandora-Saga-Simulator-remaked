@@ -22,7 +22,7 @@ function fixture(){
     sqlite.exec('BEGIN');
     try{
       const outputs=[];
-      for(const statement of commands)outputs.push(await (statement.all?.()??statement.run()));
+      for(const statement of commands)outputs.push(await statement.run());
       sqlite.exec('COMMIT');return outputs;
     }catch(error){sqlite.exec('ROLLBACK');throw error;}
   }};
