@@ -99,3 +99,36 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
 .result-label-filters label input { width: 16px; height: 16px; min-height: 0; accent-color: var(--green); }
 .result-label-filters output { font: 12px/1.4 system-ui, sans-serif; color: #c6cdbb; }
 #result-label-editor tbody tr[hidden] { display: none; }
+
+/* Accessible searchable UI translation editor; compatible with compact admin layout. */
+#ui-translation-editor { margin: 16px 0 22px; font: 12px/1.5 system-ui, sans-serif; }
+#ui-translation-editor details { border: 1px solid var(--border); padding: 10px 12px; }
+#ui-translation-editor summary { cursor: pointer; color: var(--green); font-weight: 700; padding: 5px 0; }
+#ui-translation-editor .result-label-help { color: #c6cdbb; max-width: 85ch; }
+#ui-translation-editor .result-label-status { color: #c6cdbb; min-height: 18px; }
+#ui-translation-editor .result-label-status[data-error="true"] { color: #ffcf9b; }
+#ui-translation-editor .ui-translation-filters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+#ui-translation-editor .ui-translation-filters > input[type="search"] { flex: 1 1 220px; min-width: 0; }
+#ui-translation-editor .ui-translation-filters select { min-width: 125px; }
+#ui-translation-editor .ui-translation-filters label { display: flex; align-items: center; gap: 6px; }
+#ui-translation-editor .ui-translation-filters input[type="checkbox"] { min-height: auto; }
+#ui-translation-editor .ui-translation-row {
+  display: grid; grid-template-columns: minmax(110px, 1.5fr) minmax(135px, 2fr) minmax(70px, 0.7fr) auto;
+  gap: 8px; align-items: center; border-top: 1px solid var(--border); padding: 8px 0;
+}
+#ui-translation-editor .ui-translation-identity { min-width: 0; overflow-wrap: anywhere; display: grid; gap: 2px; }
+#ui-translation-editor .ui-translation-identity small { color: #c6cdbb; }
+#ui-translation-editor .ui-translation-row input { min-width: 0; width: 100%; }
+#ui-translation-editor .ui-translation-actions, #ui-translation-editor .ui-translation-pagination {
+  display: flex; gap: 6px; align-items: center;
+}
+#ui-translation-editor .ui-translation-actions button { min-height: 34px; padding: 6px 8px; }
+#ui-translation-editor .ui-translation-pagination { justify-content: space-between; margin: 12px 0 2px; }
+@media (max-width: 850px) {
+  #ui-translation-editor .ui-translation-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  #ui-translation-editor .ui-translation-actions { grid-column: span 2; flex-wrap: wrap; }
+}
+@media (max-width: 440px) {
+  #ui-translation-editor .ui-translation-row { grid-template-columns: minmax(0, 1fr); }
+  #ui-translation-editor .ui-translation-actions { grid-column: auto; }
+}
