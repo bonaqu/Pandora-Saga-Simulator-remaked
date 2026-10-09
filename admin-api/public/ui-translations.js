@@ -36,8 +36,8 @@
     var panel = element('details'); panel.dataset.uiTranslationPanel = '';
     panel.appendChild(element('summary','Тексты Modern UI · RU / EN · 242 ключа'));
     panel.appendChild(element('p',
-      'Основной перевод хранится в translations.xlsx. Здесь публикуются только отличия от Excel; ' +
-      'пустое поле — использовать Excel. Изменения текста не меняют игровые характеристики. ' +
+      'Основной перевод сохранён в утверждённом каталоге. Здесь доступны прежние правки; ' +
+      'пустое поле — использовать базовый текст. Изменения текста не меняют игровые характеристики. ' +
       'Предусмотрены проверка плейсхолдеров и защита от перезаписи изменений в другой вкладке.',
       'result-label-help'));
     var render;
@@ -106,11 +106,11 @@
           var editor=element('input'); editor.type='text'; editor.maxLength=300;
           var key=item.locale+'\u0000'+item.id;
           editor.value=drafts.has(key)?drafts.get(key):item.value;
-          editor.placeholder=item.locale==='ru'?'Перевод RU из Excel (оставь пустым)':'Оригинал EN из Excel';
+          editor.placeholder=item.locale==='ru'?'Базовый текст RU (оставь пустым)':'Базовый текст EN';
           editor.setAttribute('aria-label',item.locale.toUpperCase()+' '+item.id);
-          var status=element('span',item.overridden?'Админка · v'+item.version:'Excel','ui-translation-status');
+          var status=element('span',item.overridden?'Админка · v'+item.version :'Базовый текст','ui-translation-status');
           var save=element('button','Сохранить'); save.type='button';
-          var reset=element('button','Вернуть Excel'); reset.type='button';reset.className='secondary';
+          var reset=element('button','Вернуть базовый текст'); reset.type='button';reset.className='secondary';
           reset.disabled=!item.overridden;
           var controls=element('div',null,'ui-translation-actions');
           controls.append(save,reset);
@@ -118,7 +118,7 @@
             var changed=editor.value!==item.value;
             if(changed) drafts.set(key,editor.value); else drafts.delete(key);
             row.dataset.uiUnsaved=String(changed);
-            status.textContent=changed?'Не сохранено':item.overridden?'Админка · v'+item.version:'Excel';
+            status.textContent=changed?'Не сохранено':item.overridden?'Админка · v'+item.version :'Базовый текст';
             save.disabled=!changed;
             updateDraftStatus();
           }
@@ -162,7 +162,7 @@
       locale.addEventListener('change',function(){page=0;render();});
       changed.addEventListener('change',function(){page=0;render();});
       render();
-      notify('Доступно '+(items.length/2)+' ключа для RU и EN. Опубликованные изменения имеют приоритет над Excel.');
+      notify('Доступно '+(items.length/2)+' ключа для RU и EN. Опубликованные изменения имеют приоритет над базовым переводом.');
     } catch(error) {if(token===generation)state.textContent=error.message;}
   }
   window.PandoraUiTranslationConsole={
