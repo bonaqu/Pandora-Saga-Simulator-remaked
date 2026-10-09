@@ -564,3 +564,45 @@ test('catalog search finds stable numeric ID of allocated new equipment',async()
   assert.deepEqual(created.edit.upgradeBonuses,edit.upgradeBonuses);
   assert.equal((await publicData(env)).revision,0,'draft never publishes automatically');
 });
+
+
+test('catalog list limits draft payload reads to the selected item kind',async()=>{
+  const {env}=fixture(),calls=[];
+  const original=env.DB.prepare.bind(env.DB);
+  env.DB.prepare=sql=>{calls.push(sql);return original(sql);};
+  for(const kind of ['equipment','soul','class','racial','active','passive']){
+    calls.length=0;
+    const response=await call(env,'catalog?kind='+kind);
+    assert.equal(response.status,200);
+    assert.ok(calls.some(sql=>sql.includes('FROM catalog_drafts WHERE id LIKE ?')),
+      kind+' must not fetch unrelated catalog draft payloads');
+    assert.ok(response.count>=0);
+  }
+});
+
+
+test('catalog batch receipts are committed with revision and safely recover a lost HTTP response',async()=>{
+  const {env,sqlite}=fixture();
+  const entry=await detail(env,'equipment.0.1');
+  entry.edit.names.ru='Проверка квитанции';
+  const staged=await save(env,entry);
+  const operationId='91577c0e-7844-41d8-81cb-98d7e2477746';
+  const input={operationId,expectedCatalogRevision:0,
+    items:[{id:entry.identity.id,expectedDraftVersion:staged.draftVersion}]};
+  const before=await call(env,'publish-batch-status?operationId='+operationId);
+  assert.equal(before.found,false);
+  const published=await call(env,'publish-batch',input);
+  assert.equal(published.ok,true);
+  assert.equal(published.catalogRevision,1);
+  assert.equal(published.operationId,operationId);
+  const receipt=await call(env,'publish-batch-status?operationId='+operationId);
+  assert.equal(receipt.found,true);
+  assert.equal(receipt.receipt.catalogRevision,1);
+  assert.equal(receipt.receipt.count,1);
+  assert.equal(receipt.receipt.operationId,operationId);
+  const retry=await call(env,'publish-batch',input);
+  assert.equal(retry.catalogRevision,1,'same request ID cannot publish again');
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_revisions').get().n,1);
+  assert.equal((await call(env,'drafts')).count,0);
+  await assert.rejects(()=>call(env,'publish-batch-status?operationId=bad'),/Invalid catalog operation ID/);
+});
