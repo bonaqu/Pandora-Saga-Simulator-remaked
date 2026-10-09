@@ -28,3 +28,7 @@ Translation changes never touch the Legacy calculation engine, item stats, or sa
 ## Validation
 
 Run `python3 -m unittest discover -s tests` or the project's ordinary CI before publishing code changes. Both static and browser checks verify stable IDs, placeholders, mobile layout, and restore of old publications. The JSON snapshot is immutable; any future source refresh must be reviewed as a dedicated migration, never blindly overwrite existing D1 edits.
+
+## Reviewed whole-word replacement
+
+The admin translation console can preview case-insensitive whole-word replacement scoped to the active locale, scope and category (untranslated entries by default). A separate dry-run lists full before/after text and per-row opt-in; the original English source is immutable. Each approved edit is rechecked against its effective text and version before posting, and partial progress is reported if another editor changes a row. The batch is limited to 100 matches at a time; the operator can narrow a category and repeat.
