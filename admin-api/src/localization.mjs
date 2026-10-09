@@ -65,8 +65,14 @@ function groupOf(kind) {
 }
 const isText=s=>typeof s==='string' && s.length<=4000 && !/[\x00-\x09\x0b-\x1f\x7f<>]/.test(s);
 const slots=s=>(s.match(/\{[A-Za-z0-9_]+\}/g)||[]).sort().join('|');
-async function overrides(env) {
-  return (await env.DB.prepare('SELECT scope, term_id, locale, text, version, updated_at FROM localization_overrides').all()).results;
+async function overrides(env,scope=null,locale=null) {
+  // The administrator usually edits one locale in one workspace. Fetch only
+  // that slice instead of all historical D1 overrides on every search.
+  const query=scope&&locale
+    ? 'SELECT scope, term_id, locale, text, version, updated_at FROM localization_overrides WHERE scope=? AND locale=?'
+    : 'SELECT scope, term_id, locale, text, version, updated_at FROM localization_overrides';
+  const statement=env.DB.prepare(query);
+  return (await (scope&&locale?statement.bind(scope,locale):statement).all()).results;
 }
 function overlayMap(rows) {
   return new Map(rows.map(row=>[keyOf(row.scope,row.term_id)+'\0'+row.locale,row]));
@@ -86,34 +92,44 @@ export async function localizationEffectiveSnapshot(env){
   };
 }
 
-async function legacyOverrides(env) {
+async function legacyOverrides(env,scope=null,locale=null) {
+  // Historical values are still authoritative when no new override exists,
+  // but unrelated scopes/languages need not be scanned for each admin page.
+  const needUi=!scope||scope==='ui',needGame=!scope||scope==='game';
   const [ui,result,head]=await Promise.all([
-    env.DB.prepare('SELECT locale,id,text FROM ui_translation_overrides WHERE text <> ?').bind('').all(),
-    env.DB.prepare('SELECT id,ru FROM result_label_overrides').all(),
-    env.DB.prepare('SELECT snapshot_json FROM catalog_head WHERE id=1').first()
+    needUi
+      ? (locale
+        ? env.DB.prepare('SELECT locale,id,text FROM ui_translation_overrides WHERE locale=? AND text <> ?').bind(locale,'').all()
+        : env.DB.prepare('SELECT locale,id,text FROM ui_translation_overrides WHERE text <> ?').bind('').all())
+      : Promise.resolve({results:[]}),
+    needGame&&(!locale||locale==='ru')
+      ? env.DB.prepare('SELECT id,ru FROM result_label_overrides').all()
+      : Promise.resolve({results:[]}),
+    needGame
+      ? env.DB.prepare('SELECT snapshot_json FROM catalog_head WHERE id=1').first()
+      : Promise.resolve(null)
   ]);
   const values=new Map();
-  for(const row of ui.results) values.set(keyOf('ui',row.id)+'\0'+row.locale,row.text);
-  for(const row of result.results) if(row.ru && row.ru !== '<excel-baseline>')
-    values.set(keyOf('game',row.id)+'\0ru',row.ru);
-  for(const entry of JSON.parse(head?.snapshot_json||'[]')) {
+  for(const row of ui.results)values.set(keyOf('ui',row.id)+'\\0'+row.locale,row.text);
+  for(const row of result.results) if(row.ru&&row.ru!=='<excel-baseline>')
+    values.set(keyOf('game',row.id)+'\\0ru',row.ru);
+  for(const entry of JSON.parse(head?.snapshot_json||'[]')){
     const edit=entry.edit||{},id=entry.identity?.id;
-    if (!id)continue;
-    const add=(term,fields)=> {
-      for(const locale of LOCALES) if(fields?.[locale])
-        values.set(keyOf('game',term)+'\0'+locale,fields[locale]);
+    if(!id)continue;
+    const add=(term,fields)=>{
+      const locales=locale?[locale]:LOCALES;
+      for(const lang of locales)if(fields?.[lang])
+        values.set(keyOf('game',term)+'\\0'+lang,fields[lang]);
     };
     add(id,edit.names);
-    if (entry.identity.kind==='active'||entry.identity.kind==='passive')
+    if(entry.identity.kind==='active'||entry.identity.kind==='passive')
       add('skill_detail.'+entry.identity.category+'.'+entry.identity.index+'.3',edit.description);
-    else if(entry.identity.kind==='equipment'||entry.identity.kind==='soul') {
+    else if(entry.identity.kind==='equipment'||entry.identity.kind==='soul')
       for(const field of ['description','notes','acquisition','modifiers'])
         add(id+'.'+field,edit[field]);
-    }
   }
   return values;
 }
-
 export async function publicLocalization(env) {
   const [published,legacy]=await Promise.all([overrides(env),legacyOverrides(env)]);
   const data={ui:{ru:{},en:{},jp:{},tw:{}},game:{ru:{},en:{},jp:{},tw:{}}};
@@ -156,7 +172,7 @@ export async function adminLocalization(request,env) {
     if(!['game','ui'].includes(scope)||!LOCALES.includes(locale)||q.length>120||!GROUPS.has(group)||
        !/^\d{1,5}$/.test(pageText)||!['all','missing','published'].includes(status))fail('Invalid search filters');
     const page=Number(pageText),pageSize=40;
-    const [newRows,legacy]=await Promise.all([overrides(env),legacyOverrides(env)]);
+    const [newRows,legacy]=await Promise.all([overrides(env,scope,locale),legacyOverrides(env,scope,locale)]);
     const index=overlayMap(newRows);
     const displayRow=row=>{
       const key=keyOf(scope,row.id)+'\0'+locale,override=index.get(key),older=legacy.get(key)||'';
@@ -205,7 +221,7 @@ export async function adminLocalization(request,env) {
   if(Object.hasOwn(input,'expectedEffective')){
     const oldText=existing
       ? existing.text || entry.baseline[input.locale]
-      : (await legacyOverrides(env)).get(keyOf(input.scope,input.id)+'\0'+input.locale)||entry.baseline[input.locale];
+      : (await legacyOverrides(env,input.scope,input.locale)).get(keyOf(input.scope,input.id)+'\0'+input.locale)||entry.baseline[input.locale];
     if(oldText!==input.expectedEffective)fail('Translation changed since preview; review before saving',409);
   }
   if(existing?.text===value)
