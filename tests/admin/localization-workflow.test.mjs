@@ -32,7 +32,7 @@ async function call(env,path,body,method=body?'POST':'GET'){
   const request=new Request(origin+'/api/admin/localization'+path,{method,
     headers:body?{'content-type':'application/json'}:{},
     body:body?JSON.stringify(body):undefined});
-  const response=path===''?await adminLocalization(request,env):await adminLocalizationWorkflow(request,env);
+  const response=path===''||path.startsWith('?')?await adminLocalization(request,env):await adminLocalizationWorkflow(request,env);
   const payload=await response.json();
   assert.equal(response.status,200,JSON.stringify(payload));
   return payload;
