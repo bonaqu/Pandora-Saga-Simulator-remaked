@@ -9,7 +9,7 @@
 - Исправлена подсветка пассивок Чести: изначально не выбрано ничего, можно выбрать только одну, повторное нажатие снимает её выбор.
 - Заголовок Honor переведён как «Честь», названия пяти сопротивлений сокращены без потери смысла, «Сопр. тьмы» исправлено на «Сопр. тьме».
 - Убрано зачёркивание у доступных для выбора усилений в современном интерфейсе. Расчёты не менялись.
-- Улучшена навигация по 43 редактируемым подписям в админке и добавлена ссылка на полную Excel-таблицу переводов.
+- Админка получила защищённый редактор 242 текстов Modern UI для RU/EN: поиск, страницы, опубликованные правки, контроль конфликтов и возврат к Excel. Редактор 43 подписей результатов также улучшен.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
@@ -18,7 +18,7 @@
 - Stabilized the three Enhancement parameter/input positions across all four languages and made popup layout responsive to actual panel width.
 - Fixed Honor selection highlighting: none selected by default, one at a time, and click again to clear.
 - Clarified Russian resistance labels and removed misleading Legacy strikethroughs from selectable Modern enhancements without changing damage formulas.
-- Added filtering and clear workbook guidance to the admin result-label editor.
+- Added a searchable, version-safe RU/EN editor for 242 Modern UI texts, with conflict detection and reset to workbook. The 43 calculated-stat captions editor remains separate.
 <!-- /release-notes:en -->
 
 ## Modern 3.42 — русские гильдейские бонусы и точный расчёт сопротивления, 2026-10-09
