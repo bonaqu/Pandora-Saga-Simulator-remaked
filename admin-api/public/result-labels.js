@@ -112,7 +112,9 @@
         syncState();
         input.addEventListener('input', syncState);
         async function commit(value) {
-          if (value === item.value) return;
+          // Reset must remain possible even when an old D1 override now equals
+          // the updated Excel baseline; the tombstone clears precedence safely.
+          if (value === item.value && !(item.overridden && value === item.baseline)) return;
           var requestVersion = item.version;
           save.disabled = reset.disabled = true;
           try {
