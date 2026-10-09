@@ -40,6 +40,7 @@
       'пустое поле — использовать Excel. Изменения текста не меняют игровые характеристики. ' +
       'Предусмотрены проверка плейсхолдеров и защита от перезаписи изменений в другой вкладке.',
       'result-label-help'));
+    var render;
     var toolbar = element('div',null,'ui-translation-filters');
     var search = element('input');
     search.type='search'; search.placeholder='Поиск ID или исходного текста…';
@@ -92,7 +93,7 @@
               item.value.toLocaleLowerCase('ru').includes(q));
         });
       }
-      function render() {
+      render = function render() {
         if (token !== generation) return;
         var found=visibleRecords(); page=Math.min(page,Math.max(0,Math.ceil(found.length/pageSize)-1));
         records.replaceChildren();
@@ -137,7 +138,7 @@
               if(token !== generation)return;
               // Keep the entered text on a network error or concurrent edit.
               notify(error.message+' Черновик сохранён в этой вкладке. Скопируй текст перед обновлением с сервера.',true);
-            } finally {if(token===generation)save.disabled=false;}
+            } finally {if(token===generation)save.disabled=(editor.value===item.value);}
           }
           save.addEventListener('click',function(){commit(editor.value);});
           reset.addEventListener('click',function(){commit('');});
@@ -155,7 +156,7 @@
         paging.append(previous,element('span',Math.min(start+1,found.length)+'–'+Math.min(start+pageSize,found.length)+' из '+found.length),next);
         records.appendChild(paging);
         count.textContent='Найдено '+found.length+' из '+items.filter(item=>item.locale===locale.value).length;
-      }
+      };
       search.addEventListener('input',function(){page=0;render();});
       locale.addEventListener('change',function(){page=0;render();});
       changed.addEventListener('change',function(){page=0;render();});
