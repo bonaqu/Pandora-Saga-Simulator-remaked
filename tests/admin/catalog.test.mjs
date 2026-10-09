@@ -529,3 +529,38 @@ test('batch publish keeps mechanically relevant impact revision and leaves unsel
   assert.equal(pending.count,1);assert.equal(pending.items[0].id,other.identity.id);
   assert.equal((await detail(env,other.identity.id)).hasDraft,true);
 });
+
+
+test('numeric refinement bonuses publish with build-impact revision and stay editable',async()=>{
+  const {env}=fixture();
+  const selected=await detail(env,'equipment.0.1');
+  selected.edit.upgradeBonuses=[{stat:11,value:1,unit:'flat',from:2,every:2,to:10}];
+  const saved=await save(env,selected);
+  const published=await publish(env,saved);
+  assert.equal(published.status,200);
+  assert.equal(published.catalogRevision,1);
+  assert.equal(published.impactRevision,1,'numeric refinement affects build calculations');
+  const record=(await publicData(env)).records.find(item=>item.id==='equipment.0.1');
+  assert.deepEqual(record.upgradeBonuses,selected.edit.upgradeBonuses);
+  const reopened=await detail(env,'equipment.0.1');
+  assert.deepEqual(reopened.edit.upgradeBonuses,selected.edit.upgradeBonuses);
+  reopened.edit.names.ru='Название меняется без механики';
+  const renamed=await save(env,reopened);
+  const next=await publish(env,renamed);
+  assert.equal(next.catalogRevision,2);
+  assert.equal(next.impactRevision,1,'translations are not mechanical changes');
+});
+
+test('catalog search finds stable numeric ID of allocated new equipment',async()=>{
+  const {env}=fixture(),edit=draftFromSource(null,'equipment');
+  edit.category=30;edit.names={en:'Item for engine ID search',ru:'Вещь для поиска',jp:'検索用の装備',tw:'搜尋用裝備'};
+  edit.upgradeBonuses=[{stat:11,value:1,unit:'flat',from:2,every:2,to:10}];
+  const created=await save(env,{edit,draftVersion:0,catalogRevision:0});
+  assert.equal(created.status,201);
+  const id=created.identity.category*10000+created.identity.index;
+  const list=await call(env,'catalog?kind=equipment&q='+id);
+  assert.ok(list.items.some(row=>row.id===created.identity.id&&row.engineId===id));
+  assert.equal(list.items.find(row=>row.id===created.identity.id).names.jp,'検索用の装備');
+  assert.deepEqual(created.edit.upgradeBonuses,edit.upgradeBonuses);
+  assert.equal((await publicData(env)).revision,0,'draft never publishes automatically');
+});
