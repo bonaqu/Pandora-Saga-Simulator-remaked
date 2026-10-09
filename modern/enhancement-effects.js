@@ -68,6 +68,23 @@
       (effects || []).forEach(function (effect) { pushMapped(effect, touched); });
     });
   }
+  function applyCustomUpgradeBonuses(touched) {
+    // Additive Modern-only refinement milestones. Data is validated by both
+    // the Worker catalog codec and Modern's snapshot schema before adoption.
+    if (!namespace.catalog || typeof namespace.catalog.item !== 'function') return;
+    window.Status.Equip.forEach(function(state){
+      var record=namespace.catalog.item('equipment',Number(state[0]));
+      if (!record || !Array.isArray(record.upgradeBonuses)) return;
+      var plus=Math.max(0,Math.min(10,Number(state[3])||0));
+      record.upgradeBonuses.forEach(function(rule){
+        if(plus<rule.from)return;
+        var last=Math.min(plus,rule.to);
+        var count=1+Math.floor((last-rule.from)/rule.every);
+        if(count>0)pushValue({stat:rule.stat,value:Number((rule.value*count).toFixed(2)),
+          percent:rule.unit==='percent'},touched);
+      });
+    });
+  }
   function applyUnison(touched) {
     var equipped = Object.create(null);
     window.Status.Equip.forEach(function (state) {
@@ -108,6 +125,7 @@
     applyBaseSupplement(touched);
     applyItemForth(touched);
     applyUnison(touched);
+    applyCustomUpgradeBonuses(touched);
     recalculate(touched);
     return touched;
   }
