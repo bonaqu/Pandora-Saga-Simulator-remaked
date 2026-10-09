@@ -53,11 +53,21 @@ test('Updates provides an accessible on-site release panel without altering the 
   await expect(dialog.locator('li')).toHaveCount(await page.evaluate(() => PandoraRemakedRelease.highlights.en.length));
   await expect(dialog.locator('li').first()).toHaveCSS('font-size', '15px');
   await expect(dialog.locator('li').first()).toHaveCSS('letter-spacing', 'normal');
-  await expect(dialog.getByRole('link', { name: 'Full changelog', exact: true })).toHaveAttribute('href', /CHANGELOG\.md$/);
-  await expect(dialog.getByRole('link', { name: 'Report a problem', exact: true })).toHaveAttribute('href', /issues\/new\?template=bug_report.yml$/);
+  await expect(dialog.getByRole('link', { name: 'Full changelog', exact: true })).toHaveAttribute('href', /CHANGELOG\.en\.md$/);
+  await expect(dialog.getByRole('link', { name: 'Report a problem', exact: true })).toHaveAttribute('href', /issues\/new\?template=01-bug.yml$/);
+  await expect(dialog.locator('[data-remaked-player-version]')).toContainText(
+    'Modern ' + await page.evaluate(() => PandoraRemakedRelease.playerVersion));
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
   await expect(trigger).toBeFocused();
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+  await page.getByRole('button', { name: 'Обновления', exact: true }).click();
+  await expect(dialog.getByRole('link', { name: 'Полный список изменений' }))
+    .toHaveAttribute('href', /CHANGELOG\.ru\.md$/);
+  await expect(dialog.locator('[data-remaked-player-version]')).toContainText('Последние изменения для игроков:');
+  await expect(dialog.locator('li').first())
+    .toHaveText(await page.evaluate(() => PandoraRemakedRelease.highlights.ru[0]));
+  await page.keyboard.press('Escape');
   expect(await page.evaluate(() => Store())).toBe(before);
   expect(errors).toEqual([]);
 });
