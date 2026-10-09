@@ -19,6 +19,7 @@
   var buildNameInput = null;
   var buildCode = null;
   var shareUrl = null;
+  var SHARE_API = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/share';
   var initialized = false;
   var suppressAutosave = false;
   var previousBodyOverflow = '';
@@ -214,7 +215,7 @@
   }
 
   function detachLoadedShareLink() {
-    if (location.hash.indexOf('#build=') !== 0) return true;
+    if (location.hash.indexOf('#build=') !== 0 && location.hash.indexOf('#b=') !== 0) return true;
     try {
       var url = new URL(location.href); url.hash = '';
       history.replaceState(history.state, '', url.href);
@@ -410,12 +411,27 @@
   var shareRequest = 0;
   async function loadSharedBuild() {
     var request = ++shareRequest, hash = window.location.hash;
-    if (window.location.hash.indexOf('#build=') !== 0) return false;
+    if (hash.indexOf('#build=') !== 0 && hash.indexOf('#b=') !== 0) return false;
     var payload, intent;
     try {
       intent = beginLoadIntent();
-      if (window.location.hash.length > 20000) throw new Error('Share link too large');
-      payload = namespace.shareCodec.decode(decodeURIComponent(window.location.hash.slice(7)));
+      if (hash.length > 20000) throw new Error('Share link too large');
+      var code;
+      if (hash.indexOf('#b=') === 0) {
+        var slug = hash.slice(3);
+        if (!/^[A-Za-z0-9_-]{12}$/.test(slug)) throw new Error('Invalid short share link');
+        var response = await fetch(SHARE_API + '/' + encodeURIComponent(slug), {
+          cache: 'no-store', credentials: 'omit', signal: AbortSignal.timeout(10000)
+        });
+        if (!response.ok) throw new Error('Shared build not found');
+        var result = await response.json();
+        if (!result || result.ok !== true || typeof result.code !== 'string' ||
+            !/^S1\.[A-Za-z0-9_-]{10,6000}$/.test(result.code)) throw new Error('Invalid shared build');
+        code = result.code;
+      } else {
+        code = decodeURIComponent(hash.slice(7));
+      }
+      payload = namespace.shareCodec.decode(code);
       if (namespace.catalog) { var migrated = await namespace.catalog.prepareCurrentPayload(payload); payload = migrated.payload; }
       if (request !== shareRequest || hash !== window.location.hash || !currentLoadIntent(intent)) return false;
       // Links use plain numeric Legacy CSV, never untrusted compressed input.
@@ -437,15 +453,42 @@
   }
 
   async function shareCurrentBuild() {
+    var url = new URL(window.location.href);
+    var shortReady = false, code;
     try {
-      var url = new URL(window.location.href);
+      code = namespace.shareCodec.encode(currentPayload());
+      // The stored link contains only a random-looking 12-character ID.
+      // The URL never carries the entire build payload when Cloudflare is up.
+      // Anonymous sharing is opt-in through this explicit button.
+      try {
+        var response = await fetch(SHARE_API, {
+          method: 'POST', mode: 'cors', credentials: 'omit', cache: 'no-store',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: code }),
+          signal: AbortSignal.timeout(10000)
+        });
+        if (!response.ok) throw new Error('Share service unavailable');
+        var saved = await response.json();
+        if (!saved || saved.ok !== true || !/^[A-Za-z0-9_-]{12}$/.test(saved.slug))
+          throw new Error('Invalid short link');
+        url.hash = 'b=' + saved.slug; shortReady = true;
+      } catch (networkError) {
+        // Do not discard a valid working link when short-link storage is down.
+        // This is explicitly a fallback, not a falsely advertised short link.
+        url.hash = 'build=' + code;
+      }
       url.search = '';
-      url.hash = 'build=' + namespace.shareCodec.encode(currentPayload());
       shareUrl.value = url.href;
       shareUrl.hidden = false;
       if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error('Clipboard unavailable');
       await navigator.clipboard.writeText(url.href);
-      setManagerStatus(t('builds.shareCopied', null, 'Build link copied.'), 'success');
+      if (shortReady) setManagerStatus(t('builds.shareCopied', null, 'Build link copied.'), 'success');
+      else {
+        var locale = i18n?.getLocale?.() || 'en';
+        setManagerStatus(locale === 'ru'
+          ? 'Сервис коротких ссылок недоступен. Скопирована рабочая резервная ссылка.'
+          : 'Short links are unavailable. A working fallback link was copied.', 'warning');
+      }
     } catch (error) {
       if (shareUrl && shareUrl.value) {
         shareUrl.hidden = false; shareUrl.focus(); shareUrl.select();
