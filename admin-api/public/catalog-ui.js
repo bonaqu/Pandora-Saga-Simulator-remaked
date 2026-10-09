@@ -601,7 +601,8 @@
     draftBoard.appendChild(actions);
     var entries=node('div',undefined,'catalog-draft-entries');
     knownDrafts.forEach(function(item){
-      var row=node('label',undefined,'catalog-draft-entry');
+      var row=node('div',undefined,'catalog-draft-entry');
+      var label=node('label',undefined,'catalog-draft-entry-label');
       var box=node('input');box.type='checkbox';box.checked=selectedDrafts.get(item.id)===item.version;box.disabled=batchPending;
       box.addEventListener('change',function(){
         if(box.checked)selectedDrafts.set(item.id,item.version);
@@ -611,7 +612,16 @@
       var description=node('span',undefined,'catalog-draft-entry-info');
       description.append(node('strong',item.name||item.englishName||item.id),
         node('small',item.id+' · '+item.kind+' · черновик v'+item.version));
-      row.append(box,description);entries.append(row);
+      label.append(box,description);
+      var open=button('Открыть',async function(){
+        if(batchPending||!canLeave())return;
+        kind.value=item.kind;selectedKind=item.kind;
+        newButton.disabled=item.kind!=='equipment'&&item.kind!=='soul';
+        search.value=item.id;page=0;
+        await loadList();
+        await openItem(item.id);
+      },'secondary');
+      row.append(label,open);entries.append(row);
     });
     draftBoard.appendChild(entries);
   }
