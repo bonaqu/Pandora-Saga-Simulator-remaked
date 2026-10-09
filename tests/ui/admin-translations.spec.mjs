@@ -1,97 +1,69 @@
-import { test, expect } from '@playwright/test';
+import {test,expect} from '@playwright/test';
 import fs from 'node:fs';
-const origin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
 
-test('admin UI drafts survive search, pagination and locale changes, then save safely', async ({page}) => {
-  await page.setViewportSize({width:1280,height:900});
-  const baseIds=['header.updates','hero.version',...Array.from({length:45},(_,i)=>'test.'+i)];
-  const changes=new Map(); let conflict=false;
-  const records=['ru','en'].flatMap(locale=>baseIds.map(id=>({
-    id,locale,source:id==='header.updates'?'Updates':id,value:'',
-    version:0,overridden:false
-  })));
+const origin='https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
+
+test('historical calculator result labels are editable in unified translations without duplicate legacy panels',async({page})=>{
+  let revision=0,override=null;
+  const writes=[];
   await page.route(origin+'/**',async route=>{
-    const url=new URL(route.request().url()),path=url.pathname;
-    if(path==='/api/session') return route.fulfill({json:{
-      ok:true,username:'admin',csrfToken:'only-synthetic-test-csrf',expiresAt:9999999999
-    }});
-    if(path==='/api/admin/localization') return route.fulfill({json:{ok:true,schemaVersion:1,scope:'game',locale:'ru',page:0,pageSize:40,total:0,counts:{ui:242,game:2920},items:[]}});
-    if(path==='/api/admin/ui-translations') {
-      if(route.request().method()==='GET') return route.fulfill({json:{
-        ok:true,schemaVersion:1,source:'approved-translations.v1.json',items:records
-      }});
-      const input=route.request().postDataJSON();
-      if(conflict) return route.fulfill({status:409,json:{ok:false,message:'Translation changed in another session'}});
-      const row=records.find(row=>row.locale===input.locale&&row.id===input.id);
-      if(input.expectedVersion!==row.version)return route.fulfill({status:409,json:{ok:false,message:'Stale version'}});
-      row.version++;row.value=input.value;row.overridden=Boolean(input.value);
-      changes.set(input.locale+':'+input.id,input.value);
-      return route.fulfill({json:{ok:true,id:row.id,locale:row.locale,value:row.value,
-        version:row.version,overridden:row.overridden}});
+    const req=route.request(),url=new URL(req.url()),path=url.pathname;
+    if(path==='/api/session')return route.fulfill({json:{
+      ok:true,username:'admin',csrfToken:'synthetic-csrf',expiresAt:9999999999}});
+    if(path==='/api/admin/localization'){
+      if(req.method()==='POST'){
+        const input=req.postDataJSON();writes.push(input);
+        expect(req.headers()['x-csrf-token']).toBe('synthetic-csrf');
+        expect(input.id).toBe('calculator.status.0');
+        expect(input.expectedVersion).toBe(revision);
+        expect(input.expectedEffective).toBe(override===null?'Старый D1 перевод':override||'ОЗ');
+        override=input.value;revision++;
+        return route.fulfill({json:{ok:true,scope:'game',locale:'ru',id:input.id,version:revision,override}});
+      }
+      const group=url.searchParams.get('group')||'all',
+        scope=url.searchParams.get('scope')||'game',
+        lang=url.searchParams.get('locale')||'ru',
+        q=(url.searchParams.get('q')||'').toLowerCase();
+      const matched=scope==='game'&&(group==='all'||group==='stats')&&
+        (!q||['calculator.status.0','LP','ОЗ','Старый D1 перевод'].some(s=>s.toLowerCase().includes(q)));
+      const row={scope:'game',id:'calculator.status.0',locale:lang,kind:'calculator_label',
+        source:{en:'LP',jp:'LP',tw:'HP'},baseline:lang==='ru'?'ОЗ':'LP',
+        baselineOrigin:'import',effective:override===null?'Старый D1 перевод':override||'ОЗ',
+        legacyValue:'Старый D1 перевод',version:revision,
+        origin:override===null?'previous-admin':override?'admin':'import'};
+      return route.fulfill({json:{ok:true,schemaVersion:1,scope,locale:lang,group,page:0,pageSize:40,
+        total:matched?1:0,counts:{ui:242,game:2920},items:matched?[row]:[]}});
     }
-    if(path==='/api/admin/result-labels') return route.fulfill({json:{
-      ok:true,schemaVersion:1,items:[]
-    }});
-    const file=(path==='/admin'||path==='/admin/')?'admin.html':path.replace(/^\//,'');
-    const assets=new Set(['admin.html','admin.css','admin.js','catalog-ui.js','result-labels.js','ui-translations.js','localization-console.js','localization-bulk.js']);
-    if(!assets.has(file))return route.fulfill({status:404,body:'Not found'});
-    // This suite exercises wording editors; catalog integration has its own tests.
-    if(file==='catalog-ui.js')return route.fulfill({contentType:'text/javascript',body:''});
-    const data=fs.readFileSync(new URL('../../admin-api/public/'+file,import.meta.url),'utf8');
-    return route.fulfill({body:data,contentType:file.endsWith('.html')?'text/html':file.endsWith('.css')?'text/css':'text/javascript'});
+    const file=(path==='/admin'||path==='/admin/')?'admin.html':path.slice(1);
+    if(['catalog-ui.js','result-labels.js','ui-translations.js'].includes(file))
+      return route.fulfill({contentType:'text/javascript',body:''});
+    if(['admin.html','admin.css','admin.js','localization-console.js','localization-bulk.js'].includes(file))
+      return route.fulfill({body:fs.readFileSync(new URL('../../admin-api/public/'+file,import.meta.url),'utf8'),
+        contentType:file.endsWith('.html')?'text/html':file.endsWith('.css')?'text/css':'text/javascript'});
+    return route.fulfill({status:404});
   });
   await page.goto(origin+'/admin');
-  const panel=page.locator('#ui-translation-editor details');
-  // Previous editors stay collapsed under an advanced compatibility section.
-  await page.locator('#ui-translation-editor').evaluate(node => {
-    const parent=node.closest('details.capability-note');
-    if(parent)parent.open=true;
-  });
-  await expect(panel).toBeVisible();
-  await panel.locator('summary').click();
-  const row=page.locator('[data-ui-translation-id="header.updates"][data-ui-locale="ru"]');
-  const editor=row.locator('input');
-  await editor.fill('История обновлений');
-  await expect(row).toHaveAttribute('data-ui-unsaved','true');
-  await expect(page.locator('[data-ui-draft-count]')).toContainText('1');
-  const search=panel.getByRole('searchbox');
-  await search.fill('test.45');
-  await expect(row).toHaveCount(0);
-  await search.fill('');
-  await expect(editor).toHaveValue('История обновлений');
-  await panel.getByRole('button',{name:'Вперёд →'}).click();
-  await panel.getByRole('button',{name:'← Назад'}).click();
-  await expect(editor).toHaveValue('История обновлений');
-  await panel.getByRole('combobox',{name:'Язык перевода'}).selectOption('en');
-  await panel.getByRole('combobox',{name:'Язык перевода'}).selectOption('ru');
-  await expect(editor).toHaveValue('История обновлений');
-
-  conflict=true;
-  await row.getByRole('button',{name:'Сохранить'}).click();
-  await expect(editor).toHaveValue('История обновлений');
-  await expect(page.locator('[data-ui-draft-count]')).toContainText('1');
-  await expect(panel.locator('.result-label-status')).toContainText('Translation changed in another session');
-  conflict=false;
-  await row.getByRole('button',{name:'Сохранить'}).click();
-  await expect(page.locator('[data-ui-draft-count]')).toContainText('0');
-  expect(changes.get('ru:header.updates')).toBe('История обновлений');
-  await expect(row).toHaveAttribute('data-ui-unsaved','false');
-  await editor.fill('Не надо сохранять');
-  await editor.press('Escape');
-  await expect(editor).toHaveValue('История обновлений');
-  await expect(page.locator('[data-ui-draft-count]')).toContainText('0');
-  await editor.fill('Отменяем черновик');
-  page.once('dialog',dialog=>dialog.accept());
-  await panel.getByRole('button',{name:'Отменить черновики'}).click();
-  await expect(editor).toHaveValue('История обновлений');
-  await expect(page.locator('[data-ui-draft-count]')).toContainText('0');
+  await expect(page.locator('#admin-workspace')).toBeVisible();
+  await expect(page.locator('#result-label-editor')).toHaveCount(0);
+  await expect(page.locator('#ui-translation-editor')).toHaveCount(0);
+  await expect(page.getByText('Дополнительные редакторы прежних переводов')).toHaveCount(0);
+  const panel=page.locator('#localization-console');
+  await panel.getByRole('combobox',{name:'Категория переводов'}).selectOption('stats');
+  const row=panel.locator('[data-localization-id="calculator.status.0"]');
+  await expect(row.locator('textarea')).toHaveValue('Старый D1 перевод');
+  await row.getByRole('button',{name:'Вернуть базовый текст'}).click();
+  await expect(row.locator('textarea')).toHaveValue('ОЗ');
+  await expect(panel).toContainText('Базовый текст восстановлен');
+  expect(writes).toHaveLength(1);
+  expect(writes[0].value).toBe('');
+  await page.reload();
+  await expect(panel.locator('[data-localization-id="calculator.status.0"] textarea')).toHaveValue('ОЗ');
 });
 
-test('mobile admin UI translation cards fit the viewport',async({page})=>{
+test('unified result-label translation editor fits mobile without horizontal clipping',async({page})=>{
   await page.setViewportSize({width:390,height:844});
-  // Pure static smoke prevents regressions of the responsive CSS contract.
   await page.route(origin+'/admin.css',route=>route.fulfill({contentType:'text/css',body:fs.readFileSync(new URL('../../admin-api/public/admin.css',import.meta.url),'utf8')}));
-  await page.setContent('<link rel="stylesheet" href="'+origin+'/admin.css"><section id="ui-translation-editor"><div class="ui-translation-row" data-ui-unsaved="true"><div class="ui-translation-identity"><strong>long.interface.translation.name</strong></div><input value="Русский перевод"><span>Черновик</span><div class="ui-translation-actions"><button>Сохранить</button><button>Вернуть Excel</button></div></div></section>');
+  await page.setContent('<link rel="stylesheet" href="'+origin+'/admin.css"><section id="localization-console"><div class="localization-panel"><article class="localization-item"><div class="localization-identity"><strong>calculator.status.42</strong></div><textarea>Русский перевод</textarea><div class="localization-item-foot"><span>Черновик</span><button>Опубликовать</button><button>Вернуть базовый текст</button></div></article></div></section>');
   const widths=await page.evaluate(()=>({viewport:document.documentElement.clientWidth,content:document.documentElement.scrollWidth}));
   expect(widths.content).toBeLessThanOrEqual(widths.viewport+1);
 });
