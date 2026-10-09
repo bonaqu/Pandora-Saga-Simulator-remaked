@@ -91,7 +91,7 @@ Modern supports additional numeric equipment enhancement bonuses in character ca
 
 Modern checks a small no-cache release manifest on startup, when returning to the tab, after reconnecting and periodically while visible. A newer release waits for a short idle moment, commits the active field, flushes autosave and reloads versioned assets. The site is intentionally online-only; no manual cache or cookie cleanup should normally be needed.
 
-The on-site **Updates / What’s new** dialog displays only the most recent section explicitly marked for **players** in [CHANGELOG.md](CHANGELOG.md). The displayed Remaked UI version is taken from the latest deployed release, while the dialog also identifies the latest player-facing release independently. Internal-only updates never appear in its highlights. The **Full changelog** link opens the matching [English](CHANGELOG.en.md) or [Russian](CHANGELOG.ru.md) history, with player and technical sections labeled separately.
+The on-site **Updates / What’s new** dialog displays only the most recent section explicitly marked for **users** in [CHANGELOG.md](CHANGELOG.md). The displayed Remaked UI version is taken from the latest deployed release, while the dialog also identifies the latest user-facing release independently. Internal-only updates never appear in its highlights. The **Full changelog** link opens the matching [English](CHANGELOG.en.md) or [Russian](CHANGELOG.ru.md) history, with **For users** and **Development and technical changes** sections labeled separately.
 
 Public documentation covers player help, project architecture, history, release behavior and the roadmap.
 
