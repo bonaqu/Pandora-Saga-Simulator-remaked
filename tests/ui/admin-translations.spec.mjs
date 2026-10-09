@@ -34,6 +34,8 @@ test('admin UI drafts survive search, pagination and locale changes, then save s
     const file=(path==='/admin'||path==='/admin/')?'admin.html':path.replace(/^\//,'');
     const assets=new Set(['admin.html','admin.css','admin.js','catalog-ui.js','result-labels.js','ui-translations.js']);
     if(!assets.has(file))return route.fulfill({status:404,body:'Not found'});
+    // This suite exercises wording editors; catalog integration has its own tests.
+    if(file==='catalog-ui.js')return route.fulfill({contentType:'text/javascript',body:''});
     const data=fs.readFileSync(new URL('../../admin-api/public/'+file,import.meta.url),'utf8');
     return route.fulfill({body:data,contentType:file.endsWith('.html')?'text/html':file.endsWith('.css')?'text/css':'text/javascript'});
   });
