@@ -177,3 +177,30 @@ test('curated approved-display defaults stay identical to visible Modern fallbac
   }
   assert.equal(Object.keys(curated.ru.ui).length+Object.keys(curated.ru.game).length,27);
 });
+
+test('preview-guarded bulk writes preserve English and reject stale effective UI/catalog texts',async()=>{
+  const en='Updates',original={locale:'ru',id:'header.updates',text:'Warrior ' + en};
+  const env=fixture({legacyUi:[original]});
+  const base={scope:'ui',id:'header.updates',locale:'ru',value:'Воин Updates',expectedVersion:0};
+  await assert.rejects(()=>adminLocalization(post({...base,expectedEffective:'Old Warrior Updates'}),env),
+    /Translation changed since preview/);
+  assert.equal(env.updates.size,0,'a stale preview must not write D1');
+  const applied=await (await adminLocalization(post({...base,expectedEffective:'Warrior Updates'}),env)).json();
+  assert.equal(applied.version,1);
+  const view=(await (await adminLocalization(get('/api/admin/localization?scope=ui&locale=ru&q=header.updates'),env)).json()).items;
+  assert.equal(view.find(row=>row.id==='header.updates').effective,'Воин Updates');
+  assert.equal(original.text,'Warrior Updates','old published D1 data is immutable');
+  assert.equal((await (await adminLocalization(get('/api/admin/localization?scope=ui&locale=en&q=header.updates'),env)).json())
+    .items.find(row=>row.id==='header.updates').source.en,en);
+  await assert.rejects(()=>adminLocalization(post({...base,expectedVersion:1,expectedEffective:'Warrior Updates',value:'Новое'}),env),
+    /Translation changed since preview/);
+  await assert.rejects(()=>adminLocalization(post({...base,expectedVersion:1,expectedEffective:55}),env),
+    /Invalid translation edit/);
+});
+
+test('preview-guarded reset uses the exact checked language and stable item ID',async()=>{
+  const env=fixture(),base={scope:'game',id:'skill_detail.7.5.3',locale:'ru',value:'Воин в строю',
+    expectedVersion:0,expectedEffective:'A skilled Warrior attacks.'};
+  await assert.rejects(()=>adminLocalization(post(base),env),/Translation changed since preview/);
+  assert.equal(env.updates.size,0);
+});
