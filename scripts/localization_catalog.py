@@ -2,15 +2,22 @@
 
 The JSON is an immutable recovery baseline exported before any D1 cutover.
 Only admin Cloudflare D1 overrides are editable after migration. Keep a
-compatibility parity test while the XLSX backup is present in source control.
+All texts are edited using authenticated Cloudflare admin revisions.
 """
 from __future__ import annotations
 import json
 import pathlib
-try:
-    from scripts.translation_workbook import TranslationCatalogs
-except ModuleNotFoundError:
-    from translation_workbook import TranslationCatalogs
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class TranslationCatalogs:
+    ui_russian: dict[str, str]
+    ui_japanese: dict[str, str]
+    ui_traditional_chinese: dict[str, str]
+    game_russian: dict[str, str]
+    ui_english: dict[str, str]
+    game_english: dict[str, str]
+    total: int
 
 def load_migrated_catalogs(root: pathlib.Path) -> TranslationCatalogs:
     source = root / "localization" / "approved-translations.v1.json"
