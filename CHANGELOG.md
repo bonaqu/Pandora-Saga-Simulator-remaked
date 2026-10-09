@@ -1,5 +1,31 @@
 # Changelog
 
+## Modern 3.56 — локализованная история обновлений и удобство редактора, 2026-10-09
+
+<!-- release-notes:player:ru -->
+- Полный журнал обновлений теперь доступен отдельно на русском и английском: история разделяет изменения для игроков и технические изменения.
+- Окно «Что нового» явно указывает версию последнего игрового обновления отдельно от общей версии интерфейса; ссылка на журнал соответствует языку сайта.
+- Исправлена ссылка «Сообщить о проблеме» на действующую форму GitHub.
+<!-- /release-notes:player:ru -->
+
+<!-- release-notes:player:en -->
+- The full release history now has separate Russian and English editions, with player changes and technical updates clearly labeled.
+- What's New shows the latest player-facing release independently of the overall UI version and links to the matching language.
+- The Report a Problem link now opens the current GitHub issue form.
+<!-- /release-notes:player:en -->
+
+<!-- admin-notes:ru -->
+- Внутри каталога создание нового активного или пассивного умения стало доступно через кнопку «Новый навык из выбранного» после выбора исходного шаблона; новые классы и расовые пассивки не создаются.
+- Для карточек предметов и навыков добавлена индикация заполнения языковых полей, быстрые переходы между редакторами и Ctrl+S для сохранения черновика.
+- Два языковых журнала собираются детерминированно из одного CHANGELOG.md; контроль синхронизации входит в тесты, отдельного ручного ведения копий нет.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Skill creation from an existing active/passive template is accessible from the catalog toolbar; new classes and racial slots remain unsupported.
+- Added four-language field coverage hints, direct admin section navigation, and Ctrl+S draft saving.
+- RU/EN release archives are derived deterministically from one canonical CHANGELOG.md and checked in regression tests.
+<!-- /admin-notes:en -->
+
 ## Modern 3.55 — удобство и надёжность внутренней админки, 2026-10-09
 
 <!-- admin-notes:ru -->
