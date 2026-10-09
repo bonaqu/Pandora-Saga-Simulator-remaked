@@ -1,5 +1,31 @@
 # Changelog
 
+## Modern 3.58 — единый поиск переводов новых записей, 2026-10-09
+
+<!-- release-notes:user:ru -->
+- Поиск переводов в админке теперь показывает опубликованные новые предметы, души и умения вместе с существующими переводами.
+- Для этих записей открывается одна исходная карточка каталога: все языки RU / EN / JP / TW редактируются и публикуются без второй копии текста.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Admin translation search now includes newly published equipment, Souls and skill variants alongside existing terms.
+- These entries open the canonical catalog editor for RU / EN / JP / TW rather than creating a second writable copy of their text.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- В индекс переводов добавлена доступная только после публикации проекция из действующего снимка каталога; неопубликованные черновики не раскрываются в поиске.
+- Новые записи помечены как управляемые каталогом, поэтому прямые действия публикации и массовой замены слов в отдельной системе переводов для них недоступны.
+- Из центра переводов добавлен безопасный переход по ID в редактор каталога с защитой незаписанных полей; после подтверждённой публикации индекс обновляется без перезагрузки.
+- Схема D1, канонические ID, формулы и ревизии влияния на билды не изменены; добавлены серверные и браузерные регрессионные проверки.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Project published catalog item/skill text into the unified admin search without exposing unpublished drafts.
+- Catalog-managed entries are read-only in localization and excluded from independent bulk translation writes; the catalog remains the only writer.
+- Guarded in-page navigation preserves unsaved form changes; publishing refreshes the search index. No D1 migration, calculation changes or ID rewrites.
+- Server and browser regression checks cover the single-writer boundary.
+<!-- /admin-notes:en -->
+
 ## Modern 3.57 — изменения для пользователей и проверка публикаций, 2026-10-09
 
 <!-- release-notes:user:ru -->
