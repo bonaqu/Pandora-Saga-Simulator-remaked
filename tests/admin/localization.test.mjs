@@ -70,8 +70,12 @@ test('versioned translation writes and resets do not affect old D1 rows',async()
   const reset=await (await adminLocalization(post({...body,value:'',expectedVersion:1}),env)).json();
   assert.equal(reset.version,2);
   const after=await (await publicLocalization(env)).json();
-  assert.equal(after.overrides.game.ru[id],undefined);
+  assert.equal(after.overrides.game.ru[id],'Пылающая стрела');
+  const listed=await (await adminLocalization(get('/api/admin/localization?scope=game&locale=ru&q=skill_entry.7.5'),env)).json();
+  assert.equal(listed.items.find(x=>x.id===id).effective,'Пылающая стрела');
   await assert.rejects(()=>adminLocalization(post({...body,expectedVersion:1}),env),/Translation changed elsewhere/);
+  const search=await (await adminLocalization(get('/api/admin/localization?scope=game&locale=ru&q=Пылающая'),env)).json();
+  assert.ok(search.items.some(x=>x.id===id));
 });
 test('long multiline descriptions are safe; HTML and bad translation placeholders fail',async()=>{
   const env=fixture();
