@@ -447,8 +447,9 @@
     editor.appendChild(node('h3', edit.id ? edit.names.en : 'Новая запись'));
     var numericId=current.identity&&['equipment','soul'].includes(edit.kind)
       ? (edit.kind==='equipment'?current.identity.category*10000+current.identity.index:current.identity.index) : null;
-    editor.appendChild(node('p', (numericId===null?'Числовой ID выдаст сервер':'Игровой ID: '+numericId)+
-      ' · '+(edit.id||'Технический ID ещё не назначен')+' · '+
+    var numericLabel=['equipment','soul'].includes(edit.kind)
+      ? (numericId===null?'Числовой ID выдаст сервер':'Игровой ID: '+numericId)+' · ' : '';
+    editor.appendChild(node('p', numericLabel+(edit.id||'Технический ID ещё не назначен')+' · '+
       (current.hasDraft?'ЧЕРНОВИК '+current.draftVersion:current.published?'ОПУБЛИКОВАНО':edit.id?'ИСТОЧНИК':'НОВАЯ НЕСОХРАНЁННАЯ ЗАПИСЬ'),
       'item-identity'));
     review();
