@@ -52,7 +52,7 @@ No. Versioned catalog context is kept so an old build or shared link does not si
 
 The preserved source contains English, Japanese and Traditional Chinese game data. Modern also provides a Russian interface and an editable translation workflow.
 
-See [LOCALIZATION_FOR_BEGINNERS.ru.md](LOCALIZATION_FOR_BEGINNERS.ru.md).
+Translations are available in the simulator in supported languages; administrator operating instructions are not publicly distributed.
 
 ## Does the site need a backend?
 
