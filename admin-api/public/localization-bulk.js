@@ -72,7 +72,8 @@
       busy=value;scan.disabled=value;word.disabled=value;translated.disabled=value;missing.disabled=value;
       publish.disabled=value||!proposal||!Array.from(selections.values()).some(Boolean);
       cancel.disabled=value||!proposal;
-      for(const control of results.querySelectorAll('button, input[type="checkbox"], textarea'))control.disabled=value;
+      for(const control of results.querySelectorAll('button, input[type="checkbox"], textarea'))
+        control.disabled=value || control.dataset.blocked==='true';
     }
     function invalidate(){
       epoch++;proposal=null;selections.clear();editing.clear();results.replaceChildren();
@@ -148,6 +149,7 @@
         const card=node('article',undefined,'localization-bulk-row');
         const label=node('label');
         const checkbox=node('input');checkbox.type='checkbox';checkbox.checked=!item.blocked;checkbox.disabled=item.blocked;
+        checkbox.dataset.blocked=String(item.blocked);
         checkboxes.set(item.id,checkbox);selections.set(item.id,checkbox.checked);
         checkbox.addEventListener('change',()=>{selections.set(item.id,checkbox.checked);updateCounts();});
         label.append(checkbox,document.createTextNode(' '+item.id+' · '+item.kind+(item.blocked?' · есть несохранённый черновик':'')));
