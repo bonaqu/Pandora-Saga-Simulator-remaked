@@ -189,7 +189,7 @@
       check(!seen['id:' + record.id], 'Duplicate stable item ID'); seen['id:' + record.id] = true;
       check(record.engineId === (record.kind === 'equipment' ? record.category * 10000 + record.index : record.index), 'Encoded item ID mismatch');
       var original = sourceRow(record);
-      check(original ? record.id === term : record.id.indexOf('modern.' + record.kind + '.') === 0 && record.engineKey === 'Modern:' + record.id, 'Item identity does not match source');
+      check(original ? record.id === term : (record.id === term || record.id.indexOf('modern.' + record.kind + '.') === 0) && record.engineKey === 'Modern:' + record.id, 'Item identity does not match source');
       check(Number.isInteger(record.level) && record.level >= 0 && record.level <= 1000 && Number.isInteger(record.sockets) && record.sockets >= 0 && record.sockets <= 3, 'Invalid item requirements');
       check(typeof record.disabled === 'boolean', 'Invalid item availability');
       ['names', 'modifiers'].forEach(function (field) { textMap(record[field], 160); });
