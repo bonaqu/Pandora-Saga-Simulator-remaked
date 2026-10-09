@@ -1,10 +1,24 @@
 # Release history — English
 
-Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays player entries only.
+Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
+
+## Modern 3.57 — 2026-10-09
+
+### For users
+
+- What's New now says “Latest changes for users” instead of the narrower “player update”.
+- Russian and English release histories use consistent “For users” and “Development and technical changes” sections.
+- Historical releases remain available with separate user-facing and technical change records.
+
+### Development and technical changes
+
+- Require `release-notes:user:ru/en` for new releases, while keeping historical player-tagged notes readable.
+- Reject incomplete localized user releases and obsolete markers for new versions during builds.
+- Audited legacy draft PR #123; its outdated base must not be merged over newer implementations without isolating remaining work.
 
 ## Modern 3.56 — 2026-10-09
 
-### For players
+### For users
 
 - The full release history now has separate Russian and English editions, with player changes and technical updates clearly labeled.
 - What's New shows the latest player-facing release independently of the overall UI version and links to the matching language.
@@ -26,7 +40,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.54 — 2026-10-09
 
-### For players
+### For users
 
 - Custom numeric equipment enhancement bonuses now contribute to character calculations at configured refinement milestones, such as every +2 levels.
 - Existing equipment mechanics remain intact; the new bonuses do not claim to simulate unimplemented combat procs.
@@ -82,7 +96,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.47 — 2026-10-09
 
-### For players
+### For users
 
 - Fixed Soul description field ordering so editing one text no longer replaces unrelated text fields.
 
@@ -100,7 +114,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.45 — 2026-10-09
 
-### For players
+### For users
 
 - Introduced one four-locale translation editor for game and UI text, with legacy approved wording visible and safe versioned updates.
 - Localized Russian learned-skill tooltip labels and mastery prerequisites, and restored line breaks in glued equipment effects.
@@ -108,7 +122,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.44 — 2026-10-09
 
-### For players
+### For users
 
 - Synchronized seven approved Russian translations directly into the Excel workbook.
 - Preserved unsaved Modern UI translation drafts across search, locale and pagination changes with clear dirty-state indicators.
@@ -116,7 +130,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.43 — 2026-10-09
 
-### For players
+### For users
 
 - Stabilized the three Enhancement parameter/input positions across all four languages and made popup layout responsive to actual panel width.
 - Fixed Honor selection highlighting: none selected by default, one at a time, and click again to clear.
@@ -125,7 +139,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.42 — 2026-10-09
 
-### For players
+### For users
 
 - Fit full Blessing and Hymn labels on one line with smaller numeric fields and a compact Russian spirit caption.
 - Localized guild bonus names and level choices for Russian.
@@ -134,7 +148,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.41 — 2026-10-09
 
-### For players
+### For users
 
 - Completed the Russian skills allocation help text.
 - Localized Enhancement parameter labels, skill names and hover descriptions in Russian.
@@ -142,14 +156,14 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.40 — 2026-10-08
 
-### For players
+### For users
 
 - Restored the readable Effects tab spacing and original panel width across all languages.
 - Kept the balanced Character/Skills layout and complete result labels unchanged.
 
 ## Modern 3.39 — 2026-10-08
 
-### For players
+### For users
 
 - Reduced empty space between calculated result names and values.
 - Allocated more room to skill headings so learned and potential captions stay on one line.
@@ -157,7 +171,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.38 — 2026-10-08
 
-### For players
+### For users
 
 - Calculated result names are shown in full on a single line, without ellipses.
 - The workbench provides enough room for result labels while keeping skill inputs readable.
@@ -165,7 +179,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.37 — 2026-10-08
 
-### For players
+### For users
 
 - Russian calculated-result names now match the project's approved translations.
 - Long captions stay on one line without resizing the result grid, with full names preserved for accessibility.
@@ -173,7 +187,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.36 — 2026-10-08
 
-### For players
+### For users
 
 - Clearer Russian result labels distinguish closely related stats.
 - Result columns retain consistent tracks across languages; longer labels wrap without shrinking the skills panel.
@@ -182,65 +196,65 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.35 — 2026-10-08
 
-### For players
+### For users
 
 - Skill and potion effect buttons now share readable, consistent text sizing across languages.
 - Both buttons retain their existing compact dimensions.
 
 ## Modern 3.34 — 2026-10-08
 
-### For players
+### For users
 
 - Riding toggle matches the adjacent stat field on wider screens in every language; larger mobile touch targets remain.
 
 ## Modern 3.33 — 2026-10-08
 
-### For players
+### For users
 
 - Shorter Russian labels fit on one line when the available width allows.
 - Calculator actions use evenly sized columns and consistent button dimensions across languages.
 
 ## Modern 3.32 — 2026-10-08
 
-### For players
+### For users
 
 - Calculator action buttons now use consistent size, placement and typography across every language.
 - The original compact 3×2 layout remains stable with longer translated labels.
 
 ## Modern 3.31 — 2026-10-08
 
-### For players
+### For users
 
 - Rebalanced the Russian calculator action buttons for a compact but readable size, avoiding both oversized controls and tiny text.
 
 ## Modern 3.30 — 2026-10-08
 
-### For players
+### For users
 
 - Restored locale-consistent compact sizing for Russian calculator action buttons while keeping the translated labels readable.
 
 ## Modern 3.29 — 2026-10-08
 
-### For players
+### For users
 
 - Polished the Russian calculator action area into an even 3×2 grid with equal button heights and balanced columns.
 
 ## Modern 3.28 — 2026-10-07
 
-### For players
+### For users
 
 - Added the requested Russian labels for calculator action, reset and riding controls without changing their mechanics.
 
 ## Modern 3.27 — 2026-10-07
 
-### For players
+### For users
 
 - Clarified the Russian skill-column labels while keeping the underlying skill mechanics unchanged.
 - Renamed the Russian effect tabs and adjusted their compact layout so both labels remain on one line.
 
 ## Modern 3.26 — 2026-10-07
 
-### For players
+### For users
 
 - Modern now detects a newly published release automatically. After a short idle moment it commits the active field, flushes the current build and reloads fresh versioned assets; manual cache/cookie cleanup or Ctrl+F5 should not normally be necessary.
 - The Character-level Potential budget row is hidden because the supported level range never awards those separate points and it always displayed 0/0. Skill-branch Potential remains available and unchanged.
@@ -249,7 +263,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.25 — 2026-10-07
 
-### For players
+### For users
 
 - Saved Modern builds now use current game data. Renamed items stay selected; unavailable or incompatible items, Souls and skills are removed individually. A compact report explains removals and stat changes.
 - Removed outdated badges and visible backup builds. Autosave also saves the last changes when leaving the page.
@@ -259,7 +273,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.24 — 2026-10-07
 
-### For players
+### For users
 
 - Fixed item effects that depend on enhancement level: calculations now include both base bonuses and stat changes at specific enhancement thresholds.
 - Audited all **148 items with enhancement mechanics** and **1,136 enhancement-level effects**. Missing calculations were added for 118 items, while 30 existing Legacy implementations remain single-counted.
@@ -271,7 +285,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.23 — 2026-10-07
 
-### For players
+### For users
 
 - Fixed automatic game-data adoption for an existing current autosave: an open build should no longer remain silently pinned to an old catalog solely because Soul slot rules changed.
 - When a newer catalog reduces Soul slots or makes an equipped Soul incompatible with its slot, Modern **first stores a separate backup of the old build**, then clears only the conflicting Souls and moves the current autosave to the latest catalog.
@@ -281,7 +295,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.22 — 2026-10-07
 
-### For players
+### For users
 
 - Astir equipment in Modern now uses current **RU/EN names and descriptions** on retained simulator identities wherever the match is verified.
 - Older Astian/Asutian entries with outdated or distorted English names are reconciled instead of being shown alongside duplicate Modern records.
@@ -291,7 +305,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.21 — 2026-10-07
 
-### For players
+### For users
 
 - The Modern equippable-item and Soul catalog is now fully refreshed: **599 records** — 488 equipment/weapon/accessory records and 111 Souls.
 - 368 existing simulator identities are updated in place, while 231 previously missing records receive separate stable Modern identities. The Legacy catalog and existing save-code identities remain unchanged.
@@ -303,7 +317,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.20 — 2026-10-06
 
-### For players
+### For users
 
 - Synchronized **180 existing simulator records**: 111 weapons/equipment items and 69 Souls.
 - Updated Russian and English names/descriptions for the matched records.
@@ -314,7 +328,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.19 — 2026-10-06
 
-### For players
+### For users
 
 - Removed the manual “Update current build” control because catalog updates are automatic.
 - The Builds manager now uses a player-friendly automatic game-data status and a plain-language hint instead of internal catalog/revision terminology.
@@ -323,7 +337,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.18 — 2026-10-06
 
-### For players
+### For users
 
 - Open pages now check automatically for new app versions and published catalog revisions; normal use no longer depends on manually reloading or pressing “Update current build”.
 - Current progress is flushed before automatic PWA activation. If saving fails, the update is not activated.
@@ -334,7 +348,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.17 — 2026-10-06
 
-### For players
+### For users
 
 - The Equipment reset caption is now centered without changing its size or behavior.
 - PWA updates now keep HTML and static assets on one cache generation until the new service worker is activated.
@@ -344,7 +358,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.16 — 2026-10-06
 
-### For players
+### For users
 
 - Equipment reset now has a safe locale fallback and can no longer expose the raw `equipment.reset` key during a mixed PWA-cache update.
 - Desktop/tablet Equipment slot-label width is tightened from 80px to 76px while keeping long RU labels visible.
@@ -353,7 +367,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.15 — 2026-10-06
 
-### For players
+### For users
 
 - Refined several RU calculated-result resistance labels and added hover help for seven compact stats.
 - Updated RU character and calculator-navigation terminology.
@@ -362,7 +376,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.14 — 2026-10-06
 
-### For players
+### For users
 
 - Russian base-stat abbreviations no longer clip beside their numeric fields.
 - RU calculated-result and effect labels received the requested shorter, more consistent terminology.
@@ -371,7 +385,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.13 — 2026-10-06
 
-### For players
+### For users
 
 - Base attributes now use the requested compact Russian abbreviations in RU mode.
 - Calculated results have reviewed Russian labels for combat, defense, evasion, range, speed, elemental resistance and utility stats.
@@ -380,7 +394,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.12 — 2026-10-05
 
-### For players
+### For users
 
 - Search no longer leaves an unexplained blank area: zero-result states show a clear message, an underlined `Reset filter` action and the current compatible/result count.
 - Equipment picker now renders the Legacy weapon/equipment type separators as clear visual group headings, with a compact `All types` filter when more than one type is available.
@@ -392,7 +406,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.11 — 2026-10-05
 
-### For players
+### For users
 
 - Equipment no longer shows duplicate top-level Equipment Search and Soul Search actions. Search is still available where it belongs: inside every equipment picker and every visible Soul socket.
 - The soft translucent 2P/3P stat-cost treatment is restored, compact character/riding/skill alignment is polished, and an item-preview hover race caused by automatic picker scrolling is fixed.
