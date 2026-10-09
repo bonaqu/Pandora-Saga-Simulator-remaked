@@ -381,14 +381,21 @@ def _plain_release_bullet(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def _release_marker_bullets(section: str, locale: str) -> list[str]:
-    # Only an explicit PLAYER block is allowed into the public "What's new".
-    # Administrator-only changelog entries can contain any historical wording.
-    marker = re.search(
-        rf"<!-- release-notes:player:{re.escape(locale)} -->(.*?)<!-- /release-notes:player:{re.escape(locale)} -->",
-        section,
-        flags=re.DOTALL,
-    )
+def _release_marker_bullets(section: str, locale: str, version: str) -> list[str]:
+    # User notes alone feed What's New. Historical player-tagged releases still
+    # work, but new releases must adopt release-notes:user.
+    markers = {}
+    for name in ("user", "player"):
+        markers[name] = re.search(
+            rf"<!-- release-notes:{name}:{re.escape(locale)} -->(.*?)<!-- /release-notes:{name}:{re.escape(locale)} -->",
+            section,
+            flags=re.DOTALL,
+        )
+    if all(markers.values()):
+        raise ValueError("Only one user-facing release marker is allowed per locale")
+    if tuple(map(int, version.split("."))) >= (3, 57) and markers["player"]:
+        raise ValueError("Modern 3.57+ requires release-notes:user:ru/en")
+    marker = markers["user"] or markers["player"]
     if not marker:
         return []
     bullets: list[str] = []
@@ -410,7 +417,7 @@ def _release_marker_bullets(section: str, locale: str) -> list[str]:
 
 
 def _read_latest_release(root: pathlib.Path) -> dict[str, object]:
-    """Latest *player-visible* entry, not merely the latest admin deployment."""
+    """Latest user-visible entry, not merely the latest admin deployment."""
     source = (root / "CHANGELOG.md").read_text(encoding="utf-8")
     matches = list(RELEASE_HEADING_RE.finditer(source))
     if not matches:
@@ -418,20 +425,25 @@ def _read_latest_release(root: pathlib.Path) -> dict[str, object]:
     for index, match in enumerate(matches):
         end = matches[index + 1].start() if index + 1 < len(matches) else len(source)
         section = source[match.end():end]
-        highlights = {locale: _release_marker_bullets(section, locale) for locale in ("en", "ru")}
-        # Fail closed when only one locale was marked as player-facing.
+        highlights = {
+            locale: _release_marker_bullets(section, locale, match.group("version"))
+            for locale in ("en", "ru")
+        }
+        user_marker_present = bool(re.search(
+            r"<!-- release-notes:(?:user|player):(?:en|ru) -->", section
+        ))
+        if user_marker_present and not all(highlights.values()):
+            raise ValueError("user release must contain both en and ru nonempty notes")
         if not any(highlights.values()):
             continue
-        if not all(highlights.values()):
-            raise ValueError("player release must contain both en and ru player-marked notes")
         return {
             "version": _read_ui_version(root),
-            "playerVersion": match.group("version"),
+            "userVersion": match.group("version"),
             "title": match.group("title").strip(),
             "date": match.group("date"),
             "highlights": highlights,
         }
-    raise ValueError("CHANGELOG.md has no explicitly player-marked release notes")
+    raise ValueError("CHANGELOG.md has no explicitly user-marked release notes")
 
 
 def _read_ui_version(root: pathlib.Path) -> str:
