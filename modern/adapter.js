@@ -419,7 +419,7 @@
     var isObsoleteAstir = kind === 'equipment' && obsoleteAstirIds.indexOf(id) !== -1;
     function currentGameNote(value) {
       var note = String(value || '');
-      return isObsoleteAstir && /(?:セットで装備すると|\bsets?\b|with a set|when equipped|and fitted|一組|一套|配備|並設置|並配|設備|和集)/i.test(note)
+      return isObsoleteAstir && /(?:セットで装備すると|\b(?:set of|with a set|and set|when equipped with|fitted with pumps)\b|一組|一套|配備|並設置|並配|設備|和集)/i.test(note)
         ? '' : note;
     }
     var overrideName = namespace.catalog?.itemText(kind, value, 'names');
