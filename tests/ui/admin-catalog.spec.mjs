@@ -674,3 +674,34 @@ test('saved catalog drafts from different items appear in a shared queue and pub
   expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts WHERE is_dirty=1').get().n).toBe(0);
   expect(errors).toEqual([]);
 });
+
+
+test('admin exposes numeric engine IDs and saves a typed healing bonus every two upgrades',async({page})=>{
+  const {sqlite,errors}=await openConsole(page);
+  const search=page.getByRole('searchbox',{name:'Поиск в каталоге'});
+  await search.fill('equipment.0.1');
+  await page.locator('.catalog-entry[data-record-id="equipment.0.1"]').click();
+  await expect(page.locator('.catalog-editor .item-identity')).toContainText('Игровой ID: 1');
+  const upgrades=page.locator('.catalog-editor .upgrade-editor');
+  await expect(upgrades).toContainText('Бонусы от заточки');
+  await upgrades.getByRole('button',{name:'Добавить бонус заточки'}).click();
+  await expect(upgrades.locator('.upgrade-rule-row')).toHaveCount(1);
+  const edit=upgrades.locator('.upgrade-rule-row');
+  await expect(edit.locator('.effect-row select').first()).toHaveValue('11');
+  await expect(edit.locator('[data-upgrade="from"]')).toHaveValue('2');
+  await expect(edit.locator('[data-upgrade="every"]')).toHaveValue('2');
+  await expect(edit.locator('[data-upgrade="to"]')).toHaveValue('10');
+  await page.getByRole('button',{name:'Сохранить черновик',exact:true}).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  let stored=JSON.parse(sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id=?').get('equipment.0.1').payload_json);
+  expect(stored.upgradeBonuses).toEqual([{stat:11,value:1,unit:'flat',from:2,every:2,to:10}]);
+  page.on('dialog',dialog=>dialog.accept());
+  await page.getByRole('button',{name:'Опубликовать',exact:true}).click();
+  await expect(page.locator('#catalog-state')).toContainText('Опубликована версия каталога 1');
+  expect(sqlite.prepare('SELECT impact_version FROM catalog_head WHERE id=1').get().impact_version).toBe(1);
+  stored=JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head WHERE id=1').get().snapshot_json)[0];
+  expect(stored.edit.upgradeBonuses).toHaveLength(1);
+  await search.fill('1');
+  await expect(page.locator('.catalog-entry[data-record-id="equipment.0.1"]')).toBeVisible();
+  expect(errors).toEqual([]);
+});
