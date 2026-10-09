@@ -728,3 +728,25 @@ test('admin exposes numeric engine IDs and saves a typed healing bonus every two
   await expect(page.locator('.catalog-entry[data-record-id="equipment.0.1"]')).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+
+test('catalog item preview updates live with RU multiline descriptions and Soul rings without writing a draft',async({page})=>{
+  const {sqlite,errors}=await openConsole(page);
+  const entries=page.locator('.catalog-entry');
+  await expect(entries.first()).toBeVisible();
+  await entries.first().click();
+  const preview=page.locator('[data-catalog-item-live-preview]');
+  await expect(preview).toBeVisible();
+  const description=page.locator('.catalog-editor [data-field="description"][data-language="ru"]');
+  await description.fill('Описание предмета.\\n\\nЗа каждые 2 уровня улучшения:\\nТочность +1');
+  await page.locator('.catalog-editor [data-field="names"][data-language="ru"]').fill('Предпросмотр меча');
+  await page.locator('.catalog-editor [data-field="sockets"]').fill('2');
+  await expect(preview.locator('.catalog-item-preview-name')).toHaveText('Предпросмотр меча');
+  await expect(preview.locator('.catalog-item-preview-socket')).toHaveCount(2);
+  await expect(preview.locator('.catalog-item-preview-description').first()).toContainText('За каждые 2 уровня улучшения:');
+  expect(await preview.locator('.catalog-item-preview-description').first().evaluate(node=>getComputedStyle(node).whiteSpace)).toBe('pre-wrap');
+  await preview.getByRole('combobox',{name:'Язык предпросмотра предмета'}).selectOption('en');
+  await expect(preview.locator('.catalog-item-preview-name')).not.toHaveText('Предпросмотр меча');
+  expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts WHERE is_dirty=1').get().n).toBe(0);
+  expect(errors).toEqual([]);
+});
