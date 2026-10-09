@@ -45,7 +45,7 @@ class DeployChangePolicyTests(unittest.TestCase):
 
     def test_translation_inputs_use_translation_feature_profile(self):
         for path in (
-            "localization/translations.xlsx",
+            "localization/approved-translations.v1.json",
             "localization/game-terms.ru.json",
             "localization/ui.en.json",
         ):
@@ -77,7 +77,7 @@ class DeployChangePolicyTests(unittest.TestCase):
     def test_translation_plus_catalog_uses_catalog_superset(self):
         result = POLICY.classify([
             "CHANGELOG.md",
-            "localization/translations.xlsx",
+            "localization/approved-translations.v1.json",
             "data/generated/equipment.v1.json",
         ])
         self.assertEqual(result["ci_profile"], "catalog")
