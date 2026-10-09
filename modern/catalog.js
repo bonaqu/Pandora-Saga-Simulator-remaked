@@ -55,6 +55,28 @@
       check(typeof effect.value === 'number' && Number.isFinite(effect.value) && Math.abs(effect.value) <= 10000 && Number(effect.value.toFixed(2)) === effect.value, 'Invalid effect value');
     });
   }
+  function validateUpgradeBonuses(record){
+    if(record.upgradeBonuses===undefined)return;
+    check(record.kind==='equipment'&&Array.isArray(record.upgradeBonuses)&&record.upgradeBonuses.length<=12,
+      'Invalid refinement bonus collection');
+    var seen=Object.create(null);
+    record.upgradeBonuses.forEach(function(rule){
+      check(rule&&!Array.isArray(rule)&&typeof rule==='object'&&
+        Object.keys(rule).sort().join(',')==='every,from,stat,to,unit,value',
+        'Invalid refinement bonus shape');
+      check(effectIds.indexOf(rule.stat)!==-1&&(rule.unit==='flat'||
+        rule.unit==='percent'&&percentEffectIds.indexOf(rule.stat)!==-1),
+        'Unsupported refinement bonus stat');
+      check(Number.isInteger(rule.every)&&rule.every>=1&&rule.every<=10&&
+        Number.isInteger(rule.from)&&rule.from>=1&&rule.from<=10&&
+        Number.isInteger(rule.to)&&rule.to>=rule.from&&rule.to<=10&&
+        typeof rule.value==='number'&&Number.isFinite(rule.value)&&rule.value!==0&&
+        Math.abs(rule.value)<=10000&&Number(rule.value.toFixed(2))===rule.value,
+        'Invalid refinement threshold/value');
+      var k=[rule.stat,rule.unit,rule.every,rule.from,rule.to].join(':');
+      check(!seen[k],'Duplicate refinement rule');seen[k]=true;
+    });
+  }
   function validateLearning(required) {
     check(required && typeof required === 'object' && !Array.isArray(required) && Object.keys(required).every(function (key) {
       return ['classIds', 'classScope', 'minimumLevel', 'branches'].indexOf(key) !== -1;
@@ -203,6 +225,7 @@
         // this codec. It is accepted only if it was already in that exact row.
         check(match ? Number(match[1]) < window.Name.Option.length && Number.isFinite(Number(match[2].replace(/^W/, '').replace(/%$/, ''))) && Math.abs(Number(match[2].replace(/^W/, '').replace(/%$/, ''))) <= 10000 : original && String(original[7]).split('_').indexOf(token) !== -1, 'Unsupported engine effect');
       });
+      validateUpgradeBonuses(record);
       if (record.kind === 'equipment' && record.category <= 13) check(/^18=W\d+(?:_|$)/.test(record.calculationCode), 'Missing weapon attack');
       [record.parameter6, record.trailing].forEach(function (value) { check(typeof value === 'string' && value.length <= 160 || typeof value === 'number' && Number.isFinite(value), 'Invalid auxiliary engine data'); });
       check(Array.isArray(record.soulParameters) && record.soulParameters.length === 2 && record.soulParameters.every(function (value) { return typeof value === 'string' && value.length <= 160 || typeof value === 'number' && Number.isFinite(value); }), 'Invalid Soul data');
