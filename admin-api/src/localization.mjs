@@ -51,7 +51,8 @@ async function legacyOverrides(env) {
   ]);
   const values=new Map();
   for(const row of ui.results) values.set(keyOf('ui',row.id)+'\0'+row.locale,row.text);
-  for(const row of result.results) values.set(keyOf('game',row.id)+'\0ru',row.ru);
+  for(const row of result.results) if(row.ru && row.ru !== '<excel-baseline>')
+    values.set(keyOf('game',row.id)+'\0ru',row.ru);
   for(const entry of JSON.parse(head?.snapshot_json||'[]')) {
     const edit=entry.edit||{},id=entry.identity?.id;
     if (!id)continue;
@@ -74,9 +75,13 @@ export async function publicLocalization(env) {
   const published=await overrides(env);
   const data={ui:{ru:{},en:{},jp:{},tw:{}},game:{ru:{},en:{},jp:{},tw:{}}};
   for(const row of published) {
-    if(row.text && registry.has(keyOf(row.scope,row.term_id)) &&
-       LOCALES.includes(row.locale) && isText(row.text))
-      data[row.scope][row.locale][row.term_id]=row.text;
+    const term=registry.get(keyOf(row.scope,row.term_id));
+    if(!term || !LOCALES.includes(row.locale) || !isText(row.text))continue;
+    // Versioned reset must suppress old public UI/catalog overrides too.
+    // Publishing the approved baseline preserves that precedence without
+    // deleting historical D1 rows or changing any calculation revision.
+    const effective=row.text || term.baseline[row.locale];
+    if(effective)data[row.scope][row.locale][row.term_id]=effective;
   }
   return jsonResponse({ok:true,schemaVersion:1,overrides:data});
 }
@@ -98,16 +103,20 @@ export async function adminLocalization(request,env) {
     const page=Number(pageText),pageSize=40;
     const [newRows,legacy]=await Promise.all([overrides(env),legacyOverrides(env)]);
     const index=overlayMap(newRows);
-    const matched=RECORDS.filter(row=>row.scope===scope && (
-      !q || [row.id,row.kind,row.source.en,row.baseline[locale]].some(value=>String(value||'').toLocaleLowerCase().includes(q))));
-    const items=matched.slice(page*pageSize,(page+1)*pageSize).map(row=>{
-      const key=keyOf(scope,row.id)+'\0'+locale, override=index.get(key),older=legacy.get(key)||'';
+    const displayRow=row=>{
+      const key=keyOf(scope,row.id)+'\0'+locale,override=index.get(key),older=legacy.get(key)||'';
+      // An explicit reset shadows previous editor values, even if the row
+      // still exists for optimistic concurrency.
+      const effective=override ? override.text || row.baseline[locale] : older || row.baseline[locale];
+      const origin=override ? override.text ? 'admin' : 'import' : older ? 'previous-admin' : 'import';
       return {id:row.id,scope,kind:row.kind,locale,source:row.source,baseline:row.baseline[locale],
-        effective:override?.text || older || row.baseline[locale],
-        legacyValue:older,override:override?.text||'',version:override?.version||0,
-        updatedAt:override?.updated_at||null,
-        origin:override?.text?'admin':older?'previous-admin':'import'};
-    });
+        effective,legacyValue:older,override:override?.text||'',version:override?.version||0,
+        updatedAt:override?.updated_at||null,origin};
+    };
+    const matched=RECORDS.filter(row=>row.scope===scope).map(displayRow).filter(row=>
+      !q || [row.id,row.kind,row.source.en,row.effective,row.legacyValue].some(value=>
+        String(value||'').toLocaleLowerCase().includes(q)));
+    const items=matched.slice(page*pageSize,(page+1)*pageSize);
     return jsonResponse({ok:true,schemaVersion:1,locale,scope,page,pageSize,total:matched.length,
       counts:{ui:RECORDS.filter(r=>r.scope==='ui').length,game:RECORDS.filter(r=>r.scope==='game').length},
       items});
