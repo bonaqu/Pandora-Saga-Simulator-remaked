@@ -1,6 +1,7 @@
 import english from '../../localization/ui.en.json' with { type: 'json' };
 import sourceTerms from '../../localization/game-terms.ru.json' with { type: 'json' };
 import approved from '../../localization/approved-translations.v1.json' with { type: 'json' };
+import curated from '../../localization/curated-runtime-defaults.ru.v1.json' with { type: 'json' };
 import { baselineRecords } from './catalog-baseline.mjs';
 import { CatalogError } from './catalog-model.mjs';
 import { jsonResponse } from './auth.mjs';
@@ -13,18 +14,26 @@ const registry = new Map();
 const originOf=(source,approvedValue={})=>Object.fromEntries(LOCALES.map(locale=>[
   locale,(approvedValue[locale] || source[locale]) ? 'import' : 'fallback'
 ]));
+// The public Modern client already displays these curated Russian fallbacks.
+// Include their existing wording in the admin baseline without modifying the
+// immutable historical approved JSON or shadowing any published D1 value.
+function migratedBaseline(scope,id) {
+  const values=Object.fromEntries(LOCALES.map(locale=>[locale,approved[scope][locale]?.[id]]));
+  if(!values.ru)values.ru=curated.ru[scope]?.[id]||'';
+  return values;
+}
 const keyOf=(scope,id)=>scope+'\0'+id;
 const src=(source,approvedValue={})=>Object.fromEntries(LOCALES.map(locale=>[
   locale,approvedValue[locale] || source[locale] || (locale==='ru'?source.en:'') || ''
 ]));
 for (const [id,en] of Object.entries(english)) {
-  const migrated=Object.fromEntries(LOCALES.map(locale=>[locale,approved.ui[locale]?.[id]]));
+  const migrated=migratedBaseline('ui',id);
   registry.set(keyOf('ui',id),{scope:'ui',id,kind:'interface',source:{en},
     baseline:src({en},migrated),baselineOrigin:originOf({en},migrated)});
 }
 for (const term of sourceTerms.terms) {
   const original={en:term.source_en,jp:term.source_jp,tw:term.source_tw};
-  const migrated=Object.fromEntries(LOCALES.map(locale=>[locale,approved.game[locale]?.[term.id]]));
+  const migrated=migratedBaseline('game',term.id);
   registry.set(keyOf('game',term.id),{scope:'game',id:term.id,kind:term.category,source:original,
     baseline:src(original,migrated),baselineOrigin:originOf(original,migrated)});
 }
