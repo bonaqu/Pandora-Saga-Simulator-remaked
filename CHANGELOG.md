@@ -1,5 +1,18 @@
 # Changelog
 
+## Modern 3.53 — надёжные черновики и история переводов, 2026-10-09
+
+<!-- admin-notes:ru -->
+- Переводы RU / EN / JP / TW получили сохраняемые в D1 черновики и журнал версий с безопасным восстановлением.
+- Массовая публикация переводов выполняется одной транзакцией; после сетевой ошибки админка может проверить результат по идентификатору операции.
+- Добавлена полоса заполненности переводов и объединено чтение актуальных текстов с прежними опубликованными правками.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Added persistent D1 drafts, historical revisions, atomic batch publication and reconciliation receipts for protected four-language translations.
+- Added localization progress and canonical handling of older published wording without exposing private drafts.
+<!-- /admin-notes:en -->
+
 ## Modern 3.52 — раздельные обновления для игроков и администратора, 2026-10-09
 
 <!-- admin-notes:ru -->
