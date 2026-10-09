@@ -224,12 +224,11 @@ export async function adminLocalization(request,env) {
         effective,legacyValue:older,override:override?.text||'',version:override?.version||0,
         updatedAt:override?.updated_at||null,origin};
     };
+    const managed=scope==='game'
+      ? catalogManagedRows(legacy.catalogEntries,locale,legacy.catalogRevision) : [];
     const scoped=RECORDS.filter(row=>row.scope===scope&&(group==='all'||groupOf(row.kind)===group))
       .map(displayRow);
-    if(scope==='game'){
-      const managed=catalogManagedRows(legacy.catalogEntries,locale,legacy.catalogRevision);
-      scoped.push(...managed.filter(row=>group==='all'||groupOf(row.kind)===group));
-    }
+    scoped.push(...managed.filter(row=>group==='all'||groupOf(row.kind)===group));
     const coverage={total:scoped.length,translated:scoped.filter(row=>row.origin!=='fallback').length};
     const matched=scoped.filter(row=>
       (status==='all'||status==='missing'&&row.origin==='fallback'||
@@ -238,7 +237,7 @@ export async function adminLocalization(request,env) {
         String(value||'').toLocaleLowerCase().includes(q))));
     const items=matched.slice(page*pageSize,(page+1)*pageSize);
     return jsonResponse({ok:true,schemaVersion:1,locale,scope,group,status,coverage,page,pageSize,total:matched.length,
-      counts:{ui:RECORDS.filter(r=>r.scope==='ui').length,game:RECORDS.filter(r=>r.scope==='game').length+(scope==='game'?catalogManagedRows(legacy.catalogEntries,locale,legacy.catalogRevision).length:0)},
+      counts:{ui:RECORDS.filter(r=>r.scope==='ui').length,game:RECORDS.filter(r=>r.scope==='game').length+managed.length},
       items});
   }
   if(request.method!=='POST')return jsonResponse({ok:false,message:'Method not allowed'},405);
