@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { CatalogError, draftFromSource, validateDraft, compileRecord, EFFECTS, EQUIPMENT_CATEGORIES, NATIVE_PASSIVES } from './catalog-model.mjs';
+import { CatalogError, draftFromSource, validateDraft, compileRecord, showApprovedTranslations, EFFECTS, EQUIPMENT_CATEGORIES, NATIVE_PASSIVES } from './catalog-model.mjs';
 import { baselineById, baselineRecords, categories, skillCategories, compatibilityLabels, sourceFingerprint, characterSourceFingerprint, sourceIdentity, firstNewIndex } from './catalog-baseline.mjs';
 import { jsonResponse } from './auth.mjs';
 
@@ -133,9 +133,10 @@ async function detail(env, id) {
   const [snapshot, draft] = await Promise.all([head(env), draftRow(env, id)]);
   const published = snapshot.entries.find(entry => entry.identity.id === id);
   const edit = draft?.is_dirty || (!published && (!source || identity.templateId) && draft) ? JSON.parse(draft.payload_json) : published?.edit || draftFromSource(source, identity.kind);
-  edit.id = id; edit.category = identity.category;
+  const displayEdit = showApprovedTranslations(edit, source, identity.kind);
+  displayEdit.id = id; displayEdit.category = identity.category;
   const currentRecord = published ? compileEntry(published) : source && !identity.templateId ? compileRecord(draftFromSource(source, identity.kind), identity, source) : null;
-  return { ok: true, identity, edit, currentRecord, nativeMechanics: identity.kind === 'racial' ? racialReference[id] || 'Эта расовая механика не моделируется в исходном калькуляторе. Описание из игры не создаёт числовой эффект автоматически.' : null,
+  return { ok: true, identity, edit: displayEdit, currentRecord, nativeMechanics: identity.kind === 'racial' ? racialReference[id] || 'Эта расовая механика не моделируется в исходном калькуляторе. Описание из игры не создаёт числовой эффект автоматически.' : null,
     draftVersion: draft?.version || 0, hasDraft: Boolean(draft?.is_dirty), catalogRevision: snapshot.version, published: Boolean(published), sourceCode: source?.calculation_code || '', engineKey: source?.name.jp || 'Modern:' + id,
     nativeSkill: source?.prerequisite_code ? { templateName: source.name, prerequisites: source.prerequisites, equipmentRequirements: source.equipment_requirements, prerequisiteCode: source.prerequisite_code,
       intrinsicEffect: !identity.templateId && NATIVE_PASSIVES[identity.id] ? structuredClone(NATIVE_PASSIVES[identity.id]) : null } : null };
@@ -267,8 +268,9 @@ async function list(request, env) {
     const draft = draftMap.get(identity.id);
     const source = sourceFor(identity);
     const edit = draft?.is_dirty || (!edits.has(identity.id) && (!source || identity.templateId) && draft) ? JSON.parse(draft.payload_json) : edits.get(identity.id) || draftFromSource(source, kind);
-    if (q && !Object.values(edit.names).some(name => name.toLowerCase().includes(q)) && !identity.id.includes(q)) continue;
-    results.push({ id: identity.id, names: edit.names, category: identity.category, ...(identity.templateId ? { templateId: identity.templateId } : {}), level: edit.level, sockets: edit.sockets, progression: edit.progression, disabled: edit.disabled, draftVersion: draft?.is_dirty ? draft.version : 0, published: edits.has(identity.id), custom: identity.id.startsWith('modern.') });
+    const displayEdit = showApprovedTranslations(edit, source, kind);
+    if (q && !Object.values(displayEdit.names).some(name => name.toLowerCase().includes(q)) && !identity.id.includes(q)) continue;
+    results.push({ id: identity.id, names: displayEdit.names, category: identity.category, ...(identity.templateId ? { templateId: identity.templateId } : {}), level: edit.level, sockets: edit.sockets, progression: edit.progression, disabled: edit.disabled, draftVersion: draft?.is_dirty ? draft.version : 0, published: edits.has(identity.id), custom: identity.id.startsWith('modern.') });
   }
   return jsonResponse({ ok: true, catalogRevision: snapshot.version, count: results.length, page, pageSize: 40, items: results.slice(page * 40, (page + 1) * 40) });
 }

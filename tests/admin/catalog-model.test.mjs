@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { draftFromSource, validateDraft, compileRecord, EFFECTS } from '../../admin-api/src/catalog-model.mjs';
+import { draftFromSource, validateDraft, compileRecord, showApprovedTranslations, EFFECTS } from '../../admin-api/src/catalog-model.mjs';
 
 const source = {
   id: 'equipment.0.1', legacy_id: 1, legacy_category_id: 0, legacy_item_index: 1,
@@ -87,4 +87,24 @@ test('all 1304 existing source records round-trip without a single calculation-c
     }
   }
   assert.equal(count, 1304);
+});
+
+test('previously translated skill names and descriptions appear in admin without a D1 snapshot edit', () => {
+  const skill = {
+    id: 'skill_entry.7.5', kind: 'active',
+    legacy_category_id: 7, legacy_entry_index: 5,
+    name: {jp:'火の矢',en:'Flaming Arrow',tw:'火箭'},
+    description: {jp:'',en:'Shoot fire bolts or fire arrows.',tw:''},
+    mp_cost: 10, cast_seconds: 0, cooldown_seconds: 2, duration_seconds: 0
+  };
+  const display = draftFromSource(skill, 'active');
+  assert.equal(display.names.ru, 'Пылающая стрела');
+  assert.equal(display.description.ru, 'Выстрел горящей стрелой, наносящий двойной урон.');
+  // An explicit manual editor value beats the migrated workbook baseline.
+  const manual = { ...display, names:{...display.names,ru:'Моё название'},
+    description:{...display.description,ru:''} };
+  const resolved = showApprovedTranslations(manual,skill,'active');
+  assert.equal(resolved.names.ru,'Моё название');
+  assert.equal(resolved.description.ru,'Выстрел горящей стрелой, наносящий двойной урон.');
+  assert.equal(manual.description.ru,'');
 });

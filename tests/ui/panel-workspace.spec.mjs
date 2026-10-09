@@ -72,11 +72,14 @@ test('attack labels have readable contrast and all five buff columns use actual 
   expect(boxes.every(box => box.width > 80)).toBe(true);
 });
 
-test('all five inspectors float without shifting the workbench and close by tab, Escape and close button', async ({ page }, testInfo) => {
+for (const [group,widths] of [
+  ['mobile and tablet',[320,390,768]],
+  ['desktop',[1366,1440,1920]],
+]) test('all five inspectors float without shifting the workbench — '+group, async ({ page }, testInfo) => {
   test.setTimeout(90000); await page.goto('/');
   await page.evaluate(() => { StatusMove('Lev', 54); CalcSet('Lev'); });
   const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
-  for (const width of [320, 390, 768, 1366, 1440, 1920]) {
+  for (const width of widths) {
     await page.setViewportSize({ width, height: 900 });
     await expect(page.locator('[data-remaked-tools]')).toHaveCount(0);
     const restingCharacter = await page.locator('[data-remaked-calculator-character]').boundingBox();

@@ -105,3 +105,16 @@ test('touch detail action does not equip, and Soul descriptions come from preser
   await expect(row.locator('[data-remaked-item-description]')).toContainText(expected);
   expect(await page.evaluate(() => ({ code: window.Store(), data: JSON.stringify(window.SoulData) }))).toEqual(before);
 });
+
+test('compact equipment effects regain meaningful line breaks without changing numbers', async ({ page }) => {
+  await page.goto('/');
+  const example = 'ПРВ +1За каждые 2 единицы улучшения:Скорость атаки +2%При улучшении на +7 и выше: ПРВ +1';
+  const actual = await page.evaluate(value => PandoraRemaked.catalogText.lines(value), example);
+  expect(actual).toBe([
+    'ПРВ +1',
+    'За каждые 2 единицы улучшения:',
+    'Скорость атаки +2%',
+    'При улучшении на +7 и выше: ПРВ +1'
+  ].join('\n'));
+  expect(actual.replace(/\s/g, '')).toBe(example.replace(/\s/g, ''));
+});

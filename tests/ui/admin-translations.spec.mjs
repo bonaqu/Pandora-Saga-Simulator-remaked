@@ -15,6 +15,7 @@ test('admin UI drafts survive search, pagination and locale changes, then save s
     if(path==='/api/session') return route.fulfill({json:{
       ok:true,username:'admin',csrfToken:'only-synthetic-test-csrf',expiresAt:9999999999
     }});
+    if(path==='/api/admin/localization') return route.fulfill({json:{ok:true,schemaVersion:1,scope:'game',locale:'ru',page:0,pageSize:40,total:0,counts:{ui:242,game:2920},items:[]}});
     if(path==='/api/admin/ui-translations') {
       if(route.request().method()==='GET') return route.fulfill({json:{
         ok:true,schemaVersion:1,source:'translations.xlsx',items:records
@@ -32,7 +33,7 @@ test('admin UI drafts survive search, pagination and locale changes, then save s
       ok:true,schemaVersion:1,items:[]
     }});
     const file=(path==='/admin'||path==='/admin/')?'admin.html':path.replace(/^\//,'');
-    const assets=new Set(['admin.html','admin.css','admin.js','catalog-ui.js','result-labels.js','ui-translations.js']);
+    const assets=new Set(['admin.html','admin.css','admin.js','catalog-ui.js','result-labels.js','ui-translations.js','localization-console.js']);
     if(!assets.has(file))return route.fulfill({status:404,body:'Not found'});
     // This suite exercises wording editors; catalog integration has its own tests.
     if(file==='catalog-ui.js')return route.fulfill({contentType:'text/javascript',body:''});
@@ -41,6 +42,11 @@ test('admin UI drafts survive search, pagination and locale changes, then save s
   });
   await page.goto(origin+'/admin');
   const panel=page.locator('#ui-translation-editor details');
+  // Previous editors stay collapsed under an advanced compatibility section.
+  await page.locator('#ui-translation-editor').evaluate(node => {
+    const parent=node.closest('details.capability-note');
+    if(parent)parent.open=true;
+  });
   await expect(panel).toBeVisible();
   await panel.locator('summary').click();
   const row=page.locator('[data-ui-translation-id="header.updates"][data-ui-locale="ru"]');

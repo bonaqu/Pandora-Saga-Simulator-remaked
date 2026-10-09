@@ -34,10 +34,10 @@
     root.replaceChildren();
     var details = element('details');
     details.dataset.resultLabelsPanel = '';
-    var summary = element('summary', 'Расчётные характеристики · RU / Excel / админка');
+    var summary = element('summary', 'Расчётные характеристики · RU / совместимость');
     var intro = element('p',
       '43 русских подписи. База берётся из translations.xlsx. ' +
-      'Сохранённая здесь правка публикуется сразу и имеет приоритет над Excel. ' +
+      'Сохранённая здесь правка публикуется сразу и имеет приоритет над базовым переводом. ' +
       'Изменение текста не влияет на характеристики билдов.', 'result-label-help');
     // Filter before editing: never conflate the Excel baseline with a D1
     // override. Controls are local-only and cannot mutate catalog revisions.
@@ -74,7 +74,7 @@
     table.className = 'result-label-table';
     table.appendChild(element('thead'));
     var headings = element('tr');
-    ['ID', 'Excel (основной)', 'Перевод RU', 'Статус', 'Действия'].forEach(label => {
+    ['ID', 'Базовый перевод', 'Перевод RU', 'Статус', 'Действия'].forEach(label => {
       var cell = element('th', label); headings.appendChild(cell);
     });
     table.tHead.appendChild(headings);
@@ -97,13 +97,13 @@
         var state = element('td');
         var saveCell = element('td');
         var save = element('button', 'Сохранить');
-        var reset = element('button', 'Вернуть Excel');
+        var reset = element('button', 'Вернуть базовый текст');
         save.type = reset.type = 'button';
         reset.className = 'secondary';
         saveCell.append(save, reset);
         function syncState() {
           var dirty = input.value !== item.value;
-          state.textContent = dirty ? 'Черновик · не сохранено' : item.overridden ? 'Админка · версия ' + item.version : 'Excel';
+          state.textContent = dirty ? 'Черновик · не сохранено' : item.overridden ? 'Админка · версия ' + item.version : 'Базовый текст';
           row.dataset.resultLabelUnsaved = String(dirty);
           save.disabled = !dirty;
           row.dataset.resultLabelOverridden = String(item.overridden);
@@ -141,7 +141,7 @@
         body.appendChild(row);
       });
       filterRows();
-      report('Загружено ' + response.items.length + ' подписей. База Excel и опубликованные правки админки показаны отдельно.');
+      report('Загружено ' + response.items.length + ' подписей. База и опубликованные правки админки показаны отдельно.');
     } catch (error) {
       if (token === generation) report(error.message, true);
     }

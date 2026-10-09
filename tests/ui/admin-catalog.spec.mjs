@@ -18,7 +18,7 @@ test('a late initial session check preserves credentials already entered into th
       return route.fulfill({ status: 401, json: { ok: false } });
     }
     const asset = path === '/admin' ? 'admin.html' : path.slice(1);
-    if (!['admin.html', 'admin.css', 'admin.js', 'catalog-ui.js'].includes(asset)) return route.fulfill({ status: 404 });
+    if (!['admin.html', 'admin.css', 'admin.js', 'catalog-ui.js', 'localization-console.js', 'ui-translations.js', 'result-labels.js'].includes(asset)) return route.fulfill({ status: 404 });
     return route.fulfill({ contentType: asset.endsWith('.css') ? 'text/css' : asset.endsWith('.js') ? 'text/javascript' : 'text/html', body: fs.readFileSync(new URL('../../admin-api/public/' + asset, import.meta.url), 'utf8') });
   });
   await page.goto(admin + '/admin');
@@ -34,7 +34,7 @@ test('an origin-denied login explains the safe retry without showing or storing 
     const path = new URL(route.request().url()).pathname;
     if (path === '/api/session') return route.fulfill({ status: 401, json: { ok: false } });
     const asset = path === '/admin' ? 'admin.html' : path.slice(1);
-    if (!['admin.html', 'admin.css', 'admin.js', 'catalog-ui.js'].includes(asset)) return route.fulfill({ status: 404 });
+    if (!['admin.html', 'admin.css', 'admin.js', 'catalog-ui.js', 'localization-console.js', 'ui-translations.js', 'result-labels.js'].includes(asset)) return route.fulfill({ status: 404 });
     return route.fulfill({ contentType: asset.endsWith('.css') ? 'text/css' : asset.endsWith('.js') ? 'text/javascript' : 'text/html', body: fs.readFileSync(new URL('../../admin-api/public/' + asset, import.meta.url), 'utf8') });
   });
   await page.goto(admin + '/admin?status=origin');
@@ -77,6 +77,16 @@ async function openConsole(page, drafts = []) {
     const request = route.request(); const path = new URL(request.url()).pathname;
     if (path === '/api/session') return route.fulfill({ json: { ok: true, username: 'admin', csrfToken: 'synthetic-test-csrf-only', expiresAt: 9999999999 } });
     if (path === '/api/auth/logout') return route.fulfill({ json: { ok: true } });
+    if (path === '/api/admin/localization') {
+      return route.fulfill({json:{ok:true,schemaVersion:1,locale:'ru',scope:'game',page:0,pageSize:40,total:0,
+        counts:{ui:242,game:2920},items:[]}});
+    }
+    if (path === '/api/admin/ui-translations') {
+      return route.fulfill({json:{ok:true,schemaVersion:1,items:[]}});
+    }
+    if (path === '/api/admin/result-labels') {
+      return route.fulfill({json:{ok:true,schemaVersion:1,items:[]}});
+    }
     if (path.startsWith('/api/admin/')) {
       if (request.method() === 'POST') expect(request.headers()['x-csrf-token']).toBe('synthetic-test-csrf-only');
       try {
@@ -85,7 +95,7 @@ async function openConsole(page, drafts = []) {
       } catch (error) { return route.fulfill({ status: error.status || 503, json: { ok: false, message: error.message } }); }
     }
     const asset = path === '/admin' ? 'admin.html' : path.slice(1);
-    if (!['admin.html', 'admin.css', 'admin.js', 'catalog-ui.js'].includes(asset)) return route.fulfill({ status: 404 });
+    if (!['admin.html', 'admin.css', 'admin.js', 'catalog-ui.js', 'localization-console.js', 'ui-translations.js', 'result-labels.js'].includes(asset)) return route.fulfill({ status: 404 });
     return route.fulfill({ contentType: asset.endsWith('.css') ? 'text/css' : asset.endsWith('.js') ? 'text/javascript' : 'text/html', body: fs.readFileSync(new URL('../../admin-api/public/' + asset, import.meta.url), 'utf8') });
   });
   const errors = []; page.on('pageerror', error => errors.push(error.message));

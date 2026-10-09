@@ -11,11 +11,11 @@ import re
 import shutil
 
 try:
-    from scripts.translation_workbook import load_editable_catalogs
+    from scripts.localization_catalog import load_migrated_catalogs as load_editable_catalogs
     from scripts.recover_archived_javascript import recover_archived_javascript
     from scripts.native_passive_hooks import materialize_native_passives
 except ModuleNotFoundError:  # Direct execution keeps only scripts/ on sys.path.
-    from translation_workbook import load_editable_catalogs
+    from localization_catalog import load_migrated_catalogs as load_editable_catalogs
     from recover_archived_javascript import recover_archived_javascript
     from native_passive_hooks import materialize_native_passives
 
@@ -61,7 +61,7 @@ REQUIRED_MODERN = (
 REQUIRED_LOCALIZATION = (
     "localization/ui.en.json",
     "localization/game-terms.ru.json",
-    "localization/translations.xlsx",
+    "localization/approved-translations.v1.json",
 )
 REQUIRED_GENERATED = (
     "data/generated/equipment.v1.json",
@@ -354,12 +354,6 @@ def _materialize_game_terms(output: pathlib.Path, russian: dict[str, str], engli
     )
 
 
-def _publish_translation_workbook(root: pathlib.Path, output: pathlib.Path) -> None:
-    destination = output / "localization"
-    destination.mkdir(parents=True)
-    shutil.copy2(root / "localization/translations.xlsx", destination / "translations.xlsx")
-
-
 def _materialize_generated_data(root: pathlib.Path, output: pathlib.Path) -> None:
     destination = output / "data" / "generated"
     destination.mkdir(parents=True)
@@ -498,7 +492,6 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
         translations.ui_english,
     )
     _materialize_game_terms(output, translations.game_russian, translations.game_english)
-    _publish_translation_workbook(root, output)
     _materialize_generated_data(root, output)
     materialize_native_passives(root, output)
 

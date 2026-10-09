@@ -96,3 +96,40 @@ test('skill tooltip portal fallback preserves native IDs and cleans up after the
   await icon.focus(); await expect(tip).toBeVisible(); await page.keyboard.press('Escape'); await expect(tip).toBeHidden();
   expect(await tip.evaluate(node => node.parentElement.id)).toBe('LearnSkillIcon_0_15');
 });
+
+
+test('RU skill hover shows localized labels and already translated mastery prerequisites', async ({ page }) => {
+  await page.goto('/?ui=ru');
+  await page.evaluate(() => {
+    Flag[3] = 1; StatusMove('Lev', 54); CalcSet('Lev');
+    Status.Job[2] = 8; CalcSet('Job'); SkillList('Create');
+  });
+  await page.locator('[data-remaked-tab="1"]').click();
+  // Stable display fixture: the native renderer draws only eligible skills.
+  // Include the real skill in the list without altering its data or conditions.
+  await page.evaluate(() => {
+    if (!Learn[1].includes('7_5')) Learn[1].push('7_5');
+    Learn[2] = Learn[1].map(entry => entry.split('_'));
+    SkillList('Create');
+  });
+  const icon = page.locator('#LearnSkillIcon_7_5');
+  await expect(icon).toHaveCount(1);
+  await icon.focus();
+  const tooltip = page.locator('#LearnSkill_7_5');
+  await expect(tooltip).toBeVisible();
+  const lines = await tooltip.evaluate(node => [...node.children].filter(row => row.tagName === 'UL').map(row => row.textContent));
+  expect(lines[0]).toContain('Пылающая стрела');
+  expect(lines[2]).toContain('Скорость применения');
+  expect(lines[2]).toContain('Откат');
+  expect(lines[4]).toContain('Необходимо');
+  expect(lines[5]).toContain('Стрельба 8');
+  expect(lines[6]).toContain('Требования снаряжения');
+  expect(lines[1]).toContain('Расход ОМ');
+  await page.evaluate(() => PandoraRemaked.i18n.setLocale('en'));
+  await icon.blur();
+  await icon.focus();
+  const english = await tooltip.evaluate(node => [...node.children].filter(row => row.tagName === 'UL').map(row => row.textContent));
+  expect(english[4]).toContain('Prerequisites');
+  expect(english[5]).toContain('Shot 8');
+  expect(english[6]).toContain('Equipment requirements');
+});

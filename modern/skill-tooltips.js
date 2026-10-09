@@ -38,6 +38,77 @@
     if (node.style.left !== left + 'px') node.style.left = left + 'px';
     if (node.style.top !== top + 'px') node.style.top = top + 'px';
   }
+  // Modern-only display translation. Retain all original Skill[] data,
+  // prerequisite gates and timings used by the Legacy calculation engine.
+  function translatedPrerequisites(source) {
+    var i18n = namespace.i18n;
+    if (!i18n || i18n.getLocale() !== 'ru') return source;
+    var groups = [];
+    var entries = window.Name?.Skill || [];
+    for (var index = 0; index < entries.length; index++) {
+      var en = entries[index]?.[2], ru = i18n.game('skill.' + index, '');
+      if (en && ru && ru !== en) groups.push([en, ru]);
+    }
+    groups.sort(function(a,b){ return b[0].length - a[0].length; });
+    // Only translate complete group names immediately preceding mastery points:
+    // "Shot 8" -> "Стрельба 8", never mutate Skill[*] requirements.
+    var names = Object.create(null);
+    groups.forEach(function(pair){ names[pair[0]] = pair[1]; });
+    var tokens = groups.map(function(pair){ return pair[0]; });
+    if (!tokens.length) return source;
+    return String(source).replace(new RegExp('(^|[^\\p{L}])(' + tokens.join('|') + ')(?=\\s*\\d)', 'gu'),
+      function(match, before, name){ return before + names[name]; });
+  }
+
+  // Legacy source uses HTML entities and occasional <span class="help"> markup.
+  // Parse only original trusted source in an inert template, preserving
+  // visible strings without displaying raw HTML tags or entity encodings.
+  function legacyPlain(value) {
+    var template=document.createElement('template');
+    template.innerHTML=String(value==null?'':value);
+    return template.content.textContent||'';
+  }
+  function renderTranslatedTooltip(node, category, index) {
+    var i18n=namespace.i18n;
+    if (!i18n || !window.Skill || !window.Name) return;
+    var locale=i18n.getLocale(), lang=Number(window.Flag?.[0] || 0);
+    var source=window.Skill[lang]?.[category]?.[index];
+    if (!source) return;
+    var rows=Array.from(node.children).filter(function(el){return el.tagName==='UL';});
+    if (rows.length < 9) return;
+    var set=function(row,index,value){
+      var element=rows[row]?.children[index];
+      if (element && element.textContent!==value) element.textContent=value;
+    };
+    var name=i18n.game('skill_entry.'+category+'.'+index,'') || legacyPlain(source[0]);
+    set(0,0,name);
+    var groupSource=legacyPlain(window.Name.Skill[category]?.[lang+1] || '');
+    set(1,0,i18n.game('skill.'+category,'') || groupSource);
+    // Preserve published custom prerequisites and selected skill profiles.
+    // The renderer must not replace them with an old Skill[] template string.
+    var prerequisite=i18n.game('skill_detail.'+category+'.'+index+'.1',legacyPlain(source[1]||''));
+    // All four locales can override every visible header through the
+    // authenticated editor. Localized defaults apply only if no override
+    // exists; never patch original Name.Learn or Skill[] tables.
+    var defaultHeading=function(index,russian){
+      return locale==='ru' ? russian : legacyPlain(window.Name.Learn[index]?.[lang]||'');
+    };
+    var heading=function(index,russian){
+      return i18n.game('calculator.learn.'+index,defaultHeading(index,russian));
+    };
+    set(1,1,heading(1,'Расход ОМ'));
+    set(2,0,heading(2,'Скорость применения'));
+    set(2,2,heading(3,'Откат'));
+    set(3,0,heading(5,'Длительность'));
+    set(4,0,heading(6,'Необходимо'));
+    set(5,0,locale==='ru'?translatedPrerequisites(prerequisite):prerequisite);
+    set(6,0,heading(7,'Требования снаряжения'));
+    var equipment=i18n.game('skill_detail.'+category+'.'+index+'.2',legacyPlain(source[2]||''));
+    set(7,0,locale==='ru'&&equipment==='None'?'Нет':equipment);
+    var description=i18n.game('skill_detail.'+category+'.'+index+'.3','') || legacyPlain(source[3]||'');
+    set(8,0,description);
+  }
+
   function open(icon) {
     cancelTimers();
     if (active?.icon === icon) return;
@@ -52,7 +123,9 @@
     node.dataset.remakedSkillTooltip = ''; node.setAttribute('role', 'tooltip');
     if (portal) document.body.appendChild(node);
     else node.setAttribute('popover', 'manual');
-    window.DDMOpen(Number(parts[1]), Number(parts[2])); node.style.display = 'block';
+    window.DDMOpen(Number(parts[1]), Number(parts[2]));
+    renderTranslatedTooltip(node, Number(parts[1]), Number(parts[2]));
+    node.style.display = 'block';
     active = { icon: icon, node: node, portal: portal };
     icon.setAttribute('aria-describedby', node.id);
     if (!portal) node.showPopover();
@@ -125,6 +198,17 @@
       close();
     }, true);
     window.addEventListener('resize', position);
+    // The same open tooltip must reflect locale changes immediately.
+    // Do not call SkillList('Create') or change any underlying skill data.
+    var refreshActiveText = function () {
+      if (!active || !active.node.isConnected) return;
+      var parts = active.icon.id.match(/^LearnSkillIcon_(\d+)_(\d+)$/);
+      if (!parts) return;
+      renderTranslatedTooltip(active.node, Number(parts[1]), Number(parts[2]));
+      position();
+    };
+    window.addEventListener('pandora-remaked:localechange', refreshActiveText);
+    window.addEventListener('pandora-remaked:translationchange', refreshActiveText);
     decorate();
   }
   namespace.skillTooltips = { close: close };
