@@ -1,5 +1,27 @@
 # Changelog
 
+## Modern 3.60 — короткие ссылки на билды, 2026-10-09
+
+<!-- release-notes:user:ru -->
+- Кнопка «Поделиться билдом» теперь создаёт действительно короткую ссылку с 12-символьным кодом вместо длинного закодированного билда.
+- Получатель может открыть ссылку в другом браузере без сохранённых данных; старые ссылки продолжают работать. Если сервис коротких ссылок временно недоступен, создаётся рабочая резервная ссылка с предупреждением.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Share Build now creates genuinely short links with a 12-character code instead of embedding the entire build in the URL.
+- The recipient can open the build in a fresh browser; legacy links remain supported. If the short-link service is offline, sharing provides a working longer fallback link with an explicit warning.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Для коротких ссылок добавлено отдельное D1-хранилище по SHA-256 с проверкой коллизий, ограничениями размера, проверкой Origin и ограничением частоты анонимных запросов.
+- Новый API не затрагивает каталоги, учётные данные администратора, миграцию билдов и старый формат S1. Добавлены серверные и браузерные проверки; публикация выполняется вместе с миграцией базы.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add isolated D1-backed SHA-256-deduplicated short-code storage with explicit collision, content size, origin and anonymous rate-limit checks.
+- No admin credentials, catalog revision or build representation is changed. Backend and browser regression tests cover the API and backward compatibility.
+<!-- /admin-notes:en -->
+
 ## Modern 3.59 — нейтральное описание технических обновлений, 2026-10-09
 
 <!-- admin-notes:ru -->
