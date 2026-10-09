@@ -94,8 +94,15 @@
     var maximum=Math.min(plus,rule.to);
     return (Math.floor((maximum-rule.from)/rule.every)+1)*rule.value;
   }
+  // Calc(Heal/HealingAura/...) can re-enter the equipment projection. Apply
+  // dynamic rules once per actual EquipOpt array, never once per nested call.
+  // A normal new EquipCheck allocates a new array and remains fully effective.
+  var upgradedOptionArrays=new WeakSet();
   function applyCatalogEnhancementRules(touched) {
     if(!namespace.catalog || typeof namespace.catalog.item!=='function')return;
+    var options=window.EquipOpt;
+    if(!options||upgradedOptionArrays.has(options))return;
+    upgradedOptionArrays.add(options);
     window.Status.Equip.forEach(function(state){
       var id=Number(state[0]);
       if(!Number.isSafeInteger(id)||id<=0)return;
