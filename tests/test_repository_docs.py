@@ -154,8 +154,10 @@ class RepositoryDocsTests(unittest.TestCase):
         # Admin-only releases must not become player-facing README news.
         # The release version lives in the live site's version panel; the
         # player highlights are selected independently by build_pages.py.
-        self.assertIn("only the most recent section explicitly marked for **players**", english)
+        self.assertIn("only the most recent section explicitly marked for **users**", english)
         self.assertIn("только последний раздел", russian)
+        self.assertIn("для пользователей", russian)
+        self.assertIn("Для пользователей", (ROOT / "CHANGELOG.ru.md").read_text(encoding="utf-8"))
         self.assertIn("latest deployed release", english)
         self.assertIn("Номер Remaked UI отражает последний опубликованный релиз", russian)
         self.assertIn("CHANGELOG.ru.md", russian)
