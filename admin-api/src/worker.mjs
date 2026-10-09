@@ -4,6 +4,7 @@ import { CatalogError } from './catalog-model.mjs';
 import { publicResultLabels, adminResultLabels } from './result-labels.mjs';
 import { publicUiTranslations, adminUiTranslations } from './ui-translations.mjs';
 import { publicLocalization, adminLocalization } from './localization.mjs';
+import { adminLocalizationWorkflow } from './localization-workflow.mjs';
 
 const PRIVATE_CSP = "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'; font-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'";
 
@@ -65,6 +66,7 @@ async function route(request, env) {
     if (url.pathname === '/api/admin/result-labels') return adminResultLabels(request, env);
     if (url.pathname === '/api/admin/ui-translations') return adminUiTranslations(request, env);
     if (url.pathname === '/api/admin/localization') return adminLocalization(request, env);
+    if (url.pathname.startsWith('/api/admin/localization/')) return adminLocalizationWorkflow(request, env);
     return adminCatalog(request, env);
   }
 
