@@ -321,7 +321,24 @@ async function list(request, env) {
   const page = Number(pageText);
   const skillKind = kind === 'active' || kind === 'passive';
   const allocationQuery = skillKind ? 'SELECT id, kind, category, item_index, template_id FROM catalog_skill_allocations WHERE kind = ? ORDER BY category, item_index, id' : 'SELECT id, kind, category, item_index FROM catalog_allocations WHERE kind = ? ORDER BY category, item_index';
-  const [snapshot, allocations, drafts] = await Promise.all([head(env), env.DB.prepare(allocationQuery).bind(kind).all(), env.DB.prepare('SELECT id, payload_json, version, is_dirty FROM catalog_drafts').all()]);
+  // Every kind has a stable ID namespace. Read only drafts relevant to the
+  // selected kind instead of deserializing descriptions for every category.
+  // Skill variants use modern.<kind> IDs while native skills share skill_entry.
+  const patterns={
+    equipment:['equipment.%','modern.equipment.%'],
+    soul:['soul.%','modern.soul.%'],
+    class:['job.%'],
+    racial:['racial_skill.%'],
+    active:['skill_entry.%','modern.active.%'],
+    passive:['skill_entry.%','modern.passive.%']
+  }[kind];
+  const draftQuery='SELECT id, payload_json, version, is_dirty FROM catalog_drafts WHERE '+
+    patterns.map(()=>'id LIKE ?').join(' OR ');
+  const [snapshot, allocations, drafts] = await Promise.all([
+    head(env),
+    env.DB.prepare(allocationQuery).bind(kind).all(),
+    env.DB.prepare(draftQuery).bind(...patterns).all()
+  ]);
   const edits = new Map(snapshot.entries.map(entry => [entry.identity.id, entry.edit]));
   const draftMap = new Map(drafts.results.map(row => [row.id, row]));
   const identities = baselineRecords.filter(source => sourceIdentity(source).kind === kind).map(sourceIdentity).concat(allocations.results.map(skillKind ? normalizeSkillIdentity : normalizeIdentity));
