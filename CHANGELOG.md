@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 3.55 — удобство и надёжность внутренней админки, 2026-10-09
+
+<!-- admin-notes:ru -->
+- Чтение переводов из D1 ограничено выбранным языком и разделом; добавлен индекс для типичного поиска. Каталог читает черновики только выбранного типа.
+- Очереди черновиков получили поиск по названию или ID и фильтры; отметка отдельных строк не сбрасывает фокус клавиатуры.
+- Массовая публикация каталога получила квитанцию с ID операции. После потери сетевого ответа можно проверить факт публикации, не выдавая недоказанный откат за успешный.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Filter D1 translation lookups by selected locale/scope and catalog draft lookups by kind.
+- Add searchable and keyboard-stable draft queues for translations and catalog entries.
+- Make catalog batch publication recoverable by durable operation receipts after network timeouts.
+<!-- /admin-notes:en -->
+
 ## Modern 3.54 — новые бонусы заточки с настоящим расчётом, 2026-10-09
 
 <!-- release-notes:player:ru -->

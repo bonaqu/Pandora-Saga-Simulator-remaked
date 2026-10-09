@@ -14,7 +14,22 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
   const summary=el('summary','Облачные черновики переводов · загрузка…');
   const status=el('p','', 'localization-queue-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
   const content=el('div',undefined,'localization-queue-content');
-  wrapper.append(summary,status,content);host.append(wrapper);
+  // Keep the filters mounted during queue refreshes. Replacing a focused
+  // searchbox on every keystroke makes large editorial lists unusable.
+  const filters=el('div',undefined,'localization-queue-filters');
+  const search=el('input');search.type='search';search.placeholder='Найти ID или текст черновика…';
+  search.setAttribute('aria-label','Поиск среди сохранённых переводов');
+  const localeFilter=el('select');localeFilter.setAttribute('aria-label','Язык черновиков');
+  [['all','Все языки'],['ru','Русский'],['en','English'],['jp','日本語'],['tw','繁體中文']]
+    .forEach(function(option){const elOption=el('option',option[1]);elOption.value=option[0];localeFilter.append(elOption);});
+  const scopeFilter=el('select');scopeFilter.setAttribute('aria-label','Раздел черновиков');
+  [['all','Все разделы'],['game','Игровые термины'],['ui','Интерфейс']]
+    .forEach(function(option){const elOption=el('option',option[1]);elOption.value=option[0];scopeFilter.append(elOption);});
+  filters.append(search,localeFilter,scopeFilter);
+  search.addEventListener('input',()=>render());
+  localeFilter.addEventListener('change',()=>render());
+  scopeFilter.addEventListener('change',()=>render());
+  wrapper.append(summary,status,filters,content);host.append(wrapper);
   function message(value,failed=false){status.textContent=value;status.dataset.error=String(failed);}
   function get(scope,id,locale){return drafts.get(key({scope,id,locale}))||null;}
   async function refresh(){
@@ -31,22 +46,31 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
   function render(){
     content.replaceChildren();
     if(!drafts.size){content.append(el('p','Сохранённых черновиков переводов нет.','help-text'));return;}
+    const q=search.value.trim().toLocaleLowerCase();
+    const visible=[...drafts.entries()].filter(([,entry])=>
+      (localeFilter.value==='all'||entry.locale===localeFilter.value)&&
+      (scopeFilter.value==='all'||entry.scope===scopeFilter.value)&&
+      (!q||[entry.id,entry.text,entry.locale,entry.scope].some(text=>String(text||'').toLocaleLowerCase().includes(q))));
     const bar=el('div',undefined,'localization-queue-toolbar');
-    const output=el('output','Выбрано: '+selected.size+' из '+drafts.size);
+    const output=el('output');
     const selectAll=el('button','Выбрать первые 50');selectAll.type='button';selectAll.className='secondary';
-    selectAll.onclick=()=>{selected=new Set([...drafts.keys()].slice(0,50));render();};
+    selectAll.onclick=()=>{for(const [id] of visible.slice(0,50))selected.add(id);render();};
     const clear=el('button','Снять выделение');clear.type='button';clear.className='secondary';
     clear.onclick=()=>{selected.clear();render();};
     const publish=el('button','Опубликовать выбранные');publish.type='button';
-    publish.disabled=busy||!selected.size||selected.size>50;
+    function updateSelection(){
+      output.textContent='Выбрано: '+selected.size+' из '+drafts.size+' · найдено: '+visible.length;
+      publish.disabled=busy||!selected.size||selected.size>50;
+    }
+    updateSelection();
     publish.onclick=()=>publishSelected();
     bar.append(output,selectAll,clear,publish);
     content.append(bar);
     const items=el('div',undefined,'localization-queue-items');
-    for(const [id,draft] of drafts){
+    for(const [id,draft] of visible){
       const row=el('div',undefined,'localization-queue-row');
       const label=el('label'),check=el('input');check.type='checkbox';check.checked=selected.has(id);check.disabled=busy;
-      check.onchange=()=>{if(check.checked)selected.add(id);else selected.delete(id);render();};
+      check.onchange=()=>{if(check.checked)selected.add(id);else selected.delete(id);updateSelection();};
       const details=el('span',undefined,'localization-queue-row-text');
       details.append(el('strong',draft.id+' · '+draft.locale.toUpperCase()),
         el('small',draft.scope+' · версия черновика '+draft.version),
@@ -66,6 +90,7 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
       };
       actions.append(open,remove);row.append(label,actions);items.append(row);
     }
+    if(!visible.length)items.append(el('p','По этому фильтру сохранённых черновиков нет.','help-text'));
     content.append(items);
   }
   async function publishSelected(){

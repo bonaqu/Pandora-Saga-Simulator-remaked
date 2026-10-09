@@ -261,9 +261,29 @@ async function listDrafts(env) {
     }))});
 }
 
+const OPERATION_ID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+async function publishedBatchReceipt(env,operationId){
+  if(!OPERATION_ID.test(operationId||''))fail('Invalid catalog operation ID');
+  // The immutable catalog revision note is written in the same D1 batch as
+  // the catalog head. It serves as a durable receipt without another table.
+  const suffix=' [batch:'+operationId+']';
+  const row=await env.DB.prepare(
+    'SELECT version,impact_version AS impactRevision,note FROM catalog_revisions WHERE note LIKE ? ORDER BY version DESC LIMIT 1'
+  ).bind('%'+suffix).first();
+  if(!row||!row.note.endsWith(suffix))return null;
+  const count=/^Publish (\d+) selected catalog drafts /.exec(row.note);
+  if(!count)return null;
+  return {ok:true,catalogRevision:row.version,impactRevision:row.impactRevision,
+    operationId,count:Number(count[1]),publishedIds:[],recovered:true};
+}
+
 async function publishBatch(request,env,now) {
   const input=await body(request);
-  schema(input,['items','expectedCatalogRevision']);
+  schema(input,['items','expectedCatalogRevision','operationId']);
+  if(input.operationId!==undefined){
+    const previous=await publishedBatchReceipt(env,input.operationId);
+    if(previous)return jsonResponse(previous);
+  }
   const expectedCatalog=version(input.expectedCatalogRevision,'Catalog revision');
   if(!Array.isArray(input.items)||input.items.length<1||input.items.length>MAX_BATCH_DRAFTS)
     fail('Select between 1 and '+MAX_BATCH_DRAFTS+' saved drafts');
@@ -291,11 +311,13 @@ async function publishBatch(request,env,now) {
   const ids=new Set(chosen.map(row=>row.id));
   const entries=snapshot.entries.filter(entry=>!ids.has(entry.identity.id));
   for(const {identity,edit} of chosen)entries.push({identity,edit});
-  const result=await commitSnapshot(env,expectedCatalog,entries,now,
-    'Publish '+chosen.length+' selected catalog drafts',
+  const note='Publish '+chosen.length+' selected catalog drafts'+
+    (input.operationId?' [batch:'+input.operationId+']':'');
+  const result=await commitSnapshot(env,expectedCatalog,entries,now,note,
     chosen.map(({id,version})=>({id,version})));
   const payload=await result.json();
-  return jsonResponse({...payload,count:chosen.length,publishedIds:chosen.map(row=>row.id)});
+  return jsonResponse({...payload,count:chosen.length,publishedIds:chosen.map(row=>row.id),
+    ...(input.operationId?{operationId:input.operationId}:{})});
 }
 
 async function rollback(request, env, now) {
@@ -321,7 +343,24 @@ async function list(request, env) {
   const page = Number(pageText);
   const skillKind = kind === 'active' || kind === 'passive';
   const allocationQuery = skillKind ? 'SELECT id, kind, category, item_index, template_id FROM catalog_skill_allocations WHERE kind = ? ORDER BY category, item_index, id' : 'SELECT id, kind, category, item_index FROM catalog_allocations WHERE kind = ? ORDER BY category, item_index';
-  const [snapshot, allocations, drafts] = await Promise.all([head(env), env.DB.prepare(allocationQuery).bind(kind).all(), env.DB.prepare('SELECT id, payload_json, version, is_dirty FROM catalog_drafts').all()]);
+  // Every kind has a stable ID namespace. Read only drafts relevant to the
+  // selected kind instead of deserializing descriptions for every category.
+  // Skill variants use modern.<kind> IDs while native skills share skill_entry.
+  const patterns={
+    equipment:['equipment.%','modern.equipment.%'],
+    soul:['soul.%','modern.soul.%'],
+    class:['job.%'],
+    racial:['racial_skill.%'],
+    active:['skill_entry.%','modern.active.%'],
+    passive:['skill_entry.%','modern.passive.%']
+  }[kind];
+  const draftQuery='SELECT id, payload_json, version, is_dirty FROM catalog_drafts WHERE '+
+    patterns.map(()=>'id LIKE ?').join(' OR ');
+  const [snapshot, allocations, drafts] = await Promise.all([
+    head(env),
+    env.DB.prepare(allocationQuery).bind(kind).all(),
+    env.DB.prepare(draftQuery).bind(...patterns).all()
+  ]);
   const edits = new Map(snapshot.entries.map(entry => [entry.identity.id, entry.edit]));
   const draftMap = new Map(drafts.results.map(row => [row.id, row]));
   const identities = baselineRecords.filter(source => sourceIdentity(source).kind === kind).map(sourceIdentity).concat(allocations.results.map(skillKind ? normalizeSkillIdentity : normalizeIdentity));
@@ -352,6 +391,11 @@ export async function adminCatalog(request, env, now = Math.floor(Date.now() / 1
   if (path === '/api/admin/draft' && request.method === 'POST') return saveDraft(request, env, now);
   if (path === '/api/admin/preview' && request.method === 'POST') return preview(request, env);
   if (path === '/api/admin/publish' && request.method === 'POST') return publish(request, env, now);
+  if (path === '/api/admin/publish-batch-status' && request.method === 'GET') {
+    const operationId=new URL(request.url).searchParams.get('operationId');
+    const receipt=await publishedBatchReceipt(env,operationId);
+    return jsonResponse({ok:true,found:Boolean(receipt),receipt});
+  }
   if (path === '/api/admin/publish-batch' && request.method === 'POST') return publishBatch(request, env, now);
   if (path === '/api/admin/rollback' && request.method === 'POST') return rollback(request, env, now);
   return jsonResponse({ ok: false, message: 'Unknown admin operation' }, 404);

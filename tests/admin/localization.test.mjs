@@ -266,3 +266,25 @@ test('consecutive equipment reset tombstones persist in D1 without restoring eit
     expectedVersion:1,expectedEffective:'Рыцарь Hat'
   }),env),/Translation changed elsewhere/);
 });
+
+
+test('admin localization queries only the selected locale/scope and does not read unrelated D1 tables',async()=>{
+  const env=fixture(),queries=[];
+  const prepare=env.DB.prepare.bind(env.DB);
+  env.DB.prepare=sql=>{queries.push(sql);return prepare(sql);};
+  const read=async(scope,locale)=>(await(await adminLocalization(
+    get('/api/admin/localization?scope='+scope+'&locale='+locale+'&q=skill_entry.7.5'),env)).json());
+  const ui=await read('ui','ru');
+  assert.equal(ui.scope,'ui');
+  assert.ok(queries.some(sql=>sql.includes('FROM localization_overrides WHERE scope=? AND locale=?')));
+  assert.ok(queries.some(sql=>sql.includes('FROM ui_translation_overrides WHERE locale=?')));
+  assert.ok(!queries.some(sql=>sql.includes('FROM catalog_head')),'UI editing should not load all catalog JSON');
+  assert.ok(!queries.some(sql=>sql.includes('FROM result_label_overrides')),'UI editing should not query game result labels');
+  queries.length=0;
+  const game=await read('game','jp');
+  assert.equal(game.scope,'game');
+  assert.ok(queries.some(sql=>sql.includes('FROM catalog_head')));
+  assert.ok(!queries.some(sql=>sql.includes('FROM ui_translation_overrides')),'game editing should not load legacy UI rows');
+  assert.ok(!queries.some(sql=>sql.includes('FROM result_label_overrides')),'non-Russian locale does not use old RU result labels');
+  assert.ok(queries.some(sql=>sql.includes('FROM localization_overrides WHERE scope=? AND locale=?')));
+});
