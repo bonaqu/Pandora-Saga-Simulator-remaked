@@ -87,7 +87,7 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 
 Translations are maintained in one [Excel workbook](localization/translations.xlsx): H (yellow) is Russian, I (green) is an editable English override. The original source columns stay read-only. See the [step-by-step Russian guide](docs/LOCALIZATION_FOR_BEGINNERS.ru.md). Approved translations appear throughout the Modern calculator, lists, search and skill descriptions. Blank game fields retain the selected source language; Legacy Mode stays unchanged.
 
-Modern **3.42** adds complete Russian guild-bonus names and compact single-line Enhancement controls. Guild physical and magical damage reduction now affects the received-damage results; saved builds and share links remain compatible.
+Modern **3.43** keeps Enhancement labels and inputs in fixed positions across all four languages, fixes Honor's one-of-many toggle highlight, and clarifies Russian resistance labels. Existing calculations, saved builds and links remain compatible.
 
 Modern checks a small no-cache release manifest on startup, when returning to the tab, after reconnecting and periodically while visible. A newer release waits for a short idle moment, commits the active field, flushes autosave and reloads versioned assets. The site is intentionally online-only; no manual cache or cookie cleanup should normally be needed.
 
@@ -116,7 +116,7 @@ Found an incorrect stat, broken control, missing item, bad translation or browse
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** Modern 3.42
+- **Remaked UI:** Modern 3.43
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 
