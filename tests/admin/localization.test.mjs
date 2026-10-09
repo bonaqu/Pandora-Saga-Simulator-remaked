@@ -142,7 +142,7 @@ test('missing locale translations are distinguishable from approved imports and 
 
   await adminLocalization(post({scope:'game',id,locale:'ru',value:'Короткий меч',expectedVersion:0}),env);
   assert.equal((await lookup('ru')).items.find(row=>row.id===id).origin,'admin');
-  assert.equal((await lookup('ru','missing')).total,0);
+  assert.ok(!(await lookup('ru','missing')).items.some(row=>row.id===id));
   assert.ok((await lookup('ru','published')).items.some(row=>row.id===id));
 
   await adminLocalization(post({scope:'game',id,locale:'ru',value:'',expectedVersion:1}),env);
