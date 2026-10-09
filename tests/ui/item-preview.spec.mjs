@@ -115,6 +115,6 @@ test('compact equipment effects regain meaningful line breaks without changing n
     'За каждые 2 единицы улучшения:',
     'Скорость атаки +2%',
     'При улучшении на +7 и выше: ПРВ +1'
-  ].join('\\n'));
-  expect(actual.replace(/\\s/g, '')).toBe(example.replace(/\\s/g, ''));
+  ].join('\n'));
+  expect(actual.replace(/\s/g, '')).toBe(example.replace(/\s/g, ''));
 });
