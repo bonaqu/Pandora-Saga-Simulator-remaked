@@ -8,6 +8,7 @@ import unittest
 from scripts.build_pages import build_pages, _materialize_modern_guild_resistance, _read_latest_release, _read_ui_version
 from scripts.localization_catalog import load_migrated_catalogs as load_editable_catalogs
 from scripts.localization_catalog import load_migrated_catalogs
+from scripts.sync_localized_changelogs import render as render_changelog
 
 
 LEGACY_HTML = '''<!DOCTYPE html><html><head><title>Pandora Saga Simulator</title></head><body>
@@ -25,6 +26,15 @@ HERO_WEBP_FIXTURE = b"RIFF\x04\x00\x00\x00WEBP"
 
 
 class BuildPagesTests(unittest.TestCase):
+    def test_localized_changelog_editions_track_canonical_source(self):
+        root = pathlib.Path(__file__).resolve().parents[1]
+        canonical = (root / "CHANGELOG.md").read_text(encoding="utf-8")
+        for locale in ("ru", "en"):
+            with self.subTest(locale=locale):
+                expected = render_changelog(canonical, locale)
+                actual = (root / f"CHANGELOG.{locale}.md").read_text(encoding="utf-8")
+                self.assertEqual(actual, expected)
+
     def test_admin_only_release_never_leaks_into_player_notes(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = pathlib.Path(temporary)

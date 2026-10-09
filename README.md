@@ -87,11 +87,11 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 
 The Modern interface supports English, Russian, Japanese and Traditional Chinese. Available translations appear in character calculations, equipment lists, search results and skill descriptions; untranslated game terms use the available source-language text. Legacy Mode remains unchanged.
 
-Modern supports additional numeric equipment enhancement bonuses in character calculations at configured refinement levels. It does not simulate random on-hit effects or combat against targets.
+Modern supports additional numeric equipment enhancement bonuses in character calculations at configured refinement levels. It does not simulate random on-hit effects or combat against targets. The full release history is available by language, independent of internal-only release notes.
 
 Modern checks a small no-cache release manifest on startup, when returning to the tab, after reconnecting and periodically while visible. A newer release waits for a short idle moment, commits the active field, flushes autosave and reloads versioned assets. The site is intentionally online-only; no manual cache or cookie cleanup should normally be needed.
 
-The on-site **Updates / What’s new** dialog displays only the most recent section explicitly marked for **players** in [CHANGELOG.md](CHANGELOG.md). The displayed Remaked UI version is taken from the latest deployed release, so it may be newer than the latest player-facing highlights. Internal-only entries never appear in the on-site highlights; the full changelog remains linked separately.
+The on-site **Updates / What’s new** dialog displays only the most recent section explicitly marked for **players** in [CHANGELOG.md](CHANGELOG.md). The displayed Remaked UI version is taken from the latest deployed release, while the dialog also identifies the latest player-facing release independently. Internal-only updates never appear in its highlights. The **Full changelog** link opens the matching [English](CHANGELOG.en.md) or [Russian](CHANGELOG.ru.md) history, with player and technical sections labeled separately.
 
 Public documentation covers player help, project architecture, history, release behavior and the roadmap.
 
@@ -105,7 +105,7 @@ Current directions include:
 - continued visual, touch, keyboard and cross-browser polish;
 - preserving old saved choices and links while recalculating them against current catalog data.
 
-See [CHANGELOG.md](CHANGELOG.md) for released changes and the [public roadmap](docs/TASK_QUEUE.ru.md) for current and future work.
+See the [English release history](CHANGELOG.en.md), [Russian release history](CHANGELOG.ru.md) and the [public roadmap](docs/TASK_QUEUE.ru.md).
 
 ## 🐛 Report a problem
 

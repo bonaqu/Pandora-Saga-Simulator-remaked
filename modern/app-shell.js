@@ -228,7 +228,13 @@
     return header;
   }
 
-  var updatesDialog;
+  var updatesDialog, updatesChangelogUrl;
+
+  function playerUpdatesLocale() {
+    var locale = namespace.i18n && typeof namespace.i18n.getLocale === 'function'
+      ? namespace.i18n.getLocale() : (document.documentElement.lang || 'en');
+    return locale === 'ru' ? 'ru' : 'en';
+  }
 
   function latestReleaseHighlights() {
     var release = window.PandoraRemakedRelease;
@@ -246,6 +252,18 @@
     if (!updatesDialog) return;
     var version = updatesDialog.querySelector('.remaked-updates-version');
     if (version) localizeText(version, 'updates.version', '', window.PandoraRemakedVersion);
+    var release = window.PandoraRemakedRelease;
+    var lang = playerUpdatesLocale();
+    var playerVersion = updatesDialog.querySelector('[data-remaked-player-version]');
+    if (playerVersion && release && release.playerVersion) {
+      playerVersion.textContent = (lang === 'ru' ? 'Последние изменения для игроков: ' : 'Latest player update: ')
+        + 'Modern ' + release.playerVersion + (release.date ? ' · ' + release.date : '');
+    }
+    var fullChangelog = updatesDialog.querySelector('[data-remaked-full-changelog]');
+    if (fullChangelog && updatesChangelogUrl) {
+      fullChangelog.href = updatesChangelogUrl.replace(/CHANGELOG(?:\.(?:ru|en))?\.md$/,
+        'CHANGELOG.' + lang + '.md');
+    }
 
     var list = updatesDialog.querySelector('[data-remaked-updates-list]');
     if (!list) return;
@@ -267,6 +285,7 @@
   }
 
   function openUpdates(changelogUrl, projectUrl) {
+    updatesChangelogUrl = changelogUrl;
     if (!updatesDialog) {
       updatesDialog = document.createElement('dialog');
       updatesDialog.className = 'remaked-modal remaked-updates-overlay';
@@ -283,12 +302,18 @@
       header.appendChild(title); header.appendChild(close); panel.appendChild(header);
       var version = document.createElement('p'); version.className = 'remaked-updates-version';
       panel.appendChild(version);
+      var playerVersion = document.createElement('p');
+      playerVersion.className = 'remaked-updates-player-version';
+      playerVersion.dataset.remakedPlayerVersion = '';
+      panel.appendChild(playerVersion);
       var list = document.createElement('ul');
       list.dataset.remakedUpdatesList = '';
       panel.appendChild(list);
       var links = document.createElement('div'); links.className = 'remaked-updates-links';
-      links.appendChild(makeLink('Full changelog', changelogUrl, 'updates.fullChangelog'));
-      links.appendChild(makeLink('Report a problem', projectUrl + '/issues/new?template=bug_report.yml', 'updates.report'));
+      var fullChangelog = makeLink('Full changelog', changelogUrl, 'updates.fullChangelog');
+      fullChangelog.dataset.remakedFullChangelog = '';
+      links.appendChild(fullChangelog);
+      links.appendChild(makeLink('Report a problem', projectUrl + '/issues/new?template=01-bug.yml', 'updates.report'));
       panel.appendChild(links); updatesDialog.appendChild(panel);
       updatesDialog.addEventListener('click', function (event) { if (event.target === updatesDialog) updatesDialog.close(); });
       document.body.appendChild(updatesDialog);

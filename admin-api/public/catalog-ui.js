@@ -188,6 +188,7 @@
     }
     var actions = editor.querySelector('.editor-actions'); if (actions) editor.appendChild(actions);
     editor.dataset.unsaved = dirty ? 'true' : 'false';
+    updateLocaleCoverage();
   }
   function compatibility(label, field, values, labels, parent) {
     var group = node('fieldset', undefined, 'compatibility-fields'); group.appendChild(node('legend', label));
@@ -442,8 +443,32 @@
     } catch (error) { if (thisGeneration === generation) report(error.message, true); }
     finally { if (thisGeneration === generation) { host.inert = false; host.removeAttribute('aria-busy'); } }
   }
+  function syncNewButton() {
+    if (!newButton || !kind) return;
+    var skill = kind.value === 'active' || kind.value === 'passive';
+    newButton.textContent = skill ? 'Новый навык из выбранного' : 'Новая запись';
+    newButton.disabled = skill
+      ? !(current?.edit?.id && current.edit.kind === kind.value)
+      : kind.value !== 'equipment' && kind.value !== 'soul';
+  }
+  function updateLocaleCoverage() {
+    if (!editor) return;
+    var indicator = editor.querySelector('[data-language-coverage]');
+    if (!indicator) return;
+    var groups = ['names', 'description'].map(function (field) {
+      var filled = languages.filter(function (entry) {
+        var input = editor.querySelector('[data-field="' + field + '"][data-language="' + entry[0] + '"]');
+        return input && input.value.trim().length > 0;
+      }).map(function (entry) { return entry[0].toUpperCase(); });
+      return (field === 'names' ? 'Название' : 'Описание') + ': ' +
+        (filled.length ? filled.join(' / ') : 'нет текста');
+    });
+    indicator.textContent = groups.join(' · ') +
+      ' · Проверяй корректность каждого языка перед публикацией.';
+  }
   function renderEditor() {
     editor.replaceChildren(); readProfiles = null; var edit = current.edit;
+    syncNewButton();
     editor.appendChild(node('h3', edit.id ? edit.names.en : 'Новая запись'));
     var numericId=current.identity&&['equipment','soul'].includes(edit.kind)
       ? (edit.kind==='equipment'?current.identity.category*10000+current.identity.index:current.identity.index) : null;
@@ -452,6 +477,13 @@
     editor.appendChild(node('p', numericLabel+(edit.id||'Технический ID ещё не назначен')+' · '+
       (current.hasDraft?'ЧЕРНОВИК '+current.draftVersion:current.published?'ОПУБЛИКОВАНО':edit.id?'ИСТОЧНИК':'НОВАЯ НЕСОХРАНЁННАЯ ЗАПИСЬ'),
       'item-identity'));
+    if (['equipment', 'soul', 'active', 'passive'].includes(edit.kind)) {
+      var coverage = node('p', '', 'catalog-language-coverage');
+      coverage.dataset.languageCoverage = '';
+      coverage.setAttribute('role', 'status');
+      coverage.setAttribute('aria-live', 'polite');
+      editor.appendChild(coverage);
+    }
     review();
     if (edit.kind === 'active' || edit.kind === 'passive') {
       multilingual('Название навыка · English обязателен', 'names', edit.names, editor, false);
@@ -576,7 +608,7 @@
     current = null; dirty = false; editor.replaceChildren(node('p', 'Загрузка ' + id + '…'));
     try {
       var result = await api('item?id=' + encodeURIComponent(id)); if (thisGeneration !== generation || sequence !== editorRequest) return;
-      current = result; renderEditor();
+      current = result; renderEditor(); syncNewButton();
       listHost.querySelectorAll('.catalog-entry').forEach(function (entry) { if (entry.dataset.recordId === id) entry.setAttribute('aria-current', 'true'); else entry.removeAttribute('aria-current'); });
       report('Выбрано: ' + current.edit.names.en + '. Изменения пока не опубликованы.');
     } catch (error) { if (thisGeneration === generation && sequence === editorRequest) report(error.message, true); }
@@ -759,7 +791,7 @@
       draftVersion: 0, catalogRevision: source.catalogRevision, hasDraft: false, published: false, edit: edit, nativeSkill: source.nativeSkill };
     // Preserve the current fields as a new unsaved entry, including any typing.
     // No request, source edit, allocation or publication occurs on duplication.
-    dirty = true; renderEditor();
+    dirty = true; renderEditor(); syncNewButton();
     editor.querySelector('[data-field="names"][data-language="en"]').focus();
     report('Исходный навык не изменён. Укажите название нового навыка, сохраните черновик, затем опубликуйте его отдельно.');
   }
@@ -794,9 +826,18 @@
         if (!canLeave()) { kind.value = selectedKind; return; }
         selectedKind = kind.value; clearTimeout(searchTimer); editorRequest++; current = null; dirty = false;
         editor.replaceChildren(node('p', 'Выберите запись в списке. Здесь будут её текущие характеристики и поля для редактирования.'));
-        newButton.disabled = kind.value !== 'equipment' && kind.value !== 'soul'; page = 0; loadList();
+        syncNewButton(); page = 0; loadList();
       });
-      newButton = button('Новая запись', newItem);
+      newButton = button('Новая запись', function () {
+        if (kind.value === 'active' || kind.value === 'passive') {
+          if (!current?.edit?.id || current.edit.kind !== kind.value) {
+            report('Сначала выбери существующий навык как шаблон.', true); return;
+          }
+          duplicateSkill(); return;
+        }
+        newItem();
+      });
+      syncNewButton();
       controls.append(kind, search, newButton, button('История / откат', revisions, 'secondary')); host.appendChild(controls);
       draftPanel=node('details',undefined,'catalog-draft-board');
       draftSummary=node('summary','Сохранённые черновики каталога · загрузка…');
@@ -814,7 +855,15 @@
       draftPanel.append(draftSummary,draftFilters,draftBoard);host.appendChild(draftPanel);
       var grid = node('div', undefined, 'catalog-grid'); var sidebar = node('section', undefined, 'catalog-sidebar'); sidebar.setAttribute('aria-label', 'Список записей');
       listStatus = node('p', undefined, 'help-text'); listHost = node('div'); sidebar.append(listStatus, listHost);
-      editor = node('form', undefined, 'catalog-editor'); editor.addEventListener('submit', function (event) { event.preventDefault(); saveDraft(); }); editor.appendChild(node('p', 'Выберите существующую запись слева или нажмите «Новая запись».'));
+      editor = node('form', undefined, 'catalog-editor');
+      editor.addEventListener('submit', function (event) { event.preventDefault(); saveDraft(); });
+      editor.addEventListener('input', updateLocaleCoverage);
+      editor.addEventListener('keydown', function (event) {
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+          event.preventDefault();
+          if (current && !host.inert) saveDraft();
+        }
+      }); editor.appendChild(node('p', 'Выберите существующую запись слева или нажмите «Новая запись».'));
       grid.append(sidebar, editor); host.appendChild(grid); page = 0; await Promise.all([loadList(),refreshDrafts()]); report('Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.');
     } catch (error) { report(error.message, true); }
   }
