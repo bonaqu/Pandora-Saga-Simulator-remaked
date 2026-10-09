@@ -425,7 +425,8 @@ def _read_latest_release(root: pathlib.Path) -> dict[str, object]:
         if not all(highlights.values()):
             raise ValueError("player release must contain both en and ru player-marked notes")
         return {
-            "version": match.group("version"),
+            "version": _read_ui_version(root),
+            "playerVersion": match.group("version"),
             "title": match.group("title").strip(),
             "date": match.group("date"),
             "highlights": highlights,
