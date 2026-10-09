@@ -67,28 +67,80 @@ test('Astir Scarlet Dress retains the canonical torso-plus-legs exclusivity',asy
 });
 
 
-test('complete Scarlet Astir male/female sets award their original bonuses only when all parts are worn',async({page})=>{
+test('Modern Astir outfits have no full-set bonus, at any enhancement level',async({page})=>{
   await page.goto('/');
   await page.evaluate(data=>PandoraRemaked.catalog.applySnapshot(data),snapshot);
   const result=await page.evaluate(()=>{
-    const total=(stat)=>[...(EquipOpt[stat]||[])].reduce((n,v)=>n+Number(String(v).replace('%','')),0);
-    const outfit=(torso,gloves,legs,boots)=>{
+    // Inclusion-exclusion isolates a hypothetical full-set interaction.
+    // A complete outfit must equal its independent equipped pieces.
+    // Importantly this subtracts each boot's OWN stats and enhancements.
+    const measure=(torso,gloves,legs,boots,plus)=>{
       for(const slot of [3,4,5,6])Status.Equip[slot]=[0,0,0,0,0,0,0];
-      Status.Equip[3]=[torso,0,0,6,0,0,0];
+      Status.Equip[3]=[torso,0,0,plus,0,0,0];
       Status.Equip[4]=[gloves,0,0,0,0,0,0];
       Status.Equip[5]=[legs,0,0,0,0,0,0];
       Status.Equip[6]=[boots,0,0,0,0,0,0];
       EquipCheck();
-      return {armor:total(49),burn:total(148),atk:total(18),torso:Status.Equip[3][0],legs:Status.Equip[5][0]};
+      const result={legs:Status.Equip[5][0]};
+      for(const stat of [18,49,148]){
+        result[stat]=[...(EquipOpt[stat]||[])].reduce((n,v)=>n+Number(String(v).replace('%','')),0);
+      }
+      return result;
     };
-    return {male:outfit(310041,320034,330036,340037),
-      maleMissing:outfit(310041,320034,330036,0),
-      female:outfit(310042,320035,0,340038),
-      femaleMissing:outfit(310042,320035,0,0)};
+    const combos=[];
+    for(const plus of [0,5,6,8,10]){
+      for(const [title,torso,gloves,legs,boots] of [
+        ['male',310041,320034,330036,340037],
+        ['dress',310042,320035,0,340038]
+      ]){
+        const full=measure(torso,gloves,legs,boots,plus);
+        const without=measure(torso,gloves,legs,0,plus);
+        const boot=measure(0,0,0,boots,0);
+        const empty=measure(0,0,0,0,0);
+        combos.push({title,plus,fullLegs:full.legs,
+          interaction:Object.fromEntries([18,49,148].map(stat=>[
+            stat,full[stat]-without[stat]-boot[stat]+empty[stat]
+          ]))});
+      }
+    }
+    return combos;
   });
-  expect(result.male.armor-result.maleMissing.armor).toBe(2);
-  expect(result.male.burn-result.maleMissing.burn).toBe(4);
-  expect(result.female.burn-result.femaleMissing.burn).toBe(4);
-  expect(result.female.atk-result.femaleMissing.atk).toBe(1);
-  expect(result.female.legs).toBe(0);
+  for(const row of result){
+    for(const stat of [18,49,148])
+      expect(row.interaction[stat],row.title+' +'+row.plus+' stat '+stat).toBe(0);
+    if(row.title==='dress')expect(row.fullLegs).toBe(0);
+  }
 });
+
+test('outdated Astir set notes are absent from Modern item descriptions in every language',async({page})=>{
+  await page.goto('/');
+  await page.evaluate(data=>PandoraRemaked.catalog.applySnapshot(data),snapshot);
+  const cases=await page.evaluate(()=>{
+    const result=[];
+    const localeToFlag={jp:0,en:1,ru:2,tw:0};
+    for(const locale of ['ru','en','jp','tw']){
+      PandoraRemaked.i18n.setLocale(locale);
+      Flag[0]=localeToFlag[locale];
+      for(const id of [310041,310042,310033]){
+        const details=PandoraRemaked.adapter.readItemDetails('equipment',id,3);
+        result.push({locale,id,description:details.descriptions.join('\\n'),source:EquipData[0][31][id%10000][2]});
+      }
+    }
+    return result;
+  });
+  for(const {locale,id,description} of cases){
+    expect(description,locale+' item '+id).toBeTruthy();
+    expect(description,locale+' item '+id).not.toMatch(/セットで装備すると|set (?:of|bonus|features)|set of equipment|when equipped with|pant.*glov.*boot|[кК]омплект[а-я]* бонус/i);
+  }
+});
+
+test('equipment and Soul previews have no obsolete Legacy 2.00 source footer',async({page})=>{
+  await page.goto('/');
+  await page.evaluate(data=>PandoraRemaked.catalog.applySnapshot(data),snapshot);
+  await page.evaluate(()=>PandoraRemaked.search.openEquipmentSearch(3));
+  const previews=page.locator('[data-remaked-item-description]');
+  await expect(previews.first()).toBeAttached();
+  await expect(previews.first()).not.toContainText('Legacy 2.00');
+  await expect(page.locator('[data-remaked-item-description] small')).toHaveCount(0);
+});
+

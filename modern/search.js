@@ -424,7 +424,6 @@
       description.appendChild(element('p', 'remaked-item-prose', text));
     });
     if (item.calculationWarning) description.appendChild(element('p', 'remaked-item-warning', item.calculationWarning));
-    description.appendChild(translatedElement('small', '', 'search.itemSource', 'Item descriptions from Legacy 2.00; not calculated build deltas.'));
     details.appendChild(description); row.appendChild(details);
     var pinned = false;
     var hoverTimer = null;

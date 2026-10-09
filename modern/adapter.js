@@ -409,9 +409,20 @@
       // Flags follow the preserved ListCreate('Equip') layout (offset 16).
       if (canonical[16 + jobIndex]) classes.push(text(job[2 + language]));
     });
+    var catalogRecord = namespace.catalog?.item(kind, value);
+    // Current-game Astir gear has NO full-set bonuses. Historical catalog
+    // 'notes' for these 16 coats/dresses are legacy set-bonus descriptions,
+    // frequently machine-translated. Preserve original D1 values for audit
+    // and possible admin revisions, but never display this obsolete material.
+    var obsoleteAstirSetNote = kind === 'equipment' &&
+      /セットで装備すると/.test(String(catalogRecord?.notes?.jp || text(canonical[2])));
     var overrideName = namespace.catalog?.itemText(kind, value, 'names');
-    var descriptions = columns.map(function (column) { return text(record[column]); }).filter(Boolean);
-    if (namespace.catalog?.item(kind, value)) descriptions = ['description', 'notes', 'acquisition'].map(function (field) { return namespace.catalog.itemText(kind, value, field); }).filter(Boolean);
+    var descriptions = columns.map(function (column) {
+      return obsoleteAstirSetNote && column === 2 ? '' : text(record[column]);
+    }).filter(Boolean);
+    if (catalogRecord) descriptions = ['description', 'notes', 'acquisition'].map(function (field) {
+      return obsoleteAstirSetNote && field === 'notes' ? '' : namespace.catalog.itemText(kind, value, field);
+    }).filter(Boolean);
     // Unified four-locale text overrides apply only to displayed detail prose.
     // Preserve the canonical numeric rows, sockets and calculation code.
     var termId = kind === 'equipment'
@@ -421,6 +432,7 @@
       ? ['description','notes','acquisition'] : ['modifiers','description','notes','acquisition'];
     if (namespace.i18n?.game) {
       var translatedFields = textFields.map(function (field, i) {
+        if (obsoleteAstirSetNote && field === 'notes') return '';
         return namespace.i18n.game(termId + '.' + field, '') ||
           (namespace.catalog?.item(kind, value)
             ? namespace.catalog.itemText(kind, value, field)

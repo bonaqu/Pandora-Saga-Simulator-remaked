@@ -1,5 +1,30 @@
 # Changelog
 
+## Modern 3.63 — актуальные астирские комплекты без бонусов за набор, 2026-10-10
+
+<!-- release-notes:user:ru -->
+- У астирского снаряжения больше не начисляются устаревшие бонусы за полный комплект: учитываются только собственные характеристики вещей и их бонусы заточки.
+- Из описаний астирских вещей убраны устаревшие упоминания бонусов полного набора на всех языках сайта.
+- Из всплывающих описаний всех предметов, оружия, бижутерии и душ удалена лишняя подпись про Legacy 2.00.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Astir equipment no longer gains obsolete full-outfit set bonuses. Only each piece's own attributes and refinement effects apply.
+- Outdated full-set bonus notes are hidden from Astir item descriptions across site languages.
+- Removed the redundant Legacy 2.00 footer from all equipment, weapon, accessory and Soul detail previews.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- При сборке только Modern исключаются 16 старых условий полного набора Astir; архивный Legacy и исходный файл движка остаются побайтово неизменными. Другие комплекты и индивидуальные бонусы заточки сохраняются.
+- Устаревшие переводные примечания Astir скрываются при отображении, но исходные опубликованные данные D1 не удаляются и могут быть безопасно исправлены через админку.
+- Добавлены проверки разграничения Modern/Legacy, отсутствия бонусов полного набора и устаревших подписей. Тесты учитывают собственные характеристики каждой детали.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Modern packaging excludes the 16 outdated Astir outfit conditions while keeping the archived Legacy engine byte-identical and retaining unrelated set/refinement rules.
+- Hide stale localized Astir set notes at presentation time without deleting published D1 data. Add precise per-piece vs complete-outfit tests and tooltip regressions.
+<!-- /admin-notes:en -->
+
 ## Modern 3.62 — стабильные бонусы заточки между уровнями, 2026-10-10
 
 <!-- release-notes:user:ru -->

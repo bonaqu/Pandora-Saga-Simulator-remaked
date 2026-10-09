@@ -265,6 +265,35 @@ def _materialize_modern_guild_resistance(root: pathlib.Path, output: pathlib.Pat
     (output / "js" / "calc.js").write_text(original, encoding="utf-8")
 
 
+def _materialize_modern_astir_rules(root: pathlib.Path, output: pathlib.Path) -> None:
+    """Omit obsolete Astir full-outfit effects from the Modern bundle only.
+
+    Legacy's equipment source, archived /legacy/ bundle and all unrelated
+    equipment sets/individual enhancement mechanics remain byte-preserved.
+    The 16 full-set checks are a contiguous source section, so enforce exact
+    known boundaries rather than regex-rewriting individual effect codes.
+    """
+    source = (root / "js" / "equip.js").read_text(encoding="utf-8-sig")
+    copied = (output / "js" / "equip.js").read_text(encoding="utf-8-sig")
+    if source != copied:
+        raise ValueError("Modern Astir rules expected an unmodified equip.js source copy")
+
+    first = "  if (To['N'] == 'アスティアンコート' && Gl['N'] == 'アスティアングローブ'"
+    last = "\n\n// ----- 武器"
+    if copied.count(first) != 1:
+        raise ValueError("Modern Astir rules could not locate unique first set")
+    start = copied.index(first)
+    end = copied.find(last, start)
+    if end < 0:
+        raise ValueError("Modern Astir rules could not locate final set boundary")
+    original_sets = copied[start:end]
+    if original_sets.count("  if (To['N'] ==") != 16 or " // ----- " in original_sets:
+        raise ValueError("Unexpected Legacy Astir set section: review before updating")
+    # Keep preceding non-Astir set bonuses and the following weapon rules.
+    patched = copied[:start] + "  // Modern: no Astir full-outfit bonuses in the current game.\n" + copied[end:]
+    (output / "js" / "equip.js").write_text(patched, encoding="utf-8")
+
+
 def _copy_runtime(root: pathlib.Path, destination: pathlib.Path) -> None:
     for dirname in RUNTIME_DIRS:
         shutil.copytree(root / dirname, destination / dirname)
@@ -497,6 +526,7 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
 
     _copy_runtime(root, output)
     _materialize_modern_guild_resistance(root, output)
+    _materialize_modern_astir_rules(root, output)
     _materialize_modern_assets(root, output)
     _materialize_release_metadata(root, output)
     _materialize_locales(
