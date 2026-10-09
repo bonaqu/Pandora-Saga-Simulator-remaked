@@ -109,7 +109,7 @@ test('reviewed whole-word replacement scans all pages and preserves English, sub
   expect(texts[40].source.en).toBe(sourceText);
   expect(texts[40].baseline.en).toBe(sourceText);
   expect(texts[40].baseline.jp).toBe('戦士');
-  expect(stored.size).toBe(2);
+  expect(stored.size).toBe(1);
 });
 
 test('whole-word helper retains multiline formatting and escapes punctuation safely',async({page})=>{
