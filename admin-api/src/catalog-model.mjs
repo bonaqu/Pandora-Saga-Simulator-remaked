@@ -201,7 +201,6 @@ function validateUpgradeBonuses(input) {
     const every=integer(rule.every,1,10,'Upgrade step');
     const from=integer(rule.from,1,10,'First upgrade');
     const to=integer(rule.to,from,10,'Last upgrade');
-    check((to-from)%every===0, 'Last upgrade must match a complete threshold');
     check(typeof rule.value==='number'&&Number.isFinite(rule.value)&&Math.abs(rule.value)<=10000&&
       Number(rule.value.toFixed(2))===rule.value&&rule.value!==0,'Upgrade bonus must be nonzero and bounded');
     const unique=rule.stat+':'+rule.unit+':'+every+':'+from+':'+to;
