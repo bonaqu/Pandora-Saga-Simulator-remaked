@@ -141,7 +141,7 @@ async function legacyOverrides(env,scope=null,locale=null) {
       ? env.DB.prepare('SELECT id,ru FROM result_label_overrides').all()
       : Promise.resolve({results:[]}),
     needGame
-      ? env.DB.prepare('SELECT snapshot_json FROM catalog_head WHERE id=1').first()
+      ? env.DB.prepare('SELECT snapshot_json, version FROM catalog_head WHERE id=1').first()
       : Promise.resolve(null)
   ]);
   const values=new Map();
