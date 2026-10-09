@@ -11,7 +11,7 @@
     "test:ui": "playwright test",
     "test:ui:compact-inputs": "playwright test tests/ui/compact-inputs.spec.mjs tests/ui/panel-workspace.spec.mjs",
     "test:ui:catalog-audit": "playwright test tests/ui/catalog-wide-differential.spec.mjs --project=chromium",
-    "test:ui:admin": "playwright test tests/ui/admin-catalog.spec.mjs tests/ui/admin-translations.spec.mjs tests/ui/admin-unified-localization.spec.mjs --project=chromium",
+    "test:ui:admin": "playwright test tests/ui/admin-catalog.spec.mjs tests/ui/admin-translations.spec.mjs tests/ui/admin-unified-localization.spec.mjs tests/ui/admin-bulk-localization.spec.mjs --project=chromium",
     "test:ui:learning": "playwright test tests/ui/custom-skill-learning.spec.mjs --project=chromium",
     "test:ui:profiles": "playwright test tests/ui/skill-profiles.spec.mjs --project=chromium",
     "test:ui:foundation": "playwright test tests/ui/modern-foundation.spec.mjs",
