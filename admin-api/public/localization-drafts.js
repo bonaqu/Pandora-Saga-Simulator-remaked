@@ -6,6 +6,7 @@ function el(tag,text,klass){
   if(klass)e.className=klass;
   return e;
 }
+  function plural(number){const n=Number(number),t=n%10,h=n%100;return t===1&&h!==11?'перевод':t>=2&&t<=4&&(h<12||h>14)?'перевода':'переводов';}
 function mount(host,{api,onPublished,onJump,onQueueChanged}){
   let drafts=new Map(),selected=new Set(),busy=false,active=true;
   const key=item=>item.scope+'\0'+item.id+'\0'+item.locale;
@@ -91,7 +92,7 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
     }finally{
       busy=false;
       if(receipt){
-        selected.clear();message('Опубликовано '+receipt.count+' переводов в одной операции.');
+        selected.clear();message('Опубликовано '+receipt.count+' '+plural(receipt.count)+' одной операцией.');
         await refresh();onPublished();
       }else await refresh();
       render();
