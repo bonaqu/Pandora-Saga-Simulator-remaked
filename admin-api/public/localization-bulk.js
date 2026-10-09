@@ -3,7 +3,7 @@
 
   // Only visible, localized text is editable here. Source EN/JP/TW values,
   // game mechanics, legacy catalog snapshots and existing drafts stay intact.
-  const MAX_MATCHES=100, MAX_SCAN=3500;
+  const MAX_MATCHES=50, MAX_SCAN=3500;
   const cleanWord=value=>typeof value==='string' && value.length>0 && value.length<=60 &&
     /^[\p{L}\p{N}_]+$/u.test(value);
   const safeText=value=>typeof value==='string' && value.length>0 && value.length<=80 &&
@@ -238,21 +238,18 @@
 
     async function commit(){
       if(busy||!proposal||!stillCurrent(proposal.current)){invalidate();return;}
-      if(editing.size){state.textContent='Закончи или отмени редактирование открытой строки перед публикацией.';return;}
+      if(editing.size){state.textContent='Закончи редактирование открытой строки.';return;}
       const checked=proposal.found.filter(item=>selections.get(item.id));
       if(!checked.length)return;
       if(checked.some(item=>hasDraft(item))){
-        state.textContent='В выбранных строках появились несохранённые черновики. Повтори предпросмотр.';return;
+        state.textContent='В выбранных строках есть черновик. Перепроверь данные и обнови предпросмотр.';return;
       }
-      if(!window.confirm('Опубликовать замену в '+checked.length+' строках языка '+proposal.current.locale.toUpperCase()+
-          '? Английский оригинал и остальные языки не изменятся.'))return;
-      const current=proposal.current,requestId=epoch;
-      setBusy(true);
-      let published=0;
+      if(!window.confirm('Опубликовать '+checked.length+' переводов ОДНОЙ транзакцией для '+proposal.current.locale.toUpperCase()+
+        '? Остальные языки не изменятся.'))return;
+      const current=proposal.current,requestId=epoch,operationId=window.crypto.randomUUID();
+      setBusy(true);let receipt=null,uncertain=false;
       try{
-        // Re-read the full matching selection first; never apply a stale
-        // preview or save over another published translation.
-        state.textContent='Повторно сверяю версии и тексты перед публикацией…';
+        state.textContent='Перепроверяю переводы перед атомарной публикацией…';
         const latest=await collect(current);
         const actual=new Map(latest.found.map(item=>[item.id,item]));
         for(const before of checked){
@@ -260,24 +257,33 @@
           if(!now||now.version!==before.version||now.before!==before.before||now.after!==before.suggested||now.blocked)
             throw Error('Данные изменились для '+before.id+'. Пересмотри пакет.');
         }
-        for(const item of checked){
-          if(!active||requestId!==epoch||!stillCurrent(current))throw Error('Контекст редактора изменился.');
-          // The server checks both row revision and effective text (including
-          // published values from the compatibility editor).
-          await api('POST',{scope:item.scope,id:item.id,locale:item.locale,value:item.after,
-            expectedVersion:item.version,expectedEffective:item.before});
-          published++;
-          state.textContent='Опубликовано '+published+' из '+checked.length+'.';
+        if(!active||requestId!==epoch||!stillCurrent(current))throw Error('Контекст редактора изменился.');
+        state.textContent='Публикую '+checked.length+' переводов одной транзакцией…';
+        const items=checked.map(item=>({scope:item.scope,id:item.id,locale:item.locale,
+          value:item.after,expectedVersion:item.version,expectedEffective:item.before}));
+        try{
+          receipt=await api('POST',{operationId,items},'/api/admin/localization/publish-batch');
+        }catch(error){
+          // A network failure after a server commit is not proof of rollback.
+          // An operation receipt is written in the SAME D1 transaction.
+          state.textContent='Проверяю сохранённый результат операции…';
+          try{
+            const check=await api('GET',null,
+              '/api/admin/localization/operations?operationId='+encodeURIComponent(operationId));
+            if(check.found)receipt=check.receipt;
+            else{uncertain=true;throw Error('Состояние публикации не подтверждено: '+error.message);}
+          }catch(checkError){uncertain=true;throw checkError;}
         }
         invalidate();
-        state.textContent='Успешно опубликовано '+published+' строк. Проверь переводы на сайте.';
+        state.textContent='Успешно опубликовано '+receipt.count+' переводов одной операцией. Проверь их на сайте.';
       }catch(error){
-        invalidate();
-        state.textContent='Остановлено: '+published+' из '+checked.length+' строк опубликовано; остальные не изменены. '+
-          error.message+' Составь новый предпросмотр перед повторной попыткой.';
+        if(!uncertain)invalidate();
+        state.textContent=(uncertain
+          ? 'Не удалось подтвердить результат операции. НЕ повторяй публикацию вслепую. Код: '+operationId+'. '
+          : 'Пакет не опубликован: ')+error.message;
       }finally{
         setBusy(false);
-        if(published)onPublished();
+        if(receipt)onPublished();
       }
     }
     publish.addEventListener('click',commit);
