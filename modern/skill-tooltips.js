@@ -54,7 +54,7 @@
     // "Shot 8" -> "Стрельба 8", never mutate Skill[*] requirements.
     var names = Object.create(null);
     groups.forEach(function(pair){ names[pair[0]] = pair[1]; });
-    var tokens = groups.map(function(pair){ return pair[0].replace(/[.*+?^$\u007b\u007d()|[\]\\]/g, '\\  function open(icon) {'); });
+    var tokens = groups.map(function(pair){ return pair[0]; });
     if (!tokens.length) return source;
     return String(source).replace(new RegExp('(^|[^\\p{L}])(' + tokens.join('|') + ')(?=\\s*\\d)', 'gu'),
       function(match, before, name){ return before + names[name]; });
