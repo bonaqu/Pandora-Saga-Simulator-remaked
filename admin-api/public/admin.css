@@ -132,3 +132,17 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
   #ui-translation-editor .ui-translation-row { grid-template-columns: minmax(0, 1fr); }
   #ui-translation-editor .ui-translation-actions { grid-column: auto; }
 }
+
+/* Stable unsaved-state feedback: never hide an edit when filtering/page changing. */
+#ui-translation-editor .ui-translation-row[data-ui-unsaved="true"] {
+  border-inline-start: 3px solid #e6ba65; padding-inline-start: 7px;
+  background: rgba(230,186,101,.075);
+}
+#ui-translation-editor .ui-translation-row[data-ui-unsaved="true"] .ui-translation-status {
+  color: #f4d99c; font-weight: 700;
+}
+#ui-translation-editor [data-ui-draft-count] { color: #f4d99c; font-weight: 650; }
+#ui-translation-editor [data-ui-discard-drafts]:disabled { opacity: .45; }
+#ui-translation-editor .ui-translation-actions button:disabled { opacity: .55; cursor: default; }
+#ui-translation-editor .ui-translation-row:focus-within { outline: 1px solid var(--green); outline-offset: 2px; }
+#ui-translation-editor :is(button,input,select):focus-visible { outline: 2px solid #d3e7b6; outline-offset: 2px; }

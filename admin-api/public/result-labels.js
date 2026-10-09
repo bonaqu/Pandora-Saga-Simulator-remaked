@@ -102,12 +102,19 @@
         reset.className = 'secondary';
         saveCell.append(save, reset);
         function syncState() {
-          state.textContent = item.overridden ? 'Админка · версия ' + item.version : 'Excel';
+          var dirty = input.value !== item.value;
+          state.textContent = dirty ? 'Черновик · не сохранено' : item.overridden ? 'Админка · версия ' + item.version : 'Excel';
+          row.dataset.resultLabelUnsaved = String(dirty);
+          save.disabled = !dirty;
           row.dataset.resultLabelOverridden = String(item.overridden);
           reset.disabled = !item.overridden;
         }
         syncState();
+        input.addEventListener('input', syncState);
         async function commit(value) {
+          // Reset must remain possible even when an old D1 override now equals
+          // the updated Excel baseline; the tombstone clears precedence safely.
+          if (value === item.value && !(item.overridden && value === item.baseline)) return;
           var requestVersion = item.version;
           save.disabled = reset.disabled = true;
           try {
@@ -118,9 +125,8 @@
             report(item.id + ' сохранён. На сайте новая подпись появится после обновления страницы.');
           } catch (error) {
             if (token !== generation) return;
-            report(error.message + ' Список обновится, чтобы не перезаписывать правку.', true);
-            await load();
-            root.querySelector('details')?.setAttribute('open', '');
+            // A stale version must never discard the text the user just typed.
+            report(error.message + ' Несохранённый текст оставлен в поле. Скопируй его перед обновлением.', true);
           } finally {
             if (token === generation) { save.disabled = false; syncState(); }
           }
@@ -129,7 +135,7 @@
         reset.addEventListener('click', function () { commit(item.baseline); });
         input.addEventListener('keydown', function (event) {
           if (event.key === 'Enter') { event.preventDefault(); commit(input.value); }
-          if (event.key === 'Escape') { input.value = item.value; }
+          if (event.key === 'Escape') { input.value = item.value; syncState(); }
         });
         row.append(id, baseline, editor, state, saveCell);
         body.appendChild(row);

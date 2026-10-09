@@ -3,6 +3,12 @@
   var root = document.getElementById('ui-translation-editor');
   if (!root) return;
   var csrf, expired, generation = 0;
+  // Unsaved drafts stay local; never sent until explicitly saved.
+  var drafts = new Map();
+  window.addEventListener('beforeunload',function(event){
+    if(!drafts.size)return;
+    event.preventDefault(); event.returnValue='';
+  });
   function element(tag, text, cls) {
     var e = document.createElement(tag);
     if (text != null) e.textContent = text;
@@ -23,7 +29,7 @@
     if (!response.ok || data.ok !== true) throw new Error(data.message || 'Ошибка сохранения');
     return data;
   }
-  function clear() { generation++; root.replaceChildren(); }
+  function clear() { generation++; drafts.clear(); root.replaceChildren(); }
   async function load() {
     var token = ++generation;
     root.replaceChildren();
@@ -34,6 +40,7 @@
       'пустое поле — использовать Excel. Изменения текста не меняют игровые характеристики. ' +
       'Предусмотрены проверка плейсхолдеров и защита от перезаписи изменений в другой вкладке.',
       'result-label-help'));
+    var render;
     var toolbar = element('div',null,'ui-translation-filters');
     var search = element('input');
     search.type='search'; search.placeholder='Поиск ID или исходного текста…';
@@ -46,7 +53,28 @@
     var changed=element('input'); changed.type='checkbox';
     changedWrap.append(changed,document.createTextNode(' Только правки админки'));
     var count=element('output'); count.setAttribute('aria-live','polite');
-    toolbar.append(search,locale,changedWrap,count);
+    var draftStatus=element('output'); draftStatus.dataset.uiDraftCount='';
+    var discard=element('button','Отменить черновики'); discard.type='button';
+    discard.className='secondary'; discard.disabled=true; discard.dataset.uiDiscardDrafts='';
+    var reload=element('button','Обновить с сервера'); reload.type='button';
+    reload.className='secondary'; reload.dataset.uiReload='';
+    toolbar.append(search,locale,changedWrap,count,draftStatus,discard,reload);
+    function updateDraftStatus(){
+      draftStatus.textContent='Несохранённые: '+drafts.size;
+      discard.disabled=!drafts.size;
+    }
+    discard.addEventListener('click',function(){
+      if(!drafts.size || !window.confirm('Отменить все '+drafts.size+' несохранённые правки?'))return;
+      drafts.clear(); updateDraftStatus();
+      if(typeof render==='function')render();
+    });
+    reload.addEventListener('click',function(){
+      if(drafts.size && !window.confirm('Есть несохранённые правки. Отменить их и обновить данные?'))return;
+      drafts.clear();
+      var expanded=panel.open;
+      load().then(function(){if(root.querySelector('details'))root.querySelector('details').open=expanded;});
+    });
+    updateDraftStatus();
     var state=element('p','Загружаю интерфейсные переводы…','result-label-status');
     state.setAttribute('role','status'); state.setAttribute('aria-live','polite');
     var records=element('div',null,'ui-translation-list');
@@ -65,17 +93,20 @@
               item.value.toLocaleLowerCase('ru').includes(q));
         });
       }
-      function render() {
+      render = function render() {
         if (token !== generation) return;
         var found=visibleRecords(); page=Math.min(page,Math.max(0,Math.ceil(found.length/pageSize)-1));
         records.replaceChildren();
         var start=page*pageSize;
         found.slice(start,start+pageSize).forEach(function(item){
           var row=element('div',null,'ui-translation-row');
+          row.dataset.uiTranslationId=item.id; row.dataset.uiLocale=item.locale;
           var identity=element('div',null,'ui-translation-identity');
           identity.append(element('strong',item.id),element('small','EN: '+item.source));
           var editor=element('input'); editor.type='text'; editor.maxLength=300;
-          editor.value=item.value; editor.placeholder=item.locale==='ru'?'Перевод RU из Excel (оставь пустым)':'Оригинал EN из Excel';
+          var key=item.locale+'\u0000'+item.id;
+          editor.value=drafts.has(key)?drafts.get(key):item.value;
+          editor.placeholder=item.locale==='ru'?'Перевод RU из Excel (оставь пустым)':'Оригинал EN из Excel';
           editor.setAttribute('aria-label',item.locale.toUpperCase()+' '+item.id);
           var status=element('span',item.overridden?'Админка · v'+item.version:'Excel','ui-translation-status');
           var save=element('button','Сохранить'); save.type='button';
@@ -83,26 +114,38 @@
           reset.disabled=!item.overridden;
           var controls=element('div',null,'ui-translation-actions');
           controls.append(save,reset);
+          function updateDraft(){
+            var changed=editor.value!==item.value;
+            if(changed) drafts.set(key,editor.value); else drafts.delete(key);
+            row.dataset.uiUnsaved=String(changed);
+            status.textContent=changed?'Не сохранено':item.overridden?'Админка · v'+item.version:'Excel';
+            save.disabled=!changed;
+            updateDraftStatus();
+          }
+          editor.addEventListener('input',updateDraft);
+          updateDraft();
           async function commit(value) {
+            if(value===item.value)return;
             save.disabled=reset.disabled=true;
             try {
               var answer=await api('POST',{id:item.id,locale:item.locale,value,expectedVersion:item.version});
               if(token !== generation)return;
               Object.assign(item,answer);
+              drafts.delete(key);
+              updateDraftStatus();
               notify('Сохранено: '+item.locale.toUpperCase()+' / '+item.id+'. Обнови страницу симулятора для проверки.');
               render();
             } catch(error) {
               if(token !== generation)return;
-              notify(error.message+' Обновляю список без перезаписи чужих изменений.',true);
-              var open=panel.open;
-              await load(); root.querySelector('details').open=open;
-            } finally {if(token===generation)save.disabled=false;}
+              // Keep the entered text on a network error or concurrent edit.
+              notify(error.message+' Черновик сохранён в этой вкладке. Скопируй текст перед обновлением с сервера.',true);
+            } finally {if(token===generation)save.disabled=(editor.value===item.value);}
           }
           save.addEventListener('click',function(){commit(editor.value);});
           reset.addEventListener('click',function(){commit('');});
           editor.addEventListener('keydown',function(event){
-            if(event.key==='Enter'){event.preventDefault();commit(editor.value);}
-            if(event.key==='Escape')editor.value=item.value;
+            if(event.key==='Enter' && !event.shiftKey){event.preventDefault();commit(editor.value);}
+            if(event.key==='Escape'){editor.value=item.value;updateDraft();}
           });
           row.append(identity,editor,status,controls); records.appendChild(row);
         });
@@ -114,7 +157,7 @@
         paging.append(previous,element('span',Math.min(start+1,found.length)+'–'+Math.min(start+pageSize,found.length)+' из '+found.length),next);
         records.appendChild(paging);
         count.textContent='Найдено '+found.length+' из '+items.filter(item=>item.locale===locale.value).length;
-      }
+      };
       search.addEventListener('input',function(){page=0;render();});
       locale.addEventListener('change',function(){page=0;render();});
       changed.addEventListener('change',function(){page=0;render();});

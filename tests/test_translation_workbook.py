@@ -139,7 +139,7 @@ class TranslationWorkbookTests(unittest.TestCase):
             "calculator.status.32": "Сопр. молнии", "calculator.status.33": "Откат",
             "calculator.status.34": "Сопр. яду", "calculator.status.35": "Скор. движения",
             "calculator.status.36": "Скор. в городе", "calculator.status.37": "Сопр. чарам",
-            "calculator.status.38": "Сопр. свету", "calculator.status.39": "Сопр. тьмы",
+            "calculator.status.38": "Сопр. свету", "calculator.status.39": "Сопр. тьме",
             "calculator.status.40": "Сопр. аном. тел.", "calculator.status.41": "Сопр. аном. дух.",
             "calculator.status.42": "Сопр. магии",
             "skill.0": "Ближний бой", "skill.1": "Секущий удар", "skill.2": "Колющий удар",
@@ -369,7 +369,7 @@ class TranslationWorkbookTests(unittest.TestCase):
         # レジストアイス skill "Resist Ice". Keep the English skill name intact,
         # but use the supplied RU name and EN/RU description.
         self.assertEqual(rows["skill_entry.18.9"][4], "Resist Cold")
-        self.assertEqual(rows["skill_entry.18.9"][7], "Сопротивляемость льду")
+        self.assertEqual(rows["skill_entry.18.9"][7], "Сопр. льду")
         self.assertEqual(
             rows["skill_detail.18.9.3"][7],
             "Сопротивляемость цели к магии льда повышается, а к магии огня и молний - понижается.",

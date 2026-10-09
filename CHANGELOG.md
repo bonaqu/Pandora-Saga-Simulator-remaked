@@ -1,5 +1,24 @@
 # Changelog
 
+## Modern 3.44 — безопасные черновики админки и единый Excel, 2026-10-09
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Уточнены русские обозначения «Честь», «Сопр. огню», «Сопр. льду», «Сопр. молнии», «Сопр. тьме», «Сопр. чарам» в основной таблице переводов.
+- В редакторе интерфейсных переводов черновики не теряются при поиске, переключении языков и страниц. Несохранённые значения явно выделены.
+- Ошибка сети или конфликт одновременного сохранения не удаляет набранный перевод; возврат к опубликованному тексту и обновление списка выполняются отдельно.
+- В редакторе характеристик добавлена подсветка несохранённых строк и сохранение набранного текста при конфликте.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Synchronized seven approved Russian translations directly into the Excel workbook.
+- Preserved unsaved Modern UI translation drafts across search, locale and pagination changes with clear dirty-state indicators.
+- Kept text visible after conflicts or network failures, with explicit discard/reload controls; improved calculated-label draft status.
+<!-- /release-notes:en -->
+
 ## Modern 3.43 — единая геометрия усилений, выбор Чести и читаемые сопротивления, 2026-10-09
 
 <!-- release-notes:ru -->
