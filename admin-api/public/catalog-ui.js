@@ -5,6 +5,8 @@
   var meta, getCsrf, expired, current, editor, listHost, listStatus, search, kind, newButton, page = 0;
   var generation = 0, pending = 0, editorRequest = 0, searchTimer, dirty = false, catalogRevision = 0, selectedKind = 'equipment';
   var readProfiles;
+  var draftPanel, draftSummary, draftBoard, selectedDrafts=new Map(), knownDrafts=[];
+  var draftRequest=0, batchPending=false;
   var languages = [['en', 'English'], ['ru', 'Русский'], ['jp', '日本語'], ['tw', '繁體中文']];
   function node(tag, text, className) { var result = document.createElement(tag); if (text !== undefined) result.textContent = text; if (className) result.className = className; return result; }
   function button(text, action, className) { var result = node('button', text, className); result.type = 'button'; result.addEventListener('click', action); return result; }
@@ -386,7 +388,7 @@
     try {
       var result = await api('draft', { edit: collect(), expectedDraftVersion: current.draftVersion, expectedCatalogRevision: current.catalogRevision });
       if (thisGeneration !== generation) return;
-      current = result; dirty = false; renderEditor(); report('Черновик сохранён. На сайте он ещё не опубликован.'); await loadList();
+      current = result; dirty = false; renderEditor(); report('Черновик сохранён. На сайте он ещё не опубликован.'); await Promise.all([loadList(),refreshDrafts()]);
     } catch (error) { if (thisGeneration === generation) report(error.message + ' Несохранённые поля оставлены на месте.', true); }
     finally { busy.forEach(function (button) { button.disabled = false; }); if (thisGeneration === generation) { host.inert = false; host.removeAttribute('aria-busy'); } }
   }
@@ -399,7 +401,7 @@
       var result = await api('publish', { id: current.identity.id, expectedDraftVersion: current.draftVersion, expectedCatalogRevision: current.catalogRevision });
       if (thisGeneration !== generation) return;
       var refreshed = await api('item?id=' + encodeURIComponent(id)); if (thisGeneration !== generation) return;
-      current = refreshed; renderEditor(); await loadList(); if (thisGeneration === generation) report('Опубликована версия каталога ' + result.catalogRevision + '.');
+      current = refreshed; renderEditor(); await Promise.all([loadList(),refreshDrafts()]); if (thisGeneration === generation) report('Опубликована версия каталога ' + result.catalogRevision + '.');
     } catch (error) { if (thisGeneration === generation) report(error.message, true); }
     finally { if (thisGeneration === generation) { host.inert = false; host.removeAttribute('aria-busy'); } }
   }
@@ -536,6 +538,8 @@
       result.items.forEach(function (item) {
         var select = button(item.names.ru || item.names.en, function () { openItem(item.id); }, 'catalog-entry');
         select.dataset.recordId = item.id;
+        select.dataset.hasDraft=String(Boolean(item.draftVersion));
+        if(item.draftVersion)select.title='Сохранённый неопубликованный черновик';
         if (current?.edit.id === item.id) select.setAttribute('aria-current', 'true');
         var race = kind.value === 'racial' && meta.compatibilityLabels.race.find(function (entry) { return entry.index === item.category; });
         select.appendChild(node('span', (item.draftVersion ? 'Черновик · ' : '') + item.names.en + (race ? ' · ' + race.label : '') + (kind.value === 'equipment' ? ' · Lv ' + item.level + ' · ○ ' + item.sockets : ''), 'catalog-entry-meta')); listHost.appendChild(select);
@@ -545,6 +549,102 @@
       var next = button('Далее →', function () { page++; loadList(); }, 'secondary'); next.disabled = (page + 1) * result.pageSize >= result.count; pagination.append(back, next); listHost.appendChild(pagination);
     } catch (error) { if (thisGeneration === generation && sequence === pending) { listHost.removeAttribute('aria-busy'); listStatus.textContent = 'Список не загружен'; report(error.message, true); } }
   }
+
+  async function refreshDrafts() {
+    var token=++draftRequest, thisGeneration=generation;
+    if(!draftSummary)return;
+    draftSummary.textContent='Сохранённые черновики · загрузка…';
+    try{
+      var response=await api('drafts');
+      if(token!==draftRequest||thisGeneration!==generation)return;
+      knownDrafts=response.items;
+      // Keep selections only while both identity and saved version match.
+      var present=new Map(knownDrafts.map(function(item){return [item.id,item.version];}));
+      for(var [id,version] of selectedDrafts)
+        if(present.get(id)!==version)selectedDrafts.delete(id);
+      draftSummary.textContent='Сохранённые черновики каталога: '+knownDrafts.length;
+      renderDraftBoard();
+    }catch(error){
+      if(token!==draftRequest||thisGeneration!==generation)return;
+      draftSummary.textContent='Не удалось загрузить черновики';
+      draftBoard.replaceChildren(node('p',error.message,'help-text'));
+      report(error.message,true);
+    }
+  }
+  function renderDraftBoard(){
+    if(!draftBoard)return;
+    draftBoard.replaceChildren();
+    var help=node('p','Сохранённые черновики всех категорий. Отмечай нужные записи и публикуй одним выпуском. Ничего не изменится до подтверждения.','help-text');
+    draftBoard.appendChild(help);
+    if(!knownDrafts.length){
+      draftBoard.appendChild(node('p','Опубликованных не ожидают: сохранённых черновиков нет.','help-text'));
+      return;
+    }
+    var actions=node('div',undefined,'catalog-draft-actions');
+    var selectionStatus=node('output');selectionStatus.setAttribute('aria-live','polite');
+    var all=button('Выбрать все',function(){
+      selectedDrafts.clear();knownDrafts.forEach(function(item){selectedDrafts.set(item.id,item.version);});renderDraftBoard();
+    },'secondary');
+    var none=button('Снять выделение',function(){selectedDrafts.clear();renderDraftBoard();},'secondary');
+    var send=button('Опубликовать выбранные',function(){publishDraftBatch(false);});
+    var sendAll=button('Опубликовать все черновики',function(){publishDraftBatch(true);},'secondary');
+    var refresh=button('Обновить список',refreshDrafts,'secondary');
+    function selectionCount(){return [...selectedDrafts].filter(function(pair){return knownDrafts.some(function(item){return item.id===pair[0]&&item.version===pair[1];});}).length;}
+    var count=selectionCount();
+    selectionStatus.textContent='Выбрано: '+count+' из '+knownDrafts.length;
+    send.disabled=!count||count>50||batchPending;
+    sendAll.disabled=knownDrafts.length>50||batchPending;
+    all.disabled=none.disabled=refresh.disabled=batchPending;
+    if(knownDrafts.length>50)
+      draftBoard.appendChild(node('p','За одну публикацию допускается не более 50 записей. Отметь до 50 нужных черновиков.','catalog-draft-warning'));
+    actions.append(selectionStatus,all,none,send,sendAll,refresh);
+    draftBoard.appendChild(actions);
+    var entries=node('div',undefined,'catalog-draft-entries');
+    knownDrafts.forEach(function(item){
+      var row=node('label',undefined,'catalog-draft-entry');
+      var box=node('input');box.type='checkbox';box.checked=selectedDrafts.get(item.id)===item.version;box.disabled=batchPending;
+      box.addEventListener('change',function(){
+        if(box.checked)selectedDrafts.set(item.id,item.version);
+        else selectedDrafts.delete(item.id);
+        renderDraftBoard();
+      });
+      var description=node('span',undefined,'catalog-draft-entry-info');
+      description.append(node('strong',item.name||item.englishName||item.id),
+        node('small',item.id+' · '+item.kind+' · черновик v'+item.version));
+      row.append(box,description);entries.append(row);
+    });
+    draftBoard.appendChild(entries);
+  }
+  async function publishDraftBatch(all){
+    if(batchPending)return;
+    if(dirty){report('В текущей записи есть несохранённые изменения. Сохрани или отмени их перед массовой публикацией.',true);return;}
+    var targets=knownDrafts.filter(function(item){return all || selectedDrafts.get(item.id)===item.version;});
+    if(!targets.length||targets.length>50){report('Выбери от 1 до 50 черновиков.',true);return;}
+    if(!window.confirm('Опубликовать '+targets.length+' сохранённых черновиков как ОДНУ версию каталога? Изменения названий, эффектов и характеристик появятся в Modern. Legacy и старые версии останутся неизменными.'))return;
+    batchPending=true;host.inert=true;host.setAttribute('aria-busy','true');
+    var thisGeneration=generation,keepId=current?.edit.id;
+    try{
+      var reply=await api('publish-batch',{expectedCatalogRevision:catalogRevision,
+        items:targets.map(function(item){return {id:item.id,expectedDraftVersion:item.version};})});
+      if(thisGeneration!==generation)return;
+      selectedDrafts.clear();
+      // The catalog may change after publication; never keep an old draft
+      // version or form in the editor.
+      catalogRevision=reply.catalogRevision;
+      if(keepId){
+        current=await api('item?id='+encodeURIComponent(keepId));
+        if(thisGeneration!==generation)return;
+        renderEditor();
+      }
+      await Promise.all([loadList(),refreshDrafts()]);
+      if(thisGeneration===generation)report('Опубликовано '+reply.count+' черновиков одной версией #'+reply.catalogRevision+'.');
+    }catch(error){
+      if(thisGeneration===generation){report('Публикация отменена: '+error.message+' Ничего из выбранного пакета не должно считаться опубликованным без подтверждения сервера.',true);await refreshDrafts();}
+    }finally{
+      if(thisGeneration===generation){batchPending=false;host.inert=false;host.removeAttribute('aria-busy');renderDraftBoard();}
+    }
+  }
+
   function newItem() {
     if (kind.value !== 'equipment' && kind.value !== 'soul') { report('Для этого каталога пока поддерживаются только существующие слоты.'); return; }
     if (!canLeave()) return;
@@ -604,12 +704,16 @@
       });
       newButton = button('Новая запись', newItem);
       controls.append(kind, search, newButton, button('История / откат', revisions, 'secondary')); host.appendChild(controls);
+      draftPanel=node('details',undefined,'catalog-draft-board');
+      draftSummary=node('summary','Сохранённые черновики каталога · загрузка…');
+      draftBoard=node('div',undefined,'catalog-draft-board-content');
+      draftPanel.append(draftSummary,draftBoard);host.appendChild(draftPanel);
       var grid = node('div', undefined, 'catalog-grid'); var sidebar = node('section', undefined, 'catalog-sidebar'); sidebar.setAttribute('aria-label', 'Список записей');
       listStatus = node('p', undefined, 'help-text'); listHost = node('div'); sidebar.append(listStatus, listHost);
       editor = node('form', undefined, 'catalog-editor'); editor.addEventListener('submit', function (event) { event.preventDefault(); saveDraft(); }); editor.appendChild(node('p', 'Выберите существующую запись слева или нажмите «Новая запись».'));
-      grid.append(sidebar, editor); host.appendChild(grid); page = 0; await loadList(); report('Каталог загружен. Черновики приватны; публикация выполняется отдельной кнопкой.');
+      grid.append(sidebar, editor); host.appendChild(grid); page = 0; await Promise.all([loadList(),refreshDrafts()]); report('Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.');
     } catch (error) { report(error.message, true); }
   }
   window.addEventListener('beforeunload', function (event) { if (dirty) { event.preventDefault(); event.returnValue = ''; } });
-  window.PandoraCatalogConsole = { start, clear: function () { generation++; pending++; editorRequest++; clearTimeout(searchTimer); dirty = false; current = null; meta = null; host.inert = false; host.removeAttribute('aria-busy'); host.replaceChildren(); } };
+  window.PandoraCatalogConsole = { start, clear: function () { generation++; pending++; editorRequest++; draftRequest++; clearTimeout(searchTimer); dirty = false; current = null; meta = null; selectedDrafts.clear();knownDrafts=[];draftPanel=draftSummary=draftBoard=null; host.inert = false; host.removeAttribute('aria-busy'); host.replaceChildren(); } };
 })();
