@@ -314,7 +314,7 @@ jobs:
         run: |
           mkdir -p .ci-artifacts
           if ! npm run test:ui:ci -- --project=chromium --shard=${{ matrix.shard }}/3 --reporter=json > .ci-artifacts/browser-report-${{ matrix.shard }}.json; then
-            node -e 'const fs=require("node:fs");const p=process.argv[1];try{const j=JSON.parse(fs.readFileSync(p,"utf8"));const visit=s=>{for(const t of s.tests||[]){for(const r of t.results||[])if(r.status!=="passed"&&r.status!=="skipped")console.log("TEST:",s.title,t.projectName||"",r.status,(r.error?.message||"").slice(0,1400));}for(const sub of s.suites||[])visit(sub)};for(const s of j.suites||[])visit(s);console.log("SUMMARY:",JSON.stringify(j.stats));}catch(e){console.error("Cannot summarize Playwright report:",e.message)}' .ci-artifacts/browser-report-${{ matrix.shard }}.json
+            node -e 'const fs=require("node:fs");const p=process.argv[1];try{const j=JSON.parse(fs.readFileSync(p,"utf8").slice(fs.readFileSync(p,"utf8").indexOf("{")));const visit=s=>{for(const t of s.tests||[]){for(const r of t.results||[])if(r.status!=="passed"&&r.status!=="skipped")console.log("TEST:",s.title,t.projectName||"",r.status,(r.error?.message||"").slice(0,1400));}for(const sub of s.suites||[])visit(sub)};for(const s of j.suites||[])visit(s);console.log("SUMMARY:",JSON.stringify(j.stats));}catch(e){console.error("Cannot summarize Playwright report:",e.message)}' .ci-artifacts/browser-report-${{ matrix.shard }}.json
             exit 1
           fi
 
