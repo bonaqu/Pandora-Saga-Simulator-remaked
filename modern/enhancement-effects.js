@@ -85,35 +85,13 @@
       });
     });
   }
-  // New catalog-defined enhancement bonuses use only known calculator stats.
-  // A rule {from:2,to:10,every:2,value:1} yields +1 at +2, +2 at +4,
-  // and +5 at +10. The stored source/stat data is never mutated.
-  function enhancementRuleValue(rule,level) {
+  // The existing applyCustomUpgradeBonuses is the single publisher of
+  // typed enhancement thresholds. Keep this pure helper available for tests.
+  function enhancementRuleValue(rule,level){
     var plus=Math.max(0,Math.min(10,Math.trunc(Number(level)||0)));
     if(plus<rule.from)return 0;
-    var maximum=Math.min(plus,rule.to);
-    return (Math.floor((maximum-rule.from)/rule.every)+1)*rule.value;
-  }
-  // Calc(Heal/HealingAura/...) can re-enter the equipment projection. Apply
-  // dynamic rules once per actual EquipOpt array, never once per nested call.
-  // A normal new EquipCheck allocates a new array and remains fully effective.
-  var upgradedOptionArrays=new WeakSet();
-  function applyCatalogEnhancementRules(touched) {
-    if(!namespace.catalog || typeof namespace.catalog.item!=='function')return;
-    var options=window.EquipOpt;
-    if(!options||upgradedOptionArrays.has(options))return;
-    upgradedOptionArrays.add(options);
-    window.Status.Equip.forEach(function(state){
-      var id=Number(state[0]);
-      if(!Number.isSafeInteger(id)||id<=0)return;
-      var record=namespace.catalog.item('equipment',id);
-      if(!record||!Array.isArray(record.upgradeBonuses))return;
-      var plus=Number(state[3])||0;
-      record.upgradeBonuses.forEach(function(rule){
-        var value=enhancementRuleValue(rule,plus);
-        if(value!==0)pushValue({stat:rule.stat,value:value,percent:rule.unit==='percent'},touched);
-      });
-    });
+    var max=Math.min(plus,rule.to),count=1+Math.floor((max-rule.from)/rule.every);
+    return count>0?Number((rule.value*count).toFixed(2)):0;
   }
   function applyUnison(touched) {
     var equipped = Object.create(null);
@@ -154,7 +132,6 @@
     if (!namespace.catalog || Number(namespace.catalog.getRevision()) < MIN_CATALOG_REVISION) return touched;
     applyBaseSupplement(touched);
     applyItemForth(touched);
-    applyCatalogEnhancementRules(touched);
     applyUnison(touched);
     applyCustomUpgradeBonuses(touched);
     recalculate(touched);
