@@ -12,7 +12,7 @@
     if(className)node.className=className;
     return node;
   }
-  let status,items,count,draftCount,prev,next,scopeInput,localeInput,searchInput,groupInput,translationStatusInput;
+  let status,items,count,draftCount,progress,progressLabel,prev,next,scopeInput,localeInput,searchInput,groupInput,translationStatusInput;
   async function api(method,payload,url='/api/admin/localization'){
     const headers=method!=='GET'?{'Content-Type':'application/json','X-CSRF-Token':csrf()||''}:{};
     const reply=await fetch(url,{method,credentials:'same-origin',cache:'no-store',headers,
@@ -55,6 +55,11 @@
     });
     draftCount=tag('output','Не сохранено: 0');
     filters.append(scopeInput,localeInput,groupInput,translationStatusInput,searchInput,draftCount,resetDrafts);
+    const coverage=tag('div',null,'localization-progress');
+    progressLabel=tag('output','Покрытие выбранного языка · загрузка…');
+    progress=tag('progress');progress.max=1;progress.value=0;
+    progress.setAttribute('aria-label','Доля имеющихся переводов в выбранной категории');
+    coverage.append(progressLabel,progress);
     status=tag('p','Загрузка…','localization-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
     count=tag('output','');
     items=tag('div',null,'localization-items');
@@ -65,7 +70,7 @@
     next=tag('button','Вперёд →');next.type='button';
     prev.addEventListener('click',()=>{page=Math.max(0,page-1);load();});
     next.addEventListener('click',()=>{page++;load();});
-    nav.append(prev,count,next);panel.append(head,info,filters,queueHost,bulkHost,status,items,nav);host.append(panel);
+    nav.append(prev,count,next);panel.append(head,info,filters,coverage,queueHost,bulkHost,status,items,nav);host.append(panel);
     queued=window.PandoraLocalizationDrafts?.mount(queueHost,{
       api,
       onPublished:()=>load(),
@@ -233,6 +238,13 @@
       const result=await api('GET',null,'/api/admin/localization?'+params);
       if(token!==generation)return;
       rows=result.items;total=result.total;
+      if(result.coverage){
+        progress.max=Math.max(1,result.coverage.total);
+        progress.value=result.coverage.translated;
+        const percent=result.coverage.total?Math.round(100*result.coverage.translated/result.coverage.total):100;
+        progressLabel.textContent='Переведено: '+result.coverage.translated+' / '+result.coverage.total+
+          ' · '+percent+'% ('+locale.toUpperCase()+')';
+      }
       render();
       report('Раздел: '+result.counts[scope]+' ключей. В этой странице: '+rows.length+'.');
     }catch(error){if(token===generation)report(error.message,true);}
