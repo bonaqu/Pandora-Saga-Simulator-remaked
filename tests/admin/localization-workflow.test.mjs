@@ -101,3 +101,31 @@ test('direct multiword publication is a single all-or-nothing operation',async()
   assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM localization_history').get().n,2);
   await assert.rejects(()=>call(env,'/publish-batch',{operationId:'50d98863-d25f-4a4f-a582-53211a68fbc7',items}),/Translation changed/);
 });
+
+
+test('D1 transaction rolls back every earlier write when a late concurrent insert fails',async()=>{
+  const {env,sqlite}=fixture();
+  const a='skill_entry.7.5',b='skill_entry.7.6';
+  const before=(await call(env,'?scope=game&locale=ru&q=skill_entry.7.6')).items.find(x=>x.id===b).effective;
+  const batch=env.DB.batch.bind(env.DB);
+  let raced=false;
+  env.DB.batch=async statements=>{
+    if(!raced){
+      raced=true;
+      sqlite.prepare('INSERT INTO localization_overrides(scope,term_id,locale,text,version,updated_at,last_operation) VALUES(?,?,?,?,1,?,NULL)')
+        .run('game',b,'ru','Чужая опубликованная правка',123);
+    }
+    return batch(statements);
+  };
+  await assert.rejects(()=>call(env,'/publish-batch',{
+    operationId:'50d98863-d25f-4a4f-a582-53211a68fbc8',
+    items:[row(a,'Новая массовая правка'),row(b,'Конфликтующая правка',0,before)]
+  }),/Another editor changed/);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM localization_overrides WHERE term_id=?').get(a).n,0);
+  assert.equal(sqlite.prepare('SELECT text FROM localization_overrides WHERE term_id=?').get(b).text,
+    'Чужая опубликованная правка');
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM localization_operations').get().n,0,
+    'receipt must roll back together with the first successful insert');
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM localization_history').get().n,1,
+    'only the independent competing publication may remain in the history');
+});
