@@ -5,6 +5,7 @@ import { approvedRacialCorrections } from '../../admin-api/src/racial-correction
 import { baselineById, sourceIdentity } from '../../admin-api/src/catalog-baseline.mjs';
 import { validateDraft, compileRecord } from '../../admin-api/src/catalog-model.mjs';
 import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs';
+import approved from '../../localization/approved-translations.v1.json' with { type: 'json' };
 const descriptions = JSON.parse(fs.readFileSync(new URL('../fixtures/current-racial-descriptions.json', import.meta.url), 'utf8'));
 
 test('owner-approved corrections remove only the two spurious critical bonuses through the existing native effect path', () => {
@@ -14,7 +15,7 @@ test('owner-approved corrections remove only the two spurious critical bonuses t
     const source = baselineById.get(edit.id), identity = sourceIdentity(source);
     assert.deepEqual(validateDraft(edit, identity).effects, [{ stat: 69, value: -2, unit: 'flat' }]);
     assert.equal(compileRecord(edit, identity, source).effectMode, 'add');
-    assert.deepEqual(edit.names, { ...source.name, ru: '' });
+    assert.deepEqual(edit.names, { ...source.name, ru: approved.game.ru[edit.id] || '' });
   }
 });
 
