@@ -62,10 +62,12 @@ test('Updates provides an accessible on-site release panel without altering the 
   await expect(trigger).toBeFocused();
   await page.locator('[data-remaked-ui-locale="ru"]').click();
   await page.getByRole('button', { name: 'Обновления', exact: true }).click();
-  await expect(dialog.getByRole('link', { name: 'Полный список изменений' }))
+  const russianDialog = page.getByRole('dialog', { name: 'Что нового', exact: true });
+  await expect(russianDialog).toBeVisible();
+  await expect(russianDialog.getByRole('link', { name: 'Полный список изменений' }))
     .toHaveAttribute('href', /CHANGELOG\.ru\.md$/);
-  await expect(dialog.locator('[data-remaked-player-version]')).toContainText('Последние изменения для игроков:');
-  await expect(dialog.locator('li').first())
+  await expect(russianDialog.locator('[data-remaked-player-version]')).toContainText('Последние изменения для игроков:');
+  await expect(russianDialog.locator('li').first())
     .toHaveText(await page.evaluate(() => PandoraRemakedRelease.highlights.ru[0]));
   await page.keyboard.press('Escape');
   expect(await page.evaluate(() => Store())).toBe(before);
