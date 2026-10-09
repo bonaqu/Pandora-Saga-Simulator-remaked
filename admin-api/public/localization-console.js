@@ -2,7 +2,7 @@
   'use strict';
   const host=document.getElementById('localization-console');
   if(!host)return;
-  let csrf,expired,generation=0,page=0,total=0,rows=[],query='',locale='ru',scope='game',group='all';
+  let csrf,expired,generation=0,page=0,total=0,rows=[],query='',locale='ru',scope='game',group='all',translationStatus='all';
   const drafts=new Map();
   const key=row=>row.scope+'\0'+row.id+'\0'+row.locale;
   function tag(name,content,className){
@@ -11,7 +11,7 @@
     if(className)node.className=className;
     return node;
   }
-  let status,items,count,draftCount,prev,next,scopeInput,localeInput,searchInput,groupInput;
+  let status,items,count,draftCount,prev,next,scopeInput,localeInput,searchInput,groupInput,translationStatusInput;
   async function api(method,payload,url='/api/admin/localization'){
     const headers=method==='POST'?{'Content-Type':'application/json','X-CSRF-Token':csrf()||''}:{};
     const reply=await fetch(url,{method,credentials:'same-origin',cache:'no-store',headers,
@@ -39,6 +39,9 @@
     [['all','Все категории'],['skills','Навыки и умения'],['equipment','Снаряжение'],['souls','Души'],
       ['classes','Классы'],['races','Расы и пассивки'],['stats','Характеристики'],['other','Прочее']]
       .forEach(([id,name])=>{const option=tag('option',name);option.value=id;groupInput.append(option);});
+    translationStatusInput=tag('select');translationStatusInput.setAttribute('aria-label','Статус перевода');
+    [['all','Все строки'],['missing','Не переведено'],['published','Правки из админки']]
+      .forEach(([id,name])=>{const option=tag('option',name);option.value=id;translationStatusInput.append(option);});
     localeInput=tag('select');localeInput.setAttribute('aria-label','Язык перевода');
     [['ru','Русский'],['en','English'],['jp','日本語'],['tw','繁體中文']].forEach(([id,name])=>{
       const o=tag('option',name);o.value=id;localeInput.append(o);
@@ -50,7 +53,7 @@
       drafts.clear();updateDrafts();render();
     });
     draftCount=tag('output','Черновики: 0');
-    filters.append(scopeInput,localeInput,groupInput,searchInput,draftCount,resetDrafts);
+    filters.append(scopeInput,localeInput,groupInput,translationStatusInput,searchInput,draftCount,resetDrafts);
     status=tag('p','Загрузка…','localization-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
     count=tag('output','');
     items=tag('div',null,'localization-items');
@@ -60,12 +63,14 @@
     prev.addEventListener('click',()=>{page=Math.max(0,page-1);load();});
     next.addEventListener('click',()=>{page++;load();});
     nav.append(prev,count,next);panel.append(head,info,filters,status,items,nav);host.append(panel);
-    scopeInput.value=scope;localeInput.value=locale;groupInput.value=group;searchInput.value=query;
+    scopeInput.value=scope;localeInput.value=locale;groupInput.value=group;
+    translationStatusInput.value=translationStatus;searchInput.value=query;
     scopeInput.addEventListener('change',()=>{
       scope=scopeInput.value;group='all';groupInput.value='all';groupInput.disabled=scope==='ui';page=0;load();
     });
     groupInput.disabled=scope==='ui';
     groupInput.addEventListener('change',()=>{group=groupInput.value;page=0;load();});
+    translationStatusInput.addEventListener('change',()=>{translationStatus=translationStatusInput.value;page=0;load();});
     localeInput.addEventListener('change',()=>{locale=localeInput.value;page=0;load();});
     let searchDebounce;
     searchInput.addEventListener('input',()=>{
@@ -87,7 +92,8 @@
       const category=labels[record.kind]||record.kind.replaceAll('.',' · ');
       identity.append(tag('strong',record.id),tag('small',category));
       const badge=tag('span','', 'localization-origin');
-      const description={admin:'Админка · новая','previous-admin':'Админка · ранее',import:'Утверждённый импорт'};
+      const description={admin:'Админка · новая','previous-admin':'Админка · ранее',
+        import:'Утверждённый перевод',fallback:'Нет перевода · исходный текст'};
       badge.textContent=description[record.origin]||record.origin;
       header.append(identity,badge);
       const preview=tag('div',null,'localization-preview');
@@ -122,7 +128,7 @@
             value,expectedVersion:requestVersion});
           if(viewToken!==generation)return;
           record.version=result.version;record.override=result.override;
-          record.origin=result.override?'admin':'import';
+          record.origin=result.override?'admin':(record.baselineOrigin||'import');
           record.effective=result.override||record.baseline;
           drafts.delete(id);
           report('Перевод '+record.id+' сохранён. Проверь его после обновления страницы симулятора.');
@@ -147,7 +153,7 @@
   async function load(){
     const token=++generation;
     report('Загружаю переводы…');
-    const params=new URLSearchParams({scope,locale,group,page:String(page),q:query});
+    const params=new URLSearchParams({scope,locale,group,status:translationStatus,page:String(page),q:query});
     try{
       const result=await api('GET',null,'/api/admin/localization?'+params);
       if(token!==generation)return;

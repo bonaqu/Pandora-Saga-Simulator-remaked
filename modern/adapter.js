@@ -418,7 +418,7 @@
       ? 'equipment.' + Math.floor(id / 10000) + '.' + (id % 10000)
       : 'soul.' + id;
     var textFields = kind === 'equipment'
-      ? ['description','notes','acquisition'] : ['description','notes','acquisition','modifiers'];
+      ? ['description','notes','acquisition'] : ['modifiers','description','notes','acquisition'];
     if (namespace.i18n?.game) {
       var translatedFields = textFields.map(function (field, i) {
         return namespace.i18n.game(termId + '.' + field, '') ||

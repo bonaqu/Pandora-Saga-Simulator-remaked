@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "ru": {
+    "ui": {
+      "skills.adeptness": "Изучено (ОЧ)",
+      "skills.potential": "Потенциал."
+    },
+    "game": {
+      "calculator.text.3": "Учитывать умения",
+      "calculator.text.5": "Учитывать мастерство",
+      "calculator.text.6": "Учитывать эфф. зелий",
+      "calculator.text.7": "Сброс характеристик",
+      "calculator.text.8": "Сброс умений",
+      "calculator.text.9": "Сбросить все",
+      "calculator.text.16": "Верхом",
+      "calculator.text.17": "Эффекты умений",
+      "calculator.text.18": "Эффекты зелий",
+      "calculator.text.19": "Хар-ки верхом",
+      "calculator.text.21": "СД",
+      "calculator.text.22": "Благословение",
+      "calculator.text.23": "Песнопения",
+      "calculator.text.24": "Гильдия",
+      "calculator.clan.0": "Гильдия",
+      "calculator.clan.1": "Сила гильдии",
+      "calculator.clan.2": "Дух гильдии",
+      "calculator.clan.3": "Восстановление силы",
+      "calculator.clan.4": "Восстановление духа",
+      "calculator.clan.5": "Физическая устойчивость",
+      "calculator.clan.6": "Магическая устойчивость",
+      "calculator.clan.7": "Опыт",
+      "calculator.clan.8": "Магистр исцеления",
+      "calculator.clan.9": "Магистр битвы",
+      "calculator.clan.10": "Магистр магии"
+    }
+  }
+}

@@ -118,3 +118,40 @@ test('compact equipment effects regain meaningful line breaks without changing n
   ].join('\n'));
   expect(actual.replace(/\s/g, '')).toBe(example.replace(/\s/g, ''));
 });
+
+
+test('a published Soul modifier replaces only its own description field', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(() => {
+    const i18n = PandoraRemaked.i18n, adapter = PandoraRemaked.adapter;
+    const language = Number(Flag[0]);
+    let id = 0;
+    const plain = value => {
+      const node = document.createElement('div');
+      node.innerHTML = String(value || '');
+      return node.textContent.trim();
+    };
+    for (let index = 1; index < SoulData[language].length; index++) {
+      const row = SoulData[language][index];
+      if (row && plain(row[1]) && plain(row[2]) && adapter.readItemDetails('soul',index)?.descriptions.length >= 2) {
+        id = index; break;
+      }
+    }
+    if (!id) throw Error('Expected a Soul with modifiers and a description');
+    const before = adapter.readItemDetails('soul',id);
+    const originals = JSON.stringify([EquipData,SoulData]);
+    const locale = i18n.getLocale();
+    const data = { ui: { ru: {}, en: {}, jp: {}, tw: {} }, game: { ru: {}, en: {}, jp: {}, tw: {} } };
+    data.game[locale]['soul.'+id+'.modifiers'] = 'UNIQUE SOUL MODIFIER';
+    if (!i18n.applyUnifiedLocalization({ ok: true, schemaVersion: 1, overrides: data }))
+      throw Error('Localization rejected');
+    const after = adapter.readItemDetails('soul',id);
+    return { before: before.descriptions, after: after.descriptions,
+      unchanged: originals === JSON.stringify([EquipData,SoulData]) };
+  });
+  expect(result.before.length).toBeGreaterThanOrEqual(2);
+  expect(result.after[0]).toBe('UNIQUE SOUL MODIFIER');
+  expect(result.after.slice(1)).toEqual(result.before.slice(1));
+  expect(result.after.filter(line=>line.includes('UNIQUE SOUL MODIFIER'))).toHaveLength(1);
+  expect(result.unchanged).toBe(true);
+});

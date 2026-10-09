@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {adminLocalization,publicLocalization} from '../../admin-api/src/localization.mjs';
+import {readFileSync} from 'node:fs';
+import curated from '../../localization/curated-runtime-defaults.ru.v1.json' with {type:'json'};
 
 function fixture({legacyUi=[]}={}){
   const updates=new Map();
@@ -118,4 +120,60 @@ test('category filters are stable and separate equipment from skills, race and s
   const races=await (await adminLocalization(get('/api/admin/localization?scope=game&group=races&q=race.0'),env)).json();
   assert.ok(races.items.some(row=>row.id==='race.0'));
   await assert.rejects(()=>adminLocalization(get('/api/admin/localization?scope=game&group=invalid'),env),/Invalid search filters/);
+});
+
+
+test('missing locale translations are distinguishable from approved imports and published edits',async()=>{
+  const env=fixture(),id='equipment.0.2';
+  const lookup=async(locale,status='all')=>(await (await adminLocalization(
+    get('/api/admin/localization?scope=game&locale='+locale+'&status='+status+'&q='+id),env)).json());
+  const ru=(await lookup('ru')).items.find(row=>row.id===id);
+  assert.equal(ru.baseline,'Short Sword');
+  assert.equal(ru.effective,'Short Sword');
+  assert.equal(ru.baselineOrigin,'fallback');
+  assert.equal(ru.origin,'fallback');
+  assert.ok((await lookup('ru','missing')).items.some(row=>row.id===id));
+  assert.equal((await lookup('ru','published')).total,0);
+
+  const jp=(await lookup('jp')).items.find(row=>row.id===id);
+  assert.equal(jp.origin,'import');
+  assert.ok(jp.effective);
+  assert.equal((await lookup('jp','missing')).total,0);
+
+  await adminLocalization(post({scope:'game',id,locale:'ru',value:'Короткий меч',expectedVersion:0}),env);
+  assert.equal((await lookup('ru')).items.find(row=>row.id===id).origin,'admin');
+  assert.ok(!(await lookup('ru','missing')).items.some(row=>row.id===id));
+  assert.ok((await lookup('ru','published')).items.some(row=>row.id===id));
+
+  await adminLocalization(post({scope:'game',id,locale:'ru',value:'',expectedVersion:1}),env);
+  assert.equal((await lookup('ru')).items.find(row=>row.id===id).origin,'fallback');
+  assert.ok((await lookup('ru','missing')).items.some(row=>row.id===id));
+  await assert.rejects(()=>adminLocalization(get('/api/admin/localization?status=unknown'),env),/Invalid search filters/);
+});
+
+
+test('previously visible Russian curated translations are present in unified admin baseline',async()=>{
+  const env=fixture();
+  for(const [scope,id,expected] of [
+    ['game','calculator.clan.5','Физическая устойчивость'],
+    ['game','calculator.text.7','Сброс характеристик'],
+    ['ui','skills.adeptness','Изучено (ОЧ)']
+  ]){
+    const rows=(await (await adminLocalization(
+      get('/api/admin/localization?scope='+scope+'&locale=ru&q='+id),env)).json()).items;
+    const found=rows.find(row=>row.id===id);
+    assert.ok(found,id+' must be editable');
+    assert.equal(found.effective,expected);
+    assert.equal(found.baselineOrigin,'import');
+    assert.equal(found.origin,'import');
+  }
+});
+
+test('curated approved-display defaults stay identical to visible Modern fallback text',()=>{
+  const runtime=readFileSync(new URL('../../modern/i18n.js',import.meta.url),'utf8');
+  for(const scope of ['ui','game'])for(const [id,value] of Object.entries(curated.ru[scope])){
+    assert.ok(runtime.includes("'"+id+"': '"+value+"'")||runtime.includes("'"+id+"': \""+value+"\""),
+      'Runtime fallback drift for '+id);
+  }
+  assert.equal(Object.keys(curated.ru.ui).length+Object.keys(curated.ru.game).length,27);
 });

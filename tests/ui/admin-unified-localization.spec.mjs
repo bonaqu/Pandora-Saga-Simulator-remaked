@@ -6,6 +6,9 @@ const key=(scope,locale,id)=>[scope,locale,id].join(':');
 
 test('four-language translation editor starts with effective texts, keeps drafts and honors versioned reset',async({page})=>{
   const texts=[
+    {scope:'game',id:'equipment.0.2',kind:'equipment',source:{en:'Short Sword',jp:'ショートソード',tw:'短劍'},
+      baseline:{ru:'Short Sword',en:'Short Sword',jp:'ショートソード',tw:'短劍'},
+      baselineOrigin:{ru:'fallback',en:'import',jp:'import',tw:'import'},legacy:{}},
     {scope:'game',id:'skill_entry.7.5',kind:'skill_entry',source:{en:'Flaming Arrow',jp:'フレーミングアロー',tw:'火箭'},
       baseline:{ru:'Пылающая стрела',en:'Flaming Arrow',jp:'フレーミングアロー',tw:'火箭'},legacy:{}},
     {scope:'ui',id:'header.updates',kind:'interface',source:{en:'Updates'},
@@ -36,13 +39,16 @@ test('four-language translation editor starts with effective texts, keeps drafts
       const scope=url.searchParams.get('scope')||'game',lang=url.searchParams.get('locale')||'ru',
         query=(url.searchParams.get('q')||'').toLocaleLowerCase(),
         pageNumber=Number(url.searchParams.get('page')||0);
+      const status=url.searchParams.get('status')||'all';
       const rows=texts.filter(item=>item.scope===scope).map(item=>{
         const entry=saved.get(key(item.scope,lang,item.id)),legacy=item.legacy[lang]||'';
         return {scope,id:item.id,kind:item.kind,locale:lang,source:item.source,baseline:item.baseline[lang],
           effective:expected(item,lang),legacyValue:legacy,override:entry?.text||'',
-          version:entry?.version||0,
-          origin:entry?entry.text?'admin':'import':legacy?'previous-admin':'import'};
-      }).filter(row=>!query||[row.id,row.effective,row.source.en].some(word=>String(word).toLocaleLowerCase().includes(query)));
+          version:entry?.version||0,baselineOrigin:item.baselineOrigin?.[lang]||'import',
+          origin:entry?entry.text?'admin':item.baselineOrigin?.[lang]||'import':legacy?'previous-admin':item.baselineOrigin?.[lang]||'import'};
+      }).filter(row=>(status==='all'||status==='missing'&&row.origin==='fallback'||
+        status==='published'&&['admin','previous-admin'].includes(row.origin))&&
+        (!query||[row.id,row.effective,row.source.en].some(word=>String(word).toLocaleLowerCase().includes(query))));
       return route.fulfill({json:{ok:true,schemaVersion:1,scope,locale:lang,
         total:rows.length,page:pageNumber,pageSize:40,counts:{ui:242,game:2900},
         items:rows.slice(pageNumber*40,(pageNumber+1)*40)}});
@@ -61,6 +67,12 @@ test('four-language translation editor starts with effective texts, keeps drafts
   const panel=page.locator('#localization-console');
   const russian=panel.locator('[data-localization-id="skill_entry.7.5"] textarea');
   await expect(russian).toHaveValue('Пылающая стрела');
+  const missing=panel.locator('[data-localization-id="equipment.0.2"]');
+  await expect(missing).toContainText('Нет перевода · исходный текст');
+  await panel.getByRole('combobox',{name:'Статус перевода'}).selectOption('missing');
+  await expect(missing).toBeVisible();
+  await expect(panel.locator('[data-localization-id="skill_entry.7.5"]')).toHaveCount(0);
+  await panel.getByRole('combobox',{name:'Статус перевода'}).selectOption('all');
   await russian.fill('Моя пылающая стрела');
   await expect(panel).toContainText('Черновики: 1');
   await panel.getByRole('combobox',{name:'Язык перевода'}).selectOption('jp');

@@ -1,5 +1,22 @@
 # Changelog
 
+## Modern 3.47 — проверка переводов и описаний, 2026-10-09
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- В едином редакторе появились понятные отметки отсутствующих переводов и фильтр для поиска непереведённых строк и опубликованных правок.
+- В редакторе отображаются ранее переведённые подписи интерфейса и игровых усилений, даже если они отсутствовали в первой версии утверждённого каталога.
+- Исправлено соответствие полей описания душ: изменение одного текста не подменяет остальные. Игровые характеристики, сохранённые билды и Legacy не изменяются.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Added clear untranslated-language badges and filters for missing or published translations in the unified editor.
+- Restored existing localized labels in the editor and corrected Soul detail field ordering without touching gameplay or saved builds.
+<!-- /release-notes:en -->
+
 ## Modern 3.46 — переводы только через админку, 2026-10-09
 
 <!-- release-notes:ru -->
