@@ -68,6 +68,21 @@
       (effects || []).forEach(function (effect) { pushMapped(effect, touched); });
     });
   }
+  function applyCatalogRefinement(touched){
+    if(!namespace.catalog||typeof namespace.catalog.item!=='function')return;
+    window.Status.Equip.forEach(function(state){
+      var selected=namespace.catalog.item('equipment',Number(state[0]));
+      if(!selected||!Array.isArray(selected.refinementEffects))return;
+      var plus=Math.max(0,Math.min(10,Number(state[3])||0));
+      selected.refinementEffects.forEach(function(rule){
+        if(plus<rule.start)return;
+        var cap=Math.min(rule.cap,plus);
+        var count=1+Math.floor((cap-rule.start)/rule.step);
+        if(count<1||!Number.isFinite(count))return;
+        pushValue({stat:rule.stat,value:count*rule.value,percent:rule.unit==='percent'},touched);
+      });
+    });
+  }
   function applyUnison(touched) {
     var equipped = Object.create(null);
     window.Status.Equip.forEach(function (state) {
@@ -107,6 +122,7 @@
     if (!namespace.catalog || Number(namespace.catalog.getRevision()) < MIN_CATALOG_REVISION) return touched;
     applyBaseSupplement(touched);
     applyItemForth(touched);
+    applyCatalogRefinement(touched);
     applyUnison(touched);
     recalculate(touched);
     return touched;
