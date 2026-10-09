@@ -117,7 +117,7 @@ test('RU skill hover shows localized labels and already translated mastery prere
   await icon.focus();
   const tooltip = page.locator('#LearnSkill_7_5');
   await expect(tooltip).toBeVisible();
-  const lines = await tooltip.locator(':scope > ul').allTextContents();
+  const lines = await tooltip.evaluate(node => [...node.children].filter(row => row.tagName === 'UL').map(row => row.textContent));
   expect(lines[0]).toContain('Пылающая стрела');
   expect(lines[2]).toContain('Скорость применения');
   expect(lines[2]).toContain('Откат');
@@ -128,7 +128,7 @@ test('RU skill hover shows localized labels and already translated mastery prere
   await page.evaluate(() => PandoraRemaked.i18n.setLocale('en'));
   await icon.blur();
   await icon.focus();
-  const english = await tooltip.locator(':scope > ul').allTextContents();
+  const english = await tooltip.evaluate(node => [...node.children].filter(row => row.tagName === 'UL').map(row => row.textContent));
   expect(english[4]).toContain('Prerequisites');
   expect(english[5]).toContain('Shot 8');
   expect(english[6]).toContain('Equipment requirements');
