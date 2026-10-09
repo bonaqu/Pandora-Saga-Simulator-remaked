@@ -103,11 +103,11 @@
       async function commit(value){
         if(value===(record.override||'')&&!(record.override&&value===''))return;
         save.disabled=true;reset.disabled=true;
-        const requestVersion=record.version;
+        const requestVersion=record.version, viewToken=generation;
         try{
           const result=await api('POST',{scope:record.scope,id:record.id,locale:record.locale,
             value,expectedVersion:requestVersion});
-          if(generation<1)return;
+          if(viewToken!==generation)return;
           record.version=result.version;record.override=result.override;
           record.origin=result.override?'admin':'import';
           record.effective=result.override||record.legacyValue||record.baseline;
@@ -115,9 +115,9 @@
           report('Перевод '+record.id+' сохранён. Проверь его после обновления страницы симулятора.');
           render();
         }catch(error){
-          report(error.message+'. Черновик сохранён здесь; не закрывай вкладку до разрешения конфликта.',true);
-          sync();
-        }finally{save.disabled=false;sync();}
+          if(viewToken===generation){report(error.message+'. Черновик сохранён здесь; не закрывай вкладку до разрешения конфликта.',true);
+          sync();}
+        }finally{if(viewToken===generation){save.disabled=false;sync();}}
       }
       save.addEventListener('click',()=>commit(input.value));
       reset.addEventListener('click',()=>commit(''));
