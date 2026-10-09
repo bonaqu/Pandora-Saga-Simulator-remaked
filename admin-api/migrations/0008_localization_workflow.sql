@@ -1,5 +1,6 @@
 -- Additive workflow tables. Existing translations, catalog revisions and legacy
 -- overrides are preserved without rewriting or renumbering old records.
+ALTER TABLE localization_overrides ADD COLUMN last_operation TEXT DEFAULT NULL;
 CREATE TABLE IF NOT EXISTS localization_drafts (
   scope TEXT NOT NULL CHECK(scope IN ('ui','game')),
   term_id TEXT NOT NULL,
