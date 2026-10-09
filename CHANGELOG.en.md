@@ -2,6 +2,20 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays player entries only.
 
+## Modern 3.56 — 2026-10-09
+
+### For players
+
+- The full release history now has separate Russian and English editions, with player changes and technical updates clearly labeled.
+- What's New shows the latest player-facing release independently of the overall UI version and links to the matching language.
+- The Report a Problem link now opens the current GitHub issue form.
+
+### Development and technical changes
+
+- Skill creation from an existing active/passive template is accessible from the catalog toolbar; new classes and racial slots remain unsupported.
+- Added four-language field coverage hints, direct admin section navigation, and Ctrl+S draft saving.
+- RU/EN release archives are derived deterministically from one canonical CHANGELOG.md and checked in regression tests.
+
 ## Modern 3.55 — 2026-10-09
 
 ### Development and technical changes
