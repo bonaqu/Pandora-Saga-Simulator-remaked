@@ -65,3 +65,30 @@ test('Astir Scarlet Dress retains the canonical torso-plus-legs exclusivity',asy
   expect(outcome.legs).toBe(0);
   expect(outcome.legSelector).toBe(0);
 });
+
+
+test('complete Scarlet Astir male/female sets award their original bonuses only when all parts are worn',async({page})=>{
+  await page.goto('/');
+  await page.evaluate(data=>PandoraRemaked.catalog.applySnapshot(data),snapshot);
+  const result=await page.evaluate(()=>{
+    const total=(stat)=>[...(EquipOpt[stat]||[])].reduce((n,v)=>n+Number(String(v).replace('%','')),0);
+    const outfit=(torso,gloves,legs,boots)=>{
+      for(const slot of [3,4,5,6])Status.Equip[slot]=[0,0,0,0,0,0,0];
+      Status.Equip[3]=[torso,0,0,6,0,0,0];
+      Status.Equip[4]=[gloves,0,0,0,0,0,0];
+      Status.Equip[5]=[legs,0,0,0,0,0,0];
+      Status.Equip[6]=[boots,0,0,0,0,0,0];
+      EquipCheck();
+      return {armor:total(49),burn:total(148),atk:total(18),torso:Status.Equip[3][0],legs:Status.Equip[5][0]};
+    };
+    return {male:outfit(310041,320034,330036,340037),
+      maleMissing:outfit(310041,320034,330036,0),
+      female:outfit(310042,320035,0,340038),
+      femaleMissing:outfit(310042,320035,0,0)};
+  });
+  expect(result.male.armor-result.maleMissing.armor).toBe(2);
+  expect(result.male.burn-result.maleMissing.burn).toBe(4);
+  expect(result.female.burn-result.femaleMissing.burn).toBe(4);
+  expect(result.female.atk-result.femaleMissing.atk).toBe(1);
+  expect(result.female.legs).toBe(0);
+});
