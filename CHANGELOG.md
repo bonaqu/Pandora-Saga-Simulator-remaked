@@ -9,7 +9,7 @@
 - При открытии карточки админка подставляет уже утверждённые переводы вместо пустых значений. Ручные опубликованные правки не сбрасываются.
 - В подсказках умений переведены «Необходимо», «Требования снаряжения», «Скорость применения», «Откат» и «Расход ОМ». Названия мастерства, например «Стрельба 8», берутся из готовых переводов.
 - Улучшены переносы строк в длинных описаниях улучшения экипировки.
-- Экспортирован исходный набор переводов из Excel для безопасной последующей миграции и сверки всех четырёх языков. Excel пока сохраняется как резервный источник на период поэтапной проверки.
+- Ранее сделанные переводы сохранены и доступны для дальнейшего редактирования в одном интерфейсе; изменение текста не влияет на игровые характеристики.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
@@ -17,7 +17,7 @@
 
 - Introduced one four-locale translation editor for game and UI text, with legacy approved wording visible and safe versioned updates.
 - Localized Russian learned-skill tooltip labels and mastery prerequisites, and restored line breaks in glued equipment effects.
-- Exported the approved Excel translations into an immutable migration snapshot. The workbook remains a temporary rollback source until comprehensive migration checks pass.
+- Preserved existing approved translations and made them available in the new editor without affecting game mechanics.
 <!-- /release-notes:en -->
 
 ## Modern 3.44 — безопасные черновики админки и единый Excel, 2026-10-09
