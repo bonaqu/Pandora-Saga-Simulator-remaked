@@ -171,7 +171,7 @@
           if(queued)await queued.refresh();
           if(token===generation){render();report('Черновик '+record.id+' сохранён в Cloudflare D1. Публикации пока нет.');}
         }catch(error){if(token===generation)report('Не удалось сохранить черновик: '+error.message,true);}
-        finally{record.pending=false;if(token===generation)sync();}
+        finally{record.pending=false;if(token===generation&&card.isConnected)sync();}
       });
       async function commit(value,resetToBaseline=false){
         if(record.pending || (!resetToBaseline&&value===record.effective))return;
