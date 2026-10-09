@@ -68,6 +68,31 @@
       (effects || []).forEach(function (effect) { pushMapped(effect, touched); });
     });
   }
+  function applyCustomUpgradeBonuses(touched) {
+    // Additive Modern-only refinement milestones. Data is validated by both
+    // the Worker catalog codec and Modern's snapshot schema before adoption.
+    if (!namespace.catalog || typeof namespace.catalog.item !== 'function') return;
+    window.Status.Equip.forEach(function(state){
+      var record=namespace.catalog.item('equipment',Number(state[0]));
+      if (!record || !Array.isArray(record.upgradeBonuses)) return;
+      var plus=Math.max(0,Math.min(10,Number(state[3])||0));
+      record.upgradeBonuses.forEach(function(rule){
+        if(plus<rule.from)return;
+        var last=Math.min(plus,rule.to);
+        var count=1+Math.floor((last-rule.from)/rule.every);
+        if(count>0)pushValue({stat:rule.stat,value:Number((rule.value*count).toFixed(2)),
+          percent:rule.unit==='percent'},touched);
+      });
+    });
+  }
+  // The existing applyCustomUpgradeBonuses is the single publisher of
+  // typed enhancement thresholds. Keep this pure helper available for tests.
+  function enhancementRuleValue(rule,level){
+    var plus=Math.max(0,Math.min(10,Math.trunc(Number(level)||0)));
+    if(plus<rule.from)return 0;
+    var max=Math.min(plus,rule.to),count=1+Math.floor((max-rule.from)/rule.every);
+    return count>0?Number((rule.value*count).toFixed(2)):0;
+  }
   function applyUnison(touched) {
     var equipped = Object.create(null);
     window.Status.Equip.forEach(function (state) {
@@ -108,6 +133,7 @@
     applyBaseSupplement(touched);
     applyItemForth(touched);
     applyUnison(touched);
+    applyCustomUpgradeBonuses(touched);
     recalculate(touched);
     return touched;
   }
@@ -120,6 +146,7 @@
   };
   namespace.enhancementEffects = {
     apply: apply,
+    enhancementRuleValue: enhancementRuleValue,
     minimumCatalogRevision: MIN_CATALOG_REVISION,
     itemForth: ITEM_FORTH,
     unison: UNISON,

@@ -331,8 +331,9 @@ async function list(request, env) {
     const source = sourceFor(identity);
     const edit = draft?.is_dirty || (!edits.has(identity.id) && (!source || identity.templateId) && draft) ? JSON.parse(draft.payload_json) : edits.get(identity.id) || draftFromSource(source, kind);
     const displayEdit = showApprovedTranslations(edit, source, kind);
-    if (q && !Object.values(displayEdit.names).some(name => name.toLowerCase().includes(q)) && !identity.id.includes(q)) continue;
-    results.push({ id: identity.id, names: displayEdit.names, category: identity.category, ...(identity.templateId ? { templateId: identity.templateId } : {}), level: edit.level, sockets: edit.sockets, progression: edit.progression, disabled: edit.disabled, draftVersion: draft?.is_dirty ? draft.version : 0, published: edits.has(identity.id), custom: identity.id.startsWith('modern.') });
+    const engineId=kind==='equipment'?identity.category*10000+identity.index:kind==='soul'?identity.index:null;
+    if (q && !Object.values(displayEdit.names).some(name => name.toLowerCase().includes(q)) && !identity.id.includes(q) && !(engineId!==null&&String(engineId).includes(q))) continue;
+    results.push({ id: identity.id, ...(engineId!==null?{engineId}:{}), names: displayEdit.names, category: identity.category, ...(identity.templateId ? { templateId: identity.templateId } : {}), level: edit.level, sockets: edit.sockets, progression: edit.progression, disabled: edit.disabled, draftVersion: draft?.is_dirty ? draft.version : 0, published: edits.has(identity.id), custom: identity.id.startsWith('modern.') });
   }
   return jsonResponse({ ok: true, catalogRevision: snapshot.version, count: results.length, page, pageSize: 40, items: results.slice(page * 40, (page + 1) * 40) });
 }

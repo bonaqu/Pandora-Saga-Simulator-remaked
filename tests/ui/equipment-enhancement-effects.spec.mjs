@@ -610,3 +610,59 @@ test('safe omitted base stats are visible in the retained calculator', async ({ 
   expect(result.expTokens).toContain('5');
   expect(result.auraTokens).toContain('2');
 });
+
+
+test('existing/new gear adds enhancement bonuses on top of baseline without double-counting',async({page})=>{
+  const rule={stat:11,unit:'flat',value:1,from:2,every:2,to:10};
+  const id={id:'modern.equipment.2f65c193-bda8-4c62-9a9a-5d5d4d4a74fa',kind:'equipment',category:35,index:850};
+  const edit=draftFromSource(null,'equipment');
+  edit.id=id.id;edit.category=35;edit.names={en:'Healer Cloak',ru:'Плащ лекаря',jp:'治療者のマント',tw:'治療者披風'};
+  edit.upgradeBonuses=[rule];
+  const created=compileRecord(validateDraft(edit,id),id,null);
+  const source=equipment.records.find(item=>item.legacy_category_id===35&&item.legacy_item_index>0);
+  expect(source).toBeTruthy();
+  const existingIdentity={id:source.id,kind:'equipment',category:35,index:source.legacy_item_index};
+  const existingEdit=draftFromSource(source,'equipment');
+  existingEdit.upgradeBonuses=[rule];
+  const modified=compileRecord(validateDraft(existingEdit,existingIdentity),existingIdentity,source);
+  expect(modified.calculationCode).toBe(source.calculation_code);
+  expect(created.names.tw).toBe('治療者披風');
+
+  const plain=[created,modified].map(record=>{
+    const copy=structuredClone(record);delete copy.upgradeBonuses;return copy;
+  });
+  const collect=async records=>{
+    await page.goto('/');
+    await page.evaluate(snapshot=>PandoraRemaked.catalog.applySnapshot(snapshot),publication(records));
+    return page.evaluate(ids=>{
+      const scan=id=>{
+        const output={};
+        for(const level of [0,1,2,3,4,6,8,10]){
+          Status.Equip[7]=[id,0,0,level,0,0,0];
+          EquipCheck();
+          const tokens=()=>[...(EquipOpt[11]||[])].map(String);
+          const first=tokens();
+          EquipCheck();
+          const second=tokens();
+          output[level]={first,second,slots:Status.Equip.map(state=>[Number(state[0]),Number(state[3])])};
+        }
+        return output;
+      };
+      return {created:scan(ids.created),existing:scan(ids.existing),
+        formula:[0,1,2,3,4,6,8,10].map(level=>PandoraRemaked.enhancementEffects.enhancementRuleValue(ids.rule,level))};
+    },{created:created.engineId,existing:modified.engineId,rule});
+  };
+  const baseline=await collect(plain);
+  const withBonus=await collect([created,modified]);
+  expect(withBonus.formula).toEqual([0,0,1,1,2,3,4,5]);
+  const sum=list=>list.reduce((total,v)=>total+Number(v.replace('%','')),0);
+  for(const kind of ['created','existing']){
+    for(const level of [0,1,2,3,4,6,8,10]){
+      const base=baseline[kind][level],after=withBonus[kind][level];
+      const delta=sum(after.first)-sum(base.first);
+      expect(delta,kind+' +'+level+' got '+JSON.stringify(after.first)+' vs '+JSON.stringify(base.first)+' equipped '+JSON.stringify(after.slots))
+        .toBe(withBonus.formula[[0,1,2,3,4,6,8,10].indexOf(level)]);
+      expect(after.second,kind+' duplicated after repeated EquipCheck at +'+level).toEqual(after.first);
+    }
+  }
+});

@@ -1,5 +1,27 @@
 # Changelog
 
+## Modern 3.54 — новые бонусы заточки с настоящим расчётом, 2026-10-09
+
+<!-- release-notes:player:ru -->
+- Дополнительные числовые бонусы заточки для экипировки теперь участвуют в расчёте характеристик персонажа. Они могут активироваться по заданным ступеням усиления, например каждые +2.
+- Существующая механика экипировки и базовые эффекты сохраняются; новое правило добавляется поверх них, без симуляции несуществующих боевых срабатываний.
+<!-- /release-notes:player:ru -->
+
+<!-- release-notes:player:en -->
+- Custom numeric equipment enhancement bonuses now contribute to character calculations at configured refinement milestones, such as every +2 levels.
+- Existing equipment mechanics remain intact; the new bonuses do not claim to simulate unimplemented combat procs.
+<!-- /release-notes:player:en -->
+
+<!-- admin-notes:ru -->
+- Каталог показывает числовые ID новых и существующих предметов и поддерживает поиск по ним.
+- Новые и существующие вещи получили типизированный редактор бонусов заточки с предпросмотром, проверками значений и безопасной ревизией влияния на билды.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Exposes the existing stable numeric engine ID for all items and supports numeric search.
+- Supports guarded per-item numeric refinement rules; catalog impact revision changes only when calculations change.
+<!-- /admin-notes:en -->
+
 ## Modern 3.53 — усиленная надёжность внутренних переводческих операций, 2026-10-09
 
 <!-- admin-notes:ru -->
