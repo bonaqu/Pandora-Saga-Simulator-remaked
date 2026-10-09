@@ -71,6 +71,21 @@ async function overrides(env) {
 function overlayMap(rows) {
   return new Map(rows.map(row=>[keyOf(row.scope,row.term_id)+'\0'+row.locale,row]));
 }
+export const localizationEntry=(scope,id)=>registry.get(keyOf(scope,id))||null;
+export async function localizationEffectiveSnapshot(env){
+  const [recent,legacy]=await Promise.all([overrides(env),legacyOverrides(env)]);
+  return {recent:overlayMap(recent),legacy,
+    get(scope,id,locale){
+      const entry=localizationEntry(scope,id);
+      if(!entry)return null;
+      const key=keyOf(scope,id)+'\\0'+locale;
+      const row=this.recent.get(key);
+      const text=row ? row.text || entry.baseline[locale] : this.legacy.get(key)||entry.baseline[locale];
+      return {entry,version:row?.version||0,effective:text||'',override:row?.text||''};
+    }
+  };
+}
+
 async function legacyOverrides(env) {
   const [ui,result,head]=await Promise.all([
     env.DB.prepare('SELECT locale,id,text FROM ui_translation_overrides WHERE text <> ?').bind('').all(),
