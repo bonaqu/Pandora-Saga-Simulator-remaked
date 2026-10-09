@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from scripts.build_pages import build_pages, _materialize_modern_guild_resistance, _read_latest_release, _read_ui_version
+from scripts.build_pages import build_pages, _materialize_modern_astir_rules, _materialize_modern_guild_resistance, _read_latest_release, _read_ui_version
 from scripts.localization_catalog import load_migrated_catalogs as load_editable_catalogs
 from scripts.localization_catalog import load_migrated_catalogs
 from scripts.sync_localized_changelogs import render as render_changelog
@@ -188,6 +188,31 @@ class BuildPagesTests(unittest.TestCase):
                 _materialize_modern_guild_resistance(root, output)
 
 
+    def test_astir_set_bonuses_absent_only_from_modern_bundle(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary) / "repo"
+            source = pathlib.Path(__file__).resolve().parents[1] / "js/equip.js"
+            (root / "js").mkdir(parents=True)
+            shutil.copy2(source, root / "js/equip.js")
+            output = root / "_site"
+            (output / "js").mkdir(parents=True)
+            shutil.copy2(source, output / "js/equip.js")
+            before = source.read_bytes()
+            _materialize_modern_astir_rules(root, output)
+            patched = (output / "js/equip.js").read_text(encoding="utf-8")
+            self.assertNotIn("To['N'] == '緋色アスティアンコート' &&", patched)
+            self.assertNotIn("To['N'] == '緋色アスティアンドレス' &&", patched)
+            # Individual Astir refinement triggers and other gear combos
+            # must still work. The old source stays byte-identical.
+            self.assertIn("To['N'] == '雪色アスティアンコート' && To['E'] >= 1", patched)
+            self.assertIn("Sh['N'] == 'カイトシールド'", patched)
+            self.assertEqual(source.read_bytes(), before)
+            self.assertEqual((root / "js/equip.js").read_bytes(), before)
+            # Drift/missing anchors must fail closed.
+            (root / "js/equip.js").write_text("broken", encoding="utf-8")
+            with self.assertRaises(ValueError):
+                _materialize_modern_astir_rules(root, output)
+
     def test_modern_omits_only_obsolete_hidden_counter_and_preserves_legacy(self):
         with tempfile.TemporaryDirectory() as temporary:
             base = pathlib.Path(temporary)
@@ -282,6 +307,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             repository = pathlib.Path(__file__).resolve().parents[1]
             shutil.copy2(repository / "data/native-passive-hooks.v1.json", root / "data/native-passive-hooks.v1.json")
             shutil.copy2(repository / "js/calc.js", root / "js/calc.js")
+            shutil.copy2(repository / "js/equip.js", root / "js/equip.js")
             for name in ("equipment.v1.json", "souls.v1.json", "skills.v1.json"):
                 (generated / name).write_text(
                     json.dumps({"kind": name.removesuffix(".v1.json"), "records": []}),
