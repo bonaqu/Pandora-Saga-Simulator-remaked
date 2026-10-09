@@ -79,25 +79,24 @@
     // Preserve published custom prerequisites and selected skill profiles.
     // The renderer must not replace them with an old Skill[] template string.
     var prerequisite=i18n.game('skill_detail.'+category+'.'+index+'.1',source[1]||'');
-    if(locale==='ru'){
-      set(1,1,'Расход ОМ');
-      set(2,0,'Скорость применения');
-      set(2,2,'Откат');
-      set(3,0,'Длительность');
-      set(4,0,'Необходимо');
-      set(5,0,translatedPrerequisites(prerequisite));
-      set(6,0,'Требования снаряжения');
-      set(7,0,source[2]==='None'?'Нет':source[2]||'');
-    } else {
-      set(1,1,window.Name.Learn[1]?.[lang]||'');
-      set(2,0,window.Name.Learn[2]?.[lang]||'');
-      set(2,2,window.Name.Learn[3]?.[lang]||'');
-      set(3,0,window.Name.Learn[5]?.[lang]||'');
-      set(4,0,window.Name.Learn[6]?.[lang]||'');
-      set(5,0,prerequisite);
-      set(6,0,window.Name.Learn[7]?.[lang]||'');
-      set(7,0,source[2]||'');
-    }
+    // All four locales can override every visible header through the
+    // authenticated editor. Localized defaults apply only if no override
+    // exists; never patch original Name.Learn or Skill[] tables.
+    var defaultHeading=function(index,russian){
+      return locale==='ru' ? russian : window.Name.Learn[index]?.[lang]||'';
+    };
+    var heading=function(index,russian){
+      return i18n.game('calculator.learn.'+index,defaultHeading(index,russian));
+    };
+    set(1,1,heading(1,'Расход ОМ'));
+    set(2,0,heading(2,'Скорость применения'));
+    set(2,2,heading(3,'Откат'));
+    set(3,0,heading(5,'Длительность'));
+    set(4,0,heading(6,'Необходимо'));
+    set(5,0,locale==='ru'?translatedPrerequisites(prerequisite):prerequisite);
+    set(6,0,heading(7,'Требования снаряжения'));
+    var equipment=i18n.game('skill_detail.'+category+'.'+index+'.2',source[2]||'');
+    set(7,0,locale==='ru'&&equipment==='None'?'Нет':equipment);
     var description=i18n.game('skill_detail.'+category+'.'+index+'.3','') || source[3]||'';
     set(8,0,description);
   }
