@@ -83,7 +83,7 @@
       const baseline=tag('div',null,'localization-baseline');
       baseline.append(tag('small','Перевод, используемый сайтом'),tag('p',record.effective||'—'));
       const input=tag('textarea');input.rows=record.kind.includes('description')?4:2;
-      input.maxLength=4000;input.value=drafts.has(id)?drafts.get(id):record.override||'';
+      input.maxLength=4000;input.value=drafts.has(id)?drafts.get(id):record.effective||'';
       input.placeholder='Введите перевод или оставьте пустым для возврата к существующей версии';
       input.setAttribute('aria-label',record.locale.toUpperCase()+' '+record.id);
       const foot=tag('div',null,'localization-item-foot');
@@ -92,16 +92,16 @@
       const reset=tag('button','Вернуть базовый текст');reset.type='button';reset.className='secondary';
       const length=tag('small');
       function sync(){
-        const isDirty=input.value!==(record.override||'');
+        const isDirty=input.value!==(record.effective||'');
         if(isDirty)drafts.set(id,input.value);else drafts.delete(id);
         card.dataset.dirty=String(isDirty);dirty.textContent=isDirty?'Не опубликовано':'Сохранено';
-        save.disabled=!isDirty;reset.disabled=!record.override;
+        save.disabled=!isDirty;reset.disabled=record.origin==='import';
         length.textContent=input.value.length+' / 4000';
         updateDrafts();
       }
       input.addEventListener('input',sync);
       async function commit(value){
-        if(value===(record.override||'')&&!(record.override&&value===''))return;
+        if(value===record.effective)return;
         save.disabled=true;reset.disabled=true;
         const requestVersion=record.version, viewToken=generation;
         try{
@@ -110,7 +110,7 @@
           if(viewToken!==generation)return;
           record.version=result.version;record.override=result.override;
           record.origin=result.override?'admin':'import';
-          record.effective=result.override||record.legacyValue||record.baseline;
+          record.effective=result.override||record.baseline;
           drafts.delete(id);
           report('Перевод '+record.id+' сохранён. Проверь его после обновления страницы симулятора.');
           render();
@@ -122,7 +122,7 @@
       save.addEventListener('click',()=>commit(input.value));
       reset.addEventListener('click',()=>commit(''));
       input.addEventListener('keydown',event=>{
-        if(event.key==='Escape'){input.value=record.override||'';sync();}
+        if(event.key==='Escape'){input.value=record.effective||'';sync();}
         if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){event.preventDefault();commit(input.value);}
       });
       foot.append(dirty,length,save,reset);card.append(header,preview,baseline,input,foot);items.append(card);
