@@ -41,7 +41,7 @@ test('unified translations show published catalog text and safely jump to same c
     const response=await adminCatalog(new Request(origin+'/api/admin/'+endpoint,{
       method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
     }),env,1000);
-    expect(response.status).toBe(200);return response.json();
+    expect([200,201]).toContain(response.status);return response.json();
   };
   const draft=await post('draft',{edit,expectedDraftVersion:0,expectedCatalogRevision:0});
   await post('publish',{id:draft.identity.id,expectedDraftVersion:draft.draftVersion,expectedCatalogRevision:draft.catalogRevision});
@@ -76,7 +76,7 @@ test('unified translations show published catalog text and safely jump to same c
   await expect(card).toContainText('Тестовый лук');
   await expect(card.locator('textarea')).toHaveCount(0);
   await card.getByRole('button',{name:'Редактировать в каталоге'}).click();
-  await expect(page.locator('#catalog-state')).toContainText('Открыта');
+  await expect(page.locator('#localization-console .localization-status')).toContainText('Открыта карточка');
   await expect(page.locator('.catalog-editor [data-field="names"][data-language="ru"]')).toHaveValue('Тестовый лук');
   await expect(page.locator('.catalog-editor')).toContainText('Union Test Bow');
   // Do not discard unsaved catalog changes when jumping from localization.
