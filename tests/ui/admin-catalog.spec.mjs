@@ -637,7 +637,7 @@ test('admin workflow exposes skill creation from a selected template and four-la
 test('active and passive editors expose distinct real fields and publish their own typed data', async ({ page }, testInfo) => {
   const { sqlite, errors } = await openConsole(page);
   await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('active');
-  await expect(page.getByRole('button', { name: 'Новая запись', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Новый навык из выбранного', exact: true })).toBeDisabled();
   await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill('skill_entry.0.0');
   await page.locator('.catalog-entry').first().click();
   await expect(page.locator('.catalog-editor')).toContainText('Warrior Lv5');
