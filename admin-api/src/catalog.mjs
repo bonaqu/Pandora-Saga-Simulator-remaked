@@ -212,15 +212,21 @@ async function commitSnapshot(env, previous, entries, now, note, draft = null) {
   if (current.version !== previous) fail('Catalog changed in another tab; reload before publishing', 409);
   const token = randomUUID(); const next = previous + 1;
   const impactVersion = impactProjection(current.entries) === impactProjection(entries) ? current.impactVersion : next;
-  const guard = draft ? ' AND EXISTS (SELECT 1 FROM catalog_drafts WHERE id = ? AND version = ? AND is_dirty = 1)' : '';
+  // A batch is one immutable snapshot and one D1 transaction. All draft
+  // versions must still match before the head can be updated.
+  const selectedDrafts = draft ? Array.isArray(draft) ? draft : [draft] : [];
+  const guard=selectedDrafts.map(()=>' AND EXISTS (SELECT 1 FROM catalog_drafts WHERE id = ? AND version = ? AND is_dirty = 1)').join('');
   const update = env.DB.prepare('UPDATE catalog_head SET version = ?, impact_version = ?, snapshot_json = ?, write_token = ?, updated_at = ? WHERE id = 1 AND version = ?' + guard)
-    .bind(next, impactVersion, json, token, now, previous, ...(draft ? [draft.id, draft.version] : []));
+    .bind(next, impactVersion, json, token, now, previous, ...selectedDrafts.flatMap(item=>[item.id,item.version]));
   const statements = [update,
     env.DB.prepare('INSERT INTO catalog_revisions (version, impact_version, snapshot_json, created_at, note) SELECT ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND write_token = ?)').bind(next, impactVersion, json, now, note, token)
   ];
-  if (draft) statements.push(env.DB.prepare('UPDATE catalog_drafts SET is_dirty = 0, version = version + 1 WHERE id = ? AND version = ? AND EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND write_token = ?)').bind(draft.id, draft.version, token));
+  for(const item of selectedDrafts)
+    statements.push(env.DB.prepare('UPDATE catalog_drafts SET is_dirty = 0, version = version + 1 WHERE id = ? AND version = ? AND is_dirty = 1 AND EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND write_token = ?)').bind(item.id,item.version,token));
   const result = await env.DB.batch(statements);
-  if (result[0].meta.changes !== 1) fail('Catalog or draft changed in another tab; reload before publishing', 409);
+  if(result[0].meta.changes!==1 || result[1].meta.changes!==1 ||
+     result.slice(2).some(row=>row.meta.changes!==1))
+    fail('Catalog or draft changed in another tab; reload before publishing',409);
   return jsonResponse({ ok: true, catalogRevision: next, impactRevision: impactVersion, message: 'Catalog published' });
 }
 async function publish(request, env, now) {
@@ -234,6 +240,62 @@ async function publish(request, env, now) {
   const entries = snapshot.entries.filter(entry => entry.identity.id !== identity.id);
   entries.push({ identity, edit });
   return commitSnapshot(env, expectedCatalog, entries, now, 'Publish ' + identity.id, { id: identity.id, version: expectedDraft });
+}
+
+
+const MAX_BATCH_DRAFTS=50;
+async function listDrafts(env) {
+  const [snapshot,rows]=await Promise.all([
+    headMeta(env),
+    env.DB.prepare(
+      "SELECT id, version, updated_at, json_extract(payload_json, '$.kind') AS kind, " +
+      "json_extract(payload_json, '$.names.en') AS name_en, json_extract(payload_json, '$.names.ru') AS name_ru " +
+      "FROM catalog_drafts WHERE is_dirty = 1 ORDER BY updated_at DESC, id LIMIT 501"
+    ).all()
+  ]);
+  if(rows.results.length>500)fail('More than 500 drafts; narrow the list before publishing',413);
+  return jsonResponse({ok:true,catalogRevision:snapshot.version,count:rows.results.length,
+    maxBatch:MAX_BATCH_DRAFTS,items:rows.results.map(row=>({
+      id:row.id,kind:row.kind,name:row.name_ru||row.name_en||row.id,
+      englishName:row.name_en||'',version:row.version,updatedAt:row.updated_at
+    }))});
+}
+
+async function publishBatch(request,env,now) {
+  const input=await body(request);
+  schema(input,['items','expectedCatalogRevision']);
+  const expectedCatalog=version(input.expectedCatalogRevision,'Catalog revision');
+  if(!Array.isArray(input.items)||input.items.length<1||input.items.length>MAX_BATCH_DRAFTS)
+    fail('Select between 1 and '+MAX_BATCH_DRAFTS+' saved drafts');
+  const requested=new Map();
+  for(const item of input.items) {
+    if(!item || typeof item!=='object'||Array.isArray(item)||
+       Object.keys(item).sort().join(',')!=='expectedDraftVersion,id'||
+       typeof item.id!=='string'||item.id.length>160||!item.id||
+       requested.has(item.id))
+      fail('Invalid or duplicate draft identity');
+    requested.set(item.id,version(item.expectedDraftVersion,'Draft version'));
+  }
+  const snapshot=await head(env);
+  if(snapshot.version!==expectedCatalog)fail('Catalog changed since draft selection; reload before publishing',409);
+  const chosen=[];
+  for(const [id,expectedVersion] of requested) {
+    const identity=await identityFor(env,id);
+    const draft=await draftRow(env,id);
+    if(!draft?.is_dirty||draft.version!==expectedVersion)
+      fail('Draft changed or was published elsewhere: '+id,409);
+    const edit=validateDraft(JSON.parse(draft.payload_json),identity);
+    compileRecord(edit,identity,sourceFor(identity));
+    chosen.push({identity,edit,version:expectedVersion,id});
+  }
+  const ids=new Set(chosen.map(row=>row.id));
+  const entries=snapshot.entries.filter(entry=>!ids.has(entry.identity.id));
+  for(const {identity,edit} of chosen)entries.push({identity,edit});
+  const result=await commitSnapshot(env,expectedCatalog,entries,now,
+    'Publish '+chosen.length+' selected catalog drafts',
+    chosen.map(({id,version})=>({id,version})));
+  const payload=await result.json();
+  return jsonResponse({...payload,count:chosen.length,publishedIds:chosen.map(row=>row.id)});
 }
 
 async function rollback(request, env, now) {
@@ -279,6 +341,7 @@ export async function adminCatalog(request, env, now = Math.floor(Date.now() / 1
   const path = new URL(request.url).pathname;
   if (path === '/api/admin/meta' && request.method === 'GET') return jsonResponse({ ok: true, effects: EFFECTS, categories: categories.filter(category => EQUIPMENT_CATEGORIES.includes(category.legacy_id)), skillCategories, compatibilityLabels, sourceFingerprint, characterSourceFingerprint, sourceCount: baselineRecords.length });
   if (path === '/api/admin/catalog' && request.method === 'GET') return list(request, env);
+  if (path === '/api/admin/drafts' && request.method === 'GET') return listDrafts(env);
   if (path === '/api/admin/item' && request.method === 'GET') return jsonResponse(await detail(env, new URL(request.url).searchParams.get('id') || ''));
   if (path === '/api/admin/revisions' && request.method === 'GET') {
     const rows = await env.DB.prepare('SELECT version, impact_version AS impactRevision, created_at, note FROM catalog_revisions ORDER BY version DESC LIMIT 50').all();
@@ -288,6 +351,7 @@ export async function adminCatalog(request, env, now = Math.floor(Date.now() / 1
   if (path === '/api/admin/draft' && request.method === 'POST') return saveDraft(request, env, now);
   if (path === '/api/admin/preview' && request.method === 'POST') return preview(request, env);
   if (path === '/api/admin/publish' && request.method === 'POST') return publish(request, env, now);
+  if (path === '/api/admin/publish-batch' && request.method === 'POST') return publishBatch(request, env, now);
   if (path === '/api/admin/rollback' && request.method === 'POST') return rollback(request, env, now);
   return jsonResponse({ ok: false, message: 'Unknown admin operation' }, 404);
 }
