@@ -23,16 +23,29 @@ test('Astir Scarlet Coat accuracy and Azure Coat casting speed follow exact enha
       }
       return output;
     };
-    return {scarlet:scan(310041,62,[0,1,3,5]),
-      azure:scan(310033,77,[0,1,2,4,5])};
+    return {scarlet:scan(310041,62,[0,1,2,3,4,5,6,7,8,9,10]),
+      azure:scan(310033,77,[0,1,2,3,4,5,6,7,8,9,10]),
+      leggings:scan(330036,18,[0,1,2,3,4,5,6,7,8,9,10]),
+      dress:scan(310042,62,[0,1,2,3,4,5,6,7,8,9,10])};
   });
   expect(result.scarlet[0].exists).toBe(true);
   expect(result.scarlet[3].first-result.scarlet[0].first).toBe(3);
   expect(result.scarlet[5].first-result.scarlet[0].first).toBe(5);
-  expect(result.azure[2].first-result.azure[0].first).toBe(1);
-  expect(result.azure[4].first-result.azure[0].first).toBe(2);
-  for(const group of [result.scarlet,result.azure])
-    for(const item of Object.values(group))expect(item.second).toBe(item.first);
+  // Each server Forth row represents the full effect at that milestone.
+  // Intermediate levels retain its effect rather than incorrectly clearing it.
+  for(let level=0;level<=10;level++){
+    expect(result.scarlet[level].first-result.scarlet[0].first,
+      'Scarlet Coat accuracy at +'+level).toBe(level);
+    expect(result.azure[level].first-result.azure[0].first,
+      'Azure Coat casting speed at +'+level).toBe(Math.floor(level/2));
+    expect(result.leggings[level].first-result.leggings[0].first,
+      'Scarlet Leggings attack bonus at +'+level).toBe(Math.floor(level/2));
+    expect(result.dress[level].first-result.dress[0].first,
+      'Scarlet Dress accuracy at +'+level).toBe(level);
+  }
+  for(const group of [result.scarlet,result.azure,result.leggings,result.dress])
+    for(const item of Object.values(group))
+      expect(item.second,'Repeated EquipCheck must not stack milestones').toBe(item.first);
 });
 
 test('Astir Scarlet Dress retains the canonical torso-plus-legs exclusivity',async({page})=>{
