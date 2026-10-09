@@ -4,6 +4,10 @@
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
   var catalogs = window.PandoraRemakedLocales || { en: {} };
   var publishedUi = { ru: {}, en: {} };
+  var unifiedOverrides = {
+    ui: {ru:{},en:{},jp:{},tw:{}},
+    game: {ru:{},en:{},jp:{},tw:{}}
+  };
   var gameCatalogs = window.PandoraRemakedGameTerms || { ru: {} };
   var STORAGE_KEY = 'pandora.remaked.uiLocale.v1';
   var DEFAULT_LOCALE = 'en';
@@ -183,7 +187,8 @@
   function translate(key, values) {
     var active = catalogs[currentLocale] || {};
     var english = catalogs[DEFAULT_LOCALE] || {};
-    var override = publishedUi[currentLocale] && publishedUi[currentLocale][key];
+    var override = unifiedOverrides.ui[currentLocale]?.[key] ||
+      (publishedUi[currentLocale] && publishedUi[currentLocale][key]);
     var value = override || (Object.prototype.hasOwnProperty.call(active, key) ? active[key] : terminology('ui', key));
     if (!value) value = english[key];
     return interpolate(typeof value === 'string' ? localizedUiValue(key, value) : key, values);
@@ -205,6 +210,8 @@
   }
 
   function translateGameTerm(key, fallback) {
+    var unified = unifiedOverrides.game[currentLocale]?.[key];
+    if (unified) return unified;
     if (currentLocale === 'ru' && Object.prototype.hasOwnProperty.call(publishedResultLabels, key)) return publishedResultLabels[key];
     var published = namespace.catalog && namespace.catalog.gameLabel(key);
     if (published) return compactActionLabel(key, published);
@@ -325,10 +332,34 @@
     return true;
   }
 
+  // New canonical translations may be published without changing catalog
+  // revision, build hash, Legacy data or local save state.
+  function applyUnifiedLocalization(payload) {
+    if (!payload || payload.ok !== true || payload.schemaVersion !== 1 ||
+        !payload.overrides || typeof payload.overrides !== 'object') return false;
+    var next={ui:{ru:{},en:{},jp:{},tw:{}},game:{ru:{},en:{},jp:{},tw:{}}};
+    for (var scope of ['ui','game']) for (var locale of ['ru','en','jp','tw']) {
+      var rows=payload.overrides[scope]?.[locale];
+      if (!rows || Array.isArray(rows) || typeof rows !== 'object') return false;
+      for (var [key,text] of Object.entries(rows)) {
+        if (!/^[a-z][a-z0-9._-]{0,120}$/.test(key) ||
+            typeof text !== 'string' || text.length > 4000 ||
+            /[\\x00-\\x09\\x0b-\\x1f\\x7f<>]/.test(text)) return false;
+        next[scope][locale][key]=text;
+      }
+    }
+    unifiedOverrides=next;
+    apply(document);
+    if(namespace.gameTermDisplay) namespace.gameTermDisplay.refresh();
+    window.dispatchEvent(new CustomEvent('pandora-remaked:translationchange'));
+    return true;
+  }
+
   namespace.i18n = {
     apply: apply,
     applyPublishedResultLabels: applyPublishedResultLabels,
     applyPublishedUi: applyPublishedUi,
+    applyUnifiedLocalization: applyUnifiedLocalization,
     bindAttribute: bindAttribute,
     bindText: bindText,
     game: translateGameTerm,
@@ -343,6 +374,14 @@
   // Editor customizations are deliberately independent from workbook updates.
   // Fetch only explicit published overrides, never rewrite base translations.
   if (location.origin === 'https://bonaqu.github.io') {
+    fetch('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/localization', {
+      credentials:'omit',cache:'no-store',signal:AbortSignal.timeout(4000)
+    }).then(function(response){
+      if(!response.ok)throw new Error('Published localized text unavailable');
+      return response.json();
+    }).then(applyUnifiedLocalization).catch(function(){
+      // Cached approved baseline remains available when Cloudflare is offline.
+    });
     fetch('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/ui-translations', {
       credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(4000)
     }).then(function (response) {
