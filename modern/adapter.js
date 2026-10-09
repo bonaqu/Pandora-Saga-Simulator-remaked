@@ -427,8 +427,8 @@
       return column === 2 ? currentGameNote(text(record[column])) : text(record[column]);
     }).filter(Boolean);
     if (catalogRecord) descriptions = ['description', 'notes', 'acquisition'].map(function (field) {
-      var value = namespace.catalog.itemText(kind, value, field);
-      return field === 'notes' ? currentGameNote(value) : value;
+      var fieldText = namespace.catalog.itemText(kind, id, field);
+      return field === 'notes' ? currentGameNote(fieldText) : fieldText;
     }).filter(Boolean);
     // Unified four-locale text overrides apply only to displayed detail prose.
     // Preserve the canonical numeric rows, sockets and calculation code.
@@ -439,9 +439,9 @@
       ? ['description','notes','acquisition'] : ['modifiers','description','notes','acquisition'];
     if (namespace.i18n?.game) {
       var translatedFields = textFields.map(function (field, i) {
-        var value = namespace.i18n.game(termId + '.' + field, '') ||
-          (catalogRecord ? namespace.catalog.itemText(kind, value, field) : text(record[columns[i]]));
-        return field === 'notes' ? currentGameNote(value) : value;
+        var fieldText = namespace.i18n.game(termId + '.' + field, '') ||
+          (catalogRecord ? namespace.catalog.itemText(kind, id, field) : text(record[columns[i]]));
+        return field === 'notes' ? currentGameNote(fieldText) : fieldText;
       }).filter(Boolean);
       if (translatedFields.some(Boolean)) descriptions = translatedFields;
     }
