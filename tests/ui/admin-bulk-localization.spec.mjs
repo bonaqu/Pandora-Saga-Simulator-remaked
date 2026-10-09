@@ -16,6 +16,26 @@ test('reviewed whole-word replacement scans all pages and preserves English, sub
   await page.route(origin+'/**',async route=>{
     const request=route.request(),url=new URL(request.url()),path=url.pathname;
     if(path==='/api/session')return route.fulfill({json:{ok:true,csrfToken:'test-csrf',username:'admin',expiresAt:9999999999}});
+    if(path==='/api/admin/localization/drafts')return route.fulfill({json:{ok:true,count:0,maxBatch:50,items:[]}});
+    if(path==='/api/admin/localization/publish-batch'){
+      const body=request.postDataJSON();
+      expect(request.headers()['x-csrf-token']).toBe('test-csrf');
+      expect(body.operationId).toMatch(/^[0-9a-f-]{36}$/i);
+      expect(body.items.length).toBeGreaterThan(0);
+      const violations=body.items.some(input=>{
+        const prev=stored.get(input.id);
+        const current=prev?.value||texts.find(x=>x.id===input.id)?.baseline.ru;
+        return input.expectedVersion!==(prev?.version||0)||input.expectedEffective!==current;
+      });
+      if(violations)return route.fulfill({status:409,json:{ok:false,message:'Conflict'}});
+      for(const item of body.items){
+        const prior=stored.get(item.id);
+        posts.push(item);
+        stored.set(item.id,{value:item.value,version:(prior?.version||0)+1});
+      }
+      return route.fulfill({json:{ok:true,operationId:body.operationId,count:body.items.length,
+        items:body.items.map(item=>({id:item.id,scope:item.scope,locale:item.locale,version:stored.get(item.id).version}))}});
+    }
     if(path==='/api/admin/localization'){
       if(request.method()==='POST'){
         expect(request.headers()['x-csrf-token']).toBe('test-csrf');
@@ -45,7 +65,7 @@ test('reviewed whole-word replacement scans all pages and preserves English, sub
     const file=(path==='/admin'||path==='/admin/')?'admin.html':path.slice(1);
     if(['catalog-ui.js','result-labels.js','ui-translations.js'].includes(file))
       return route.fulfill({contentType:'text/javascript',body:''});
-    if(['admin.html','admin.css','admin.js','localization-console.js','localization-bulk.js'].includes(file)){
+    if(['admin.html','admin.css','admin.js','localization-console.js','localization-bulk.js','localization-drafts.js'].includes(file)){
       const body=fs.readFileSync(new URL('../../admin-api/public/'+file,import.meta.url),'utf8');
       return route.fulfill({contentType:file.endsWith('.css')?'text/css':file.endsWith('.js')?'text/javascript':'text/html',body});
     }
@@ -100,7 +120,7 @@ test('reviewed whole-word replacement scans all pages and preserves English, sub
   await bulk.locator('.localization-bulk-row').nth(1).locator('input[type="checkbox"]').uncheck();
   await expect(bulk.locator('.localization-bulk-selection')).toContainText('Выбрано: 1 / 2');
   await bulk.getByRole('button',{name:'Опубликовать выбранные'}).click();
-  await expect(bulk.locator('.localization-bulk-state')).toContainText('Успешно опубликовано 1 строк');
+  await expect(bulk.locator('.localization-bulk-state')).toContainText('Успешно опубликовано 1 переводов');
   expect(posts).toHaveLength(1);
   expect(posts.every(x=>x.scope==='game'&&x.locale==='ru'&&x.expectedEffective)).toBe(true);
   expect(posts.map(x=>x.id)).toEqual([texts[40].id]);
