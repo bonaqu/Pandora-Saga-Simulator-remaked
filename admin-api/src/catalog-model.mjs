@@ -159,6 +159,21 @@ function itemTexts(source) {
   result.en = normalizeUntranslatedItemName(result.en);
   return result;
 }
+export function showApprovedTranslations(edit, source, kind) {
+  if (!source || !edit) return edit;
+  const baseline = draftFromSource(source, kind);
+  // Copy only for responses, never mutate the published catalog snapshot or
+  // dirty drafts. Manual non-empty edits always take priority over imports.
+  const shown = structuredClone(edit);
+  for (const field of ['names', 'description']) {
+    if (!shown[field] || !baseline[field]) continue;
+    for (const locale of LANGUAGES)
+      if (!shown[field][locale] && baseline[field][locale])
+        shown[field][locale] = baseline[field][locale];
+  }
+  return shown;
+}
+
 function effects(input) {
   check(Array.isArray(input) && input.length <= EFFECTS.reduce((count, effect) => count + effect.units.length, 0), 'Too many effects');
   const seen = new Set();
