@@ -51,7 +51,7 @@ test('UI translation catalog lists all RU and EN IDs; empty public overrides', a
   const env = environment();
   const result = await (await adminUiTranslations(new Request('https://admin.example/api/admin/ui-translations'), env)).json();
   assert.equal(result.schemaVersion,1);
-  assert.equal(result.source,'translations.xlsx');
+  assert.equal(result.source,'approved-translations.v1.json');
   assert.equal(result.items.length,Object.keys(ui).length * 2);
   assert.equal(result.items.filter(row=>row.locale==='ru').length,Object.keys(ui).length);
   assert.equal(result.items.find(row=>row.locale==='en'&&row.id==='header.updates').source,ui['header.updates']);
