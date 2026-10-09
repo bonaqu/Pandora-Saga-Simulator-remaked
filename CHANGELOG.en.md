@@ -2,6 +2,13 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.59 — 2026-10-09
+
+### Development and technical changes
+
+- Technical-only releases now show a neutral localized summary in What's New without disclosing administrative implementation details.
+- Preserve the last actual user-facing release version separately and cover both locales in the regression test.
+
 ## Modern 3.58 — 2026-10-09
 
 ### Development and technical changes
