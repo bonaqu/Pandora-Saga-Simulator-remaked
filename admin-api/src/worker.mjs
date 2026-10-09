@@ -3,6 +3,7 @@ import { adminCatalog, publicCatalog, publicCatalogHead } from './catalog.mjs';
 import { CatalogError } from './catalog-model.mjs';
 import { publicResultLabels, adminResultLabels } from './result-labels.mjs';
 import { publicUiTranslations, adminUiTranslations } from './ui-translations.mjs';
+import { publicLocalization, adminLocalization } from './localization.mjs';
 
 const PRIVATE_CSP = "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'; font-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'";
 
@@ -28,7 +29,7 @@ function secureResponse(response, request, env) {
 async function route(request, env) {
   const url = new URL(request.url);
   if (request.method === 'OPTIONS') {
-    if (request.headers.get('Origin') !== env.PUBLIC_ORIGIN || !['/api/catalog', '/api/catalog/head', '/api/result-labels', '/api/ui-translations', '/api/auth/login'].includes(url.pathname)) return jsonResponse({ ok: false }, 403);
+    if (request.headers.get('Origin') !== env.PUBLIC_ORIGIN || !['/api/catalog', '/api/catalog/head', '/api/result-labels', '/api/ui-translations', '/api/localization', '/api/auth/login'].includes(url.pathname)) return jsonResponse({ ok: false }, 403);
     const method = request.headers.get('Access-Control-Request-Method');
     if (!['GET', 'POST'].includes(method)) return jsonResponse({ ok: false }, 403);
     const requestedHeaders = (request.headers.get('Access-Control-Request-Headers') || '').split(',').map(header => header.trim().toLowerCase()).filter(Boolean);
@@ -53,6 +54,7 @@ async function route(request, env) {
   if (url.pathname === '/api/catalog' && request.method === 'GET') return publicCatalog(request, env);
   if (url.pathname === '/api/result-labels' && request.method === 'GET') return publicResultLabels(env);
   if (url.pathname === '/api/ui-translations' && request.method === 'GET') return publicUiTranslations(env);
+  if (url.pathname === '/api/localization' && request.method === 'GET') return publicLocalization(env);
 
   // Authorize before routing: even a future/new/unknown admin endpoint cannot
   // accidentally bypass the guard. IDDQD is not part of the security boundary.
@@ -62,11 +64,12 @@ async function route(request, env) {
     if (url.pathname === '/api/session' && request.method === 'GET') return jsonResponse({ ok: true, username: 'admin', csrfToken: session.csrfToken, expiresAt: session.expiresAt });
     if (url.pathname === '/api/admin/result-labels') return adminResultLabels(request, env);
     if (url.pathname === '/api/admin/ui-translations') return adminUiTranslations(request, env);
+    if (url.pathname === '/api/admin/localization') return adminLocalization(request, env);
     return adminCatalog(request, env);
   }
 
   if (url.pathname === '/health' && request.method === 'GET') return jsonResponse({ ok: true, service: 'pandora-admin-api', apiVersion: 1, workerVersion: env.CF_VERSION_METADATA?.id || null });
-  if (['/admin', '/admin.css', '/admin.js', '/catalog-ui.js', '/result-labels.js', '/ui-translations.js'].includes(url.pathname) && ['GET', 'HEAD'].includes(request.method)) {
+  if (['/admin', '/admin.css', '/admin.js', '/catalog-ui.js', '/result-labels.js', '/ui-translations.js', '/localization-console.js'].includes(url.pathname) && ['GET', 'HEAD'].includes(request.method)) {
     if (!env.ASSETS) return jsonResponse({ ok: false }, 503);
     const assetUrl = new URL(request.url);
     if (url.pathname === '/admin') assetUrl.pathname = '/admin.html';
