@@ -583,3 +583,25 @@ test('enhancement captions keep fixed positions for RU EN JP TW and Honor select
   ]) await expect(page.locator('#'+id+' [data-remaked-buff]')).toContainText(name);
   await expect(page.locator('#TextStatus_39')).toContainText('Сопр. тьме');
 });
+
+
+test('approved UI wording may be overridden live without editing game calculations or saved builds',async({page})=>{
+  await page.goto('/?ui=ru');
+  const before=await page.evaluate(()=>window.Store());
+  const ok=await page.evaluate(()=>PandoraRemaked.i18n.applyPublishedUi({
+    ok:true,schemaVersion:1,
+    overrides:{ru:{'header.updates':'История версий'},en:{'header.updates':'Release notes'}}
+  }));
+  expect(ok).toBe(true);
+  await expect(page.locator('[data-remaked-i18n="header.updates"]')).toContainText('История версий');
+  await page.locator('[data-remaked-ui-locale="en"]').click();
+  await expect(page.locator('[data-remaked-i18n="header.updates"]')).toContainText('Release notes');
+  expect(await page.evaluate(()=>window.Store())).toBe(before);
+  expect(await page.evaluate(()=>PandoraRemaked.i18n.applyPublishedUi({
+    ok:true,schemaVersion:1,
+    overrides:{ru:{'bad-key':'Атака'},en:{}}
+  }))).toBe(false);
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+  await expect(page.locator('[data-remaked-i18n="header.updates"]')).toContainText('История версий');
+  expect(await page.evaluate(()=>window.Store())).toBe(before);
+});
