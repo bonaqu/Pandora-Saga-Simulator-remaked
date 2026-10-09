@@ -1,5 +1,31 @@
 # Changelog
 
+## Modern 3.61 — читаемые игровые описания снаряжения, 2026-10-09
+
+<!-- release-notes:user:ru -->
+- Описания предметов теперь отделяют предложения, базовые характеристики и бонусы улучшения на читаемые строки; значения эффектов и исходные названия не изменяются.
+- Всплывающая карточка оружия, брони, бижутерии и душ получила оформление по мотивам игры: тёмный фон, компактные параметры и различимые пустые и занятые гнёзда душ.
+- Сохранены наведение мышью, управление с клавиатуры и просмотр на телефоне.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Item descriptions now separate sentences, stats and enhancement conditions into readable lines without changing numerical values or canonical item names.
+- Hover cards for equipment, weapons, jewelry and Souls have an in-game-inspired dark layout with legible metadata and distinguishable empty/filled Soul sockets.
+- Mouse, keyboard and mobile previews retain their existing behavior.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- В каталоге добавлен безопасный живой предпросмотр предмета на RU/EN/JP/TW: название, текст и количество гнёзд меняются при вводе без сохранения и публикации в D1.
+- Добавлены проверки астирских бонусов по точным игровым ID, сохранения нескольких порогов заточки и двуслотовой механики астирского платья; существующая числовая таблица не продублирована.
+- Числовая проверка через сервер по-прежнему отдельно подтверждается кнопкой «Проверить изменения».
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add a non-publishing live multilingual catalog tooltip preview for items and Soul slots; preserve separate server validation for numeric effects.
+- Pin Astir source equipment IDs, native refinement milestone behavior and torso-plus-legs Astir Dress handling in UI regressions.
+- Keep canonical calculation data and original game item names unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 3.60 — короткие ссылки на билды, 2026-10-09
 
 <!-- release-notes:user:ru -->
