@@ -1,109 +1,122 @@
 # Changelog
 
+## Modern 3.52 — раздельные обновления для игроков и администратора, 2026-10-09
+
+<!-- admin-notes:ru -->
+- Раздел «Что нового» теперь показывает только явно отмеченные изменения для игроков, а не внутренние релизы админки; версия UI продолжает отражать фактическое обновление проекта.
+- Внутренние инструкции администрирования больше не публикуются в публичном репозитории и доступны владельцу отдельным файлом.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Separated public player update notes from private administration releases while retaining a deployment-aligned UI version.
+- Removed private administrator operating guides from the public repository.
+<!-- /admin-notes:en -->
+
 ## Modern 3.51 — единая админка переводов и публикация каталога пакетами, 2026-10-09
 
-<!-- release-notes:ru -->
+<!-- admin-notes:ru -->
 ### Кратко для игроков
 
 - Старые дублирующиеся редакторы подписей характеристик и интерфейса убраны из админки: все утверждённые переводы доступны в едином центре, с категорией «Характеристики» для расчётных подписей.
 - В игровом каталоге появился общий список сохранённых черновиков всех категорий с подсветкой, счётчиком, выбором и открытием каждого предмета.
 - Выбранные черновики можно публиковать одной версией каталога, с защитой от конкурирующих изменений и общей проверкой данных. Сохранённые билды получают новую ревизию влияния только при изменении игровых характеристик.
 - Старые опубликованные переводы и API совместимости продолжают работать без удаления существующих данных.
-<!-- /release-notes:ru -->
+<!-- /admin-notes:ru -->
 
-<!-- release-notes:en -->
+<!-- admin-notes:en -->
 ### Player highlights
 
 - Removed duplicate legacy translation editors from the admin UI. Approved calculator captions and interface strings remain accessible in the unified four-language localization console.
 - The catalog now provides a cross-category saved-draft queue, counts and highlighting, open-item navigation and guarded one-revision publication of up to 50 selected drafts.
 - Historical published translations and compatibility APIs are retained; existing game mechanics, build impact rules and earlier revisions remain intact.
-<!-- /release-notes:en -->
+<!-- /admin-notes:en -->
 
 ## Modern 3.50 — надёжный сброс переводов, 2026-10-09
 
-<!-- release-notes:ru -->
+<!-- admin-notes:ru -->
 ### Кратко для игроков
 
 - Кнопка «Вернуть базовый текст» корректно восстанавливает исходное утверждённое значение, сохраняет сброс в админке и показывает явное подтверждение.
 - Исправлена ошибка, из-за которой старый опубликованный перевод мог повторно появляться как черновик после сброса и следующего действия с другой строкой.
 - Добавлены проверки последовательного сброса названий предметов, перезагрузки админки и защиты от параллельных правок; английский оригинал и игровые характеристики не меняются.
-<!-- /release-notes:ru -->
+<!-- /admin-notes:ru -->
 
-<!-- release-notes:en -->
+<!-- admin-notes:en -->
 ### Player highlights
 
 - Fixed the admin translation editor restoring stale drafts after resetting published entries. Reset now immediately shows the persisted baseline and clear feedback, including after the next edit or page reload.
 - Added consecutive equipment-reset and conflict-safety regression tests. English source strings, game mechanics, and saved builds remain unchanged.
-<!-- /release-notes:en -->
+<!-- /admin-notes:en -->
 
 ## Modern 3.49 — ручное редактирование в массовом предпросмотре, 2026-10-09
 
-<!-- release-notes:ru -->
+<!-- admin-notes:ru -->
 ### Кратко для игроков
 
 - В массовом переводе появился компактный карандаш возле текста «Станет»: можно вручную исправить предложенное название или описание прямо перед публикацией.
 - Добавлены возврат к автоматически предложенному тексту, выбор всех строк или снятие выделения и счётчик ручных исправлений.
 - Ручные изменения остаются только в предпросмотре до подтверждения, проходят те же проверки безопасности и не затрагивают оригинальные тексты или расчёты.
-<!-- /release-notes:ru -->
+<!-- /admin-notes:ru -->
 
-<!-- release-notes:en -->
+<!-- admin-notes:en -->
 ### Player highlights
 
 - Bulk translation preview now supports a small inline pencil editor for reviewing and correcting individual proposed strings before publishing.
 - Added revert-to-suggestion, select-all/none and a manual-edit counter. Approved writes retain the existing version and effective-text conflict guards.
-<!-- /release-notes:en -->
+<!-- /admin-notes:en -->
 
 ## Modern 3.48 — массовый перевод слов, 2026-10-09
 
-<!-- release-notes:ru -->
+<!-- admin-notes:ru -->
 ### Кратко для игроков
 
 - В защищённой админке добавлена массовая замена отдельных слов с поиском во всех страницах выбранной категории, проверкой до/после и выбором конкретных строк.
 - По умолчанию затрагиваются только ещё не переведённые тексты. Учитываются границы слов и регистр не мешает поиску; оригинальные языковые исходники не изменяются.
 - Каждая опубликованная запись проверяется на изменения с момента предпросмотра, что предотвращает случайную перезапись исправлений другого редактора.
-<!-- /release-notes:ru -->
+<!-- /admin-notes:ru -->
 
-<!-- release-notes:en -->
+<!-- admin-notes:en -->
 ### Player highlights
 
 - Added carefully reviewed whole-word mass localization in the protected admin panel, with complete paginated search, dry-run diff, row selection and conflict checks.
 - Existing translations, language sources, catalog mechanics and Legacy calculations are preserved.
-<!-- /release-notes:en -->
+<!-- /admin-notes:en -->
 
 ## Modern 3.47 — проверка переводов и описаний, 2026-10-09
 
-<!-- release-notes:ru -->
-### Кратко для игроков
+<!-- release-notes:player:ru -->
+- Исправлено соответствие полей описаний душ: редактирование одного текста больше не подменяет другие.
+<!-- /release-notes:player:ru -->
 
-- В едином редакторе появились понятные отметки отсутствующих переводов и фильтр для поиска непереведённых строк и опубликованных правок.
-- В редакторе отображаются ранее переведённые подписи интерфейса и игровых усилений, даже если они отсутствовали в первой версии утверждённого каталога.
-- Исправлено соответствие полей описания душ: изменение одного текста не подменяет остальные. Игровые характеристики, сохранённые билды и Legacy не изменяются.
-<!-- /release-notes:ru -->
+<!-- release-notes:player:en -->
+- Fixed Soul description field ordering so editing one text no longer replaces unrelated text fields.
+<!-- /release-notes:player:en -->
 
-<!-- release-notes:en -->
-### Player highlights
+<!-- admin-notes:ru -->
+- Добавлены отметки отсутствующих переводов, фильтры строк и отображение прежних утверждённых переводов в едином редакторе.
+<!-- /admin-notes:ru -->
 
-- Added clear untranslated-language badges and filters for missing or published translations in the unified editor.
-- Restored existing localized labels in the editor and corrected Soul detail field ordering without touching gameplay or saved builds.
-<!-- /release-notes:en -->
+<!-- admin-notes:en -->
+- Added translation coverage markers, filters and previously approved labels to the admin editor.
+<!-- /admin-notes:en -->
 
 ## Modern 3.46 — переводы только через админку, 2026-10-09
 
-<!-- release-notes:ru -->
+<!-- admin-notes:ru -->
 ### Кратко для игроков
 
 - Завершён отказ от Excel как файла переводов: утверждённый набор из 2 920 исходных записей сохранён в проверенном JSON, новые изменения на RU/EN/JP/TW публикуются через защищённую админку.
 - Резервная копия Excel остаётся доступной в истории Git для восстановления, но больше не входит в текущий репозиторий и не публикуется на сайте.
 - Вместо устаревших Excel-тестов проверяются стабильные ID, набор языков и соответствие плейсхолдеров исходному тексту. Игровые формулы и сохранённые билды не изменены.
-<!-- /release-notes:ru -->
+<!-- /admin-notes:ru -->
 
-<!-- release-notes:en -->
+<!-- admin-notes:en -->
 ### Player highlights
 
 - Retired the legacy XLSX file and editing scripts in favor of the approved 2,920-entry JSON snapshot and protected four-language admin revisions.
 - Preserved the final spreadsheet in repository Git history for disaster recovery; it is no longer shipped or required for builds.
 - Replaced spreadsheet mutation tests with stable ID, placeholder and language coverage checks; calculator mechanics are unchanged.
-<!-- /release-notes:en -->
+<!-- /admin-notes:en -->
 
 ## Modern 3.45 — единый редактор переводов, подсказки навыков и описания, 2026-10-09
 
