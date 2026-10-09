@@ -8,16 +8,25 @@ import { jsonResponse } from './auth.mjs';
 const LOCALES = ['ru','en','jp','tw'];
 const fail = (message,status=400) => {throw new CatalogError(message,status);};
 const registry = new Map();
+// Distinguish a real localized baseline from an English fallback. Never label
+// source-language text as an approved translation on an untranslated locale.
+const originOf=(source,approvedValue={})=>Object.fromEntries(LOCALES.map(locale=>[
+  locale,(approvedValue[locale] || source[locale]) ? 'import' : 'fallback'
+]));
 const keyOf=(scope,id)=>scope+'\0'+id;
 const src=(source,approvedValue={})=>Object.fromEntries(LOCALES.map(locale=>[
   locale,approvedValue[locale] || source[locale] || (locale==='ru'?source.en:'') || ''
 ]));
-for (const [id,en] of Object.entries(english))
-  registry.set(keyOf('ui',id),{scope:'ui',id,kind:'interface',source:{en},baseline:src({en},Object.fromEntries(LOCALES.map(locale=>[locale,approved.ui[locale]?.[id]])))});
+for (const [id,en] of Object.entries(english)) {
+  const migrated=Object.fromEntries(LOCALES.map(locale=>[locale,approved.ui[locale]?.[id]]));
+  registry.set(keyOf('ui',id),{scope:'ui',id,kind:'interface',source:{en},
+    baseline:src({en},migrated),baselineOrigin:originOf({en},migrated)});
+}
 for (const term of sourceTerms.terms) {
   const original={en:term.source_en,jp:term.source_jp,tw:term.source_tw};
   const migrated=Object.fromEntries(LOCALES.map(locale=>[locale,approved.game[locale]?.[term.id]]));
-  registry.set(keyOf('game',term.id),{scope:'game',id:term.id,kind:term.category,source:original,baseline:src(original,migrated)});
+  registry.set(keyOf('game',term.id),{scope:'game',id:term.id,kind:term.category,source:original,
+    baseline:src(original,migrated),baselineOrigin:originOf(original,migrated)});
 }
 // Structured catalog descriptions were not exposed as workbook rows. Give them
 // stable editable IDs without treating numeric stats as translations.
@@ -31,7 +40,7 @@ for (const record of baselineRecords) {
     if (registry.has(k)||!values||!Object.values(values).some(Boolean))continue;
     registry.set(k,{scope:'game',id,kind:record.kind+'.'+field,
       source:{en:values.en||'',jp:values.jp||'',tw:values.tw||''},
-      baseline:src(values)});
+      baseline:src(values),baselineOrigin:originOf(values)});
   }
 }
 const RECORDS=[...registry.values()].sort((a,b)=>a.scope.localeCompare(b.scope)||a.id.localeCompare(b.id));
@@ -107,9 +116,10 @@ export async function adminLocalization(request,env) {
   if(request.method==='GET'){
     const url=new URL(request.url),scope=url.searchParams.get('scope')||'game',
       locale=url.searchParams.get('locale')||'ru',q=(url.searchParams.get('q')||'').trim().toLocaleLowerCase(),
-      pageText=url.searchParams.get('page')||'0',group=url.searchParams.get('group')||'all';
+      pageText=url.searchParams.get('page')||'0',group=url.searchParams.get('group')||'all',
+      status=url.searchParams.get('status')||'all';
     if(!['game','ui'].includes(scope)||!LOCALES.includes(locale)||q.length>120||!GROUPS.has(group)||
-       !/^\d{1,5}$/.test(pageText))fail('Invalid search filters');
+       !/^\d{1,5}$/.test(pageText)||!['all','missing','published'].includes(status))fail('Invalid search filters');
     const page=Number(pageText),pageSize=40;
     const [newRows,legacy]=await Promise.all([overrides(env),legacyOverrides(env)]);
     const index=overlayMap(newRows);
@@ -118,17 +128,20 @@ export async function adminLocalization(request,env) {
       // An explicit reset shadows previous editor values, even if the row
       // still exists for optimistic concurrency.
       const effective=override ? override.text || row.baseline[locale] : older || row.baseline[locale];
-      const origin=override ? override.text ? 'admin' : 'import' : older ? 'previous-admin' : 'import';
-      return {id:row.id,scope,kind:row.kind,locale,source:row.source,baseline:row.baseline[locale],
+      const baselineOrigin=row.baselineOrigin[locale];
+      const origin=override ? override.text ? 'admin' : baselineOrigin : older ? 'previous-admin' : baselineOrigin;
+      return {id:row.id,scope,kind:row.kind,locale,source:row.source,baseline:row.baseline[locale],baselineOrigin,
         effective,legacyValue:older,override:override?.text||'',version:override?.version||0,
         updatedAt:override?.updated_at||null,origin};
     };
     const matched=RECORDS.filter(row=>row.scope===scope&&(group==='all'||groupOf(row.kind)===group))
       .map(displayRow).filter(row=>
-      !q || [row.id,row.kind,row.source.en,row.effective,row.legacyValue].some(value=>
-        String(value||'').toLocaleLowerCase().includes(q)));
+      (status==='all'||status==='missing'&&row.origin==='fallback'||
+        status==='published'&&['admin','previous-admin'].includes(row.origin)) &&
+      (!q || [row.id,row.kind,row.source.en,row.effective,row.legacyValue].some(value=>
+        String(value||'').toLocaleLowerCase().includes(q))));
     const items=matched.slice(page*pageSize,(page+1)*pageSize);
-    return jsonResponse({ok:true,schemaVersion:1,locale,scope,group,page,pageSize,total:matched.length,
+    return jsonResponse({ok:true,schemaVersion:1,locale,scope,group,status,page,pageSize,total:matched.length,
       counts:{ui:RECORDS.filter(r=>r.scope==='ui').length,game:RECORDS.filter(r=>r.scope==='game').length},
       items});
   }
