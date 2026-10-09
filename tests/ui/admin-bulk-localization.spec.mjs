@@ -120,7 +120,7 @@ test('reviewed whole-word replacement scans all pages and preserves English, sub
   await bulk.locator('.localization-bulk-row').nth(1).locator('input[type="checkbox"]').uncheck();
   await expect(bulk.locator('.localization-bulk-selection')).toContainText('Выбрано: 1 / 2');
   await bulk.getByRole('button',{name:'Опубликовать выбранные'}).click();
-  await expect(bulk.locator('.localization-bulk-state')).toContainText('Успешно опубликовано 1 переводов');
+  await expect(bulk.locator('.localization-bulk-state')).toContainText('Успешно опубликовано 1 перевод');
   expect(posts).toHaveLength(1);
   expect(posts.every(x=>x.scope==='game'&&x.locale==='ru'&&x.expectedEffective)).toBe(true);
   expect(posts.map(x=>x.id)).toEqual([texts[40].id]);
