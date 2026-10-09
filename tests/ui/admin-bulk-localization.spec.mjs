@@ -63,19 +63,53 @@ test('reviewed whole-word replacement scans all pages and preserves English, sub
   await bulk.getByRole('button',{name:'Показать предварительный просмотр'}).click();
   await expect(bulk.locator('.localization-bulk-row')).toHaveCount(2);
   const first=bulk.locator('.localization-bulk-row').first();
-  await expect(first.locator('.localization-bulk-after')).toHaveText(
-    'Воин fights Warriors, SwordWarrior, Warrior_2; {Warrior} and Воин.');
+  const suggested='Воин fights Warriors, SwordWarrior, Warrior_2; {Warrior} and Воин.';
+  await expect(first.locator('.localization-bulk-after')).toHaveText(suggested);
+  await expect(bulk.locator('.localization-bulk-selection')).toContainText('Выбрано: 2 / 2');
+
+  // Every manually reviewed proposal stays in preview until the operator
+  // explicitly confirms publication. Neither English nor another locale changes.
+  const pencil=first.getByRole('button',{name:'Редактировать «Станет» для '+texts[40].id});
+  const revert=first.getByRole('button',{name:'Вернуть автоматический вариант для '+texts[40].id});
+  await pencil.click();
+  const editor=first.getByRole('textbox',{name:'Итоговый перевод '+texts[40].id});
+  await expect(editor).toHaveValue(suggested);
+  await expect(bulk.getByRole('button',{name:'Опубликовать выбранные'})).toBeDisabled();
+  await editor.fill('<script>bad</script>');
+  await first.getByRole('button',{name:'Применить в предпросмотре'}).click();
+  await expect(first.getByRole('alert')).toContainText('недопустимые символы');
+  await expect(editor).toBeVisible();
+  await editor.fill('Проверенный перевод');
+  await editor.press('Control+Enter');
+  await expect(first.locator('.localization-bulk-after')).toHaveText('Проверенный перевод');
+  await expect(bulk.locator('.localization-bulk-selection')).toContainText('Исправлено вручную: 1');
+  await revert.click();
+  await expect(first.locator('.localization-bulk-after')).toHaveText(suggested);
+  await expect(bulk.locator('.localization-bulk-selection')).toContainText('Исправлено вручную: 0');
+
+  await pencil.click();
+  await editor.fill('Шляпа рыцаря');
+  await first.getByRole('button',{name:'Применить в предпросмотре'}).click();
+  await expect(first.locator('.localization-bulk-after')).toHaveText('Шляпа рыцаря');
+  await bulk.getByRole('button',{name:'Снять выделение'}).click();
+  await expect(bulk.getByRole('button',{name:'Опубликовать выбранные'})).toBeDisabled();
+  await expect(bulk.locator('.localization-bulk-selection')).toContainText('Выбрано: 0 / 2');
+  await bulk.getByRole('button',{name:'Выбрать все'}).click();
+  await expect(first.locator('.localization-bulk-after')).toHaveText('Шляпа рыцаря');
+  await expect(bulk.locator('.localization-bulk-selection')).toContainText('Выбрано: 2 / 2');
+  await bulk.locator('.localization-bulk-row').nth(1).locator('input[type="checkbox"]').uncheck();
+  await expect(bulk.locator('.localization-bulk-selection')).toContainText('Выбрано: 1 / 2');
   await bulk.getByRole('button',{name:'Опубликовать выбранные'}).click();
-  await expect(bulk.locator('.localization-bulk-state')).toContainText('Успешно опубликовано 2 строк');
-  expect(posts).toHaveLength(2);
+  await expect(bulk.locator('.localization-bulk-state')).toContainText('Успешно опубликовано 1 строк');
+  expect(posts).toHaveLength(1);
   expect(posts.every(x=>x.scope==='game'&&x.locale==='ru'&&x.expectedEffective)).toBe(true);
-  expect(posts.map(x=>x.id)).toEqual(texts.slice(40).map(x=>x.id));
-  expect(posts[0].value).toBe('Воин fights Warriors, SwordWarrior, Warrior_2; {Warrior} and Воин.');
-  expect(posts[1].value).toBe('Воин\nВоин');
+  expect(posts.map(x=>x.id)).toEqual([texts[40].id]);
+  expect(posts[0].value).toBe('Шляпа рыцаря');
+  expect(stored.has(texts[41].id)).toBe(false);
   expect(texts[40].source.en).toBe(sourceText);
   expect(texts[40].baseline.en).toBe(sourceText);
   expect(texts[40].baseline.jp).toBe('戦士');
-  expect(stored.size).toBe(2);
+  expect(stored.size).toBe(1);
 });
 
 test('whole-word helper retains multiline formatting and escapes punctuation safely',async({page})=>{
