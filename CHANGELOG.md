@@ -1,5 +1,22 @@
 # Changelog
 
+## Modern 3.48 — массовый перевод слов, 2026-10-09
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- В защищённой админке добавлена массовая замена отдельных слов с поиском во всех страницах выбранной категории, проверкой до/после и выбором конкретных строк.
+- По умолчанию затрагиваются только ещё не переведённые тексты. Учитываются границы слов и регистр не мешает поиску; оригинальные языковые исходники не изменяются.
+- Каждая опубликованная запись проверяется на изменения с момента предпросмотра, что предотвращает случайную перезапись исправлений другого редактора.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Added carefully reviewed whole-word mass localization in the protected admin panel, with complete paginated search, dry-run diff, row selection and conflict checks.
+- Existing translations, language sources, catalog mechanics and Legacy calculations are preserved.
+<!-- /release-notes:en -->
+
 ## Modern 3.47 — проверка переводов и описаний, 2026-10-09
 
 <!-- release-notes:ru -->
