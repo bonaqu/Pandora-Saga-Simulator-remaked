@@ -39,6 +39,33 @@
       '43 русских подписи. База берётся из translations.xlsx. ' +
       'Сохранённая здесь правка публикуется сразу и имеет приоритет над Excel. ' +
       'Изменение текста не влияет на характеристики билдов.', 'result-label-help');
+    // Filter before editing: never conflate the Excel baseline with a D1
+    // override. Controls are local-only and cannot mutate catalog revisions.
+    var filters = element('div', null, 'result-label-filters');
+    var search = element('input');
+    search.type = 'search'; search.placeholder = 'Поиск по ID или тексту…';
+    search.setAttribute('aria-label', 'Найти перевод характеристики');
+    search.dataset.resultLabelSearch = '';
+    var modifiedLabel = element('label');
+    var modified = element('input'); modified.type = 'checkbox';
+    modified.dataset.resultLabelOverriddenOnly = '';
+    modifiedLabel.append(modified, document.createTextNode(' Только изменения админки'));
+    var count = element('output'); count.dataset.resultLabelCount = '';
+    filters.append(search, modifiedLabel, count);
+    function filterRows() {
+      var visible = 0;
+      Array.from(body.children).forEach(function (row) {
+        var query = search.value.trim().toLocaleLowerCase('ru');
+        var matches = !query || row.textContent.toLocaleLowerCase('ru').includes(query) ||
+          (row.querySelector('input')?.value || '').toLocaleLowerCase('ru').includes(query);
+        var accepted = matches && (!modified.checked || row.dataset.resultLabelOverridden === 'true');
+        row.hidden = !accepted;
+        if (accepted) visible++;
+      });
+      count.textContent = 'Показано ' + visible + ' из ' + body.children.length;
+    }
+    search.addEventListener('input', filterRows);
+    modified.addEventListener('change', filterRows);
     var status = element('p', 'Загружаю переводы…', 'result-label-status');
     status.dataset.resultLabelStatus = '';
     status.setAttribute('role', 'status');
@@ -52,7 +79,7 @@
     });
     table.tHead.appendChild(headings);
     var body = element('tbody'); table.appendChild(body);
-    details.append(summary, intro, status, table); root.appendChild(details);
+    details.append(summary, intro, filters, status, table); root.appendChild(details);
     try {
       var response = await api('GET');
       if (token !== generation) return;
@@ -76,6 +103,7 @@
         saveCell.append(save, reset);
         function syncState() {
           state.textContent = item.overridden ? 'Админка · версия ' + item.version : 'Excel';
+          row.dataset.resultLabelOverridden = String(item.overridden);
           reset.disabled = !item.overridden;
         }
         syncState();
@@ -86,7 +114,7 @@
             var answer = await api('POST', { id: item.id, value: value, expectedVersion: requestVersion });
             if (token !== generation) return;
             Object.assign(item, answer);
-            input.value = item.value; syncState();
+            input.value = item.value; syncState(); filterRows();
             report(item.id + ' сохранён. На сайте новая подпись появится после обновления страницы.');
           } catch (error) {
             if (token !== generation) return;
@@ -106,6 +134,7 @@
         row.append(id, baseline, editor, state, saveCell);
         body.appendChild(row);
       });
+      filterRows();
       report('Загружено ' + response.items.length + ' подписей. База Excel и опубликованные правки админки показаны отдельно.');
     } catch (error) {
       if (token === generation) report(error.message, true);
