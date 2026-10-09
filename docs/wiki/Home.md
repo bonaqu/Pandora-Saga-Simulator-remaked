@@ -25,7 +25,7 @@ The project deliberately separates two modes:
 
 ## Current update behavior
 
-Modern 3.11 derives its visible UI version and the on-site **What’s new** highlights from the latest release in the repository changelog.
+The public UI version reflects the latest deployment, while the on-site **What’s new** panel shows only the most recent changelog section explicitly marked for players. Administration-only releases are never used as player update highlights.
 
 The PWA uses a content-fingerprinted cache for offline use, but new deployments are now detected and activated automatically. Users should normally not need Ctrl+F5: normal navigation/refresh, returning to the tab or coming back online can adopt the fresh version.
 
