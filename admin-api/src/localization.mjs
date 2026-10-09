@@ -114,11 +114,13 @@ export async function publicLocalization(env) {
   return jsonResponse({ok:true,schemaVersion:1,overrides:data});
 }
 
+// A guarded bulk write carries both old and new text; each may be up to
+// 4000 Unicode characters (up to four UTF-8 bytes each), plus JSON overhead.
 async function parseInput(request) {
   if(!(request.headers.get('content-type')||'').startsWith('application/json'))fail('JSON required',415);
-  if(Number(request.headers.get('content-length')||0)>10000)fail('Request too large',413);
+  if(Number(request.headers.get('content-length')||0)>40000)fail('Request too large',413);
   const raw=await request.text();
-  if(new TextEncoder().encode(raw).length>10000)fail('Request too large',413);
+  if(new TextEncoder().encode(raw).length>40000)fail('Request too large',413);
   try {return JSON.parse(raw);}catch{fail('Invalid JSON');}
 }
 export async function adminLocalization(request,env) {
@@ -157,9 +159,11 @@ export async function adminLocalization(request,env) {
   if(request.method!=='POST')return jsonResponse({ok:false,message:'Method not allowed'},405);
   const input=await parseInput(request);
   if(!input || Array.isArray(input) || typeof input!=='object'||
-    Object.keys(input).sort().join(',')!=='expectedVersion,id,locale,scope,value'||
+     !['expectedVersion,id,locale,scope,value',
+      'expectedEffective,expectedVersion,id,locale,scope,value'].includes(Object.keys(input).sort().join(','))||
     !['ui','game'].includes(input.scope)||!LOCALES.includes(input.locale)||
     !registry.has(keyOf(input.scope,input.id))||!isText(input.value)||
+    (Object.hasOwn(input,'expectedEffective')&&!isText(input.expectedEffective))||
     !Number.isSafeInteger(input.expectedVersion)||input.expectedVersion<0||input.expectedVersion>1000000000)
     fail('Invalid translation edit');
   const entry=registry.get(keyOf(input.scope,input.id)),value=input.value.trim();
@@ -169,6 +173,15 @@ export async function adminLocalization(request,env) {
     .bind(input.scope,input.id,input.locale).first();
   const version=existing?.version||0;
   if(version!==input.expectedVersion)fail('Translation changed elsewhere; refresh before saving',409);
+  // A bulk preview uses an exact effective-text lease in addition to the
+  // version. Protect previously published legacy overrides that have no new
+  // localization_overrides version of their own.
+  if(Object.hasOwn(input,'expectedEffective')){
+    const oldText=existing
+      ? existing.text || entry.baseline[input.locale]
+      : (await legacyOverrides(env)).get(keyOf(input.scope,input.id)+'\0'+input.locale)||entry.baseline[input.locale];
+    if(oldText!==input.expectedEffective)fail('Translation changed since preview; review before saving',409);
+  }
   if(existing?.text===value)
     return jsonResponse({ok:true,scope:input.scope,id:input.id,locale:input.locale,version,override:value});
   // An empty value on top of a previous editor publication is a real reset.

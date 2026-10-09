@@ -4,6 +4,7 @@
   if(!host)return;
   let csrf,expired,generation=0,page=0,total=0,rows=[],query='',locale='ru',scope='game',group='all',translationStatus='all';
   const drafts=new Map();
+  let bulk;
   const key=row=>row.scope+'\0'+row.id+'\0'+row.locale;
   function tag(name,content,className){
     const node=document.createElement(name);
@@ -57,21 +58,28 @@
     status=tag('p','Загрузка…','localization-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
     count=tag('output','');
     items=tag('div',null,'localization-items');
+    const bulkHost=tag('div');
     const nav=tag('div',null,'localization-pagination');
     prev=tag('button','← Назад');prev.type='button';
     next=tag('button','Вперёд →');next.type='button';
     prev.addEventListener('click',()=>{page=Math.max(0,page-1);load();});
     next.addEventListener('click',()=>{page++;load();});
-    nav.append(prev,count,next);panel.append(head,info,filters,status,items,nav);host.append(panel);
+    nav.append(prev,count,next);panel.append(head,info,filters,bulkHost,status,items,nav);host.append(panel);
+    bulk=window.PandoraBulkLocalization.mount(bulkHost,{
+      api,
+      getContext:()=>({scope,locale,group}),
+      hasDraft:record=>drafts.has(key(record)),
+      onPublished:()=>load()
+    });
     scopeInput.value=scope;localeInput.value=locale;groupInput.value=group;
     translationStatusInput.value=translationStatus;searchInput.value=query;
     scopeInput.addEventListener('change',()=>{
-      scope=scopeInput.value;group='all';groupInput.value='all';groupInput.disabled=scope==='ui';page=0;load();
+      bulk.invalidate();scope=scopeInput.value;group='all';groupInput.value='all';groupInput.disabled=scope==='ui';page=0;load();
     });
     groupInput.disabled=scope==='ui';
-    groupInput.addEventListener('change',()=>{group=groupInput.value;page=0;load();});
-    translationStatusInput.addEventListener('change',()=>{translationStatus=translationStatusInput.value;page=0;load();});
-    localeInput.addEventListener('change',()=>{locale=localeInput.value;page=0;load();});
+    groupInput.addEventListener('change',()=>{bulk.invalidate();group=groupInput.value;page=0;load();});
+    translationStatusInput.addEventListener('change',()=>{bulk.invalidate();translationStatus=translationStatusInput.value;page=0;load();});
+    localeInput.addEventListener('change',()=>{bulk.invalidate();locale=localeInput.value;page=0;load();});
     let searchDebounce;
     searchInput.addEventListener('input',()=>{
       clearTimeout(searchDebounce);searchDebounce=setTimeout(()=>{query=searchInput.value.trim();page=0;load();},240);
@@ -162,7 +170,7 @@
       report('Раздел: '+result.counts[scope]+' ключей. В этой странице: '+rows.length+'.');
     }catch(error){if(token===generation)report(error.message,true);}
   }
-  function clear(){generation++;drafts.clear();host.replaceChildren();status=items=null;}
+  function clear(){generation++;bulk?.destroy();bulk=null;drafts.clear();host.replaceChildren();status=items=null;}
   window.addEventListener('beforeunload',event=>{
     if(!drafts.size)return;event.preventDefault();event.returnValue='';
   });

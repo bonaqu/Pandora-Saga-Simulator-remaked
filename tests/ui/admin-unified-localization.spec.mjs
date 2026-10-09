@@ -56,7 +56,7 @@ test('four-language translation editor starts with effective texts, keeps drafts
     const asset=(pathname==='/admin'||pathname==='/admin/')?'admin.html':pathname.slice(1);
     if(['catalog-ui.js','result-labels.js','ui-translations.js'].includes(asset))
       return route.fulfill({contentType:'text/javascript',body:''});
-    if(['admin.html','admin.css','admin.js','localization-console.js'].includes(asset)){
+    if(['admin.html','admin.css','admin.js','localization-console.js','localization-bulk.js'].includes(asset)){
       const content=fs.readFileSync(new URL('../../admin-api/public/'+asset,import.meta.url),'utf8');
       return route.fulfill({contentType:asset.endsWith('.css')?'text/css':asset.endsWith('.js')?'text/javascript':'text/html',body:content});
     }
