@@ -76,13 +76,16 @@
     set(0,0,name);
     var groupSource=window.Name.Skill[category]?.[lang+1] || '';
     set(1,0,i18n.game('skill.'+category,'') || groupSource);
+    // Preserve published custom prerequisites and selected skill profiles.
+    // The renderer must not replace them with an old Skill[] template string.
+    var prerequisite=i18n.game('skill_detail.'+category+'.'+index+'.1',source[1]||'');
     if(locale==='ru'){
       set(1,1,'Расход ОМ');
       set(2,0,'Скорость применения');
       set(2,2,'Откат');
       set(3,0,'Длительность');
       set(4,0,'Необходимо');
-      set(5,0,translatedPrerequisites(source[1]||''));
+      set(5,0,translatedPrerequisites(prerequisite));
       set(6,0,'Требования снаряжения');
       set(7,0,source[2]==='None'?'Нет':source[2]||'');
     } else {
@@ -91,7 +94,7 @@
       set(2,2,window.Name.Learn[3]?.[lang]||'');
       set(3,0,window.Name.Learn[5]?.[lang]||'');
       set(4,0,window.Name.Learn[6]?.[lang]||'');
-      set(5,0,source[1]||'');
+      set(5,0,prerequisite);
       set(6,0,window.Name.Learn[7]?.[lang]||'');
       set(7,0,source[2]||'');
     }
