@@ -198,6 +198,17 @@
       close();
     }, true);
     window.addEventListener('resize', position);
+    // The same open tooltip must reflect locale changes immediately.
+    // Do not call SkillList('Create') or change any underlying skill data.
+    var refreshActiveText = function () {
+      if (!active || !active.node.isConnected) return;
+      var parts = active.icon.id.match(/^LearnSkillIcon_(\d+)_(\d+)$/);
+      if (!parts) return;
+      renderTranslatedTooltip(active.node, Number(parts[1]), Number(parts[2]));
+      position();
+    };
+    window.addEventListener('pandora-remaked:localechange', refreshActiveText);
+    window.addEventListener('pandora-remaked:translationchange', refreshActiveText);
     decorate();
   }
   namespace.skillTooltips = { close: close };
