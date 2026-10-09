@@ -85,15 +85,15 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 | 繁體中文 | Available through the legacy data |
 | Русский | Modern interface available; game names await verification against the Russian client |
 
-The protected localization center is the only editor for Russian, English, Japanese and Traditional Chinese. Previously approved translations have been preserved in versioned `localization/approved-translations.v1.json`, and new publications live in Cloudflare D1 with revision checks. The legacy Excel file has been retired; its last verified copy is recoverable from the Git history. Approved translations appear throughout the Modern calculator, lists, search and skill descriptions. Blank game fields retain the selected source language; Legacy Mode stays unchanged.
+The Modern interface supports English, Russian, Japanese and Traditional Chinese. Available translations appear in character calculations, equipment lists, search results and skill descriptions; untranslated game terms use the available source-language text. Legacy Mode remains unchanged.
 
-Modern **3.55** improves the administrative editing workflow and D1 query efficiency without changing the Modern 3.54 calculator mechanics.
+Modern supports additional numeric equipment enhancement bonuses in character calculations at configured refinement levels. It does not simulate random on-hit effects or combat against targets.
 
 Modern checks a small no-cache release manifest on startup, when returning to the tab, after reconnecting and periodically while visible. A newer release waits for a short idle moment, commits the active field, flushes autosave and reloads versioned assets. The site is intentionally online-only; no manual cache or cookie cleanup should normally be needed.
 
-The on-site **Updates / What’s new** dialog is generated from the latest release in [CHANGELOG.md](CHANGELOG.md), and the visible Remaked UI version is derived from the same release during build. The visible version, short release notes and full changelog therefore share one source of truth.
+The on-site **Updates / What’s new** dialog displays only the most recent section explicitly marked for **players** in [CHANGELOG.md](CHANGELOG.md). The displayed Remaked UI version is taken from the latest deployed release, so it may be newer than the latest player-facing highlights. Internal-only entries never appear in the on-site highlights; the full changelog remains linked separately.
 
-Public documentation focuses on player help, project architecture, history, release behavior and roadmap. Private catalog-administration credentials and maintainer-only operating instructions are intentionally kept out of the public documentation set.
+Public documentation covers player help, project architecture, history, release behavior and the roadmap.
 
 ## 🚧 What's coming next
 
@@ -111,12 +111,12 @@ See [CHANGELOG.md](CHANGELOG.md) for released changes and the [public roadmap](d
 
 Found an incorrect stat, broken control, missing item, bad translation or browser issue? **Report it through GitHub Issues** and include the shortest steps that reproduce the problem.
 
-[Open a bug report](https://github.com/bonaqu/Pandora-Saga-Simulator-remaked/issues/new?template=bug_report.yml)
+[Open a bug report](https://github.com/bonaqu/Pandora-Saga-Simulator-remaked/issues/new?template=01-bug.yml)
 
 ## 📌 Project status
 
 - **Legacy engine:** Pandora Saga Simulator 2.00
-- **Remaked UI:** Modern 3.51
+- **Remaked UI:** see the current version in the site's **Updates** panel
 - **Hosting:** GitHub Pages
 - **Project:** community preservation / modernization project
 

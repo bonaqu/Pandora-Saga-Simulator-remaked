@@ -151,15 +151,22 @@ class RepositoryDocsTests(unittest.TestCase):
 
         for document in (changelog, plan):
             self.assertIn("2026.09.7", document)
-        latest_heading = next(line for line in changelog.splitlines() if line.startswith("## Modern "))
-        latest_version = latest_heading.split()[2]
-        self.assertIn(f"Modern **{latest_version}**", english)
-        self.assertIn(f"Modern **{latest_version}**", russian)
+        # Admin-only releases must not become player-facing README news.
+        # The release version lives in the live site's version panel; the
+        # player highlights are selected independently by build_pages.py.
+        self.assertIn("only the most recent section explicitly marked for **players**", english)
+        self.assertIn("только последний раздел", russian)
+        self.assertIn("latest deployed release", english)
+        self.assertIn("последнего опубликованного релиза", russian)
+        self.assertNotIn("Modern 3.51", english)
+        self.assertNotIn("Modern 3.51", russian)
+        self.assertIn("issues/new?template=01-bug.yml", english)
+        self.assertIn("issues/new?template=01-bug.yml", russian)
         self.assertIn("## Modern 3.11", changelog)
         self.assertNotIn("LOCALIZATION_FOR_BEGINNERS.ru.md", russian)
         self.assertFalse((ROOT / "docs/LOCALIZATION_FOR_BEGINNERS.ru.md").exists())
         self.assertFalse((ROOT / "docs/ADMIN_EDITING_FOR_BEGINNERS.ru.md").exists())
-        self.assertIn("approved-translations.v1.json", english)
+        self.assertIn("The Modern interface supports English, Russian, Japanese and Traditional Chinese.", english)
         self.assertIn("RU / EN / JP / TW", russian)
         self.assertIn("private", deployment.lower())
         self.assertIn("game-term-display.js", architecture)
