@@ -135,7 +135,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             localization = root / "localization"
             localization.mkdir()
             repository_localization = pathlib.Path(__file__).resolve().parents[1] / "localization"
-            for name in ("ui.en.json", "game-terms.ru.json", "translations.xlsx"):
+            for name in ("ui.en.json", "game-terms.ru.json", "translations.xlsx", "approved-translations.v1.json"):
                 shutil.copy2(repository_localization / name, localization / name)
             generated = root / "data" / "generated"
             generated.mkdir(parents=True)
@@ -319,7 +319,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             game_terms = (output / "modern" / "game-terms.js").read_text(encoding="utf-8")
             parsed_game = json.loads(game_terms.split(" = ", 1)[1].removesuffix(";\n"))
             self.assertEqual(parsed_game["ru"], game_russian)
-            self.assertTrue((output / "localization" / "translations.xlsx").is_file())
+            self.assertFalse((output / "localization" / "translations.xlsx").exists())
 
     def test_recovers_archived_codecs_only_in_published_runtime(self):
         with tempfile.TemporaryDirectory() as td:
@@ -370,7 +370,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
                 "data/generated/equipment.v1.json",
                 "data/generated/souls.v1.json",
                 "data/generated/skills.v1.json",
-                "localization/translations.xlsx",
+                "modern/game-terms.js",
                 "service-worker.js",
                 ".nojekyll",
             ):
