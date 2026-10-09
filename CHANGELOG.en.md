@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.60 — 2026-10-09
+
+### For users
+
+- Share Build now creates genuinely short links with a 12-character code instead of embedding the entire build in the URL.
+- The recipient can open the build in a fresh browser; legacy links remain supported. If the short-link service is offline, sharing provides a working longer fallback link with an explicit warning.
+
+### Development and technical changes
+
+- Add isolated D1-backed SHA-256-deduplicated short-code storage with explicit collision, content size, origin and anonymous rate-limit checks.
+- No admin credentials, catalog revision or build representation is changed. Backend and browser regression tests cover the API and backward compatibility.
+
 ## Modern 3.59 — 2026-10-09
 
 ### Development and technical changes
