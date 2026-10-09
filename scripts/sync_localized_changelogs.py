@@ -41,7 +41,7 @@ def marker(section: str, kind: str, lang: str) -> str:
 def render(source: str, lang: str) -> str:
     if lang not in LOCALES:
         raise ValueError("Unsupported changelog language")
-    title, player_label, dev_label, legacy_label = LOCALES[lang]
+    title, user_label, dev_label, legacy_label = LOCALES[lang]
     matches = list(HEAD.finditer(source))
     if not matches:
         raise ValueError("CHANGELOG.md has no dated Modern entries")
@@ -61,7 +61,7 @@ def render(source: str, lang: str) -> str:
         dev = marker(section, "admin-notes", lang)
         lines.extend(["## Modern " + match.group("version") + " — " + match.group("date"), ""])
         if user:
-            lines.extend(["### " + player_label, "", user, ""])
+            lines.extend(["### " + user_label, "", user, ""])
         if dev:
             lines.extend(["### " + dev_label, "", dev, ""])
         if not user and not dev:
