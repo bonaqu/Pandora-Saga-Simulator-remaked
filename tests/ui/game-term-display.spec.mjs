@@ -129,7 +129,7 @@ test('an edited approved JSON snapshot publishes calculator labels and names tog
       'data["game"]["ru"]["race.0"] = "Имя из каталога"',
       'data["game"]["ru"]["calculator.text.0"] = "Подпись из каталога"',
       'data["game"]["en"]["race.0"] = "Custom Human"',
-      'data["game"]["en"]["equipment.0.1"] = "Owner\\'s custom weapon"',
+      `data["game"]["en"]["equipment.0.1"] = "Owner's custom weapon"`,
       'data["game"]["en"]["calculator.text.0"] = "Custom race label"',
       'data["ui"]["en"]["header.project"] = "Community project"',
       'source.write_text(json.dumps(data, ensure_ascii=False), encoding="utf8")',
