@@ -121,7 +121,7 @@ export async function publicLocalization(env) {
   // publications are folded into one read-only API response, with a new
   // localization override (including reset tombstones) taking precedence.
   for(const [key,text] of legacy){
-    const parts=key.split('\\0'),scope=parts[0],locale=parts.at(-1),id=parts.slice(1,-1).join('\\0');
+    const parts=key.split('\0'),scope=parts[0],locale=parts.at(-1),id=parts.slice(1,-1).join('\0');
     if(['ui','game'].includes(scope)&&LOCALES.includes(locale)&&
        registry.has(keyOf(scope,id))&&isText(text)&&text)
       data[scope][locale][id]=text;
