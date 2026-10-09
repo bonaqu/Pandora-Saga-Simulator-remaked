@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from scripts.build_pages import build_pages, _materialize_modern_guild_resistance
+from scripts.build_pages import build_pages, _materialize_modern_guild_resistance, _read_latest_release, _read_ui_version
 from scripts.localization_catalog import load_migrated_catalogs as load_editable_catalogs
 from scripts.localization_catalog import load_migrated_catalogs
 
@@ -25,6 +25,59 @@ HERO_WEBP_FIXTURE = b"RIFF\x04\x00\x00\x00WEBP"
 
 
 class BuildPagesTests(unittest.TestCase):
+    def test_admin_only_release_never_leaks_into_player_notes(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            (root / "CHANGELOG.md").write_text("""# Changelog
+
+## Modern 3.52 — Admin only, 2026-10-09
+
+<!-- admin-notes:ru -->
+- Секретная внутренняя админская инструкция.
+<!-- /admin-notes:ru -->
+<!-- admin-notes:en -->
+- Internal administrator operations.
+<!-- /admin-notes:en -->
+
+## Modern 3.47 — Soul descriptions, 2026-10-09
+
+<!-- release-notes:player:ru -->
+- Исправлены описания душ.
+<!-- /release-notes:player:ru -->
+<!-- release-notes:player:en -->
+- Fixed Soul descriptions.
+<!-- /release-notes:player:en -->
+""", encoding="utf-8")
+            self.assertEqual(_read_ui_version(root), "3.52")
+            notes = _read_latest_release(root)
+            self.assertEqual(notes["version"], "3.47")
+            self.assertEqual(notes["highlights"]["ru"], ["Исправлены описания душ."])
+            self.assertNotIn("админ", str(notes))
+
+    def test_one_sided_player_release_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=pathlib.Path(temporary)
+            (root / "CHANGELOG.md").write_text("""# Changelog
+
+## Modern 3.53 — Broken release, 2026-10-09
+
+<!-- release-notes:player:ru -->
+- Изменение сайта.
+<!-- /release-notes:player:ru -->
+
+## Modern 3.47 — Good release, 2026-10-08
+
+<!-- release-notes:player:ru -->
+- Изменения.
+<!-- /release-notes:player:ru -->
+<!-- release-notes:player:en -->
+- Changes.
+<!-- /release-notes:player:en -->
+""", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError,"both en and ru"):
+                _read_latest_release(root)
+
+
     def test_guild_damage_reduction_only_patches_modern_calculator(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = pathlib.Path(temporary) / "repo"
@@ -78,15 +131,15 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 
 ## Modern 3.11 — fixture release, 2026-10-05
 
-<!-- release-notes:ru -->
+<!-- release-notes:player:ru -->
 ### Кратко
 - Проверка русского release note.
-<!-- /release-notes:ru -->
+<!-- /release-notes:player:ru -->
 
-<!-- release-notes:en -->
+<!-- release-notes:player:en -->
 ### Highlights
 - Fixture English release note.
-<!-- /release-notes:en -->
+<!-- /release-notes:player:en -->
 
 ## Modern 3.10 — older fixture, 2026-10-04
 - Older entry.
