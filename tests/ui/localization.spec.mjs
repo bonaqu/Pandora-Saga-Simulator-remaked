@@ -416,7 +416,8 @@ test('Russian skills help and Enhancement buffs show full names and localized na
       const name = PandoraRemaked.i18n.game('skill_entry.' + category + '.' + index, '');
       const description = PandoraRemaked.i18n.game('skill_detail.' + category + '.' + index + '.3', '');
       const hover = (label.querySelector('.help') || label).getAttribute('title');
-      return { visible: label.textContent.trim(), name, description, hover };
+      return { visible: label.textContent.trim(), name, description, hover,
+        historicallyStruck: label.style.textDecoration.includes('line-through') };
     });
   });
   expect(translated).toHaveLength(36);
@@ -424,7 +425,11 @@ test('Russian skills help and Enhancement buffs show full names and localized na
     expect(entry.name).toBeTruthy();
     expect(entry.description).toBeTruthy();
     expect(entry.visible).toBe(entry.name);
-    expect(entry.hover).toBe(entry.name + String.fromCharCode(10) + entry.description);
+    const fullDescription = entry.name + String.fromCharCode(10) + entry.description;
+    if (entry.historicallyStruck) {
+      expect(entry.hover).toContain(fullDescription);
+      expect(entry.hover).toContain('эффект полностью рассчитан');
+    } else expect(entry.hover).toBe(fullDescription);
   }
   expect(await page.evaluate(() => window.Store())).toBe(before);
 
