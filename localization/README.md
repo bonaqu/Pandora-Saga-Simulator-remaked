@@ -1,35 +1,28 @@
-# Translation workbook
+# Localization source and admin editing
 
-`translations.xlsx` is the only file a translator edits. It contains 2,920 data rows:
+**All new translations are edited only through the protected admin UI** (RU, EN, JP and TW). This includes interface labels, skills, prerequisites, equipment and Souls, races, classes and stat labels. No spreadsheet editing or manual source commit is necessary for routine wording changes.
 
-- 242 Modern interface labels;
-- 2,678 game-term rows, including calculator labels/hints, races, classes, items, Souls and skills.
+## Source and runtime
 
-The yellow **Русский — заполнять здесь** (H) and green **English — редактировать здесь** (I) columns are editable. A–G are validated source data. Rows may be filtered or sorted; IDs, source columns, worksheet name and header row must not be changed. A blank Russian cell safely falls back to English. Published admin-record names take precedence over workbook aliases; edit those names in the admin record. Unpublished source records use H/I, without changing Legacy.
+- `ui.en.json`: canonical list of 242 stable interface IDs and their original English source.
+- `game-terms.ru.json`: canonical source index of 2,678 stable game IDs extracted from the preserved engine.
+- `approved-translations.v1.json`: verified and immutable migration snapshot preserving all historical approved source translations (2,920 IDs), with sparse language-specific values.
+- Cloudflare D1 `localization_overrides`: authenticated per-ID and per-locale changes, versioned and conflict-safe.
+- Older D1 overrides and catalog revisions remain readable during compatibility cutover so manually published terms are not silently lost.
 
-Modern UI labels (242 keys) may also be edited on the secure Cloudflare admin page in RU or EN without changing the workbook. Each published D1 override is version-checked; reset returns to the workbook text. Public pages safely fall back to the bundled workbook while offline. These UI overrides are kept separate from character and build revisions. Only published overrides are exposed publicly, never a login token or admin session.
+Modern's builder uses only these checked-in JSON sources; **Excel is not read, built, or published**. The last approved spreadsheet is still recoverable through earlier Git commits if a disaster recovery audit needs it, but it is not an editable or live translation source.
 
-The 43 calculator result captions also have a generated administrative baseline in `calculator-results.ru.json`. Its values must match the stable IDs in column H; `tests/test_translation_workbook.py` checks this invariant. The source workbook is the base, while explicit published D1 edits take precedence at runtime; reverting an admin edit returns to the exact Excel value. Admin edits do not silently write back to Git, and future workbook updates do not erase admin overrides.
+## How to translate
 
-`ui.en.json` and `game-terms.ru.json` are machine-maintained source indexes. Do not enter translations there.
+1. Log into the admin UI and open **Переводы · единый центр**.
+2. Select the category (skills, equipment, Souls, races, classes, stats, other) and one of the four languages.
+3. Search by stable ID, source text, or currently displayed translation. The editor shows the effective text and its origin.
+4. Edit that text and click **Опубликовать**. An optimistic revision check prevents silently overwriting concurrent edits.
+5. Use **Вернуть базовый текст** to return to the approved baseline; the new revision also suppresses historical admin overrides for that ID.
+6. Check the public Modern site after publishing. If the API is temporarily unavailable, the built-in approved fallback continues to display existing wording.
 
-During every Pages build, `scripts/translation_workbook.py` validates the workbook and generates:
+Translation changes never touch the Legacy calculation engine, item stats, or saved build revision. HTML is not accepted as translation source. Multiline descriptions preserve newlines. Numeric game changes belong in the separate catalog editor.
 
-- the EN/RU Modern UI catalog;
-- the approved Russian game-term map used by Modern equipment and Soul search;
-- a downloadable copy at `/localization/translations.xlsx`.
+## Validation
 
-CI refuses a workbook with missing/duplicate IDs, changed source values, formulas, unknown rows or broken UI placeholders. A failed build does not replace the currently published site.
-
-For the no-terminal, step-by-step workflow, read [LOCALIZATION_FOR_BEGINNERS.ru.md](../docs/LOCALIZATION_FOR_BEGINNERS.ru.md).
-
-Developer checks:
-
-```powershell
-python scripts/translation_workbook.py
-npm run test:translations
-python scripts/build_pages.py --output _site
-npx playwright test tests/ui/localization.spec.mjs
-```
-
-When preserved Legacy data intentionally changes, run `npm run extract:terms` to refresh `game-terms.ru.json`, then regenerate the workbook source rows before release. Existing Russian values must only be carried forward when their stable ID and source text still match.
+Run `python3 -m unittest discover -s tests` or the project's ordinary CI before publishing code changes. Both static and browser checks verify stable IDs, placeholders, mobile layout, and restore of old publications. The JSON snapshot is immutable; any future source refresh must be reviewed as a dedicated migration, never blindly overwrite existing D1 edits.
