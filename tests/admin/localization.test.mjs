@@ -119,3 +119,32 @@ test('category filters are stable and separate equipment from skills, race and s
   assert.ok(races.items.some(row=>row.id==='race.0'));
   await assert.rejects(()=>adminLocalization(get('/api/admin/localization?scope=game&group=invalid'),env),/Invalid search filters/);
 });
+
+
+test('missing locale translations are distinguishable from approved imports and published edits',async()=>{
+  const env=fixture(),id='equipment.0.2';
+  const lookup=async(locale,status='all')=>(await (await adminLocalization(
+    get('/api/admin/localization?scope=game&locale='+locale+'&status='+status+'&q='+id),env)).json());
+  const ru=(await lookup('ru')).items.find(row=>row.id===id);
+  assert.equal(ru.baseline,'Short Sword');
+  assert.equal(ru.effective,'Short Sword');
+  assert.equal(ru.baselineOrigin,'fallback');
+  assert.equal(ru.origin,'fallback');
+  assert.ok((await lookup('ru','missing')).items.some(row=>row.id===id));
+  assert.equal((await lookup('ru','published')).total,0);
+
+  const jp=(await lookup('jp')).items.find(row=>row.id===id);
+  assert.equal(jp.origin,'import');
+  assert.ok(jp.effective);
+  assert.equal((await lookup('jp','missing')).total,0);
+
+  await adminLocalization(post({scope:'game',id,locale:'ru',value:'Короткий меч',expectedVersion:0}),env);
+  assert.equal((await lookup('ru')).items.find(row=>row.id===id).origin,'admin');
+  assert.equal((await lookup('ru','missing')).total,0);
+  assert.ok((await lookup('ru','published')).items.some(row=>row.id===id));
+
+  await adminLocalization(post({scope:'game',id,locale:'ru',value:'',expectedVersion:1}),env);
+  assert.equal((await lookup('ru')).items.find(row=>row.id===id).origin,'fallback');
+  assert.ok((await lookup('ru','missing')).items.some(row=>row.id===id));
+  await assert.rejects(()=>adminLocalization(get('/api/admin/localization?status=unknown'),env),/Invalid search filters/);
+});
