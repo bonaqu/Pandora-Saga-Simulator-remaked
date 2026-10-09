@@ -31,7 +31,7 @@
     "test:ui:data": "playwright test tests/ui/data-projections.spec.mjs",
     "test:ui:cross-browser": "playwright test tests/ui/cross-browser-smoke.spec.mjs",
     "extract:terms": "node scripts/extract_legacy_terms.mjs",
-    "test:translations": "node scripts/extract_legacy_terms.mjs --check && python scripts/translation_workbook.py",
+    "test:translations": "node scripts/extract_legacy_terms.mjs --check && python -m unittest tests.test_translation_catalog tests.test_translation_workbook",
     "extract:data": "node scripts/extract_legacy_data.mjs",
     "test:data": "node scripts/extract_legacy_data.mjs --check && node scripts/extract_character_metadata.mjs --check",
     "test:source-audit": "node --test tests/tools/current-skill-audit.test.mjs",
