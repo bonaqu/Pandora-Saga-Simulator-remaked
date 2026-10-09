@@ -219,3 +219,50 @@ test('guarded publication supports long Unicode before/after pairs under the 400
   assert.equal(next.version,2);
   assert.equal(env.updates.get('game|'+id+'|ru').text,replacement);
 });
+
+
+test('consecutive equipment reset tombstones persist in D1 without restoring either published translation',async()=>{
+  const env=fixture(),ids=['equipment.30.37','equipment.32.36'];
+  const before=new Map();
+  async function item(id) {
+    const response=await (await adminLocalization(get('/api/admin/localization?scope=game&locale=ru&q='+id),env)).json();
+    return response.items.find(row=>row.id===id);
+  }
+  for(const [index,id] of ids.entries()){
+    const row=await item(id);
+    assert.ok(row,'equipment exists in unified localization registry');
+    before.set(id,row);
+    const publish=await (await adminLocalization(post({
+      scope:'game',id,locale:'ru',value:index===0?'Рыцарь Hat':'Рыцарь Grove',
+      expectedVersion:0,expectedEffective:row.effective
+    }),env)).json();
+    assert.equal(publish.version,1);
+  }
+  for(const [index,id] of ids.entries()){
+    const edited=await item(id);
+    assert.equal(edited.origin,'admin');
+    const reset=await (await adminLocalization(post({
+      scope:'game',id,locale:'ru',value:'',expectedVersion:1,
+      expectedEffective:index===0?'Рыцарь Hat':'Рыцарь Grove'
+    }),env)).json();
+    assert.equal(reset.version,2);
+    assert.equal(reset.override,'');
+    const restored=await item(id);
+    assert.equal(restored.effective,before.get(id).baseline);
+    assert.equal(restored.version,2);
+    assert.equal(restored.origin,restored.baselineOrigin);
+    assert.equal(restored.source.en,before.get(id).source.en);
+    const live=await (await publicLocalization(env)).json();
+    assert.equal(live.overrides.game.ru[id],before.get(id).baseline);
+  }
+  const after=await Promise.all(ids.map(item));
+  for(const [index,row] of after.entries()){
+    assert.equal(row.effective,before.get(ids[index]).baseline);
+    assert.equal(row.version,2);
+    assert.equal(env.updates.get('game|'+ids[index]+'|ru').text,'');
+  }
+  await assert.rejects(()=>adminLocalization(post({
+    scope:'game',id:ids[0],locale:'ru',value:'Устаревший перевод',
+    expectedVersion:1,expectedEffective:'Рыцарь Hat'
+  }),env),/Translation changed elsewhere/);
+});

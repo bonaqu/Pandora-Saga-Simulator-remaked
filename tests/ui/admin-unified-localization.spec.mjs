@@ -11,10 +11,18 @@ test('four-language translation editor starts with effective texts, keeps drafts
       baselineOrigin:{ru:'fallback',en:'import',jp:'import',tw:'import'},legacy:{}},
     {scope:'game',id:'skill_entry.7.5',kind:'skill_entry',source:{en:'Flaming Arrow',jp:'フレーミングアロー',tw:'火箭'},
       baseline:{ru:'Пылающая стрела',en:'Flaming Arrow',jp:'フレーミングアロー',tw:'火箭'},legacy:{}},
+    {scope:'game',id:'equipment.30.37',kind:'equipment',source:{en:'(xx Knight Hat)'},
+      baseline:{ru:'(xx Knight Hat)',en:'(xx Knight Hat)',jp:'',tw:''},
+      baselineOrigin:{ru:'fallback',en:'import',jp:'fallback',tw:'fallback'},legacy:{}},
+    {scope:'game',id:'equipment.32.36',kind:'equipment',source:{en:'(xx Knight Grove)'},
+      baseline:{ru:'(xx Knight Grove)',en:'(xx Knight Grove)',jp:'',tw:''},
+      baselineOrigin:{ru:'fallback',en:'import',jp:'fallback',tw:'fallback'},legacy:{}},
     {scope:'ui',id:'header.updates',kind:'interface',source:{en:'Updates'},
       baseline:{ru:'Обновления',en:'Updates',jp:'アップデート',tw:'更新'},legacy:{ru:'Старый перевод'}},
   ];
   const saved=new Map(),requests=[];
+  saved.set(key('game','ru','equipment.30.37'),{text:'(xx Рыцарь Hat)',version:1});
+  saved.set(key('game','ru','equipment.32.36'),{text:'(xx Рыцарь Grove)',version:1});
   const expected=(item,lang)=>{
     const override=saved.get(key(item.scope,lang,item.id));
     const fromOld=item.legacy[lang];
@@ -30,7 +38,8 @@ test('four-language translation editor starts with effective texts, keeps drafts
         const input=route.request().postDataJSON();
         requests.push(input);
         const k=key(input.scope,input.locale,input.id),prior=saved.get(k);
-        if(input.expectedVersion!==(prior?.version||0))
+        const originalText=expected(texts.find(item=>item.scope===input.scope&&item.id===input.id),input.locale);
+        if(input.expectedVersion!==(prior?.version||0)||input.expectedEffective!==originalText)
           return route.fulfill({status:409,json:{ok:false,message:'Translation changed elsewhere'}});
         saved.set(k,{text:input.value,version:(prior?.version||0)+1});
         return route.fulfill({json:{ok:true,id:input.id,scope:input.scope,locale:input.locale,
@@ -82,13 +91,45 @@ test('four-language translation editor starts with effective texts, keeps drafts
   await panel.locator('[data-localization-id="skill_entry.7.5"]').getByRole('button',{name:'Опубликовать'}).click();
   await expect(russian).toHaveValue('Моя пылающая стрела');
   await expect(panel).toContainText('Черновики: 0');
-  expect(requests.at(-1)).toEqual({scope:'game',id:'skill_entry.7.5',locale:'ru',expectedVersion:0,value:'Моя пылающая стрела'});
+  expect(requests.at(-1)).toEqual({scope:'game',id:'skill_entry.7.5',locale:'ru',expectedVersion:0,
+    expectedEffective:'Пылающая стрела',value:'Моя пылающая стрела'});
   await panel.getByRole('combobox',{name:'Раздел'}).selectOption('ui');
   const ui=panel.locator('[data-localization-id="header.updates"]');
   await expect(ui.locator('textarea')).toHaveValue('Старый перевод');
   await ui.getByRole('button',{name:'Вернуть базовый текст'}).click();
   await expect(ui.locator('textarea')).toHaveValue('Обновления');
-  expect(requests.at(-1)).toMatchObject({scope:'ui',id:'header.updates',locale:'ru',value:''});
+  expect(requests.at(-1)).toMatchObject({scope:'ui',id:'header.updates',locale:'ru',
+    expectedEffective:'Старый перевод',value:''});
+
+  // Regression: resetting two previously published items must not resurrect
+  // the OLD value of the first in drafts or after an unrelated rerender.
+  await panel.getByRole('combobox',{name:'Раздел'}).selectOption('game');
+  const hat=panel.locator('[data-localization-id="equipment.30.37"]');
+  const grove=panel.locator('[data-localization-id="equipment.32.36"]');
+  await expect(hat.locator('textarea')).toHaveValue('(xx Рыцарь Hat)');
+  await expect(grove.locator('textarea')).toHaveValue('(xx Рыцарь Grove)');
+  await hat.getByRole('button',{name:'Вернуть базовый текст'}).click();
+  await expect(hat.locator('textarea')).toHaveValue('(xx Knight Hat)');
+  await expect(hat).toContainText('Базовый текст восстановлен · сохранено');
+  await expect(hat.getByRole('button',{name:'Вернуть базовый текст'})).toBeDisabled();
+  await expect(panel).toContainText('Черновики: 0');
+  await grove.getByRole('button',{name:'Вернуть базовый текст'}).click();
+  await expect(grove.locator('textarea')).toHaveValue('(xx Knight Grove)');
+  await expect(hat.locator('textarea')).toHaveValue('(xx Knight Hat)');
+  await expect(panel).toContainText('Черновики: 0');
+  await expect(hat).not.toHaveAttribute('data-dirty','true');
+  await expect(grove).not.toHaveAttribute('data-dirty','true');
+  await page.reload();
+  await expect(panel.locator('[data-localization-id="equipment.30.37"] textarea')).toHaveValue('(xx Knight Hat)');
+  await expect(panel.locator('[data-localization-id="equipment.32.36"] textarea')).toHaveValue('(xx Knight Grove)');
+  await expect(panel).toContainText('Черновики: 0');
+  const resetPosts=requests.filter(x=>x.id==='equipment.30.37'||x.id==='equipment.32.36');
+  expect(resetPosts).toEqual([
+    {scope:'game',id:'equipment.30.37',locale:'ru',expectedVersion:1,
+      expectedEffective:'(xx Рыцарь Hat)',value:''},
+    {scope:'game',id:'equipment.32.36',locale:'ru',expectedVersion:1,
+      expectedEffective:'(xx Рыцарь Grove)',value:''}
+  ]);
   for(const width of [390,320]){
     await page.setViewportSize({width,height:844});
     const dimension=await page.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));
