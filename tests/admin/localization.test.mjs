@@ -2,14 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {adminLocalization,publicLocalization} from '../../admin-api/src/localization.mjs';
 
-function fixture(){
+function fixture({legacyUi=[]}={}){
   const updates=new Map();
   const database={prepare(sql){
     let args=[];
     return {bind(...v){args=v;return this;},
       async all(){
         if(sql.includes('FROM localization_overrides'))return {results:[...updates.values()]};
-        if(sql.includes('FROM ui_translation_overrides'))return {results:[]};
+        if(sql.includes('FROM ui_translation_overrides'))return {results:legacyUi};
         if(sql.includes('FROM result_label_overrides'))return {results:[]};
         throw Error('Unrecognized query '+sql);
       },
@@ -85,4 +85,26 @@ test('long multiline descriptions are safe; HTML and bad translation placeholder
   await assert.rejects(()=>adminLocalization(post({...good,id:'unknown.id'}),env),/Invalid translation edit/);
   await assert.rejects(()=>adminLocalization(post({...good,value:'<img src=x onerror=alert(1)>'}),env),/Invalid translation edit/);
   await assert.rejects(()=>adminLocalization(post({...good,scope:'ui',id:'hero.version',value:'Совсем другой {value}'}),env),/Template placeholders/);
+});
+
+test('old published UI text is immediately editable, searchable and safely reset without mutating legacy D1',async()=>{
+  const original={locale:'ru',id:'header.updates',text:'Мой старый перевод'};
+  const env=fixture({legacyUi:[original]});
+  const read=async q=>(await (await adminLocalization(get('/api/admin/localization?scope=ui&locale=ru&q='+encodeURIComponent(q)),env)).json()).items;
+  const displayed=(await read('Мой старый перевод')).find(row=>row.id===original.id);
+  assert.equal(displayed.effective,original.text);
+  assert.equal(displayed.origin,'previous-admin');
+  const reply=await (await adminLocalization(post({
+    scope:'ui',locale:'ru',id:original.id,value:'',expectedVersion:0
+  }),env)).json();
+  assert.equal(reply.version,1);
+  const after=(await read('header.updates')).find(row=>row.id===original.id);
+  assert.equal(after.effective,after.baseline);
+  assert.equal(after.origin,'import');
+  assert.equal(original.text,'Мой старый перевод');
+  const live=await (await publicLocalization(env)).json();
+  assert.equal(live.overrides.ui.ru[original.id],after.baseline);
+  await assert.rejects(()=>adminLocalization(post({
+    scope:'ui',locale:'ru',id:original.id,value:'New name',expectedVersion:0
+  }),env),/Translation changed elsewhere/);
 });
