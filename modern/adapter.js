@@ -412,7 +412,26 @@
     var overrideName = namespace.catalog?.itemText(kind, value, 'names');
     var descriptions = columns.map(function (column) { return text(record[column]); }).filter(Boolean);
     if (namespace.catalog?.item(kind, value)) descriptions = ['description', 'notes', 'acquisition'].map(function (field) { return namespace.catalog.itemText(kind, value, field); }).filter(Boolean);
-    var displayName = overrideName || normalizeUntranslatedItemName(text(record[0]));
+    // Unified four-locale text overrides apply only to displayed detail prose.
+    // Preserve the canonical numeric rows, sockets and calculation code.
+    var termId = kind === 'equipment'
+      ? 'equipment.' + Math.floor(id / 10000) + '.' + (id % 10000)
+      : 'soul.' + id;
+    var textFields = kind === 'equipment'
+      ? ['description','notes','acquisition'] : ['description','notes','acquisition','modifiers'];
+    if (namespace.i18n?.game) {
+      var translatedFields = textFields.map(function (field, i) {
+        return namespace.i18n.game(termId + '.' + field, '') ||
+          (namespace.catalog?.item(kind, value)
+            ? namespace.catalog.itemText(kind, value, field)
+            : text(record[columns[i]]));
+      }).filter(Boolean);
+      if (translatedFields.some(Boolean)) descriptions = translatedFields;
+    }
+    descriptions = descriptions.map(function(line) {
+      return namespace.catalogText?.lines ? namespace.catalogText.lines(line) : line;
+    });
+    var displayName = namespace.i18n?.game?.(termId, '') || overrideName || normalizeUntranslatedItemName(text(record[0]));
     return { name: displayName, level: kind === 'equipment' ? canonical[4] : null,
       sockets: kind === 'equipment' ? canonical[5] : null,
       souls: souls, baseStats: baseStats, classes: classes,
