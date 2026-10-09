@@ -42,6 +42,11 @@ test('admin UI drafts survive search, pagination and locale changes, then save s
   });
   await page.goto(origin+'/admin');
   const panel=page.locator('#ui-translation-editor details');
+  // Previous editors stay collapsed under an advanced compatibility section.
+  await page.locator('#ui-translation-editor').evaluate(node => {
+    const parent=node.closest('details.capability-note');
+    if(parent)parent.open=true;
+  });
   await expect(panel).toBeVisible();
   await panel.locator('summary').click();
   const row=page.locator('[data-ui-translation-id="header.updates"][data-ui-locale="ru"]');
