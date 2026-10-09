@@ -85,7 +85,7 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 | 繁體中文 | Available through the legacy data |
 | Русский | Modern interface available; game names await verification against the Russian client |
 
-A unified authenticated translation editor is being introduced for Russian, English, Japanese and Traditional Chinese. A checked-in versioned JSON migration baseline preserves the current approved workbook values; the original [translations.xlsx](localization/translations.xlsx) remains a temporary recovery backup for parity checks while existing Cloudflare D1 edits are reconciled. See the [step-by-step Russian guide](docs/LOCALIZATION_FOR_BEGINNERS.ru.md). Approved translations appear throughout the Modern calculator, lists, search and skill descriptions. Blank game fields retain the selected source language; Legacy Mode stays unchanged.
+The protected localization center is the only editor for Russian, English, Japanese and Traditional Chinese. Previously approved translations have been preserved in versioned `localization/approved-translations.v1.json`, and new publications live in Cloudflare D1 with revision checks. The legacy Excel file has been retired; its last verified copy is recoverable from the Git history. See the [step-by-step Russian guide](docs/LOCALIZATION_FOR_BEGINNERS.ru.md). Approved translations appear throughout the Modern calculator, lists, search and skill descriptions. Blank game fields retain the selected source language; Legacy Mode stays unchanged.
 
 Modern **3.45** keeps Enhancement labels and inputs in fixed positions across all four languages, fixes Honor's one-of-many toggle highlight, and clarifies Russian resistance labels. Existing calculations, saved builds and links remain compatible.
 
