@@ -2,6 +2,20 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.58 — 2026-10-09
+
+### For users
+
+- Admin translation search now includes newly published equipment, Souls and skill variants alongside existing terms.
+- These entries open the canonical catalog editor for RU / EN / JP / TW rather than creating a second writable copy of their text.
+
+### Development and technical changes
+
+- Project published catalog item/skill text into the unified admin search without exposing unpublished drafts.
+- Catalog-managed entries are read-only in localization and excluded from independent bulk translation writes; the catalog remains the only writer.
+- Guarded in-page navigation preserves unsaved form changes; publishing refreshes the search index. No D1 migration, calculation changes or ID rewrites.
+- Server and browser regression checks cover the single-writer boundary.
+
 ## Modern 3.57 — 2026-10-09
 
 ### For users
