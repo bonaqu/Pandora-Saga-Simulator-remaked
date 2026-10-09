@@ -447,3 +447,85 @@ test('strict request shape, unknown IDs, unsupported raw effects, malformed and 
   await assert.rejects(() => adminCatalog(new Request(origin + '/api/admin/draft', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: 'x'.repeat(65537) }), env), error => error.status === 413);
   assert.equal(sqlite.prepare('SELECT version FROM catalog_head').get().version, 0);
 });
+
+
+test('saved drafts across equipment rows publish atomically as one catalog revision',async()=>{
+  const {env,sqlite}=fixture(),ids=['equipment.0.1','equipment.0.2'];
+  const drafts=[];
+  for(const [index,id] of ids.entries()){
+    let row=await detail(env,id);
+    row.edit.names.ru='Готовый черновик '+index;
+    row=await save(env,row);
+    assert.equal(row.hasDraft,true);
+    drafts.push({id,expectedDraftVersion:row.draftVersion});
+  }
+  const pending=await call(env,'drafts');
+  assert.equal(pending.count,2);
+  assert.deepEqual(new Set(pending.items.map(row=>row.id)),new Set(ids));
+  assert.equal(pending.catalogRevision,0);
+  assert.equal((await publicData(env)).revision,0);
+  const published=await call(env,'publish-batch',{items:drafts,expectedCatalogRevision:0});
+  assert.equal(published.ok,true);
+  assert.equal(published.count,2);
+  assert.equal(published.catalogRevision,1);
+  assert.equal(published.impactRevision,0,'text-only batch must not stale saved builds');
+  assert.deepEqual(new Set(published.publishedIds),new Set(ids));
+  assert.equal((await call(env,'drafts')).count,0);
+  const effective=await publicData(env);
+  assert.equal(effective.revision,1);
+  assert.equal(effective.records.length,2);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_revisions').get().n,1);
+  for(const id of ids) {
+    assert.equal((await detail(env,id)).hasDraft,false);
+    assert.ok(effective.records.some(item=>item.id===id));
+  }
+});
+
+test('batch draft publication rejects one stale version or invalid batch without publishing any selected item',async()=>{
+  const {env,sqlite}=fixture(),ids=['equipment.0.1','equipment.0.2'];
+  const drafts=[];
+  for(const [index,id] of ids.entries()){
+    const item=await detail(env,id);
+    item.edit.names.ru='Правка '+index;
+    const saved=await save(env,item);
+    drafts.push({id,expectedDraftVersion:saved.draftVersion});
+  }
+  const changed=await detail(env,ids[1]);
+  changed.edit.notes.ru='Дополнительная правка';
+  await save(env,changed);
+  await assert.rejects(()=>call(env,'publish-batch',{items:drafts,expectedCatalogRevision:0}),
+    error=>error.status===409);
+  for(const items of [
+    [drafts[0],drafts[0]],
+    [{id:'equipment.999999.1',expectedDraftVersion:1}],
+    [{id:ids[0],expectedDraftVersion:-1}],
+    Array.from({length:51},(_,i)=>({id:'equipment.0.'+i,expectedDraftVersion:1}))
+  ])await assert.rejects(()=>call(env,'publish-batch',{items,expectedCatalogRevision:0}));
+  assert.equal((await publicData(env)).revision,0);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_revisions').get().n,0);
+  assert.equal((await call(env,'drafts')).count,2);
+  drafts[1].expectedDraftVersion=(await detail(env,ids[1])).draftVersion;
+  const published=await call(env,'publish-batch',{items:drafts,expectedCatalogRevision:0});
+  assert.equal(published.catalogRevision,1);
+  assert.equal((await call(env,'drafts')).count,0);
+  await assert.rejects(()=>call(env,'publish-batch',{items:drafts,expectedCatalogRevision:0}),
+    error=>error.status===409);
+});
+
+test('batch publish keeps mechanically relevant impact revision and leaves unselected drafts intact',async()=>{
+  const {env}=fixture();
+  let one=await detail(env,'equipment.0.1');
+  one.edit.effectMode='patch';one.edit.effects=[{stat:1,value:3,unit:'flat'}];
+  one=await save(env,one);
+  let other=await detail(env,'equipment.0.2');
+  other.edit.names.ru='Не публикация';
+  other=await save(env,other);
+  const reply=await call(env,'publish-batch',{
+    items:[{id:one.identity.id,expectedDraftVersion:one.draftVersion}],
+    expectedCatalogRevision:0
+  });
+  assert.equal(reply.catalogRevision,1);assert.equal(reply.impactRevision,1);
+  const pending=await call(env,'drafts');
+  assert.equal(pending.count,1);assert.equal(pending.items[0].id,other.identity.id);
+  assert.equal((await detail(env,other.identity.id)).hasDraft,true);
+});
