@@ -4,7 +4,7 @@
   if(!host)return;
   let csrf,expired,generation=0,page=0,total=0,rows=[],query='',locale='ru',scope='game',group='all',translationStatus='all';
   const drafts=new Map();
-  let bulk;
+  let bulk,queued;
   const key=row=>row.scope+'\0'+row.id+'\0'+row.locale;
   function tag(name,content,className){
     const node=document.createElement(name);
@@ -14,7 +14,7 @@
   }
   let status,items,count,draftCount,prev,next,scopeInput,localeInput,searchInput,groupInput,translationStatusInput;
   async function api(method,payload,url='/api/admin/localization'){
-    const headers=method==='POST'?{'Content-Type':'application/json','X-CSRF-Token':csrf()||''}:{};
+    const headers=method!=='GET'?{'Content-Type':'application/json','X-CSRF-Token':csrf()||''}:{};
     const reply=await fetch(url,{method,credentials:'same-origin',cache:'no-store',headers,
       body:payload?JSON.stringify(payload):undefined,signal:AbortSignal.timeout(12000)});
     if(reply.status===401||reply.status===403){expired();throw Error('Сеанс завершён. Войди снова.');}
@@ -23,7 +23,7 @@
     return result;
   }
   function report(text,bad=false){if(status){status.textContent=text;status.dataset.error=String(bad);}}
-  function updateDrafts(){if(draftCount)draftCount.textContent='Черновики: '+drafts.size;}
+  function updateDrafts(){if(draftCount)draftCount.textContent='Не сохранено: '+drafts.size;}
   function newPage(){
     host.replaceChildren();
     const panel=tag('section',null,'localization-panel');
@@ -53,18 +53,31 @@
       if(!drafts.size||!confirm('Отменить '+drafts.size+' несохранённых переводов?'))return;
       drafts.clear();updateDrafts();render();
     });
-    draftCount=tag('output','Черновики: 0');
+    draftCount=tag('output','Не сохранено: 0');
     filters.append(scopeInput,localeInput,groupInput,translationStatusInput,searchInput,draftCount,resetDrafts);
     status=tag('p','Загрузка…','localization-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
     count=tag('output','');
     items=tag('div',null,'localization-items');
     const bulkHost=tag('div');
+    const queueHost=tag('div');
     const nav=tag('div',null,'localization-pagination');
     prev=tag('button','← Назад');prev.type='button';
     next=tag('button','Вперёд →');next.type='button';
     prev.addEventListener('click',()=>{page=Math.max(0,page-1);load();});
     next.addEventListener('click',()=>{page++;load();});
-    nav.append(prev,count,next);panel.append(head,info,filters,bulkHost,status,items,nav);host.append(panel);
+    nav.append(prev,count,next);panel.append(head,info,filters,queueHost,bulkHost,status,items,nav);host.append(panel);
+    queued=window.PandoraLocalizationDrafts?.mount(queueHost,{
+      api,
+      onPublished:()=>load(),
+      onQueueChanged:()=>render(),
+      onJump:record=>{
+        scope=record.scope;locale=record.locale;group='all';translationStatus='all';
+        query=record.id;page=0;scopeInput.value=scope;localeInput.value=locale;
+        groupInput.value='all';groupInput.disabled=scope==='ui';
+        translationStatusInput.value='all';searchInput.value=query;
+        bulk?.invalidate();load();
+      }
+    });
     bulk=window.PandoraBulkLocalization.mount(bulkHost,{
       api,
       getContext:()=>({scope,locale,group}),
@@ -109,33 +122,52 @@
       preview.append(tag('small','Оригинал (EN)'),tag('p',original||'—'));
       const baseline=tag('div',null,'localization-baseline');
       baseline.append(tag('small','Перевод, используемый сайтом'),tag('p',record.effective||'—'));
+      const savedDraft=()=>queued?.get(record.scope,record.id,record.locale);
       const input=tag('textarea');input.rows=record.kind.includes('description')?4:2;
-      input.maxLength=4000;input.value=drafts.has(id)?drafts.get(id):record.effective||'';
+      input.maxLength=4000;input.value=drafts.has(id)?drafts.get(id):savedDraft()?.text??record.effective??'';
       input.placeholder='Введите перевод или оставьте пустым для возврата к существующей версии';
       input.setAttribute('aria-label',record.locale.toUpperCase()+' '+record.id);
       const foot=tag('div',null,'localization-item-foot');
       const dirty=tag('span','', 'localization-dirty');
       const save=tag('button','Опубликовать');save.type='button';
+      const stage=tag('button','Сохранить черновик');stage.type='button';stage.className='secondary';
       const reset=tag('button','Вернуть базовый текст');reset.type='button';reset.className='secondary';
       const length=tag('small');
       reset.title='Восстановить базовый текст и сохранить: '+(record.baseline||'—');
       function sync(){
-        const isDirty=input.value!==(record.effective||'');
+        const isDirty=input.value!==(savedDraft()?.text??record.effective??'');
         if(isDirty)record.justReset=false;
         if(isDirty)drafts.set(id,input.value);else drafts.delete(id);
         const published=record.origin==='admin'||record.origin==='previous-admin';
         card.dataset.dirty=String(isDirty);
-        dirty.textContent=isDirty?'Не опубликовано':
-          record.justReset?'Базовый текст восстановлен · сохранено':'Сохранено';
+        dirty.textContent=isDirty?'Изменено локально':
+          savedDraft()?'Черновик сохранён в D1':
+          record.justReset?'Базовый текст восстановлен · сохранено':'Опубликовано / без изменений';
         // Even an untranslated fallback may have an unsaved draft that can
         // be discarded locally; resetting a published value needs a D1 write.
-        save.disabled=Boolean(record.pending)||!isDirty;
-        reset.disabled=Boolean(record.pending)||(!published&&!isDirty);
+        save.disabled=Boolean(record.pending)||Boolean(savedDraft())||!isDirty;
+        stage.disabled=Boolean(record.pending)||!isDirty||!input.value.trim();
+        reset.disabled=Boolean(record.pending)||Boolean(savedDraft())||(!published&&!isDirty);
+        if(savedDraft())reset.title='Сначала отмени облачный черновик в очереди выше';
         input.disabled=Boolean(record.pending);
         length.textContent=input.value.length+' / 4000';
         updateDrafts();
       }
       input.addEventListener('input',sync);
+      stage.addEventListener('click',async()=>{
+        if(record.pending||!input.value.trim())return;
+        record.pending=true;sync();const token=generation;
+        try{
+          const draft=savedDraft();
+          await api('POST',{scope:record.scope,id:record.id,locale:record.locale,value:input.value,
+            expectedVersion:record.version,expectedEffective:record.effective,
+            expectedDraftVersion:draft?.version||0},'/api/admin/localization/draft');
+          drafts.delete(id);
+          if(queued)await queued.refresh();
+          if(token===generation){render();report('Черновик '+record.id+' сохранён в Cloudflare D1. Публикации пока нет.');}
+        }catch(error){if(token===generation)report('Не удалось сохранить черновик: '+error.message,true);}
+        finally{record.pending=false;if(token===generation)sync();}
+      });
       async function commit(value,resetToBaseline=false){
         if(record.pending || (!resetToBaseline&&value===record.effective))return;
         const published=record.origin==='admin'||record.origin==='previous-admin';
@@ -185,7 +217,9 @@
         if(event.key==='Escape'){input.value=record.effective||'';sync();}
         if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){event.preventDefault();commit(input.value);}
       });
-      foot.append(dirty,length,save,reset);card.append(header,preview,baseline,input,foot);items.append(card);
+      foot.append(dirty,length,stage,save,reset);
+      queued?.history(foot,record,()=>{queued.refresh();load();});
+      card.append(header,preview,baseline,input,foot);items.append(card);
       sync();
     }
     const start=page*40;count.textContent=(total?start+1:0)+'–'+Math.min(total,start+rows.length)+' из '+total;
@@ -203,7 +237,7 @@
       report('Раздел: '+result.counts[scope]+' ключей. В этой странице: '+rows.length+'.');
     }catch(error){if(token===generation)report(error.message,true);}
   }
-  function clear(){generation++;bulk?.destroy();bulk=null;drafts.clear();host.replaceChildren();status=items=null;}
+  function clear(){generation++;bulk?.destroy();bulk=null;queued?.destroy();queued=null;drafts.clear();host.replaceChildren();status=items=null;}
   window.addEventListener('beforeunload',event=>{
     if(!drafts.size)return;event.preventDefault();event.returnValue='';
   });
