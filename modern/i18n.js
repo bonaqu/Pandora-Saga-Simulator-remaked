@@ -371,32 +371,27 @@
   };
 
   document.documentElement.lang = currentLocale;
-  // Editor customizations are deliberately independent from workbook updates.
-  // Fetch only explicit published overrides, never rewrite base translations.
+  // One canonical published translation response: new overrides, historical
+  // D1 editor publications and catalog text. Older API endpoints are queried
+  // only if an old Worker cannot provide the unified response.
   if (location.origin === 'https://bonaqu.github.io') {
-    fetch('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/localization', {
-      credentials:'omit',cache:'no-store',signal:AbortSignal.timeout(4000)
-    }).then(function(response){
-      if(!response.ok)throw new Error('Published localized text unavailable');
-      return response.json();
-    }).then(applyUnifiedLocalization).catch(function(){
-      // Cached approved baseline remains available when Cloudflare is offline.
-    });
-    fetch('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/ui-translations', {
-      credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(4000)
-    }).then(function (response) {
-      if (!response.ok) throw new Error('UI translation overrides unavailable');
-      return response.json();
-    }).then(applyPublishedUi).catch(function () {
-      // Offline users always receive the bundled approved workbook catalog.
-    });
-    fetch('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/result-labels', {
-      credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(4000)
-    }).then(function (response) {
-      if (!response.ok) throw new Error('Result translations unavailable');
-      return response.json();
-    }).then(applyPublishedResultLabels).catch(function () {
-      // Offline and older Workers continue using bundled approved Excel text.
+    var endpoint='https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
+    var getPublic=function(path){
+      return fetch(endpoint+path,{credentials:'omit',cache:'no-store',
+        signal:AbortSignal.timeout(4000)}).then(function(response){
+        if(!response.ok)throw new Error('Translation endpoint unavailable');
+        return response.json();
+      });
+    };
+    getPublic('/api/localization').then(function(payload){
+      if(!applyUnifiedLocalization(payload))throw new Error('Unsupported unified localization payload');
+    }).catch(function(){
+      // The compatibility reads are a rolling-deploy fallback, not a second
+      // authority. Avoid duplicate requests when the new endpoint succeeds.
+      return Promise.allSettled([
+        getPublic('/api/ui-translations').then(applyPublishedUi),
+        getPublic('/api/result-labels').then(applyPublishedResultLabels)
+      ]);
     });
   }
 })();

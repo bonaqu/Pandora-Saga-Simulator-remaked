@@ -71,6 +71,21 @@ async function overrides(env) {
 function overlayMap(rows) {
   return new Map(rows.map(row=>[keyOf(row.scope,row.term_id)+'\0'+row.locale,row]));
 }
+export const localizationEntry=(scope,id)=>registry.get(keyOf(scope,id))||null;
+export async function localizationEffectiveSnapshot(env){
+  const [recent,legacy]=await Promise.all([overrides(env),legacyOverrides(env)]);
+  return {recent:overlayMap(recent),legacy,
+    get(scope,id,locale){
+      const entry=localizationEntry(scope,id);
+      if(!entry)return null;
+      const key=keyOf(scope,id)+'\0'+locale;
+      const row=this.recent.get(key);
+      const text=row ? row.text || entry.baseline[locale] : this.legacy.get(key)||entry.baseline[locale];
+      return {entry,version:row?.version||0,effective:text||'',override:row?.text||''};
+    }
+  };
+}
+
 async function legacyOverrides(env) {
   const [ui,result,head]=await Promise.all([
     env.DB.prepare('SELECT locale,id,text FROM ui_translation_overrides WHERE text <> ?').bind('').all(),
@@ -100,8 +115,17 @@ async function legacyOverrides(env) {
 }
 
 export async function publicLocalization(env) {
-  const published=await overrides(env);
+  const [published,legacy]=await Promise.all([overrides(env),legacyOverrides(env)]);
   const data={ui:{ru:{},en:{},jp:{},tw:{}},game:{ru:{},en:{},jp:{},tw:{}}};
+  // The player reads the same effective values as the editor. Older D1
+  // publications are folded into one read-only API response, with a new
+  // localization override (including reset tombstones) taking precedence.
+  for(const [key,text] of legacy){
+    const parts=key.split('\0'),scope=parts[0],locale=parts.at(-1),id=parts.slice(1,-1).join('\0');
+    if(['ui','game'].includes(scope)&&LOCALES.includes(locale)&&
+       registry.has(keyOf(scope,id))&&isText(text)&&text)
+      data[scope][locale][id]=text;
+  }
   for(const row of published) {
     const term=registry.get(keyOf(row.scope,row.term_id));
     if(!term || !LOCALES.includes(row.locale) || !isText(row.text))continue;
@@ -145,14 +169,16 @@ export async function adminLocalization(request,env) {
         effective,legacyValue:older,override:override?.text||'',version:override?.version||0,
         updatedAt:override?.updated_at||null,origin};
     };
-    const matched=RECORDS.filter(row=>row.scope===scope&&(group==='all'||groupOf(row.kind)===group))
-      .map(displayRow).filter(row=>
+    const scoped=RECORDS.filter(row=>row.scope===scope&&(group==='all'||groupOf(row.kind)===group))
+      .map(displayRow);
+    const coverage={total:scoped.length,translated:scoped.filter(row=>row.origin!=='fallback').length};
+    const matched=scoped.filter(row=>
       (status==='all'||status==='missing'&&row.origin==='fallback'||
         status==='published'&&['admin','previous-admin'].includes(row.origin)) &&
       (!q || [row.id,row.kind,row.source.en,row.effective,row.legacyValue].some(value=>
         String(value||'').toLocaleLowerCase().includes(q))));
     const items=matched.slice(page*pageSize,(page+1)*pageSize);
-    return jsonResponse({ok:true,schemaVersion:1,locale,scope,group,status,page,pageSize,total:matched.length,
+    return jsonResponse({ok:true,schemaVersion:1,locale,scope,group,status,coverage,page,pageSize,total:matched.length,
       counts:{ui:RECORDS.filter(r=>r.scope==='ui').length,game:RECORDS.filter(r=>r.scope==='game').length},
       items});
   }
