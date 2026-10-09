@@ -83,6 +83,11 @@
     if (description) target.appendChild(node('p', description, 'record-description'));
     var values = node('ul', undefined, 'record-values');
     if (record.kind === 'equipment') values.appendChild(node('li', 'Уровень: ' + record.level + ' · Слоты душ: ' + record.sockets));
+    if(record.kind==='equipment'&&record.upgradeBonuses?.length)
+      record.upgradeBonuses.forEach(function(rule){
+        values.appendChild(node('li','Заточка: '+effectText(rule.stat,rule.value,rule.unit)+
+          ' с +' +rule.from+' за каждые '+rule.every+' уровня до +'+rule.to));
+      });
     if (record.kind === 'soul' && !record.compatibility.includes(1)) values.appendChild(node('li', 'Нет допустимого слота для вставки. Эта душа не предлагается для экипировки, пока не заданы ограничения.'));
     if (record.calculationCode !== undefined) {
       record.calculationCode.split('_').filter(Boolean).forEach(function (token) {
@@ -206,6 +211,28 @@
     units(); stat.addEventListener('change', function () { units(); changing(); }); value.addEventListener('input', changing); unit.addEventListener('change', changing);
     row.append(stat, value, unit, button('Убрать', function () { row.remove(); changing(); }, 'secondary'));
     parent.appendChild(row);
+  }
+  function upgradeRuleRow(rule,parent) {
+    var row=node('div',undefined,'upgrade-rule-row');
+    var heading=node('div',undefined,'upgrade-rule-heading');
+    heading.append(node('strong','Бонус усиления'));
+    row.append(heading);
+    var effects=node('div',undefined,'effect-rows');
+    effectRow({stat:rule.stat,value:rule.value,unit:rule.unit},effects);
+    // The numeric stat/units are exactly the existing supported calculator
+    // controls; additional controls only specify when the bonus applies.
+    var statRow=effects.querySelector('.effect-row');
+    statRow.lastElementChild.remove();
+    row.append(effects);
+    var times=node('div',undefined,'basic-fields');
+    [['from','Первый порог +',1],['every','Каждые N уровней',2],['to','Учитывать до +',10]].forEach(function(entry){
+      var input=inputField(entry[1],'number',rule[entry[0]]??entry[2],
+        'upgrade'+entry[0],times,1,10);
+      input.dataset.upgrade=entry[0];input.step='1';input.required=true;
+      input.addEventListener('input',changing);
+    });
+    row.append(times,button('Удалить правило',function(){row.remove();changing();},'secondary'));
+    parent.append(row);
   }
   function formValue(field) { return editor.querySelector('[data-field="' + field + '"]').value; }
   function learningBranchRow(gate, parent) {
@@ -376,7 +403,17 @@
     edit.baseAttack = editor.querySelector('[data-field="baseAttack"]') && formValue('baseAttack') !== '' ? Number(formValue('baseAttack')) : null;
     edit.effectMode = formValue('effectMode');
     edit.effects = [];
-    editor.querySelectorAll('.effect-row').forEach(function (row) { var inputs = row.querySelectorAll('select, input'); edit.effects.push({ stat: Number(inputs[0].value), value: Number(inputs[1].value), unit: inputs[2].value }); });
+    editor.querySelectorAll('.numeric-effects > .effect-rows > .effect-row').forEach(function (row) { var inputs = row.querySelectorAll('select, input'); edit.effects.push({ stat: Number(inputs[0].value), value: Number(inputs[1].value), unit: inputs[2].value }); });
+    if(edit.kind==='equipment'){
+      edit.upgradeBonuses=[];
+      editor.querySelectorAll('.upgrade-rule-row').forEach(function(row){
+        var inputs=row.querySelectorAll('.effect-row select, .effect-row input'),
+          range={};
+        row.querySelectorAll('[data-upgrade]').forEach(function(input){range[input.dataset.upgrade]=Number(input.value);});
+        edit.upgradeBonuses.push({stat:Number(inputs[0].value),value:Number(inputs[1].value),unit:inputs[2].value,
+          from:range.from,every:range.every,to:range.to});
+      });
+    }
     ['races', 'classes', 'slots'].forEach(function (field) { editor.querySelectorAll('[data-flag="' + field + '"]').forEach(function (input) { edit[field][Number(input.dataset.index)] = input.checked ? 1 : 0; }); });
     return edit;
   }
@@ -408,7 +445,12 @@
   function renderEditor() {
     editor.replaceChildren(); readProfiles = null; var edit = current.edit;
     editor.appendChild(node('h3', edit.id ? edit.names.en : 'Новая запись'));
-    editor.appendChild(node('p', (edit.id || 'ID выдаст сервер') + ' · ' + (current.hasDraft ? 'ЧЕРНОВИК ' + current.draftVersion : current.published ? 'ОПУБЛИКОВАНО' : edit.id ? 'LEGACY SOURCE' : 'НОВАЯ НЕСОХРАНЁННАЯ ЗАПИСЬ'), 'item-identity'));
+    var numericId=current.identity&&['equipment','soul'].includes(edit.kind)
+      ? (edit.kind==='equipment'?current.identity.category*10000+current.identity.index:current.identity.index) : null;
+    editor.appendChild(node('p', (numericId===null?'Числовой ID выдаст сервер':'Игровой ID: '+numericId)+
+      ' · '+(edit.id||'Технический ID ещё не назначен')+' · '+
+      (current.hasDraft?'ЧЕРНОВИК '+current.draftVersion:current.published?'ОПУБЛИКОВАНО':edit.id?'ИСТОЧНИК':'НОВАЯ НЕСОХРАНЁННАЯ ЗАПИСЬ'),
+      'item-identity'));
     review();
     if (edit.kind === 'active' || edit.kind === 'passive') {
       multilingual('Название навыка · English обязателен', 'names', edit.names, editor, false);
@@ -510,6 +552,17 @@
     edit.effects.forEach(function (effect) { effectRow(effect, rows); });
     effects.appendChild(button('Добавить характеристику', function () { effectRow({ stat: 1, value: 0, unit: 'flat' }, rows); var mode = editor.querySelector('[data-field="effectMode"]'); if (mode.value === 'preserve') mode.value = 'patch'; changing(); }, 'secondary'));
     editor.appendChild(effects);
+    if(edit.kind==='equipment'){
+      var upgrades=node('fieldset',undefined,'numeric-effects upgrade-editor');
+      upgrades.append(node('legend','Бонусы от заточки (+1…+10)'));
+      upgrades.append(node('p','Только расчётные характеристики. Пример: +1 п.п. эффективности лечения при +2, +4, +6, +8 и +10: первый порог 2, шаг 2, до 10, значение 1. Это ДОПОЛНЕНИЕ к исходным эффектам вещи и не симулирует случайные срабатывания при атаке.','help-text'));
+      var upgradeRows=node('div',undefined,'upgrade-rule-list');
+      (edit.upgradeBonuses||[]).forEach(function(rule){upgradeRuleRow(rule,upgradeRows);});
+      upgrades.append(upgradeRows,button('Добавить бонус заточки',function(){
+        upgradeRuleRow({stat:11,value:1,unit:'flat',from:2,every:2,to:10},upgradeRows);changing();
+      },'secondary'));
+      editor.append(upgrades);
+    }
     if (edit.kind === 'equipment') { compatibility('Разрешённые расы', 'races', edit.races, meta.compatibilityLabels.race, editor); compatibility('Разрешённые классы', 'classes', edit.classes, meta.compatibilityLabels.job, editor); }
     else compatibility('Куда вставляется Soul', 'slots', edit.slots, ['Weapon', 'Shield', 'Head', 'Torso', 'Arms', 'Legs', 'Boots', 'Cloak'].map(function (label, index) { return { label, index }; }), editor);
     var actions = node('div', undefined, 'editor-actions');
