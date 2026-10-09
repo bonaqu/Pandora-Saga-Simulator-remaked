@@ -257,9 +257,9 @@
             ? 'Возможность выбрать усиление не означает, что его эффект полностью рассчитан в симуляторе.'
             : 'Selectable effect; the calculator may not model all of its effects.';
           var currentHint = button.getAttribute('title') || (label.querySelector('.help') || label).title;
-          button.title = [currentHint, caveat].filter(Boolean).join('\\n');
+          button.title = [currentHint, caveat].filter(Boolean).join('\n');
           var helpNode = label.querySelector('.help');
-          if (helpNode) helpNode.title = [helpNode.title, caveat].filter(Boolean).join('\\n');
+          if (helpNode) helpNode.title = [helpNode.title, caveat].filter(Boolean).join('\n');
           button.setAttribute('aria-description', caveat);
         } else if (button) {
           button.removeAttribute('aria-description');
