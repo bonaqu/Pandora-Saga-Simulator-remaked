@@ -1475,16 +1475,16 @@ body.remaked-modern {
   min-width: 0; max-width: 100%; overflow-wrap: anywhere;
 }
 .remaked-modern #body [data-remaked-skill-variant] dl {
-  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 .remaked-modern #body [data-remaked-skill-variant] summary {
-  display: list-item; cursor: pointer; padding: 7px 2px; line-height: 1.5;
+  display: list-item; min-width: 0; cursor: pointer; padding: 7px 2px; line-height: 1.5;
 }
 .remaked-modern #body [data-remaked-skill-variant] summary span { margin-left: 8px; color: #556449; font-weight: 400; }
 .remaked-modern #body [data-remaked-skill-variant] summary:focus-visible { outline: 2px solid #50792d; outline-offset: 2px; }
 .remaked-modern #body [data-remaked-skill-variant] > div { padding: 0 4px 8px; white-space: normal; }
 .remaked-modern #body [data-remaked-skill-variant] p { margin: 5px 0; line-height: 1.5; white-space: pre-line; }
-.remaked-modern #body [data-remaked-skill-variant] dl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 10px; margin: 6px 0; }
+.remaked-modern #body [data-remaked-skill-variant] dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px 5px; margin: 6px 0; }
 .remaked-modern #body [data-remaked-skill-variant] :is(dt, dd) { margin: 0; }
 .remaked-modern #body [data-remaked-variant-bonus] { font-weight: 700; }
 @media (max-width: 620px) {
