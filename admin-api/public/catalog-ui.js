@@ -439,7 +439,11 @@
       var result = await api('publish', { id: current.identity.id, expectedDraftVersion: current.draftVersion, expectedCatalogRevision: current.catalogRevision });
       if (thisGeneration !== generation) return;
       var refreshed = await api('item?id=' + encodeURIComponent(id)); if (thisGeneration !== generation) return;
-      current = refreshed; renderEditor(); await Promise.all([loadList(),refreshDrafts()]); if (thisGeneration === generation) report('Опубликована версия каталога ' + result.catalogRevision + '.');
+      current = refreshed; renderEditor(); await Promise.all([loadList(),refreshDrafts()]);
+      if (thisGeneration === generation) {
+        window.dispatchEvent(new Event('pandora:catalog-published'));
+        report('Опубликована версия каталога ' + result.catalogRevision + '.');
+      }
     } catch (error) { if (thisGeneration === generation) report(error.message, true); }
     finally { if (thisGeneration === generation) { host.inert = false; host.removeAttribute('aria-busy'); } }
   }
@@ -756,7 +760,10 @@
         renderEditor();
       }
       await Promise.all([loadList(),refreshDrafts()]);
-      if(thisGeneration===generation)report('Опубликовано '+reply.count+' черновиков одной версией #'+reply.catalogRevision+'.');
+      if(thisGeneration===generation){
+        window.dispatchEvent(new Event('pandora:catalog-published'));
+        report('Опубликовано '+reply.count+' черновиков одной версией #'+reply.catalogRevision+'.');
+      }
     }catch(error){
       if(thisGeneration===generation){
         report(uncertain
@@ -867,6 +874,26 @@
       grid.append(sidebar, editor); host.appendChild(grid); page = 0; await Promise.all([loadList(),refreshDrafts()]); report('Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.');
     } catch (error) { report(error.message, true); }
   }
+  async function openFromLocalization(id, targetKind){
+    // Navigation is authorized by the already active admin session and uses
+    // existing guarded GET endpoints. Cancel without changing any editor state
+    // when the current catalog form contains unsaved changes.
+    if(!getCsrf||!meta||host.inert||batchPending||
+       !['equipment','soul','active','passive'].includes(targetKind)||
+       typeof id!=='string'||!id||id.length>160)return false;
+    if(!canLeave())return false;
+    editorRequest++; current=null; dirty=false;
+    clearTimeout(searchTimer);
+    kind.value=targetKind;selectedKind=targetKind;
+    search.value=id;page=0;syncNewButton();
+    await loadList();
+    await openItem(id);
+    if(current?.identity?.id!==id)return false;
+    editor.scrollIntoView({block:'start',behavior:'auto'});
+    editor.querySelector('h3')?.setAttribute('tabindex','-1');
+    editor.querySelector('h3')?.focus({preventScroll:true});
+    return true;
+  }
   window.addEventListener('beforeunload', function (event) { if (dirty) { event.preventDefault(); event.returnValue = ''; } });
-  window.PandoraCatalogConsole = { start, clear: function () { generation++; pending++; editorRequest++; draftRequest++; clearTimeout(searchTimer); dirty = false; current = null; meta = null; selectedDrafts.clear();knownDrafts=[];draftPanel=draftSummary=draftBoard=null; host.inert = false; host.removeAttribute('aria-busy'); host.replaceChildren(); } };
+  window.PandoraCatalogConsole = { start, openFromLocalization, clear: function () { generation++; pending++; editorRequest++; draftRequest++; clearTimeout(searchTimer); dirty = false; current = null; meta = null; selectedDrafts.clear();knownDrafts=[];draftPanel=draftSummary=draftBoard=null; host.inert = false; host.removeAttribute('aria-busy'); host.replaceChildren(); } };
 })();
