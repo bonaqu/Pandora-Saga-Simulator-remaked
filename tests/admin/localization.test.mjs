@@ -148,3 +148,21 @@ test('missing locale translations are distinguishable from approved imports and 
   assert.ok((await lookup('ru','missing')).items.some(row=>row.id===id));
   await assert.rejects(()=>adminLocalization(get('/api/admin/localization?status=unknown'),env),/Invalid search filters/);
 });
+
+
+test('previously visible Russian curated translations are present in unified admin baseline',async()=>{
+  const env=fixture();
+  for(const [scope,id,expected] of [
+    ['game','calculator.clan.5','Физическая устойчивость'],
+    ['game','calculator.text.7','Сброс характеристик'],
+    ['ui','skills.adeptness','Изучено (ОЧ)']
+  ]){
+    const rows=(await (await adminLocalization(
+      get('/api/admin/localization?scope='+scope+'&locale=ru&q='+id),env)).json()).items;
+    const found=rows.find(row=>row.id===id);
+    assert.ok(found,id+' must be editable');
+    assert.equal(found.effective,expected);
+    assert.equal(found.baselineOrigin,'import');
+    assert.equal(found.origin,'import');
+  }
+});
