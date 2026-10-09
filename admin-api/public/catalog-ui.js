@@ -207,6 +207,27 @@
     row.append(stat, value, unit, button('Убрать', function () { row.remove(); changing(); }, 'secondary'));
     parent.appendChild(row);
   }
+  function refinementRow(rule,parent){
+    var row=node('div',undefined,'refinement-row');
+    var stat=selectField('Бонус к характеристике',meta.effects.map(function(x){return [x.id,effectLabel(x.id)];}),
+      rule.stat,'refinementStat',row);
+    var unit=selectField('Единица',['flat','percent'].map(function(value){return [value,value==='flat'?'Число / процентные пункты':'% от базы'];}),
+      rule.unit,'refinementUnit',row);
+    var value=inputField('За каждую ступень', 'number',rule.value,'refinementValue',row,-10000,10000);
+    value.step='.01';value.required=true;
+    var start=inputField('Начиная с +','number',rule.start,'refinementStart',row,1,10);start.step='1';start.required=true;
+    var step=inputField('Каждые N уровней','number',rule.step,'refinementStep',row,1,10);step.step='1';step.required=true;
+    var cap=inputField('До +','number',rule.cap,'refinementCap',row,1,10);cap.step='1';cap.required=true;
+    function units(){
+      var definition=meta.effects.find(function(x){return x.id===Number(stat.value);});
+      unit.replaceChildren();
+      definition.units.forEach(function(v){var opt=node('option',v==='percent'?'% от базы':'Число / процентные пункты');opt.value=v;unit.appendChild(opt);});
+      if(definition.units.includes(rule.unit))unit.value=rule.unit;
+    }
+    stat.addEventListener('change',function(){units();changing();});units();
+    row.append(button('Убрать ступень',function(){row.remove();changing();},'secondary'));
+    parent.append(row);
+  }
   function formValue(field) { return editor.querySelector('[data-field="' + field + '"]').value; }
   function learningBranchRow(gate, parent) {
     var row = node('div', undefined, 'basic-fields'); row.dataset.learningBranchRow = '';
@@ -377,6 +398,15 @@
     edit.effectMode = formValue('effectMode');
     edit.effects = [];
     editor.querySelectorAll('.effect-row').forEach(function (row) { var inputs = row.querySelectorAll('select, input'); edit.effects.push({ stat: Number(inputs[0].value), value: Number(inputs[1].value), unit: inputs[2].value }); });
+    if(edit.kind==='equipment'){
+      edit.refinementEffects=[];
+      editor.querySelectorAll('.refinement-row').forEach(function(row){
+        var get=name=>row.querySelector('[data-field="'+name+'"]').value;
+        edit.refinementEffects.push({stat:Number(get('refinementStat')),unit:get('refinementUnit'),
+          value:Number(get('refinementValue')),start:Number(get('refinementStart')),
+          step:Number(get('refinementStep')),cap:Number(get('refinementCap'))});
+      });
+    }
     ['races', 'classes', 'slots'].forEach(function (field) { editor.querySelectorAll('[data-flag="' + field + '"]').forEach(function (input) { edit[field][Number(input.dataset.index)] = input.checked ? 1 : 0; }); });
     return edit;
   }
@@ -510,6 +540,17 @@
     edit.effects.forEach(function (effect) { effectRow(effect, rows); });
     effects.appendChild(button('Добавить характеристику', function () { effectRow({ stat: 1, value: 0, unit: 'flat' }, rows); var mode = editor.querySelector('[data-field="effectMode"]'); if (mode.value === 'preserve') mode.value = 'patch'; changing(); }, 'secondary'));
     editor.appendChild(effects);
+    if(edit.kind==='equipment'){
+      var levels=node('fieldset',undefined,'numeric-effects');levels.dataset.refinementEffects='';
+      levels.append(node('legend','Бонусы за уровень заточки'));
+      levels.append(node('p','Например: Начало +2, каждые 2 уровня до +10, бонус +1 к эффективности лечения. Используются только поддерживаемые числовые характеристики калькулятора; это не вероятность боевого срабатывания.','help-text'));
+      var steps=node('div',undefined,'refinement-rows');levels.append(steps);
+      (edit.refinementEffects||[]).forEach(function(rule){refinementRow(rule,steps);});
+      levels.append(button('Добавить бонус заточки',function(){
+        refinementRow({stat:11,value:1,unit:'flat',start:2,step:2,cap:10},steps);changing();
+      },'secondary'));
+      editor.append(levels);
+    }
     if (edit.kind === 'equipment') { compatibility('Разрешённые расы', 'races', edit.races, meta.compatibilityLabels.race, editor); compatibility('Разрешённые классы', 'classes', edit.classes, meta.compatibilityLabels.job, editor); }
     else compatibility('Куда вставляется Soul', 'slots', edit.slots, ['Weapon', 'Shield', 'Head', 'Torso', 'Arms', 'Legs', 'Boots', 'Cloak'].map(function (label, index) { return { label, index }; }), editor);
     var actions = node('div', undefined, 'editor-actions');
