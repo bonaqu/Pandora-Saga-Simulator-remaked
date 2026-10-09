@@ -25,7 +25,7 @@ The project deliberately separates two modes:
 
 ## Current update behavior
 
-The public UI version reflects the latest deployment, while the on-site **What’s new** panel shows only the most recent changelog section explicitly marked for players. Its full history link follows the interface language (RU/EN) and marks gameplay and development notes separately. Administration-only releases are never used as player update highlights.
+The public UI version reflects the latest deployment, while the on-site **What’s new** panel shows only the most recent changelog section explicitly marked for users. Its full history link follows the interface language (RU/EN) and marks user-facing and development notes separately. Administration-only releases are never used as user update highlights.
 
 The PWA uses a content-fingerprinted cache for offline use, but new deployments are now detected and activated automatically. Users should normally not need Ctrl+F5: normal navigation/refresh, returning to the tab or coming back online can adopt the fresh version.
 

@@ -61,11 +61,11 @@ Administrator-only workflows are documented privately and are not published in t
 
 ## Version and changelog
 
-One canonical [CHANGELOG.md](../CHANGELOG.md) holds separately marked **player RU/EN** and **development RU/EN** release records. Its latest dated Modern heading determines the deployed UI version, while the latest explicitly player-tagged heading supplies the **What’s new / Что нового** highlights and their distinct player version. Unmarked development-only releases never become game news.
+One canonical [CHANGELOG.md](../CHANGELOG.md) holds separately marked **user RU/EN** and **development RU/EN** release records. Its latest dated Modern heading determines the deployed UI version, while the latest explicitly user-tagged heading supplies the **What’s new / Что нового** highlights and their distinct user version. Unmarked development-only releases never become user-visible news.
 
-Deterministic [English](../CHANGELOG.en.md) and [Russian](../CHANGELOG.ru.md) changelogs show separate player/development headings and are checked against that source in CI. The popup's full history link follows the UI language; both languages use the same underlying release history. Historic entries without audience tags are labeled as unclassified rather than silently promoted to player news.
+Deterministic [English](../CHANGELOG.en.md) and [Russian](../CHANGELOG.ru.md) changelogs show separate user/development headings and are checked against that source in CI. The popup's full history link follows the UI language; both languages use the same underlying release history. Historic entries without audience tags are labeled as unclassified rather than silently promoted to player news.
 
-The normal PWA/Pages build still derives its version prefix and release manifest from the canonical source, avoiding a second editable set of player highlights.
+The normal PWA/Pages build still derives its version prefix and release manifest from the canonical source, avoiding a second editable set of user highlights.
 
 ## Wiki synchronization
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Generate both public locale-specific changelogs from one canonical source.
 
-CHANGELOG.md contains explicit player and development blocks. This script
-produces readable RU/EN archives; only player blocks may feed the on-site
+CHANGELOG.md contains explicit user and development blocks. This script
+produces readable RU/EN archives; only user blocks may feed the on-site
 What's New popup (scripts/build_pages.py enforces this separately).
 """
 from __future__ import annotations
@@ -16,9 +16,9 @@ HEAD = re.compile(
     re.MULTILINE,
 )
 LOCALES = {
-    "ru": ("# История обновлений — Русский", "Для игроков", "Разработка и технические изменения",
+    "ru": ("# История обновлений — Русский", "Для пользователей", "Разработка и технические изменения",
            "Архивная запись без разделения по аудитории. См. [исходный журнал](CHANGELOG.md)."),
-    "en": ("# Release history — English", "For players", "Development and technical changes",
+    "en": ("# Release history — English", "For users", "Development and technical changes",
            "Legacy entry without audience classification. See the [source changelog](CHANGELOG.md)."),
 }
 
@@ -31,7 +31,7 @@ def marker(section: str, kind: str, lang: str) -> str:
     found = re.search(expression, section, re.DOTALL)
     if not found:
         return ""
-    # The previous changelog had misplaced "Player highlights" subheadings
+    # The previous changelog had misplaced audience subheadings
     # inside developer-only notes. Do not propagate misleading headings.
     lines = [line.rstrip() for line in found.group(1).strip().splitlines()
              if not line.lstrip().startswith("### ")]
@@ -41,28 +41,30 @@ def marker(section: str, kind: str, lang: str) -> str:
 def render(source: str, lang: str) -> str:
     if lang not in LOCALES:
         raise ValueError("Unsupported changelog language")
-    title, player_label, dev_label, legacy_label = LOCALES[lang]
+    title, user_label, dev_label, legacy_label = LOCALES[lang]
     matches = list(HEAD.finditer(source))
     if not matches:
         raise ValueError("CHANGELOG.md has no dated Modern entries")
     lines = [title, "",
-             "Один источник изменений: [CHANGELOG.md](CHANGELOG.md). Всплывающее окно сайта показывает только блоки «Для игроков»."
+             "Один источник изменений: [CHANGELOG.md](CHANGELOG.md). Всплывающее окно сайта показывает только блоки «Для пользователей»."
              if lang == "ru" else
-             "Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays player entries only.",
+             "Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.",
              ""]
     for i, match in enumerate(matches):
         section = source[match.end(): matches[i+1].start() if i+1 < len(matches) else len(source)]
-        player = marker(section, "release-notes:player", lang)
-        # Backward-compatible historical releases before player/admin tagging.
-        if not player:
-            player = marker(section, "release-notes", lang)
+        user = marker(section, "release-notes:user", lang)
+        if not user:
+            # Older releases keep their original markers; no history rewriting.
+            user = marker(section, "release-notes:player", lang)
+        if not user:
+            user = marker(section, "release-notes", lang)
         dev = marker(section, "admin-notes", lang)
         lines.extend(["## Modern " + match.group("version") + " — " + match.group("date"), ""])
-        if player:
-            lines.extend(["### " + player_label, "", player, ""])
+        if user:
+            lines.extend(["### " + user_label, "", user, ""])
         if dev:
             lines.extend(["### " + dev_label, "", dev, ""])
-        if not player and not dev:
+        if not user and not dev:
             lines.extend([legacy_label, ""])
     return "\n".join(lines).rstrip() + "\n"
 

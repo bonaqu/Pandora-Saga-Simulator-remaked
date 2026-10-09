@@ -254,10 +254,10 @@
     if (version) localizeText(version, 'updates.version', '', window.PandoraRemakedVersion);
     var release = window.PandoraRemakedRelease;
     var lang = playerUpdatesLocale();
-    var playerVersion = updatesDialog.querySelector('[data-remaked-player-version]');
-    if (playerVersion && release && release.playerVersion) {
-      playerVersion.textContent = (lang === 'ru' ? 'Последние изменения для игроков: ' : 'Latest player update: ')
-        + 'Modern ' + release.playerVersion + (release.date ? ' · ' + release.date : '');
+    var userVersion = updatesDialog.querySelector('[data-remaked-user-version]');
+    if (userVersion && release && release.userVersion) {
+      userVersion.textContent = (lang === 'ru' ? 'Последние изменения для пользователей: ' : 'Latest changes for users: ')
+        + 'Modern ' + release.userVersion + (release.date ? ' · ' + release.date : '');
     }
     var fullChangelog = updatesDialog.querySelector('[data-remaked-full-changelog]');
     if (fullChangelog && updatesChangelogUrl) {
@@ -302,10 +302,10 @@
       header.appendChild(title); header.appendChild(close); panel.appendChild(header);
       var version = document.createElement('p'); version.className = 'remaked-updates-version';
       panel.appendChild(version);
-      var playerVersion = document.createElement('p');
-      playerVersion.className = 'remaked-updates-player-version';
-      playerVersion.dataset.remakedPlayerVersion = '';
-      panel.appendChild(playerVersion);
+      var userVersion = document.createElement('p');
+      userVersion.className = 'remaked-updates-user-version';
+      userVersion.dataset.remakedUserVersion = '';
+      panel.appendChild(userVersion);
       var list = document.createElement('ul');
       list.dataset.remakedUpdatesList = '';
       panel.appendChild(list);

@@ -28,25 +28,41 @@ class LocalizedChangelogTests(unittest.TestCase):
 - Internal update.
 <!-- /admin-notes:en -->
 
-## Modern 4.01 — Player update, 2026-10-08
+## Modern 4.01 — User update, 2026-10-08
 
-<!-- release-notes:player:ru -->
+<!-- release-notes:user:ru -->
 - Исправлен игровой расчёт.
-<!-- /release-notes:player:ru -->
-<!-- release-notes:player:en -->
+<!-- /release-notes:user:ru -->
+<!-- release-notes:user:en -->
 - Fixed the calculator.
-<!-- /release-notes:player:en -->
+<!-- /release-notes:user:en -->
 """
         ru = render(fixture, "ru")
         en = render(fixture, "en")
-        self.assertIn("### Для игроков", ru)
+        self.assertIn("### Для пользователей", ru)
         self.assertIn("### Разработка и технические изменения", ru)
         self.assertIn("Исправлен игровой расчёт", ru)
         self.assertNotIn("Internal update.", ru)
-        self.assertIn("### For players", en)
+        self.assertIn("### For users", en)
         self.assertIn("### Development and technical changes", en)
         self.assertIn("Fixed the calculator.", en)
         self.assertNotIn("Служебное обновление", en)
+
+    def test_historical_player_markers_still_show_under_users(self):
+        source = """# Changelog
+
+## Modern 3.54 — Old release, 2026-10-08
+
+<!-- release-notes:player:ru -->
+- Старый пользовательский текст.
+<!-- /release-notes:player:ru -->
+<!-- release-notes:player:en -->
+- Old user release.
+<!-- /release-notes:player:en -->
+"""
+        self.assertIn("### Для пользователей", render(source, "ru"))
+        self.assertIn("### For users", render(source, "en"))
+        self.assertIn("Старый пользовательский текст", render(source, "ru"))
 
     def test_deterministic_and_archival_entries_are_explicit(self):
         source = """# Changelog
