@@ -30,7 +30,7 @@ export const EFFECTS = [
   [162, 'Negative effect duration (percentage points)', FLAT]
 ].map(([id, label, units]) => ({ id, label, units }));
 const effectById = new Map(EFFECTS.map(effect => [effect.id, effect]));
-const fields = ['id', 'kind', 'category', 'names', 'description', 'notes', 'acquisition', 'modifiers', 'level', 'sockets', 'races', 'classes', 'slots', 'baseAttack', 'effectMode', 'effects', 'disabled'];
+const fields = ['id', 'kind', 'category', 'names', 'description', 'notes', 'acquisition', 'modifiers', 'level', 'sockets', 'races', 'classes', 'slots', 'baseAttack', 'effectMode', 'effects', 'refinementEffects', 'disabled'];
 
 export class CatalogError extends Error {
   constructor(message, status = 400) { super(message); this.status = status; }
@@ -217,7 +217,7 @@ export function draftFromSource(source, kind) {
     races: kind === 'equipment' && source ? source.compatibility_flags.slice(2, 8) : Array(6).fill(1),
     classes: kind === 'equipment' && source ? source.compatibility_flags.slice(8) : Array(28).fill(1),
     slots: kind === 'soul' && source ? [...source.compatibility_flags] : Array(8).fill(1),
-    baseAttack: null, effectMode: source ? 'preserve' : 'replace', effects: [], disabled: false
+    baseAttack: null, effectMode: source ? 'preserve' : 'replace', effects: [], refinementEffects: [], disabled: false
   };
 }
 
@@ -298,6 +298,18 @@ export function validateDraft(input, identity) {
   check(input.baseAttack === null || (input.kind === 'equipment' && input.category <= 13), 'Weapon attack only applies to weapons');
   result.baseAttack = input.baseAttack === null ? null : integer(input.baseAttack, 0, 10000, 'Weapon attack');
   result.effects = effects(input.effects);
+  const refinement=input.refinementEffects||[];
+  check(input.kind==='equipment'||refinement.length===0,'Only equipment can have refinement bonuses');
+  check(Array.isArray(refinement)&&refinement.length<=16,'Too many enhancement rules');
+  result.refinementEffects=refinement.map(rule=>{
+    keys(rule,['stat','value','unit','start','step','cap'],'Refinement bonus');
+    const [typed]=effects([{stat:rule.stat,value:rule.value,unit:rule.unit}]);
+    const start=integer(rule.start,1,10,'Enhancement start');
+    const step=integer(rule.step,1,10,'Enhancement step');
+    const cap=integer(rule.cap,1,10,'Enhancement cap');
+    check(cap>=start,'Enhancement cap precedes the initial step');
+    return {...typed,start,step,cap};
+  });
   check(result.effectMode !== 'preserve' || (result.effects.length === 0 && result.baseAttack === null), 'Preserve mode must not discard submitted effects');
   return result;
 }
@@ -349,6 +361,7 @@ export function compileRecord(edit, identity, source) {
     engineKey: source?.name.jp || 'Modern:' + identity.id,
     names: edit.names, description: edit.description, notes: edit.notes, acquisition: edit.acquisition, modifiers: edit.modifiers,
     level: edit.level, sockets: edit.sockets, disabled: edit.disabled, calculationCode: tokens.join('_'),
+    ...(edit.refinementEffects?.length ? {refinementEffects:edit.refinementEffects.map(x=>({...x}))} : {}),
     compatibility: edit.kind === 'equipment' ? [...(source?.compatibility_flags.slice(0, 2) || [1, 1]), ...edit.races, ...edit.classes] : edit.slots,
     parameter6: source?.legacy_parameter_6 ?? '', soulParameters: source?.legacy_parameters_5_6 || ['', ''], trailing: source?.legacy_trailing_value ?? ''
   };
