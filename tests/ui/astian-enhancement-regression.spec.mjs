@@ -179,7 +179,7 @@ test('all 16 deprecated Astir notes are filtered per language without hiding val
   const newNotes=await page.evaluate(payload=>{
     const version={...payload,revision:86,impactRevision:85,records:structuredClone(payload.records)};
     const coat=version.records.find(v=>v.engineId===310041);
-    coat.notes.en='A new independent note for the Scarlet Coat.';
+    coat.notes.en='Set the enhancement to +5 for INT +1. A new independent note for the Scarlet Coat.';
     coat.notes.jp='アスティアンの新しい説明文';
     const applied=PandoraRemaked.catalog.applySnapshot(version);
     const text={applied};
@@ -191,6 +191,7 @@ test('all 16 deprecated Astir notes are filtered per language without hiding val
     return text;
   },snapshot);
   expect(newNotes.applied).toBeTruthy();
+  expect(newNotes.en).toContain('Set the enhancement to +5 for INT +1.');
   expect(newNotes.en).toContain('A new independent note for the Scarlet Coat.');
   expect(newNotes.jp).toContain('アスティアンの新しい説明文');
   expect(newNotes.tw).not.toMatch(/一組|一套|配備|並設置|並配|設備|和集/);
