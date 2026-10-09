@@ -45,6 +45,25 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
 .extra-languages summary { cursor: pointer; color: #c6cdbb; padding: 8px 0; font: 12px/1.4 system-ui, sans-serif; }
 .optional-description > summary { cursor: pointer; padding: 12px 0; color: var(--green); font: 13px/1.5 system-ui, sans-serif; }
 .catalog-entry[aria-current="true"] { outline: 2px solid #e8dfa5; outline-offset: -3px; }
+.catalog-entry[data-has-draft="true"] { border-left: 3px solid #d4ba77; padding-left: 10px; background: #283426; }
+.catalog-draft-board { padding: 12px 14px; border: 1px solid #6a805d; border-radius: 9px; margin: 10px 0 20px; background: #1d2b1b; }
+.catalog-draft-board > summary { color: #e5efcd; cursor: pointer; font: 600 14px/1.5 system-ui, sans-serif; }
+.catalog-draft-board-content { margin-top: 12px; font: 13px/1.5 system-ui, sans-serif; }
+.catalog-draft-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.catalog-draft-actions output { color: #e0d29e; margin-inline-end: auto; font-size: 12px; }
+.catalog-draft-actions button { font-size: 12px; padding: 6px 9px; min-height: 35px; }
+.catalog-draft-entries { display: grid; gap: 6px; max-height: 360px; overflow-y: auto; }
+.catalog-draft-entry { display: flex; gap: 10px; align-items: start; padding: 9px 11px; border: 1px solid #4b6542; border-radius: 5px; cursor: pointer; background: #243323; overflow-wrap: anywhere; }
+.catalog-draft-entry:has(input:checked) { border-color: #d4ba77; }
+.catalog-draft-entry input { margin-top: 3px; accent-color: #c5d99a; }
+.catalog-draft-entry-info { display: grid; min-width: 0; }
+.catalog-draft-entry-info small { color: #b6c8a7; }
+.catalog-draft-warning { color: #ffcf9b; }
+@media (max-width: 600px) {
+  .catalog-draft-actions button { flex: 1 1 125px; }
+  .catalog-draft-actions output { flex-basis: 100%; }
+}
+
 .catalog-editor .editor-field, .help-text, .flag-label, .catalog-editor legend { font-family: system-ui, sans-serif; }
 .catalog-editor fieldset { border: 1px solid var(--border); padding: 14px; margin: 18px 0; min-width: 0; }
 .catalog-editor legend { color: var(--green); font-size: 13px; padding: 0 6px; }
