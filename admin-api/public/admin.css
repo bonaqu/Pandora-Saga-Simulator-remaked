@@ -125,6 +125,11 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
 .localization-baseline p { color: #d8ecd1; }
 .localization-item textarea { box-sizing: border-box; width: 100%; min-width: 0; resize: vertical; border-radius: 6px; font-size: 14px; line-height: 1.45; }
 .localization-item-foot { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; margin-top: 10px; }
+.localization-item[data-managed-by="catalog"] { border-color: #7e9b74; background: #1c3022; }
+.catalog-managed-note { margin: 8px 0 10px; color: #d2e5cb; font: 12px/1.55 system-ui, sans-serif; overflow-wrap: anywhere; }
+.localization-item[data-managed-by="catalog"] .localization-item-foot { justify-content: flex-start; }
+.localization-item[data-managed-by="catalog"] .localization-item-foot button { background: #b9ce9d; color: #20321a; font-weight: 650; }
+.localization-item[data-managed-by="catalog"] .localization-item-foot button:hover { background: #d3dfa9; }
 .localization-item-foot .localization-dirty { color: #d5dfa8; font-size: 12px; margin-inline-end: auto; }
 .localization-item-foot small { color: #adbaa1; margin-inline-end: 10px; }
 .localization-item-foot button { min-height: 34px; border-radius: 5px; padding: 6px 11px; }

@@ -30,7 +30,7 @@
     const head=tag('div',null,'localization-head');
     head.append(tag('h3','Переводы · единый центр'),
       tag('p','Интерфейс, навыки, предметы, расы и классы · RU / EN / 日本語 / 繁體中文'));
-    const info=tag('p','Изменения переводов отделены от игровой механики. Исходные тексты и утверждённый импорт сохраняются. Уже опубликованные правки прежней админки имеют приоритет до переноса и явно отмечены.','localization-help');
+    const info=tag('p','Единый поиск показывает старые переводы и новые опубликованные предметы, души и навыки. У новых записей источником остаётся каталог: кнопка «Редактировать в каталоге» открывает одну общую карточку для RU / EN / JP / TW, без второй копии перевода. Изменение текста не влияет на расчёты.','localization-help');
     const filters=tag('div',null,'localization-filters');
     scopeInput=tag('select');scopeInput.setAttribute('aria-label','Раздел');
     [['game','Игровые термины и предметы'],['ui','Интерфейс']].forEach(([id,name])=>{
@@ -119,7 +119,8 @@
       identity.append(tag('strong',record.id),tag('small',category));
       const badge=tag('span','', 'localization-origin');
       const description={admin:'Админка · новая','previous-admin':'Админка · ранее',
-        import:'Утверждённый перевод',fallback:'Нет перевода · исходный текст'};
+        catalog:'Опубликовано в каталоге',import:'Утверждённый перевод',
+        fallback:'Нет перевода · исходный текст'};
       badge.textContent=description[record.origin]||record.origin;
       header.append(identity,badge);
       const preview=tag('div',null,'localization-preview');
@@ -127,6 +128,34 @@
       preview.append(tag('small','Оригинал (EN)'),tag('p',original||'—'));
       const baseline=tag('div',null,'localization-baseline');
       baseline.append(tag('small','Перевод, используемый сайтом'),tag('p',record.effective||'—'));
+      if(record.managedBy==='catalog'){
+        // Canonical item text belongs to the catalog's draft/publish revision,
+        // not to localization_overrides. Show it in unified search without a
+        // second writable field, and open the exact catalog editor on demand.
+        const note=tag('p','Источник: опубликованный каталог (версия '+record.catalogRevision+
+          '). Правки всех четырёх языков выполняются в карточке предмета или навыка; отдельная публикация перевода здесь не создаётся.',
+          'catalog-managed-note');
+        const actions=tag('div',null,'localization-item-foot');
+        const open=tag('button','Редактировать в каталоге');open.type='button';open.className='secondary';
+        open.dataset.openCatalog=record.catalogId;
+        open.addEventListener('click',async()=>{
+          if(open.disabled)return;
+          open.disabled=true;
+          try{
+            const editor=window.PandoraCatalogConsole;
+            if(!editor?.openFromLocalization)throw Error('Редактор каталога недоступен.');
+            const opened=await editor.openFromLocalization(record.catalogId,record.catalogKind);
+            if(opened)report('Открыта карточка «'+record.catalogId+'». Изменения будут опубликованы только через каталог.');
+            else report('Переход отменён; несохранённые изменения оставлены на месте.');
+          }catch(error){report('Не удалось открыть запись: '+error.message,true);}
+          finally{if(card.isConnected)open.disabled=false;}
+        });
+        actions.append(open);
+        card.dataset.managedBy='catalog';
+        card.append(header,preview,baseline,note,actions);
+        items.append(card);
+        continue;
+      }
       const savedDraft=()=>queued?.get(record.scope,record.id,record.locale);
       const input=tag('textarea');input.rows=record.kind.includes('description')?4:2;
       input.maxLength=4000;input.value=drafts.has(id)?drafts.get(id):savedDraft()?.text??record.effective??'';
@@ -249,12 +278,24 @@
       report('Раздел: '+result.counts[scope]+' ключей. В этой странице: '+rows.length+'.');
     }catch(error){if(token===generation)report(error.message,true);}
   }
-  function clear(){generation++;bulk?.destroy();bulk=null;queued?.destroy();queued=null;drafts.clear();host.replaceChildren();status=items=null;}
+  function catalogPublished(){
+    if(status&&scope==='game')load();
+  }
+  function clear(){
+    window.removeEventListener('pandora:catalog-published',catalogPublished);
+    generation++;bulk?.destroy();bulk=null;queued?.destroy();queued=null;
+    drafts.clear();host.replaceChildren();status=items=null;
+  }
   window.addEventListener('beforeunload',event=>{
     if(!drafts.size)return;event.preventDefault();event.returnValue='';
   });
   window.PandoraLocalizationConsole={
-    start:function(getCsrf,onExpired){csrf=getCsrf;expired=onExpired;newPage();return load();},
+    start:function(getCsrf,onExpired){
+      csrf=getCsrf;expired=onExpired;newPage();
+      window.removeEventListener('pandora:catalog-published',catalogPublished);
+      window.addEventListener('pandora:catalog-published',catalogPublished);
+      return load();
+    },
     clear
   };
 })();

@@ -99,6 +99,9 @@
         if(total>MAX_SCAN)throw Error('Слишком много строк для безопасного предпросмотра. Выбери более узкую категорию.');
         if(!Array.isArray(response.items)||response.page!==page)throw Error('Неполная страница переводов.');
         for(const row of response.items){
+          // Catalog-owned text is shown in unified search, but published only
+          // by catalog revisions. Never add it to independent bulk D1 writes.
+          if(row.managedBy==='catalog'){skipped.push(row.id+' (редактируется в каталоге)');continue;}
           const before=row.effective||'',after=replaceWholeWord(before,current.word,current.replacement);
           if(before===after)continue;
           if(after.length>4000||after!==after.trim()||/[\x00-\x09\x0b-\x1f\x7f<>]/.test(after)){
