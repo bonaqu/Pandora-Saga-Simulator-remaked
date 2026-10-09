@@ -1,5 +1,22 @@
 # Changelog
 
+## Modern 3.49 — ручное редактирование в массовом предпросмотре, 2026-10-09
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- В массовом переводе появился компактный карандаш возле текста «Станет»: можно вручную исправить предложенное название или описание прямо перед публикацией.
+- Добавлены возврат к автоматически предложенному тексту, выбор всех строк или снятие выделения и счётчик ручных исправлений.
+- Ручные изменения остаются только в предпросмотре до подтверждения, проходят те же проверки безопасности и не затрагивают оригинальные тексты или расчёты.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Bulk translation preview now supports a small inline pencil editor for reviewing and correcting individual proposed strings before publishing.
+- Added revert-to-suggestion, select-all/none and a manual-edit counter. Approved writes retain the existing version and effective-text conflict guards.
+<!-- /release-notes:en -->
+
 ## Modern 3.48 — массовый перевод слов, 2026-10-09
 
 <!-- release-notes:ru -->
