@@ -66,7 +66,7 @@ test('Updates provides an accessible on-site release panel without altering the 
   await expect(russianDialog).toBeVisible();
   await expect(russianDialog.getByRole('link', { name: 'Полный список изменений' }))
     .toHaveAttribute('href', /CHANGELOG\.ru\.md$/);
-  await expect(russianDialog.locator('[data-remaked-player-version]')).toContainText('Последние изменения для пользователей:');
+  await expect(russianDialog.locator('[data-remaked-user-version]')).toContainText('Последние изменения для пользователей:');
   await expect(russianDialog.locator('li').first())
     .toHaveText(await page.evaluate(() => PandoraRemakedRelease.highlights.ru[0]));
   await page.keyboard.press('Escape');
