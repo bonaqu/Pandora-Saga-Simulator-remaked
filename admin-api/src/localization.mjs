@@ -78,7 +78,7 @@ export async function localizationEffectiveSnapshot(env){
     get(scope,id,locale){
       const entry=localizationEntry(scope,id);
       if(!entry)return null;
-      const key=keyOf(scope,id)+'\\0'+locale;
+      const key=keyOf(scope,id)+'\0'+locale;
       const row=this.recent.get(key);
       const text=row ? row.text || entry.baseline[locale] : this.legacy.get(key)||entry.baseline[locale];
       return {entry,version:row?.version||0,effective:text||'',override:row?.text||''};
