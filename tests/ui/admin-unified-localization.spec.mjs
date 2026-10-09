@@ -20,7 +20,7 @@ test('four-language translation editor starts with effective texts, keeps drafts
     {scope:'ui',id:'header.updates',kind:'interface',source:{en:'Updates'},
       baseline:{ru:'Обновления',en:'Updates',jp:'アップデート',tw:'更新'},legacy:{ru:'Старый перевод'}},
   ];
-  const saved=new Map(),requests=[];
+  const saved=new Map(),requests=[],cloudDrafts=new Map();
   saved.set(key('game','ru','equipment.30.37'),{text:'(xx Рыцарь Hat)',version:1});
   saved.set(key('game','ru','equipment.32.36'),{text:'(xx Рыцарь Grove)',version:1});
   const expected=(item,lang)=>{
@@ -33,7 +33,17 @@ test('four-language translation editor starts with effective texts, keeps drafts
     if(pathname==='/api/session')return route.fulfill({json:{
       ok:true,username:'admin',csrfToken:'synthetic-csrf',expiresAt:9999999999}});
     if(pathname==='/api/admin/localization/drafts')
-      return route.fulfill({json:{ok:true,count:0,maxBatch:50,items:[]}});
+      return route.fulfill({json:{ok:true,count:cloudDrafts.size,maxBatch:50,items:[...cloudDrafts.values()]}});
+    if(pathname==='/api/admin/localization/draft'&&route.request().method()==='POST'){
+      const data=route.request().postDataJSON(),k=key(data.scope,data.locale,data.id);
+      const prior=cloudDrafts.get(k);
+      if(data.expectedDraftVersion!==(prior?.version||0))
+        return route.fulfill({status:409,json:{ok:false,message:'Draft conflict'}});
+      const row={scope:data.scope,id:data.id,locale:data.locale,text:data.value,
+        version:(prior?.version||0)+1,sourceVersion:data.expectedVersion,sourceText:data.expectedEffective};
+      cloudDrafts.set(k,row);
+      return route.fulfill({json:{ok:true,id:data.id,scope:data.scope,locale:data.locale,version:row.version,text:row.text}});
+    }
     if(pathname==='/api/admin/localization/history')
       return route.fulfill({json:{ok:true,items:[],historyStartsAtMigration:true}});
     if(pathname==='/api/admin/localization'){
@@ -134,6 +144,20 @@ test('four-language translation editor starts with effective texts, keeps drafts
     {scope:'game',id:'equipment.32.36',locale:'ru',expectedVersion:1,
       expectedEffective:'(xx Рыцарь Grove)',value:''}
   ]);
+  // A stored draft survives a hard reload and never publishes by itself.
+  const sword=panel.locator('[data-localization-id="equipment.0.2"]');
+  await sword.locator('textarea').fill('Меч в облачном черновике');
+  await sword.getByRole('button',{name:'Сохранить черновик'}).click();
+  await expect(panel.locator('.localization-queue summary')).toContainText('Сохранённые черновики переводов: 1');
+  await expect(sword.locator('textarea')).toHaveValue('Меч в облачном черновике');
+  await expect(sword).toContainText('Черновик сохранён в D1');
+  await expect(panel).toContainText('Не сохранено: 0');
+  await page.reload();
+  await expect(panel.locator('.localization-queue summary')).toContainText('Сохранённые черновики переводов: 1');
+  await expect(panel.locator('[data-localization-id="equipment.0.2"] textarea')).toHaveValue('Меч в облачном черновике');
+  expect(saved.has(key('game','ru','equipment.0.2'))).toBe(false,
+    'Saving to D1 drafts must not publish the translation override');
+
   for(const width of [390,320]){
     await page.setViewportSize({width,height:844});
     const dimension=await page.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));
