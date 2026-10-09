@@ -196,6 +196,18 @@
       ['description', 'notes', 'acquisition'].forEach(function (field) { textMap(record[field], 4000); });
       check(Boolean(record.names.en?.trim()), 'English item name required');
       check(Array.isArray(record.compatibility) && record.compatibility.length === (record.kind === 'equipment' ? 36 : 8) && record.compatibility.every(function (flag) { return flag === 0 || flag === 1; }), 'Invalid compatibility flags');
+      if(Object.prototype.hasOwnProperty.call(record,'refinementEffects')){
+        check(record.kind==='equipment'&&Array.isArray(record.refinementEffects)&&record.refinementEffects.length<=16,
+          'Invalid per-refinement bonus rules');
+        typedEffects(record.refinementEffects.map(function(rule){
+          return {stat:rule.stat,value:rule.value,unit:rule.unit};
+        }));
+        record.refinementEffects.forEach(function(rule){
+          check(Object.keys(rule).every(function(key){return ['stat','value','unit','start','step','cap'].indexOf(key)!==-1;})&&
+            [rule.start,rule.step,rule.cap].every(function(value){return Number.isInteger(value)&&value>=1&&value<=10;})&&
+            rule.cap>=rule.start,'Invalid enhancement step');
+        });
+      }
       check(typeof record.calculationCode === 'string' && record.calculationCode.length <= 8192, 'Invalid engine data');
       record.calculationCode.split('_').filter(Boolean).forEach(function (token) {
         var match = token.match(/^(\d{1,3})=(-?\d+(?:\.\d{1,2})?%?|W\d+)$/);
