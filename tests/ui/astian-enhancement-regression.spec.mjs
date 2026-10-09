@@ -1,12 +1,13 @@
 import { test, expect } from '@playwright/test';
 import equipment from '../../data/generated/equipment.v1.json' with { type: 'json' };
 import character from '../../data/generated/character.v1.json' with { type: 'json' };
+import astir from '../fixtures/published-astian-gear.json' with { type: 'json' };
 
 // Actual game server IDs reconciled against the published Modern catalog;
 // the corresponding enhancement code is already in ITEM_FORTH, not a new
 // independently maintained or duplicate rules table.
 const snapshot={ok:true,schemaVersion:1,sourceFingerprint:equipment.metadata.generated_from[0].sha256,
-  characterSourceFingerprint:character.sourceFingerprint,revision:85,impactRevision:85,records:[]};
+  characterSourceFingerprint:character.sourceFingerprint,revision:85,impactRevision:85,records:astir.records};
 test('Astir Scarlet Coat accuracy and Azure Coat casting speed follow exact enhancement milestones',async({page})=>{
   await page.goto('/');
   await page.evaluate(data=>PandoraRemaked.catalog.applySnapshot(data),snapshot);
