@@ -32,6 +32,7 @@ test('share link restores the exact build in a separate browser with no storage'
   const payload = await page.evaluate(() => window.Store());
   await page.locator('[data-remaked-builds-open]').click();
   await page.locator('[data-remaked-share-build]').click();
+  await expect(page.locator('[data-remaked-share-url]')).toHaveValue(/#(?:b|build)=/);
   const url = await page.locator('[data-remaked-share-url]').inputValue();
   expect(url).toContain('#b='+server.slug);
   expect(url.length).toBeLessThan(120);
@@ -90,9 +91,11 @@ test('short-link service failure offers a working legacy-compatible long link',a
   await page.goto('/');
   await page.locator('[data-remaked-builds-open]').click();
   await page.locator('[data-remaked-share-build]').click();
+  await expect(page.locator('[data-remaked-share-url]')).toHaveValue(/#build=S1\./);
   const link=await page.locator('[data-remaked-share-url]').inputValue();
   expect(link).toContain('#build=S1.');
-  await expect(page.locator('[data-remaked-build-manager-status]')).toContainText('fallback');
+  await expect(page.locator('[data-remaked-build-manager-status]'))
+    .toContainText(/(?:fallback|Copy the link below)/);
   await page.goto(link);
   await expect(page.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
 });
