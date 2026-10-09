@@ -344,7 +344,7 @@
       for (var [key,text] of Object.entries(rows)) {
         if (!/^[a-z][a-z0-9._-]{0,120}$/.test(key) ||
             typeof text !== 'string' || text.length > 4000 ||
-            /[\\x00-\\x09\\x0b-\\x1f\\x7f<>]/.test(text)) return false;
+            /[\x00-\x09\x0b-\x1f\x7f<>]/.test(text)) return false;
         next[scope][locale][key]=text;
       }
     }
