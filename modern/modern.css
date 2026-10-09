@@ -1467,7 +1467,16 @@ body.remaked-modern {
 }
 .remaked-modern #body [data-remaked-catalog-skills][hidden] { display: none !important; }
 .remaked-modern #body [data-remaked-catalog-skills] h3 { grid-column: 1 / -1; margin: 0 0 6px; font: inherit; font-weight: 700; }
-.remaked-modern #body [data-remaked-skill-variant] { border-top: 1px solid #c3d5ac; overflow-wrap: anywhere; }
+.remaked-modern #body [data-remaked-skill-variant] {
+  min-width: 0; max-width: 100%; box-sizing: border-box;
+  border-top: 1px solid #c3d5ac; overflow-wrap: anywhere;
+}
+.remaked-modern #body [data-remaked-skill-variant] :is(summary, strong, span, div, dl, dt, dd, p) {
+  min-width: 0; max-width: 100%; overflow-wrap: anywhere;
+}
+.remaked-modern #body [data-remaked-skill-variant] dl {
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+}
 .remaked-modern #body [data-remaked-skill-variant] summary {
   display: list-item; cursor: pointer; padding: 7px 2px; line-height: 1.5;
 }
