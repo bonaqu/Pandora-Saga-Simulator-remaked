@@ -5,6 +5,7 @@ import { publicResultLabels, adminResultLabels } from './result-labels.mjs';
 import { publicUiTranslations, adminUiTranslations } from './ui-translations.mjs';
 import { publicLocalization, adminLocalization } from './localization.mjs';
 import { adminLocalizationWorkflow } from './localization-workflow.mjs';
+import { sharedBuild } from './share-links.mjs';
 
 const PRIVATE_CSP = "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'; font-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'";
 
@@ -30,7 +31,9 @@ function secureResponse(response, request, env) {
 async function route(request, env) {
   const url = new URL(request.url);
   if (request.method === 'OPTIONS') {
-    if (request.headers.get('Origin') !== env.PUBLIC_ORIGIN || !['/api/catalog', '/api/catalog/head', '/api/result-labels', '/api/ui-translations', '/api/localization', '/api/auth/login'].includes(url.pathname)) return jsonResponse({ ok: false }, 403);
+    const sharePath=url.pathname==='/api/share'||/^\/api\/share\/[A-Za-z0-9_-]{12}$/.test(url.pathname);
+    if (request.headers.get('Origin') !== env.PUBLIC_ORIGIN || !(sharePath ||
+      ['/api/catalog', '/api/catalog/head', '/api/result-labels', '/api/ui-translations', '/api/localization', '/api/auth/login'].includes(url.pathname))) return jsonResponse({ ok: false }, 403);
     const method = request.headers.get('Access-Control-Request-Method');
     if (!['GET', 'POST'].includes(method)) return jsonResponse({ ok: false }, 403);
     const requestedHeaders = (request.headers.get('Access-Control-Request-Headers') || '').split(',').map(header => header.trim().toLowerCase()).filter(Boolean);
@@ -56,6 +59,10 @@ async function route(request, env) {
   if (url.pathname === '/api/result-labels' && request.method === 'GET') return publicResultLabels(env);
   if (url.pathname === '/api/ui-translations' && request.method === 'GET') return publicUiTranslations(env);
   if (url.pathname === '/api/localization' && request.method === 'GET') return publicLocalization(env);
+  // Anonymous, opt-in short build sharing. Protected by strict origins, safe
+  // code limits and per-IP/global rate budgets in an isolated D1 table.
+  if (url.pathname === '/api/share' || url.pathname.startsWith('/api/share/'))
+    return sharedBuild(request, env);
 
   // Authorize before routing: even a future/new/unknown admin endpoint cannot
   // accidentally bypass the guard. IDDQD is not part of the security boundary.
