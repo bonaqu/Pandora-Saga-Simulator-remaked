@@ -60,6 +60,14 @@
       function(match, before, name){ return before + names[name]; });
   }
 
+  // Legacy source uses HTML entities and occasional <span class="help"> markup.
+  // Parse only original trusted source in an inert template, preserving
+  // visible strings without displaying raw HTML tags or entity encodings.
+  function legacyPlain(value) {
+    var template=document.createElement('template');
+    template.innerHTML=String(value==null?'':value);
+    return template.content.textContent||'';
+  }
   function renderTranslatedTooltip(node, category, index) {
     var i18n=namespace.i18n;
     if (!i18n || !window.Skill || !window.Name) return;
@@ -72,18 +80,18 @@
       var element=rows[row]?.children[index];
       if (element && element.textContent!==value) element.textContent=value;
     };
-    var name=i18n.game('skill_entry.'+category+'.'+index,'') || source[0];
+    var name=i18n.game('skill_entry.'+category+'.'+index,'') || legacyPlain(source[0]);
     set(0,0,name);
-    var groupSource=window.Name.Skill[category]?.[lang+1] || '';
+    var groupSource=legacyPlain(window.Name.Skill[category]?.[lang+1] || '');
     set(1,0,i18n.game('skill.'+category,'') || groupSource);
     // Preserve published custom prerequisites and selected skill profiles.
     // The renderer must not replace them with an old Skill[] template string.
-    var prerequisite=i18n.game('skill_detail.'+category+'.'+index+'.1',source[1]||'');
+    var prerequisite=i18n.game('skill_detail.'+category+'.'+index+'.1',legacyPlain(source[1]||''));
     // All four locales can override every visible header through the
     // authenticated editor. Localized defaults apply only if no override
     // exists; never patch original Name.Learn or Skill[] tables.
     var defaultHeading=function(index,russian){
-      return locale==='ru' ? russian : window.Name.Learn[index]?.[lang]||'';
+      return locale==='ru' ? russian : legacyPlain(window.Name.Learn[index]?.[lang]||'');
     };
     var heading=function(index,russian){
       return i18n.game('calculator.learn.'+index,defaultHeading(index,russian));
@@ -95,9 +103,9 @@
     set(4,0,heading(6,'Необходимо'));
     set(5,0,locale==='ru'?translatedPrerequisites(prerequisite):prerequisite);
     set(6,0,heading(7,'Требования снаряжения'));
-    var equipment=i18n.game('skill_detail.'+category+'.'+index+'.2',source[2]||'');
+    var equipment=i18n.game('skill_detail.'+category+'.'+index+'.2',legacyPlain(source[2]||''));
     set(7,0,locale==='ru'&&equipment==='None'?'Нет':equipment);
-    var description=i18n.game('skill_detail.'+category+'.'+index+'.3','') || source[3]||'';
+    var description=i18n.game('skill_detail.'+category+'.'+index+'.3','') || legacyPlain(source[3]||'');
     set(8,0,description);
   }
 
