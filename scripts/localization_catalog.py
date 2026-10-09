@@ -1,8 +1,8 @@
-"""Runtime approved translation catalog, detached from the legacy Excel editor.
+"""Canonical immutable translation baseline.
 
-The JSON is an immutable recovery baseline exported before any D1 cutover.
-Only admin Cloudflare D1 overrides are editable after migration. Keep a
-All texts are edited using authenticated Cloudflare admin revisions.
+Approved language data ships as reviewed JSON. All new changes are made via
+the authenticated RU/EN/JP/TW Cloudflare admin editor, using D1 revisions.
+No Excel file is required for builds, translations or routine maintenance.
 """
 from __future__ import annotations
 import json
