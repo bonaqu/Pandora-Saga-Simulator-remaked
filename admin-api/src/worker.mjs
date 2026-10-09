@@ -71,7 +71,7 @@ async function route(request, env) {
   }
 
   if (url.pathname === '/health' && request.method === 'GET') return jsonResponse({ ok: true, service: 'pandora-admin-api', apiVersion: 1, workerVersion: env.CF_VERSION_METADATA?.id || null });
-  if (['/admin', '/admin.css', '/admin.js', '/catalog-ui.js', '/localization-console.js', '/localization-bulk.js'].includes(url.pathname) && ['GET', 'HEAD'].includes(request.method)) {
+  if (['/admin', '/admin.css', '/admin.js', '/catalog-ui.js', '/localization-console.js', '/localization-bulk.js', '/localization-drafts.js'].includes(url.pathname) && ['GET', 'HEAD'].includes(request.method)) {
     if (!env.ASSETS) return jsonResponse({ ok: false }, 503);
     const assetUrl = new URL(request.url);
     if (url.pathname === '/admin') assetUrl.pathname = '/admin.html';
