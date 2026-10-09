@@ -632,10 +632,22 @@
     if(!targets.length||targets.length>50){report('Выбери от 1 до 50 черновиков.',true);return;}
     if(!window.confirm('Опубликовать '+targets.length+' сохранённых черновиков как ОДНУ версию каталога? Изменения названий, эффектов и характеристик появятся в Modern. Legacy и старые версии останутся неизменными.'))return;
     batchPending=true;host.inert=true;host.setAttribute('aria-busy','true');
-    var thisGeneration=generation,keepId=current?.edit.id;
+    var thisGeneration=generation,keepId=current?.edit.id,operationId=crypto.randomUUID(),uncertain=false;
     try{
-      var reply=await api('publish-batch',{expectedCatalogRevision:catalogRevision,
-        items:targets.map(function(item){return {id:item.id,expectedDraftVersion:item.version};})});
+      var reply;
+      try{
+        reply=await api('publish-batch',{expectedCatalogRevision:catalogRevision,operationId,
+          items:targets.map(function(item){return {id:item.id,expectedDraftVersion:item.version};})});
+      }catch(error){
+        // A lost HTTP response is not a rollback. The immutable revision note
+        // has the operation ID from the same transaction as the catalog head.
+        report('Ответ публикации не получен. Проверяю результат по коду операции…',true);
+        try{
+          var check=await api('publish-batch-status?operationId='+encodeURIComponent(operationId));
+          if(check.found)reply=check.receipt;
+          else{uncertain=true;throw Error('Нет подтверждённой квитанции операции. '+error.message);}
+        }catch(statusError){uncertain=true;throw statusError;}
+      }
       if(thisGeneration!==generation)return;
       selectedDrafts.clear();
       // The catalog may change after publication; never keep an old draft
@@ -649,7 +661,14 @@
       await Promise.all([loadList(),refreshDrafts()]);
       if(thisGeneration===generation)report('Опубликовано '+reply.count+' черновиков одной версией #'+reply.catalogRevision+'.');
     }catch(error){
-      if(thisGeneration===generation){report('Публикация отменена: '+error.message+' Ничего из выбранного пакета не должно считаться опубликованным без подтверждения сервера.',true);await refreshDrafts();}
+      if(thisGeneration===generation){
+        report(uncertain
+          ? 'Результат публикации НЕ ПОДТВЕРЖДЁН. Код '+operationId+'. Нельзя утверждать, что изменения отменены. Перечитай очередь и ревизию перед повторной публикацией. '+error.message
+          : 'Публикация не состоялась либо отклонена: '+error.message+' Перечитай ревизию и черновики.',
+          true);
+        await refreshDrafts();
+        await loadList();
+      }
     }finally{
       if(thisGeneration===generation){batchPending=false;host.inert=false;host.removeAttribute('aria-busy');renderDraftBoard();}
     }
