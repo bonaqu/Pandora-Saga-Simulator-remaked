@@ -38,6 +38,67 @@
     if (node.style.left !== left + 'px') node.style.left = left + 'px';
     if (node.style.top !== top + 'px') node.style.top = top + 'px';
   }
+  // Modern-only display translation. Retain all original Skill[] data,
+  // prerequisite gates and timings used by the Legacy calculation engine.
+  function translatedPrerequisites(source) {
+    var i18n = namespace.i18n;
+    if (!i18n || i18n.getLocale() !== 'ru') return source;
+    var groups = [];
+    var entries = window.Name?.Skill || [];
+    for (var index = 0; index < entries.length; index++) {
+      var en = entries[index]?.[2], ru = i18n.game('skill.' + index, '');
+      if (en && ru && ru !== en) groups.push([en, ru]);
+    }
+    groups.sort(function(a,b){ return b[0].length - a[0].length; });
+    // Only translate complete group names immediately preceding mastery points:
+    // "Shot 8" -> "Стрельба 8", never mutate Skill[*] requirements.
+    var names = Object.create(null);
+    groups.forEach(function(pair){ names[pair[0]] = pair[1]; });
+    var tokens = groups.map(function(pair){ return pair[0].replace(/[.*+?^$\u007b\u007d()|[\]\\]/g, '\\  function open(icon) {'); });
+    if (!tokens.length) return source;
+    return String(source).replace(new RegExp('(^|[^\\p{L}])(' + tokens.join('|') + ')(?=\\s*\\d)', 'gu'),
+      function(match, before, name){ return before + names[name]; });
+  }
+
+  function renderTranslatedTooltip(node, category, index) {
+    var i18n=namespace.i18n;
+    if (!i18n || !window.Skill || !window.Name) return;
+    var locale=i18n.getLocale(), lang=Number(window.Flag?.[0] || 0);
+    var source=window.Skill[lang]?.[category]?.[index];
+    if (!source) return;
+    var rows=Array.from(node.children).filter(function(el){return el.tagName==='UL';});
+    if (rows.length < 9) return;
+    var set=function(row,index,value){
+      var element=rows[row]?.children[index];
+      if (element && element.textContent!==value) element.textContent=value;
+    };
+    var name=i18n.game('skill_entry.'+category+'.'+index,'') || source[0];
+    set(0,0,name);
+    var groupSource=window.Name.Skill[category]?.[lang+1] || '';
+    set(1,0,i18n.game('skill.'+category,'') || groupSource);
+    if(locale==='ru'){
+      set(1,1,'Расход ОМ');
+      set(2,0,'Скорость применения');
+      set(2,2,'Откат');
+      set(3,0,'Длительность');
+      set(4,0,'Необходимо');
+      set(5,0,translatedPrerequisites(source[1]||''));
+      set(6,0,'Требования снаряжения');
+      set(7,0,source[2]==='None'?'Нет':source[2]||'');
+    } else {
+      set(1,1,window.Name.Learn[1]?.[lang]||'');
+      set(2,0,window.Name.Learn[2]?.[lang]||'');
+      set(2,2,window.Name.Learn[3]?.[lang]||'');
+      set(3,0,window.Name.Learn[5]?.[lang]||'');
+      set(4,0,window.Name.Learn[6]?.[lang]||'');
+      set(5,0,source[1]||'');
+      set(6,0,window.Name.Learn[7]?.[lang]||'');
+      set(7,0,source[2]||'');
+    }
+    var description=i18n.game('skill_detail.'+category+'.'+index+'.3','') || source[3]||'';
+    set(8,0,description);
+  }
+
   function open(icon) {
     cancelTimers();
     if (active?.icon === icon) return;
@@ -52,7 +113,9 @@
     node.dataset.remakedSkillTooltip = ''; node.setAttribute('role', 'tooltip');
     if (portal) document.body.appendChild(node);
     else node.setAttribute('popover', 'manual');
-    window.DDMOpen(Number(parts[1]), Number(parts[2])); node.style.display = 'block';
+    window.DDMOpen(Number(parts[1]), Number(parts[2]));
+    renderTranslatedTooltip(node, Number(parts[1]), Number(parts[2]));
+    node.style.display = 'block';
     active = { icon: icon, node: node, portal: portal };
     icon.setAttribute('aria-describedby', node.id);
     if (!portal) node.showPopover();
@@ -78,6 +141,7 @@
         icon.removeAttribute('onmouseover'); icon.removeAttribute('onmouseout');
         node.removeAttribute('onmouseover'); node.removeAttribute('onmouseout');
       }
+      renderTranslatedTooltip(node,Number(parts[1]),Number(parts[2]));
       var label = node.firstElementChild?.textContent.trim();
       if (icon.getAttribute('aria-label') !== label) icon.setAttribute('aria-label', label);
     });
