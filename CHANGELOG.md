@@ -1,5 +1,23 @@
 # Changelog
 
+## Modern 3.46 — переводы только через админку, 2026-10-09
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Завершён отказ от Excel как файла переводов: утверждённый набор из 2 920 исходных записей сохранён в проверенном JSON, новые изменения на RU/EN/JP/TW публикуются через защищённую админку.
+- Резервная копия Excel остаётся доступной в истории Git для восстановления, но больше не входит в текущий репозиторий и не публикуется на сайте.
+- Вместо устаревших Excel-тестов проверяются стабильные ID, набор языков и соответствие плейсхолдеров исходному тексту. Игровые формулы и сохранённые билды не изменены.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Retired the legacy XLSX file and editing scripts in favor of the approved 2,920-entry JSON snapshot and protected four-language admin revisions.
+- Preserved the final spreadsheet in repository Git history for disaster recovery; it is no longer shipped or required for builds.
+- Replaced spreadsheet mutation tests with stable ID, placeholder and language coverage checks; calculator mechanics are unchanged.
+<!-- /release-notes:en -->
+
 ## Modern 3.45 — единый редактор переводов, подсказки навыков и описания, 2026-10-09
 
 <!-- release-notes:ru -->

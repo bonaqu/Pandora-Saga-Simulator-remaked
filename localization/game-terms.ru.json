@@ -11,7 +11,7 @@
       "js/create.js",
       "modern/calculator-labels.js"
     ],
-    "policy": "source rows only; approved Russian text lives in localization/translations.xlsx"
+    "policy": "source rows only; approved translations are in localization/approved-translations.v1.json and authenticated Cloudflare D1"
   },
   "terms": [
     {

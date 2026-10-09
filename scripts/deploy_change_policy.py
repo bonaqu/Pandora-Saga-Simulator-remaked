@@ -38,7 +38,7 @@ SAFE_PREFIXES = (
 
 TRANSLATION_RUNTIME_EXACT = {
     "localization/game-terms.ru.json",
-    "localization/translations.xlsx",
+    "localization/approved-translations.v1.json",
     "localization/ui.en.json",
 }
 

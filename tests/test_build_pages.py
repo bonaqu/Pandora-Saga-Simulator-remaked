@@ -6,7 +6,8 @@ import tempfile
 import unittest
 
 from scripts.build_pages import build_pages, _materialize_modern_guild_resistance
-from scripts.translation_workbook import load_editable_catalogs, load_translation_catalogs
+from scripts.localization_catalog import load_migrated_catalogs as load_editable_catalogs
+from scripts.localization_catalog import load_migrated_catalogs
 
 
 LEGACY_HTML = '''<!DOCTYPE html><html><head><title>Pandora Saga Simulator</title></head><body>
@@ -135,7 +136,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             localization = root / "localization"
             localization.mkdir()
             repository_localization = pathlib.Path(__file__).resolve().parents[1] / "localization"
-            for name in ("ui.en.json", "game-terms.ru.json", "translations.xlsx", "approved-translations.v1.json"):
+            for name in ("ui.en.json", "game-terms.ru.json", "approved-translations.v1.json"):
                 shutil.copy2(repository_localization / name, localization / name)
             generated = root / "data" / "generated"
             generated.mkdir(parents=True)
@@ -310,8 +311,8 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             build_pages(root, output)
             locales = (output / "modern" / "locales.js").read_text(encoding="utf-8")
             self.assertIn('"controls.interfaceLanguage": "Interface language"', locales)
-            ui_russian, game_russian, _ = load_translation_catalogs(root)
-            editable = load_editable_catalogs(root)
+            editable = load_migrated_catalogs(root)
+            ui_russian, game_russian = editable.ui_russian, editable.game_russian
             parsed_locales = json.loads(locales.split("Object.freeze(", 1)[1].removesuffix(");\n"))
             self.assertEqual(parsed_locales["ru"], ui_russian)
             self.assertEqual(parsed_locales["jp"], editable.ui_japanese)

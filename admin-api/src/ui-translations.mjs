@@ -52,7 +52,7 @@ export async function adminUiTranslations(request, env) {
     const selected = await rows(env);
     const known = new Map(selected.map(row => [row.locale + '\0' + row.id, row]));
     return jsonResponse({
-      ok: true, schemaVersion: 1, source: 'translations.xlsx',
+      ok: true, schemaVersion: 1, source: 'approved-translations.v1.json',
       items: LOCALES.flatMap(locale => KEY_LIST.map(id => {
         const row = known.get(locale + '\0' + id);
         const overridden = Boolean(row?.text);

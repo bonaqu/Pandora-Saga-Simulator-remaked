@@ -121,7 +121,7 @@ async function main() {
     source: {
       legacy_engine: '2.00',
       generated_from: ['index.html', 'js/ini.js', 'js/item.js', 'js/skill.js', 'js/option.js', 'js/create.js', 'modern/calculator-labels.js'],
-      policy: 'source rows only; approved Russian text lives in localization/translations.xlsx'
+      policy: 'source rows only; approved translations are in localization/approved-translations.v1.json and authenticated Cloudflare D1'
     },
     terms
   };

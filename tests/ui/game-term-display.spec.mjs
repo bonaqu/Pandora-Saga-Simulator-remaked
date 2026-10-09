@@ -107,33 +107,33 @@ test('translated skill descriptions and units leave their numeric values unchang
   expect(await immutableState(page)).toEqual(before);
 });
 
-test('an actual edited workbook publishes calculator labels and names together', async ({ browser }) => {
+test('an edited approved JSON snapshot publishes calculator labels and names together', async ({ browser }) => {
   const sourceLocales = await publishedLocaleFingerprints();
   let fixture, server, context;
   try {
     fixture = await test.step('Copy isolated published artifact', () => createPublishedFixture(test.info()));
     const source = path.join(fixture.directory, 'source'), site = fixture.site;
-    await test.step('Copy source workbook', async () => {
+    await test.step('Copy canonical source catalogs', async () => {
       await fs.mkdir(path.join(source, 'localization'), { recursive: true });
-      for (const file of ['translations.xlsx', 'ui.en.json', 'game-terms.ru.json']) {
+      for (const file of ['approved-translations.v1.json', 'ui.en.json', 'game-terms.ru.json']) {
         await fs.copyFile(path.resolve('localization', file), path.join(source, 'localization', file));
       }
     });
-    await test.step('Compile edited workbook and service worker', async () => execFileSync('python', ['-c', [
-      'import pathlib, sys',
-      'sys.path.insert(0, str(pathlib.Path.cwd() / "tests"))',
-      'from test_translation_workbook import set_russian_cell, set_translation_cell',
+    await test.step('Compile edited approved JSON and service worker', async () => execFileSync('python', ['-c', [
+      'import pathlib, sys, json',
       'from scripts.build_pages import _materialize_locales, _materialize_game_terms, _materialize_service_worker',
-      'from scripts.translation_workbook import load_editable_catalogs',
+      'from scripts.localization_catalog import load_migrated_catalogs',
       'root, site = map(pathlib.Path, sys.argv[1:])',
-      'workbook = root / "localization/translations.xlsx"',
-      'set_russian_cell(workbook, "race.0", "Имя из таблицы")',
-      'set_russian_cell(workbook, "calculator.text.0", "Подпись из таблицы")',
-      'set_translation_cell(workbook, "race.0", "Custom Human", "I")',
-      'set_translation_cell(workbook, "equipment.0.1", "Owner\'s custom weapon", "I")',
-      'set_translation_cell(workbook, "calculator.text.0", "Custom race label", "I")',
-      'set_translation_cell(workbook, "header.project", "Community project", "I")',
-      'catalogs = load_editable_catalogs(root)',
+      'source = root / "localization/approved-translations.v1.json"',
+      'data = json.loads(source.read_text(encoding="utf8"))',
+      'data["game"]["ru"]["race.0"] = "Имя из каталога"',
+      'data["game"]["ru"]["calculator.text.0"] = "Подпись из каталога"',
+      'data["game"]["en"]["race.0"] = "Custom Human"',
+      `data["game"]["en"]["equipment.0.1"] = "Owner's custom weapon"`,
+      'data["game"]["en"]["calculator.text.0"] = "Custom race label"',
+      'data["ui"]["en"]["header.project"] = "Community project"',
+      'source.write_text(json.dumps(data, ensure_ascii=False), encoding="utf8")',
+      'catalogs = load_migrated_catalogs(root)',
       '_materialize_locales(root, site, catalogs.ui_russian, catalogs.ui_japanese, catalogs.ui_traditional_chinese, catalogs.ui_english)',
       '_materialize_game_terms(site, catalogs.game_russian, catalogs.game_english)',
       '_materialize_service_worker(pathlib.Path.cwd(), site)'
@@ -145,9 +145,9 @@ test('an actual edited workbook publishes calculator labels and names together',
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(`http://127.0.0.1:${server.address().port}/?ui=ru`);
-    await expect(page.locator('#StatusRace')).toHaveText('Имя из таблицы');
-    await expect(page.locator('#Text_0')).toHaveText('Подпись из таблицы');
-    await expect(page.locator('[data-remaked-summary-race]')).toHaveText('Имя из таблицы');
+    await expect(page.locator('#StatusRace')).toHaveText('Имя из каталога');
+    await expect(page.locator('#Text_0')).toHaveText('Подпись из каталога');
+    await expect(page.locator('[data-remaked-summary-race]')).toHaveText('Имя из каталога');
     const original = await page.evaluate(() => ({
       source: JSON.stringify({ Name, EquipData, SoulData, Skill }), payload: Store(),
       jp: Name.Race[0][0], tw: Name.Race[0][2]
@@ -162,7 +162,7 @@ test('an actual edited workbook publishes calculator labels and names together',
     await page.locator('[data-remaked-language="2"]').click();
     await expect(page.locator('#StatusRace')).toHaveText(original.tw);
     await page.locator('[data-remaked-ui-locale="ru"]').click();
-    await expect(page.locator('#StatusRace')).toHaveText('Имя из таблицы');
+    await expect(page.locator('#StatusRace')).toHaveText('Имя из каталога');
     expect(await page.evaluate(() => PandoraRemaked.i18n.game('equipment.0.1', 'fallback'))).toBe("Owner's custom weapon");
     expect(await page.evaluate(() => ({ source: JSON.stringify({ Name, EquipData, SoulData, Skill }), payload: Store() })))
       .toEqual({ source: original.source, payload: original.payload });
@@ -201,7 +201,7 @@ test('inherited labels, qualified effects, hints and implicit option values deco
   expect(await immutableState(page)).toEqual(before);
 });
 
-test('requested Russian calculator labels, skill groups and effect hints render from the workbook', async ({ page }) => {
+test('requested Russian calculator labels, skill groups and effect hints render from the approved JSON baseline', async ({ page }) => {
   await page.goto('/');
   const before = await immutableState(page);
   await page.locator('[data-remaked-ui-locale="ru"]').click();

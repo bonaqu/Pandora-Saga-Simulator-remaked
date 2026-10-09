@@ -158,7 +158,7 @@ class RepositoryDocsTests(unittest.TestCase):
         self.assertIn(f"Modern **{latest_version}**", russian)
         self.assertIn("## Modern 3.11", changelog)
         self.assertIn("LOCALIZATION_FOR_BEGINNERS.ru.md", russian)
-        self.assertIn("translations.xlsx", english)
+        self.assertIn("approved-translations.v1.json", english)
         self.assertIn("2 920", guide)
         self.assertIn("RU", guide)
         self.assertIn("EN", guide)
@@ -168,8 +168,8 @@ class RepositoryDocsTests(unittest.TestCase):
         self.assertIn("Опубликовать", guide)
         self.assertIn("не читает Excel", guide)
         self.assertIn("game-term-display.js", architecture)
-        self.assertIn("translations.xlsx", architecture)
-        self.assertIn("translations.xlsx", deployment)
+        self.assertIn("approved-translations.v1.json", architecture)
+        self.assertIn("approved-translations.v1.json", deployment)
 
     def test_header_uses_single_dynamic_two_part_version_badge(self):
         shell = self.read("modern/app-shell.js")

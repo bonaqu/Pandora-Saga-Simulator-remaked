@@ -50,7 +50,7 @@ async function stored(env) {
 }
 
 // Only customizations are sent to the public simulator. Every other caption
-// comes from the versioned translation workbook bundled with the site.
+// comes from the immutable approved JSON catalog bundled with the site.
 export async function publicResultLabels(env) {
   const overrides = await stored(env);
   return jsonResponse({
@@ -63,7 +63,7 @@ export async function adminResultLabels(request, env) {
   if (request.method === 'GET') {
     const overrides = await stored(env);
     return jsonResponse({
-      ok: true, schemaVersion: 1, source: 'translations.xlsx',
+      ok: true, schemaVersion: 1, source: 'approved-translations.v1.json',
       items: IDS.map(id => {
         const row = overrides.get(id);
         return {
