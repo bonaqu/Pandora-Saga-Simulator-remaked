@@ -644,7 +644,7 @@ test('existing/new gear adds enhancement bonuses on top of baseline without doub
           const first=tokens();
           EquipCheck();
           const second=tokens();
-          output[level]={first,second};
+          output[level]={first,second,slots:Status.Equip.map(state=>[Number(state[0]),Number(state[3])])};
         }
         return output;
       };
@@ -660,7 +660,7 @@ test('existing/new gear adds enhancement bonuses on top of baseline without doub
     for(const level of [0,1,2,3,4,6,8,10]){
       const base=baseline[kind][level],after=withBonus[kind][level];
       const delta=sum(after.first)-sum(base.first);
-      expect(delta,kind+' +'+level+' got '+JSON.stringify(after.first)+' vs '+JSON.stringify(base.first))
+      expect(delta,kind+' +'+level+' got '+JSON.stringify(after.first)+' vs '+JSON.stringify(base.first)+' equipped '+JSON.stringify(after.slots))
         .toBe(withBonus.formula[[0,1,2,3,4,6,8,10].indexOf(level)]);
       expect(after.second,kind+' duplicated after repeated EquipCheck at +'+level).toEqual(after.first);
     }
