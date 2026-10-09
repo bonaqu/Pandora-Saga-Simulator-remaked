@@ -395,11 +395,15 @@
     description.id = 'remaked-item-detail-' + (++previewSequence);
     summary.setAttribute('aria-controls', description.id);
     var name = button.querySelector('.remaked-search-result-name').textContent;
-    description.appendChild(element('strong', '', item.equippedName ? item.equippedName.replace(item.name, name) : name));
-    if (item.category) description.appendChild(element('p', '', item.category));
-    item.baseStats.forEach(function (stat) { description.appendChild(element('p', '', stat.label + ': ' + stat.value)); });
-    if (item.level != null) description.appendChild(element('p', '', t('search.level', { level: item.level }, 'Lv ' + item.level)));
-    if (item.sockets != null) description.appendChild(element('p', '', t('search.sockets', { count: item.sockets }, 'Soul sockets: ' + item.sockets)));
+    description.appendChild(element('strong', 'remaked-item-title', item.equippedName ? item.equippedName.replace(item.name, name) : name));
+    var metadata = element('div', 'remaked-item-metadata');
+    if (item.category) metadata.appendChild(element('p', 'remaked-item-meta-line', item.category));
+    item.baseStats.forEach(function (stat) {
+      metadata.appendChild(element('p', 'remaked-item-meta-line', stat.label + ': ' + stat.value));
+    });
+    if (item.level != null) metadata.appendChild(element('p', 'remaked-item-meta-line', t('search.level', { level: item.level }, 'Lv ' + item.level)));
+    if (item.sockets != null) metadata.appendChild(element('p', 'remaked-item-meta-line', t('search.sockets', { count: item.sockets }, 'Soul sockets: ' + item.sockets)));
+    description.appendChild(metadata);
     if (item.souls.length) {
       var sockets = element('div', 'remaked-item-sockets');
       item.souls.forEach(function (soul, index) {
@@ -410,13 +414,15 @@
         socket.setAttribute('aria-label', soulLabel + ' ' + (index + 1) + ': ' + label);
         socket.setAttribute('role', 'img'); socket.title = label;
         sockets.appendChild(socket);
-        if (soul.id > 0) description.appendChild(element('p', '', soulLabel + ' ' + (index + 1) + ': ' + label));
+        if (soul.id > 0) description.appendChild(element('p', 'remaked-item-soul-bonus', soulLabel + ' ' + (index + 1) + ': ' + label));
       });
-      description.insertBefore(sockets, description.children[1]);
+      description.insertBefore(sockets, metadata.nextSibling);
     }
-    if (item.gem) description.appendChild(element('p', '', item.gem));
+    if (item.gem) description.appendChild(element('p', 'remaked-item-gem', item.gem));
     if (item.classes.length) description.appendChild(element('p', 'remaked-item-classes', item.classes.join(' · ')));
-    item.descriptions.forEach(function (text) { description.appendChild(element('p', '', text)); });
+    item.descriptions.forEach(function (text) {
+      description.appendChild(element('p', 'remaked-item-prose', text));
+    });
     if (item.calculationWarning) description.appendChild(element('p', 'remaked-item-warning', item.calculationWarning));
     description.appendChild(translatedElement('small', '', 'search.itemSource', 'Item descriptions from Legacy 2.00; not calculated build deltas.'));
     details.appendChild(description); row.appendChild(details);
