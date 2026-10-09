@@ -48,9 +48,17 @@ test('Updates provides an accessible on-site release panel without altering the 
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText(await page.evaluate(() => PandoraRemakedVersion.ui));
   await expect(dialog).toContainText('Legacy engine: 2.00');
+  const technicalRelease = await page.evaluate(() =>
+    PandoraRemakedVersion.ui !== PandoraRemakedRelease.userVersion);
   const latestEnglishNote = await page.evaluate(() => PandoraRemakedRelease.highlights.en[0]);
-  await expect(dialog.locator('li').first()).toHaveText(latestEnglishNote);
-  await expect(dialog.locator('li')).toHaveCount(await page.evaluate(() => PandoraRemakedRelease.highlights.en.length));
+  if (technicalRelease) {
+    await expect(dialog.locator('li')).toHaveCount(1);
+    await expect(dialog.locator('li').first()).toHaveText('Internal technical improvements.');
+    await expect(dialog).not.toContainText('catalog_head.snapshot_json');
+  } else {
+    await expect(dialog.locator('li').first()).toHaveText(latestEnglishNote);
+    await expect(dialog.locator('li')).toHaveCount(await page.evaluate(() => PandoraRemakedRelease.highlights.en.length));
+  }
   await expect(dialog.locator('li').first()).toHaveCSS('font-size', '15px');
   await expect(dialog.locator('li').first()).toHaveCSS('letter-spacing', 'normal');
   await expect(dialog.getByRole('link', { name: 'Full changelog', exact: true })).toHaveAttribute('href', /CHANGELOG\.en\.md$/);
@@ -67,8 +75,13 @@ test('Updates provides an accessible on-site release panel without altering the 
   await expect(russianDialog.getByRole('link', { name: 'Полный список изменений' }))
     .toHaveAttribute('href', /CHANGELOG\.ru\.md$/);
   await expect(russianDialog.locator('[data-remaked-user-version]')).toContainText('Последние изменения для пользователей:');
-  await expect(russianDialog.locator('li').first())
-    .toHaveText(await page.evaluate(() => PandoraRemakedRelease.highlights.ru[0]));
+  if (technicalRelease) {
+    await expect(russianDialog.locator('li')).toHaveCount(1);
+    await expect(russianDialog.locator('li').first()).toHaveText('Выполнены внутренние технические улучшения.');
+  } else {
+    await expect(russianDialog.locator('li').first())
+      .toHaveText(await page.evaluate(() => PandoraRemakedRelease.highlights.ru[0]));
+  }
   await page.keyboard.press('Escape');
   expect(await page.evaluate(() => Store())).toBe(before);
   expect(errors).toEqual([]);
