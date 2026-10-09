@@ -316,7 +316,7 @@
       for (var [key, value] of Object.entries(words)) {
         if (!Object.prototype.hasOwnProperty.call(catalogs.en || {}, key) ||
             typeof value !== 'string' || !value.trim() || value.length > 300 ||
-            /[\\x00-\\x1f\\x7f<>]/.test(value)) return false;
+            /[\x00-\x1f\x7f<>]/.test(value)) return false;
         next[locale][key] = value;
       }
     }
