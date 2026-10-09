@@ -279,7 +279,7 @@ def _materialize_modern_astir_rules(root: pathlib.Path, output: pathlib.Path) ->
         raise ValueError("Modern Astir rules expected an unmodified equip.js source copy")
 
     first = "  if (To['N'] == 'アスティアンコート' && Gl['N'] == 'アスティアングローブ'"
-    last = "\\n\\n// ----- 武器"
+    last = "\n\n// ----- 武器"
     if copied.count(first) != 1:
         raise ValueError("Modern Astir rules could not locate unique first set")
     start = copied.index(first)
@@ -290,7 +290,7 @@ def _materialize_modern_astir_rules(root: pathlib.Path, output: pathlib.Path) ->
     if original_sets.count("  if (To['N'] ==") != 16 or " // ----- " in original_sets:
         raise ValueError("Unexpected Legacy Astir set section: review before updating")
     # Keep preceding non-Astir set bonuses and the following weapon rules.
-    patched = copied[:start] + "  // Modern: no Astir full-outfit bonuses in the current game.\\n" + copied[end:]
+    patched = copied[:start] + "  // Modern: no Astir full-outfit bonuses in the current game.\n" + copied[end:]
     (output / "js" / "equip.js").write_text(patched, encoding="utf-8")
 
 
