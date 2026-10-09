@@ -611,6 +611,29 @@ test('late item response cannot replace a newer selection, and saving freezes fi
   expect(errors).toEqual([]);
 });
 
+
+test('admin workflow exposes skill creation from a selected template and four-language coverage', async ({ page }) => {
+  const { errors } = await openConsole(page);
+  await expect(page.getByRole('navigation', { name: 'Быстрый переход по админке' })).toBeVisible();
+  await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('active');
+  const create = page.getByRole('button', { name: 'Новый навык из выбранного', exact: true });
+  await expect(create).toBeDisabled();
+  await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill('skill_entry.0.0');
+  await page.locator('.catalog-entry').first().click();
+  await expect(create).toBeEnabled();
+  await expect(page.locator('[data-language-coverage]')).toContainText('Название:');
+  await create.click();
+  await expect(create).toBeDisabled();
+  await expect(page.locator('.catalog-editor')).toContainText('Это отдельный новый навык');
+  await page.locator('[data-field="names"][data-language="en"]').fill('New supported skill variant');
+  await page.locator('[data-field="names"][data-language="ru"]').fill('Новый навык');
+  await expect(page.locator('[data-language-coverage]')).toContainText('RU');
+  await page.locator('[data-field="names"][data-language="en"]').focus();
+  await page.keyboard.press('Control+s');
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  expect(errors).toEqual([]);
+});
+
 test('active and passive editors expose distinct real fields and publish their own typed data', async ({ page }, testInfo) => {
   const { sqlite, errors } = await openConsole(page);
   await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('active');
