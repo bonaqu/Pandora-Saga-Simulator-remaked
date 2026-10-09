@@ -18,7 +18,7 @@ test('a late initial session check preserves credentials already entered into th
       return route.fulfill({ status: 401, json: { ok: false } });
     }
     const asset = path === '/admin' ? 'admin.html' : path.slice(1);
-    if (!['admin.html', 'admin.css', 'admin.js', 'catalog-ui.js', 'localization-console.js', 'ui-translations.js', 'result-labels.js'].includes(asset)) return route.fulfill({ status: 404 });
+    if (!['admin.html', 'admin.css', 'admin.js', 'catalog-ui.js', 'localization-console.js','localization-bulk.js', 'ui-translations.js', 'result-labels.js'].includes(asset)) return route.fulfill({ status: 404 });
     return route.fulfill({ contentType: asset.endsWith('.css') ? 'text/css' : asset.endsWith('.js') ? 'text/javascript' : 'text/html', body: fs.readFileSync(new URL('../../admin-api/public/' + asset, import.meta.url), 'utf8') });
   });
   await page.goto(admin + '/admin');
@@ -34,7 +34,7 @@ test('an origin-denied login explains the safe retry without showing or storing 
     const path = new URL(route.request().url()).pathname;
     if (path === '/api/session') return route.fulfill({ status: 401, json: { ok: false } });
     const asset = path === '/admin' ? 'admin.html' : path.slice(1);
-    if (!['admin.html', 'admin.css', 'admin.js', 'catalog-ui.js', 'localization-console.js', 'ui-translations.js', 'result-labels.js'].includes(asset)) return route.fulfill({ status: 404 });
+    if (!['admin.html', 'admin.css', 'admin.js', 'catalog-ui.js', 'localization-console.js','localization-bulk.js', 'ui-translations.js', 'result-labels.js'].includes(asset)) return route.fulfill({ status: 404 });
     return route.fulfill({ contentType: asset.endsWith('.css') ? 'text/css' : asset.endsWith('.js') ? 'text/javascript' : 'text/html', body: fs.readFileSync(new URL('../../admin-api/public/' + asset, import.meta.url), 'utf8') });
   });
   await page.goto(admin + '/admin?status=origin');
@@ -95,7 +95,7 @@ async function openConsole(page, drafts = []) {
       } catch (error) { return route.fulfill({ status: error.status || 503, json: { ok: false, message: error.message } }); }
     }
     const asset = path === '/admin' ? 'admin.html' : path.slice(1);
-    if (!['admin.html', 'admin.css', 'admin.js', 'catalog-ui.js', 'localization-console.js', 'ui-translations.js', 'result-labels.js'].includes(asset)) return route.fulfill({ status: 404 });
+    if (!['admin.html', 'admin.css', 'admin.js', 'catalog-ui.js', 'localization-console.js','localization-bulk.js', 'ui-translations.js', 'result-labels.js'].includes(asset)) return route.fulfill({ status: 404 });
     return route.fulfill({ contentType: asset.endsWith('.css') ? 'text/css' : asset.endsWith('.js') ? 'text/javascript' : 'text/html', body: fs.readFileSync(new URL('../../admin-api/public/' + asset, import.meta.url), 'utf8') });
   });
   const errors = []; page.on('pageerror', error => errors.push(error.message));
