@@ -160,14 +160,16 @@ export async function adminLocalization(request,env) {
         effective,legacyValue:older,override:override?.text||'',version:override?.version||0,
         updatedAt:override?.updated_at||null,origin};
     };
-    const matched=RECORDS.filter(row=>row.scope===scope&&(group==='all'||groupOf(row.kind)===group))
-      .map(displayRow).filter(row=>
+    const scoped=RECORDS.filter(row=>row.scope===scope&&(group==='all'||groupOf(row.kind)===group))
+      .map(displayRow);
+    const coverage={total:scoped.length,translated:scoped.filter(row=>row.origin!=='fallback').length};
+    const matched=scoped.filter(row=>
       (status==='all'||status==='missing'&&row.origin==='fallback'||
         status==='published'&&['admin','previous-admin'].includes(row.origin)) &&
       (!q || [row.id,row.kind,row.source.en,row.effective,row.legacyValue].some(value=>
         String(value||'').toLocaleLowerCase().includes(q))));
     const items=matched.slice(page*pageSize,(page+1)*pageSize);
-    return jsonResponse({ok:true,schemaVersion:1,locale,scope,group,status,page,pageSize,total:matched.length,
+    return jsonResponse({ok:true,schemaVersion:1,locale,scope,group,status,coverage,page,pageSize,total:matched.length,
       counts:{ui:RECORDS.filter(r=>r.scope==='ui').length,game:RECORDS.filter(r=>r.scope==='game').length},
       items});
   }
