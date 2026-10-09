@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.63 — 2026-10-10
+
+### For users
+
+- Astir equipment no longer gains obsolete full-outfit set bonuses. Only each piece's own attributes and refinement effects apply.
+- Outdated full-set bonus notes are hidden from Astir item descriptions across site languages.
+- Removed the redundant Legacy 2.00 footer from all equipment, weapon, accessory and Soul detail previews.
+
+### Development and technical changes
+
+- Modern packaging excludes the 16 outdated Astir outfit conditions while keeping the archived Legacy engine byte-identical and retaining unrelated set/refinement rules.
+- Hide stale localized Astir set notes at presentation time without deleting published D1 data. Add precise per-piece vs complete-outfit tests and tooltip regressions.
+
 ## Modern 3.62 — 2026-10-10
 
 ### For users
