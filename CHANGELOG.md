@@ -1,5 +1,26 @@
 # Changelog
 
+## Modern 3.43 — единая геометрия усилений, выбор Чести и читаемые сопротивления, 2026-10-09
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Значения СД, Благословение и Песнопения закреплены в одинаковых местах для всех четырёх языков; подписи не плавают при смене языка. Адаптация зависит от ширины панели.
+- Исправлена подсветка пассивок Чести: изначально не выбрано ничего, можно выбрать только одну, повторное нажатие снимает её выбор.
+- Заголовок Honor переведён как «Честь», названия пяти сопротивлений сокращены без потери смысла, «Сопр. тьмы» исправлено на «Сопр. тьме».
+- Убрано зачёркивание у доступных для выбора усилений в современном интерфейсе. Расчёты не менялись.
+- Улучшена навигация по 43 редактируемым подписям в админке и добавлена ссылка на полную Excel-таблицу переводов.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Stabilized the three Enhancement parameter/input positions across all four languages and made popup layout responsive to actual panel width.
+- Fixed Honor selection highlighting: none selected by default, one at a time, and click again to clear.
+- Clarified Russian resistance labels and removed misleading Legacy strikethroughs from selectable Modern enhancements without changing damage formulas.
+- Added filtering and clear workbook guidance to the admin result-label editor.
+<!-- /release-notes:en -->
+
 ## Modern 3.42 — русские гильдейские бонусы и точный расчёт сопротивления, 2026-10-09
 
 <!-- release-notes:ru -->
