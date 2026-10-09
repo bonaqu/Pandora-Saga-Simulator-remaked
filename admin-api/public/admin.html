@@ -9,6 +9,7 @@
   <script src="/catalog-ui.js" defer></script>
   <script src="/result-labels.js" defer></script>
   <script src="/ui-translations.js" defer></script>
+  <script src="/localization-console.js" defer></script>
   <script src="/admin.js" defer></script>
 </head>
 <body>
@@ -29,10 +30,15 @@
         <div class="workspace-toolbar"><h2>CATALOG CONTROL</h2><button id="logout" type="button">LOGOUT</button></div>
         <details class="capability-note"><summary>Что можно редактировать · возможности и ограничения</summary><p>Редакторы: 242 текста Modern UI (RU/EN), 43 подписи расчёта; экипировка и души; 28 классов (LP/MP); 18 расовых пассивок; 178 активных навыков (текст, MP и время); 33 пассивки (текст и дополнительные бонусы). Можно создать новый навык по исходному шаблону изучения; его встроенная механика не копируется. Новые классы, собственные условия изучения, замена встроенных классовых пассивок и новая боевая механика ещё в разработке. Сохранённые билды обновляются явно, без незаметной смены расчёта.</p></details>
         <a class="editor-guide" href="https://github.com/bonaqu/Pandora-Saga-Simulator-remaked/blob/bonaqu_projects/docs/ADMIN_EDITING_FOR_BEGINNERS.ru.md" target="_blank" rel="noopener noreferrer">Как редактировать — пошаговая инструкция</a>
-        <div id="result-label-editor"></div>
-        <div id="ui-translation-editor"></div>
+        <div id="localization-console"></div>
         <details class="capability-note">
-          <summary>Переводы остальных частей интерфейса · Excel и приоритет админки</summary>
+          <summary>Дополнительные редакторы прежних переводов · совместимость</summary>
+          <p>Существующие редакторы оставлены для безопасного переноса опубликованных правок. Новые переводы вводи в едином центре выше. Каталог ниже по-прежнему редактирует игровые параметры, классы, расы и эффекты.</p>
+          <div id="result-label-editor"></div>
+          <div id="ui-translation-editor"></div>
+        </details>
+        <details class="capability-note">
+          <summary>История переноса и резервные источники</summary>
           <p>Редактор характеристик позволяет изменять 43 русские подписи расчёта. Редактор Modern UI — 242 интерфейсных текста на русском и английском с поиском, историей версии и возвратом к Excel. Для остальных игровых названий и подсказок используйте соответствующий редактор каталога или translations.xlsx. Ни одно из этих текстовых изменений не меняет числовые эффекты. Никогда не редактируйте стабильные ID или исходные колонки Excel.</p>
           <p><a class="editor-guide" href="https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/localization/translations.xlsx" target="_blank" rel="noopener noreferrer">Скачать полную таблицу переводов Excel</a> · <a class="editor-guide" href="https://github.com/bonaqu/Pandora-Saga-Simulator-remaked/blob/bonaqu_projects/docs/LOCALIZATION_FOR_BEGINNERS.ru.md" target="_blank" rel="noopener noreferrer">Как безопасно обновить переводы</a></p>
         </details>
