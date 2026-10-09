@@ -2,6 +2,20 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.61 — 2026-10-09
+
+### For users
+
+- Item descriptions now separate sentences, stats and enhancement conditions into readable lines without changing numerical values or canonical item names.
+- Hover cards for equipment, weapons, jewelry and Souls have an in-game-inspired dark layout with legible metadata and distinguishable empty/filled Soul sockets.
+- Mouse, keyboard and mobile previews retain their existing behavior.
+
+### Development and technical changes
+
+- Add a non-publishing live multilingual catalog tooltip preview for items and Soul slots; preserve separate server validation for numeric effects.
+- Pin Astir source equipment IDs, native refinement milestone behavior and torso-plus-legs Astir Dress handling in UI regressions.
+- Keep canonical calculation data and original game item names unchanged.
+
 ## Modern 3.60 — 2026-10-09
 
 ### For users
