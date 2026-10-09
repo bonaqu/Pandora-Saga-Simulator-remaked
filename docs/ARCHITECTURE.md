@@ -64,7 +64,7 @@ Legacy JavaScript remains the sole calculation/data source of truth. The generat
 
 ### Translator input
 
-`localization/translations.xlsx` is the translator's editable display-text source. The Pages builder validates all 2,865 rows against `ui.en.json` and the machine-exported Legacy term index, then generates `modern/locales.js` and `modern/game-terms.js`. Its 198 UI strings, 1,617 core game terms, 259 calculator labels, 158 hints and 633 skill-detail fields share stable IDs. Column H supplies Russian; column I supplies optional English overrides. `modern/calculator-labels.js` provides the exporter and display adapter with one source-to-DOM map. `modern/game-term-display.js` decorates Modern native lists, selected names, inherited labels and skill popups after Legacy redraws and build loads. It writes approved input as literal text, preserves control values and existing help nodes, and falls back to source labels for blank cells. It does not replace Legacy globals or calculation inputs. Modern LOG is removed; museum output stays original. Published CMS names/descriptions are a separate revision-pinned data layer.
+The protected RU/EN/JP/TW admin is the only translation editor. A verified immutable 2,920-ID snapshot in `localization/approved-translations.v1.json` holds the approved migration baseline, while Cloudflare D1 stores versioned per-ID edits and remains backward compatible with older publications. The Pages builder reads this JSON (never Excel) to generate `modern/locales.js` and `modern/game-terms.js`. `modern/game-term-display.js` translates Modern native lists, labels and skill popups while leaving the Legacy calculation engine and saved build data untouched.
 
 The user's UI 2026.09.11 correction unifies the visible language control. EN selects source 1 and English UI; RU selects source 1 and Russian UI; JP/TW select source 0/2 and English UI. Internal i18n/Legacy APIs remain separate; stored UI-locale compatibility is retained. `adapter.readItemDetails` reads descriptions, socket count, class flags, literal base ATK/DEF and equipped customization from source arrays; `EquipOption` provides the existing enhanced name. Other candidates do not inherit current upgrades. Source descriptions and names are rendered as text, not executable HTML. Conditional formulas, final enhancement bonuses, client icons/prices/flavor absent from the source are not invented.
 
@@ -72,7 +72,7 @@ Build sharing uses validated `#build=` payloads through the safe-load adapter. A
 
 Modern search, build manager, compare and Updates use native modal dialogs. The browser makes background content inert; a shared boundary handler wraps Tab/Shift+Tab at the dialog's focusable ends. Equipment uses an anchored nonmodal dropdown instead; a delayed preview cancels on deliberate scrolling and review never equips an item. Closing returns focus to the opener. Escape dismisses a focused stat tooltip before its parent dialog. A first-focusable skip link moves to the calculator main landmark. These are tested DOM/keyboard contracts, not a claim of full screen-reader conformance.
 
-The service worker cache key includes a deterministic fingerprint of its precached files. Updating only workbook translations changes the generated catalogs and cache key. Modern 3.11 checks the worker script without reusing its HTTP cache, activates real updates automatically and uses fresh navigation HTML to bridge clients still controlled by an older cached runtime. Normal navigation/refresh, returning to the tab or coming back online can therefore adopt the fresh cache without requiring Ctrl+F5.
+The service worker cache key includes a deterministic fingerprint of its precached files. Publishing an updated immutable JSON baseline changes the generated catalogs and cache key; ordinary admin translations arrive from the public localized-override API without requiring a rebuild. Modern 3.11 checks the worker script without reusing its HTTP cache, activates real updates automatically and uses fresh navigation HTML to bridge clients still controlled by an older cached runtime. Normal navigation/refresh, returning to the tab or coming back online can therefore adopt the fresh cache without requiring Ctrl+F5.
 
 ```mermaid
 sequenceDiagram
@@ -122,7 +122,7 @@ into Build Manager, removing the second export/import interface. Modern replaces
 only the Code Load DOM callback with `builds.importPreparedPayload`. It validates/rolls back
 through the existing adapter and persists Modern autosave separately; it never
 calls `File('CodeLoad')` or reads/writes compressed Legacy File slots. Source
-label anchors remain available for the same translation workbook. Inline
+label anchors remain available for stable translation IDs. Inline
 feedback, input validation/focus and explicit unavailable-import fallback do
 not change `File`, `Expand`, `Store`, codecs or museum behavior.
 Versioned/context-bearing codes export the complete `PS3` envelope instead of
@@ -139,7 +139,7 @@ Three archived codec files (`base64.js`, `rawinflate.js`, `rawdeflate.js`) are C
 
 Modern can consume immutable public catalog revisions alongside the preserved Legacy source. This layer exists so verified data corrections can be published without rewriting the historical calculator files.
 
-The translation workbook supports optional English display overrides in column I and Russian in H; A:G remain preserved source references.
+The old workbook was retired after its approved language values were validated against the versioned JSON migration baseline. New RU/EN/JP/TW wording is edited only in the authenticated admin, with immutable baseline fallback and versioned Cloudflare D1 overrides.
 
 Catalog revisions are immutable public snapshots. Existing saved/shared builds keep their pin; explicit **Update current build** checks the current public head and preflights item, class/race compatibility and occupied Soul sockets before any runtime mutation. Named records are not rewritten automatically.
 
