@@ -82,8 +82,8 @@ test('admin UI drafts survive search, pagination and locale changes, then save s
 test('mobile admin UI translation cards fit the viewport',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   // Pure static smoke prevents regressions of the responsive CSS contract.
-  await page.setContent('<link rel="stylesheet" href="'+origin+'/admin.css"><section id="ui-translation-editor"><div class="ui-translation-row" data-ui-unsaved="true"><div class="ui-translation-identity"><strong>long.interface.translation.name</strong></div><input value="Русский перевод"><span>Черновик</span><div class="ui-translation-actions"><button>Сохранить</button><button>Вернуть Excel</button></div></div></section>');
   await page.route(origin+'/admin.css',route=>route.fulfill({contentType:'text/css',body:fs.readFileSync(new URL('../../admin-api/public/admin.css',import.meta.url),'utf8')}));
+  await page.setContent('<link rel="stylesheet" href="'+origin+'/admin.css"><section id="ui-translation-editor"><div class="ui-translation-row" data-ui-unsaved="true"><div class="ui-translation-identity"><strong>long.interface.translation.name</strong></div><input value="Русский перевод"><span>Черновик</span><div class="ui-translation-actions"><button>Сохранить</button><button>Вернуть Excel</button></div></div></section>');
   const widths=await page.evaluate(()=>({viewport:document.documentElement.clientWidth,content:document.documentElement.scrollWidth}));
   expect(widths.content).toBeLessThanOrEqual(widths.viewport+1);
 });
