@@ -2,7 +2,7 @@ import english from '../../localization/ui.en.json' with { type: 'json' };
 import sourceTerms from '../../localization/game-terms.ru.json' with { type: 'json' };
 import approved from '../../localization/approved-translations.v1.json' with { type: 'json' };
 import curated from '../../localization/curated-runtime-defaults.ru.v1.json' with { type: 'json' };
-import { baselineRecords } from './catalog-baseline.mjs';
+import { baselineRecords, baselineById } from './catalog-baseline.mjs';
 import { CatalogError } from './catalog-model.mjs';
 import { jsonResponse } from './auth.mjs';
 
@@ -53,6 +53,41 @@ for (const record of baselineRecords) {
   }
 }
 const RECORDS=[...registry.values()].sort((a,b)=>a.scope.localeCompare(b.scope)||a.id.localeCompare(b.id));
+
+// New catalog entries are not a second translation database. This read-only
+// projection points to the same published catalog snapshot that Modern loads.
+// Edits always go through the catalog's guarded draft/publish API, never
+// localization_overrides. No old/source entries are reinterpreted here.
+function catalogManagedRows(snapshot,locale,revision=0){
+  const rows=[];
+  for(const item of snapshot){
+    const identity=item?.identity, edit=item?.edit, id=identity?.id;
+    if(typeof id!=='string'||!id||baselineById.has(id)||
+       !['equipment','soul','active','passive'].includes(identity.kind)||!edit)continue;
+    const fields=['equipment','soul'].includes(identity.kind)
+      ? ['names','description','notes','acquisition','modifiers']
+      : ['names','description'];
+    for(const field of fields){
+      const translations=edit[field];
+      if(!translations||typeof translations!=='object'||Array.isArray(translations)||
+         !LOCALES.some(lang=>isText(translations[lang])&&translations[lang].trim()))continue;
+      const term=field==='names'?id:id+'.'+field;
+      if(registry.has(keyOf('game',term)))continue;
+      const actual=translations[locale];
+      const source=Object.fromEntries(LOCALES.map(lang=>[lang,
+        isText(translations[lang])?translations[lang]:'']));
+      const hasLocale=isText(actual)&&Boolean(actual.trim());
+      const baseline=hasLocale?actual:source.en;
+      rows.push({id:term,scope:'game',kind:identity.kind+(field==='names'?'':'.'+field),
+        locale,source,baseline,baselineOrigin:hasLocale?'catalog':'fallback',
+        effective:baseline,legacyValue:'',override:'',version:0,updatedAt:null,
+        origin:hasLocale?'catalog':'fallback',managedBy:'catalog',catalogId:id,
+        catalogKind:identity.kind,catalogField:field,catalogRevision:revision});
+    }
+  }
+  return rows;
+}
+
 const GROUPS=new Set(['all','skills','equipment','souls','classes','races','stats','other']);
 function groupOf(kind) {
   if(kind==='skill'||kind==='skill_entry'||kind==='skill_detail'||kind.startsWith('active.')||kind.startsWith('passive.'))return 'skills';
@@ -110,10 +145,14 @@ async function legacyOverrides(env,scope=null,locale=null) {
       : Promise.resolve(null)
   ]);
   const values=new Map();
+  // Reuse the catalog snapshot already read for legacy overrides. Do not
+  // double-fetch the full JSON blob when displaying the unified index.
+  values.catalogEntries=JSON.parse(head?.snapshot_json||'[]');
+  values.catalogRevision=Number(head?.version)||0;
   for(const row of ui.results)values.set(keyOf('ui',row.id)+'\0'+row.locale,row.text);
   for(const row of result.results) if(row.ru&&row.ru!=='<excel-baseline>')
     values.set(keyOf('game',row.id)+'\0ru',row.ru);
-  for(const entry of JSON.parse(head?.snapshot_json||'[]')){
+  for(const entry of values.catalogEntries){
     const edit=entry.edit||{},id=entry.identity?.id;
     if(!id)continue;
     const add=(term,fields)=>{
@@ -187,15 +226,19 @@ export async function adminLocalization(request,env) {
     };
     const scoped=RECORDS.filter(row=>row.scope===scope&&(group==='all'||groupOf(row.kind)===group))
       .map(displayRow);
+    if(scope==='game'){
+      const managed=catalogManagedRows(legacy.catalogEntries,locale,legacy.catalogRevision);
+      scoped.push(...managed.filter(row=>group==='all'||groupOf(row.kind)===group));
+    }
     const coverage={total:scoped.length,translated:scoped.filter(row=>row.origin!=='fallback').length};
     const matched=scoped.filter(row=>
       (status==='all'||status==='missing'&&row.origin==='fallback'||
-        status==='published'&&['admin','previous-admin'].includes(row.origin)) &&
+        status==='published'&&['admin','previous-admin','catalog'].includes(row.origin)) &&
       (!q || [row.id,row.kind,row.source.en,row.effective,row.legacyValue].some(value=>
         String(value||'').toLocaleLowerCase().includes(q))));
     const items=matched.slice(page*pageSize,(page+1)*pageSize);
     return jsonResponse({ok:true,schemaVersion:1,locale,scope,group,status,coverage,page,pageSize,total:matched.length,
-      counts:{ui:RECORDS.filter(r=>r.scope==='ui').length,game:RECORDS.filter(r=>r.scope==='game').length},
+      counts:{ui:RECORDS.filter(r=>r.scope==='ui').length,game:RECORDS.filter(r=>r.scope==='game').length+(scope==='game'?catalogManagedRows(legacy.catalogEntries,locale,legacy.catalogRevision).length:0)},
       items});
   }
   if(request.method!=='POST')return jsonResponse({ok:false,message:'Method not allowed'},405);
