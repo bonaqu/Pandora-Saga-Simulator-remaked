@@ -108,3 +108,40 @@ test('previously translated skill names and descriptions appear in admin without
   assert.equal(resolved.description.ru,'Выстрел горящей стрелой, наносящий двойной урон.');
   assert.equal(manual.description.ru,'');
 });
+
+
+test('refinement bonus rules are additive, validated and do not alter base calculation code',()=>{
+  const edit=draft();
+  edit.upgradeBonuses=[{stat:11,value:1,unit:'flat',every:2,from:2,to:10}];
+  const validated=validateDraft(edit,identity);
+  const compiled=compileRecord(validated,identity,source);
+  assert.equal(compiled.calculationCode,source.calculation_code);
+  assert.deepEqual(compiled.upgradeBonuses,[{stat:11,value:1,unit:'flat',every:2,from:2,to:10}]);
+  assert.equal(compiled.names.en,'Sword');
+  assert.equal(Object.hasOwn(compileRecord(validateDraft(draft(),identity),identity,source),'upgradeBonuses'),false);
+});
+
+test('new equipment supports four language fields and enhancement bonuses; invalid/proc effects fail closed',()=>{
+  const id={id:'modern.equipment.bonus',kind:'equipment',category:30,index:99};
+  const item=draftFromSource(null,'equipment');
+  item.id=id.id;item.category=30;item.names={en:'Blessed Gloves',ru:'Благословенные перчатки',jp:'祝福された手袋',tw:'祝福手套'};
+  item.upgradeBonuses=[{stat:11,value:1,unit:'flat',from:2,every:2,to:10}];
+  const compiled=compileRecord(validateDraft(item,id),id,null);
+  assert.equal(compiled.engineId,300099);
+  assert.equal(compiled.upgradeBonuses.length,1);
+  assert.equal(compiled.names.jp,'祝福された手袋');
+  const incorrect=[
+    [{stat:11,value:1,unit:'flat',from:0,every:2,to:10}],
+    [{stat:11,value:1,unit:'flat',from:2,every:0,to:10}],
+    [{stat:11,value:1,unit:'flat',from:2,every:2,to:11}],
+    [{stat:11,value:1,unit:'flat',from:2,every:2,to:10,proc:'freeze'}],
+    [{stat:999,value:1,unit:'flat',from:2,every:2,to:10}],
+    [{stat:11,value:0,unit:'flat',from:2,every:2,to:10}],
+    [{stat:11,value:1,unit:'percent',from:2,every:2,to:10}],
+    Array(13).fill({stat:11,value:1,unit:'flat',from:2,every:2,to:10})
+  ];
+  for(const upgradeBonuses of incorrect)assert.throws(()=>validateDraft({...item,upgradeBonuses},id));
+  const soulId={id:'modern.soul.test',kind:'soul',category:null,index:185};
+  const soul=draftFromSource(null,'soul');soul.id=soulId.id;soul.names.en='Soul';
+  assert.throws(()=>validateDraft({...soul,upgradeBonuses:item.upgradeBonuses},soulId),/Soul refinement/i);
+});
