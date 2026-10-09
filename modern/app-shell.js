@@ -268,7 +268,16 @@
     var list = updatesDialog.querySelector('[data-remaked-updates-list]');
     if (!list) return;
     list.replaceChildren();
-    var notes = latestReleaseHighlights();
+    // A technical-only deployment advances the deployed UI version without
+    // pretending its private/admin changes are user-facing release notes.
+    // Keep the last real user version visible above, but give the current
+    // deployment its own neutral, localized public summary.
+    var technicalOnly = release && release.userVersion &&
+      window.PandoraRemakedVersion &&
+      String(window.PandoraRemakedVersion.ui) !== String(release.userVersion);
+    var notes = technicalOnly
+      ? [lang === 'ru' ? 'Выполнены внутренние технические улучшения.' : 'Internal technical improvements.']
+      : latestReleaseHighlights();
     if (notes.length) {
       notes.forEach(function (note) {
         var item = document.createElement('li');
