@@ -271,7 +271,7 @@ async function publishedBatchReceipt(env,operationId){
     'SELECT version,impact_version AS impactRevision,note FROM catalog_revisions WHERE note LIKE ? ORDER BY version DESC LIMIT 1'
   ).bind('%'+suffix).first();
   if(!row||!row.note.endsWith(suffix))return null;
-  const count=/^Publish (\\d+) selected catalog drafts /.exec(row.note);
+  const count=/^Publish (\d+) selected catalog drafts /.exec(row.note);
   if(!count)return null;
   return {ok:true,catalogRevision:row.version,impactRevision:row.impactRevision,
     operationId,count:Number(count[1]),publishedIds:[],recovered:true};
