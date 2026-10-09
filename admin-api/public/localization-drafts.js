@@ -6,7 +6,7 @@ function el(tag,text,klass){
   if(klass)e.className=klass;
   return e;
 }
-function mount(host,{api,onPublished,onJump}){
+function mount(host,{api,onPublished,onJump,onQueueChanged}){
   let drafts=new Map(),selected=new Set(),busy=false,active=true;
   const key=item=>item.scope+'\0'+item.id+'\0'+item.locale;
   const wrapper=el('details',undefined,'localization-queue');
@@ -24,7 +24,7 @@ function mount(host,{api,onPublished,onJump}){
       drafts=new Map(reply.items.map(item=>[key(item),item]));
       selected=new Set([...selected].filter(x=>drafts.has(x)));
       summary.textContent='Сохранённые черновики переводов: '+reply.count;
-      render();
+      render();onQueueChanged?.();
     }catch(error){if(active)message('Не удалось перечитать черновики: '+error.message,true);}
   }
   function render(){
