@@ -9,7 +9,7 @@ const validVersion=value=>Number.isSafeInteger(value)&&value>=0;
 const slots=value=>(value.match(/\{[A-Za-z0-9_]+\}/g)||[]).sort().join('|');
 const validIdentity=x=>x&&typeof x==='object'&&!Array.isArray(x)&&
   ['ui','game'].includes(x.scope)&&['ru','en','jp','tw'].includes(x.locale)&&validId(x.id)&&
-  Boolean(localizationEntry(x.scope,x.id));
+  /^[a-z][a-z0-9._-]{0,159}$/.test(x.id);
 const identityKey=x=>x.scope+'\0'+x.id+'\0'+x.locale;
 const SQL_ERROR_GUARD="json_extract('INVALID-OPERATION','$')";
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -25,9 +25,9 @@ function shape(data,fields){
   if(!data||typeof data!=='object'||Array.isArray(data)||
     Object.keys(data).sort().join(',')!==fields.slice().sort().join(','))fail('Invalid translation workflow request');
 }
-function textCheck(identity,value){
+function textCheck(identity,value,entry){
   if(!validText(value)||!value.trim())fail('Translation must contain safe nonempty text');
-  const entry=localizationEntry(identity.scope,identity.id);
+  entry=entry||localizationEntry(identity.scope,identity.id);
   if(!entry)fail('Unknown translation ID',404);
   if(identity.scope==='ui'&&slots(value)!==slots(entry.source.en))fail('Template placeholders must match original');
   return value.trim();
@@ -49,8 +49,8 @@ async function saveDraft(request,env){
   shape(body,['scope','id','locale','value','expectedVersion','expectedEffective','expectedDraftVersion']);
   if(!validIdentity(body)||!validVersion(body.expectedVersion)||
      !validVersion(body.expectedDraftVersion)||!validText(body.expectedEffective))fail('Invalid translation draft');
-  const value=textCheck(body,body.value);
   const state=(await localizationEffectiveSnapshot(env)).get(body.scope,body.id,body.locale);
+  const value=textCheck(body,body.value,state?.entry);
   if(!state||state.version!==body.expectedVersion||state.effective!==body.expectedEffective)
     fail('Translation changed elsewhere; refresh before saving draft',409);
   const prior=await env.DB.prepare('SELECT version,source_version,source_text FROM localization_drafts WHERE scope=? AND term_id=? AND locale=?')
@@ -120,7 +120,7 @@ async function publishBatch(request,env){
       if(!saved||saved.version!==requestItem.expectedDraftVersion||
         saved.source_version!==state.version||saved.source_text!==state.effective)
         fail('Draft changed or published value is newer: '+requestItem.id,409);
-      value=textCheck(requestItem,saved.text);draftVersion=saved.version;
+      value=textCheck(requestItem,saved.text,state.entry);draftVersion=saved.version;
     }else{
       if(!validVersion(requestItem.expectedVersion)||!validText(requestItem.expectedEffective)||
         state.version!==requestItem.expectedVersion||state.effective!==requestItem.expectedEffective)
@@ -128,7 +128,7 @@ async function publishBatch(request,env){
       const pending=await env.DB.prepare('SELECT version FROM localization_drafts WHERE scope=? AND term_id=? AND locale=?')
         .bind(requestItem.scope,requestItem.id,requestItem.locale).first();
       if(pending)fail('Stored draft exists for '+requestItem.id+'; review the draft first',409);
-      value=textCheck(requestItem,requestItem.value);
+      value=textCheck(requestItem,requestItem.value,state.entry);
     }
     if(value===state.effective)fail('Translation already matches published text: '+requestItem.id);
     validated.push({scope:requestItem.scope,id:requestItem.id,locale:requestItem.locale,
