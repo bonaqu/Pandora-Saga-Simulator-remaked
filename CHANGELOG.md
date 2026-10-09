@@ -1,5 +1,24 @@
 # Changelog
 
+## Modern 3.51 — единая админка переводов и публикация каталога пакетами, 2026-10-09
+
+<!-- release-notes:ru -->
+### Кратко для игроков
+
+- Старые дублирующиеся редакторы подписей характеристик и интерфейса убраны из админки: все утверждённые переводы доступны в едином центре, с категорией «Характеристики» для расчётных подписей.
+- В игровом каталоге появился общий список сохранённых черновиков всех категорий с подсветкой, счётчиком, выбором и открытием каждого предмета.
+- Выбранные черновики можно публиковать одной версией каталога, с защитой от конкурирующих изменений и общей проверкой данных. Сохранённые билды получают новую ревизию влияния только при изменении игровых характеристик.
+- Старые опубликованные переводы и API совместимости продолжают работать без удаления существующих данных.
+<!-- /release-notes:ru -->
+
+<!-- release-notes:en -->
+### Player highlights
+
+- Removed duplicate legacy translation editors from the admin UI. Approved calculator captions and interface strings remain accessible in the unified four-language localization console.
+- The catalog now provides a cross-category saved-draft queue, counts and highlighting, open-item navigation and guarded one-revision publication of up to 50 selected drafts.
+- Historical published translations and compatibility APIs are retained; existing game mechanics, build impact rules and earlier revisions remain intact.
+<!-- /release-notes:en -->
+
 ## Modern 3.50 — надёжный сброс переводов, 2026-10-09
 
 <!-- release-notes:ru -->

@@ -639,3 +639,38 @@ test('active and passive editors expose distinct real fields and publish their o
   await page.setViewportSize({ width: 390, height: 844 }); expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath('passive-editor-mobile.png'), fullPage: true }); expect(errors).toEqual([]);
 });
+
+
+test('saved catalog drafts from different items appear in a shared queue and publish as one revision',async({page})=>{
+  const {sqlite,errors}=await openConsole(page);
+  const search=page.getByRole('searchbox',{name:'Поиск в каталоге'});
+  const board=page.locator('.catalog-draft-board');
+  await expect(board.locator('summary')).toContainText('Сохранённые черновики каталога: 0');
+  for(const [index,id] of ['equipment.0.1','equipment.0.2'].entries()){
+    await search.fill(id);
+    await page.locator('.catalog-entry[data-record-id="'+id+'"]').click();
+    await page.locator('.catalog-editor [data-field="names"][data-language="ru"]').fill('Черновик для выпуска '+index);
+    await page.getByRole('button',{name:'Сохранить черновик',exact:true}).click();
+    await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+    await expect(board.locator('summary')).toContainText('Сохранённые черновики каталога: '+(index+1));
+    await expect(page.locator('.catalog-entry[data-record-id="'+id+'"]')).toHaveAttribute('data-has-draft','true');
+  }
+  expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(0);
+  await board.locator('summary').click();
+  await expect(board.locator('.catalog-draft-entry')).toHaveCount(2);
+  await board.getByRole('button',{name:'Выбрать все'}).click();
+  await expect(board).toContainText('Выбрано: 2 из 2');
+  await board.getByRole('button',{name:'Снять выделение'}).click();
+  await expect(board).toContainText('Выбрано: 0 из 2');
+  await board.getByRole('button',{name:'Выбрать все'}).click();
+  page.once('dialog',dialog=>dialog.accept());
+  await board.getByRole('button',{name:'Опубликовать выбранные'}).click();
+  await expect(board.locator('summary')).toContainText('Сохранённые черновики каталога: 0');
+  await expect(page.locator('#catalog-state')).toContainText('Опубликовано 2 черновиков одной версией #1');
+  const published=JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head').get().snapshot_json);
+  expect(published).toHaveLength(2);
+  expect(published.map(x=>x.edit.names.ru).sort()).toEqual(['Черновик для выпуска 0','Черновик для выпуска 1']);
+  expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_revisions').get().n).toBe(1);
+  expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts WHERE is_dirty=1').get().n).toBe(0);
+  expect(errors).toEqual([]);
+});
