@@ -157,9 +157,11 @@ export async function adminLocalization(request,env) {
   if(request.method!=='POST')return jsonResponse({ok:false,message:'Method not allowed'},405);
   const input=await parseInput(request);
   if(!input || Array.isArray(input) || typeof input!=='object'||
-    Object.keys(input).sort().join(',')!=='expectedVersion,id,locale,scope,value'||
+     !['expectedVersion,id,locale,scope,value',
+      'expectedEffective,expectedVersion,id,locale,scope,value'].includes(Object.keys(input).sort().join(','))||
     !['ui','game'].includes(input.scope)||!LOCALES.includes(input.locale)||
     !registry.has(keyOf(input.scope,input.id))||!isText(input.value)||
+    (Object.hasOwn(input,'expectedEffective')&&!isText(input.expectedEffective))||
     !Number.isSafeInteger(input.expectedVersion)||input.expectedVersion<0||input.expectedVersion>1000000000)
     fail('Invalid translation edit');
   const entry=registry.get(keyOf(input.scope,input.id)),value=input.value.trim();
@@ -169,6 +171,15 @@ export async function adminLocalization(request,env) {
     .bind(input.scope,input.id,input.locale).first();
   const version=existing?.version||0;
   if(version!==input.expectedVersion)fail('Translation changed elsewhere; refresh before saving',409);
+  // A bulk preview uses an exact effective-text lease in addition to the
+  // version. Protect previously published legacy overrides that have no new
+  // localization_overrides version of their own.
+  if(Object.hasOwn(input,'expectedEffective')){
+    const oldText=existing
+      ? existing.text || entry.baseline[input.locale]
+      : (await legacyOverrides(env)).get(keyOf(input.scope,input.id)+'\0'+input.locale)||entry.baseline[input.locale];
+    if(oldText!==input.expectedEffective)fail('Translation changed since preview; review before saving',409);
+  }
   if(existing?.text===value)
     return jsonResponse({ok:true,scope:input.scope,id:input.id,locale:input.locale,version,override:value});
   // An empty value on top of a previous editor publication is a real reset.
