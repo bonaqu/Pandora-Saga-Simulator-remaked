@@ -63,9 +63,21 @@
     window.Status.Equip.forEach(function (state) {
       var record = ITEM_FORTH[String(Number(state[0]))];
       if (!record) return;
-      var plus = Math.max(0, Math.min(10, Number(state[3]) || 0));
-      var effects = record.levels[String(plus)] || record.levels[plus];
-      (effects || []).forEach(function (effect) { pushMapped(effect, touched); });
+      var plus = Math.max(0, Math.min(10, Math.trunc(Number(state[3]) || 0)));
+      // A server Forth row is the COMPLETE active effect snapshot at a
+      // milestone, not a one-level proc. Missing intermediate rows retain the
+      // latest achieved snapshot (e.g. +3 keeps the +2 bonus). Do not sum
+      // previous milestones: +4 already contains the cumulative +4 effect.
+      // Explicit empty arrays intentionally clear the previous bonus.
+      var levels = record.levels || {};
+      var effects = [];
+      for (var milestone = plus; milestone >= 0; milestone--) {
+        if (Object.prototype.hasOwnProperty.call(levels, String(milestone))) {
+          effects = levels[String(milestone)] || [];
+          break;
+        }
+      }
+      effects.forEach(function (effect) { pushMapped(effect, touched); });
     });
   }
   function applyCustomUpgradeBonuses(touched) {
