@@ -513,3 +513,68 @@ test('full guild localization and real damage reduction keep stats and selection
   await expect(page.locator('#SelBuffClan_0 option[value="12"]')).toHaveText('Clan Lv12');
   await expect(page.locator('#SelBuffClan_5 option[value="1"]')).toHaveText('Physical Resist Lv1');
 });
+
+
+test('enhancement captions keep fixed positions for RU EN JP TW and Honor selects one passive or none', async ({page}) => {
+  await page.setViewportSize({width: 1920, height: 1080});
+  await page.goto('/');
+  await page.locator('[data-remaked-tab="4"]').click();
+  const rectangles = [];
+  for (const locale of ['ru', 'en', 'ja', 'zh-TW']) {
+    const localeButton = {'ru':'ru','en':'en','ja':'jp','zh-TW':'tw'}[locale];
+    await page.locator('[data-remaked-ui-locale="' + localeButton + '"]').click();
+    const sample = await page.evaluate(() => {
+      const items = [0,1,2].map(i => {
+        const label = document.getElementById('Text_' + (i+21));
+        const input = document.getElementById('InBuff_' + i);
+        const textRange = document.createRange(); textRange.selectNodeContents(label);
+        const textRect = textRange.getBoundingClientRect();
+        const labelRect = label.getBoundingClientRect();
+        const inputRect = input.getBoundingClientRect();
+        const buttonRect = document.querySelector('#BUFFView [data-remaked-buff-column]:nth-child(' + (i+1) + ') [data-remaked-buff]')?.getBoundingClientRect();
+        return {text:label.textContent.trim(), left:inputRect.left, right:inputRect.right,
+          labelRight:labelRect.right, textWidth:textRect.width, labelWidth:labelRect.width,
+          labelHeight:labelRect.height, textHeight:textRect.height, buttonLeft:buttonRect?.left};
+      });
+      return items;
+    });
+    for (const item of sample) {
+      expect(item.textWidth, JSON.stringify({locale,item})).toBeLessThanOrEqual(item.labelWidth+1);
+      expect(item.textHeight, JSON.stringify({locale,item})).toBeLessThanOrEqual(item.labelHeight+1);
+    }
+    rectangles.push(sample);
+  }
+  for (const sample of rectangles.slice(1))
+    for (let i=0;i<3;i++) {
+      expect(Math.abs(sample[i].left-rectangles[0][i].left)).toBeLessThan(1);
+      expect(Math.abs(sample[i].right-rectangles[0][i].right)).toBeLessThan(1);
+      expect(Math.abs(sample[i].labelRight-rectangles[0][i].labelRight)).toBeLessThan(1);
+    }
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+  await expect(page.locator('#Text_25')).toHaveText('Честь');
+  const first = page.locator('#BuffHonor_0 [data-remaked-buff]');
+  const second = page.locator('#BuffHonor_1 [data-remaked-buff]');
+  await expect(first).toHaveAttribute('aria-pressed', 'false');
+  await expect(second).toHaveAttribute('aria-pressed', 'false');
+  await first.click();
+  await expect(first).toHaveAttribute('aria-pressed', 'true');
+  await expect(second).toHaveAttribute('aria-pressed', 'false');
+  await second.click();
+  await expect(first).toHaveAttribute('aria-pressed', 'false');
+  await expect(second).toHaveAttribute('aria-pressed', 'true');
+  await second.click();
+  await expect(first).toHaveAttribute('aria-pressed', 'false');
+  await expect(second).toHaveAttribute('aria-pressed', 'false');
+  expect(await page.evaluate(() => Flag.Honor)).toBe(0);
+  // The Legacy crossed-out classification must not disguise a usable buff.
+  await expect(page.locator('#Buff_14_2')).toBeVisible();
+  const decoration = await page.locator('#Buff_14_2 [id^="TextBuff_"]').evaluate(el => getComputedStyle(el).textDecorationLine);
+  expect(decoration).toBe('none');
+
+  for (const [id, name] of [
+    ['Buff_18_8','Сопр. огню'],['Buff_18_9','Сопр. льду'],
+    ['Buff_18_10','Сопр. молнии'],['Buff_20_7','Сопр. тьме'],
+    ['Buff_21_7','Сопр. чарам']
+  ]) await expect(page.locator('#'+id+' [data-remaked-buff]')).toContainText(name);
+  await expect(page.locator('#TextStatus_39')).toContainText('Сопр. тьме');
+});
