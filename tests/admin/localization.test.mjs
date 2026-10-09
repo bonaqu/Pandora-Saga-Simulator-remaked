@@ -208,7 +208,7 @@ test('preview-guarded reset uses the exact checked language and stable item ID',
 
 test('guarded publication supports long Unicode before/after pairs under the 4000-character field limit',async()=>{
   const env=fixture(),id='skill_detail.7.5.3';
-  const original='Воин '.repeat(650),replacement='Герой '.repeat(640);
+  const original='Воин '.repeat(650).trim(),replacement='Герой '.repeat(640).trim();
   const saved=await (await adminLocalization(post({
     scope:'game',id,locale:'ru',value:original,expectedVersion:0
   }),env)).json();
