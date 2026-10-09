@@ -1,5 +1,28 @@
 # Changelog
 
+## Modern 3.62 — стабильные бонусы заточки между уровнями, 2026-10-10
+
+<!-- release-notes:user:ru -->
+- Исправлены бонусы заточки снаряжения, включая астирские комплекты: эффекты, полученные на +2, +4 и других порогах, теперь сохраняются на промежуточных уровнях.
+- Расчёт учитывает действующий достигнутый порог без двойного начисления характеристик при повторном пересчёте билда.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Fixed gear refinement bonuses, including Astir sets: bonuses earned at +2, +4 and other milestones now remain active at intermediate refinement levels.
+- Recalculating the build preserves the latest reached milestone without double-counting effects.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Таблица серверных Forth-эффектов хранит полные снимки бонусов для отдельных порогов, а не только одноразовые изменения; поиск ближайшего пройденного порога заменил поиск исключительно точного уровня.
+- Явные пустые снимки обнуляют прежние эффекты. Исходные данные каталога, формулы Legacy, D1 и ID вещей не изменяются.
+- Регрессионные тесты проверяют все уровни +0…+10 у астирских курток, платья и штанов, включая отсутствие повторного начисления.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Treat server Forth milestone rows as complete active snapshots and retain the nearest reached snapshot when an intermediate enhancement level has no row; explicit empty snapshots still clear previous bonuses.
+- Keep the D1 catalog, Legacy formulas and item identities untouched. Cover all +0…+10 levels across multiple Astir items, including idempotent recalculation.
+<!-- /admin-notes:en -->
+
 ## Modern 3.61 — читаемые игровые описания снаряжения, 2026-10-09
 
 <!-- release-notes:user:ru -->
