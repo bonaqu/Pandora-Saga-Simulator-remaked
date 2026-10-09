@@ -143,7 +143,7 @@ test('public skill additions are explicit keyboard details with literal names, t
     const metrics = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth,
       cards: [...document.querySelectorAll('[data-remaked-skill-variant]')].map(node => ({ width: node.clientWidth, scroll: node.scrollWidth })) }));
     expect(metrics.document).toBeLessThanOrEqual(metrics.viewport);
-    for (const card of metrics.cards) expect(card.scroll).toBeLessThanOrEqual(card.width);
+    for (const card of metrics.cards) expect(card.scroll, 'Custom skill card exceeds its inner width on a narrow viewport').toBeLessThanOrEqual(card.width);
     await page.screenshot({ path: testInfo.outputPath('skill-additions-' + width + '.png'), fullPage: true });
   }
   await page.evaluate(code => PandoraRemaked.adapter.load(code), original);
