@@ -1,5 +1,31 @@
 # Changelog
 
+## Modern 3.57 — изменения для пользователей и проверка публикаций, 2026-10-09
+
+<!-- release-notes:user:ru -->
+- Раздел «Что нового» теперь использует подпись «Последние изменения для пользователей» вместо «для игроков».
+- Русский и английский журналы обновлений получили единые названия разделов: «Для пользователей» и «Разработка и технические изменения».
+- История предыдущих выпусков сохранена; новое оформление отделяет изменения сайта от технических записей без смешения языков.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- What's New now says “Latest changes for users” instead of the narrower “player update”.
+- Russian and English release histories use consistent “For users” and “Development and technical changes” sections.
+- Historical releases remain available with separate user-facing and technical change records.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Для новых релизов закреплён единый формат `release-notes:user:ru/en`; старые `release-notes:player` продолжают читаться как архивные.
+- Сборка отклоняет односторонние или пустые языковые блоки нового пользовательского релиза и запрещает устаревшие маркеры в новых выпусках.
+- Проверен старый Draft PR #123: его базовая ветка устарела, поэтому повторное объединение поверх актуального кода запрещено до отдельного разбора оставшихся изменений.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Require `release-notes:user:ru/en` for new releases, while keeping historical player-tagged notes readable.
+- Reject incomplete localized user releases and obsolete markers for new versions during builds.
+- Audited legacy draft PR #123; its outdated base must not be merged over newer implementations without isolating remaining work.
+<!-- /admin-notes:en -->
+
 ## Modern 3.56 — локализованная история обновлений и удобство редактора, 2026-10-09
 
 <!-- release-notes:player:ru -->
@@ -91,7 +117,7 @@
 ## Modern 3.51 — единая админка переводов и публикация каталога пакетами, 2026-10-09
 
 <!-- admin-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Старые дублирующиеся редакторы подписей характеристик и интерфейса убраны из админки: все утверждённые переводы доступны в едином центре, с категорией «Характеристики» для расчётных подписей.
 - В игровом каталоге появился общий список сохранённых черновиков всех категорий с подсветкой, счётчиком, выбором и открытием каждого предмета.
@@ -100,7 +126,7 @@
 <!-- /admin-notes:ru -->
 
 <!-- admin-notes:en -->
-### Player highlights
+### User highlights
 
 - Removed duplicate legacy translation editors from the admin UI. Approved calculator captions and interface strings remain accessible in the unified four-language localization console.
 - The catalog now provides a cross-category saved-draft queue, counts and highlighting, open-item navigation and guarded one-revision publication of up to 50 selected drafts.
@@ -110,7 +136,7 @@
 ## Modern 3.50 — надёжный сброс переводов, 2026-10-09
 
 <!-- admin-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Кнопка «Вернуть базовый текст» корректно восстанавливает исходное утверждённое значение, сохраняет сброс в админке и показывает явное подтверждение.
 - Исправлена ошибка, из-за которой старый опубликованный перевод мог повторно появляться как черновик после сброса и следующего действия с другой строкой.
@@ -118,7 +144,7 @@
 <!-- /admin-notes:ru -->
 
 <!-- admin-notes:en -->
-### Player highlights
+### User highlights
 
 - Fixed the admin translation editor restoring stale drafts after resetting published entries. Reset now immediately shows the persisted baseline and clear feedback, including after the next edit or page reload.
 - Added consecutive equipment-reset and conflict-safety regression tests. English source strings, game mechanics, and saved builds remain unchanged.
@@ -127,7 +153,7 @@
 ## Modern 3.49 — ручное редактирование в массовом предпросмотре, 2026-10-09
 
 <!-- admin-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - В массовом переводе появился компактный карандаш возле текста «Станет»: можно вручную исправить предложенное название или описание прямо перед публикацией.
 - Добавлены возврат к автоматически предложенному тексту, выбор всех строк или снятие выделения и счётчик ручных исправлений.
@@ -135,7 +161,7 @@
 <!-- /admin-notes:ru -->
 
 <!-- admin-notes:en -->
-### Player highlights
+### User highlights
 
 - Bulk translation preview now supports a small inline pencil editor for reviewing and correcting individual proposed strings before publishing.
 - Added revert-to-suggestion, select-all/none and a manual-edit counter. Approved writes retain the existing version and effective-text conflict guards.
@@ -144,7 +170,7 @@
 ## Modern 3.48 — массовый перевод слов, 2026-10-09
 
 <!-- admin-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - В защищённой админке добавлена массовая замена отдельных слов с поиском во всех страницах выбранной категории, проверкой до/после и выбором конкретных строк.
 - По умолчанию затрагиваются только ещё не переведённые тексты. Учитываются границы слов и регистр не мешает поиску; оригинальные языковые исходники не изменяются.
@@ -152,7 +178,7 @@
 <!-- /admin-notes:ru -->
 
 <!-- admin-notes:en -->
-### Player highlights
+### User highlights
 
 - Added carefully reviewed whole-word mass localization in the protected admin panel, with complete paginated search, dry-run diff, row selection and conflict checks.
 - Existing translations, language sources, catalog mechanics and Legacy calculations are preserved.
@@ -179,7 +205,7 @@
 ## Modern 3.46 — переводы только через админку, 2026-10-09
 
 <!-- admin-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Завершён отказ от Excel как файла переводов: утверждённый набор из 2 920 исходных записей сохранён в проверенном JSON, новые изменения на RU/EN/JP/TW публикуются через защищённую админку.
 - Резервная копия Excel остаётся доступной в истории Git для восстановления, но больше не входит в текущий репозиторий и не публикуется на сайте.
@@ -187,7 +213,7 @@
 <!-- /admin-notes:ru -->
 
 <!-- admin-notes:en -->
-### Player highlights
+### User highlights
 
 - Retired the legacy XLSX file and editing scripts in favor of the approved 2,920-entry JSON snapshot and protected four-language admin revisions.
 - Preserved the final spreadsheet in repository Git history for disaster recovery; it is no longer shipped or required for builds.
@@ -197,7 +223,7 @@
 ## Modern 3.45 — единый редактор переводов, подсказки навыков и описания, 2026-10-09
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - В защищённой админке появился единый поиск и редактор переводов на русском, английском, японском и традиционном китайском: интерфейс, игровые навыки, снаряжение, расы, классы и другие текстовые поля.
 - При открытии карточки админка подставляет уже утверждённые переводы вместо пустых значений. Ручные опубликованные правки не сбрасываются.
@@ -207,7 +233,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Introduced one four-locale translation editor for game and UI text, with legacy approved wording visible and safe versioned updates.
 - Localized Russian learned-skill tooltip labels and mastery prerequisites, and restored line breaks in glued equipment effects.
@@ -217,7 +243,7 @@
 ## Modern 3.44 — безопасные черновики админки и единый Excel, 2026-10-09
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Уточнены русские обозначения «Честь», «Сопр. огню», «Сопр. льду», «Сопр. молнии», «Сопр. тьме», «Сопр. чарам» в основной таблице переводов.
 - В редакторе интерфейсных переводов черновики не теряются при поиске, переключении языков и страниц. Несохранённые значения явно выделены.
@@ -226,7 +252,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Synchronized seven approved Russian translations directly into the Excel workbook.
 - Preserved unsaved Modern UI translation drafts across search, locale and pagination changes with clear dirty-state indicators.
@@ -236,7 +262,7 @@
 ## Modern 3.43 — единая геометрия усилений, выбор Чести и читаемые сопротивления, 2026-10-09
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Значения СД, Благословение и Песнопения закреплены в одинаковых местах для всех четырёх языков; подписи не плавают при смене языка. Адаптация зависит от ширины панели.
 - Исправлена подсветка пассивок Чести: изначально не выбрано ничего, можно выбрать только одну, повторное нажатие снимает её выбор.
@@ -246,7 +272,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Stabilized the three Enhancement parameter/input positions across all four languages and made popup layout responsive to actual panel width.
 - Fixed Honor selection highlighting: none selected by default, one at a time, and click again to clear.
@@ -257,7 +283,7 @@
 ## Modern 3.42 — русские гильдейские бонусы и точный расчёт сопротивления, 2026-10-09
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Полные названия «Благословение» и «Песнопения» помещаются в одной строке; числовые поля стали компактнее, а подпись «ДУХ» заменена на «СД».
 - Переведены все названия гильдейских усилений и уровни в выпадающих списках («Гильдия Ур. 1» и далее).
@@ -266,7 +292,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Fit full Blessing and Hymn labels on one line with smaller numeric fields and a compact Russian spirit caption.
 - Localized guild bonus names and level choices for Russian.
@@ -277,7 +303,7 @@
 ## Modern 3.41 — русский перевод усилений и подсказок, 2026-10-09
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Подсказка по изучению умений полностью переведена на русский язык.
 - Во вкладке «Усиления» переведены названия параметров, кнопки умений и описания при наведении.
@@ -285,7 +311,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Completed the Russian skills allocation help text.
 - Localized Enhancement parameter labels, skill names and hover descriptions in Russian.
@@ -295,14 +321,14 @@
 ## Modern 3.40 — readable Effects buttons restored, 2026-10-08
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Вернули прежнюю ширину панели «Эффекты» и нормальную читаемость кнопок эффектов во всех языках.
 - «Персонаж» и «Умения» сохраняют уже согласованную компактную компоновку; полные названия характеристик не сокращаются и не обрезаются.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Restored the readable Effects tab spacing and original panel width across all languages.
 - Kept the balanced Character/Skills layout and complete result labels unchanged.
@@ -311,7 +337,7 @@
 ## Modern 3.39 — balanced result and skill columns, 2026-10-08
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Убраны излишние промежутки между названиями характеристик и значениями в «Результатах расчёта».
 - «Умения» получили больше пространства: подписи «Изучено» и «Потенциал» остаются на одной строке.
@@ -319,7 +345,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Reduced empty space between calculated result names and values.
 - Allocated more room to skill headings so learned and potential captions stay on one line.
@@ -329,7 +355,7 @@
 ## Modern 3.38 — full result names in every language, 2026-10-08
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Названия параметров в «Результатах расчёта» больше не обрезаются многоточием и не переносятся на вторую строку.
 - Рабочее пространство перераспределяет ширину для полных названий, не сужая элементы «Умений».
@@ -337,7 +363,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Calculated result names are shown in full on a single line, without ellipses.
 - The workbench provides enough room for result labels while keeping skill inputs readable.
@@ -347,7 +373,7 @@
 ## Modern 3.37 — согласованные переводы результатов, 2026-10-08
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Русские названия всех характеристик в «Результатах расчёта» теперь согласованы с переводами проекта.
 - Длинные подписи не увеличивают ширину и высоту строк: полный текст доступен в подсказках и средствах доступности.
@@ -355,7 +381,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Russian calculated-result names now match the project's approved translations.
 - Long captions stay on one line without resizing the result grid, with full names preserved for accessibility.
@@ -365,7 +391,7 @@
 ## Modern 3.36 — clearer result names and smarter numeric entry, 2026-10-08
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - В «Результатах расчёта» уточнены русские названия характеристик, чтобы различать похожие показатели.
 - Подписи результатов сохраняют единую сетку для всех языков и переносятся при недостатке места, не сжимая блок «Умения».
@@ -374,7 +400,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Clearer Russian result labels distinguish closely related stats.
 - Result columns retain consistent tracks across languages; longer labels wrap without shrinking the skills panel.
@@ -385,14 +411,14 @@
 ## Modern 3.35 — readable effect buttons across languages, 2026-10-08
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Подписи «Эффекты умений» и «Эффекты зелий» стали крупнее и лучше читаются.
 - Кнопки эффектов сохранили прежнюю ширину, высоту и одинаковую типографику во всех языках.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Skill and potion effect buttons now share readable, consistent text sizing across languages.
 - Both buttons retain their existing compact dimensions.
@@ -401,13 +427,13 @@
 ## Modern 3.34 — aligned riding control, 2026-10-08
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Кнопка «Верхом» выровнена по высоте с «Хар-ки верхом / %» на широких экранах во всех языках; на телефонах сохранена удобная область нажатия.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Riding toggle matches the adjacent stat field on wider screens in every language; larger mobile touch targets remain.
 <!-- /release-notes:en -->
@@ -415,14 +441,14 @@
 ## Modern 3.33 — compact calculator actions, 2026-10-08
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Подписи кнопок «Учитывать мастерство» и «Учитывать эфф. зелий» стали короче и занимают одну строку там, где хватает ширины.
 - Шесть кнопок учёта и сброса теперь расположены ровными колонками с одинаковыми размерами во всех языках интерфейса.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Shorter Russian labels fit on one line when the available width allows.
 - Calculator actions use evenly sized columns and consistent button dimensions across languages.
@@ -431,14 +457,14 @@
 ## Modern 3.32 — consistent action button sizing across languages, 2026-10-08
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Кнопки учёта и сброса получили одинаковые размеры, расположение и насыщенность шрифта во всех языках интерфейса.
 - Сохранена компактная сетка 3×2; длинные русские подписи больше не меняют высоту кнопок и соседних элементов.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Calculator action buttons now use consistent size, placement and typography across every language.
 - The original compact 3×2 layout remains stable with longer translated labels.
@@ -447,14 +473,14 @@
 ## Modern 3.31 — balanced Russian calculator controls, 2026-10-08
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Русские кнопки учёта и сброса получили промежуточный компактный размер: заметно меньше прежних 44 px, но без слишком мелкого текста.
 - Все шесть кнопок выровнены по высоте, а длинные подписи остаются читаемыми максимум в две строки.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Rebalanced the Russian calculator action buttons for a compact but readable size, avoiding both oversized controls and tiny text.
 <!-- /release-notes:en -->
@@ -462,14 +488,14 @@
 ## Modern 3.30 — compact Russian calculator controls, 2026-10-08
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Русские кнопки учёта и сброса снова используют те же компактные размеры и пропорции, что и в других языках.
 - Длинные подписи помещаются за счёт более компактной типографики, без увеличения высоты самих кнопок.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Restored locale-consistent compact sizing for Russian calculator action buttons while keeping the translated labels readable.
 <!-- /release-notes:en -->
@@ -477,14 +503,14 @@
 ## Modern 3.29 — aligned Russian calculator controls, 2026-10-08
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Русские кнопки учёта и сброса в блоке персонажа выровнены в аккуратную сетку 3×2.
 - Все шесть кнопок теперь имеют одинаковую высоту и равные колонки; многострочные подписи центрируются внутри кнопок без визуальной «ступеньки».
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Polished the Russian calculator action area into an even 3×2 grid with equal button heights and balanced columns.
 <!-- /release-notes:en -->
@@ -492,14 +518,14 @@
 ## Modern 3.28 — clearer Russian calculator actions, 2026-10-07
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - В блоке персонажа переведены переключатели учёта умений и эффектов зелий, кнопки сброса и элементы верховой езды.
 - Используются формулировки «Учитывать умения», «Учитывать мастерство умений», «Учитывать эффекты зелий», «Сброс характеристик», «Сброс умений», «Сбросить все», «Верхом» и «Хар-ки верхом».
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Added the requested Russian labels for calculator action, reset and riding controls without changing their mechanics.
 <!-- /release-notes:en -->
@@ -507,14 +533,14 @@
 ## Modern 3.27 — clearer Russian skill and effect labels, 2026-10-07
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - В разделе «Умения» русские подписи уточнены: Adeptness теперь отображается как «Изучено (ОЧ)», а Potential — как «Потенциал.».
 - В разделе «Эффекты» вкладки переименованы в «Эффекты умений» и «Эффекты зелий». Длинные русские подписи адаптированы так, чтобы оставаться в одну строку.
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Clarified the Russian skill-column labels while keeping the underlying skill mechanics unchanged.
 - Renamed the Russian effect tabs and adjusted their compact layout so both labels remain on one line.
@@ -523,7 +549,7 @@
 ## Modern 3.26 — seamless online updates and catalog cleanup, 2026-10-07
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Modern теперь сам замечает новую опубликованную версию: после короткой паузы в действиях сайт завершает ввод в активном поле, сохраняет текущий билд и перезагружается на свежие файлы. Обычно очищать кэш/cookie или использовать Ctrl+F5 не требуется.
 - Убрана строка «Потенциал» в блоке «Персонаж»: при текущем максимальном уровне этот отдельный бюджет очков не начисляется и всегда показывал 0/0. Потенциал веток в разделе «Умения» остаётся и продолжает работать.
@@ -532,7 +558,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Modern now detects a newly published release automatically. After a short idle moment it commits the active field, flushes the current build and reloads fresh versioned assets; manual cache/cookie cleanup or Ctrl+F5 should not normally be necessary.
 - The Character-level Potential budget row is hidden because the supported level range never awards those separate points and it always displayed 0/0. Skill-branch Potential remains available and unchanged.
@@ -543,7 +569,7 @@
 ## Modern 3.25 — current builds and online calculator, 2026-10-07
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Все сохранённые Modern-билды используют текущие игровые данные. Переименованные предметы остаются выбранными; исчезнувшие или несовместимые предметы, души и умения снимаются точечно. Изменения характеристик и снятые элементы показываются в компактном отчёте.
 - Убраны отметка «Возможно устарел» и видимые резервные билды. Автосохранение сохраняет последние изменения и при закрытии страницы.
@@ -554,7 +580,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Saved Modern builds now use current game data. Renamed items stay selected; unavailable or incompatible items, Souls and skills are removed individually. A compact report explains removals and stat changes.
 - Removed outdated badges and visible backup builds. Autosave also saves the last changes when leaving the page.
@@ -566,7 +592,7 @@
 ## Modern 3.24 — enhancement mechanics audit, 2026-10-07
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Исправлены характеристики предметов, зависящие от уровня заточки: теперь учитываются не только базовые бонусы, но и изменения характеристик на конкретных уровнях улучшения.
 - Полностью проверены **148 предметов с механиками улучшения** и **1 136 отдельных эффектов по уровням заточки**. Для 118 предметов добавлен недостающий расчёт, а 30 уже существующих механик Legacy оставлены без двойного начисления.
@@ -578,7 +604,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Fixed item effects that depend on enhancement level: calculations now include both base bonuses and stat changes at specific enhancement thresholds.
 - Audited all **148 items with enhancement mechanics** and **1,136 enhancement-level effects**. Missing calculations were added for 118 items, while 30 existing Legacy implementations remain single-counted.
@@ -600,7 +626,7 @@
 ## Modern 3.23 — safe automatic catalog adoption, 2026-10-07
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Исправлено автообновление игровых данных для уже существующего текущего autosave: старый открытый билд больше не должен незаметно оставаться на прошлой ревизии каталога только из-за изменений Soul slots.
 - Если новая ревизия уменьшила число Soul slots или сделала установленную Soul несовместимой со слотом, Modern **сначала сохраняет отдельную резервную копию старого билда**, затем снимает только конфликтующие Souls и переводит текущий autosave на актуальный каталог.
@@ -610,7 +636,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Fixed automatic game-data adoption for an existing current autosave: an open build should no longer remain silently pinned to an old catalog solely because Soul slot rules changed.
 - When a newer catalog reduces Soul slots or makes an equipped Soul incompatible with its slot, Modern **first stores a separate backup of the old build**, then clears only the conflicting Souls and moves the current autosave to the latest catalog.
@@ -629,7 +655,7 @@
 ## Modern 3.22 — Astir equipment identity cleanup, 2026-10-07
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Астирские комплекты в Modern теперь используют актуальные **RU/EN названия и описания** на уже существующих идентичностях симулятора там, где соответствие подтверждено.
 - Исправлены старые варианты с устаревшими или искажёнными английскими названиями Astian/Asutian: вместо дублирующих записей Modern показывает актуализированные существующие предметы.
@@ -639,7 +665,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Astir equipment in Modern now uses current **RU/EN names and descriptions** on retained simulator identities wherever the match is verified.
 - Older Astian/Asutian entries with outdated or distorted English names are reconciled instead of being shown alongside duplicate Modern records.
@@ -658,7 +684,7 @@
 ## Modern 3.21 — current item catalog refresh, 2026-10-07
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Полностью актуализирована Modern-база экипируемых предметов и Souls: **599 записей** — 488 предметов экипировки/оружия/бижутерии и 111 Souls.
 - 368 уже существующих ID симулятора обновлены на месте, а для 231 отсутствовавшей записи созданы отдельные стабильные Modern-ID. Legacy-каталог и старые save-коды не меняются.
@@ -670,7 +696,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - The Modern equippable-item and Soul catalog is now fully refreshed: **599 records** — 488 equipment/weapon/accessory records and 111 Souls.
 - 368 existing simulator identities are updated in place, while 231 previously missing records receive separate stable Modern identities. The Legacy catalog and existing save-code identities remain unchanged.
@@ -693,7 +719,7 @@
 ## Modern 3.20 — item catalog sync, 2026-10-06
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Обновлены **180 уже существующих записей** симулятора: 111 оружий/предметов экипировки и 69 Souls.
 - Для найденных записей актуализированы русские и английские названия и описания.
@@ -704,7 +730,7 @@
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Synchronized **180 existing simulator records**: 111 weapons/equipment items and 69 Souls.
 - Updated Russian and English names/descriptions for the matched records.
@@ -726,7 +752,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 ## Modern 3.19 — impact-aware saved builds and simpler Builds UI, 2026-10-06
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Из Менеджера билдов убрана ручная кнопка «Обновить текущий билд»: каталог уже обновляется автоматически, поэтому отдельное действие больше не требуется.
 - Блок игровых данных стал компактнее и использует понятную игроку строку вида `Игровые данные: версия 78 · обновляются автоматически`; подсказка объясняет простыми словами, что сайт обновляет данные сам и предупредит, если изменение может затронуть сохранённый билд.
@@ -736,7 +762,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Removed the manual “Update current build” control because catalog updates are automatic.
 - The Builds manager now uses a player-friendly automatic game-data status and a plain-language hint instead of internal catalog/revision terminology.
@@ -755,7 +781,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 ## Modern 3.18 — automatic live updates and saved-build freshness, 2026-10-06
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Открытый сайт теперь сам проверяет новые версии приложения и опубликованного игрового каталога; ручное обновление страницы или кнопка «Обновить текущий билд» для обычного сценария больше не нужны.
 - Перед автоматическим переключением PWA на новую версию текущий прогресс принудительно сохраняется. Если сохранение не удалось, автоматическая активация обновления блокируется.
@@ -766,7 +792,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Open pages now check automatically for new app versions and published catalog revisions; normal use no longer depends on manually reloading or pressing “Update current build”.
 - Current progress is flushed before automatic PWA activation. If saving fails, the update is not activated.
@@ -788,7 +814,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 ## Modern 3.17 — centered reset and PWA update safety, 2026-10-06
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Текст кнопки `Сброс` в блоке снаряжения теперь выровнен строго по центру без изменения её размера или логики.
 - Обновления PWA теперь переключаются между версиями целиком: активная страница не смешивает HTML одной версии с JS/CSS из другого кэша.
@@ -798,7 +824,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - The Equipment reset caption is now centered without changing its size or behavior.
 - PWA updates now keep HTML and static assets on one cache generation until the new service worker is activated.
@@ -818,7 +844,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 ## Modern 3.16 — production polish after RU layout review, 2026-10-06
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Исправлена кнопка сброса снаряжения: при временном рассинхроне PWA-кэша больше не может показываться сырой ключ `equipment.reset`; всегда используется человекочитаемый `Reset / Сброс / リセット / 重設`.
 - Ширина названий слотов снаряжения уменьшена с 80 до 76 px: `Перчатки` всё ещё помещается полностью, но лишнее пустое пространство сокращено.
@@ -828,7 +854,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Equipment reset now has a safe locale fallback and can no longer expose the raw `equipment.reset` key during a mixed PWA-cache update.
 - Desktop/tablet Equipment slot-label width is tightened from 80px to 76px while keeping long RU labels visible.
@@ -846,7 +872,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 ## Modern 3.15 — Russian result help and compact layout polish, 2026-10-06
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Уточнены русские подписи нескольких сопротивлений в «Результатах расчёта»: `Сопр КРУРОН`, `Сопр ФИЗ`, `Сопр УРОНСПИН`, `Сопр АНОМТЕЛ` и `Сопр АНООМДУХ`.
 - Для `ОЗ`, `ОМ`, `Точность`, `Уклонение`, `Откат`, `МаксАТК` и `ЗАЩИТА` добавлена такая же hover-подсказка, как у уже поясняемых коротких показателей.
@@ -857,7 +883,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Refined several RU calculated-result resistance labels and added hover help for seven compact stats.
 - Updated RU character and calculator-navigation terminology.
@@ -875,7 +901,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 ## Modern 3.14 — Russian Equipment terminology and compact stat labels, 2026-10-06
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Исправлено обрезание русских сокращений базовых характеристик: `ВЫН`, `СИЛ`, `ПРВ`, `ЛВК`, `СД` и `ИНТ` теперь полностью помещаются рядом с числовыми полями.
 - Уточнены короткие русские подписи в «Результатах расчёта» и «Эффектах»: сопротивления приведены к более единообразному виду, `МагАТК` сокращено до `МАТК`, а перезарядка — до `Откат`.
@@ -884,7 +910,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Russian base-stat abbreviations no longer clip beside their numeric fields.
 - RU calculated-result and effect labels received the requested shorter, more consistent terminology.
@@ -901,7 +927,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 ## Modern 3.13 — Russian calculator terminology and hover help, 2026-10-06
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Базовые характеристики получили согласованные русские сокращения: `ВЫН`, `СИЛ`, `ПРВ`, `ЛВК`, `СД`, `ИНТ`.
 - В «Результатах расчёта» переведены основные боевые, защитные, скоростные, элементальные и служебные показатели, включая `ОЗ`, `ОМ`, `Точность`, `Крит УРОН`, `Ближ УКЛОН`, `Дальн АТК УКЛОН`, дистанцию ближней/дальней атаки и сопротивления.
@@ -910,7 +936,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Base attributes now use the requested compact Russian abbreviations in RU mode.
 - Calculated results have reviewed Russian labels for combat, defense, evasion, range, speed, elemental resistance and utility stats.
@@ -927,7 +953,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 ## Modern 3.12 — clearer equipment search and keyboard picking, 2026-10-05
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - Поиск больше не оставляет пустую область без объяснения: при нулевом результате показывается понятное сообщение, подчёркнутая ссылка `Сбросить фильтр` и количество найденных/совместимых предметов.
 - В выпадающем Equipment picker нативные разделители типов оружия и экипировки теперь отображаются как явные визуальные заголовки групп; для списков с несколькими типами появился компактный фильтр `Все типы`.
@@ -939,7 +965,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Search no longer leaves an unexplained blank area: zero-result states show a clear message, an underlined `Reset filter` action and the current compatible/result count.
 - Equipment picker now renders the Legacy weapon/equipment type separators as clear visual group headings, with a compact `All types` filter when more than one type is available.
@@ -964,7 +990,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 ## Modern 3.11 — automatic updates, cleaner Equipment and faster delivery, 2026-10-05
 
 <!-- release-notes:ru -->
-### Кратко для игроков
+### Кратко для пользователей
 
 - В Equipment убраны две лишние верхние кнопки поиска экипировки и Souls: поиск не удалён и по-прежнему открывается прямо из каждого слота оружия, щита, брони и каждой доступной ячейки Soul.
 - Возвращён мягкий полупрозрачный фон стоимости характеристик 2P/3P и отполированы компактные поля персонажа, верховая езда и заголовки навыков; исправлена гонка hover-preview при автоматической прокрутке списка предметов.
@@ -978,7 +1004,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
 <!-- /release-notes:ru -->
 
 <!-- release-notes:en -->
-### Player highlights
+### User highlights
 
 - Equipment no longer shows duplicate top-level Equipment Search and Soul Search actions. Search is still available where it belongs: inside every equipment picker and every visible Soul socket.
 - The soft translucent 2P/3P stat-cost treatment is restored, compact character/riding/skill alignment is polished, and an item-preview hover race caused by automatic picker scrolling is fixed.
