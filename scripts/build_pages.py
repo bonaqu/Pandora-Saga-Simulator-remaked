@@ -382,8 +382,10 @@ def _plain_release_bullet(text: str) -> str:
 
 
 def _release_marker_bullets(section: str, locale: str) -> list[str]:
+    # Only an explicit PLAYER block is allowed into the public "What's new".
+    # Administrator-only changelog entries can contain any historical wording.
     marker = re.search(
-        rf"<!-- release-notes:{re.escape(locale)} -->(.*?)<!-- /release-notes:{re.escape(locale)} -->",
+        rf"<!-- release-notes:player:{re.escape(locale)} -->(.*?)<!-- /release-notes:player:{re.escape(locale)} -->",
         section,
         flags=re.DOTALL,
     )
@@ -408,38 +410,43 @@ def _release_marker_bullets(section: str, locale: str) -> list[str]:
 
 
 def _read_latest_release(root: pathlib.Path) -> dict[str, object]:
+    """Latest *player-visible* entry, not merely the latest admin deployment."""
+    source = (root / "CHANGELOG.md").read_text(encoding="utf-8")
+    matches = list(RELEASE_HEADING_RE.finditer(source))
+    if not matches:
+        raise ValueError("CHANGELOG.md needs at least one dated Modern release")
+    for index, match in enumerate(matches):
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(source)
+        section = source[match.end():end]
+        highlights = {locale: _release_marker_bullets(section, locale) for locale in ("en", "ru")}
+        # Fail closed when only one locale was marked as player-facing.
+        if not any(highlights.values()):
+            continue
+        if not all(highlights.values()):
+            raise ValueError("player release must contain both en and ru player-marked notes")
+        return {
+            "version": match.group("version"),
+            "title": match.group("title").strip(),
+            "date": match.group("date"),
+            "highlights": highlights,
+        }
+    raise ValueError("CHANGELOG.md has no explicitly player-marked release notes")
+
+
+def _read_ui_version(root: pathlib.Path) -> str:
+    """Current deployed UI version still advances on administration releases."""
     source = (root / "CHANGELOG.md").read_text(encoding="utf-8")
     match = RELEASE_HEADING_RE.search(source)
     if not match:
-        raise ValueError(
-            "CHANGELOG.md must begin with a dated release heading like "
-            "'## Modern 3.11 — release title, 2026-10-05'"
-        )
-    rest = source[match.end():]
-    next_release = re.search(r"^## Modern ", rest, flags=re.MULTILINE)
-    section = rest[: next_release.start()] if next_release else rest
-    highlights = {
-        "en": _release_marker_bullets(section, "en"),
-        "ru": _release_marker_bullets(section, "ru"),
-    }
-    if not highlights["en"] or not highlights["ru"]:
-        raise ValueError(
-            "latest CHANGELOG release must contain non-empty "
-            "release-notes:en and release-notes:ru marker blocks"
-        )
-    return {
-        "version": match.group("version"),
-        "title": match.group("title").strip(),
-        "date": match.group("date"),
-        "highlights": highlights,
-    }
+        raise ValueError("CHANGELOG.md needs a dated Modern release heading")
+    return match.group("version")
 
 
 def _materialize_release_metadata(root: pathlib.Path, output: pathlib.Path) -> None:
     release = _read_latest_release(root)
     version_payload = {
         "legacyEngine": "2.00",
-        "ui": release["version"],
+        "ui": _read_ui_version(root),
     }
     (output / "modern/version.js").write_text(
         "window.PandoraRemakedVersion = Object.freeze("
@@ -457,10 +464,6 @@ def _materialize_release_metadata(root: pathlib.Path, output: pathlib.Path) -> N
         + ");\n",
         encoding="utf-8",
     )
-
-
-def _read_ui_version(root: pathlib.Path) -> str:
-    return str(_read_latest_release(root)["version"])
 
 
 def _materialize_service_worker(root: pathlib.Path, output: pathlib.Path) -> None:
