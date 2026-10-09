@@ -108,3 +108,14 @@ test('old published UI text is immediately editable, searchable and safely reset
     scope:'ui',locale:'ru',id:original.id,value:'New name',expectedVersion:0
   }),env),/Translation changed elsewhere/);
 });
+
+test('category filters are stable and separate equipment from skills, race and stats',async()=>{
+  const env=fixture();
+  const skills=await (await adminLocalization(get('/api/admin/localization?scope=game&group=skills&q=skill_entry.7.5'),env)).json();
+  assert.ok(skills.items.some(row=>row.id==='skill_entry.7.5'));
+  const equipment=await (await adminLocalization(get('/api/admin/localization?scope=game&group=equipment&q=skill_entry.7.5'),env)).json();
+  assert.equal(equipment.total,0);
+  const races=await (await adminLocalization(get('/api/admin/localization?scope=game&group=races&q=race.0'),env)).json();
+  assert.ok(races.items.some(row=>row.id==='race.0'));
+  await assert.rejects(()=>adminLocalization(get('/api/admin/localization?scope=game&group=invalid'),env),/Invalid search filters/);
+});
