@@ -255,6 +255,11 @@ test('new equipment/Souls get stable unique IDs without modifying source or leak
   }
   assert.equal(created[0].status, 201); assert.notEqual(created[0].identity.id, created[1].identity.id);
   assert.equal(created[1].identity.index, created[0].identity.index + 1); assert.equal(created[2].identity.index, 185);
+  assert.equal(created[0].identity.id,'equipment.0.'+created[0].identity.index);
+  assert.equal(created[1].identity.id,'equipment.0.'+created[1].identity.index);
+  assert.equal(created[2].identity.id,'soul.185');
+  assert.equal(new Set(created.map(row=>row.identity.id)).size,3);
+
   assert.deepEqual((await publicData(env)).records, []);
   assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_allocations').get().n, 3);
   await publish(env, created[0]);
