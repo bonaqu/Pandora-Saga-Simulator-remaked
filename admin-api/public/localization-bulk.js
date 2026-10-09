@@ -3,6 +3,7 @@
 
   // Only visible, localized text is editable here. Source EN/JP/TW values,
   // game mechanics, legacy catalog snapshots and existing drafts stay intact.
+  function plural(number){const n=Number(number),t=n%10,h=n%100;return t===1&&h!==11?'перевод':t>=2&&t<=4&&(h<12||h>14)?'перевода':'переводов';}
   const MAX_MATCHES=50, MAX_SCAN=3500;
   const cleanWord=value=>typeof value==='string' && value.length>0 && value.length<=60 &&
     /^[\p{L}\p{N}_]+$/u.test(value);
@@ -275,7 +276,7 @@
           }catch(checkError){uncertain=true;throw checkError;}
         }
         invalidate();
-        state.textContent='Успешно опубликовано '+receipt.count+' переводов одной операцией. Проверь их на сайте.';
+        state.textContent='Успешно опубликовано '+receipt.count+' '+plural(receipt.count)+' одной операцией. Проверь результат на сайте.';
       }catch(error){
         if(!uncertain)invalidate();
         state.textContent=(uncertain
