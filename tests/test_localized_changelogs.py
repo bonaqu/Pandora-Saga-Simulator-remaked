@@ -39,11 +39,11 @@ class LocalizedChangelogTests(unittest.TestCase):
 """
         ru = render(fixture, "ru")
         en = render(fixture, "en")
-        self.assertIn("### Для игроков", ru)
+        self.assertIn("### Для пользователей", ru)
         self.assertIn("### Разработка и технические изменения", ru)
         self.assertIn("Исправлен игровой расчёт", ru)
         self.assertNotIn("Internal update.", ru)
-        self.assertIn("### For players", en)
+        self.assertIn("### For users", en)
         self.assertIn("### Development and technical changes", en)
         self.assertIn("Fixed the calculator.", en)
         self.assertNotIn("Служебное обновление", en)
