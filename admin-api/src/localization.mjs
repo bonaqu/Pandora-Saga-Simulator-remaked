@@ -136,8 +136,14 @@ export async function adminLocalization(request,env) {
     .bind(input.scope,input.id,input.locale).first();
   const version=existing?.version||0;
   if(version!==input.expectedVersion)fail('Translation changed elsewhere; refresh before saving',409);
-  if(existing?.text===value||(!existing&&!value))
+  if(existing?.text===value)
     return jsonResponse({ok:true,scope:input.scope,id:input.id,locale:input.locale,version,override:value});
+  // An empty value on top of a previous editor publication is a real reset.
+  // Persist a tombstone; otherwise the legacy override would reappear.
+  if(!existing&&!value){
+    const previous=(await legacyOverrides(env)).get(keyOf(input.scope,input.id)+'\0'+input.locale);
+    if(!previous)return jsonResponse({ok:true,scope:input.scope,id:input.id,locale:input.locale,version,override:value});
+  }
   const stamp=Math.floor(Date.now()/1000);
   if(existing){
     const update=await env.DB.prepare(
