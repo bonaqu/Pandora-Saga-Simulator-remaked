@@ -87,7 +87,7 @@ https://bonaqu.github.io/Pandora-Saga-Simulator-remaked/legacy/
 
 The protected localization center is the only editor for Russian, English, Japanese and Traditional Chinese. Previously approved translations have been preserved in versioned `localization/approved-translations.v1.json`, and new publications live in Cloudflare D1 with revision checks. The legacy Excel file has been retired; its last verified copy is recoverable from the Git history. Approved translations appear throughout the Modern calculator, lists, search and skill descriptions. Blank game fields retain the selected source language; Legacy Mode stays unchanged.
 
-Modern **3.52** unifies approved translations into the four-language admin console and introduces a saved catalog-draft queue: review and publish selected changes from different items as one guarded catalog revision. Historical translations and published game data remain intact.
+Modern **3.53** improves the reliability of localized text delivery without changing the calculator's mechanics or the preserved Legacy mode.
 
 Modern checks a small no-cache release manifest on startup, when returning to the tab, after reconnecting and periodically while visible. A newer release waits for a short idle moment, commits the active field, flushes autosave and reloads versioned assets. The site is intentionally online-only; no manual cache or cookie cleanup should normally be needed.
 
