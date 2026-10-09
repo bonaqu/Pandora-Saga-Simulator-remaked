@@ -30,7 +30,7 @@ export const EFFECTS = [
   [162, 'Negative effect duration (percentage points)', FLAT]
 ].map(([id, label, units]) => ({ id, label, units }));
 const effectById = new Map(EFFECTS.map(effect => [effect.id, effect]));
-const fields = ['id', 'kind', 'category', 'names', 'description', 'notes', 'acquisition', 'modifiers', 'level', 'sockets', 'races', 'classes', 'slots', 'baseAttack', 'effectMode', 'effects', 'disabled'];
+const fields = ['id', 'kind', 'category', 'names', 'description', 'notes', 'acquisition', 'modifiers', 'level', 'sockets', 'races', 'classes', 'slots', 'baseAttack', 'effectMode', 'effects', 'upgradeBonuses', 'disabled'];
 
 export class CatalogError extends Error {
   constructor(message, status = 400) { super(message); this.status = status; }
@@ -188,6 +188,28 @@ function effects(input) {
   });
 }
 
+// Verified numeric refinement bonuses. Each threshold reached at "from"
+// and again every "every" levels adds "value", up through level "to".
+// Not a combat proc, damage roll or event simulation.
+function validateUpgradeBonuses(input) {
+  check(Array.isArray(input) && input.length <= 12, 'Too many enhancement bonuses');
+  const seen=new Set();
+  return input.map(rule=>{
+    keys(rule,['stat','value','unit','every','from','to'],'Upgrade bonus');
+    const definition=effectById.get(rule.stat);
+    check(definition && definition.units.includes(rule.unit), 'Unsupported upgrade stat or unit');
+    const every=integer(rule.every,1,10,'Upgrade step');
+    const from=integer(rule.from,1,10,'First upgrade');
+    const to=integer(rule.to,from,10,'Last upgrade');
+    check((to-from)%every===0, 'Last upgrade must match a complete threshold');
+    check(typeof rule.value==='number'&&Number.isFinite(rule.value)&&Math.abs(rule.value)<=10000&&
+      Number(rule.value.toFixed(2))===rule.value&&rule.value!==0,'Upgrade bonus must be nonzero and bounded');
+    const unique=rule.stat+':'+rule.unit+':'+every+':'+from+':'+to;
+    check(!seen.has(unique),'Duplicate refinement bonus rule');seen.add(unique);
+    return {stat:rule.stat,unit:rule.unit,value:rule.value,every,from,to};
+  });
+}
+
 export function draftFromSource(source, kind) {
   if (kind === 'active' || kind === 'passive') {
     check(source?.kind === kind, 'Only existing skill slots and native skill types are supported');
@@ -298,6 +320,11 @@ export function validateDraft(input, identity) {
   check(input.baseAttack === null || (input.kind === 'equipment' && input.category <= 13), 'Weapon attack only applies to weapons');
   result.baseAttack = input.baseAttack === null ? null : integer(input.baseAttack, 0, 10000, 'Weapon attack');
   result.effects = effects(input.effects);
+  if(input.upgradeBonuses!==undefined){
+    const rules=validateUpgradeBonuses(input.upgradeBonuses);
+    check(input.kind==='equipment'||rules.length===0,'Soul refinement bonuses are unsupported');
+    if(rules.length)result.upgradeBonuses=rules;
+  }
   check(result.effectMode !== 'preserve' || (result.effects.length === 0 && result.baseAttack === null), 'Preserve mode must not discard submitted effects');
   return result;
 }
@@ -350,6 +377,7 @@ export function compileRecord(edit, identity, source) {
     names: edit.names, description: edit.description, notes: edit.notes, acquisition: edit.acquisition, modifiers: edit.modifiers,
     level: edit.level, sockets: edit.sockets, disabled: edit.disabled, calculationCode: tokens.join('_'),
     compatibility: edit.kind === 'equipment' ? [...(source?.compatibility_flags.slice(0, 2) || [1, 1]), ...edit.races, ...edit.classes] : edit.slots,
+    ...(edit.upgradeBonuses?.length ? {upgradeBonuses: edit.upgradeBonuses.map(rule=>({...rule}))} : {}),
     parameter6: source?.legacy_parameter_6 ?? '', soulParameters: source?.legacy_parameters_5_6 || ['', ''], trailing: source?.legacy_trailing_value ?? ''
   };
 }
