@@ -114,11 +114,13 @@ export async function publicLocalization(env) {
   return jsonResponse({ok:true,schemaVersion:1,overrides:data});
 }
 
+// A guarded bulk write carries both old and new text; each may be up to
+// 4000 Unicode characters (up to four UTF-8 bytes each), plus JSON overhead.
 async function parseInput(request) {
   if(!(request.headers.get('content-type')||'').startsWith('application/json'))fail('JSON required',415);
-  if(Number(request.headers.get('content-length')||0)>10000)fail('Request too large',413);
+  if(Number(request.headers.get('content-length')||0)>40000)fail('Request too large',413);
   const raw=await request.text();
-  if(new TextEncoder().encode(raw).length>10000)fail('Request too large',413);
+  if(new TextEncoder().encode(raw).length>40000)fail('Request too large',413);
   try {return JSON.parse(raw);}catch{fail('Invalid JSON');}
 }
 export async function adminLocalization(request,env) {
