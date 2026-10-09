@@ -119,7 +119,12 @@
   }
   function apply() {
     var touched = Object.create(null);
-    if (!namespace.catalog || Number(namespace.catalog.getRevision()) < MIN_CATALOG_REVISION) return touched;
+    if(!namespace.catalog)return touched;
+    if(Number(namespace.catalog.getRevision())<MIN_CATALOG_REVISION){
+      // Catalog-customized numeric rules are independent of the older
+      // source-specific server supplement dataset's minimum revision.
+      applyCatalogRefinement(touched);recalculate(touched);return touched;
+    }
     applyBaseSupplement(touched);
     applyItemForth(touched);
     applyCatalogRefinement(touched);
