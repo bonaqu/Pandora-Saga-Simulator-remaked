@@ -3,6 +3,7 @@
 
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
   var catalogs = window.PandoraRemakedLocales || { en: {} };
+  var publishedUi = { ru: {}, en: {} };
   var gameCatalogs = window.PandoraRemakedGameTerms || { ru: {} };
   var STORAGE_KEY = 'pandora.remaked.uiLocale.v1';
   var DEFAULT_LOCALE = 'en';
@@ -182,7 +183,8 @@
   function translate(key, values) {
     var active = catalogs[currentLocale] || {};
     var english = catalogs[DEFAULT_LOCALE] || {};
-    var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : terminology('ui', key);
+    var override = publishedUi[currentLocale] && publishedUi[currentLocale][key];
+    var value = override || (Object.prototype.hasOwnProperty.call(active, key) ? active[key] : terminology('ui', key));
     if (!value) value = english[key];
     return interpolate(typeof value === 'string' ? localizedUiValue(key, value) : key, values);
   }
@@ -304,9 +306,29 @@
     return true;
   }
 
+  function applyPublishedUi(payload) {
+    if (!payload || payload.ok !== true || payload.schemaVersion !== 1 ||
+        !payload.overrides || typeof payload.overrides !== 'object') return false;
+    var next = { ru: {}, en: {} };
+    for (var locale of ['ru', 'en']) {
+      var words = payload.overrides[locale];
+      if (!words || typeof words !== 'object' || Array.isArray(words)) return false;
+      for (var [key, value] of Object.entries(words)) {
+        if (!Object.prototype.hasOwnProperty.call(catalogs.en || {}, key) ||
+            typeof value !== 'string' || !value.trim() || value.length > 300 ||
+            /[\\x00-\\x1f\\x7f<>]/.test(value)) return false;
+        next[locale][key] = value;
+      }
+    }
+    publishedUi = next;
+    apply(document);
+    return true;
+  }
+
   namespace.i18n = {
     apply: apply,
     applyPublishedResultLabels: applyPublishedResultLabels,
+    applyPublishedUi: applyPublishedUi,
     bindAttribute: bindAttribute,
     bindText: bindText,
     game: translateGameTerm,
@@ -321,6 +343,14 @@
   // Editor customizations are deliberately independent from workbook updates.
   // Fetch only explicit published overrides, never rewrite base translations.
   if (location.origin === 'https://bonaqu.github.io') {
+    fetch('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/ui-translations', {
+      credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(4000)
+    }).then(function (response) {
+      if (!response.ok) throw new Error('UI translation overrides unavailable');
+      return response.json();
+    }).then(applyPublishedUi).catch(function () {
+      // Offline users always receive the bundled approved workbook catalog.
+    });
     fetch('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/result-labels', {
       credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(4000)
     }).then(function (response) {
