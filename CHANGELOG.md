@@ -1,5 +1,17 @@
 # Changelog
 
+## Modern 3.59 — нейтральное описание технических обновлений, 2026-10-09
+
+<!-- admin-notes:ru -->
+- В «Что нового» при выпуске без пользовательских изменений теперь показывается нейтральное сообщение «Выполнены внутренние технические улучшения.»; внутренние детали по-прежнему не раскрываются.
+- Номер последнего пользовательского релиза сохраняется отдельно; на RU/EN обновлён регрессионный тест для случая технического выпуска.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Technical-only releases now show a neutral localized summary in What's New without disclosing administrative implementation details.
+- Preserve the last actual user-facing release version separately and cover both locales in the regression test.
+<!-- /admin-notes:en -->
+
 ## Modern 3.58 — единый поиск переводов новых записей, 2026-10-09
 
 
