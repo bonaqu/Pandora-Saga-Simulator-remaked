@@ -91,3 +91,11 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
   #result-label-editor details { overflow-x: auto; }
   #result-label-editor .result-label-table { min-width: 680px; }
 }
+
+/* Translation console: searchable 43-row list, with visible override state. */
+.result-label-filters { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 10px 0; }
+.result-label-filters > input { flex: 1 1 220px; min-width: 170px; }
+.result-label-filters label { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.result-label-filters label input { width: 16px; height: 16px; min-height: 0; accent-color: var(--green); }
+.result-label-filters output { font: 12px/1.4 system-ui, sans-serif; color: #c6cdbb; }
+#result-label-editor tbody tr[hidden] { display: none; }
