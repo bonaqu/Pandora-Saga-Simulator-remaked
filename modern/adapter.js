@@ -410,19 +410,15 @@
       if (canonical[16 + jobIndex]) classes.push(text(job[2 + language]));
     });
     var catalogRecord = namespace.catalog?.item(kind, value);
-    // Exactly 16 Astir coats/dresses had historical, now-removed full-outfit
-    // bonus notes. Other equipment sets still have their own valid mechanics.
-    // Judge EACH locale's note separately: changing one translation must not
-    // resurrect old text from another or hide a newly authored, valid note.
-    var obsoleteAstirIds = [310031,310032,310033,310034,310035,310036,
-      310037,310038,310039,310040,310041,310042,310094,310095,310096,310097];
-    var isObsoleteAstir = kind === 'equipment' && obsoleteAstirIds.indexOf(id) !== -1;
+    // Derived from the same Astir registry used by the D1 editor and build.
+    // The historical browser fallback still protects old pinned catalog
+    // revisions and untouched retained game strings.
+    var astirRules = namespace.astirRules;
+    var historicalAstir = kind === 'equipment' && astirRules?.outfitRootIds?.includes(id);
+    var archivedPattern = historicalAstir ? new RegExp(astirRules.obsoleteNotePattern, 'i') : null;
     function currentGameNote(value) {
       var note = String(value || '');
-      // Generic Chinese words for equipment/equipping are not set-bonus
-      // evidence; match the archival pump/outfit wording instead.
-      return isObsoleteAstir && /(?:セットで装備すると|\b(?:set of|with a set|and set|when equipped with|fitted with pumps)\b|一組|一套|當配備了(?:一套)?(?:水泵組|泵)|並設置|並配|和集)/i.test(note)
-        ? '' : note;
+      return archivedPattern?.test(note) ? '' : note;
     }
     var overrideName = namespace.catalog?.itemText(kind, value, 'names');
     var descriptions = columns.map(function (column) {
