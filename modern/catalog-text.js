@@ -15,6 +15,7 @@
   var englishMilestones = /([^\s\n])(?=(?:Per every\s+(?:(?:\d+|each)\s+)?enhancement levels?|For every\s+\d+\s+(?:enhancement\s+)?levels?|At\s*\+\d+\s+and above|When enhanced(?:\s+to)?\s*\+\d+))/gi;
   var englishBonusAfterColon = /:(?=(?:Accuracy|Attack(?:\s+Speed)?|Back Attack|Aura Damage|Skill Casting Speed|Skill Cooldown|Skill Failure Resistance|Magic Attack|Magic Resistance|Physical Damage Taken|Magic Damage Taken|Knockdown Resistance|Stun Resistance|Sleep Resistance|Healing Spell Effectiveness|(?:STR|STA|AGI|DEX|INT|SPI|HP|MP|LP|DEF))\s*[+\-]\d)/gi;
   var englishAdjacentStats = /([0-9%])(?=(?:Skill Cooldown|Attack Speed|Healing Spell Effectiveness|Skill Failure Resistance|Knockdown Resistance|Stun Resistance|Sleep Resistance)\s*[+\-]\d)/g;
+  var englishSentenceStarts = /([.!?])(?=(?:A|An|The|This|Those|These|It)\s+[A-Za-z])/g;
   function lines(value) {
     return String(value || '')
       .replace(/\r\n?/g, '\n')
@@ -25,6 +26,7 @@
       .replace(englishMilestones, '$1\n')
       .replace(englishBonusAfterColon, ':\n')
       .replace(englishAdjacentStats, '$1\n')
+      .replace(englishSentenceStarts, '$1\n')
       .replace(boundary, '$1\n');
   }
   namespace.catalogText = { lines: lines };
