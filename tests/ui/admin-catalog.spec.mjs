@@ -6,6 +6,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { adminCatalog } from '../../admin-api/src/catalog.mjs';
 import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs';
 import rules from '../../data/modern-astir-rules.json' with { type: 'json' };
+import publishedGear from '../fixtures/published-astian-gear.json' with { type: 'json' };
 import { astirIds } from '../../admin-api/src/astir-cleanup.mjs';
 import { baselineById, sourceIdentity } from '../../admin-api/src/catalog-baseline.mjs';
 import { draftFromSource } from '../../admin-api/src/catalog-model.mjs';
@@ -111,11 +112,17 @@ async function openConsole(page, drafts = []) {
 
 test('authenticated catalog admin previews archival Astir note cleanup and restores exactly those fields', async ({ page }) => {
   const { sqlite, errors } = await openConsole(page);
+  // Modern-only Astir identities can be published without a Legacy baseline.
   const entries = astirIds.map(id => {
-    const source = baselineById.get(id);
-    const edit = draftFromSource(source, 'equipment');
-    edit.notes = { en: '', ru: '', jp: '', tw: '' };
-    return { identity: sourceIdentity(source), edit };
+    const row = publishedGear.records.find(record => record.id === id);
+    if (!row) throw new Error('Missing Astir published fixture ' + id);
+    return { identity: { id, kind: 'equipment', category: 31, index: Number(id.split('.').at(-1)) },
+      edit: { id, kind: 'equipment', category: 31, names: structuredClone(row.names),
+        description: structuredClone(row.description), notes: { en: '', ru: '', jp: '', tw: '' },
+        acquisition: structuredClone(row.acquisition), modifiers: structuredClone(row.modifiers),
+        level: row.level, sockets: row.sockets, races: row.compatibility.slice(2, 8),
+        classes: row.compatibility.slice(8, 36), slots: Array(8).fill(1),
+        baseAttack: null, effectMode: 'replace', effects: [], disabled: false } };
   });
   entries[0].edit.notes.en = rules.historicalNotes[astirIds[0]].en;
   entries[1].edit.notes.jp = rules.historicalNotes[astirIds[1]].jp;

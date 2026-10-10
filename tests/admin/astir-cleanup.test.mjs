@@ -3,10 +3,31 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import rules from '../../data/modern-astir-rules.json' with { type: 'json' };
+import publishedGear from '../fixtures/published-astian-gear.json' with { type: 'json' };
 import { baselineById, sourceIdentity } from '../../admin-api/src/catalog-baseline.mjs';
 import { draftFromSource } from '../../admin-api/src/catalog-model.mjs';
 import { astirIds, planAstirCleanup } from '../../admin-api/src/astir-cleanup.mjs';
 import { adminCatalog, publicCatalog } from '../../admin-api/src/catalog.mjs';
+
+function astirPublishedRecords() {
+  return astirIds.map(id => {
+    const row = publishedGear.records.find(record => record.id === id);
+    assertOrThrow(row, id);
+    return {
+      identity: { id, kind: 'equipment', category: 31, index: Number(id.split('.').at(-1)) },
+      edit: {
+        id, kind: 'equipment', category: 31,
+        names: structuredClone(row.names), description: structuredClone(row.description),
+        notes: { en: '', ru: '', jp: '', tw: '' }, acquisition: structuredClone(row.acquisition),
+        modifiers: structuredClone(row.modifiers), level: row.level, sockets: row.sockets,
+        races: row.compatibility.slice(2, 8), classes: row.compatibility.slice(8, 36),
+        slots: Array(8).fill(1), baseAttack: null, effectMode: 'replace',
+        effects: [], disabled: false
+      }
+    };
+  });
+}
+function assertOrThrow(row, id) { if (!row) throw new Error('Missing published Astir test fixture ' + id); }
 
 const origin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
 function fixture() {
@@ -34,12 +55,7 @@ function fixture() {
   };
   // A fully controlled test head avoids relying on historical source strings
   // that were deliberately retained in Legacy for museum compatibility.
-  const entries = astirIds.map(id => {
-    const source = baselineById.get(id);
-    const edit = draftFromSource(source, 'equipment');
-    edit.notes = { en: '', ru: '', jp: '', tw: '' };
-    return { identity: sourceIdentity(source), edit };
-  });
+  const entries = astirPublishedRecords();
   entries[0].edit.notes.en = rules.historicalNotes[astirIds[0]].en;
   entries[1].edit.notes.jp = rules.historicalNotes[astirIds[1]].jp;
   entries[0].edit.notes.tw = '此設備可以配備護符，並提高恢復力。';

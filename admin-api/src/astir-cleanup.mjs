@@ -9,22 +9,25 @@ export const astirLanguages = ['en', 'ru', 'jp', 'tw'];
 const historicalPattern = new RegExp(rules.obsoleteNotePattern, 'i');
 const normalize = text => String(text || '').replace(/\s+/g, ' ').trim();
 export function astirEdit(entries, id, baselineById, draftFromSource) {
-  const entry = entries.find(row => row.identity.id === id);
+  const entry = entries.find(row => row.identity?.id === id);
+  if (entry) return structuredClone(entry.edit);
   const baseline = baselineById.get(id);
-  if (!baseline || baseline.kind !== 'equipment') throw new Error('Missing Astir baseline: ' + id);
-  return entry ? structuredClone(entry.edit) : draftFromSource(baseline, 'equipment');
+  // Newly added Modern-only items need not exist in retained Legacy sources.
+  return baseline?.kind === 'equipment' ? draftFromSource(baseline, 'equipment') : null;
 }
 export function planAstirCleanup(entries, baselineById, draftFromSource) {
   const fields = [], warnings = [], affected = new Set();
   for (let index = 0; index < astirIds.length; index++) {
     const id = astirIds[index], engineId = rules.outfitRootIds[index];
     const edit = astirEdit(entries, id, baselineById, draftFromSource);
+    if (!edit) continue; // No published record and no retained source for this ID.
     for (const locale of astirLanguages) {
       const before = String(edit.notes?.[locale] || '');
       if (!before.trim()) continue;
       const old = rules.historicalNotes[id]?.[locale] || '';
       const source = baselineById.get(id);
-      const originalSourceNote = draftFromSource(source, 'equipment').notes[locale];
+      const originalSourceNote = source?.kind === 'equipment'
+        ? draftFromSource(source, 'equipment').notes[locale] : '';
       const isPublishedArchive = old && normalize(before) === normalize(old);
       const isRetainedArchive = historicalPattern.test(before) &&
         originalSourceNote && normalize(before) === normalize(originalSourceNote);
@@ -61,8 +64,10 @@ export function restorablesForCleanup(predecessor, publishedCleanup, current,
   const plan = planAstirCleanup(predecessor, baselineById, draftFromSource);
   if (!plan.fields.length || plan.warnings.length) throw new Error('Unverifiable original Astir cleanup');
   return plan.fields.map(field => {
-    const atCleanup = astirEdit(publishedCleanup, field.id, baselineById, draftFromSource).notes[field.locale];
-    const atCurrent = astirEdit(current, field.id, baselineById, draftFromSource).notes[field.locale];
+    const cleanupEdit = astirEdit(publishedCleanup, field.id, baselineById, draftFromSource);
+    const currentEdit = astirEdit(current, field.id, baselineById, draftFromSource);
+    if (!cleanupEdit || !currentEdit) throw new Error('Astir record is missing since cleanup: ' + field.id);
+    const atCleanup = cleanupEdit.notes[field.locale], atCurrent = currentEdit.notes[field.locale];
     if (atCleanup !== '' || atCurrent !== atCleanup)
       throw new Error('Astir note modified after cleanup: ' + field.id + '/' + field.locale);
     return { ...field, before: '', after: field.before };
