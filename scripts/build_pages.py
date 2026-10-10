@@ -293,6 +293,16 @@ def _materialize_modern_astir_rules(root: pathlib.Path, output: pathlib.Path) ->
         raise ValueError("Unexpected Legacy Astir set section: review before updating")
     # Keep preceding non-Astir set bonuses and the following weapon rules.
     patched = copied[:start] + "  // Modern: no Astir full-outfit bonuses in the current game.\n" + copied[end:]
+    replacements = registry.get("nativeRefinementReplacements", [])
+    if len(replacements) != 6 or len({row["engineId"] for row in replacements}) != 6:
+        raise ValueError("Modern Astir native-refinement list must identify six unique items")
+    for row in replacements:
+        block = row["legacyBlock"]
+        if not block.startswith("  if (") or patched.count(block) != 1:
+            raise ValueError("Cannot safely replace native Astir refinement for " + str(row["engineId"]))
+        # All numeric bonuses for these six items now come from their current
+        # per-item enhancement snapshots in Modern, never twice from Legacy.
+        patched = patched.replace(block, "  // Modern: Astir refinement is supplied by the current-game snapshot.\n", 1)
     (output / "js" / "equip.js").write_text(patched, encoding="utf-8")
 
 
@@ -308,6 +318,42 @@ def _materialize_modern_astir_registry(output: pathlib.Path) -> None:
         json.dumps({"outfitRootIds": rules["outfitRootIds"], "obsoleteNotePattern": rules["obsoleteNotePattern"]}, ensure_ascii=False, separators=(",", ":")) + ");\n",
         encoding="utf-8",
     )
+
+    # Extend the frozen 50-item enhancement map with the six formerly native
+    # Astir items, using verified current-game milestone snapshots. Only the
+    # Modern emitted asset is patched; source and /legacy/ remain untouched.
+    asset = output / "modern" / "enhancement-effects.js"
+    js = asset.read_text(encoding="utf-8")
+    item_prefix = "  var ITEM_FORTH = "
+    item_lines = [line for line in js.splitlines() if line.startswith(item_prefix)]
+    if len(item_lines) != 1 or not item_lines[0].endswith(";"):
+        raise ValueError("Modern Astir enhancement map anchor drift")
+    previous_line = item_lines[0]
+    items = json.loads(previous_line[len(item_prefix):-1])
+    replacements = rules.get("nativeRefinementReplacements", [])
+    if len(replacements) != 6:
+        raise ValueError("Expected six verified Astir enhancement replacements")
+    native_prefix = "  var NATIVE_SERVER_IDS = "
+    native_lines = [line for line in js.splitlines() if line.startswith(native_prefix)]
+    if len(native_lines) != 1 or not native_lines[0].endswith(";"):
+        raise ValueError("Modern Astir native-ID anchor drift")
+    native_ids = json.loads(native_lines[0][len(native_prefix):-1])
+    server_ids = [row["serverId"] for row in replacements]
+    if len(set(server_ids)) != 6 or any(sid not in native_ids for sid in server_ids):
+        raise ValueError("Modern Astir native server-ID mapping is inconsistent")
+    for row in replacements:
+        engine_id = str(row["engineId"])
+        if engine_id in items or not row.get("levels"):
+            raise ValueError("Duplicate or missing Astir refinement snapshot " + engine_id)
+        items[engine_id] = {"serverId": row["serverId"], "levels": row["levels"]}
+    updated_items = item_prefix + json.dumps(items, ensure_ascii=False, separators=(",", ":")) + ";"
+    updated_native = native_prefix + json.dumps(
+        [sid for sid in native_ids if sid not in server_ids], separators=(",", ":"
+    ) + ";"
+    if js.count(previous_line) != 1 or js.count(native_lines[0]) != 1:
+        raise ValueError("Modern Astir enhancement anchor is ambiguous")
+    js = js.replace(previous_line, updated_items, 1).replace(native_lines[0], updated_native, 1)
+    asset.write_text(js, encoding="utf-8")
 
 
 def _copy_runtime(root: pathlib.Path, destination: pathlib.Path) -> None:

@@ -248,6 +248,34 @@ class BuildPagesTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 _materialize_modern_astir_rules(root, output)
 
+    def test_native_astir_refinement_uses_current_snapshots_only_in_modern(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary) / "repo"
+            (root / "js").mkdir(parents=True)
+            source = pathlib.Path(__file__).resolve().parents[1]
+            shutil.copy2(source / "js/equip.js", root / "js/equip.js")
+            output = root / "_site"
+            (output / "js").mkdir(parents=True)
+            (output / "modern").mkdir(parents=True)
+            shutil.copy2(root / "js/equip.js", output / "js/equip.js")
+            shutil.copy2(source / "modern/enhancement-effects.js", output / "modern/enhancement-effects.js")
+            original_equip = (root / "js/equip.js").read_bytes()
+            original_enhancement = (source / "modern/enhancement-effects.js").read_bytes()
+            _materialize_modern_astir_rules(root, output)
+            _materialize_modern_astir_registry(output)
+            equipment_js = (output / "js/equip.js").read_text(encoding="utf-8")
+            enhancement_js = (output / "modern/enhancement-effects.js").read_text(encoding="utf-8")
+            rules = json.loads((source / "data/modern-astir-rules.json").read_text(encoding="utf-8"))
+            self.assertEqual(len(rules["nativeRefinementReplacements"]), 6)
+            for row in rules["nativeRefinementReplacements"]:
+                with self.subTest(item=row["engineId"]):
+                    self.assertNotIn(row["legacyBlock"], equipment_js)
+                    self.assertIn('"' + str(row["engineId"]) + '":{"serverId":'
+                                  + str(row["serverId"]) + ',"levels":', enhancement_js)
+            self.assertNotIn("12601,12607,12611,12617,13601,13607", enhancement_js)
+            self.assertEqual((root / "js/equip.js").read_bytes(), original_equip)
+            self.assertEqual((source / "modern/enhancement-effects.js").read_bytes(), original_enhancement)
+
     def test_modern_omits_only_obsolete_hidden_counter_and_preserves_legacy(self):
         with tempfile.TemporaryDirectory() as temporary:
             base = pathlib.Path(temporary)

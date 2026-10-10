@@ -2,6 +2,17 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.69 — 2026-10-10
+
+### For users
+
+- Fixed enhancement bonuses and upgrade thresholds for original and white Astir coats, dresses and trousers.
+
+### Development and technical changes
+
+- Audit 56 unique Astir items with no duplicate catalog entries or basic-stat drift; correct six outdated native per-item refinement paths.
+- Keep Legacy, catalog revisions and base item IDs untouched; guard Modern replacements against double application.
+
 ## Modern 3.68 — 2026-10-10
 
 ### For users

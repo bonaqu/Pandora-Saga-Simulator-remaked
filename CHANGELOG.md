@@ -1,5 +1,25 @@
 # Changelog
 
+## Modern 3.69 — корректный расчёт заточки базовых астирских вещей, 2026-10-10
+
+<!-- release-notes:user:ru -->
+- Исправлены бонусы заточки базовых и белых астирских курток, платьев и штанов: учитываются действующие значения и пороги усиления.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Fixed enhancement bonuses and upgrade thresholds for original and white Astir coats, dresses and trousers.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Сверены 56 уникальных предметов Astir: все записи и базовые характеристики совпадают, дубли отсутствуют. Обновлены шесть отдельных расчётов заточки, которые ранее обслуживались устаревшими правилами.
+- Архив Legacy и сохранённые ревизии каталога не изменены. Правила собраны из единого реестра, зафиксированы тестами на отсутствие повторного применения.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Audit 56 unique Astir items with no duplicate catalog entries or basic-stat drift; correct six outdated native per-item refinement paths.
+- Keep Legacy, catalog revisions and base item IDs untouched; guard Modern replacements against double application.
+<!-- /admin-notes:en -->
+
 ## Modern 3.68 — ускорение CI/CD и устранение повторной проверки при публикации, 2026-10-10
 
 <!-- admin-notes:ru -->
