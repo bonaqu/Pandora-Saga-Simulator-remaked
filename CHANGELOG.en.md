@@ -2,6 +2,16 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.71 — 2026-10-10
+
+### For users
+
+- Enhancement and Honor rank names now sit centered in their buttons, both vertically and horizontally.
+
+### Development and technical changes
+
+- Override legacy fixed label height and top padding, with RU/EN and mobile/desktop browser regression coverage. Leave calculations, translations, Admin and Legacy unchanged.
+
 ## Modern 3.70 — 2026-10-10
 
 ### For users

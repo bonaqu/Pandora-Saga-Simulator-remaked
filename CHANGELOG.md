@@ -1,5 +1,23 @@
 # Changelog
 
+## Modern 3.71 — вертикальное выравнивание названий усилений, 2026-10-10
+
+<!-- release-notes:user:ru -->
+- Названия усилений и ранговых умений «Чести» выровнены по центру кнопок по вертикали и горизонтали.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Enhancement and Honor rank names now sit centered in their buttons, both vertically and horizontally.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Исправлены унаследованные фиксированная высота и внутренний отступ текстовых блоков; добавлена браузерная проверка RU/EN и мобильной/настольной ширины. Игровая механика, переводы, админка и Legacy не меняются.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Override legacy fixed label height and top padding, with RU/EN and mobile/desktop browser regression coverage. Leave calculations, translations, Admin and Legacy unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 3.70 — русские названия и подсказки умений за Честь, 2026-10-10
 
 <!-- release-notes:user:ru -->

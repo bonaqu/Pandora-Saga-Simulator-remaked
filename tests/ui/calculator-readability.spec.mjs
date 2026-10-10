@@ -1,5 +1,55 @@
 import { test, expect } from '@playwright/test';
 
+test('Enhancements and Honor rank names are vertically centered in both locales at mobile and desktop widths', async ({ page }) => {
+  for (const locale of ['ru', 'en']) {
+    for (const width of [390, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/?ui=' + locale);
+      await page.locator('[data-remaked-tab="4"]').click();
+      const selectors = [
+        '#BUFFView [id^="Buff_"] > [data-remaked-buff]',
+        '#BuffHonor_0 > [data-remaked-buff]',
+        '#BuffHonor_12 > [data-remaked-buff]'
+      ];
+      for (const selector of selectors) {
+        const button = page.locator(selector).first();
+        await expect(button).toBeVisible();
+        const geometry = await button.evaluate(node => {
+          const label = node.querySelector(':scope > [id^="TextBuff"]');
+          if (!label) return null;
+          const box = node.getBoundingClientRect();
+          const textBox = label.getBoundingClientRect();
+          const buttonStyle = getComputedStyle(node);
+          const labelStyle = getComputedStyle(label);
+          return {
+            delta: Math.abs(textBox.top + textBox.height / 2 - (box.top + box.height / 2)),
+            display: buttonStyle.display,
+            alignItems: buttonStyle.alignItems,
+            labelHeight: textBox.height,
+            labelPaddingTop: labelStyle.paddingTop,
+            labelPaddingBottom: labelStyle.paddingBottom,
+            textAlign: labelStyle.textAlign,
+            text: label.textContent.trim()
+          };
+        });
+        expect(geometry, selector + ' ' + locale + ' ' + width).not.toBeNull();
+        expect(geometry.text.length).toBeGreaterThan(0);
+        expect(geometry.display).toBe('flex');
+        expect(geometry.alignItems).toBe('center');
+        expect(geometry.labelPaddingTop).toBe('0px');
+        expect(geometry.labelPaddingBottom).toBe('0px');
+        expect(geometry.textAlign).toBe('center');
+        expect(geometry.labelHeight).toBeGreaterThan(0);
+        expect(geometry.delta).toBeLessThanOrEqual(1);
+      }
+      await page.locator('#BuffHonor_0 > [data-remaked-buff]').click();
+      expect(await page.evaluate(() => window.Flag.Honor)).toBe(1);
+      await page.locator('#BuffHonor_0 > [data-remaked-buff]').click();
+      expect(await page.evaluate(() => window.Flag.Honor)).toBe(0);
+    }
+  }
+});
+
 test('native option text retains measured contrast in both toggle states', async ({ page }) => {
   await page.goto('/');
   const action = page.locator('[data-remaked-calculator-action="Text_3"]');

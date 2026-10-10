@@ -817,7 +817,32 @@ body.remaked-modern {
 .remaked-modern #body [data-remaked-buff-column] input { box-sizing: border-box; width: 100% !important; min-height: 26px; color: var(--rm-text) !important; font: 13px/1.4 var(--rm-font); }
 .remaked-modern #body [data-remaked-buff-column] .input_lt { color: var(--rm-text) !important; background: transparent; }
 .remaked-modern #body [data-remaked-buff-column] [id^="Buff"] { float: none; width: 100% !important; height: auto !important; padding: 0; border: 0; background: transparent; }
-.remaked-modern #body [data-remaked-buff] { width: 100%; min-height: 26px; border: 1px solid var(--rm-border); border-radius: 3px; background: #f7fbf2; color: var(--rm-text); padding: 3px; cursor: pointer; font: 12px/1.4 var(--rm-font); }
+/* The preserved source .btn2 label contributes a 14px height and top padding.
+   Center the real, potentially wrapped title inside both Buff and Honor
+   buttons without changing their columns, click handlers or touch targets. */
+.remaked-modern #body [data-remaked-buff] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 26px;
+  border: 1px solid var(--rm-border);
+  border-radius: 3px;
+  background: #f7fbf2;
+  color: var(--rm-text);
+  padding: 3px;
+  cursor: pointer;
+  font: 12px/1.4 var(--rm-font);
+  text-align: center;
+}
+.remaked-modern #body [data-remaked-buff] > [id^="TextBuff"] {
+  box-sizing: border-box;
+  width: 100%;
+  height: auto !important;
+  margin: 0;
+  padding: 0 !important;
+  text-align: center;
+}
 .remaked-modern #body [data-remaked-buff][aria-pressed="true"] { background: #d5e7bf; border-color: var(--rm-accent); }
 .remaked-modern #body [data-remaked-buff] :is(div, span) { color: inherit !important; background: transparent !important; border: 0; font: inherit; white-space: normal; }
 .remaked-modern #body [data-remaked-buff] .help { text-decoration: none; }
