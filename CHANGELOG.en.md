@@ -2,6 +2,14 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.67 — 2026-10-10
+
+### Development and technical changes
+
+- Add admin preview and explicit confirmation for archived Astir outfit notes across 16 stable item IDs and four locales. Unknown text and unpublished drafts block publication.
+- Cleanup creates an immutable D1 revision without changing mechanics or impactRevision. Scoped restoration restores only matching archived notes without rolling back unrelated item edits.
+- Share one verified Modern Astir rules registry across the admin backend, generated site and build exclusions; retained Legacy remains unchanged.
+
 ## Modern 3.66 — 2026-10-10
 
 ### Development and technical changes

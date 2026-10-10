@@ -111,6 +111,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/locales.js"></script>
 <script src="./modern/game-terms.js"></script>
 <script src="./modern/i18n.js"></script>
+<script src="./modern/astian-rules.js"></script>
 <script src="./modern/adapter.js"></script>
 <script src="./modern/build-store.js"></script>
 <script src="./modern/native-passives.js"></script>
@@ -278,8 +279,9 @@ def _materialize_modern_astir_rules(root: pathlib.Path, output: pathlib.Path) ->
     if source != copied:
         raise ValueError("Modern Astir rules expected an unmodified equip.js source copy")
 
-    first = "  if (To['N'] == 'アスティアンコート' && Gl['N'] == 'アスティアングローブ'"
-    last = "\n\n// ----- 武器"
+    registry = json.loads((pathlib.Path(__file__).resolve().parents[1] / "data" / "modern-astir-rules.json").read_text(encoding="utf-8"))
+    section = registry["legacySetSection"]
+    first, last = section["first"], section["last"]
     if copied.count(first) != 1:
         raise ValueError("Modern Astir rules could not locate unique first set")
     start = copied.index(first)
@@ -287,11 +289,25 @@ def _materialize_modern_astir_rules(root: pathlib.Path, output: pathlib.Path) ->
     if end < 0:
         raise ValueError("Modern Astir rules could not locate final set boundary")
     original_sets = copied[start:end]
-    if original_sets.count("  if (To['N'] ==") != 16 or " // ----- " in original_sets:
+    if original_sets.count("  if (To['N'] ==") != section["blockCount"] or " // ----- " in original_sets:
         raise ValueError("Unexpected Legacy Astir set section: review before updating")
     # Keep preceding non-Astir set bonuses and the following weapon rules.
     patched = copied[:start] + "  // Modern: no Astir full-outfit bonuses in the current game.\n" + copied[end:]
     (output / "js" / "equip.js").write_text(patched, encoding="utf-8")
+
+
+def _materialize_modern_astir_registry(output: pathlib.Path) -> None:
+    """Build a client-side policy from the same registry as the admin API."""
+    source = pathlib.Path(__file__).resolve().parents[1] / "data" / "modern-astir-rules.json"
+    rules = json.loads(source.read_text(encoding="utf-8"))
+    if rules["currentGameFullOutfitBonus"] or len(rules["outfitRootIds"]) != rules["legacySetSection"]["blockCount"]:
+        raise ValueError("Modern Astir registry is inconsistent")
+    (output / "modern" / "astian-rules.js").write_text(
+        "window.PandoraRemaked = window.PandoraRemaked || {};\n"
+        "window.PandoraRemaked.astirRules = Object.freeze(" +
+        json.dumps({"outfitRootIds": rules["outfitRootIds"], "obsoleteNotePattern": rules["obsoleteNotePattern"]}, ensure_ascii=False, separators=(",", ":")) + ");\n",
+        encoding="utf-8",
+    )
 
 
 def _copy_runtime(root: pathlib.Path, destination: pathlib.Path) -> None:
@@ -528,6 +544,7 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     _materialize_modern_guild_resistance(root, output)
     _materialize_modern_astir_rules(root, output)
     _materialize_modern_assets(root, output)
+    _materialize_modern_astir_registry(output)
     _materialize_release_metadata(root, output)
     _materialize_locales(
         root,

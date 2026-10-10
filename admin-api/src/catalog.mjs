@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { astirIds, planAstirCleanup, applyAstirFields, restorablesForCleanup } from './astir-cleanup.mjs';
 import { CatalogError, draftFromSource, validateDraft, compileRecord, showApprovedTranslations, EFFECTS, EQUIPMENT_CATEGORIES, NATIVE_PASSIVES } from './catalog-model.mjs';
 import { baselineById, baselineRecords, categories, skillCategories, compatibilityLabels, sourceFingerprint, characterSourceFingerprint, sourceIdentity, firstNewIndex } from './catalog-baseline.mjs';
 import { jsonResponse } from './auth.mjs';
@@ -204,7 +205,7 @@ async function saveDraft(request, env, now) {
   return jsonResponse(await detail(env, identity.id));
 }
 
-async function commitSnapshot(env, previous, entries, now, note, draft = null) {
+async function commitSnapshot(env, previous, entries, now, note, draft = null, protectedIds = []) {
   const json = JSON.stringify(entries);
   if (encoder.encode(json).length > MAX_SNAPSHOT_BYTES) fail('Catalog exceeds the safe snapshot size', 413);
   for (const entry of entries) compileEntry(entry);
@@ -216,8 +217,10 @@ async function commitSnapshot(env, previous, entries, now, note, draft = null) {
   // versions must still match before the head can be updated.
   const selectedDrafts = draft ? Array.isArray(draft) ? draft : [draft] : [];
   const guard=selectedDrafts.map(()=>' AND EXISTS (SELECT 1 FROM catalog_drafts WHERE id = ? AND version = ? AND is_dirty = 1)').join('');
-  const update = env.DB.prepare('UPDATE catalog_head SET version = ?, impact_version = ?, snapshot_json = ?, write_token = ?, updated_at = ? WHERE id = 1 AND version = ?' + guard)
-    .bind(next, impactVersion, json, token, now, previous, ...selectedDrafts.flatMap(item=>[item.id,item.version]));
+  // A maintenance publication must not race a newly saved private draft.
+  const cleanGuard=protectedIds.map(()=>' AND NOT EXISTS (SELECT 1 FROM catalog_drafts WHERE id = ? AND is_dirty = 1)').join('');
+  const update = env.DB.prepare('UPDATE catalog_head SET version = ?, impact_version = ?, snapshot_json = ?, write_token = ?, updated_at = ? WHERE id = 1 AND version = ?' + guard + cleanGuard)
+    .bind(next, impactVersion, json, token, now, previous, ...selectedDrafts.flatMap(item=>[item.id,item.version]), ...protectedIds);
   const statements = [update,
     env.DB.prepare('INSERT INTO catalog_revisions (version, impact_version, snapshot_json, created_at, note) SELECT ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND write_token = ?)').bind(next, impactVersion, json, now, note, token)
   ];
@@ -320,6 +323,71 @@ async function publishBatch(request,env,now) {
     ...(input.operationId?{operationId:input.operationId}:{})});
 }
 
+
+async function astirDirtyDrafts(env) {
+  const rows=await env.DB.prepare('SELECT id FROM catalog_drafts WHERE is_dirty = 1 AND id IN (' +
+    astirIds.map(() => '?').join(',') + ')').bind(...astirIds).all();
+  return rows.results.map(row => row.id);
+}
+async function astirNotesOverview(env) {
+  const snapshot=await head(env);
+  const plan=planAstirCleanup(snapshot.entries, baselineById, draftFromSource);
+  const drafts=await astirDirtyDrafts(env);
+  const history=await env.DB.prepare("SELECT version, created_at, note FROM catalog_revisions WHERE note LIKE 'Astir cleanup %' ORDER BY version DESC LIMIT 20").all();
+  return jsonResponse({ok:true,catalogRevision:snapshot.version,impactRevision:snapshot.impactVersion,
+    fields:plan.fields,warnings:plan.warnings,affectedIds:plan.affectedIds,
+    dirtyDraftIds:drafts,cleanupHistory:history.results,
+    ready:plan.fields.length>0&&!plan.warnings.length&&!drafts.length});
+}
+async function cleanAstirNotes(request,env,now) {
+  const input=await body(request);
+  schema(input,['expectedCatalogRevision','expectedFields']);
+  const expected=version(input.expectedCatalogRevision,'Catalog revision');
+  if(!Array.isArray(input.expectedFields)||input.expectedFields.length>64||
+      !input.expectedFields.every(key=>typeof key==='string'&&/^equipment\.31\.\d+:(en|ru|jp|tw)$/.test(key)))
+    fail('Invalid Astir cleanup selection');
+  const snapshot=await head(env);
+  if(snapshot.version!==expected)fail('Catalog changed since cleanup preview',409);
+  const plan=planAstirCleanup(snapshot.entries,baselineById,draftFromSource);
+  const actualKeys=plan.fields.map(field=>field.id+':'+field.locale).sort();
+  if(JSON.stringify(actualKeys)!==JSON.stringify([...input.expectedFields].sort()))
+    fail('Astir cleanup preview is stale',409);
+  if(plan.warnings.length)fail('Unrecognized Astir set notes require manual review',409);
+  if(!actualKeys.length)fail('No archival Astir notes remain',409);
+  if((await astirDirtyDrafts(env)).length)fail('Unpublished Astir drafts must be handled before cleanup',409);
+  const entries=applyAstirFields(snapshot.entries,plan.fields,baselineById,sourceIdentity,draftFromSource);
+  const response=await commitSnapshot(env,expected,entries,now,
+    'Astir cleanup '+actualKeys.length+' archived notes',null,astirIds);
+  return jsonResponse({...await response.json(),cleanedCount:actualKeys.length,cleanedFields:actualKeys});
+}
+async function restoreAstirNotes(request,env,now) {
+  const input=await body(request);
+  schema(input,['cleanupRevision','expectedCatalogRevision']);
+  const revision=version(input.cleanupRevision,'Cleanup revision');
+  const expected=version(input.expectedCatalogRevision,'Catalog revision');
+  if(!revision)fail('Cleanup revision must be positive');
+  const current=await head(env);
+  if(current.version!==expected)fail('Catalog changed since restore preview',409);
+  const cleanedRow=await env.DB.prepare('SELECT note,snapshot_json FROM catalog_revisions WHERE version = ?').bind(revision).first();
+  if(!cleanedRow||!/^Astir cleanup \d+ archived notes$/.test(cleanedRow.note))
+    fail('Not an Astir cleanup revision',404);
+  let predecessor=[];
+  if(revision>1) {
+    const before=await env.DB.prepare('SELECT snapshot_json FROM catalog_revisions WHERE version = ?').bind(revision-1).first();
+    if(!before)fail('Historical backup is missing',409);
+    predecessor=JSON.parse(before.snapshot_json);
+  }
+  let restorables;
+  try {
+    restorables=restorablesForCleanup(predecessor,JSON.parse(cleanedRow.snapshot_json),current.entries,baselineById,draftFromSource);
+  } catch(e) {fail(e.message,409);}
+  if((await astirDirtyDrafts(env)).length)fail('Unpublished Astir drafts must be handled before restore',409);
+  const entries=applyAstirFields(current.entries,restorables,baselineById,sourceIdentity,draftFromSource);
+  const response=await commitSnapshot(env,expected,entries,now,
+    'Restore Astir notes from cleanup #'+revision,null,astirIds);
+  return jsonResponse({...await response.json(),restoredCount:restorables.length,fromRevision:revision});
+}
+
 async function rollback(request, env, now) {
   const input = await body(request); schema(input, ['revision', 'expectedCatalogRevision']);
   const revision = version(input.revision, 'Revision'); const expected = version(input.expectedCatalogRevision, 'Catalog revision');
@@ -397,6 +465,9 @@ export async function adminCatalog(request, env, now = Math.floor(Date.now() / 1
     return jsonResponse({ok:true,found:Boolean(receipt),receipt});
   }
   if (path === '/api/admin/publish-batch' && request.method === 'POST') return publishBatch(request, env, now);
+  if (path === '/api/admin/astir-notes' && request.method === 'GET') return astirNotesOverview(env);
+  if (path === '/api/admin/astir-notes/clean' && request.method === 'POST') return cleanAstirNotes(request, env, now);
+  if (path === '/api/admin/astir-notes/restore' && request.method === 'POST') return restoreAstirNotes(request, env, now);
   if (path === '/api/admin/rollback' && request.method === 'POST') return rollback(request, env, now);
   return jsonResponse({ ok: false, message: 'Unknown admin operation' }, 404);
 }
