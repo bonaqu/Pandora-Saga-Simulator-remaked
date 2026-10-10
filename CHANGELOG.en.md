@@ -2,6 +2,16 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.70 — 2026-10-10
+
+### For users
+
+- All 13 Honor skills in Enhancements now have approved Russian names and Russian hover descriptions.
+
+### Development and technical changes
+
+- Publish 26 scoped texts through conflict-guarded D1 localization; expose Honor terms in the Admin Skills category. Keep English, Legacy calculations and unrelated translations unchanged.
+
 ## Modern 3.69 — 2026-10-10
 
 ### For users
