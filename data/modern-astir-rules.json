@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "currentGameFullOutfitBonus": false,
+  "outfitRootIds": [
+    310031,
+    310032,
+    310033,
+    310034,
+    310035,
+    310036,
+    310037,
+    310038,
+    310039,
+    310040,
+    310041,
+    310042,
+    310094,
+    310095,
+    310096,
+    310097
+  ],
+  "legacySetSection": {
+    "first": "  if (To['N'] == 'アスティアンコート' && Gl['N'] == 'アスティアングローブ'",
+    "last": "\n\n// ----- 武器",
+    "blockCount": 16
+  },
+  "obsoleteNotePattern": "(?:セットで装備すると|\\b(?:set of|with a set|and set|when equipped with|fitted with pumps)\\b|一組|一套|當配備了(?:一套)?(?:水泵組|泵)|並設置|並配|和集)",
+  "historicalNotes": {
+    "equipment.31.41": {
+      "en": "Ann Asti scarlet coat¸ pants¸ gloves¸ boots and a set of equipment¸ Defense +2¸ +3% resistance to burn. + 6 + 1 since every discipline of the court¸ Attack +1¸ +1% burn-resistant",
+      "ru": "",
+      "jp": "緋色アスティアンコート、パンツ、グローブ、ブーツをセットで装備すると、防御力+2、火傷耐性+3%。コートの鍛錬値+6以降+1毎に、攻撃力+1、火傷耐性+1%",
+      "tw": "安阿斯蒂大紅外套¸褲子¸手套¸靴子和一組設備¸防禦 +2¸+3％耐燃燒。 + 6 + 1¸因為每個學科的法院¸攻擊 +1¸+1％燒傷耐"
+    },
+    "equipment.31.33": {
+      "en": "Maple Ann color coat Asti¸ pants¸ gloves¸ boots and a set of features¸ +3% potion recovery volume. Over time the discipline of the court +6 +1 intelligence. Since each +1¸ MP +10",
+      "ru": "",
+      "jp": "碧色アスティアンコート、パンツ、グローブ、ブーツをセットで装備すると、ポーション回復量+3%。コートの鍛錬値が+6以上の時、知性+1。以降+1毎に、MP+10",
+      "tw": "楓安色外套阿斯蒂¸褲子¸手套¸靴子和一組特徵¸+3％藥水恢復卷。隨著時間的推移紀律法庭+6 +1情報。由於每個 +1¸MP +10"
+    },
+    "equipment.31.42": {
+      "en": "Andres scarlet Asti¸ Keirisu¸ when equipped with a pump set¸ 3% burn-resistant. + 6 + 1 since every discipline of the dress¸ Attack +1¸ +1% burn-resistant",
+      "ru": "",
+      "jp": "緋色アスティアンドレス、ケイリス、パンプをセットで装備すると、火傷耐性+3%。ドレスの鍛錬値+6以降+1毎に、攻撃力+1、火傷耐性+1%",
+      "tw": "安德烈斯猩紅阿斯蒂¸Keirisu¸當配備了水泵組¸3％的老化性。 + 6 + 1¸因為每個學科的裝扮¸攻擊 +1¸+1％燒傷耐"
+    },
+    "equipment.31.31": {
+      "en": "Value +1 each discipline¸ LP +1. Asti Ann Court¸ pants¸ gloves¸ boots and a set of features¸ +3% potion recovery volume. Over time the discipline of the court +6 +1 strength. Since each +1¸ LP +1%¸ MP +1%",
+      "ru": "",
+      "jp": "鍛錬値+1毎に、LP+1。アスティアンコート、パンツ、グローブ、ブーツをセットで装備すると、ポーション回復量+3%。コートの鍛錬値が+6以上の時、体力+1。以降+1毎に、LP+1%、MP+1%",
+      "tw": "每個學科的價值 1¸LP 1。阿斯蒂安法院¸褲子¸手套¸靴子和一組特徵¸+3％藥水恢復卷。隨著時間的推移紀律法庭+6 +1力量。由於每個 +1¸LP +1％¸MP 1％"
+    },
+    "equipment.31.32": {
+      "en": "Value +1 each discipline¸ LP +1¸ MP +1. Asti Andres¸ Keirisu¸ when equipped with a pump set¸ +3% potion recovery volume. When the discipline of dress is more +6 +1 strength. Since each +1¸ LP +1%¸ MP +1%",
+      "ru": "",
+      "jp": "鍛錬値+1毎に、LP+1、MP+1。アスティアンドレス、ケイリス、パンプをセットで装備すると、ポーション回復量+3%。ドレスの鍛錬値が+6以上の時、体力+1。以降+1毎に、LP+1%、MP+1%",
+      "tw": "每個學科的價值 1¸LP +1¸MP +1。阿斯蒂安德烈斯¸Keirisu¸當配備了水泵組¸3％藥水恢復卷。當紀律的著裝更+6 +1力量。由於每個 +1¸LP +1％¸MP 1％"
+    },
+    "equipment.31.94": {
+      "en": "Fang Angrove Asti color¸ pants¸ boots and equipment and set¸ LP +5%¸ MP +5%¸ +3 defense. + 6 + 1 or more each time the value discipline¸ defense +2",
+      "ru": "",
+      "jp": "芳色アスティアングローブ、パンツ、ブーツとセットで装備すると、LP+5%、MP+5%、防御力+3。鍛錬値が+6以上の時+1毎に、防御力+2",
+      "tw": "方Angrove阿斯蒂顏色¸褲子¸靴子和設備¸並設置¸LP +5％¸MP +5％¸+3防禦。 + 6 + 1個或多個每次值紀律¸防禦 +2"
+    },
+    "equipment.31.96": {
+      "en": "Asti Angrove moonlight¸ pants¸ boots and equipment and set¸ non-physical damage -2% -3% cooldown. Magic Attack +1 for every 1% or more during the forging +6",
+      "ru": "",
+      "jp": "月色アスティアングローブ、パンツ、ブーツとセットで装備すると、被物理ダメージ-2%、再使用時間-3%。鍛錬値+6以上の時+1毎に魔法攻撃力+1%",
+      "tw": "阿斯蒂Angrove月光¸褲子¸靴子和設備¸並設置非物理傷害 2％-3％的冷卻時間。魔法攻擊力+1¸每1％或以上的鍛造過程中+6"
+    },
+    "equipment.31.37": {
+      "en": "Anne Court Asti water erosion¸ pants¸ gloves¸ boots and a set of features¸ MP-5% consumption¸ 20% sleep resistance¸ +5% movement speed. + 6 + 1 since every discipline of the court¸ falling 1% tolerance¸ 1% resistance to stun",
+      "ru": "",
+      "jp": "翠色アスティアンコート、パンツ、グローブ、ブーツをセットで装備すると、消費MP-5%、睡眠耐性+20%、移動速度+5%。コートの鍛錬値+6以降+1毎に、転倒耐性+1%、気絶耐性+1%",
+      "tw": "安妮法院阿斯蒂水的侵蝕¸褲子¸手套¸靴子和一組功能¸MP - 5％的消費¸20％睡眠抗性¸+5％移動速度。 + 6 + 1¸因為每個學科的法院¸下降1％的容差¸1％的抗暈眩"
+    },
+    "equipment.31.35": {
+      "en": "Value +1 each discipline¸ LP +1. Ann Asti snow color coat¸ pants¸ gloves¸ boots and a set of features¸ under 20% debuff duration. Over time the discipline of the court +6 +1 intelligence. Since each +1¸ LP +5¸ MP +10",
+      "ru": "",
+      "jp": "鍛錬値+1毎に、LP+1。雪色アスティアンコート、パンツ、グローブ、ブーツをセットで装備すると、被debuff持続時間-20%。コートの鍛錬値が+6以上の時、知性+1。以降+1毎に、LP+5、MP+10",
+      "tw": "每個學科的價值 1¸LP 1。安阿斯蒂雪色外套¸褲子¸手套¸靴子和一組特徵¸在20％的debuff的持續時間。隨著時間的推移紀律法庭+6 +1情報。由於每個 +1¸LP +5¸MP +10"
+    },
+    "equipment.31.39": {
+      "en": "Anne Court Yese Asti¸ pants¸ gloves¸ boots and with a set of +5% attack power when attacking from behind. + 6 + 1 since every discipline of the court¸ and +2% attack power when attacking from behind",
+      "ru": "",
+      "jp": "夜色アスティアンコート、パンツ、グローブ、ブーツをセットで装備すると、背後から攻撃した時の攻撃力+5%。コートの鍛錬値+6以降+1毎に、背後から攻撃した時の攻撃力+2%",
+      "tw": "安妮法院夜色阿斯蒂¸褲子¸手套¸靴子和一組攻擊力+5％攻擊時從後面。 + 6 + 1¸因為每個學科的法院¸2％的攻擊力攻擊時從背後"
+    },
+    "equipment.31.34": {
+      "en": "Asti Andres Maple color¸ Keirisu¸ when equipped with a pump set¸ +3% potion recovery volume. When the discipline of dress is more +6 +1 intelligence. Since each +1¸ MP +10",
+      "ru": "",
+      "jp": "碧色アスティアンドレス、ケイリス、パンプをセットで装備すると、ポーション回復量+3%。ドレスの鍛錬値が+6以上の時、知性+1。以降+1毎に、MP+10",
+      "tw": "阿斯蒂安德烈斯楓木色¸Keirisu¸當配備了水泵組¸3％藥水恢復卷。當紀律的著裝更+6 +1情報。由於每個 +1¸MP +10"
+    },
+    "equipment.31.95": {
+      "en": "Anke Iris Fang Asti colors¸ and fitted with pumps and sets¸ LP +5%¸ MP +5%. + 6 + 1 or more each time the value discipline¸ defense +2",
+      "ru": "",
+      "jp": "芳色アスティアンケイリス、パンプとセットで装備すると、LP+5%、MP+5%。鍛錬値が+6以上の時+1毎に、防御力+2",
+      "tw": "安科方阿斯蒂虹膜的顏色¸並配有泵和集¸LP +5％¸MP +5％。 + 6 + 1個或多個每次值紀律¸防禦 +2"
+    },
+    "equipment.31.97": {
+      "en": "Anke Iris Asti moonlight¸ when equipped with pumps and sets¸ non-physical damage -2% -3% cooldown. Magic Attack +1 for every 1% or more during the forging +6",
+      "ru": "",
+      "jp": "月色アスティアンケイリス、パンプとセットで装備すると、被物理ダメージ-2%、再使用時間-3%。鍛錬値+6以上の時+1毎に魔法攻撃力+1%",
+      "tw": "安科虹膜阿斯蒂月光¸當配有泵和集¸非物理傷害 2％-3％的冷卻時間。魔法攻擊力+1¸每1％或以上的鍛造過程中+6"
+    },
+    "equipment.31.38": {
+      "en": "Andres Asti water erosion¸ Keirisu¸ when equipped with a pump set¸ MP Consumption-5% +5% movement speed¸ +10% stun resistance¸ +10% resistance to sleep. + 6 + 1 since every discipline of the dress¸ 1% stun resistance¸ resistance fall 1%",
+      "ru": "",
+      "jp": "翠色アスティアンドレス、ケイリス、パンプをセットで装備すると、消費MP-5%、移動速度+5%、気絶耐性+10%、睡眠耐性+10%。ドレスの鍛錬値+6以降+1毎に、気絶耐性+1%、転倒耐性+1%",
+      "tw": "安德烈斯阿斯蒂水的侵蝕¸Keirisu¸當配備了一套泵¸MP消費為 5％+5％移動速度¸+10％眩暈抵抗¸+10％抗睡眠。 + 6 + 1¸因為每個學科的禮服¸1％擊暈¸耐下降1％"
+    },
+    "equipment.31.36": {
+      "en": "Value +1 each discipline¸ LP +1¸ MP +2. Andres color Asti snow Keirisu¸ when equipped with a pump set¸ -20% target debuff duration. When the discipline of dress is more +6 +1 intelligence. Since each +1¸ LP +5¸ MP +1",
+      "ru": "",
+      "jp": "鍛錬値+1毎に、LP+1、MP+2。雪色アスティアンドレス、ケイリス、パンプをセットで装備すると、被debuff持続時間-20%。ドレスの鍛錬値が+6以上の時、知性+1。以降+1毎に、LP+5、MP+1",
+      "tw": "每個學科的價值 1¸LP 1¸MP +2。安德烈斯顏色阿斯蒂雪Keirisu¸當配備了一套泵¸-20％的目標 DEBUFF的持續時間。當紀律的著裝更+6 +1情報。由於每個 +1¸LP +5¸MP +1"
+    },
+    "equipment.31.40": {
+      "en": "Andres Yese Asti¸ Keirisu¸ when equipped with a pump set¸ +5% attack power when attacking from behind. + 6 + 1 since every discipline of the dress¸ and +2% attack power when attacking from behind",
+      "ru": "",
+      "jp": "夜色アスティアンドレス、ケイリス、パンプをセットで装備すると、背後から攻撃した時の攻撃力+5%。ドレスの鍛錬値+6以降+1毎に、背後から攻撃した時の攻撃力+2%",
+      "tw": "安德烈斯夜色阿斯蒂¸Keirisu¸當配備了水泵組¸5％的攻擊力時從背後攻擊。 + 6 + 1¸因為每個學科的禮服¸和2％的攻擊力攻擊時從背後"
+    }
+  }
+}
