@@ -68,3 +68,32 @@ test('Astir game descriptions regain sentence, stat and refinement boundaries wi
     assert.equal(lines(before).replace(/\s/g, ''), before.replace(/\s/g, ''));
   }
 });
+
+
+test('current-game English Astir descriptions preserve complete stats and refinement rules on separate lines', () => {
+  const lines = runtime().catalogText.lines;
+  const cases = [
+    [
+      'A beautiful coat the color of dawn.The men of Astir love to wear these.STR +1, HP +50Per every enhancement level:Accuracy +1',
+      'A beautiful coat the color of dawn.\nThe men of Astir love to wear these.\nSTR +1, HP +50\nPer every enhancement level:\nAccuracy +1'
+    ],
+    [
+      'A beautiful coat. The men of Astir love to wear these.SPI +1, HP +40, MP +10Per every enhancement level:HP +15At +5 and above: Magic Resistance +5',
+      'A beautiful coat. The men of Astir love to wear these.\nSPI +1, HP +40, MP +10\nPer every enhancement level:\nHP +15\nAt +5 and above: Magic Resistance +5'
+    ],
+    [
+      'Body part: torso and legs.A beautiful dress the color of the sea. DEX +1, INT +1, MP +40Skill Failure Resistance +5%Per every 2 enhancement levels:Skill Casting Speed +1%Skill Cooldown -1%',
+      'Body part: torso and legs.\nA beautiful dress the color of the sea. DEX +1, INT +1, MP +40\nSkill Failure Resistance +5%\nPer every 2 enhancement levels:\nSkill Casting Speed +1%\nSkill Cooldown -1%'
+    ],
+    [
+      'AGI +2Sleep Resistance +4%Knockdown Resistance +4%Per every 2 enhancement levels:Aura Damage +1Attack Speed +1%',
+      'AGI +2\nSleep Resistance +4%\nKnockdown Resistance +4%\nPer every 2 enhancement levels:\nAura Damage +1\nAttack Speed +1%'
+    ]
+  ];
+  for (const [original, expected] of cases) {
+    assert.equal(lines(original), expected);
+    assert.equal(lines(original).replace(/\s/g, ''), original.replace(/\s/g, ''));
+    assert.equal(lines(expected), expected, 'formatting must be idempotent');
+  }
+  assert.equal(lines('Accuracy +1, Attack +2; HP +30'), 'Accuracy +1, Attack +2; HP +30');
+});
