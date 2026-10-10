@@ -6,12 +6,14 @@
 - В админке Modern появился предпросмотр адресной очистки архивных описаний бонусов за полный Astir-комплект по 16 точным ID и четырём языкам. Неизвестные тексты и неопубликованные черновики блокируют операцию.
 - Очистка создаёт неизменяемую D1-ревизию, не меняет расчёты и impactRevision; восстановление возвращает только конкретные примечания из предыдущего снимка, не откатывая остальные предметы.
 - Правила Astir, архивные тексты и границы исключаемых Legacy-блоков объединены в единый проверяемый реестр Modern; исходные файлы и архив Legacy не меняются.
+- Технический выпуск показывается в «Что нового» под актуальной версией с нейтральной формулировкой; подробности админки остаются только в техническом разделе.
 <!-- /admin-notes:ru -->
 
 <!-- admin-notes:en -->
 - Add admin preview and explicit confirmation for archived Astir outfit notes across 16 stable item IDs and four locales. Unknown text and unpublished drafts block publication.
 - Cleanup creates an immutable D1 revision without changing mechanics or impactRevision. Scoped restoration restores only matching archived notes without rolling back unrelated item edits.
 - Share one verified Modern Astir rules registry across the admin backend, generated site and build exclusions; retained Legacy remains unchanged.
+- Show admin-only releases in What's New under the current version with a neutral public summary; detailed changes remain in development notes.
 <!-- /admin-notes:en -->
 
 ## Modern 3.66 — сохранение актуальных китайских примечаний Astir, 2026-10-10
