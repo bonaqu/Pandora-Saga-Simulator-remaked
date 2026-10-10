@@ -63,7 +63,7 @@ class HonorLocalizationTest(unittest.TestCase):
         db = setup_db()
         db.execute("INSERT INTO localization_drafts "
                    "(scope,term_id,locale,text,version,source_version,source_text,updated_at) "
-                   "VALUES ('game','calculator.honor.3.hint','Незавершённый текст',1,0,'Original',1)")
+                   "VALUES ('game','calculator.honor.3.hint','ru','Незавершённый текст',1,0,'Original',1)")
         with self.assertRaises(sqlite3.OperationalError):
             db.executescript(self.script)
         self.assertEqual(db.execute("SELECT count(*) FROM localization_overrides").fetchone()[0], 0)
