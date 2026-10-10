@@ -861,6 +861,104 @@
     editor.querySelector('[data-field="names"][data-language="en"]').focus();
     report('Исходный навык не изменён. Укажите название нового навыка, сохраните черновик, затем опубликуйте его отдельно.');
   }
+
+  async function astirMaintenance() {
+    if (!canLeave() || batchPending || host.inert) return;
+    var sequence = ++editorRequest, thisGeneration = generation;
+    current = null; dirty = false;
+    editor.replaceChildren(node('p', 'Проверяем опубликованные примечания Astir…'));
+    try {
+      var data = await api('astir-notes');
+      if (sequence !== editorRequest || thisGeneration !== generation) return;
+      editor.replaceChildren(node('h3', 'Архивные примечания Astir'));
+      editor.appendChild(node('p',
+        'Очистка только действующего каталога Modern. Legacy и старые версии не изменяются. До подтверждения ничего не записывается в D1.',
+        'help-text'));
+      editor.appendChild(node('p', 'Текущая версия #' + data.catalogRevision +
+        ' · архивных полей: ' + data.fields.length +
+        ' · предметов: ' + data.affectedIds.length, 'help-text'));
+      if (data.dirtyDraftIds.length) {
+        editor.appendChild(node('p',
+          'Очистка заблокирована: есть неопубликованные черновики ' + data.dirtyDraftIds.join(', ') +
+          '. Сначала опубликуйте или разберите их.', 'catalog-draft-warning'));
+      }
+      if (data.warnings.length) {
+        editor.appendChild(node('h4', 'Требуют ручной проверки'));
+        data.warnings.forEach(function (field) {
+          var box = node('details');
+          box.appendChild(node('summary', field.id + ' · ' + field.locale + ' · неизвестный архивный текст'));
+          var contents = node('p', field.before);
+          contents.style.whiteSpace = 'pre-wrap'; contents.style.overflowWrap = 'anywhere';
+          box.appendChild(contents); editor.appendChild(box);
+        });
+      }
+      if (data.fields.length) {
+        editor.appendChild(node('h4', 'Предпросмотр удаления: исходный текст → пустое поле'));
+        data.fields.forEach(function (field) {
+          var box = node('details');
+          box.appendChild(node('summary', field.id + ' · ' + field.locale));
+          var contents = node('p', field.before);
+          contents.style.whiteSpace = 'pre-wrap'; contents.style.overflowWrap = 'anywhere';
+          box.appendChild(contents);
+          box.appendChild(node('p', 'После публикации: примечание пустое', 'help-text'));
+          editor.appendChild(box);
+        });
+      } else {
+        editor.appendChild(node('p', 'Совпадений с известными архивными примечаниями нет.', 'help-text'));
+      }
+      var actions = node('div', undefined, 'editor-actions');
+      var refresh = button('Повторить проверку', astirMaintenance, 'secondary');
+      var cleanup = button('Подтвердить очистку Modern', async function () {
+        if (!data.ready || host.inert) return;
+        if (!window.confirm('Удалить ' + data.fields.length +
+          ' архивных примечаний Astir из текущей версии Modern? Будет создана новая ревизия с возможностью восстановления.')) return;
+        host.inert = true; host.setAttribute('aria-busy', 'true');
+        try {
+          var result = await api('astir-notes/clean', {
+            expectedCatalogRevision: data.catalogRevision,
+            expectedFields: data.fields.map(function (field) { return field.id + ':' + field.locale; }).sort()
+          });
+          window.dispatchEvent(new Event('pandora:catalog-published'));
+          report('Очищено ' + result.cleanedCount + ' архивных примечаний. Новая версия #' + result.catalogRevision +
+            '. Бонусы заточки и старые билды не затронуты.');
+          catalogRevision = result.catalogRevision;
+          await loadList();
+        } catch (error) { report(error.message, true); }
+        finally { host.inert = false; host.removeAttribute('aria-busy'); }
+        if (thisGeneration === generation && sequence === editorRequest) astirMaintenance();
+      });
+      cleanup.disabled = !data.ready;
+      actions.append(cleanup, refresh); editor.appendChild(actions);
+      editor.appendChild(node('h4', 'История очисток и восстановление'));
+      editor.appendChild(node('p', 'Восстановление возвращает только удалённые примечания из предыдущей неизменяемой ревизии. Остальные данные каталога остаются текущими.', 'help-text'));
+      if (!data.cleanupHistory.length) editor.appendChild(node('p', 'Истории очисток пока нет.', 'help-text'));
+      for (var revision of data.cleanupHistory) {
+        var row = node('div', undefined, 'revision-row');
+        row.appendChild(node('span', '#' + revision.version + ' · ' + revision.note));
+        let cleanupRevision = revision.version;
+        row.appendChild(button('Восстановить примечания #' + cleanupRevision, async function () {
+          if (!window.confirm('Вернуть только архивные примечания из очистки #' + cleanupRevision +
+            '? Это создаст новую версию; опубликованные изменения характеристик не будут отменены.')) return;
+          host.inert = true; host.setAttribute('aria-busy', 'true');
+          try {
+            var result = await api('astir-notes/restore', {
+              cleanupRevision: cleanupRevision, expectedCatalogRevision: data.catalogRevision
+            });
+            window.dispatchEvent(new Event('pandora:catalog-published'));
+            report('Примечания восстановлены как версия #' + result.catalogRevision + '.');
+            catalogRevision = result.catalogRevision;
+            await loadList();
+          } catch(error) { report(error.message, true); }
+          finally { host.inert = false; host.removeAttribute('aria-busy'); }
+          if (thisGeneration === generation && sequence === editorRequest) astirMaintenance();
+        }, 'secondary'));
+        editor.appendChild(row);
+      }
+    } catch(error) {
+      if (thisGeneration === generation && sequence === editorRequest) report(error.message, true);
+    }
+  }
+
   async function revisions() {
     if (!canLeave()) return;
     var sequence = ++editorRequest, thisGeneration = generation;
@@ -904,7 +1002,7 @@
         newItem();
       });
       syncNewButton();
-      controls.append(kind, search, newButton, button('История / откат', revisions, 'secondary')); host.appendChild(controls);
+      controls.append(kind, search, newButton, button('Очистка примечаний Astir', astirMaintenance, 'secondary'), button('История / откат', revisions, 'secondary')); host.appendChild(controls);
       draftPanel=node('details',undefined,'catalog-draft-board');
       draftSummary=node('summary','Сохранённые черновики каталога · загрузка…');
       draftBoard=node('div',undefined,'catalog-draft-board-content');
