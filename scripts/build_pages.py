@@ -348,7 +348,7 @@ def _materialize_modern_astir_registry(output: pathlib.Path) -> None:
         items[engine_id] = {"serverId": row["serverId"], "levels": row["levels"]}
     updated_items = item_prefix + json.dumps(items, ensure_ascii=False, separators=(",", ":")) + ";"
     updated_native = native_prefix + json.dumps(
-        [sid for sid in native_ids if sid not in server_ids], separators=(",", ":"
+        [sid for sid in native_ids if sid not in server_ids], separators=(",", ":")
     ) + ";"
     if js.count(previous_line) != 1 or js.count(native_lines[0]) != 1:
         raise ValueError("Modern Astir enhancement anchor is ambiguous")

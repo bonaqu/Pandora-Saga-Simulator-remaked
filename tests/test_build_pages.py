@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from scripts.build_pages import build_pages, _materialize_modern_astir_rules, _materialize_modern_guild_resistance, _read_latest_release, _read_ui_version
+from scripts.build_pages import build_pages, _materialize_modern_astir_rules, _materialize_modern_astir_registry, _materialize_modern_guild_resistance, _read_latest_release, _read_ui_version
 from scripts.localization_catalog import load_migrated_catalogs as load_editable_catalogs
 from scripts.localization_catalog import load_migrated_catalogs
 from scripts.sync_localized_changelogs import render as render_changelog
