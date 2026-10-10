@@ -55,8 +55,12 @@ const request = (path, input) => new Request(origin + path, {
   body: input === undefined ? undefined : JSON.stringify(input)
 });
 const call = async (env, path, data) => {
-  const response = await adminCatalog(request('/api/admin/' + path, data), env, 1001);
-  return { status: response.status, ...await response.json() };
+  try {
+    const response = await adminCatalog(request('/api/admin/' + path, data), env, 1001);
+    return { status: response.status, ...await response.json() };
+  } catch (error) {
+    return { status: error.status || 503, ok: false, message: error.message };
+  }
 };
 const published = async (env, revision) => {
   const response = await publicCatalog(request('/api/catalog' + (revision ? '?revision=' + revision : '')), env);

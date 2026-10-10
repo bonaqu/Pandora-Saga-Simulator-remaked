@@ -23,7 +23,12 @@ export function planAstirCleanup(entries, baselineById, draftFromSource) {
       const before = String(edit.notes?.[locale] || '');
       if (!before.trim()) continue;
       const old = rules.historicalNotes[id]?.[locale] || '';
-      if (old && normalize(before) === normalize(old)) {
+      const source = baselineById.get(id);
+      const originalSourceNote = draftFromSource(source, 'equipment').notes[locale];
+      const isPublishedArchive = old && normalize(before) === normalize(old);
+      const isRetainedArchive = historicalPattern.test(before) &&
+        originalSourceNote && normalize(before) === normalize(originalSourceNote);
+      if (isPublishedArchive || isRetainedArchive) {
         fields.push({ id, engineId, locale, before, after: '' });
         affected.add(id);
       } else if (historicalPattern.test(before)) {
