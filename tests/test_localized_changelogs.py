@@ -62,10 +62,10 @@ class LocalizedChangelogTests(unittest.TestCase):
 """
         ru = render(fixture, "ru")
         en = render(fixture, "en")
-        self.assertIn("### Для пользователей\\n\\n- Выполнены внутренние технические улучшения.", ru)
-        self.assertIn("### For users\\n\\n- Internal technical improvements.", en)
-        self.assertIn("### Разработка и технические изменения\\n\\n- Приватные детали обновления.", ru)
-        self.assertIn("### Development and technical changes\\n\\n- Private admin details.", en)
+        self.assertIn("### Для пользователей\n\n- Выполнены внутренние технические улучшения.", ru)
+        self.assertIn("### For users\n\n- Internal technical improvements.", en)
+        self.assertIn("### Разработка и технические изменения\n\n- Приватные детали обновления.", ru)
+        self.assertIn("### Development and technical changes\n\n- Private admin details.", en)
         self.assertLess(ru.index("### Для пользователей"), ru.index("### Разработка"))
         self.assertLess(en.index("### For users"), en.index("### Development"))
 
