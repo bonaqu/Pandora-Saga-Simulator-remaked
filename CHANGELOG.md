@@ -1,5 +1,25 @@
 # Changelog
 
+## Modern 3.65 — читаемые условия заточки в английских описаниях, 2026-10-10
+
+<!-- release-notes:user:ru -->
+- Улучшены переносы строк в английских описаниях снаряжения: базовые характеристики, условия заточки и эффекты теперь отображаются отдельно, без склеенных слов.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Improved line breaks in English equipment descriptions: base stats, refinement conditions and bonuses now display on separate, readable lines.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Исправлена исключительно презентационная нормализация английских текстов для «Per every enhancement level», «At +5 and above» и смежных эффектов без изменения значений, названий, ревизий D1 и правил расчёта.
+- Добавлены регрессионные проверки игровых описаний Astir, сохранения всех символов и повторного форматирования.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Extend presentation-only English text boundaries for refinement milestones and adjacent effects without editing canonical catalog strings, D1 data, item identities or calculation rules.
+- Cover representative Astir items and enforce content preservation and idempotent formatting.
+<!-- /admin-notes:en -->
+
 ## Modern 3.64 — точечная защита актуальных описаний Astir, 2026-10-10
 
 <!-- admin-notes:ru -->

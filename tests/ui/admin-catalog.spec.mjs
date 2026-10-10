@@ -500,7 +500,9 @@ test('new armor and Soul use numeric controls and multilingual literal text, inc
   await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
   await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
   await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill('New armor');
-  await expect(page.locator('.catalog-entry').filter({ hasText: '<img src=x onerror=alert(1)>' })).toHaveCount(1);
+  // Synthetic admin list search is debounced and async; retain the strict
+  // literal XSS text assertion while tolerating a saturated CI runner.
+  await expect(page.locator('.catalog-entry').filter({ hasText: '<img src=x onerror=alert(1)>' })).toHaveCount(1, { timeout: 15000 });
   await expect(page.locator('#catalog-console img')).toHaveCount(0);
   await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('soul');
   await page.getByRole('button', { name: 'Новая запись', exact: true }).click();

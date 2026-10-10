@@ -2,6 +2,17 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.65 — 2026-10-10
+
+### For users
+
+- Improved line breaks in English equipment descriptions: base stats, refinement conditions and bonuses now display on separate, readable lines.
+
+### Development and technical changes
+
+- Extend presentation-only English text boundaries for refinement milestones and adjacent effects without editing canonical catalog strings, D1 data, item identities or calculation rules.
+- Cover representative Astir items and enforce content preservation and idempotent formatting.
+
 ## Modern 3.64 — 2026-10-10
 
 ### Development and technical changes
