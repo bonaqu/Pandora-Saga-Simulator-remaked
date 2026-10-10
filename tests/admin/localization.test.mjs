@@ -115,6 +115,11 @@ test('category filters are stable and separate equipment from skills, race and s
   const env=fixture();
   const skills=await (await adminLocalization(get('/api/admin/localization?scope=game&group=skills&q=skill_entry.7.5'),env)).json();
   assert.ok(skills.items.some(row=>row.id==='skill_entry.7.5'));
+  const honor=await (await adminLocalization(get('/api/admin/localization?scope=game&group=skills&q=calculator.honor.6'),env)).json();
+  assert.ok(honor.items.some(row=>row.id==='calculator.honor.6'));
+  assert.ok(honor.items.some(row=>row.id==='calculator.honor.6.hint'));
+  const honorStats=await (await adminLocalization(get('/api/admin/localization?scope=game&group=stats&q=calculator.honor.6'),env)).json();
+  assert.equal(honorStats.total,0);
   const equipment=await (await adminLocalization(get('/api/admin/localization?scope=game&group=equipment&q=skill_entry.7.5'),env)).json();
   assert.equal(equipment.total,0);
   const races=await (await adminLocalization(get('/api/admin/localization?scope=game&group=races&q=race.0'),env)).json();
