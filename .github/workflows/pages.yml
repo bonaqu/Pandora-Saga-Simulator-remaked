@@ -76,12 +76,17 @@ jobs:
               done
 
               if [[ "$deployment_sensitive" == "true" ]]; then
+                # Infrastructure changes still require a complete PR matrix.
+                # Re-running that same matrix serially in Pages after a green
+                # exact-head PR wasted ~20 minutes and stalled publication.
+                # Only an independently verified merged PR may use the smoke
+                # gate; direct pushes / missing evidence retain full checks.
                 mode=full
                 pages_required=true
                 wiki_required=false
                 full_validation=true
-                force_full_deploy=true
-                policy_json='{"mode":"full","reason":"deployment-infrastructure-changed","pages_required":true,"wiki_required":false,"full_validation":true,"force_full_deploy":true}'
+                force_full_deploy=false
+                policy_json='{"mode":"full","reason":"deployment-infrastructure-changed-require-pr-evidence","pages_required":true,"wiki_required":false,"full_validation":true,"force_full_deploy":false}'
               else
                 policy_json="$(printf '%s\n' "${changed_files[@]}" | python3 scripts/deploy_change_policy.py --stdin)"
                 mode="$(jq -r '.mode' <<<"$policy_json")"
@@ -131,9 +136,18 @@ jobs:
                 pr="$(gh api "repos/$REPOSITORY/pulls/$pr_number")"
                 pr_head="$(jq -r '.head.sha' <<<"$pr")"
                 runs="$(gh api                   "repos/$REPOSITORY/actions/workflows/feature-ci.yml/runs?head_sha=$pr_head&event=pull_request&status=completed&per_page=20")"
-
-                if ! jq -e '.workflow_runs | any(.conclusion == "success")' <<<"$runs" >/dev/null; then
+                successful_run_id="$(jq -r '.workflow_runs | map(select(.conclusion == "success")) | first | .id // empty' <<<"$runs")"
+                if [[ -z "$successful_run_id" ]]; then
                   echo "Runtime commit $commit comes from PR #$pr_number, but exact head $pr_head has no successful Feature CI."
+                  all_runtime_validated=false
+                  break
+                fi
+                # The workflow summary alone is insufficient: verify its
+                # fail-closed partition aggregator really ran successfully.
+                # This is especially important when CI/deploy files changed.
+                ci_jobs="$(gh api "repos/$REPOSITORY/actions/runs/$successful_run_id/jobs?per_page=100")"
+                if ! jq -e '.jobs | any(.name == "test" and .conclusion == "success")' <<<"$ci_jobs" >/dev/null; then
+                  echo "PR #$pr_number CI run $successful_run_id has no successful required partition aggregator."
                   all_runtime_validated=false
                   break
                 fi
@@ -148,7 +162,7 @@ jobs:
                 full_validation=false
                 mode=validated-runtime
                 pages_required=true
-                echo "All $validated_prs runtime commit(s) since the last successful deployment are PR-validated; using the production smoke gate."
+                echo "All $validated_prs runtime commit(s) since the last successful deployment have passing exact-head PR CI and required aggregate jobs; reusing validation for production smoke."
               else
                 echo "At least one runtime change since the deployed baseline lacks reusable validation; keeping full production validation."
               fi

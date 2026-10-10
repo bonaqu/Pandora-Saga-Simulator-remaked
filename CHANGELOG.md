@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 3.68 — ускорение CI/CD и устранение повторной проверки при публикации, 2026-10-10
+
+<!-- admin-notes:ru -->
+- После успешной полной проверки точной версии PR, включая обязательный итоговый CI-контроль, GitHub Pages использует короткие проверки публикации вместо повторного последовательного прогона всей браузерной матрицы. Это действует и при изменениях скрипта сборки и CI/CD.
+- Если проверенное происхождение изменения не найдено (например, прямой push без PR), остаётся полный защитный прогон. Деплой не доверяет одной лишь успешной отметке workflow: проверяет обязательную завершающую задачу CI.
+- Для правок только CSS или изображений больше не выполняются тесты игровых расчётов, исходных данных и логики билдов; сохраняются проверка визуального интерфейса и Chromium/Firefox/WebKit.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Reuse verified exact-head pull request CI, including its required aggregate job, for Pages publication instead of rerunning the entire browser matrix after merge, even for build and CI/CD infrastructure edits.
+- Retain the full fail-closed production validation path for unverified/direct changes; a successful workflow banner alone is not enough.
+- Scope CSS/image-only PR validation to visual and Chromium/Firefox/WebKit checks, removing unrelated gameplay, data and build-code suites.
+<!-- /admin-notes:en -->
+
 ## Modern 3.67 — безопасная очистка архивных примечаний Astir, 2026-10-10
 
 <!-- admin-notes:ru -->

@@ -113,7 +113,7 @@ jobs:
             esac
 
             case "$file" in
-              modern/*.css|css/*|image/*|tests/ui/*.spec.mjs|tests/ui/helpers/*.mjs|*.md|docs/*|.github/ISSUE_TEMPLATE/*|tests/test_repository_docs.py|tests/test_deploy_change_policy.py)
+              modern/*.css|css/*|image/*|*.md|docs/*|.github/ISSUE_TEMPLATE/*)
                 ;;
               *)
                 css_only=false
@@ -199,19 +199,19 @@ jobs:
           tests.test_deploy_change_policy
 
       - name: Run full Python tests
-        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
         run: python -m unittest discover -s tests -v
 
       - name: Verify compact Modern build code and catalog descriptions
-        if: needs.classify.outputs.docs_only != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.css_only != 'true'
         run: npm run test:modern-build-code
 
       - name: Validate restored simulator
-        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.admin_only != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
         run: python3 scripts/validate_site.py
 
       - name: Syntax-check core JavaScript
-        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -253,18 +253,22 @@ jobs:
 
 
       - name: Run complete desktop workspace contract
+        if: needs.classify.outputs.css_only != 'true'
         id: workspace
         run: |
           mkdir -p .ci-artifacts
           npm run test:ui:desktop -- --project=chromium --reporter=json > .ci-artifacts/workspace-report.json
 
       - name: Verify deterministic Legacy terminology export
+        if: needs.classify.outputs.css_only != 'true'
         run: npm run test:translations
 
       - name: Verify pure current skill reference reconciliation
+        if: needs.classify.outputs.css_only != 'true'
         run: npm run test:source-audit
 
       - name: Verify deterministic structured data projections
+        if: needs.classify.outputs.css_only != 'true'
         run: npm run test:data
 
       - name: Capture desktop and mobile visual QA
@@ -284,7 +288,7 @@ jobs:
 
   browser_core:
     needs: classify
-    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true'
+    if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
