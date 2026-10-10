@@ -349,7 +349,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             (modern / "catalog-text.js").write_text("// text", encoding="utf-8")
             (modern / "identity-aliases.js").write_text("// aliases", encoding="utf-8")
             (modern / "catalog.js").write_text("// versioned public catalog", encoding="utf-8")
-            (modern / "enhancement-effects.js").write_text("// server enhancement mechanics", encoding="utf-8")
+            shutil.copy2(pathlib.Path(__file__).resolve().parents[1] / "modern/enhancement-effects.js", modern / "enhancement-effects.js")
             (modern / "admin-entry.js").write_text("// hidden entry", encoding="utf-8")
             (modern / "admin-entry.css").write_text("/* terminal */", encoding="utf-8")
             (modern / "build-store.js").write_text("// build store", encoding="utf-8")
