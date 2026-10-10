@@ -5,6 +5,10 @@ import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { adminCatalog } from '../../admin-api/src/catalog.mjs';
 import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs';
+import rules from '../../data/modern-astir-rules.json' with { type: 'json' };
+import { astirIds } from '../../admin-api/src/astir-cleanup.mjs';
+import { baselineById, sourceIdentity } from '../../admin-api/src/catalog-baseline.mjs';
+import { draftFromSource } from '../../admin-api/src/catalog-model.mjs';
 
 const admin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
 
@@ -104,6 +108,41 @@ async function openConsole(page, drafts = []) {
   await expect(page.locator('#catalog-state')).toContainText('Каталог загружен');
   return { sqlite, errors };
 }
+
+test('authenticated catalog admin previews archival Astir note cleanup and restores exactly those fields', async ({ page }) => {
+  const { sqlite, errors } = await openConsole(page);
+  const entries = astirIds.map(id => {
+    const source = baselineById.get(id);
+    const edit = draftFromSource(source, 'equipment');
+    edit.notes = { en: '', ru: '', jp: '', tw: '' };
+    return { identity: sourceIdentity(source), edit };
+  });
+  entries[0].edit.notes.en = rules.historicalNotes[astirIds[0]].en;
+  entries[1].edit.notes.jp = rules.historicalNotes[astirIds[1]].jp;
+  entries[0].edit.notes.tw = '此設備可以配備護符，並提高恢復力。';
+  const json = JSON.stringify(entries);
+  sqlite.prepare('UPDATE catalog_head SET version=2,impact_version=2,snapshot_json=? WHERE id=1').run(json);
+  sqlite.prepare('INSERT INTO catalog_revisions(version,impact_version,snapshot_json,created_at,note) VALUES(2,2,?,1000,?)')
+    .run(json, 'Seed browser fixture');
+  await page.getByRole('button', { name: 'Очистка примечаний Astir' }).click();
+  await expect(page.locator('.catalog-editor')).toContainText('архивных полей: 2');
+  await expect(page.locator('.catalog-editor')).toContainText('из текущей версии Modern');
+  assertNoChanges();
+  page.on('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: 'Подтвердить очистку Modern' }).click();
+  await expect(page.locator('.catalog-editor')).toContainText('архивных полей: 0');
+  expect(sqlite.prepare('SELECT version,impact_version FROM catalog_head').get()).toMatchObject({version:3,impact_version:2});
+  await page.getByRole('button', { name: 'Восстановить примечания #3' }).click();
+  await expect(page.locator('.catalog-editor')).toContainText('архивных полей: 2');
+  const latest = JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head').get().snapshot_json);
+  expect(latest[0].edit.notes.en).toBe(rules.historicalNotes[astirIds[0]].en);
+  expect(latest[0].edit.notes.tw).toBe('此設備可以配備護符，並提高恢復力。');
+  expect(sqlite.prepare('SELECT impact_version FROM catalog_head').get().impact_version).toBe(2);
+  expect(errors).toEqual([]);
+  function assertNoChanges() {
+    expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(2);
+  }
+});
 
 test('conditional skill profile editor keeps one compact form, isolated base values and server-reviewed variants through draft/publication', async ({ page }) => {
   const { sqlite, errors } = await openConsole(page);
