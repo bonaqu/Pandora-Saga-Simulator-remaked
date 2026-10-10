@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from scripts.build_pages import build_pages, _materialize_modern_astir_rules, _materialize_modern_guild_resistance, _read_latest_release, _read_ui_version
+from scripts.build_pages import build_pages, _materialize_modern_astir_rules, _materialize_modern_astir_registry, _materialize_modern_guild_resistance, _read_latest_release, _read_ui_version
 from scripts.localization_catalog import load_migrated_catalogs as load_editable_catalogs
 from scripts.localization_catalog import load_migrated_catalogs
 from scripts.sync_localized_changelogs import render as render_changelog
@@ -239,7 +239,7 @@ class BuildPagesTests(unittest.TestCase):
             self.assertNotIn("To['N'] == '緋色アスティアンドレス' &&", patched)
             # Individual Astir refinement triggers and other gear combos
             # must still work. The old source stays byte-identical.
-            self.assertIn("To['N'] == '雪色アスティアンコート' && To['E'] >= 1", patched)
+            self.assertNotIn("To['N'] == '雪色アスティアンコート' && To['E'] >= 1", patched)
             self.assertIn("Sh['N'] == 'カイトシールド'", patched)
             self.assertEqual(source.read_bytes(), before)
             self.assertEqual((root / "js/equip.js").read_bytes(), before)
@@ -247,6 +247,35 @@ class BuildPagesTests(unittest.TestCase):
             (root / "js/equip.js").write_text("broken", encoding="utf-8")
             with self.assertRaises(ValueError):
                 _materialize_modern_astir_rules(root, output)
+
+    def test_native_astir_refinement_uses_current_snapshots_only_in_modern(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary) / "repo"
+            (root / "js").mkdir(parents=True)
+            source = pathlib.Path(__file__).resolve().parents[1]
+            shutil.copy2(source / "js/equip.js", root / "js/equip.js")
+            output = root / "_site"
+            (output / "js").mkdir(parents=True)
+            (output / "modern").mkdir(parents=True)
+            shutil.copy2(root / "js/equip.js", output / "js/equip.js")
+            shutil.copy2(source / "modern/enhancement-effects.js", output / "modern/enhancement-effects.js")
+            original_equip = (root / "js/equip.js").read_bytes()
+            original_enhancement = (source / "modern/enhancement-effects.js").read_bytes()
+            _materialize_modern_astir_rules(root, output)
+            _materialize_modern_astir_registry(output)
+            equipment_js = (output / "js/equip.js").read_text(encoding="utf-8")
+            enhancement_js = (output / "modern/enhancement-effects.js").read_text(encoding="utf-8")
+            rules = json.loads((source / "data/modern-astir-rules.json").read_text(encoding="utf-8"))
+            self.assertEqual(len(rules["nativeRefinementReplacements"]), 6)
+            for row in rules["nativeRefinementReplacements"]:
+                with self.subTest(item=row["engineId"]):
+                    self.assertNotIn(row["legacyBlock"], equipment_js)
+                    self.assertIn('"' + str(row["engineId"]) + '":{"serverId":'
+                                  + str(row["serverId"]) + ',"levels":', enhancement_js)
+            self.assertIn("NATIVE_SERVER_IDS = NATIVE_SERVER_IDS.filter", enhancement_js)
+            self.assertIn("Duplicate Astir Forth ID:", enhancement_js)
+            self.assertEqual((root / "js/equip.js").read_bytes(), original_equip)
+            self.assertEqual((source / "modern/enhancement-effects.js").read_bytes(), original_enhancement)
 
     def test_modern_omits_only_obsolete_hidden_counter_and_preserves_legacy(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -320,7 +349,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             (modern / "catalog-text.js").write_text("// text", encoding="utf-8")
             (modern / "identity-aliases.js").write_text("// aliases", encoding="utf-8")
             (modern / "catalog.js").write_text("// versioned public catalog", encoding="utf-8")
-            (modern / "enhancement-effects.js").write_text("// server enhancement mechanics", encoding="utf-8")
+            shutil.copy2(pathlib.Path(__file__).resolve().parents[1] / "modern/enhancement-effects.js", modern / "enhancement-effects.js")
             (modern / "admin-entry.js").write_text("// hidden entry", encoding="utf-8")
             (modern / "admin-entry.css").write_text("/* terminal */", encoding="utf-8")
             (modern / "build-store.js").write_text("// build store", encoding="utf-8")

@@ -122,5 +122,459 @@
       "jp": "夜色アスティアンドレス、ケイリス、パンプをセットで装備すると、背後から攻撃した時の攻撃力+5%。ドレスの鍛錬値+6以降+1毎に、背後から攻撃した時の攻撃力+2%",
       "tw": "安德烈斯夜色阿斯蒂¸Keirisu¸當配備了水泵組¸5％的攻擊力時從背後攻擊。 + 6 + 1¸因為每個學科的禮服¸和2％的攻擊力攻擊時從背後"
     }
-  }
+  },
+  "nativeRefinementReplacements": [
+    {
+      "engineId": 310031,
+      "serverId": 12601,
+      "slot": "To",
+      "name": "アスティアンコート",
+      "legacyBlock": "  if (To['N'] == 'アスティアンコート' && To['E'] >= 1) {\n    SPOpt[0].push('6=' + To['E']);\n  }\n",
+      "levels": {
+        "1": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "2": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 30,
+            "b": 0
+          }
+        ],
+        "3": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 45,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 60,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 75,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 90,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 105,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 120,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 135,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 150,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "engineId": 310035,
+      "serverId": 12607,
+      "slot": "To",
+      "name": "雪色アスティアンコート",
+      "legacyBlock": "  if (To['N'] == '雪色アスティアンコート' && To['E'] >= 1) {\n    SPOpt[0].push('6=' + To['E']);\n  }\n",
+      "levels": {
+        "2": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -3,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -4,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -5,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "engineId": 310032,
+      "serverId": 12611,
+      "slot": "To",
+      "name": "アスティアンドレス",
+      "legacyBlock": "  if (To['N'] == 'アスティアンドレス' && To['E'] >= 1) {\n    SPOpt[0].push('6=' + To['E']);\n    SPOpt[0].push('7=' + To['E']);\n  }\n",
+      "levels": {
+        "1": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "2": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 30,
+            "b": 0
+          }
+        ],
+        "3": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 45,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 60,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 75,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 90,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 105,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 120,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 135,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -3,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 150,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -3,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "engineId": 310036,
+      "serverId": 12617,
+      "slot": "To",
+      "name": "雪色アスティアンドレス",
+      "legacyBlock": "  if (To['N'] == '雪色アスティアンドレス' && To['E'] >= 1) {\n    SPOpt[0].push('6=' + To['E']);\n    SPOpt[0].push('7=' + (To['E'] * 2));\n  }\n",
+      "levels": {
+        "2": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -1,
+            "b": 0
+          },
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -2,
+            "b": 0
+          },
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -3,
+            "b": 0
+          },
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -3,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -4,
+            "b": 0
+          },
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -4,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -5,
+            "b": 0
+          },
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -5,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "engineId": 330031,
+      "serverId": 13601,
+      "slot": "Ku",
+      "name": "アスティアンパンツ",
+      "legacyBlock": "  if (Ku['N'] == 'アスティアンパンツ' && Ku['E'] >= 1) {\n    SPOpt[0].push('7=' + Ku['E']);\n  }\n",
+      "levels": {
+        "3": [
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -3,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "engineId": 330035,
+      "serverId": 13607,
+      "slot": "Ku",
+      "name": "雪色アスティアンパンツ",
+      "legacyBlock": "  if (Ku['N'] == '雪色アスティアンパンツ' && Ku['E'] >= 1) {\n    SPOpt[0].push('7=' + (Ku['E'] * 2));\n  }\n",
+      "levels": {
+        "2": [
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -3,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -4,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -5,
+            "b": 0
+          }
+        ]
+      }
+    }
+  ]
 }

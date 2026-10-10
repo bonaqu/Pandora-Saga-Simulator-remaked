@@ -478,6 +478,57 @@ async function equipAndMeasure(page, engineId, plus) {
   }, { engineId, plus });
 }
 
+
+test('all six inherited Astir refinement rules match current milestone snapshots without Legacy double counting', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(snapshot => PandoraRemaked.catalog.applySnapshot(snapshot), publication([]));
+  const scan = await page.evaluate(() => {
+    const cases = [
+      { id: 310031, slot: 3, values: { 6: [0, 75, 150], 145: [0, 5, 5] } },
+      { id: 310035, slot: 3, values: { 77: [0, 2, 5] } },
+      { id: 310032, slot: 3, values: { 6: [0, 75, 150], 145: [0, 5, 5], 52: [0, -1, -3] } },
+      { id: 310036, slot: 3, values: { 77: [0, 2, 5], 79: [0, -2, -5] } },
+      { id: 330031, slot: 5, values: { 52: [0, -1, -3] } },
+      { id: 330035, slot: 5, values: { 79: [0, -2, -5] } }
+    ];
+    const original = Status.Equip.map(slot => [...slot]);
+    const result = [];
+    for (const entry of cases) {
+      const values = [];
+      for (const plus of [0, 5, 10]) {
+        for (let i = 0; i < Status.Equip.length; i++)
+          Status.Equip[i] = [0, 0, 0, 0, 0, 0, 0];
+        Status.Equip[entry.slot] = [entry.id, 0, 0, plus, 0, 0, 0];
+        EquipCheck();
+        const totals = Object.fromEntries(Object.keys(entry.values).map(stat => [
+          stat, (EquipOpt[stat] || []).reduce((sum, token) =>
+            sum + Number(String(token).replace('%', '')), 0)
+        ]));
+        EquipCheck();
+        const again = Object.fromEntries(Object.keys(entry.values).map(stat => [
+          stat, (EquipOpt[stat] || []).reduce((sum, token) =>
+            sum + Number(String(token).replace('%', '')), 0)
+        ]));
+        values.push({ totals, again });
+      }
+      result.push({ entry, values });
+    }
+    for (let i = 0; i < original.length; i++) Status.Equip[i] = original[i];
+    return result;
+  });
+  for (const { entry, values } of scan) {
+    for (const [stat, expected] of Object.entries(entry.values)) {
+      const base = values[0].totals[stat];
+      for (let i = 0; i < expected.length; i++) {
+        expect(values[i].totals[stat] - base,
+          'Astir engine ' + entry.id + ' stat ' + stat + ' milestone ' + [0,5,10][i])
+          .toBe(expected[i]);
+        expect(values[i].again).toEqual(values[i].totals);
+      }
+    }
+  }
+});
+
 test('Robust War Crossbow follows the live +2/+4/+6/+7 enhancement thresholds', async ({ page }) => {
   const crossbow = customEquipment(9, 19, 'War Crossbow D', [{ stat: 2, unit: 'flat', value: 1 }], {
     baseAttack: 70,

@@ -293,6 +293,16 @@ def _materialize_modern_astir_rules(root: pathlib.Path, output: pathlib.Path) ->
         raise ValueError("Unexpected Legacy Astir set section: review before updating")
     # Keep preceding non-Astir set bonuses and the following weapon rules.
     patched = copied[:start] + "  // Modern: no Astir full-outfit bonuses in the current game.\n" + copied[end:]
+    replacements = registry.get("nativeRefinementReplacements", [])
+    if len(replacements) != 6 or len({row["engineId"] for row in replacements}) != 6:
+        raise ValueError("Modern Astir native-refinement list must identify six unique items")
+    for row in replacements:
+        block = row["legacyBlock"]
+        if not block.startswith("  if (") or not block.endswith("  }\n") or patched.count(block) != 1:
+            raise ValueError("Cannot safely replace native Astir refinement for " + str(row["engineId"]))
+        # All numeric bonuses for these six items now come from their current
+        # per-item enhancement snapshots in Modern, never twice from Legacy.
+        patched = patched.replace(block, "  // Modern: Astir refinement is supplied by the current-game snapshot.\n", 1)
     (output / "js" / "equip.js").write_text(patched, encoding="utf-8")
 
 
@@ -308,6 +318,39 @@ def _materialize_modern_astir_registry(output: pathlib.Path) -> None:
         json.dumps({"outfitRootIds": rules["outfitRootIds"], "obsoleteNotePattern": rules["obsoleteNotePattern"]}, ensure_ascii=False, separators=(",", ":")) + ");\n",
         encoding="utf-8",
     )
+
+    # The shipped Modern bundle supplements six formerly native upgrades with
+    # exact published milestone snapshots. Do not rewrite the huge retained
+    # frozen map: insert a separately guarded override immediately before the
+    # pure effect mapper, after both constants have been initialized.
+    asset = output / "modern" / "enhancement-effects.js"
+    js = asset.read_text(encoding="utf-8")
+    anchor = "  function mappedEffect(effect) {"
+    if js.count(anchor) != 1 or js.count("  var ITEM_FORTH = ") != 1 or js.count("  var NATIVE_SERVER_IDS = ") != 1:
+        raise ValueError("Modern Astir refinement insertion anchor drift")
+    rows = rules.get("nativeRefinementReplacements", [])
+    if len(rows) != 6 or len({row["engineId"] for row in rows}) != 6:
+        raise ValueError("Modern Astir overrides must identify six unique items")
+    server_ids = [row["serverId"] for row in rows]
+    if len(set(server_ids)) != 6 or any(not row.get("levels") for row in rows):
+        raise ValueError("Modern Astir native refinement snapshots are invalid")
+    overrides = {
+        str(row["engineId"]): {"serverId": row["serverId"], "levels": row["levels"]}
+        for row in rows
+    }
+    payload = json.dumps(overrides, ensure_ascii=False, separators=(",", ":"))
+    server_payload = json.dumps(server_ids, separators=(",", ":"))
+    insertion = (
+        "  // Six verified Modern Astir refinement snapshots replace stale native branches.\n"
+        "  var modernAstirForth = " + payload + ";\n"
+        "  Object.keys(modernAstirForth).forEach(function (key) {\n"
+        "    if (Object.prototype.hasOwnProperty.call(ITEM_FORTH, key)) throw new Error('Duplicate Astir Forth ID: ' + key);\n"
+        "    ITEM_FORTH[key] = modernAstirForth[key];\n"
+        "  });\n"
+        "  NATIVE_SERVER_IDS = NATIVE_SERVER_IDS.filter(function (id) { return "
+        + server_payload + ".indexOf(id) === -1; });\n"
+    )
+    asset.write_text(js.replace(anchor, insertion + anchor, 1), encoding="utf-8")
 
 
 def _copy_runtime(root: pathlib.Path, destination: pathlib.Path) -> None:
