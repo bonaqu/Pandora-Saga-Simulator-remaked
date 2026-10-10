@@ -305,7 +305,7 @@ def _materialize_modern_astir_registry(output: pathlib.Path) -> None:
     (output / "modern" / "astian-rules.js").write_text(
         "window.PandoraRemaked = window.PandoraRemaked || {};\n"
         "window.PandoraRemaked.astirRules = Object.freeze(" +
-        json.dumps(rules, ensure_ascii=False, separators=(",", ":")) + ");\n",
+        json.dumps({"outfitRootIds": rules["outfitRootIds"], "obsoleteNotePattern": rules["obsoleteNotePattern"]}, ensure_ascii=False, separators=(",", ":")) + ");\n",
         encoding="utf-8",
     )
 
