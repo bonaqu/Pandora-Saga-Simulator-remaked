@@ -181,6 +181,7 @@ test('all 16 deprecated Astir notes are filtered per language without hiding val
     const coat=version.records.find(v=>v.engineId===310041);
     coat.notes.en='Set the enhancement to +5 for INT +1. A new independent note for the Scarlet Coat.';
     coat.notes.jp='アスティアンの新しい説明文';
+    coat.notes.tw='此設備可以配備護符，並提高恢復力。';
     const applied=PandoraRemaked.catalog.applySnapshot(version);
     const text={applied};
     for(const lang of ['en','jp','tw']){
@@ -194,5 +195,6 @@ test('all 16 deprecated Astir notes are filtered per language without hiding val
   expect(newNotes.en).toContain('Set the enhancement to +5 for INT +1.');
   expect(newNotes.en).toContain('A new independent note for the Scarlet Coat.');
   expect(newNotes.jp).toContain('アスティアンの新しい説明文');
-  expect(newNotes.tw).not.toMatch(/一組|一套|配備|並設置|並配|設備|和集/);
+  expect(newNotes.tw).toContain('此設備可以配備護符，並提高恢復力。');
+  expect(newNotes.tw).not.toMatch(/一組|一套|當配備了(?:一套)?(?:水泵組|泵)|並設置|並配|和集/);
 });

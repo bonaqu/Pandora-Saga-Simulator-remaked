@@ -2,6 +2,13 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.66 — 2026-10-10
+
+### Development and technical changes
+
+- Narrow archived Astir outfit-note detection so ordinary Chinese words for equipment and equipping no longer hide valid new descriptions.
+- Preserve suppression of all 16 obsolete outfit notes and add a regression for a valid replacement note.
+
 ## Modern 3.65 — 2026-10-10
 
 ### For users

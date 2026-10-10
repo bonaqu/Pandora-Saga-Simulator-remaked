@@ -1,5 +1,17 @@
 # Changelog
 
+## Modern 3.66 — сохранение актуальных китайских примечаний Astir, 2026-10-10
+
+<!-- admin-notes:ru -->
+- Уточнено распознавание устаревших примечаний о полном астирском комплекте: обычные китайские слова «снаряжение» и «экипировать» больше не скрывают новые корректные описания.
+- Сохранена фильтрация прежних несуществующих бонусов всех 16 астирских вещей; дополнена регрессионная проверка действующего примечания.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Narrow archived Astir outfit-note detection so ordinary Chinese words for equipment and equipping no longer hide valid new descriptions.
+- Preserve suppression of all 16 obsolete outfit notes and add a regression for a valid replacement note.
+<!-- /admin-notes:en -->
+
 ## Modern 3.65 — читаемые условия заточки в английских описаниях, 2026-10-10
 
 <!-- release-notes:user:ru -->
