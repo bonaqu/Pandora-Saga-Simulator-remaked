@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "approvedOn": "2026-10-10",
+  "description": "User-approved RU Honor names and hover hints, frozen from the final supplied workbook for migration and deployment verification; not a second runtime translation source.",
+  "entries": [
+    {
+      "id": "calculator.honor.0",
+      "ruName": "Сила познания",
+      "sourceEnHint": "STA+1, STR+1, AGI+1, DEX+1, INT+1",
+      "ruHint": "ВЫН +1, СИЛ +1, ПРВ +1, ЛВК +1, СД +1, ИНТ +1."
+    },
+    {
+      "id": "calculator.honor.1",
+      "ruName": "Золотое сердце",
+      "sourceEnHint": "Amount recovered healing skills+10%",
+      "ruHint": "Эффективность исцеляющих умений +10%."
+    },
+    {
+      "id": "calculator.honor.2",
+      "ruName": "Том огня",
+      "sourceEnHint": "ATK+2%, Fire element magic damage+5%, Fire resist+10%, Ice resist-15%, Burn resist+10%",
+      "ruHint": "АТК +2%, урон магией огня +5%, сопротивляемость огню +10%, сопротивляемость льду −15%, сопротивляемость ожогу +5%."
+    },
+    {
+      "id": "calculator.honor.3",
+      "ruName": "Том льда",
+      "sourceEnHint": "Ice element magic damage+5%, Casting resist+2%, Ice resist+10%, Lightning resist-15%, Frozen resist+5%",
+      "ruHint": "Урон магией льда +5%, сопротивляемость прерыванию заклинаний +2%, сопротивляемость льду +10%, сопротивляемость молнии −15%, сопротивляемость заморозке +5%."
+    },
+    {
+      "id": "calculator.honor.4",
+      "ruName": "Том грозы",
+      "sourceEnHint": "Accuracy+5, Thunder magic damage+5%, Fire resist-15%, Lightning resist+10%, Knockdown resist+5%",
+      "ruHint": "Точность +5, урон магией молнии +5%, сопротивляемость огню −15%, сопротивляемость молнии +10%, устойчивость к падению +5%."
+    },
+    {
+      "id": "calculator.honor.5",
+      "ruName": "Бешенство",
+      "sourceEnHint": "Physical damage weapon+15",
+      "ruHint": "Физический урон оружием +15."
+    },
+    {
+      "id": "calculator.honor.6",
+      "ruName": "Мастер наездника",
+      "sourceEnHint": "Release rate status on horseback+10%",
+      "ruHint": "При верховой езде повышаются базовые характеристики персонажа на +10%."
+    },
+    {
+      "id": "calculator.honor.7",
+      "ruName": "Тайна стража",
+      "sourceEnHint": "Critical resist-10%, Critical damage resist-10%",
+      "ruHint": "Вероятность получения критического удара −10%, получаемый критический урон −10%."
+    },
+    {
+      "id": "calculator.honor.8",
+      "ruName": "Том тьмы",
+      "sourceEnHint": "Light resist-5%, Darkness resist+10%, Charm resist+5%, Mental state resist+6%",
+      "ruHint": "Сопротивляемость свету −5%, тьме +10%, чарам +5%, аномальным состояниям духа +6%."
+    },
+    {
+      "id": "calculator.honor.9",
+      "ruName": "Том света",
+      "sourceEnHint": "Light resist+10%, Darkness resist-5%, Magic resist+3%, Physical state resist+6%",
+      "ruHint": "Сопротивляемость свету +10%, тьме −5%, магии +3%, аномальным состояниям тела +6%."
+    },
+    {
+      "id": "calculator.honor.10",
+      "ruName": "Сила воли",
+      "sourceEnHint": "POT Healed+5%, DEF+5, Physical damage-5%",
+      "ruHint": "Эффективность лечения зельями +5%, защита +5, получаемый физический урон −5%."
+    },
+    {
+      "id": "calculator.honor.11",
+      "ruName": "Невероятная ловкость",
+      "sourceEnHint": "Accuracy-10, Dodge+10, Avoid long-distance rates+3%",
+      "ruHint": "Точность −10, уклонение +10, уклонение от дальних атак +3%."
+    },
+    {
+      "id": "calculator.honor.12",
+      "ruName": "Мастер боя",
+      "sourceEnHint": "Accuracy+10, Dodge-10, Frontattack damage+10%",
+      "ruHint": "Точность +10, уклонение −10, АТК при атаке спереди +10%."
+    }
+  ]
+}
