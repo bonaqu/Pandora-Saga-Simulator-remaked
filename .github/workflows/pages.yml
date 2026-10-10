@@ -151,6 +151,26 @@ jobs:
                   all_runtime_validated=false
                   break
                 fi
+                if [[ "$deployment_sensitive" == "true" ]]; then
+                  # Workflow/build code changes get the fastest path ONLY if
+                  # the full PR matrix really ran (not merely a green summary
+                  # with all partitions marked skipped).
+                  if ! jq -e '
+                    (.jobs | any(.name == "static" and .conclusion == "success")) and
+                    (.jobs | any(.name == "workspace_visual" and .conclusion == "success")) and
+                    (.jobs | any(.name == "browser_core (1)" and .conclusion == "success")) and
+                    (.jobs | any(.name == "browser_core (2)" and .conclusion == "success")) and
+                    (.jobs | any(.name == "browser_core (3)" and .conclusion == "success")) and
+                    (.jobs | any(.name == "catalog_contract (1)" and .conclusion == "success")) and
+                    (.jobs | any(.name == "catalog_contract (2)" and .conclusion == "success")) and
+                    (.jobs | any(.name == "cross_browser_firefox" and .conclusion == "success")) and
+                    (.jobs | any(.name == "cross_browser_webkit" and .conclusion == "success"))
+                  ' <<<"$ci_jobs" >/dev/null; then
+                    echo "PR #$pr_number changed deployment infrastructure but did not pass every critical CI partition."
+                    all_runtime_validated=false
+                    break
+                  fi
+                fi
 
                 source_pr="$pr_number"
                 source_head="$pr_head"

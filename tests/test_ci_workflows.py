@@ -39,6 +39,8 @@ class CIWorkflowArchitectureTests(unittest.TestCase):
         self.assertIn("force_full_deploy=false", workflow)
         self.assertIn('repos/$REPOSITORY/actions/runs/$successful_run_id/jobs?per_page=100', workflow)
         self.assertIn('.name == "test" and .conclusion == "success"', workflow)
+        self.assertIn('.name == "cross_browser_webkit" and .conclusion == "success"', workflow)
+        self.assertIn('.name == "browser_core (3)" and .conclusion == "success"', workflow)
         self.assertIn("At least one runtime change since the deployed baseline lacks reusable validation", workflow)
 
     def test_production_validation_budget_allows_full_suite_to_finish(self):
@@ -86,7 +88,7 @@ class CIWorkflowArchitectureTests(unittest.TestCase):
         self.assertIn("modern/*.css|css/*|image/*|*.md|docs/*|.github/ISSUE_TEMPLATE/*", workflow)
         self.assertNotIn("image/*|tests/ui/*.spec.mjs", workflow)
         for job in ("browser_core",):
-            section = workflow.split("  " + job + ":")[1].split("\n  ", 1)[0]
+            section = workflow.split("  " + job + ":")[1].split("\n  catalog_audit:", 1)[0]
             self.assertIn("needs.classify.outputs.css_only != 'true'", section)
         self.assertIn("Run complete desktop workspace contract\n        if: needs.classify.outputs.css_only != 'true'", workflow)
         self.assertIn("Capture desktop and mobile visual QA", workflow)
