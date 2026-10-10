@@ -49,7 +49,16 @@ test('Updates provides an accessible on-site release panel without altering the 
   await expect(dialog).toContainText(await page.evaluate(() => PandoraRemakedVersion.ui));
   await expect(dialog).toContainText('Legacy engine: 2.00');
   const technicalRelease = await page.evaluate(() =>
+    Boolean(PandoraRemakedRelease.technicalOnly) ||
     PandoraRemakedVersion.ui !== PandoraRemakedRelease.userVersion);
+  if (technicalRelease && await page.evaluate(() => Boolean(PandoraRemakedRelease.technicalOnly))) {
+    expect(await page.evaluate(() => PandoraRemakedRelease.userVersion))
+      .toBe(await page.evaluate(() => PandoraRemakedVersion.ui));
+    expect(await page.evaluate(() => PandoraRemakedRelease.highlights.ru))
+      .toEqual(['Выполнены внутренние технические улучшения.']);
+    expect(await page.evaluate(() => PandoraRemakedRelease.highlights.en))
+      .toEqual(['Internal technical improvements.']);
+  }
   const latestEnglishNote = await page.evaluate(() => PandoraRemakedRelease.highlights.en[0]);
   if (technicalRelease) {
     await expect(dialog.locator('li')).toHaveCount(1);

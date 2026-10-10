@@ -4,13 +4,23 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.67 — 2026-10-10
 
+### For users
+
+- Internal technical improvements.
+
 ### Development and technical changes
 
 - Add admin preview and explicit confirmation for archived Astir outfit notes across 16 stable item IDs and four locales. Unknown text and unpublished drafts block publication.
 - Cleanup creates an immutable D1 revision without changing mechanics or impactRevision. Scoped restoration restores only matching archived notes without rolling back unrelated item edits.
 - Share one verified Modern Astir rules registry across the admin backend, generated site and build exclusions; retained Legacy remains unchanged.
+- Show admin-only releases in What's New under the current version with a neutral public summary; detailed changes remain in development notes.
+- Increase the Pages full-validation time budget to prevent the last successful browser checks from being cancelled before publication.
 
 ## Modern 3.66 — 2026-10-10
+
+### For users
+
+- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -29,6 +39,10 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - Cover representative Astir items and enforce content preservation and idempotent formatting.
 
 ## Modern 3.64 — 2026-10-10
+
+### For users
+
+- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -89,6 +103,10 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - No admin credentials, catalog revision or build representation is changed. Backend and browser regression tests cover the API and backward compatibility.
 
 ## Modern 3.59 — 2026-10-09
+
+### For users
+
+- Internal technical improvements.
 
 ### Development and technical changes
 

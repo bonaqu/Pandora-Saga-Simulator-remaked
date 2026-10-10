@@ -65,6 +65,41 @@ class BuildPagesTests(unittest.TestCase):
             self.assertEqual(notes["highlights"]["ru"], ["Исправлены описания душ."])
             self.assertNotIn("админ", str(notes))
 
+    def test_technical_only_latest_release_uses_current_version_and_neutral_summary(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            (root / "CHANGELOG.md").write_text("""# Changelog
+
+## Modern 3.67 — Admin only, 2026-10-10
+
+<!-- admin-notes:ru -->
+- Приватные настройки.
+<!-- /admin-notes:ru -->
+<!-- admin-notes:en -->
+- Private internals.
+<!-- /admin-notes:en -->
+
+## Modern 3.65 — Equipment descriptions, 2026-10-09
+
+<!-- release-notes:user:ru -->
+- Исправлены описания предметов.
+<!-- /release-notes:user:ru -->
+<!-- release-notes:user:en -->
+- Equipment descriptions fixed.
+<!-- /release-notes:user:en -->
+""", encoding="utf-8")
+            notes = _read_latest_release(root)
+            self.assertEqual(notes["version"], "3.67")
+            self.assertEqual(notes["userVersion"], "3.67")
+            self.assertEqual(notes["lastContentVersion"], "3.65")
+            self.assertTrue(notes["technicalOnly"])
+            self.assertEqual(notes["date"], "2026-10-10")
+            self.assertEqual(notes["highlights"]["ru"], ["Выполнены внутренние технические улучшения."])
+            self.assertEqual(notes["highlights"]["en"], ["Internal technical improvements."])
+            self.assertNotIn("Приватные", str(notes))
+            self.assertNotIn("Private", str(notes))
+            self.assertNotIn("описания", str(notes))
+
     def test_one_sided_player_release_is_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
             root=pathlib.Path(temporary)
