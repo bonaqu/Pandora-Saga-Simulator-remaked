@@ -272,7 +272,8 @@ class BuildPagesTests(unittest.TestCase):
                     self.assertNotIn(row["legacyBlock"], equipment_js)
                     self.assertIn('"' + str(row["engineId"]) + '":{"serverId":'
                                   + str(row["serverId"]) + ',"levels":', enhancement_js)
-            self.assertNotIn("12601,12607,12611,12617,13601,13607", enhancement_js)
+            self.assertIn("NATIVE_SERVER_IDS = NATIVE_SERVER_IDS.filter", enhancement_js)
+            self.assertIn("Duplicate Astir Forth ID:", enhancement_js)
             self.assertEqual((root / "js/equip.js").read_bytes(), original_equip)
             self.assertEqual((source / "modern/enhancement-effects.js").read_bytes(), original_enhancement)
 
