@@ -543,8 +543,8 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     _copy_runtime(root, output)
     _materialize_modern_guild_resistance(root, output)
     _materialize_modern_astir_rules(root, output)
-    _materialize_modern_astir_registry(output)
     _materialize_modern_assets(root, output)
+    _materialize_modern_astir_registry(output)
     _materialize_release_metadata(root, output)
     _materialize_locales(
         root,
