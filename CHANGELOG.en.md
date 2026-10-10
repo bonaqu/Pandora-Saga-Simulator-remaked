@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.68 — 2026-10-10
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Reuse verified exact-head pull request CI, including its required aggregate job, for Pages publication instead of rerunning the entire browser matrix after merge, even for build and CI/CD infrastructure edits.
+- Retain the full fail-closed production validation path for unverified/direct changes; a successful workflow banner alone is not enough.
+- Scope CSS/image-only PR validation to visual and Chromium/Firefox/WebKit checks, removing unrelated gameplay, data and build-code suites.
+
 ## Modern 3.67 — 2026-10-10
 
 ### For users
