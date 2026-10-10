@@ -120,6 +120,14 @@ jobs:
                 fi
 
                 runtime_seen=true
+                commit_sensitive=false
+                for commit_file in "${commit_files[@]}"; do
+                  case "$commit_file" in
+                    .github/workflows/pages.yml|.github/workflows/feature-ci.yml|.github/actions/*|scripts/build_pages.py|scripts/deploy_change_policy.py)
+                      commit_sensitive=true
+                      ;;
+                  esac
+                done
                 prs="$(gh api                   -H 'Accept: application/vnd.github+json'                   "repos/$REPOSITORY/commits/$commit/pulls")"
                 pr_number="$(jq -r '
                   map(select(.merged_at != null and .base.ref == "bonaqu_projects"))
@@ -151,7 +159,10 @@ jobs:
                   all_runtime_validated=false
                   break
                 fi
-                if [[ "$deployment_sensitive" == "true" ]]; then
+                if [[ "$commit_sensitive" == "true" ]]; then
+                  # Only commits that touched workflow/build code demand the
+                  # complete PR matrix. A combined recovery deploy must not
+                  # reject other valid, focused translation/admin/asset PRs.
                   # Workflow/build code changes get the fastest path ONLY if
                   # the full PR matrix really ran (not merely a green summary
                   # with all partitions marked skipped).

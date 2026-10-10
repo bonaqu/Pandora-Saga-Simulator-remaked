@@ -36,6 +36,8 @@ class CIWorkflowArchitectureTests(unittest.TestCase):
         self.assertIn("Runtime commit $commit is covered by successful Feature CI", workflow)
         self.assertIn("mode=validated-runtime", workflow)
         self.assertIn("deployment-infrastructure-changed-require-pr-evidence", workflow)
+        self.assertIn("commit_sensitive=false", workflow)
+        self.assertIn('if [[ "$commit_sensitive" == "true" ]]; then', workflow)
         self.assertIn("force_full_deploy=false", workflow)
         self.assertIn('repos/$REPOSITORY/actions/runs/$successful_run_id/jobs?per_page=100', workflow)
         self.assertIn('.name == "test" and .conclusion == "success"', workflow)
