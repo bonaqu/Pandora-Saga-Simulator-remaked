@@ -341,14 +341,14 @@ def _materialize_modern_astir_registry(output: pathlib.Path) -> None:
     payload = json.dumps(overrides, ensure_ascii=False, separators=(",", ":"))
     server_payload = json.dumps(server_ids, separators=(",", ":"))
     insertion = (
-        "  // Six verified Modern Astir refinement snapshots replace stale native branches.\\n"
-        "  var modernAstirForth = " + payload + ";\\n"
-        "  Object.keys(modernAstirForth).forEach(function (key) {\\n"
-        "    if (Object.prototype.hasOwnProperty.call(ITEM_FORTH, key)) throw new Error('Duplicate Astir Forth ID: ' + key);\\n"
-        "    ITEM_FORTH[key] = modernAstirForth[key];\\n"
-        "  });\\n"
+        "  // Six verified Modern Astir refinement snapshots replace stale native branches.\n"
+        "  var modernAstirForth = " + payload + ";\n"
+        "  Object.keys(modernAstirForth).forEach(function (key) {\n"
+        "    if (Object.prototype.hasOwnProperty.call(ITEM_FORTH, key)) throw new Error('Duplicate Astir Forth ID: ' + key);\n"
+        "    ITEM_FORTH[key] = modernAstirForth[key];\n"
+        "  });\n"
         "  NATIVE_SERVER_IDS = NATIVE_SERVER_IDS.filter(function (id) { return "
-        + server_payload + ".indexOf(id) === -1; });\\n"
+        + server_payload + ".indexOf(id) === -1; });\n"
     )
     asset.write_text(js.replace(anchor, insertion + anchor, 1), encoding="utf-8")
 
