@@ -93,3 +93,20 @@ jobs:
             throw new Error("Decorative equipment is still published: " + decorative.map(record => record.id).join(", "));
           console.log(JSON.stringify({ revision: head.revision, impactRevision: head.impactRevision, records: catalog.records.length, astirRecords: astir.length, decorativeRecords: decorative.length }));
           NODE
+      - name: Verify published Honor names and descriptions match approved translations
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const approved=JSON.parse(readFileSync('admin-api/data/honor-ru-20261010.json','utf8'));
+          const api='https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/localization';
+          const response=await fetch(api,{cache:'no-store'});
+          const payload=await response.json();
+          if(!response.ok||payload.ok!==true||payload.schemaVersion!==1)
+            throw new Error('Published localization is unavailable');
+          const ru=payload.overrides?.game?.ru||{};
+          for(const row of approved.entries){
+            if(ru[row.id]!==row.ruName||ru[row.id+'.hint']!==row.ruHint)
+              throw new Error('D1 Honor mismatch: '+row.id);
+          }
+          console.log('D1 approved Honor localization: 13 names and 13 hints verified');
+          NODE
