@@ -89,7 +89,8 @@ function catalogManagedRows(snapshot,locale,revision=0){
 }
 
 const GROUPS=new Set(['all','skills','equipment','souls','classes','races','stats','other']);
-function groupOf(kind) {
+function groupOf(kind,id='') {
+  if(id.startsWith('calculator.honor.'))return 'skills';
   if(kind==='skill'||kind==='skill_entry'||kind==='skill_detail'||kind.startsWith('active.')||kind.startsWith('passive.'))return 'skills';
   if(kind==='equipment'||kind.startsWith('equipment.')||kind==='equipment_category')return 'equipment';
   if(kind==='soul'||kind.startsWith('soul.'))return 'souls';
@@ -226,9 +227,9 @@ export async function adminLocalization(request,env) {
     };
     const managed=scope==='game'
       ? catalogManagedRows(legacy.catalogEntries,locale,legacy.catalogRevision) : [];
-    const scoped=RECORDS.filter(row=>row.scope===scope&&(group==='all'||groupOf(row.kind)===group))
+    const scoped=RECORDS.filter(row=>row.scope===scope&&(group==='all'||groupOf(row.kind,row.id)===group))
       .map(displayRow);
-    scoped.push(...managed.filter(row=>group==='all'||groupOf(row.kind)===group));
+    scoped.push(...managed.filter(row=>group==='all'||groupOf(row.kind,row.id)===group));
     const coverage={total:scoped.length,translated:scoped.filter(row=>row.origin!=='fallback').length};
     const matched=scoped.filter(row=>
       (status==='all'||status==='missing'&&row.origin==='fallback'||
