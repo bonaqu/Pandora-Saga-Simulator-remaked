@@ -37,6 +37,12 @@ class CIWorkflowArchitectureTests(unittest.TestCase):
         self.assertIn("mode=validated-runtime", workflow)
         self.assertIn("At least one runtime change since the deployed baseline lacks reusable validation", workflow)
 
+    def test_production_validation_budget_allows_full_suite_to_finish(self):
+        workflow = self.read(".github/workflows/pages.yml")
+        # The prior full Pages build reached the last WebKit/Firefox smoke
+        # tests at ~20m and was cancelled before it could publish.
+        self.assertIn("    timeout-minutes: 35", workflow)
+
     def test_expensive_production_matrix_only_runs_when_full_validation_is_required(self):
         workflow = self.read(".github/workflows/pages.yml")
         expensive = (

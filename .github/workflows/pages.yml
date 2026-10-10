@@ -20,7 +20,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     outputs:
       mode: ${{ steps.gate.outputs.mode }}
       pages_required: ${{ steps.gate.outputs.pages_required }}

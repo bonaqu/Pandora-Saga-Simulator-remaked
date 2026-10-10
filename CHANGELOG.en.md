@@ -14,6 +14,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - Cleanup creates an immutable D1 revision without changing mechanics or impactRevision. Scoped restoration restores only matching archived notes without rolling back unrelated item edits.
 - Share one verified Modern Astir rules registry across the admin backend, generated site and build exclusions; retained Legacy remains unchanged.
 - Show admin-only releases in What's New under the current version with a neutral public summary; detailed changes remain in development notes.
+- Increase the Pages full-validation time budget to prevent the last successful browser checks from being cancelled before publication.
 
 ## Modern 3.66 — 2026-10-10
 
