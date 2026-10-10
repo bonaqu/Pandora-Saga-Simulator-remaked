@@ -124,9 +124,15 @@ test('authenticated catalog admin previews archival Astir note cleanup and resto
   sqlite.prepare('UPDATE catalog_head SET version=2,impact_version=2,snapshot_json=? WHERE id=1').run(json);
   sqlite.prepare('INSERT INTO catalog_revisions(version,impact_version,snapshot_json,created_at,note) VALUES(2,2,?,1000,?)')
     .run(json, 'Seed browser fixture');
+  const server = await page.evaluate(async () => {
+    const response = await fetch('/api/admin/astir-notes', { credentials: 'same-origin' });
+    return { status: response.status, body: await response.json() };
+  });
+  expect(server.status, JSON.stringify(server.body)).toBe(200);
+  expect(server.body.fields).toHaveLength(2);
   await page.getByRole('button', { name: 'Очистка примечаний Astir' }).click();
-  await expect(page.locator('.catalog-editor')).toContainText('архивных полей: 2');
-  await expect(page.locator('.catalog-editor')).toContainText('из текущей версии Modern');
+  await expect(page.locator('.catalog-editor')).toContainText('архивных полей: 2', { timeout: 15000 });
+  await expect(page.locator('.catalog-editor')).toContainText('Очистка только действующего каталога Modern');
   assertNoChanges();
   page.on('dialog', dialog => dialog.accept());
   await page.getByRole('button', { name: 'Подтвердить очистку Modern' }).click();

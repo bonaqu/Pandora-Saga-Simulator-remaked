@@ -955,7 +955,12 @@
         editor.appendChild(row);
       }
     } catch(error) {
-      if (thisGeneration === generation && sequence === editorRequest) report(error.message, true);
+      if (thisGeneration === generation && sequence === editorRequest) {
+        report(error.message, true);
+        editor.replaceChildren(node('h3', 'Не удалось загрузить примечания Astir'),
+          node('p', error.message, 'catalog-draft-warning'),
+          button('Повторить проверку', astirMaintenance, 'secondary'));
+      }
     }
   }
 
