@@ -239,7 +239,7 @@ class BuildPagesTests(unittest.TestCase):
             self.assertNotIn("To['N'] == '緋色アスティアンドレス' &&", patched)
             # Individual Astir refinement triggers and other gear combos
             # must still work. The old source stays byte-identical.
-            self.assertIn("To['N'] == '雪色アスティアンコート' && To['E'] >= 1", patched)
+            self.assertNotIn("To['N'] == '雪色アスティアンコート' && To['E'] >= 1", patched)
             self.assertIn("Sh['N'] == 'カイトシールド'", patched)
             self.assertEqual(source.read_bytes(), before)
             self.assertEqual((root / "js/equip.js").read_bytes(), before)

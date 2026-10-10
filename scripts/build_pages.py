@@ -319,41 +319,38 @@ def _materialize_modern_astir_registry(output: pathlib.Path) -> None:
         encoding="utf-8",
     )
 
-    # Extend the frozen 50-item enhancement map with the six formerly native
-    # Astir items, using verified current-game milestone snapshots. Only the
-    # Modern emitted asset is patched; source and /legacy/ remain untouched.
+    # The shipped Modern bundle supplements six formerly native upgrades with
+    # exact published milestone snapshots. Do not rewrite the huge retained
+    # frozen map: insert a separately guarded override immediately before the
+    # pure effect mapper, after both constants have been initialized.
     asset = output / "modern" / "enhancement-effects.js"
     js = asset.read_text(encoding="utf-8")
-    item_prefix = "  var ITEM_FORTH = "
-    item_lines = [line for line in js.splitlines() if line.startswith(item_prefix)]
-    if len(item_lines) != 1 or not item_lines[0].endswith(";"):
-        raise ValueError("Modern Astir enhancement map anchor drift")
-    previous_line = item_lines[0]
-    items = json.loads(previous_line[len(item_prefix):-1])
-    replacements = rules.get("nativeRefinementReplacements", [])
-    if len(replacements) != 6:
-        raise ValueError("Expected six verified Astir enhancement replacements")
-    native_prefix = "  var NATIVE_SERVER_IDS = "
-    native_lines = [line for line in js.splitlines() if line.startswith(native_prefix)]
-    if len(native_lines) != 1 or not native_lines[0].endswith(";"):
-        raise ValueError("Modern Astir native-ID anchor drift")
-    native_ids = json.loads(native_lines[0][len(native_prefix):-1])
-    server_ids = [row["serverId"] for row in replacements]
-    if len(set(server_ids)) != 6 or any(sid not in native_ids for sid in server_ids):
-        raise ValueError("Modern Astir native server-ID mapping is inconsistent")
-    for row in replacements:
-        engine_id = str(row["engineId"])
-        if engine_id in items or not row.get("levels"):
-            raise ValueError("Duplicate or missing Astir refinement snapshot " + engine_id)
-        items[engine_id] = {"serverId": row["serverId"], "levels": row["levels"]}
-    updated_items = item_prefix + json.dumps(items, ensure_ascii=False, separators=(",", ":")) + ";"
-    updated_native = native_prefix + json.dumps(
-        [sid for sid in native_ids if sid not in server_ids], separators=(",", ":")
-    ) + ";"
-    if js.count(previous_line) != 1 or js.count(native_lines[0]) != 1:
-        raise ValueError("Modern Astir enhancement anchor is ambiguous")
-    js = js.replace(previous_line, updated_items, 1).replace(native_lines[0], updated_native, 1)
-    asset.write_text(js, encoding="utf-8")
+    anchor = "  function mappedEffect(effect) {"
+    if js.count(anchor) != 1 or js.count("  var ITEM_FORTH = ") != 1 or js.count("  var NATIVE_SERVER_IDS = ") != 1:
+        raise ValueError("Modern Astir refinement insertion anchor drift")
+    rows = rules.get("nativeRefinementReplacements", [])
+    if len(rows) != 6 or len({row["engineId"] for row in rows}) != 6:
+        raise ValueError("Modern Astir overrides must identify six unique items")
+    server_ids = [row["serverId"] for row in rows]
+    if len(set(server_ids)) != 6 or any(not row.get("levels") for row in rows):
+        raise ValueError("Modern Astir native refinement snapshots are invalid")
+    overrides = {
+        str(row["engineId"]): {"serverId": row["serverId"], "levels": row["levels"]}
+        for row in rows
+    }
+    payload = json.dumps(overrides, ensure_ascii=False, separators=(",", ":"))
+    server_payload = json.dumps(server_ids, separators=(",", ":"))
+    insertion = (
+        "  // Six verified Modern Astir refinement snapshots replace stale native branches.\\n"
+        "  var modernAstirForth = " + payload + ";\\n"
+        "  Object.keys(modernAstirForth).forEach(function (key) {\\n"
+        "    if (Object.prototype.hasOwnProperty.call(ITEM_FORTH, key)) throw new Error('Duplicate Astir Forth ID: ' + key);\\n"
+        "    ITEM_FORTH[key] = modernAstirForth[key];\\n"
+        "  });\\n"
+        "  NATIVE_SERVER_IDS = NATIVE_SERVER_IDS.filter(function (id) { return "
+        + server_payload + ".indexOf(id) === -1; });\\n"
+    )
+    asset.write_text(js.replace(anchor, insertion + anchor, 1), encoding="utf-8")
 
 
 def _copy_runtime(root: pathlib.Path, destination: pathlib.Path) -> None:
