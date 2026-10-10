@@ -1,5 +1,23 @@
 # Changelog
 
+## Modern 3.70 — русские названия и подсказки умений за Честь, 2026-10-10
+
+<!-- release-notes:user:ru -->
+- Умения за Честь в разделе «Усиления» получили 13 согласованных русских названий и русские подсказки с описанием бонусов.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- All 13 Honor skills in Enhancements now have approved Russian names and Russian hover descriptions.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Защищённой миграцией опубликованы 26 текстов в едином хранилище переводов D1 без перезаписи существующих правок и черновиков. Умения за Честь доступны в категории «Умения» админки. Английские описания и игровые формулы не изменены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Publish 26 scoped texts through conflict-guarded D1 localization; expose Honor terms in the Admin Skills category. Keep English, Legacy calculations and unrelated translations unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 3.69 — корректный расчёт заточки базовых астирских вещей, 2026-10-10
 
 <!-- release-notes:user:ru -->
