@@ -2,6 +2,15 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.64 — 2026-10-10
+
+### Development and technical changes
+
+- Scope obsolete full-outfit Astir note filtering to the 16 affected item IDs, independently for each locale.
+- Preserve new valid admin-authored translations even while an older language still contains historical set notes.
+- Restore visibility of genuine unrelated equipment-set notes (including the Golden Cuirass); calculations and D1 records remain unchanged.
+- Add comprehensive per-locale and revision-update regression coverage.
+
 ## Modern 3.63 — 2026-10-10
 
 ### For users

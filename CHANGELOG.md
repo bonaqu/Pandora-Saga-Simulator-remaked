@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 3.64 — точечная защита актуальных описаний Astir, 2026-10-10
+
+<!-- admin-notes:ru -->
+- Уточнено скрытие архивных примечаний о несуществующих бонусах полных Astir-комплектов. Проверка ограничена 16 соответствующими вещами и выполняется отдельно для каждого языка.
+- Новые корректные примечания, сохранённые через админку, больше не скрываются из-за устаревшего перевода на другом языке.
+- Примечания других комплектов, включая золотой нагрудник, снова доступны; их действующие игровые механики не затронуты.
+- Добавлены регрессионные проверки всех 16 Astir-записей на RU/EN/JP/TW, обновления переводов и других комплектов. Миграция D1 не требуется.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Scope obsolete full-outfit Astir note filtering to the 16 affected item IDs, independently for each locale.
+- Preserve new valid admin-authored translations even while an older language still contains historical set notes.
+- Restore visibility of genuine unrelated equipment-set notes (including the Golden Cuirass); calculations and D1 records remain unchanged.
+- Add comprehensive per-locale and revision-update regression coverage.
+<!-- /admin-notes:en -->
+
 ## Modern 3.63 — актуальные астирские комплекты без бонусов за набор, 2026-10-10
 
 <!-- release-notes:user:ru -->

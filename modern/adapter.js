@@ -410,18 +410,25 @@
       if (canonical[16 + jobIndex]) classes.push(text(job[2 + language]));
     });
     var catalogRecord = namespace.catalog?.item(kind, value);
-    // Current-game Astir gear has NO full-set bonuses. Historical catalog
-    // 'notes' for these 16 coats/dresses are legacy set-bonus descriptions,
-    // frequently machine-translated. Preserve original D1 values for audit
-    // and possible admin revisions, but never display this obsolete material.
-    var obsoleteAstirSetNote = kind === 'equipment' &&
-      /セットで装備すると/.test(String(catalogRecord?.notes?.jp || text(canonical[2])));
+    // Exactly 16 Astir coats/dresses had historical, now-removed full-outfit
+    // bonus notes. Other equipment sets still have their own valid mechanics.
+    // Judge EACH locale's note separately: changing one translation must not
+    // resurrect old text from another or hide a newly authored, valid note.
+    var obsoleteAstirIds = [310031,310032,310033,310034,310035,310036,
+      310037,310038,310039,310040,310041,310042,310094,310095,310096,310097];
+    var isObsoleteAstir = kind === 'equipment' && obsoleteAstirIds.indexOf(id) !== -1;
+    function currentGameNote(value) {
+      var note = String(value || '');
+      return isObsoleteAstir && /(?:セットで装備すると|\b(?:set of|with a set|and set|when equipped with|fitted with pumps)\b|一組|一套|配備|並設置|並配|設備|和集)/i.test(note)
+        ? '' : note;
+    }
     var overrideName = namespace.catalog?.itemText(kind, value, 'names');
     var descriptions = columns.map(function (column) {
-      return obsoleteAstirSetNote && column === 2 ? '' : text(record[column]);
+      return column === 2 ? currentGameNote(text(record[column])) : text(record[column]);
     }).filter(Boolean);
     if (catalogRecord) descriptions = ['description', 'notes', 'acquisition'].map(function (field) {
-      return obsoleteAstirSetNote && field === 'notes' ? '' : namespace.catalog.itemText(kind, value, field);
+      var fieldText = namespace.catalog.itemText(kind, id, field);
+      return field === 'notes' ? currentGameNote(fieldText) : fieldText;
     }).filter(Boolean);
     // Unified four-locale text overrides apply only to displayed detail prose.
     // Preserve the canonical numeric rows, sockets and calculation code.
@@ -432,11 +439,9 @@
       ? ['description','notes','acquisition'] : ['modifiers','description','notes','acquisition'];
     if (namespace.i18n?.game) {
       var translatedFields = textFields.map(function (field, i) {
-        if (obsoleteAstirSetNote && field === 'notes') return '';
-        return namespace.i18n.game(termId + '.' + field, '') ||
-          (namespace.catalog?.item(kind, value)
-            ? namespace.catalog.itemText(kind, value, field)
-            : text(record[columns[i]]));
+        var fieldText = namespace.i18n.game(termId + '.' + field, '') ||
+          (catalogRecord ? namespace.catalog.itemText(kind, id, field) : text(record[columns[i]]));
+        return field === 'notes' ? currentGameNote(fieldText) : fieldText;
       }).filter(Boolean);
       if (translatedFields.some(Boolean)) descriptions = translatedFields;
     }

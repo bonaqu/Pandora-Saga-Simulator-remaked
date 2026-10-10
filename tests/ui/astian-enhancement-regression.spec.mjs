@@ -144,3 +144,55 @@ test('equipment and Soul previews have no obsolete Legacy 2.00 source footer',as
   await expect(page.locator('[data-remaked-item-description] small')).toHaveCount(0);
 });
 
+
+
+test('all 16 deprecated Astir notes are filtered per language without hiding valid edits or other sets',async({page})=>{
+  await page.goto('/');
+  await page.evaluate(data=>PandoraRemaked.catalog.applySnapshot(data),snapshot);
+  const ids=[310031,310032,310033,310034,310035,310036,310037,310038,
+    310039,310040,310041,310042,310094,310095,310096,310097];
+  const baseline=await page.evaluate(ids=>{
+    const result={};
+    for(const language of ['ru','en','jp','tw']){
+      PandoraRemaked.i18n.setLocale(language);
+      Flag[0]={jp:0,en:1,ru:2,tw:0}[language];
+      result[language]={};
+      for(const id of ids){
+        const v=PandoraRemaked.adapter.readItemDetails('equipment',id,3);
+        result[language][id]=v?.descriptions.join('\n')||'';
+      }
+      const golden=PandoraRemaked.adapter.readItemDetails('equipment',310064,3);
+      result[language].golden=golden?.descriptions.join('\n')||'';
+    }
+    return result;
+  },ids);
+  for(const lang of ['en','jp','tw','ru']){
+    for(const id of ids){
+      const text=baseline[lang][id];
+      expect(text,lang+' '+id).toBeTruthy();
+      expect(text,lang+' '+id).not.toMatch(/セットで装備すると|\bsets?\b|when equipped|and fitted|一組|一套|配備|並設置|並配|設備|和集/i);
+    }
+  }
+  // A different, real Legacy full-set effect must NOT be silently removed.
+  expect(baseline.jp.golden).toContain('セットで装備すると');
+
+  const newNotes=await page.evaluate(payload=>{
+    const version={...payload,revision:86,impactRevision:85,records:structuredClone(payload.records)};
+    const coat=version.records.find(v=>v.engineId===310041);
+    coat.notes.en='Set the enhancement to +5 for INT +1. A new independent note for the Scarlet Coat.';
+    coat.notes.jp='アスティアンの新しい説明文';
+    const applied=PandoraRemaked.catalog.applySnapshot(version);
+    const text={applied};
+    for(const lang of ['en','jp','tw']){
+      PandoraRemaked.i18n.setLocale(lang);
+      Flag[0]={en:1,jp:0,tw:0}[lang];
+      text[lang]=PandoraRemaked.adapter.readItemDetails('equipment',310041,3).descriptions.join('\n');
+    }
+    return text;
+  },snapshot);
+  expect(newNotes.applied).toBeTruthy();
+  expect(newNotes.en).toContain('Set the enhancement to +5 for INT +1.');
+  expect(newNotes.en).toContain('A new independent note for the Scarlet Coat.');
+  expect(newNotes.jp).toContain('アスティアンの新しい説明文');
+  expect(newNotes.tw).not.toMatch(/一組|一套|配備|並設置|並配|設備|和集/);
+});
