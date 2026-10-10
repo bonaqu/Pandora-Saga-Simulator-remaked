@@ -129,7 +129,7 @@
       "serverId": 12601,
       "slot": "To",
       "name": "アスティアンコート",
-      "legacyBlock": "  if (To['N'] == 'アスティアンコート' && To['E'] >= 1) {\n    SPOpt[0].push('6=' + To['E']);\n  }\n ",
+      "legacyBlock": "  if (To['N'] == 'アスティアンコート' && To['E'] >= 1) {\n    SPOpt[0].push('6=' + To['E']);\n  }\n",
       "levels": {
         "1": [
           {
@@ -238,7 +238,7 @@
       "serverId": 12607,
       "slot": "To",
       "name": "雪色アスティアンコート",
-      "legacyBlock": "  if (To['N'] == '雪色アスティアンコート' && To['E'] >= 1) {\n    SPOpt[0].push('6=' + To['E']);\n  }\n ",
+      "legacyBlock": "  if (To['N'] == '雪色アスティアンコート' && To['E'] >= 1) {\n    SPOpt[0].push('6=' + To['E']);\n  }\n",
       "levels": {
         "2": [
           {
@@ -282,7 +282,7 @@
       "serverId": 12611,
       "slot": "To",
       "name": "アスティアンドレス",
-      "legacyBlock": "  if (To['N'] == 'アスティアンドレス' && To['E'] >= 1) {\n    SPOpt[0].push('6=' + To['E']);\n    SPOpt[0].push('7=' + To['E']);\n  }\n ",
+      "legacyBlock": "  if (To['N'] == 'アスティアンドレス' && To['E'] >= 1) {\n    SPOpt[0].push('6=' + To['E']);\n    SPOpt[0].push('7=' + To['E']);\n  }\n",
       "levels": {
         "1": [
           {
@@ -431,7 +431,7 @@
       "serverId": 12617,
       "slot": "To",
       "name": "雪色アスティアンドレス",
-      "legacyBlock": "  if (To['N'] == '雪色アスティアンドレス' && To['E'] >= 1) {\n    SPOpt[0].push('6=' + To['E']);\n    SPOpt[0].push('7=' + (To['E'] * 2));\n  }\n ",
+      "legacyBlock": "  if (To['N'] == '雪色アスティアンドレス' && To['E'] >= 1) {\n    SPOpt[0].push('6=' + To['E']);\n    SPOpt[0].push('7=' + (To['E'] * 2));\n  }\n",
       "levels": {
         "2": [
           {
@@ -500,7 +500,7 @@
       "serverId": 13601,
       "slot": "Ku",
       "name": "アスティアンパンツ",
-      "legacyBlock": "  if (Ku['N'] == 'アスティアンパンツ' && Ku['E'] >= 1) {\n    SPOpt[0].push('7=' + Ku['E']);\n  }\n ",
+      "legacyBlock": "  if (Ku['N'] == 'アスティアンパンツ' && Ku['E'] >= 1) {\n    SPOpt[0].push('7=' + Ku['E']);\n  }\n",
       "levels": {
         "3": [
           {
@@ -537,7 +537,7 @@
       "serverId": 13607,
       "slot": "Ku",
       "name": "雪色アスティアンパンツ",
-      "legacyBlock": "  if (Ku['N'] == '雪色アスティアンパンツ' && Ku['E'] >= 1) {\n    SPOpt[0].push('7=' + (Ku['E'] * 2));\n  }\n ",
+      "legacyBlock": "  if (Ku['N'] == '雪色アスティアンパンツ' && Ku['E'] >= 1) {\n    SPOpt[0].push('7=' + (Ku['E'] * 2));\n  }\n",
       "levels": {
         "2": [
           {

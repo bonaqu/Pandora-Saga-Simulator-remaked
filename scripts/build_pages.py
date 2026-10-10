@@ -298,7 +298,7 @@ def _materialize_modern_astir_rules(root: pathlib.Path, output: pathlib.Path) ->
         raise ValueError("Modern Astir native-refinement list must identify six unique items")
     for row in replacements:
         block = row["legacyBlock"]
-        if not block.startswith("  if (") or patched.count(block) != 1:
+        if not block.startswith("  if (") or not block.endswith("  }\n") or patched.count(block) != 1:
             raise ValueError("Cannot safely replace native Astir refinement for " + str(row["engineId"]))
         # All numeric bonuses for these six items now come from their current
         # per-item enhancement snapshots in Modern, never twice from Legacy.
