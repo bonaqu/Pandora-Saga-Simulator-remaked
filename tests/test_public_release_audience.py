@@ -9,15 +9,15 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
 class PublicAudienceAndLocalizationTests(unittest.TestCase):
-    def test_admin_only_releases_do_not_publish_development_notes_as_news(self):
+    def test_latest_player_release_and_older_admin_only_releases_keep_audiences_separate(self):
         canonical = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
         release = _read_latest_release(ROOT)
-        self.assertEqual(release["version"], "3.75")
-        self.assertEqual(release["userVersion"], "3.75")
-        self.assertEqual(release["lastContentVersion"], "3.73")
-        self.assertTrue(release["technicalOnly"])
-        self.assertEqual(release["highlights"]["ru"], ["Выполнены внутренние технические улучшения."])
-        self.assertEqual(release["highlights"]["en"], ["Internal technical improvements."])
+        self.assertEqual(release["version"], "3.76")
+        self.assertEqual(release["userVersion"], "3.76")
+        self.assertEqual(release["lastContentVersion"], "3.76")
+        self.assertFalse(release["technicalOnly"])
+        self.assertEqual(release["highlights"]["ru"], ["Исправлена опечатка в описании 1-го уровня гильдейского навыка «Магистр битвы». Другие описания и характеристики не изменились."])
+        self.assertEqual(release["highlights"]["en"], ["Fixed a typo in the level 1 tooltip for the Combat guild skill. Other descriptions and character stats are unchanged."])
         for version in ("3.75", "3.74"):
             match = re.search(r"^## Modern " + version + r"\b.*?\n(?P<body>.*?)(?=^## Modern |\Z)",
                               canonical, re.MULTILINE | re.DOTALL)
