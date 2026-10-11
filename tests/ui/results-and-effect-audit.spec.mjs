@@ -57,8 +57,9 @@ test('all 43 result labels match the supplied RU terminology', async ({ page }) 
 });
 
 test('results keep fixed single-line geometry in every language at responsive widths', async ({ page }) => {
-  test.setTimeout(120_000);
-  for (const width of [320, 390, 1024, 1366, 1440, 1920]) {
+  // Explicit checks on both sides of the phone/tablet, nav, and 3-column breakpoints.
+  test.setTimeout(240_000);
+  for (const width of [320, 360, 390, 440, 620, 621, 768, 860, 861, 1024, 1365, 1366, 1440, 1600, 1920]) {
     await page.setViewportSize({ width, height: 900 });
     const variants = {};
     for (const locale of ['en', 'ru', 'jp', 'tw']) {
