@@ -11,40 +11,42 @@
   <script src="/localization-bulk.js" defer></script>
   <script src="/localization-four-language.js" defer></script>
   <script src="/localization-console.js" defer></script>
+  <script src="/admin-i18n.js" defer></script>
   <script src="/admin.js" defer></script>
 </head>
 <body>
   <main class="terminal">
-    <header class="terminal-header"><span>PANDORA FIELD CONSOLE</span><span>ADMIN / SECURE CHANNEL</span></header>
+    <header class="terminal-header"><span data-admin-i18n="adminShell.channel">PANDORA FIELD CONSOLE</span><span data-admin-i18n="adminShell.secureChannel">ADMIN / SECURE CHANNEL</span></header>
+    <div class="admin-language-switch"><label for="admin-language" data-admin-i18n="adminShell.language">Interface language</label><select id="admin-language" aria-label="Interface language"><option value="ru">RU · Русский</option><option value="en" selected>EN · English</option><option value="jp">JP · 日本語</option><option value="tw">TW · 繁體中文</option></select></div>
     <section class="terminal-body" aria-labelledby="terminal-title">
-      <p class="bootline">IDDQD ACCEPTED</p>
-      <h1 id="terminal-title">GOD MODE REQUIRES AUTHENTICATION</h1>
-      <p id="auth-message" role="status" aria-live="polite">Sign in to manage the Modern catalog. Legacy 2.00 remains preserved.</p>
+      <p class="bootline" data-admin-i18n="adminShell.boot">IDDQD ACCEPTED</p>
+      <h1 id="terminal-title" data-admin-i18n="adminShell.loginTitle">GOD MODE REQUIRES AUTHENTICATION</h1>
+      <p id="auth-message" role="status" aria-live="polite" data-admin-i18n="adminShell.loginHint">Sign in to manage the Modern catalog. Legacy 2.00 remains preserved.</p>
       <form action="/api/auth/login" method="post" id="login-form">
-        <label for="username">LOGIN</label>
+        <label for="username" data-admin-i18n="adminShell.loginLabel">LOGIN</label>
         <input id="username" name="username" value="admin" autocomplete="username" required maxlength="64">
-        <label for="password">PASSWORD</label>
+        <label for="password" data-admin-i18n="adminShell.passwordLabel">PASSWORD</label>
         <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="512">
-        <button type="submit">AUTHENTICATE</button>
+        <button type="submit" data-admin-i18n="adminShell.authenticate">AUTHENTICATE</button>
       </form>
-      <section id="admin-workspace" hidden aria-label="Catalog management">
-        <div class="workspace-toolbar"><h2>CATALOG CONTROL</h2><button id="logout" type="button">LOGOUT</button></div>
-        <nav class="workspace-jump" aria-label="Быстрый переход по админке">
-          <a href="#localization-console">01 / Переводы</a>
-          <a href="#catalog-console">02 / Каталог, предметы и навыки</a>
+      <section id="admin-workspace" hidden aria-label="Catalog management" data-admin-i18n-aria="adminShell.workspaceTitle">
+        <div class="workspace-toolbar"><h2 data-admin-i18n="adminShell.workspaceTitle">CATALOG CONTROL</h2><button id="logout" type="button" data-admin-i18n="adminShell.logout">LOGOUT</button></div>
+        <nav class="workspace-jump" aria-label="Quick navigation" data-admin-i18n-aria="adminShell.navigation">
+          <a href="#localization-console" data-admin-i18n="adminShell.navTranslations">01 / Translations</a>
+          <a href="#catalog-console" data-admin-i18n="adminShell.navCatalog">02 / Catalog, equipment and skills</a>
         </nav>
-        <details class="capability-note"><summary>Возможности и границы редактора</summary><p>Единый центр переводов: интерфейс, навыки, умения, их требования, снаряжение, души, классы, расы и расчётные характеристики. Все четыре языка RU / EN / JP / TW можно редактировать в одной карточке. Поиск работает на четырёх языках; фильтр языка меняет только статус переводов и статистику. Отдельный игровой каталог ниже поддерживает 28 классов (включая прогрессию), 18 расовых пассивок, 178 активных и 33 пассивных навыка, экипировку и души. Новые игровые механики, классы и другие изменения за пределами допустимых правил ещё не поддерживаются. Изменение перевода не меняет расчёты или сохранённые билды.</p></details>
+        <details class="capability-note"><summary data-admin-i18n="adminShell.capabilitiesTitle">Editor capabilities and limitations</summary><p data-admin-i18n="adminShell.capabilitiesDescription">Translate the interface, skills, requirements, equipment, Souls, classes, races and calculated values in one place. Edit RU / EN / JP / TW in the same card; search all four languages. The catalog also manages 28 classes, 18 racial passives, 178 active and 33 passive skills, equipment and Souls. New mechanics and classes outside supported rules are not yet available. Translating text never changes calculations or saved builds.</p></details>
         <div id="localization-console"></div>
         <details class="capability-note">
-          <summary>Подсказка по источникам переводов</summary>
-          <p>Утверждённые ранее переводы уже загружены в исходный каталог редактора. Новые публикации сохраняются в Cloudflare D1 с версиями; черновики и историю можно просматривать в закрытой админке. Modern больше не собирает переводы из Excel; загружать Excel для публикации новых переводов не нужно.</p>
+          <summary data-admin-i18n="adminShell.sourcesTitle">How translations are stored</summary>
+          <p data-admin-i18n="adminShell.sourcesDescription">Previously approved translations are already in the editor's baseline catalog. New publications are versioned in Cloudflare D1; drafts and edit history are available in the protected admin area. Modern no longer publishes translations from Excel files.</p>
         </details>
-        <p class="help-text">Каталог — единственный редактор для новых предметов, душ и умений: общий центр переводов показывает их опубликованные тексты и открывает здесь нужную карточку. Черновики каталога можно собрать и опубликовать одной версией без дублирования переводов.</p>
-        <p id="catalog-state" role="status" aria-live="polite">Loading the catalog…</p>
+        <p class="help-text" data-admin-i18n="adminShell.catalogDescription">The catalog is the only editor for newly added equipment, Souls and skills. The translation center shows published texts and opens their catalog cards. Catalog drafts can be published as one revision without duplicating translation data.</p>
+        <p id="catalog-state" role="status" aria-live="polite" data-admin-i18n="adminShell.catalogLoading">Loading the catalog…</p>
         <div id="catalog-console"></div>
       </section>
     </section>
-    <footer>MODERN CATALOG / MUSEUM ENGINE 2.00</footer>
+    <footer data-admin-i18n="adminShell.footer">MODERN CATALOG / MUSEUM ENGINE 2.00</footer>
   </main>
 </body>
 </html>

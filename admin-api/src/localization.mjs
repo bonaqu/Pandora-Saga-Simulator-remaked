@@ -187,6 +187,21 @@ async function legacyOverrides(env,scope=null,locale=null) {
   }
   return values;
 }
+// Public, read-only administrative *chrome* copy. The same D1 precedence
+// (including reset tombstones and historical UI overrides) powers the editor.
+// No authentication state, drafts, session identifiers or hidden records
+// leave this endpoint. The admin login page can translate before signing in.
+export async function publicAdminShellLocalization(env) {
+  const snapshot = await localizationEffectiveSnapshot(env);
+  const locales = Object.fromEntries(LOCALES.map(locale => [locale, {}]));
+  for (const [id,englishText] of Object.entries(english)) {
+    if (!id.startsWith('adminShell.')) continue;
+    for (const locale of LOCALES)
+      locales[locale][id] = snapshot.get('ui',id,locale)?.effective || englishText;
+  }
+  return jsonResponse({ok:true,schemaVersion:1,locales});
+}
+
 export async function publicLocalization(env) {
   const [published,legacy]=await Promise.all([overrides(env),legacyOverrides(env)]);
   const data={ui:{ru:{},en:{},jp:{},tw:{}},game:{ru:{},en:{},jp:{},tw:{}}};

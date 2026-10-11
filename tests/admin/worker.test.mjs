@@ -92,6 +92,8 @@ test('every static admin script referenced by HTML is served by the Worker allow
     .map(match=>match[1]);
   assert.ok(scripts.length>=6, 'admin HTML must declare its runtime dependencies');
   assert.ok(scripts.includes('/localization-four-language.js'));
+  assert.ok(scripts.includes('/admin-i18n.js'));
+
   const requested=[];
   const assetEnv={...env,ASSETS:{fetch:async request=>{
     const route=new URL(request.url).pathname;requested.push(route);
@@ -114,4 +116,23 @@ test('every static admin script referenced by HTML is served by the Worker allow
   assert.equal((await worker.fetch(
     new Request(origin+'/unknown-admin-script.js'),assetEnv
   )).status,404);
+});
+
+test('read-only public shell locale API requires no session and never exposes secrets',async()=>{
+  const output=await worker.fetch(new Request(origin+'/api/admin-shell-localization'),{
+    ...env,DB:{prepare(sql){return{
+      bind(){return this;},
+      async all(){return{results:[]};},
+      async first(){return{snapshot_json:'[]',version:88};}
+    };}}
+  });
+  assert.equal(output.status,200);
+  const body=await output.json();
+  assert.equal(body.ok,true);
+  assert.equal(body.locales.en['adminShell.loginTitle'],'GOD MODE REQUIRES AUTHENTICATION');
+  assert.equal(body.locales.ru['adminShell.logout'],'ВЫЙТИ');
+  assert.equal(Object.keys(body.locales.ru).length,31);
+  assert.ok(!JSON.stringify(body).includes('csrfToken'));
+  assert.ok(!JSON.stringify(body).includes('password_hash'));
+  assert.equal((await worker.fetch(new Request(origin+'/api/admin-shell-localization',{method:'POST'}),env)).status,404);
 });

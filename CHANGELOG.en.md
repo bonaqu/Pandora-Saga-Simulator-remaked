@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.82 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Add a RU/EN/JP/TW language selector for secure admin login, session state, navigation and help copy. Register 31 independently editable D1 UI keys, preserving versioned override/reset precedence.
+- Keep the read-only shell locale endpoint restricted to published UI strings; never expose authentication tokens or drafts. An unavailable translation API leaves the original English login functional.
+- Preserve CSRF, HttpOnly cookie validation, game formulas, equipment and Legacy. Add API/browser regression tests for all locales and offline fallback. The remaining dynamic catalog/editor chrome needs further review.
+
 ## Modern 3.81 — 2026-10-11
 
 ### For users

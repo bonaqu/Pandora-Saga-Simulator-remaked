@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 3.82 — четырёхъязычная оболочка админки, 2026-10-11
+
+<!-- admin-notes:ru -->
+- В защищённой админке появился переключатель RU/EN/JP/TW для входа, статуса сессии, навигации и справочных блоков. 31 строка добавлена в редактируемый реестр D1; опубликованный администратором перевод имеет приоритет над локальным базовым текстом.
+- API переводов оболочки только читает уже разрешённые UI-ключи, не предоставляет токены или черновики. При недоступности D1 форма входа продолжает работать с английскими подписями.
+- Не меняются пароли, CSRF, HttpOnly-сессии, игровые вычисления, предметы или Legacy. Добавлены серверные и браузерные проверки четырёх языков, сброса правок и безопасного резервного режима. Остальная динамическая оболочка каталога требует отдельного последовательного переноса.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add a RU/EN/JP/TW language selector for secure admin login, session state, navigation and help copy. Register 31 independently editable D1 UI keys, preserving versioned override/reset precedence.
+- Keep the read-only shell locale endpoint restricted to published UI strings; never expose authentication tokens or drafts. An unavailable translation API leaves the original English login functional.
+- Preserve CSRF, HttpOnly cookie validation, game formulas, equipment and Legacy. Add API/browser regression tests for all locales and offline fallback. The remaining dynamic catalog/editor chrome needs further review.
+<!-- /admin-notes:en -->
+
 ## Modern 3.81 — базовая дальность оружия по текущему справочнику, 2026-10-11
 
 <!-- release-notes:user:ru -->
