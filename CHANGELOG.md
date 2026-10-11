@@ -1,5 +1,23 @@
 # Changelog
 
+## Modern 3.83 — локализация фильтров и навигации центра переводов, 2026-10-11
+
+<!-- admin-notes:ru -->
+- Ещё 30 строк защищённого центра переводов доступны для правки через четыре языка RU/EN/JP/TW в D1: заголовки, пояснение, фильтры, категории, строки поиска и пагинация.
+- Переключение языка переводит элементы на месте, без сброса поисковой строки, локальных черновиков и выбранных фильтров. Поля входа и механика публикации не изменены.
+- Публичный API административной локализации использует те же версии D1; новая база и второй источник текстов не создаются.
+- Динамические тексты редактора каталога, массовой замены и очереди черновиков остаются отдельной задачей аудита.
+- Legacy, числовые характеристики и формулы игры не меняются.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Register 30 additional D1-editable admin console labels for RU/EN/JP/TW: headings, explanations, filters, groups, search controls and pagination.
+- Update translated DOM controls in place, retaining search queries, unsaved editor text, selected filters and existing authentication/publishing contracts.
+- Reuse the existing public read-only admin-localization projection and guarded D1 precedence; create no new data source.
+- Dynamic catalog, bulk editor and draft-queue messages remain for a separate review.
+- No game formulas, numerical data or Legacy changes.
+<!-- /admin-notes:en -->
+
 ## Modern 3.82 — четырёхъязычная оболочка админки, 2026-10-11
 
 <!-- admin-notes:ru -->
