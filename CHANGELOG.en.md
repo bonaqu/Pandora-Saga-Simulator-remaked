@@ -2,13 +2,23 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.75 — 2026-10-11
+
+### For users
+
+- What's New now focuses on changes to the simulator rather than internal engineering details.
+- Saved-build update messages and change summaries now have consistent, translatable labels.
+
+### Development and technical changes
+
+- Inventory potential untranslated Modern runtime strings and emit a machine-readable audit; extend calculation/localization regressions and guard the audience split in changelog notes. Keep numerical formulas and Legacy unchanged.
+
 ## Modern 3.74 — 2026-10-11
 
 ### For users
 
-- Published D1 translations now display verbatim without hidden browser-side wording changes. Five legacy Russian resistance labels are safely migrated in D1 with version history.
-- The admin editor can compare each registered text across RU / EN / JP / TW and jump to the chosen locale.
-- Release-summary captions are now editable localization keys.
+- Resistance skills in Enhancements now display short, readable Russian names without unnecessary wrapping.
+- Skill and item names and descriptions now respect the selected language without unexpected wording replacements.
 
 ### Development and technical changes
 

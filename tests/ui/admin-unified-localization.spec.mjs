@@ -88,7 +88,7 @@ test('four-language translation editor starts with effective texts, keeps drafts
         status==='published'&&['admin','previous-admin'].includes(row.origin))&&
         (!query||[row.id,row.effective,row.source.en].some(word=>String(word).toLocaleLowerCase().includes(query))));
       return route.fulfill({json:{ok:true,schemaVersion:1,scope,locale:lang,
-        total:rows.length,page:pageNumber,pageSize:40,counts:{ui:244,game:2900},
+        total:rows.length,page:pageNumber,pageSize:40,counts:{ui:247,game:2900},
         items:rows.slice(pageNumber*40,(pageNumber+1)*40)}});
     }
     const asset=(pathname==='/admin'||pathname==='/admin/')?'admin.html':pathname.slice(1);

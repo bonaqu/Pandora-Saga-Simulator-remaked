@@ -538,7 +538,15 @@ def _release_marker_bullets(section: str, locale: str, version: str) -> list[str
             current = []
     if current:
         bullets.append(_plain_release_bullet(" ".join(current)))
-    return [bullet for bullet in bullets if bullet]
+    result = [bullet for bullet in bullets if bullet]
+    # A player release must describe visible changes, never internal pipelines.
+    # Guard both locales. Keep the historical archive untouched.
+    if tuple(map(int, version.split("."))) >= (3, 74):
+        internal = re.compile(r"(?i)(?:\b(?:D1|Cloudflare|CI/CD|worker|schema|migration|migrations|pull request|API endpoint|database|wrangler)\b|админк|миграци|внутренн(?:ей|их)\s+разработк)")
+        for bullet in result:
+            if internal.search(bullet):
+                raise ValueError(f"Modern {version} {locale} user notes contain internal development details")
+    return result
 
 
 def _read_latest_release(root: pathlib.Path) -> dict[str, object]:

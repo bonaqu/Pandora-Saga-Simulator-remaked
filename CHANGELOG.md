@@ -1,17 +1,35 @@
 # Changelog
 
-## Modern 3.74 — D1 как источник опубликованных переводов, 2026-10-11
+## Modern 3.75 — проверка стабильности и понятные обновления, 2026-10-11
 
 <!-- release-notes:user:ru -->
-- Опубликованные переводы в D1 теперь отображаются без скрытой подмены слов и сокращений в браузере. Старые названия пяти сопротивлений обновляются через D1 с сохранением истории.
-- В админке можно сравнить один текст сразу на RU / EN / JP / TW и перейти к редактированию нужного языка.
-- Подпись последнего пользовательского обновления и сообщение о технических улучшениях добавлены в редактор переводов.
+- Раздел «Что нового» теперь показывает изменения симулятора, а не подробности внутренней разработки.
+- Улучшены подписи о перерасчёте сохранённых билдов и просмотре изменений; тексты можно перевести на разные языки.
 <!-- /release-notes:user:ru -->
 
 <!-- release-notes:user:en -->
-- Published D1 translations now display verbatim without hidden browser-side wording changes. Five legacy Russian resistance labels are safely migrated in D1 with version history.
-- The admin editor can compare each registered text across RU / EN / JP / TW and jump to the chosen locale.
-- Release-summary captions are now editable localization keys.
+- What's New now focuses on changes to the simulator rather than internal engineering details.
+- Saved-build update messages and change summaries now have consistent, translatable labels.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Проведён аудит исходных текстовых поверхностей Modern с машиночитаемым перечнем потенциальных строк без ключей. Добавлены регрессионные тесты точности расчётов и локализации, проверка разделения пользовательских и внутренних релизных заметок. Существующие формулы и Legacy не изменены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Inventory potential untranslated Modern runtime strings and emit a machine-readable audit; extend calculation/localization regressions and guard the audience split in changelog notes. Keep numerical formulas and Legacy unchanged.
+<!-- /admin-notes:en -->
+
+## Modern 3.74 — D1 как источник опубликованных переводов, 2026-10-11
+
+<!-- release-notes:user:ru -->
+- Исправлено отображение названий сопротивлений в «Усилениях»: используются короткие варианты «Сопр. огню», «Сопр. льду», «Сопр. молнии», «Сопр. тьме» и «Сопр. чарам».
+- Выбранный язык теперь определяет отображаемые названия и описания без неожиданных замен текста.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Resistance skills in Enhancements now display short, readable Russian names without unnecessary wrapping.
+- Skill and item names and descriptions now respect the selected language without unexpected wording replacements.
 <!-- /release-notes:user:en -->
 
 <!-- admin-notes:ru -->

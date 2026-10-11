@@ -103,3 +103,26 @@ test('phone retains a compact dropdown and a viewport-safe detached hover tip', 
   await page.keyboard.press('Escape');
   await expect(page.locator('[data-remaked-guild-popup]')).toHaveCount(0);
 });
+
+
+test('guild presets leave health calculations reversible and idempotent', async ({ page }) => {
+  await page.goto('/?ui=ru');
+  await openGuild(page);
+  const before=await page.locator('#Status_0').textContent();
+  const numeric=value=>Number((value||'').replace(/[^\\d.-]/g,''));
+  const base=numeric(before);
+  expect(Number.isFinite(base)).toBe(true);
+  expect(base).toBeGreaterThan(0);
+  await page.locator('#SelBuffClan_0').selectOption('12');
+  const buffed=numeric(await page.locator('#Status_0').textContent());
+  expect(buffed).toBeGreaterThan(base);
+  await page.locator('#SelBuffClan_0').selectOption('12');
+  expect(numeric(await page.locator('#Status_0').textContent())).toBe(buffed);
+  await page.locator('#SelBuffClan_0').selectOption('0');
+  expect(numeric(await page.locator('#Status_0').textContent())).toBe(base);
+  await page.locator('[data-remaked-ui-locale="en"]').click();
+  await page.locator('#SelBuffClan_0').selectOption('12');
+  expect(numeric(await page.locator('#Status_0').textContent())).toBe(buffed);
+  await page.locator('#SelBuffClan_0').selectOption('0');
+  expect(numeric(await page.locator('#Status_0').textContent())).toBe(base);
+});

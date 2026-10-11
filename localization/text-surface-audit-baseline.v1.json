@@ -1,0 +1,571 @@
+{
+  "schemaVersion": 1,
+  "description": "Reviewed legacy text candidates: report remains actionable; CI fails on newly introduced high-risk static literal patterns.",
+  "candidates": [
+    [
+      "modern/admin-entry.js",
+      "literal_widget",
+      "PANDORA / SECURE CHANNEL"
+    ],
+    [
+      "modern/admin-entry.js",
+      "literal_attribute",
+      "Close administrator login"
+    ],
+    [
+      "modern/admin-entry.js",
+      "literal_widget",
+      "IDDQD ACCEPTED"
+    ],
+    [
+      "modern/admin-entry.js",
+      "literal_widget",
+      "GOD MODE REQUIRES AUTHENTICATION"
+    ],
+    [
+      "modern/admin-entry.js",
+      "literal_widget",
+      "Authentication opens the secure Cloudflare console. This code does not grant access."
+    ],
+    [
+      "modern/admin-entry.js",
+      "literal_assignment",
+      "This is a local preview or a non-production site. Sign in on the secure console; do not enter credentials here."
+    ],
+    [
+      "modern/app-shell.js",
+      "literal_assignment",
+      "REMAKED UI "
+    ],
+    [
+      "modern/app-shell.js",
+      "literal_assignment",
+      "Legacy Engine "
+    ],
+    [
+      "modern/app-shell.js",
+      "locale_conditional",
+      "return locale === 'ru' ? 'ru' : 'en';"
+    ],
+    [
+      "modern/builds.js",
+      "locale_conditional",
+      "var locale = i18n && i18n.getLocale && i18n.getLocale() === 'ru' ? 'ru-RU' : 'en';"
+    ],
+    [
+      "modern/builds.js",
+      "locale_conditional",
+      "catalogStatus.textContent = changes ? changes.length <= 2 ? migrationText(changes) : (i18n?.getLocale() === 'ru' ? 'Изменений в билде: ' : 'Build changes: ') + changes.length : catalogMessage ? t(cata"
+    ],
+    [
+      "modern/builds.js",
+      "locale_conditional",
+      "catalogReport.querySelector('summary').textContent = i18n?.getLocale() === 'ru' ? 'Показать изменения' : 'Show changes';"
+    ],
+    [
+      "modern/builds.js",
+      "locale_conditional",
+      "setCatalogStatus('builds.migrationSaveFailed', 'warning', null, i18n?.getLocale() === 'ru' ? 'Билд обновлён. Сохранённые билды не удалось записать; исходные данные сохранены.' : 'Current build updated"
+    ],
+    [
+      "modern/builds.js",
+      "locale_conditional",
+      "setAutosaveStatus(i18n?.getLocale() === 'ru' ? 'Текущий каталог недоступен. Билд сохранён; повторите загрузку онлайн.' : 'Current catalog unavailable. Saved build kept; retry online.', 'warning'); ret"
+    ],
+    [
+      "modern/builds.js",
+      "locale_conditional",
+      "var caption = document.createElement('summary'); caption.textContent = i18n?.getLocale() === 'ru' ? 'Изменения билда' : 'Build changes';"
+    ],
+    [
+      "modern/builds.js",
+      "literal_assignment",
+      "Build Manager"
+    ],
+    [
+      "modern/builds.js",
+      "literal_attribute",
+      "Close Build Manager"
+    ],
+    [
+      "modern/builds.js",
+      "literal_assignment",
+      "Named builds"
+    ],
+    [
+      "modern/builds.js",
+      "literal_assignment",
+      "Build name (optional)"
+    ],
+    [
+      "modern/builds.js",
+      "literal_assignment",
+      "Copy old FILE slots into named builds. Originals stay untouched; duplicate codes are skipped."
+    ],
+    [
+      "modern/builds.js",
+      "literal_assignment",
+      "Build code"
+    ],
+    [
+      "modern/builds.js",
+      "literal_assignment",
+      "Export the current build or paste a Pandora Saga Simulator code here."
+    ],
+    [
+      "modern/builds.js",
+      "literal_assignment",
+      "Autosave…"
+    ],
+    [
+      "modern/calculator-controls.js",
+      "locale_conditional",
+      "var russian = namespace.i18n?.getLocale() === 'ru';"
+    ],
+    [
+      "modern/catalog.js",
+      "locale_conditional",
+      "if (stat === 2 && namespace.i18n?.getLocale() === 'ru') label = 'ПРВ';"
+    ],
+    [
+      "modern/catalog.js",
+      "locale_conditional",
+      "if (beforeDescription !== undefined && afterDescription !== undefined && namespace.catalogText.lines(beforeDescription) !== namespace.catalogText.lines(afterDescription)) differences.push(locale === '"
+    ],
+    [
+      "modern/catalog.js",
+      "locale_conditional",
+      "if (beforeSlots !== undefined && beforeSlots !== afterSlots) differences.push((namespace.i18n?.getLocale() === 'ru' ? 'слоты душ ' : 'Soul slots ') + beforeSlots + '→' + afterSlots);"
+    ],
+    [
+      "modern/catalog.js",
+      "locale_conditional",
+      "var language = namespace.i18n?.getLocale() === 'ru' ? 'ru' : languages[Number(window.Flag[0])];"
+    ],
+    [
+      "modern/compare.js",
+      "literal_assignment",
+      "Compare Builds"
+    ],
+    [
+      "modern/compare.js",
+      "literal_attribute",
+      "Close Compare Builds"
+    ],
+    [
+      "modern/compare.js",
+      "literal_assignment",
+      "Hide identical stats"
+    ],
+    [
+      "modern/compare.js",
+      "literal_assignment",
+      "All displayed stats are identical."
+    ],
+    [
+      "modern/game-term-display.js",
+      "locale_conditional",
+      "var noteText = info.calculationNotes ? (i18n.getLocale() === 'ru' ? 'Ограничение расчёта: ' : 'Calculation limit: ') + info.calculationNotes : '';"
+    ],
+    [
+      "modern/i18n.js",
+      "locale_conditional",
+      "var active = currentLocale === 'en' && !useEnglish ? {} : gameCatalogs[currentLocale] || {};"
+    ],
+    [
+      "modern/mobile.js",
+      "literal_attribute",
+      "Current character summary"
+    ],
+    [
+      "modern/mobile.js",
+      "literal_attribute",
+      "Collapse section"
+    ],
+    [
+      "modern/search.js",
+      "literal_attribute",
+      "Close search"
+    ],
+    [
+      "modern/skill-controls.js",
+      "locale_conditional",
+      "var descriptionLanguage = i18n.getLocale() === 'ru' ? 'ru' : ['jp', 'en', 'tw'][language];"
+    ],
+    [
+      "modern/skill-tooltips.js",
+      "locale_conditional",
+      "return locale==='ru' ? russian : legacyPlain(window.Name.Learn[index]?.[lang]||'');"
+    ],
+    [
+      "modern/skill-tooltips.js",
+      "locale_conditional",
+      "set(5,0,locale==='ru'?translatedPrerequisites(prerequisite):prerequisite);"
+    ],
+    [
+      "modern/skill-tooltips.js",
+      "locale_conditional",
+      "set(7,0,locale==='ru'&&equipment==='None'?'Нет':equipment);"
+    ],
+    [
+      "modern/tooltips.js",
+      "literal_attribute",
+      "About "
+    ],
+    [
+      "admin-api/public/admin.js",
+      "literal_assignment",
+      "GOD MODE REQUIRES AUTHENTICATION"
+    ],
+    [
+      "admin-api/public/admin.js",
+      "literal_assignment",
+      "GOD MODE ENABLED / WELCOME, ADMIN"
+    ],
+    [
+      "admin-api/public/admin.js",
+      "literal_assignment",
+      "Authenticated on the secure Worker origin."
+    ],
+    [
+      "admin-api/public/admin.js",
+      "literal_assignment",
+      "Logout was not confirmed. Your session may still be active."
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_attribute",
+      "Свободные слоты душ: "
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_attribute",
+      "Язык предпросмотра предмета"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_attribute",
+      "Характеристика"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_attribute",
+      "Значение"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_attribute",
+      "Единица"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Вариантов пока нет. Основная запись остаётся без изменений."
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Вариантов пока нет. Используются основные поля навыка выше."
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Когда применяется выбранный вариант"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Все отмеченные ветки нужны одновременно. Вариант включается после достижения класса, уровня и вложенных очков, включая бонусы снаряжения."
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Название, описание и MP/время меняются вместе. Эти поля не создают новую формулу боевого урона."
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Вариант "
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Поиск…"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Версия "
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Сохранённый неопубликованный черновик"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Список не загружен"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Сохранённые черновики · загрузка…"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Сохранённые черновики каталога: "
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Не удалось загрузить черновики"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Выбрано: "
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_attribute",
+      "Каталог"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Поиск по названию или ID"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_attribute",
+      "Поиск в каталоге"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_assignment",
+      "Найти черновик по названию или ID…"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_attribute",
+      "Поиск сохранённых черновиков каталога"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_attribute",
+      "Категория черновиков каталога"
+    ],
+    [
+      "admin-api/public/catalog-ui.js",
+      "literal_attribute",
+      "Список записей"
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_attribute",
+      "Найти целое слово"
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "Воин"
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_attribute",
+      "Заменить словом"
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "Предпросмотр сброшен. Проверь слово и параметры, затем выполни поиск."
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "Совпадений: "
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "Выбрано: "
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "Редактировать предложенный перевод"
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_attribute",
+      "Редактировать «Станет» для "
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "Вернуть автоматическую замену"
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_attribute",
+      "Вернуть автоматический вариант для "
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_attribute",
+      "Итоговый перевод "
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "Введи одно целое слово (буквы, цифры или _), не фразу."
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "Введи безопасный перевод до 80 символов без HTML."
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "Ищу совпадения во всех страницах выбранной категории…"
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "Закончи редактирование открытой строки."
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "В выбранных строках есть черновик. Перепроверь данные и обнови предпросмотр."
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "Перепроверяю переводы перед атомарной публикацией…"
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "Публикую "
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "Проверяю сохранённый результат операции…"
+    ],
+    [
+      "admin-api/public/localization-bulk.js",
+      "literal_assignment",
+      "Успешно опубликовано "
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "literal_assignment",
+      "Не сохранено: "
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "literal_attribute",
+      "Раздел"
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "literal_attribute",
+      "Категория переводов"
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "literal_attribute",
+      "Статус перевода"
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "literal_attribute",
+      "Язык перевода"
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "literal_assignment",
+      "Название, ID, описание…"
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "literal_attribute",
+      "Поиск переводов"
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "literal_attribute",
+      "Доля имеющихся переводов в выбранной категории"
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "literal_assignment",
+      "Загружаю четыре языка…"
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "locale_conditional",
+      "value.lang=language.locale==='jp'?'ja':language.locale==='tw'?'zh-Hant':language.locale;"
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "literal_assignment",
+      "Не удалось сравнить: "
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "literal_assignment",
+      "Введите перевод или оставьте пустым для возврата к существующей версии"
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "literal_assignment",
+      "Восстановить базовый текст и сохранить: "
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "literal_assignment",
+      "Сначала отмени облачный черновик в очереди выше"
+    ],
+    [
+      "admin-api/public/localization-console.js",
+      "literal_assignment",
+      "Переведено: "
+    ],
+    [
+      "admin-api/public/localization-drafts.js",
+      "literal_assignment",
+      "Найти ID или текст черновика…"
+    ],
+    [
+      "admin-api/public/localization-drafts.js",
+      "literal_attribute",
+      "Поиск среди сохранённых переводов"
+    ],
+    [
+      "admin-api/public/localization-drafts.js",
+      "literal_attribute",
+      "Язык черновиков"
+    ],
+    [
+      "admin-api/public/localization-drafts.js",
+      "literal_attribute",
+      "Раздел черновиков"
+    ],
+    [
+      "admin-api/public/localization-drafts.js",
+      "literal_assignment",
+      "Сохранённые черновики переводов: "
+    ],
+    [
+      "admin-api/public/localization-drafts.js",
+      "literal_assignment",
+      "Выбрано: "
+    ]
+  ]
+}

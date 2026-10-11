@@ -26,6 +26,36 @@ HERO_WEBP_FIXTURE = b"RIFF\x04\x00\x00\x00WEBP"
 
 
 class BuildPagesTests(unittest.TestCase):
+
+    def test_modern_release_notes_reject_internal_details_on_public_surface(self):
+        from scripts.build_pages import _release_marker_bullets
+        source = """<!-- release-notes:user:ru -->
+- В админке обновлена база D1.
+<!-- /release-notes:user:ru -->
+<!-- release-notes:user:en -->
+- Cloudflare Worker migration is complete.
+<!-- /release-notes:user:en -->"""
+        for lang in ("ru", "en"):
+            with self.subTest(lang=lang), self.assertRaisesRegex(ValueError, "internal development"):
+                _release_marker_bullets(source, lang, "3.75")
+        public = """<!-- release-notes:user:ru -->
+- Улучшено отображение усилений персонажа.
+<!-- /release-notes:user:ru -->"""
+        self.assertEqual(_release_marker_bullets(public, "ru", "3.75"),
+                         ["Улучшено отображение усилений персонажа."])
+
+    def test_live_374_release_notes_describe_player_changes_only(self):
+        from scripts.build_pages import RELEASE_HEADING_RE, _release_marker_bullets
+        root=pathlib.Path(__file__).resolve().parents[1]
+        raw=(root/"CHANGELOG.md").read_text(encoding="utf-8")
+        positions=list(RELEASE_HEADING_RE.finditer(raw))
+        release=next(i for i,m in enumerate(positions) if m.group("version")=="3.74")
+        chunk=raw[positions[release].end():positions[release+1].start()]
+        for lang in ("ru","en"):
+            bullets=_release_marker_bullets(chunk,lang,"3.74")
+            self.assertTrue(bullets)
+            self.assertNotIn("D1", " ".join(bullets))
+
     def test_localized_changelog_editions_track_canonical_source(self):
         root = pathlib.Path(__file__).resolve().parents[1]
         canonical = (root / "CHANGELOG.md").read_text(encoding="utf-8")

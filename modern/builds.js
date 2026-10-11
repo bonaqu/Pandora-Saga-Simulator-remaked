@@ -201,10 +201,10 @@
         ? liveText('catalogLine', { revision: revision })
         : liveText('catalogSourceLine');
     var changes = catalogMessage?.changes;
-    catalogStatus.textContent = changes ? changes.length <= 2 ? migrationText(changes) : (i18n?.getLocale() === 'ru' ? 'Изменений в билде: ' : 'Build changes: ') + changes.length : catalogMessage ? t(catalogMessage.key, catalogMessage.values, catalogMessage.fallback) : '';
+    catalogStatus.textContent = changes ? changes.length <= 2 ? migrationText(changes) : t('builds.changesCount', { count: changes.length }, 'Build changes: ' + changes.length) : catalogMessage ? t(catalogMessage.key, catalogMessage.values, catalogMessage.fallback) : '';
     if (catalogReport) {
       catalogReport.hidden = !changes || changes.length <= 2;
-      catalogReport.querySelector('summary').textContent = i18n?.getLocale() === 'ru' ? 'Показать изменения' : 'Show changes';
+      catalogReport.querySelector('summary').textContent = t('builds.showChanges', null, 'Show changes');
       catalogReport.querySelector('p').textContent = changes ? migrationText(changes) : '';
     }
     catalogStatus.dataset.state = catalogMessage?.state || 'ready';
@@ -706,7 +706,7 @@
       name.className = 'remaked-build-row-name';
       if (build.migrationReport?.length) {
         var report = document.createElement('details');
-        var caption = document.createElement('summary'); caption.textContent = i18n?.getLocale() === 'ru' ? 'Изменения билда' : 'Build changes';
+        var caption = document.createElement('summary'); caption.textContent = t('builds.buildChanges', null, 'Build changes');
         report.appendChild(caption);
         var text = document.createElement('p'); text.textContent = migrationText(build.migrationReport); report.appendChild(text);
         name.appendChild(report);
