@@ -40,3 +40,16 @@ INSERT OR IGNORE INTO localization_overrides (scope,term_id,locale,text,version,
 SELECT seed.scope,seed.term_id,seed.locale,seed.text,1,CAST(strftime('%s','now') AS INTEGER),NULL
 FROM seed
 WHERE NOT EXISTS (SELECT 1 FROM localization_drafts AS draft WHERE draft.scope=seed.scope AND draft.term_id=seed.term_id AND draft.locale=seed.locale);
+
+-- Presentation-only calculation/change-report captions.
+WITH seed(scope,term_id,locale,text) AS (VALUES
+  ('ui','catalog.diffSoulSlots','ru','слоты душ {before}→{after}'),
+  ('ui','catalog.stat.prv','ru','ПРВ'),
+  ('ui','calculator.calculationLimit','ru','Ограничение расчёта: {note}')
+)
+INSERT OR IGNORE INTO localization_overrides(scope,term_id,locale,text,version,updated_at,last_operation)
+SELECT seed.scope,seed.term_id,seed.locale,seed.text,1,CAST(strftime('%s','now') AS INTEGER),NULL
+FROM seed WHERE NOT EXISTS (
+  SELECT 1 FROM localization_drafts AS draft
+  WHERE draft.scope=seed.scope AND draft.term_id=seed.term_id AND draft.locale=seed.locale
+);

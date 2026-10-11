@@ -178,7 +178,7 @@
           if (racialInfo.children[0].textContent !== info.name) racialInfo.children[0].textContent = info.name;
           if (racialInfo.children[1].textContent !== info.description) racialInfo.children[1].textContent = info.description;
           var note = racialInfo.children[2]; note.hidden = !info.calculationNotes;
-          var noteText = info.calculationNotes ? (i18n.getLocale() === 'ru' ? 'Ограничение расчёта: ' : 'Calculation limit: ') + info.calculationNotes : '';
+          var noteText = info.calculationNotes ? i18n.t('calculator.calculationLimit', {note: info.calculationNotes}) : '';
           if (note.textContent !== noteText) note.textContent = noteText;
         }
       }

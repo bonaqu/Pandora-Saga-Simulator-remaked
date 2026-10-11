@@ -39,7 +39,7 @@ class PublicAudienceAndLocalizationTests(unittest.TestCase):
                     "builds.migration.count","adminEntry.close","adminEntry.hint"):
             self.assertIn(key,source)
         self.assertEqual(len(source),len(set(source)))
-        self.assertEqual(len(source),272)
+        self.assertEqual(len(source),275)
         self.assertEqual(sorted(re.findall(r"\{[A-Za-z0-9_]+\}",source["builds.live.catalogLine"])),["{revision}"])
         self.assertEqual(sorted(re.findall(r"\{[A-Za-z0-9_]+\}",source["builds.migration.removed"])),
                          ["{name}","{reason}"])

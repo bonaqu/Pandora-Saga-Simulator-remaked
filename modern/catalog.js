@@ -377,17 +377,16 @@
       var differences = keys.filter(function (key, index) { return keys.indexOf(key) === index; }).filter(function (key) { return (before[key] || '0') !== (after[key] || '0'); }).map(function (key) {
         var stat = Number(key.split(',')[0]), label = window.Name.Option?.[stat]?.[2] || window.Name.Text.Status?.[stat]?.[1] || key;
         label = String(label).replace(/<[^>]*>/g, '');
-        if (stat === 2 && namespace.i18n?.getLocale() === 'ru') label = 'ПРВ';
+        if (stat === 2) label = namespace.i18n?.t('catalog.stat.prv') || 'PRV';
         return label + ' ' + (before[key] || '0') + '→' + (after[key] || '0');
       });
-      var locale = namespace.i18n?.getLocale() || 'en';
-      var beforeName = previous?.names?.[locale] || previous?.names?.en, afterName = current?.names?.[locale] || current?.names?.en;
-      if (beforeName && afterName && beforeName !== afterName) differences.unshift(beforeName + '→' + afterName);
-      var beforeDescription = previous?.description?.[locale] || previous?.description?.en, afterDescription = current?.description?.[locale] || current?.description?.en;
-      if (beforeDescription !== undefined && afterDescription !== undefined && namespace.catalogText.lines(beforeDescription) !== namespace.catalogText.lines(afterDescription)) differences.push(locale === 'ru' ? 'описание обновлено' : 'description updated');
+      // Name/description changes are not mechanical build migration events.
+      // Text-only catalog revisions must never mark a saved build as changed.
       if (kind === 'equipment') {
         var beforeSlots = previous?.sockets ?? beforeSource?.[5], afterSlots = current?.sockets ?? source?.[5];
-        if (beforeSlots !== undefined && beforeSlots !== afterSlots) differences.push((namespace.i18n?.getLocale() === 'ru' ? 'слоты душ ' : 'Soul slots ') + beforeSlots + '→' + afterSlots);
+        if (beforeSlots !== undefined && beforeSlots !== afterSlots) differences.push(
+          namespace.i18n?.t('catalog.diffSoulSlots', {before: beforeSlots, after: afterSlots}) ||
+          'Soul slots ' + beforeSlots + '→' + afterSlots);
       }
       if (differences.length) changes.push({ type: 'changed', kind: kind, id: id, name: name(kind, id), details: differences });
     }

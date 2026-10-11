@@ -270,5 +270,8 @@
   "adminEntry.username": "LOGIN",
   "adminEntry.password": "PASSWORD",
   "adminEntry.authenticate": "AUTHENTICATE",
-  "adminEntry.footer": "MODERN CATALOG / MUSEUM ENGINE 2.00"
+  "adminEntry.footer": "MODERN CATALOG / MUSEUM ENGINE 2.00",
+  "catalog.diffSoulSlots": "Soul slots {before}→{after}",
+  "catalog.stat.prv": "PRV",
+  "calculator.calculationLimit": "Calculation limit: {note}"
 }
