@@ -24,9 +24,9 @@ export function roundHalfToEven(number) {
 }
 export function currentClassBaseHpMp(cls,{level,vit,spi}) {
   if(!cls || !cls.hp || !cls.mp)throw new Error('Missing HP or MP class coefficients');
-  for(const [name,value] of Object.entries({level,vit,spi})){
-    if(!Number.isInteger(value) || value< (name==='level'?1:0))
-      throw new Error('Invalid character '+name);
+  if(!Number.isInteger(level)||level<1)throw new Error('Invalid character level');
+  for(const [name,value] of Object.entries({vit,spi})){
+    if(!Number.isFinite(value)||value<0)throw new Error('Invalid character '+name);
   }
   const h=cls.hp,m=cls.mp;
   for(const value of [h.base,h.lv,h.vit,m.base,m.lv,m.spi])
