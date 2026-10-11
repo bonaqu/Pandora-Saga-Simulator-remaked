@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.05 — 2026-10-12
+
+### For users
+
+- What's New now displays the most recent actual player-facing changes, even after admin-only releases.
+- The installed version stays current; technical notes remain in the full history, separate from player updates.
+
+### Development and technical changes
+
+- Remove synthesized player notes for admin-only releases; choose the latest genuine release-notes:user entry.
+- Technical-only releases now have only technical sections in localized archives. Add Python and Playwright audience regression tests.
+- Gameplay formulas, Legacy, D1 and drafts unchanged.
+
 ## Modern 4.04 — 2026-10-12
 
 ### For users
@@ -16,10 +29,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 4.03 — 2026-10-12
 
-### For users
-
-- Internal technical improvements.
-
 ### Development and technical changes
 
 - Add per-category effective translation coverage to the authenticated D1 report in RU/EN/JP/TW: skills, equipment, souls, classes, races, stats and other.
@@ -27,10 +36,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - Add collapsible category breakdowns and drill-down into missing records, with responsive layout and API/browser regressions.
 
 ## Modern 4.02 — 2026-10-11
-
-### For users
-
-- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -40,10 +45,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 4.01 — 2026-10-11
 
-### For users
-
-- Internal technical improvements.
-
 ### Development and technical changes
 
 - Localize 18 catalog editor feedback messages in RU/EN/JP/TW through existing D1-first admin copy, covering review, draft, successful publication and rollback feedback.
@@ -51,10 +52,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - Leave unconfirmed batch publication outcomes and raw server errors unchanged to preserve safety-critical behavior.
 
 ## Modern 4.00 — 2026-10-11
-
-### For users
-
-- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -64,10 +61,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.99 — 2026-10-11
 
-### For users
-
-- Internal technical improvements.
-
 ### Development and technical changes
 
 - Add on-demand, eight-request read-only effective RU/EN/JP/TW coverage audit for authenticated admin translation center, including published D1 overrides and catalog records.
@@ -75,10 +68,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - Never write D1, modify unsaved drafts, touch game formulas or alter Legacy; add focused browser and static regressions.
 
 ## Modern 3.98 — 2026-10-11
-
-### For users
-
-- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -88,10 +77,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.97 — 2026-10-11
 
-### For users
-
-- Internal technical improvements.
-
 ### Development and technical changes
 
 - Make 36 additional translation-center messages D1-editable in RU/EN/JP/TW: dynamic counts, comparison, publication, draft feedback, catalog provenance and errors.
@@ -100,20 +85,12 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.96 — 2026-10-11
 
-### For users
-
-- Internal technical improvements.
-
 ### Development and technical changes
 
 - Add reproducible, read-only baseline coverage inventory for RU/EN/JP/TW UI and historical game identities.
 - Distinguish static source gaps from effective D1 publications; the report never overwrites or claims to enumerate live catalog translations.
 
 ## Modern 3.95 — 2026-10-11
-
-### For users
-
-- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -122,20 +99,12 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.94 — 2026-10-11
 
-### For users
-
-- Internal technical improvements.
-
 ### Development and technical changes
 
 - Register 30 new catalog form captions for skills, classes, racial abilities, equipment and Souls through the existing four-language D1 registry; reuse the existing extra-language caption.
 - Update label/legend child spans only, preserving form elements, unsaved data and drafts. D1 remains authoritative. Game formulas and Legacy are unchanged.
 
 ## Modern 3.93 — 2026-10-11
-
-### For users
-
-- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -168,10 +137,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.90 — 2026-10-11
 
-### For users
-
-- Internal technical improvements.
-
 ### Development and technical changes
 
 - 26 catalog-editor action buttons now use RU/EN/JP/TW D1-managed captions: drafting, review, publishing, variants, rules, navigation and history. Item names and form input remain untouched.
@@ -189,10 +154,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - Fix Cloudflare Admin API path filters so baseline translation sources (`ui.en`, approved and curated fallbacks) trigger a Worker redeploy; avoid mismatched admin D1 fallback indexes versus the published site.
 
 ## Modern 3.88 — 2026-10-11
-
-### For users
-
-- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -212,10 +173,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - Add strict numeric-output and repeated-buff regression coverage for 11 defense/resistance scalar results, including reversible mount state.
 
 ## Modern 3.86 — 2026-10-11
-
-### For users
-
-- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -238,10 +195,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.84 — 2026-10-11
 
-### For users
-
-- Internal technical improvements.
-
 ### Development and technical changes
 
 - Make 16 bulk-replacement labels D1-editable and translated in RU/EN/JP/TW: header, guidance, inputs, preview, selection, edit and publish actions.
@@ -249,10 +202,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - Preserve protected D1 publication, CSRF, login, game catalog, calculations and Legacy. Dynamic bulk status messages, drafts queue and catalog editor remain separate work.
 
 ## Modern 3.83 — 2026-10-11
-
-### For users
-
-- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -263,10 +212,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - No game formulas, numerical data or Legacy changes.
 
 ## Modern 3.82 — 2026-10-11
-
-### For users
-
-- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -329,10 +274,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.77 — 2026-10-11
 
-### For users
-
-- Internal technical improvements.
-
 ### Development and technical changes
 
 - Show RU/EN/JP/TW translation fields together in each admin card. Search spans all four locales; the language filter controls translation status and coverage, not which languages can be edited.
@@ -353,10 +294,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.75 — 2026-10-11
 
-### For users
-
-- Internal technical improvements.
-
 ### Development and technical changes
 
 - Audit visible Modern UI strings and introduce automatic registered-key and hard-coded-text detection.
@@ -366,10 +303,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - Reclassify Modern 3.74 administration notes as development-only, preventing technical internals from appearing as player-facing changes.
 
 ## Modern 3.74 — 2026-10-11
-
-### For users
-
-- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -430,10 +363,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ## Modern 3.68 — 2026-10-10
 
-### For users
-
-- Internal technical improvements.
-
 ### Development and technical changes
 
 - Reuse verified exact-head pull request CI, including its required aggregate job, for Pages publication instead of rerunning the entire browser matrix after merge, even for build and CI/CD infrastructure edits.
@@ -441,10 +370,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - Scope CSS/image-only PR validation to visual and Chromium/Firefox/WebKit checks, removing unrelated gameplay, data and build-code suites.
 
 ## Modern 3.67 — 2026-10-10
-
-### For users
-
-- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -455,10 +380,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - Increase the Pages full-validation time budget to prevent the last successful browser checks from being cancelled before publication.
 
 ## Modern 3.66 — 2026-10-10
-
-### For users
-
-- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -477,10 +398,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - Cover representative Astir items and enforce content preservation and idempotent formatting.
 
 ## Modern 3.64 — 2026-10-10
-
-### For users
-
-- Internal technical improvements.
 
 ### Development and technical changes
 
@@ -541,10 +458,6 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - No admin credentials, catalog revision or build representation is changed. Backend and browser regression tests cover the API and backward compatibility.
 
 ## Modern 3.59 — 2026-10-09
-
-### For users
-
-- Internal technical improvements.
 
 ### Development and technical changes
 
