@@ -2,6 +2,17 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.76 — 2026-10-11
+
+### For users
+
+- Fixed a typo in the level 1 tooltip for the Combat guild skill. Other descriptions and character stats are unchanged.
+
+### Development and technical changes
+
+- Correct one approved Russian tooltip fallback; update only the exact previously published typo in D1 while preserving custom translations, drafts, revision history and all mechanics.
+- Add migration idempotency and editor-safety regression coverage.
+
 ## Modern 3.75 — 2026-10-11
 
 ### For users
