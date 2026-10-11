@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.78 — 2026-10-11
+
+### For users
+
+- Restore all five short Russian resistance names, including the corrected lightning caption.
+- Restore 13 approved Russian Honor names and their descriptions, with a safe fallback when localization API is unavailable.
+- Prevent three-digit calculated character totals from overlapping the point-cost indicator.
+
+### Development and technical changes
+
+- Keep published D1 text and user drafts authoritative; bundle approved Honor copy in the site fallback and fix five stale catalog-name priorities.
+- Exact-value D1 migration protects user edits, tombstones and unrelated locales; only presentation changes, not stats, mechanics or Legacy.
+
 ## Modern 3.77 — 2026-10-11
 
 ### For users
