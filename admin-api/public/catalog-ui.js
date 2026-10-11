@@ -64,9 +64,9 @@
   var catalogLiveValues = new WeakMap();
   function catalogTranslate(key, fallback, values) {
     var template=window.PandoraAdminI18n?.t?.('adminShell.'+key,fallback)||fallback;
-    var slots=function(value){return (String(value).match(/\\{[A-Za-z0-9_]+\\}/g)||[]).sort().join('|');};
+    var slots=function(value){return (String(value).match(/\{[A-Za-z0-9_]+\}/g)||[]).sort().join('|');};
     if(slots(template)!==slots(fallback))template=fallback;
-    return String(template).replace(/\\{([A-Za-z0-9_]+)\\}/g,function(original,name){
+    return String(template).replace(/\{([A-Za-z0-9_]+)\}/g,function(original,name){
       return values&&Object.hasOwn(values,name)?String(values[name]):original;
     });
   }
