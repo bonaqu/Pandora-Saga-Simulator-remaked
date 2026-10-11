@@ -1,5 +1,23 @@
 # Changelog
 
+## Modern 3.89 — японский и традиционный китайский перевод менеджера билдов, 2026-10-11
+
+<!-- release-notes:user:ru -->
+- Менеджер билдов получил 58 переводов на японский и традиционный китайский: сохранение, загрузка, экспорт, импорт, обмен кодами, ошибки и восстановление.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Add 58 Japanese and Traditional Chinese translations for Build Manager: save/load, import/export, sharing, error and recovery messages.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Добавлены только утверждённые резервные текстовые значения локализации. Более свежие публикации через D1 сохраняют приоритет; формулы, экипировка, импорт сохранений и Legacy не изменены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- These are baseline localization values only; existing D1 overrides keep priority. No changes to calculations, persisted builds, import/export mechanics, equipment or Legacy.
+<!-- /admin-notes:en -->
+
 ## Modern 3.88 — четырёхъязычная карточка переводов в админке, 2026-10-11
 
 <!-- admin-notes:ru -->

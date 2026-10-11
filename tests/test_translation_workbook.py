@@ -53,6 +53,18 @@ class TranslationCatalogTests(unittest.TestCase):
         self.assertEqual(len(self.ui_source), 417)
         self.assertEqual(self.data.total, 2920)
 
+    def test_build_manager_has_japanese_and_traditional_chinese_fallbacks(self):
+        # Fallbacks are not D1 publications: the admin's newer text always wins.
+        keys = ["builds.button","builds.managerTitle","builds.close","builds.named","builds.namePlaceholder","builds.saveCurrent","builds.codeTitle","builds.codePlaceholder","builds.exportCurrent","builds.importCode","builds.clearCode","builds.load","builds.rename","builds.duplicate","builds.delete","builds.autosavePending","builds.autosaveUnavailable","builds.autosaveWarning","builds.savedAt","builds.autosaveIgnored","builds.autosaveReady","builds.autosaveRestored","builds.storageUnavailable","builds.storageReadFailed","builds.damagedIgnored","builds.none","builds.notFound","builds.invalid","builds.loaded","builds.savedLoaded","builds.loadedNoAutosave","builds.renamePrompt","builds.renameFailed","builds.renamed","builds.duplicateFailed","builds.created","builds.deleteConfirm","builds.deleteFailed","builds.deleted","builds.serializeFailed","builds.saveFailed","builds.saved","builds.exported","builds.exportFailed","builds.invalidCode","builds.imported","builds.savedImported","builds.importedNoAutosave","builds.share","builds.shareLink","builds.shareCopied","builds.shareManual","builds.sharedLoaded","builds.invalidShare","builds.legacyImport","builds.legacyHelp","builds.legacyCopied","builds.legacyFailed"]
+        self.assertEqual(len(keys), 58)
+        for key in keys:
+            self.assertIn(key, self.ui_source)
+            for language in ("jp", "tw"):
+                value = self.snapshot["ui"][language].get(key)
+                self.assertTrue(isinstance(value, str) and value.strip(), (language, key))
+                self.assertEqual(sorted(SLOTS.findall(value)),
+                                 sorted(SLOTS.findall(self.ui_source[key])))
+
     def test_all_localized_ui_placeholders_match_original(self):
         for language in ("ru", "en", "jp", "tw"):
             for identifier, text in self.snapshot["ui"][language].items():
