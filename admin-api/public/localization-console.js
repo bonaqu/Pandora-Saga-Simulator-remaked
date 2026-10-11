@@ -131,12 +131,21 @@
           const categories=data.coverageByGroup;
           if(categories!==undefined){
             const allowed=['skills','equipment','souls','classes','races','stats','other'];
+            // Legacy can override Array.prototype.filter with a two-argument
+            // callback; never require callback array-argument identity.
+            const seen=Object.create(null);
+            const duplicated=Array.isArray(categories)&&categories.some(entry=>{
+              const id=entry?.id;
+              if(Object.hasOwn(seen,id))return true;
+              seen[id]=true;
+              return false;
+            });
             if(!Array.isArray(categories)||!categories.length||
                 categories.some(entry=>!entry||!allowed.includes(entry.id)||
                   ![entry.total,entry.translated,entry.missing].every(Number.isSafeInteger)||
                   entry.total<0||entry.translated<0||entry.missing<0||
                   entry.translated+entry.missing!==entry.total)||
-                categories.map(entry=>entry.id).filter((id,index,ids)=>ids.indexOf(id)===index).length!==categories.length||
+                duplicated||
                 categories.reduce((sum,entry)=>sum+entry.total,0)!==values.total||
                 categories.reduce((sum,entry)=>sum+entry.translated,0)!==values.translated||
                 categories.reduce((sum,entry)=>sum+entry.missing,0)!==data.total)
