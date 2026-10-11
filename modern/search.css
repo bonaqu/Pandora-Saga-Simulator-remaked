@@ -663,3 +663,25 @@
   color: #5b6d51;
   opacity: 1;
 }
+
+.remaked-modern #body [data-remaked-remove-occupying-dress] {
+  display: block;
+  width: fit-content;
+  min-height: 30px;
+  margin: 4px 0 6px;
+  padding: 5px 10px;
+  background: #f7faf1;
+  border: 1px solid #94ad7d;
+  border-radius: 4px;
+  color: #35592c;
+  font: 600 12px/1.4 var(--rm-font);
+  cursor: pointer;
+}
+.remaked-modern #body [data-remaked-remove-occupying-dress]:hover {
+  background: #eaf3df;
+}
+.remaked-modern #body [data-remaked-remove-occupying-dress]:focus-visible {
+  outline: 2px solid #507642;
+  outline-offset: 2px;
+}
+.remaked-modern #body [data-remaked-remove-occupying-dress][hidden] { display: none !important; }
