@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.97 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Make 36 additional translation-center messages D1-editable in RU/EN/JP/TW: dynamic counts, comparison, publication, draft feedback, catalog provenance and errors.
+- Locale changes refresh only leaf text nodes without replacing inputs or unsaved drafts; variable values are safely inserted as plain text.
+- Add four-language fallback and browser regressions. No changes to game formulas, D1 records or Legacy.
+
 ## Modern 3.96 — 2026-10-11
 
 ### For users

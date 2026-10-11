@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 3.97 — сообщения центра переводов, 2026-10-11
+
+<!-- admin-notes:ru -->
+- Переводимые через D1 подписи и сообщения центра переводов дополнены 36 ключами: динамические счётчики, сравнение языков, публикация, черновики, источник каталога и сообщения об ошибках.
+- Переключение языка обновляет только конечные текстовые узлы, не уничтожая textarea, введённые тексты и неопубликованные правки. Параметры сообщений подставляются безопасным текстом, без HTML.
+- Обновлены проверки четырёх языков и поведение интерфейса при смене языка. Игровые формулы, каталог D1 и Legacy не изменены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Make 36 additional translation-center messages D1-editable in RU/EN/JP/TW: dynamic counts, comparison, publication, draft feedback, catalog provenance and errors.
+- Locale changes refresh only leaf text nodes without replacing inputs or unsaved drafts; variable values are safely inserted as plain text.
+- Add four-language fallback and browser regressions. No changes to game formulas, D1 records or Legacy.
+<!-- /admin-notes:en -->
+
 ## Modern 3.96 — аудит покрытия исходных переводов, 2026-10-11
 
 <!-- admin-notes:ru -->
