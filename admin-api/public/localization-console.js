@@ -86,6 +86,10 @@
     prev.addEventListener('click',()=>{page=Math.max(0,page-1);load();});
     next.addEventListener('click',()=>{page++;load();});
     nav.append(prev,count,next);panel.append(head,info,filters,coverage,queueHost,bulkHost,status,items,nav);host.append(panel);
+    // A D1 localization response may already have arrived before the user
+    // signs in and creates this protected workbench. Apply it in place:
+    // never rebuild the form or clear unsaved translation text on switching.
+    window.PandoraAdminI18n?.apply?.();
     queued=window.PandoraLocalizationDrafts?.mount(queueHost,{
       api,
       onPublished:()=>load(),
