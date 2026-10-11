@@ -184,6 +184,16 @@
     var unified = unifiedOverrides.game[currentLocale]?.[key];
     if (unified) return unified;
     if (currentLocale === 'ru' && Object.prototype.hasOwnProperty.call(publishedResultLabels, key)) return publishedResultLabels[key];
+    // The current published game catalog still contains five older, long
+    // resistance names. They are not new user edits: the verified editor/D1
+    // publications deliberately superseded these exact historical labels.
+    // When Cloudflare localization is temporarily unavailable, keep the
+    // locally approved short forms instead of resurrecting old catalog copy.
+    // D1's current publication always wins above this explicit fallback.
+    var approved = (gameCatalogs[currentLocale] || {})[key];
+    if (currentLocale === 'ru' && approved &&
+        /^(?:skill_entry\.18\.(?:8|9|10)|skill_entry\.(?:20|21)\.7)$/.test(key))
+      return approved;
     var published = namespace.catalog && namespace.catalog.gameLabel(key);
     if (published) return published;
     // JP/TW keep the original game's language for Legacy game terms while the
