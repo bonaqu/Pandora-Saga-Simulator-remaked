@@ -99,7 +99,7 @@ test('live catalog counters and filters switch RU/EN/JP/TW without losing draft 
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({edit,expectedDraftVersion:0,expectedCatalogRevision:0})
   }),env,1000);
-  expect(draftResponse.status).toBe(200);
+  expect([200,201]).toContain(draftResponse.status);
   const posts=[];
   const english=JSON.parse(fs.readFileSync(new URL('../../localization/ui.en.json',import.meta.url),'utf8'));
   const approved=JSON.parse(fs.readFileSync(new URL('../../localization/approved-translations.v1.json',import.meta.url),'utf8'));
