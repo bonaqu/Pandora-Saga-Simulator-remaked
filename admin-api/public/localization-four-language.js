@@ -68,11 +68,15 @@
         stageButton.disabled=busy || !changed || !textarea.value.trim();
         resetButton.disabled=busy || Boolean(cloud) || !(changed || ['admin','previous-admin'].includes(data.origin));
         size.textContent=textarea.value.length+' / 4000';
+        stageButton.textContent=tx('fourStage','В черновики');
+        resetButton.textContent=tx('fourReset','Вернуть базовый');
         saveButton.textContent=tx('fourPublishLocale','Опубликовать {locale}',{locale:data.locale.toUpperCase()});
         textarea.placeholder=tx('fourLanguagePlaceholder','Перевод на {language}',{language:entry.languageName});
         resetButton.title=tx('fourBaselineTitle','Базовый текст: {value}',{value:data.baseline||'—'});
         entry.container.dataset.dirty=String(changed);
       }
+      publishAll.textContent=tx('fourPublishAll','Опубликовать изменения во всех языках');
+      hint.textContent=tx('fourPublishHint','Изменённые языки публикуются одним действием; остальные сохраняются без изменений.');
       const changedEntries=states();
       card.dataset.dirty=String(changedEntries.length>0);
       publishAll.disabled=busy || changedEntries.length===0 ||
