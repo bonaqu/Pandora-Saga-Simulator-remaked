@@ -582,5 +582,15 @@
   "adminShell.catalogConfirmPublishBatch": "Publish {count} saved drafts as ONE catalog revision? Names, effects and attributes will change in Modern. Legacy and earlier versions remain unchanged.",
   "adminShell.catalogConfirmAstirCleanup": "Delete {count} archived Astir notes from the current Modern catalog? A new revision will be created with restoration available.",
   "adminShell.catalogConfirmRestoreAstir": "Restore only archived Astir notes from cleanup #{revision}? This creates a new revision and does not undo published attribute changes.",
-  "adminShell.catalogConfirmRollback": "Restore the entire published catalog from version {version}? Saved drafts will not be deleted."
+  "adminShell.catalogConfirmRollback": "Restore the entire published catalog from version {version}? Saved drafts will not be deleted.",
+  "adminShell.locAuditAction": "Check published translation coverage",
+  "adminShell.locAuditTitle": "Effective translation coverage · D1 and catalog",
+  "adminShell.locAuditDescription": "Eight authenticated read-only queries. Counts include published D1 and catalog text, not unsaved drafts. This is not an atomic snapshot.",
+  "adminShell.locAuditLoading": "Checked {done} / {total} language groups…",
+  "adminShell.locAuditCompleted": "Coverage check completed. No changes were published.",
+  "adminShell.locAuditError": "Coverage check failed: {error}",
+  "adminShell.locAuditScopeGame": "Game data and catalog",
+  "adminShell.locAuditScopeUi": "Interface",
+  "adminShell.locAuditNumbers": "Translated {translated} / {total} · missing {missing}",
+  "adminShell.locAuditBrowseMissing": "View untranslated entries"
 }

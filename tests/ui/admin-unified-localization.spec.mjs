@@ -552,3 +552,41 @@ test('dynamic D1 status translations follow locale switches without replacing un
   await expect(page.locator('.localization-status')).toContainText('Section: 1 keys');
   expect(await page.evaluate(()=>document.querySelectorAll('[data-admin-live-i18n] textarea').length)).toBe(0);
 });
+
+test('effective D1 coverage report reads 8 locale groups without posting or mutating drafts',async({page})=>{
+  await page.goto('/');
+  await page.setContent('<div id="localization-console"></div>');
+  await page.evaluate(()=>{
+    window.coverageRequests=[];
+    window.PandoraAdminI18n={t:(key,fallback)=>fallback,apply:()=>{}};
+    window.PandoraBulkLocalization={mount:()=>({invalidate(){},destroy(){}})};
+    window.fetch=async(url,options)=>{
+      const parsed=new URL(String(url),location.href);
+      window.coverageRequests.push({url:parsed.href,method:options?.method||'GET'});
+      if(parsed.searchParams.get('status')==='missing'){
+        const game=parsed.searchParams.get('scope')==='game';
+        return new Response(JSON.stringify({ok:true,coverage:{total:game?100:15,
+          translated:game?75:12},total:game?25:3,items:[],counts:{game:100,ui:15}}),
+          {headers:{'content-type':'application/json'}});
+      }
+      return new Response(JSON.stringify({ok:true,counts:{game:100,ui:15},
+        total:0,items:[],coverage:{translated:0,total:0}}),
+        {headers:{'content-type':'application/json'}});
+    };
+  });
+  await page.addScriptTag({path:'admin-api/public/localization-console.js'});
+  await page.evaluate(()=>window.PandoraLocalizationConsole.start(()=>'',()=>{}));
+  await page.locator('[data-admin-i18n="adminShell.locAuditAction"]').click();
+  const rows=page.locator('.localization-audit-row');
+  await expect(rows).toHaveCount(8);
+  await expect(page.locator('.localization-audit')).toContainText('Переведено 75 из 100 · отсутствует 25');
+  await expect(page.locator('.localization-audit')).toContainText('Переведено 12 из 15 · отсутствует 3');
+  const requests=await page.evaluate(()=>window.coverageRequests);
+  const audit=requests.filter(row=>new URL(row.url).searchParams.get('status')==='missing');
+  expect(audit).toHaveLength(8);
+  expect(audit.every(row=>row.method==='GET')).toBe(true);
+  await rows.first().getByRole('button',{name:'Показать непереведённые записи'}).click();
+  await expect(page.getByRole('combobox',{name:'Статус перевода'})).toHaveValue('missing');
+  await expect(page.getByRole('combobox',{name:'Язык статуса и покрытия'})).toHaveValue('ru');
+  expect((await page.evaluate(()=>window.coverageRequests)).every(row=>row.method==='GET')).toBe(true);
+});

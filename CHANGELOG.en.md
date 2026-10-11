@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.99 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Add on-demand, eight-request read-only effective RU/EN/JP/TW coverage audit for authenticated admin translation center, including published D1 overrides and catalog records.
+- The UI explains that the results are sequential observations, not an atomic snapshot, and allows drilling into missing entries by locale and scope.
+- Never write D1, modify unsaved drafts, touch game formulas or alter Legacy; add focused browser and static regressions.
+
 ## Modern 3.98 — 2026-10-11
 
 ### For users

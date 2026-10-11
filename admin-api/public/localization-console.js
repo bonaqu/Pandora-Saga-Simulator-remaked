@@ -4,7 +4,7 @@
   if(!host)return;
   let csrf,expired,generation=0,page=0,total=0,rows=[],query='',locale='ru',scope='game',group='all',translationStatus='all';
   const drafts=new Map();
-  let bulk,queued;
+  let bulk,queued,auditRequest=0;
   const key=row=>row.scope+'\0'+row.id+'\0'+row.locale;
   function tag(name,content,className){
     const node=document.createElement(name);
@@ -96,6 +96,67 @@
     });
     draftCount=liveText(tag('output'),'locUnsavedCount','Не сохранено: {count}',{count:0});
     filters.append(scopeInput,localeInput,groupInput,translationStatusInput,searchInput,draftCount,resetDrafts);
+    // Read the effective, currently published server state only when the
+    // administrator asks. Never enumerate private values or change D1 here.
+    const auditButton=localized('button','locAuditAction','Проверить опубликованные переводы');
+    auditButton.type='button';auditButton.className='secondary';
+    filters.append(auditButton);
+    const auditPanel=tag('section',null,'localization-audit');auditPanel.hidden=true;
+    auditButton.addEventListener('click',async()=>{
+      const token=++auditRequest;
+      auditButton.disabled=true;
+      auditPanel.hidden=false;
+      const heading=localized('h4','locAuditTitle','Фактическое покрытие · D1 и каталог');
+      const disclaimer=localized('p','locAuditDescription',
+        'Восемь авторизованных запросов только на чтение. Учитываются опубликованные D1 и каталог, но не неопубликованные черновики. Это не атомарный снимок.');
+      const auditStatus=tag('p');
+      const results=tag('div',null,'localization-audit-results');
+      auditPanel.replaceChildren(heading,disclaimer,auditStatus,results);
+      liveText(auditStatus,'locAuditLoading','Проверено {done} из {total} языковых групп…',{done:0,total:8});
+      try{
+        const coverage=[];
+        for(const selectedScope of ['game','ui'])for(const selectedLocale of ['ru','en','jp','tw']){
+          const params=new URLSearchParams({scope:selectedScope,locale:selectedLocale,
+            group:'all',status:'missing',page:'0'});
+          const data=await api('GET',null,'/api/admin/localization?'+params);
+          if(token!==auditRequest||!auditPanel.isConnected)return;
+          const values=data.coverage;
+          if(!values||![values.total,values.translated,data.total].every(Number.isSafeInteger)||
+              values.total<0||values.translated<0||values.translated>values.total||
+              data.total!==values.total-values.translated)
+            throw new Error('Invalid coverage response; no data was changed');
+          coverage.push({scope:selectedScope,locale:selectedLocale,
+            translated:values.translated,total:values.total,missing:data.total});
+          liveText(auditStatus,'locAuditLoading','Проверено {done} из {total} языковых групп…',
+            {done:coverage.length,total:8});
+        }
+        results.replaceChildren();
+        for(const entry of coverage){
+          const row=tag('div',null,'localization-audit-row');
+          const label=localized('strong',entry.scope==='game'?'locAuditScopeGame':'locAuditScopeUi',
+            entry.scope==='game'?'Игровые данные и каталог':'Интерфейс');
+          const language=tag('span',entry.locale.toUpperCase());
+          const numbers=liveText(tag('span'),'locAuditNumbers',
+            'Переведено {translated} из {total} · отсутствует {missing}',entry);
+          const browse=localized('button','locAuditBrowseMissing','Показать непереведённые записи');
+          browse.type='button';browse.className='secondary';
+          browse.addEventListener('click',()=>{
+            bulk?.invalidate();scope=entry.scope;locale=entry.locale;group='all';
+            translationStatus='missing';query='';page=0;
+            scopeInput.value=scope;localeInput.value=locale;
+            groupInput.value='all';groupInput.disabled=scope==='ui';
+            translationStatusInput.value='missing';searchInput.value='';load();
+          });
+          row.append(label,language,numbers,browse);results.append(row);
+        }
+        liveText(auditStatus,'locAuditCompleted','Проверка покрытия завершена. Изменения не публиковались.');
+      }catch(error){
+        if(token===auditRequest&&auditPanel.isConnected){
+          results.replaceChildren();
+          liveText(auditStatus,'locAuditError','Не удалось проверить покрытие: {error}',{error:error.message});
+        }
+      }finally{if(auditButton.isConnected)auditButton.disabled=false;}
+    });
     const coverage=tag('div',null,'localization-progress');
     progressLabel=liveText(tag('output'),'locCoverageLoading','Покрытие выбранного для фильтра языка · загрузка…');
     progress=tag('progress');progress.max=1;progress.value=0;
@@ -111,7 +172,7 @@
     next=localized('button','paginationNext','Вперёд →');next.type='button';
     prev.addEventListener('click',()=>{page=Math.max(0,page-1);load();});
     next.addEventListener('click',()=>{page++;load();});
-    nav.append(prev,count,next);panel.append(head,info,filters,coverage,queueHost,bulkHost,status,items,nav);host.append(panel);
+    nav.append(prev,count,next);panel.append(head,info,filters,coverage,auditPanel,queueHost,bulkHost,status,items,nav);host.append(panel);
     // A D1 localization response may already have arrived before the user
     // signs in and creates this protected workbench. Apply it in place:
     // never rebuild the form or clear unsaved translation text on switching.
@@ -408,7 +469,7 @@
   }
   function clear(){
     window.removeEventListener('pandora:catalog-published',catalogPublished);
-    generation++;bulk?.destroy();bulk=null;queued?.destroy();queued=null;
+    generation++;auditRequest++;bulk?.destroy();bulk=null;queued?.destroy();queued=null;
     drafts.clear();host.replaceChildren();status=items=null;
   }
   window.addEventListener('beforeunload',event=>{
