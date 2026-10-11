@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { readFileSync } from 'node:fs';
 import { CLASS_ORDER, parseLegacyModifiers, compareCoefficients, summarize } from '../../scripts/audit_pandora_os_class_coefficients.mjs';
 
 test('all canonical class identities are unique and ordered', () => {
@@ -42,4 +43,18 @@ test('same raw coefficients report no drift; rejects incomplete mappings', () =>
   assert.throws(() => parseLegacyModifiers(
     "Status['Mod'][0] = new Array(1,2,3,4,5,6);\nStatus['Mod'][0] = new Array(1,2,3,4,5,6);"
   ), /Duplicate/);
+});
+
+
+test('dated 28-class server coefficient snapshot replays against preserved Legacy', () => {
+  const classes = JSON.parse(readFileSync(new URL('../fixtures/pandora-os-classes-20261011.json', import.meta.url), 'utf8'));
+  const ini = readFileSync(new URL('../../js/ini.js', import.meta.url), 'utf8');
+  const retained = parseLegacyModifiers(ini);
+  const rows = compareCoefficients(classes, retained);
+  assert.equal(rows.length, CLASS_ORDER.length);
+  assert.equal(rows[0].name, 'WARRIOR');
+  assert.equal(rows[1].name, 'GLADIATOR');
+  assert.equal(summarize(rows).classesWithBaseCoefficientDifference, 28);
+  assert.equal(rows[0].comparison.find(x => x.field === 'mp.base').server, 30);
+  assert.equal(rows[16].comparison.find(x => x.field === 'mp.base').server, 255);
 });
