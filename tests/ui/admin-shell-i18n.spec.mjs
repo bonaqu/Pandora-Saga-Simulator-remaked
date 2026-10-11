@@ -124,3 +124,72 @@ test('translation workbench filters switch RU/EN/JP/TW without erasing search or
   await expect(console.locator('[data-admin-i18n]')).toHaveCount(23);
   await page.evaluate(()=>window.PandoraLocalizationConsole.clear());
 });
+
+
+test('bulk translation editor is D1-localized in four languages without changing text inputs or publication',async({page})=>{
+  await page.goto('about:blank');
+  await page.setContent(fragment+'<section id="bulk-host"></section>');
+  await page.evaluate(data=>{
+    window.fetch=async url=>{
+      if(url!=='/api/admin-shell-localization')throw Error('Unexpected auth/public request '+url);
+      return new Response(JSON.stringify(data),{status:200,headers:{'content-type':'application/json'}});
+    };
+  },fixture());
+  await page.addScriptTag({path:'admin-api/public/admin-i18n.js'});
+  await page.addScriptTag({path:'admin-api/public/localization-bulk.js'});
+  await expect(page.locator('#admin-language')).toBeEnabled();
+  await page.evaluate(()=>{
+    window.bulkRequests=[];
+    window.bulkEditor=PandoraBulkLocalization.mount(
+      document.getElementById('bulk-host'),{
+        api:async(method,payload,url)=>{
+          window.bulkRequests.push({method,url,payload});
+          if(method==='POST')throw Error('Bulk test must never publish');
+          const path=new URL(url,location.href);
+          return {ok:true,schemaVersion:1,page:Number(path.searchParams.get('page')),
+            total:1,items:[{scope:'game',id:'equipment.30.37',locale:'ru',
+              kind:'equipment',managedBy:null,source:{en:'Warrior Hat'},
+              effective:'Warrior Hat',version:0,origin:'fallback'}]};
+        },
+        getContext:()=>({scope:'game',locale:'ru',group:'equipment'}),
+        hasDraft:()=>false,
+        onPublished:()=>{throw Error('Published unexpectedly')}
+      });
+  });
+  const panel=page.locator('#bulk-host');
+  const word=panel.getByRole('textbox',{name:'Find whole word'});
+  const translated=panel.getByRole('textbox',{name:'Replace with word'});
+  await word.fill('Warrior');await translated.fill('Воин');
+  const language=page.locator('#admin-language');
+  for(const locale of ['ru','jp','tw','en']){
+    await language.selectOption(locale);
+    await expect(panel.locator('[data-admin-i18n="adminShell.bulkHeading"]'))
+      .toHaveText(locale==='en'?english['adminShell.bulkHeading']:approved.ui[locale]['adminShell.bulkHeading']);
+    await expect(panel.locator('[data-admin-i18n-aria="adminShell.bulkFindWord"]'))
+      .toHaveAttribute('aria-label',locale==='en'?english['adminShell.bulkFindWord']:approved.ui[locale]['adminShell.bulkFindWord']);
+    await expect(panel.locator('[data-admin-i18n="adminShell.bulkPreview"]'))
+      .toHaveText(locale==='en'?english['adminShell.bulkPreview']:approved.ui[locale]['adminShell.bulkPreview']);
+    await expect(word).toHaveValue('Warrior');
+    await expect(translated).toHaveValue('Воин');
+  }
+  await panel.locator('[data-admin-i18n="adminShell.bulkPreview"]').click();
+  await expect(panel.locator('.localization-bulk-row')).toHaveCount(1);
+  await language.selectOption('jp');
+  await expect(panel.locator('[data-admin-i18n="adminShell.bulkBefore"]'))
+    .toHaveText(approved.ui.jp['adminShell.bulkBefore']);
+  await expect(panel.locator('[data-admin-i18n="adminShell.bulkAfter"]'))
+    .toHaveText(approved.ui.jp['adminShell.bulkAfter']);
+  await expect(panel.locator('[data-admin-i18n-title="adminShell.bulkEditTitle"]'))
+    .toHaveAttribute('title',approved.ui.jp['adminShell.bulkEditTitle']);
+  const pencil=panel.locator('.localization-bulk-row .localization-bulk-icon').first();
+  await pencil.click();
+  const editor=panel.locator('.localization-bulk-row textarea');
+  await editor.fill('Мой отредактированный вариант');
+  await language.selectOption('tw');
+  await expect(panel.locator('[data-admin-i18n="adminShell.bulkApplyPreview"]'))
+    .toHaveText(approved.ui.tw['adminShell.bulkApplyPreview']);
+  await expect(editor).toHaveValue('Мой отредактированный вариант');
+  expect(await page.evaluate(()=>window.bulkRequests.every(x=>x.method==='GET'))).toBe(true);
+  await page.evaluate(()=>window.bulkEditor.destroy());
+  await expect(panel.locator('.localization-bulk')).toHaveCount(0);
+});
