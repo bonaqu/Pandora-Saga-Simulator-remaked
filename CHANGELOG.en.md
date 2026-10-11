@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.85 — 2026-10-11
+
+### For users
+
+- Translate 54 frequently used character-builder UI labels into Japanese and Traditional Chinese, covering language controls, panels, equipment/Soul search and mobile navigation.
+- Published D1 overrides remain authoritative; no saved builds, equipment statistics or formulas are changed.
+
+### Development and technical changes
+
+- Add 54 reviewed JP/TW static UI baselines to the existing D1-override-aware registry, keeping source placeholders intact and without adding a second data source.
+- Verify both locale catalogs in browser tests and that switching languages does not mutate builds. Other untranslated UI labels remain to be reviewed.
+- This does not modify Legacy mechanics or calculation formulas.
+
 ## Modern 3.84 — 2026-10-11
 
 ### For users

@@ -1,5 +1,29 @@
 # Changelog
 
+## Modern 3.85 — японский и тайваньский интерфейс симулятора, 2026-10-11
+
+<!-- release-notes:user:ru -->
+- Для JP и TW добавлены переводы 54 часто используемых элементов интерфейса: выбор языка, заголовки, параметры персонажа, поиск экипировки и душ, мобильная навигация.
+- Текущие опубликованные переводы D1 по-прежнему имеют приоритет; обновление подписей не меняет характеристики, сохранённые билды или игровые формулы.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Translate 54 frequently used character-builder UI labels into Japanese and Traditional Chinese, covering language controls, panels, equipment/Soul search and mobile navigation.
+- Published D1 overrides remain authoritative; no saved builds, equipment statistics or formulas are changed.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Утверждённый локальный реестр пополнен 54 ключами каждого языка JP/TW; не добавляется второй источник и не меняется API.
+- Проведена автоматическая проверка плейсхолдеров {name} и регрессионная браузерная проверка двух языков без изменения сохранённого билда. Общие UI-ключи, оставшиеся без JP/TW текста, сохраняются в очереди на перевод.
+- Это локализация интерфейса, а не изменение Legacy или расчётного движка.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add 54 reviewed JP/TW static UI baselines to the existing D1-override-aware registry, keeping source placeholders intact and without adding a second data source.
+- Verify both locale catalogs in browser tests and that switching languages does not mutate builds. Other untranslated UI labels remain to be reviewed.
+- This does not modify Legacy mechanics or calculation formulas.
+<!-- /admin-notes:en -->
+
 ## Modern 3.84 — локализация массового редактора переводов, 2026-10-11
 
 <!-- admin-notes:ru -->
