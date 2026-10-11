@@ -13,7 +13,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 - Preserve the original Legacy engine. Modern applies verified historical Providence +25 via its non-accumulating `Calc('RESMagic')` wrapper, without changing saved builds.
 - Contract tests use native Linen Robe equipment with `49=8_145=3` to verify DEF and magic resistance changes, buff stacking, reset and mount-mode display.
-- Current Pandora Saga OS parity remains an independent open audit; do not extrapolate this historical Providence coefficient to unverified live-game behavior.
+- Parity with the current game remains an independent open audit; do not extrapolate this historical Providence coefficient to unverified gameplay.
 
 ## Modern 3.79 — 2026-10-11
 
