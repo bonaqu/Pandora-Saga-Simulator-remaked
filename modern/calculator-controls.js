@@ -528,7 +528,7 @@
         // Only affected attribute rows widen; two-digit builds stay compact.
         var attributeRow = input.closest('[data-remaked-calculator-attribute]');
         if (attributeRow) {
-          if (!total.hidden && /^[-+]?\\d{3,}$/.test(finalStat))
+          if (!total.hidden && /^[-+]?\d{3,}$/.test(finalStat))
             attributeRow.setAttribute('data-remaked-wide-total', '');
           else attributeRow.removeAttribute('data-remaked-wide-total');
         }
