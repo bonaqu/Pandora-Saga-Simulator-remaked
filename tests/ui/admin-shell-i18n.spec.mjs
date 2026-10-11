@@ -157,6 +157,8 @@ test('bulk translation editor is D1-localized in four languages without changing
       });
   });
   const panel=page.locator('#bulk-host');
+  // Bulk editing is deliberately collapsed until the administrator opens it.
+  await panel.locator('.localization-bulk > summary').click();
   // Playwright may inherit a non-English browser locale; select EN explicitly.
   await page.locator('#admin-language').selectOption('en');
   // Stable DOM selectors must survive changes to their localized ARIA names.
