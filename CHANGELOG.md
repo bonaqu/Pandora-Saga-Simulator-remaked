@@ -1,5 +1,30 @@
 # Changelog
 
+## Modern 3.78 — восстановление утверждённых переводов и трёхзначных итогов, 2026-10-11
+
+<!-- release-notes:user:ru -->
+- В «Усилениях» снова отображаются короткие названия пяти сопротивлений, включая «Сопр. молниям». Исправлена подмена утверждённых названий устаревшим текстом каталога.
+- В столбце «Честь» восстановлены все 13 русских названий и их подсказки. Они доступны даже при временной недоступности сервиса переводов.
+- Исправлено наложение итоговой характеристики на значок стоимости очков при значениях от 100.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Restore the five approved compact resistance captions and all 13 approved Russian Honor names and tooltips, including when the localization API is temporarily unavailable.
+- Prevent three-digit character totals from overlapping the point-cost badge.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- D1 остаётся единственным приоритетным источником последних редакторских публикаций; резервная локализация содержит утверждённые пользователем значения и не заменяет изменённые D1-версии. Приоритет старого игрового каталога исправлен лишь для пяти исторических сопротивлений.
+- Адресная миграция D1 обновляет только старый текст «Сопр. молнии» с сохранением версий, истории, черновиков и пользовательских формулировок. Вычисления и Legacy не затронуты.
+- Добавлены тесты 26 утверждённых текстов, приоритета D1, SQL миграции и компоновки итогов.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Keep D1 publications authoritative, bundle the 26 approved Honor strings as offline-safe fallback and prefer five explicitly approved resistance names over stale catalog copy only when D1 is unavailable.
+- Migrate the exact old lightning wording through a versioned, draft-safe D1 update, without touching mechanics or Legacy.
+- Verify localization precedence, recovery, SQL history and three-digit stat geometry.
+<!-- /admin-notes:en -->
+
 ## Modern 3.77 — четырёхъязычный редактор в одной карточке, 2026-10-11
 
 <!-- admin-notes:ru -->
