@@ -371,3 +371,47 @@ test('Modern reach fails closed if canonical engine identity changed (no invente
   expect(result.known).toBe('115');
   expect(result.changed).toBe('---');
 });
+
+
+test('clicking real Enhancement buttons recalculates Providence magic resistance and Lapis defense',async({page})=>{
+  await page.goto('/?ui=ru');
+  await page.evaluate(()=>{
+    if(Flag['0_8']||Flag['14_4'])throw Error('Unexpected non-default buff state');
+    Flag[7]=0;
+    CalcSet('ALL');
+  });
+  const getValue=id=>page.locator('#Status_'+id).evaluate(node=>Number(node.textContent.replace(/,/g,'').trim()));
+  const initialMagic=await getValue(145),initialDef=await getValue(49);
+  expect(Number.isFinite(initialMagic)&&Number.isFinite(initialDef)).toBe(true);
+  await page.locator('[data-remaked-tab="4"]').click();
+  const providence=page.locator('#Buff_0_8');
+  const lapis=page.locator('#Buff_14_4');
+  await expect(providence).toBeVisible();
+  await expect(lapis).toBeVisible();
+  await expect(page.locator('#Buff_0_8 [data-remaked-buff]')).toContainText('Божественное благословление');
+  await providence.click();
+  await expect(providence).toHaveClass(/btn2_on/);
+  await expect.poll(()=>getValue(145)).toBe(initialMagic+25);
+  await page.evaluate(()=>CalcSet('ALL'));
+  await expect.poll(()=>getValue(145)).toBe(initialMagic+25);
+  await lapis.click();
+  await expect(lapis).toHaveClass(/btn2_on/);
+  const boostedDef=await getValue(49);
+  expect(boostedDef).toBeGreaterThan(initialDef);
+  const equipped=await page.evaluate(()=>PandoraRemaked.adapter.selectEquipment(3,310015));
+  expect(equipped).toBe(true);
+  await expect.poll(()=>getValue(145)).toBe(initialMagic+28);
+  await expect.poll(()=>getValue(49)).toBe(boostedDef+8);
+  await providence.click();
+  await expect(providence).toHaveClass(/btn2_off/);
+  await expect.poll(()=>getValue(145)).toBe(initialMagic+3);
+  await lapis.click();
+  await expect(lapis).toHaveClass(/btn2_off/);
+  await expect.poll(()=>getValue(49)).toBe(initialDef+8);
+  await page.evaluate(()=>{
+    if(!PandoraRemaked.adapter.selectEquipment(3,0))throw Error('Unable to unequip test robe');
+    CalcSet('ALL');
+  });
+  await expect.poll(()=>getValue(145)).toBe(initialMagic);
+  await expect.poll(()=>getValue(49)).toBe(initialDef);
+});
