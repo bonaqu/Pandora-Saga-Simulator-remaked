@@ -59,6 +59,33 @@
     "Сохранённые черновики каталога · загрузка…": "adminShell.catalogDraftsLoading",
     "Выберите существующую запись слева или нажмите «Новая запись».": "adminShell.catalogChooseExisting"
   };
+  // Display-only metadata, never draft or form values. Weak references avoid
+  // leaking discarded list rows across catalog refreshes and locale changes.
+  var catalogLiveValues = new WeakMap();
+  function catalogTranslate(key, fallback, values) {
+    var template=window.PandoraAdminI18n?.t?.('adminShell.'+key,fallback)||fallback;
+    var slots=function(value){return (String(value).match(/\\{[A-Za-z0-9_]+\\}/g)||[]).sort().join('|');};
+    if(slots(template)!==slots(fallback))template=fallback;
+    return String(template).replace(/\\{([A-Za-z0-9_]+)\\}/g,function(original,name){
+      return values&&Object.hasOwn(values,name)?String(values[name]):original;
+    });
+  }
+  function catalogLive(node,key,fallback,values) {
+    node.dataset.catalogLiveI18n=key;
+    catalogLiveValues.set(node,{key:key,fallback:fallback,values:values||{}});
+    node.textContent=catalogTranslate(key,fallback,values);
+    return node;
+  }
+  function catalogAttribute(node,attribute,key,fallback) {
+    node.setAttribute('data-admin-i18n-'+(attribute==='aria-label'?'aria':attribute),'adminShell.'+key);
+    node.setAttribute(attribute,catalogTranslate(key,fallback));
+    return node;
+  }
+  function catalogStatic(node,key,fallback) {
+    node.dataset.adminI18n='adminShell.'+key;
+    node.textContent=catalogTranslate(key,fallback);
+    return node;
+  }
   function node(tag, text, className) {
     var result = document.createElement(tag);
     var key = typeof text === 'string' && ['p','h3','h4','legend','summary','strong','option'].includes(tag)
@@ -191,6 +218,11 @@
   window.addEventListener('pandora-admin:localechange',function(){
     if(activeCatalogStatus && status?.isConnected)
       status.textContent=statusTranslation(activeCatalogStatus);
+    if(!host)return;
+    host.querySelectorAll('[data-catalog-live-i18n]').forEach(function(node){
+      var entry=catalogLiveValues.get(node);
+      if(entry)node.textContent=catalogTranslate(entry.key,entry.fallback,entry.values);
+    });
   });
   async function api(path, input) {
     var response = await fetch('/api/admin/' + path, { method: input ? 'POST' : 'GET', credentials: 'same-origin', cache: 'no-store',
@@ -700,7 +732,7 @@
   function syncNewButton() {
     if (!newButton || !kind) return;
     var skill = kind.value === 'active' || kind.value === 'passive';
-    newButton.textContent = skill ? 'Новый навык из выбранного' : 'Новая запись';
+    catalogStatic(newButton,skill?'catalogNewSkillSelected':'catalogNewRecord',skill?'Новый навык из выбранного':'Новая запись');
     newButton.disabled = skill
       ? !(current?.edit?.id && current.edit.kind === kind.value)
       : kind.value !== 'equipment' && kind.value !== 'soul';
@@ -870,17 +902,17 @@
   }
   async function loadList() {
     var sequence = ++pending, thisGeneration = generation;
-    listHost.replaceChildren(); listHost.setAttribute('aria-busy', 'true'); listStatus.textContent = 'Поиск…';
+    listHost.replaceChildren(); listHost.setAttribute('aria-busy', 'true'); catalogLive(listStatus,'catalogListLoading','Поиск…');
     try {
       var result = await api('catalog?kind=' + kind.value + '&q=' + encodeURIComponent(search.value) + '&page=' + page);
       if (sequence !== pending || thisGeneration !== generation) return;
       catalogRevision = result.catalogRevision; listHost.replaceChildren(); listHost.removeAttribute('aria-busy');
-      listStatus.textContent = 'Версия ' + catalogRevision + ' · ' + result.count + ' записей · страница ' + (page + 1);
+      catalogLive(listStatus,'catalogListSummary','Версия {revision} · {count} записей · страница {page}',{revision:catalogRevision,count:result.count,page:page+1});
       result.items.forEach(function (item) {
         var select = button(item.names.ru || item.names.en, function () { openItem(item.id); }, 'catalog-entry');
         select.dataset.recordId = item.id;
         select.dataset.hasDraft=String(Boolean(item.draftVersion));
-        if(item.draftVersion)select.title='Сохранённый неопубликованный черновик';
+        if(item.draftVersion)catalogAttribute(select,'title','catalogUnpublishedDraftTitle','Сохранённый неопубликованный черновик');
         if (current?.edit.id === item.id) select.setAttribute('aria-current', 'true');
         var race = kind.value === 'racial' && meta.compatibilityLabels.race.find(function (entry) { return entry.index === item.category; });
         select.appendChild(node('span', (item.draftVersion ? 'Черновик · ' : '') + item.names.en + (race ? ' · ' + race.label : '') + (kind.value === 'equipment' ? ' · Lv ' + item.level + ' · ○ ' + item.sockets : ''), 'catalog-entry-meta')); listHost.appendChild(select);
@@ -888,13 +920,13 @@
       if (!result.items.length) listHost.appendChild(node('p', 'Ничего не найдено.'));
       var pagination = node('div', undefined, 'pagination'); var back = button('← Назад', function () { page--; loadList(); }, 'secondary'); back.disabled = page === 0;
       var next = button('Далее →', function () { page++; loadList(); }, 'secondary'); next.disabled = (page + 1) * result.pageSize >= result.count; pagination.append(back, next); listHost.appendChild(pagination);
-    } catch (error) { if (thisGeneration === generation && sequence === pending) { listHost.removeAttribute('aria-busy'); listStatus.textContent = 'Список не загружен'; report(error.message, true); } }
+    } catch (error) { if (thisGeneration === generation && sequence === pending) { listHost.removeAttribute('aria-busy'); catalogLive(listStatus,'catalogListUnavailable','Список не загружен'); report(error.message, true); } }
   }
 
   async function refreshDrafts() {
     var token=++draftRequest, thisGeneration=generation;
     if(!draftSummary)return;
-    draftSummary.textContent='Сохранённые черновики · загрузка…';
+    catalogLive(draftSummary,'catalogDraftsLoadingStatus','Сохранённые черновики · загрузка…');
     try{
       var response=await api('drafts');
       if(token!==draftRequest||thisGeneration!==generation)return;
@@ -903,11 +935,11 @@
       var present=new Map(knownDrafts.map(function(item){return [item.id,item.version];}));
       for(var [id,version] of selectedDrafts)
         if(present.get(id)!==version)selectedDrafts.delete(id);
-      draftSummary.textContent='Сохранённые черновики каталога: '+knownDrafts.length;
+      catalogLive(draftSummary,'catalogDraftsCount','Сохранённые черновики каталога: {count}',{count:knownDrafts.length});
       renderDraftBoard();
     }catch(error){
       if(token!==draftRequest||thisGeneration!==generation)return;
-      draftSummary.textContent='Не удалось загрузить черновики';
+      catalogLive(draftSummary,'catalogDraftsUnavailable','Не удалось загрузить черновики');
       draftBoard.replaceChildren(node('p',error.message,'help-text'));
       report(error.message,true);
     }
@@ -918,7 +950,7 @@
     var help=node('p','Сохранённые черновики всех категорий. Отмечай нужные записи и публикуй одним выпуском. Ничего не изменится до подтверждения.','help-text');
     draftBoard.appendChild(help);
     if(!knownDrafts.length){
-      draftBoard.appendChild(node('p','Опубликованных не ожидают: сохранённых черновиков нет.','help-text'));
+      draftBoard.appendChild(catalogStatic(node('p','Опубликованных не ожидают: сохранённых черновиков нет.','help-text'),'catalogNoSavedDrafts','Опубликованных не ожидают: сохранённых черновиков нет.'));
       return;
     }
     var needle=(draftSearchInput?.value||'').trim().toLocaleLowerCase(),
@@ -940,7 +972,7 @@
     var refresh=button('Обновить список',refreshDrafts,'secondary');
     function selectionCount(){return [...selectedDrafts].filter(function(pair){return knownDrafts.some(function(item){return item.id===pair[0]&&item.version===pair[1];});}).length;}
     var count=selectionCount();
-    selectionStatus.textContent='Выбрано: '+count+' из '+knownDrafts.length+' · показано: '+visibleDrafts.length;
+    catalogLive(selectionStatus,'catalogDraftSelectionCount','Выбрано: {selected} из {total} · показано: {shown}',{selected:count,total:knownDrafts.length,shown:visibleDrafts.length});
     send.disabled=!count||count>50||batchPending;
     sendAll.disabled=knownDrafts.length>50||batchPending;
     all.disabled=none.disabled=refresh.disabled=batchPending;
@@ -957,12 +989,12 @@
         if(box.checked)selectedDrafts.set(item.id,item.version);
         else selectedDrafts.delete(item.id);
         var updated=selectionCount();
-        selectionStatus.textContent='Выбрано: '+updated+' из '+knownDrafts.length+' · показано: '+visibleDrafts.length;
+        catalogLive(selectionStatus,'catalogDraftSelectionCount','Выбрано: {selected} из {total} · показано: {shown}',{selected:updated,total:knownDrafts.length,shown:visibleDrafts.length});
         send.disabled=!updated||updated>50||batchPending;
       });
       var description=node('span',undefined,'catalog-draft-entry-info');
       description.append(node('strong',item.name||item.englishName||item.id),
-        node('small',item.id+' · '+item.kind+' · черновик v'+item.version));
+        catalogLive(node('small'),'catalogDraftRevision','{id} · {kind} · черновик v{version}',{id:item.id,kind:item.kind,version:item.version}));
       label.append(box,description);
       var open=button('Открыть',async function(){
         if(batchPending||!canLeave())return;
@@ -1175,10 +1207,10 @@
     getCsrf = csrf; expired = onExpired; var thisGeneration = ++generation;
     try { meta = await api('meta'); if (thisGeneration !== generation) return;
       host.replaceChildren(); var controls = node('div', undefined, 'catalog-controls');
-      kind = node('select'); kind.setAttribute('aria-label', 'Каталог'); [['equipment', 'Экипировка / оружие'], ['soul', 'Souls / души'], ['class', 'Классы персонажей'], ['racial', 'Расовые пассивки'], ['active', 'Активные навыки'], ['passive', 'Пассивные навыки']].forEach(function (entry) { var option = node('option', entry[1]); option.value = entry[0]; kind.appendChild(option); });
-      search = node('input'); search.type = 'search'; search.placeholder = 'Поиск по названию или ID'; search.setAttribute('aria-label', 'Поиск в каталоге');
+      kind = node('select'); catalogAttribute(kind,'aria-label','catalogKindAria','Каталог'); [['equipment', 'Экипировка / оружие','catalogKindEquipment'], ['soul', 'Souls / души','catalogKindSoul'], ['class', 'Классы персонажей','catalogKindClass'], ['racial', 'Расовые пассивки','catalogKindRacial'], ['active', 'Активные навыки','catalogKindActive'], ['passive', 'Пассивные навыки','catalogKindPassive']].forEach(function (entry) { var option = catalogStatic(node('option'),entry[2],entry[1]); option.value = entry[0]; kind.appendChild(option); });
+      search = node('input'); search.type = 'search'; catalogAttribute(search,'placeholder','catalogSearchPlaceholder','Поиск по названию или ID'); catalogAttribute(search,'aria-label','catalogSearchAria','Поиск в каталоге');
       search.addEventListener('input', function () {
-        clearTimeout(searchTimer); pending++; listHost.replaceChildren(); listHost.setAttribute('aria-busy', 'true'); listStatus.textContent = 'Поиск…';
+        clearTimeout(searchTimer); pending++; listHost.replaceChildren(); listHost.setAttribute('aria-busy', 'true'); catalogLive(listStatus,'catalogListLoading','Поиск…');
         searchTimer = setTimeout(function () { if (thisGeneration === generation) { page = 0; loadList(); } }, 300);
       }); selectedKind = kind.value; kind.addEventListener('change', function () {
         if (!canLeave()) { kind.value = selectedKind; return; }
@@ -1202,16 +1234,16 @@
       draftBoard=node('div',undefined,'catalog-draft-board-content');
       var draftFilters=node('div',undefined,'catalog-draft-filters');
       draftSearchInput=node('input');draftSearchInput.type='search';
-      draftSearchInput.placeholder='Найти черновик по названию или ID…';
-      draftSearchInput.setAttribute('aria-label','Поиск сохранённых черновиков каталога');
-      draftKindInput=node('select');draftKindInput.setAttribute('aria-label','Категория черновиков каталога');
-      [['all','Все категории'],['equipment','Экипировка'],['soul','Души'],['active','Активные'],['passive','Пассивные'],['class','Классы'],['racial','Расовые пассивки']]
-        .forEach(function(option){var o=node('option',option[1]);o.value=option[0];draftKindInput.append(o);});
+      catalogAttribute(draftSearchInput,'placeholder','catalogDraftSearchPlaceholder','Найти черновик по названию или ID…');
+      catalogAttribute(draftSearchInput,'aria-label','catalogDraftSearchAria','Поиск сохранённых черновиков каталога');
+      draftKindInput=node('select');catalogAttribute(draftKindInput,'aria-label','catalogDraftCategoryAria','Категория черновиков каталога');
+      [['all','Все категории','catalogDraftFilterAll'],['equipment','Экипировка','catalogDraftFilterEquipment'],['soul','Души','catalogDraftFilterSoul'],['active','Активные','catalogDraftFilterActive'],['passive','Пассивные','catalogDraftFilterPassive'],['class','Классы','catalogDraftFilterClass'],['racial','Расовые пассивки','catalogDraftFilterRacial']]
+        .forEach(function(option){var o=catalogStatic(node('option'),option[2],option[1]);o.value=option[0];draftKindInput.append(o);});
       draftSearchInput.addEventListener('input',renderDraftBoard);
       draftKindInput.addEventListener('change',renderDraftBoard);
       draftFilters.append(draftSearchInput,draftKindInput);
       draftPanel.append(draftSummary,draftFilters,draftBoard);host.appendChild(draftPanel);
-      var grid = node('div', undefined, 'catalog-grid'); var sidebar = node('section', undefined, 'catalog-sidebar'); sidebar.setAttribute('aria-label', 'Список записей');
+      var grid = node('div', undefined, 'catalog-grid'); var sidebar = node('section', undefined, 'catalog-sidebar'); catalogAttribute(sidebar,'aria-label','catalogListAria','Список записей');
       listStatus = node('p', undefined, 'help-text'); listHost = node('div'); sidebar.append(listStatus, listHost);
       editor = node('form', undefined, 'catalog-editor');
       editor.addEventListener('submit', function (event) { event.preventDefault(); saveDraft(); });
