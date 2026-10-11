@@ -295,3 +295,60 @@ test('four-language card rejects invalid placeholder edits and leaves other loca
   await russian.fill('Обновления: {version}');
   await expect(card.locator('[data-publish-all-languages]')).toBeEnabled();
 });
+
+
+test('full localization console renders and saves all four inline languages without changing the filter',async({page})=>{
+  await page.goto('/');
+  await page.setContent('<div id="localization-console"></div>');
+  await page.evaluate(()=>{
+    const translations=[
+      ['ru','Обновления'],['en','Updates'],['jp','更新情報'],['tw','更新資訊']
+    ].map(([locale,effective])=>({locale,effective,baseline:effective,
+      baselineOrigin:'import',origin:'import',version:0,override:''}));
+    const entry={scope:'ui',id:'header.updates',kind:'interface',
+      source:{en:'Updates'},locale:'ru',baseline:'Обновления',effective:'Обновления',
+      origin:'import',baselineOrigin:'import',version:0,translations};
+    window.testWriters=[];
+    window.PandoraBulkLocalization={mount:()=>({invalidate(){},destroy(){}})};
+    window.PandoraLocalizationDrafts={mount:()=>({
+      get:()=>null,history:()=>{},refresh:async()=>{},destroy:()=>{}
+    })};
+    window.fetch=async (url,options={})=>{
+      const parsed=new URL(url,location.href),path=parsed.pathname;
+      if(path==='/api/admin/localization/publish-batch'){
+        const payload=JSON.parse(options.body);window.testWriters.push(payload);
+        return new Response(JSON.stringify({ok:true,count:payload.items.length,operationId:payload.operationId}),
+          {status:200,headers:{'content-type':'application/json'}});
+      }
+      if(path==='/api/admin/localization'){
+        return new Response(JSON.stringify({ok:true,schemaVersion:1,scope:'ui',locale:'ru',
+          page:0,pageSize:40,total:1,counts:{ui:275,game:2800},
+          coverage:{total:1,translated:1},items:[entry]}),
+          {status:200,headers:{'content-type':'application/json'}});
+      }
+      throw Error('Unexpected request '+path);
+    };
+  });
+  await page.addScriptTag({path:'admin-api/public/localization-four-language.js'});
+  await page.addScriptTag({path:'admin-api/public/localization-console.js'});
+  await page.evaluate(()=>window.PandoraLocalizationConsole.start(()=>'unit-csrf',()=>{}));
+  const panel=page.locator('#localization-console');
+  await expect(panel.locator('[data-localization-id="header.updates"] [data-translation-input]')).toHaveCount(4);
+  const filter=panel.getByRole('combobox',{name:'Язык поиска и статистики'});
+  await expect(filter).toHaveValue('ru');
+  const card=panel.locator('[data-localization-id="header.updates"]');
+  await card.locator('[data-translation-input="jp"]').fill('新しい更新');
+  await card.locator('[data-translation-input="tw"]').fill('新的更新');
+  await card.locator('[data-publish-all-languages]').click();
+  await expect(filter).toHaveValue('ru');
+  await expect.poll(()=>page.evaluate(()=>window.testWriters.length)).toBe(1);
+  const data=await page.evaluate(()=>window.testWriters[0]);
+  expect(data.items.map(x=>x.locale)).toEqual(['jp','tw']);
+  expect(data.items.map(x=>x.value)).toEqual(['新しい更新','新的更新']);
+  expect(data.items.every(x=>x.expectedVersion===0)).toBeTruthy();
+  expect(data.items.every(x=>x.expectedEffective)).toBeTruthy();
+  await expect(card.locator('[data-translation-input="ru"]')).toHaveValue('Обновления');
+  await expect(card.locator('[data-translation-input="en"]')).toHaveValue('Updates');
+  await page.evaluate(()=>window.PandoraLocalizationConsole.clear());
+  await expect(panel.locator('[data-localization-id]')).toHaveCount(0);
+});
