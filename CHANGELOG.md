@@ -1,5 +1,29 @@
 # Changelog
 
+## Modern 3.79 — отображение двухслотовых платьев, 2026-10-11
+
+<!-- release-notes:user:ru -->
+- Платья, занимающие одновременно нагрудный слот и слот штанов, теперь явно показывают причину блокировки штанов и их слотов душ.
+- Кнопка «Снять платье» освобождает оба слота, не сбрасывая остальные вещи. Обычные туники и мантии не блокируют штаны.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Dresses that occupy both chest and pants now clearly show why the pants and Soul slots are unavailable.
+- A dedicated Unequip dress button frees the slot without resetting other equipment; ordinary robes remain single-slot equipment.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Использованы девять точных исходных идентификаторов платьев из EquipCheck: не текст локализации и не поиск по словам. Сохраняется один экземпляр экипировки без двойных бонусов.
+- Редактор выбора предметов и душ Modern блокирует запись в занятом слоте; оригинальный движок, база предметов, сохранения и Legacy остаются неизменными.
+- Новая строка объяснения зарегистрирована в редактируемом D1-реестре на RU/EN/JP/TW. Добавлены проверки надевания, освобождения слота, языка и адаптивности.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Identify exactly nine verified double-slot dress identities by their canonical Japanese source names, matching preserved EquipCheck; no translated-name heuristics or duplicate stat bonuses.
+- Guard Modern equipment and Soul choices for the occupied pants slot, while keeping the native engine and persisted builds unchanged.
+- Register an editable four-locale D1 message and regression tests for equip/unequip, ordinary robes and responsive UI.
+<!-- /admin-notes:en -->
+
 ## Modern 3.78 — восстановление утверждённых переводов и трёхзначных итогов, 2026-10-11
 
 <!-- release-notes:user:ru -->

@@ -516,3 +516,82 @@ test('Equipment reset uses the compact UI-localized caption and ignores long Leg
   await reset.focus(); await page.keyboard.press('Enter');
   expect(await page.evaluate(() => Store())).toBe(initial);
 });
+
+
+test('Astian dress occupies chest and pants without inventing a second equipped item',async({page})=>{
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto('/?ui=ru');
+  const detail=await page.evaluate(()=>{
+    const options=PandoraRemaked.adapter.listEquipmentOptions(3);
+    const dress=options.find(item=>Number(item.value)===310032);
+    if(!dress)throw Error('Verified Astian Dress fixture is missing from body slot');
+    const before=Store();
+    if(!PandoraRemaked.adapter.selectEquipment(3,310032))throw Error('Cannot equip Astian Dress');
+    PandoraRemaked.equipmentPicker.refresh();
+    return {before,after:Store(),chest:Status.Equip[3][0],
+      pants:Status.Equip[5][0],lock:PandoraRemaked.equipmentPicker.blockedSlot(5)};
+  });
+  expect(Number(detail.chest)).toBe(310032);
+  expect(Number(detail.pants)).toBe(0);
+  expect(detail.lock).toMatchObject({ownerSlot:3,lockedSlot:5,equipmentId:310032});
+  const pants=page.locator('[data-remaked-picker-slot]:has([data-remaked-equipment-picker="SelEquip_5_0"])');
+  const open=pants.locator('[data-remaked-equipment-picker="SelEquip_5_0"]');
+  await expect(open).toBeDisabled();
+  await expect(open).toHaveAttribute('aria-disabled','true');
+  await expect(pants.locator('[data-remaked-slot-occupied]')).toBeVisible();
+  await expect(pants.locator('[data-remaked-slot-occupied]')).toContainText('платье занимает нагрудный слот и слот штанов');
+  await expect(pants.locator('[data-remaked-equipment-picker="SelEquip_5_4"]')).toBeDisabled();
+  const guarded=await page.evaluate(()=>{
+    const before=Store();
+    const pants=PandoraRemaked.adapter.selectEquipment(5,0);
+    const soul=PandoraRemaked.adapter.selectSoul({slotIndex:5,socketIndex:4},0);
+    return {pants,soul,before,after:Store()};
+  });
+  expect(guarded).toEqual({pants:false,soul:false,before:guarded.before,after:guarded.before});
+  const remove=page.locator('[data-remaked-remove-occupying-dress]');
+  await expect(remove).toHaveText('Снять платье');
+  await remove.click();
+  const after=await page.evaluate(()=>{
+    const owner=document.getElementById('SelEquip_3_0');
+    return {chest:Number(Status.Equip[3][0]),placeholder:Number(owner.options[0].value),
+      occupied:PandoraRemaked.equipmentPicker.blockedSlot(5)};
+  });
+  expect(after.chest).toBe(after.placeholder);
+  expect(after.occupied).toBeNull();
+  await expect(remove).toBeHidden();
+  await expect(open).toBeEnabled();
+  await expect(pants.locator('[data-remaked-slot-occupied]')).toBeHidden();
+});
+
+test('normal robes do not block pants; dress warning stays readable in four locales and on phone',async({page})=>{
+  await page.goto('/?ui=en');
+  const regular=await page.evaluate(()=>{
+    // Linen Robe's canonical source record is single-slot, even if the
+    // chosen job cannot select it through its filtered native dropdown.
+    const ordinary=EquipData[0]?.[31]?.[15];
+    if(!ordinary || !/ローブ/.test(String(ordinary[0])))
+      throw Error('Canonical normal robe fixture missing');
+    const original=Status.Equip[3][0];
+    Status.Equip[3][0]=310015;
+    try { return PandoraRemaked.equipmentPicker.blockedSlot(5); }
+    finally { Status.Equip[3][0]=original; }
+  });
+  expect(regular).toBeNull();
+  const block=await page.evaluate(()=>{
+    if(!PandoraRemaked.adapter.selectEquipment(3,310032))throw Error('Cannot equip dress');
+    PandoraRemaked.equipmentPicker.refresh();
+    return PandoraRemaked.equipmentPicker.blockedSlot(5);
+  });
+  expect(block).not.toBeNull();
+  const warning=page.locator('[data-remaked-picker-slot]:has([data-remaked-equipment-picker="SelEquip_5_0"]) [data-remaked-slot-occupied]');
+  const snippets={ru:'Слот штанов занят',en:'Pants slot is occupied',jp:'脚装備スロット',tw:'褲子裝備欄'};
+  for(const locale of ['en','ru','jp','tw']){
+    await page.evaluate(locale=>PandoraRemaked.i18n.setLocale(locale),locale);
+    await expect(warning).toContainText(snippets[locale]);
+    for(const width of [390,1440]){
+      await page.setViewportSize({width,height:850});
+      expect(await warning.evaluate(node=>node.scrollWidth<=node.clientWidth+1)).toBe(true);
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+    }
+  }
+});

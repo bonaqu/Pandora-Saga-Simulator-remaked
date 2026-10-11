@@ -275,7 +275,8 @@
 
     selectEquipment: function (slotIndex, value) {
       var select = byId('SelEquip_' + Number(slotIndex) + '_0');
-      if (!select || !hasOption(select, value) || namespace.catalog?.item('equipment', value)?.disabled) return false;
+      if (!select || !hasOption(select, value) || namespace.catalog?.item('equipment', value)?.disabled ||
+          namespace.equipmentPicker?.blockedSlot?.(slotIndex)) return false;
       select.value = String(value);
       dispatchLegacyChange(select);
       return true;
@@ -323,7 +324,8 @@
     selectSoul: function (target, value) {
       if (!target || typeof target.slotIndex === 'undefined' || typeof target.socketIndex === 'undefined') return false;
       var select = byId('SelEquip_' + Number(target.slotIndex) + '_' + Number(target.socketIndex));
-      if (!select || !hasOption(select, value) || namespace.catalog?.item('soul', value)?.disabled) return false;
+      if (!select || !hasOption(select, value) || namespace.catalog?.item('soul', value)?.disabled ||
+          namespace.equipmentPicker?.blockedSlot?.(target.slotIndex)) return false;
       select.value = String(value);
       dispatchLegacyChange(select);
       return true;

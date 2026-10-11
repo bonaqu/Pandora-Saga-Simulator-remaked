@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.79 — 2026-10-11
+
+### For users
+
+- Dresses that occupy both chest and pants now clearly show why the pants and Soul slots are unavailable.
+- A dedicated Unequip dress button frees the slot without resetting other equipment; ordinary robes remain single-slot equipment.
+
+### Development and technical changes
+
+- Identify exactly nine verified double-slot dress identities by their canonical Japanese source names, matching preserved EquipCheck; no translated-name heuristics or duplicate stat bonuses.
+- Guard Modern equipment and Soul choices for the occupied pants slot, while keeping the native engine and persisted builds unchanged.
+- Register an editable four-locale D1 message and regression tests for equip/unequip, ordinary robes and responsive UI.
+
 ## Modern 3.78 — 2026-10-11
 
 ### For users

@@ -273,5 +273,7 @@
   "adminEntry.footer": "MODERN CATALOG / MUSEUM ENGINE 2.00",
   "catalog.diffSoulSlots": "Soul slots {before}→{after}",
   "catalog.stat.prv": "PRV",
-  "calculator.calculationLimit": "Calculation limit: {note}"
+  "calculator.calculationLimit": "Calculation limit: {note}",
+  "equipment.slotOccupiedByDress": "Pants slot is occupied by {item}: the outfit covers both chest and legs. Unequip the dress to use the pants slot.",
+  "equipment.releaseOccupiedDress": "Unequip dress"
 }

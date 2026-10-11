@@ -2,6 +2,26 @@
   'use strict';
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
   var timer = null;
+  // Match the exact equipment identity rule in preserved EquipCheck(), NOT
+  // translated item names or generic "Robe" text (most robes use one slot).
+  var doubleSlotDresses = [
+    'アスティアンドレス','碧色アスティアンドレス','雪色アスティアンドレス',
+    '翠色アスティアンドレス','夜色アスティアンドレス','緋色アスティアンドレス',
+    '芳色アスティアンドレス','月色アスティアンドレス','クリスマスドレス'
+  ];
+  function blockedSlot(slot) {
+    // Legacy equips these outfits into body slot #3, clearing pants #5.
+    // A pants-slot dress picker is not part of the original engine contract.
+    if (Number(slot) !== 5 || !window.Status?.Equip || !window.EquipData) return null;
+    var value = Number(window.Status.Equip[3]?.[0] || 0);
+    if (!value) return null;
+    var category = Math.floor(value / 10000), index = value % 10000;
+    var source = window.EquipData[0]?.[category]?.[index];
+    if (!source || doubleSlotDresses.indexOf(String(source[0])) === -1) return null;
+    var localized = namespace.i18n?.game?.('equipment.' + category + '.' + index, '');
+    return {ownerSlot:3,lockedSlot:5,equipmentId:value,
+      name:localized || window.EquipData[Number(window.Flag?.[0] || 0)]?.[category]?.[index]?.[0] || String(source[0])};
+  }
 
   function normalizeUntranslatedItemName(value) {
     var text = String(value == null ? '' : value).trim();
@@ -78,8 +98,54 @@
       var name = label + (Number(match[2]) ? ' · ' + soulLabel + ' ' + (Number(match[2]) - 3) : '') + ': ' + text;
       if (button.getAttribute('aria-label') !== name) button.setAttribute('aria-label', name);
       button.hidden = select.style.display === 'none';
-      button.disabled = select.disabled;
+      var locked = blockedSlot(Number(match[1]));
+      button.disabled = select.disabled || Boolean(locked);
+      if (locked) {
+        button.setAttribute('aria-disabled', 'true');
+        button.title = namespace.i18n?.t?.('equipment.slotOccupiedByDress', {item:locked.name}) ||
+          'This slot is occupied by a dress.';
+      } else {
+        button.removeAttribute('aria-disabled');
+        button.removeAttribute('title');
+      }
       if (Number(match[2]) === 0) {
+        // One canonical piece covers torso and legs. The engine already
+        // clears the trouser item and its souls; this shows WHY the slot is
+        // unavailable rather than letting a chooser silently undo the dress.
+        var occupied = slotRow.querySelector('[data-remaked-slot-occupied]');
+        if (locked && !occupied) {
+          occupied = document.createElement('p');
+          occupied.dataset.remakedSlotOccupied = '';
+          occupied.setAttribute('role', 'status');
+          fields.appendChild(occupied);
+        }
+        if (occupied) {
+          var message = locked ? (namespace.i18n?.t?.('equipment.slotOccupiedByDress', {item:locked.name}) ||
+            'The pants slot is occupied by a dress.') : '';
+          if (occupied.textContent !== message) occupied.textContent = message;
+          occupied.hidden = !locked;
+        }
+        // A normal slot-3 category placeholder is a valid, non-equipped
+        // item selection. Offer a one-click way to remove the occupying dress
+        // without clearing unrelated armor, Souls or user allocations.
+        var removeDress = slotRow.querySelector('[data-remaked-remove-occupying-dress]');
+        if (locked && !removeDress) {
+          removeDress = document.createElement('button');
+          removeDress.type = 'button';
+          removeDress.dataset.remakedRemoveOccupyingDress = '';
+          removeDress.addEventListener('click', function () {
+            var chest = document.getElementById('SelEquip_3_0');
+            if (!chest || !chest.options.length) return;
+            var emptyCategoryValue = chest.options[0].value;
+            if (namespace.adapter.selectEquipment(3, emptyCategoryValue)) refresh();
+          });
+          fields.appendChild(removeDress);
+        }
+        if (removeDress) {
+          removeDress.hidden = !locked;
+          var removeLabel = namespace.i18n?.t?.('equipment.releaseOccupiedDress') || 'Unequip dress';
+          if (removeDress.textContent !== removeLabel) removeDress.textContent = removeLabel;
+        }
         var warning = slotRow.querySelector('[data-remaked-equipment-warning]');
         var message = namespace.adapter.equipmentCalculationWarning(select.value);
         if (message && !warning) {
@@ -139,7 +205,7 @@
     window.addEventListener('resize', schedule);
     window.addEventListener('pandora-remaked:localechange', refresh);
   }
-  namespace.equipmentPicker = { refresh: refresh };
+  namespace.equipmentPicker = { refresh: refresh, blockedSlot: blockedSlot };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
   else init();
 })();
