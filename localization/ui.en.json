@@ -386,5 +386,6 @@
   "adminShell.draftQueueVersion": "Version {version} · {date}",
   "adminShell.draftQueueRestoreVersion": "Restore this version",
   "adminShell.draftQueueConfirmRestore": "Restore this wording as a NEW translation version?",
-  "adminShell.draftQueueRefreshError": "Could not refresh drafts: {error}"
+  "adminShell.draftQueueRefreshError": "Could not refresh drafts: {error}",
+  "workbench.mountedDefenseNote": "Riding mode: the retained calculator hides DEF as ---. Your equipment and defense buffs remain equipped. Disable Riding to see the numeric value."
 }
