@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 3.93 — переводы пояснений каталога в админке, 2026-10-11
+
+<!-- admin-notes:ru -->
+- 47 статических заголовков, подписей и пояснений каталога, условий навыков и истории теперь доступны для редактирования через RU/EN/JP/TW с приоритетом D1.
+- Переводится только явно разрешённый интерфейсный текст: имена снаряжения, введённые значения, числовые формулы, версии, CSRF, публикация и история изменений не изменены.
+- Добавлены резервные переводы на четыре языка и проверки полноты ключей; опубликованные D1-версии сохраняют приоритет.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- 47 explicitly whitelisted static catalog editor headings and help messages now use the editable RU/EN/JP/TW D1 translation registry.
+- Scope is presentation-only; never translate record names, typed values, formula data, versions, auth/CSRF tokens, drafts or catalog writes.
+- Provide four-language fallbacks and source-coverage checks. Existing D1 publications retain priority.
+<!-- /admin-notes:en -->
+
 ## Modern 3.92 — полный японский и тайваньский реестр UI, 2026-10-11
 
 <!-- release-notes:user:ru -->

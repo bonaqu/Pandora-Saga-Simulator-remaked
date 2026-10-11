@@ -1,5 +1,16 @@
 # Release history — English
 
+## Modern 3.93 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- 47 static catalog editor labels and help messages are now editable in all four locales through D1, preserving published overrides.
+- Input values, catalog records, formulas, history and authentication stay unchanged.
+
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
 ## Modern 3.92 — 2026-10-11

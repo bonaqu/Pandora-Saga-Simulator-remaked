@@ -8,7 +8,68 @@
   var draftPanel, draftSummary, draftBoard, draftSearchInput, draftKindInput, selectedDrafts=new Map(), knownDrafts=[];
   var draftRequest=0, batchPending=false;
   var languages = [['en', 'English'], ['ru', 'Русский'], ['jp', '日本語'], ['tw', '繁體中文']];
-  function node(tag, text, className) { var result = document.createElement(tag); if (text !== undefined) result.textContent = text; if (className) result.className = className; return result; }
+  // Explicit, approved editor chrome only. Never translate catalog names,
+  // descriptions, typed values, D1 payloads or arbitrary source strings.
+  var catalogChromeKeys = {
+    "После публикации": "adminShell.catalogAfterPublishing",
+    "Изменения ещё не проверены. Нажмите «Проверить изменения».": "adminShell.catalogChangesNotReviewed",
+    "Японский и китайский переводы": "adminShell.catalogExtraLanguages",
+    "Запись ещё не опубликована и на сайте не используется.": "adminShell.catalogRecordNotPublished",
+    "Проверено сервером. Это ещё не сохранено и не опубликовано. Здесь показаны данные записи, а не результат полного билда.": "adminShell.catalogReviewConfirmed",
+    "Редактируемые поля": "adminShell.catalogEditableFields",
+    "Душа · пригодность к слотам задаётся в карточке": "adminShell.catalogSoulCompatibility",
+    "Описание пока не заполнено.": "adminShell.catalogDescriptionMissing",
+    "Как карточка будет выглядеть на сайте": "adminShell.catalogSitePreview",
+    "Особые эффекты и где получить · только описание": "adminShell.catalogSpecialEffects",
+    "Бонус усиления": "adminShell.catalogEnhancementBonus",
+    "Условия изучения навыка": "adminShell.catalogSkillLearningConditions",
+    "Свои условия": "adminShell.catalogCustomConditions",
+    "Разрешённые классы · ничего не отмечено = любой": "adminShell.catalogAllowedClasses",
+    "Эти поля управляют изучением и дополнительными бонусами. Они не переписывают встроенные формулы, боевые эффекты или тип исходного навыка.": "adminShell.catalogLearningHelp",
+    "Варианты этого навыка для разных классов и уровней": "adminShell.catalogSkillProfiles",
+    "Вариантов нет — основные поля выше": "adminShell.catalogNoProfiles",
+    "Условия изучения и числовой эффект редактируются отдельно. Изменение названия или описания само по себе не меняет расчёт.": "adminShell.catalogLearningNumericHelp",
+    "Данные активного навыка": "adminShell.catalogActiveDetails",
+    "Эффект изученной пассивки": "adminShell.catalogPassiveEffect",
+    "Оружие для числового эффекта · пусто = любое": "adminShell.catalogWeaponsAny",
+    "Эффект выбранной расовой пассивки": "adminShell.catalogRacialPassiveEffect",
+    "Оружие для этих бонусов · пусто = любое": "adminShell.catalogWeaponsBonusAny",
+    "LP / MP — параметры исходного движка": "adminShell.catalogSourceHpMp",
+    "Расчётные характеристики": "adminShell.catalogNumericStats",
+    "Бонусы от заточки (+1…+10)": "adminShell.catalogUpgradeBonuses",
+    "Ничего не найдено.": "adminShell.catalogNothingFound",
+    "Сохранённые черновики всех категорий. Отмечай нужные записи и публикуй одним выпуском. Ничего не изменится до подтверждения.": "adminShell.catalogDraftQueueHelp",
+    "За одну публикацию допускается не более 50 записей. Отметь до 50 нужных черновиков.": "adminShell.catalogBatchCap",
+    "Нет черновиков по заданному фильтру.": "adminShell.catalogNoFilteredDrafts",
+    "Проверяем опубликованные примечания Astir…": "adminShell.catalogCheckingAstir",
+    "Архивные примечания Astir": "adminShell.catalogAstirArchives",
+    "Очистка только действующего каталога Modern. Legacy и старые версии не изменяются. До подтверждения ничего не записывается в D1.": "adminShell.catalogCleanupHelp",
+    "Требуют ручной проверки": "adminShell.catalogManualReview",
+    "Предпросмотр удаления: исходный текст → пустое поле": "adminShell.catalogCleanupPreview",
+    "После публикации: примечание пустое": "adminShell.catalogCleanupEmpty",
+    "Совпадений с известными архивными примечаниями нет.": "adminShell.catalogNoKnownArchives",
+    "История очисток и восстановление": "adminShell.catalogCleanupHistory",
+    "Восстановление возвращает только удалённые примечания из предыдущей неизменяемой ревизии. Остальные данные каталога остаются текущими.": "adminShell.catalogRestoreHelp",
+    "Истории очисток пока нет.": "adminShell.catalogNoCleanupHistory",
+    "Не удалось загрузить примечания Astir": "adminShell.catalogAstirLoadError",
+    "Загрузка истории…": "adminShell.catalogHistoryLoading",
+    "История публикаций": "adminShell.catalogPublicationHistory",
+    "Откат создаёт новую версию. Старые версии и черновики сохраняются.": "adminShell.catalogRollbackHelp",
+    "Выберите запись в списке. Здесь будут её текущие характеристики и поля для редактирования.": "adminShell.catalogChooseRecord",
+    "Сохранённые черновики каталога · загрузка…": "adminShell.catalogDraftsLoading",
+    "Выберите существующую запись слева или нажмите «Новая запись».": "adminShell.catalogChooseExisting"
+  };
+  function node(tag, text, className) {
+    var result = document.createElement(tag);
+    var key = typeof text === 'string' && ['p','h3','h4','legend','summary','strong','option'].includes(tag)
+      ? catalogChromeKeys[text] : null;
+    if (key) {
+      result.dataset.adminI18n = key;
+      result.textContent = window.PandoraAdminI18n?.t?.(key, text) || text;
+    } else if (text !== undefined) result.textContent = text;
+    if (className) result.className = className;
+    return result;
+  }
   // Static action captions are D1-localized; catalog record names are not.
   var catalogActionKeys = {
     "Проверить изменения":"catalogReviewChanges",
