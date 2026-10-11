@@ -610,5 +610,22 @@
   "adminShell.catalogStatusBatchPublished": "Published {count} drafts in one catalog revision #{revision}.",
   "adminShell.catalogStatusAstirCleaned": "Cleaned {count} archived Astir notes. New revision #{revision}. Enhancement bonuses and old builds are unchanged.",
   "adminShell.catalogStatusAstirRestored": "Archived notes were restored as revision #{revision}.",
-  "adminShell.catalogStatusRollback": "Restored as new revision {revision}."
+  "adminShell.catalogStatusRollback": "Restored as new revision {revision}.",
+  "adminShell.bulkReady": "Enter a word and its translation first.",
+  "adminShell.bulkResetPreview": "Preview cleared. Check the word and filters, then search again.",
+  "adminShell.bulkFoundCount": "Matches: {found}. Skipped: {skipped}. Review before/after and edit proposed lines with the pencil.",
+  "adminShell.bulkSkippedIds": "Skipped: {ids}",
+  "adminShell.bulkSelectedCount": "Selected: {selected} / {available} · Manually edited: {revised}",
+  "adminShell.bulkManualEdited": "Edited manually",
+  "adminShell.bulkNeedWord": "Enter one complete word (letters, digits or _), not a phrase.",
+  "adminShell.bulkNeedTranslation": "Enter a safe translation of up to 80 characters without HTML.",
+  "adminShell.bulkSearching": "Searching all pages in the selected category…",
+  "adminShell.bulkFinishEditing": "Finish editing the open row first.",
+  "adminShell.bulkDraftCollision": "Selected rows include a saved draft. Review the data and refresh the preview.",
+  "adminShell.bulkConfirmPublish": "Publish {count} translations in ONE transaction for {locale}? Other languages will remain unchanged.",
+  "adminShell.bulkRechecking": "Rechecking translations before atomic publication…",
+  "adminShell.bulkPublishingProgress": "Publishing {count} translations in one transaction…",
+  "adminShell.bulkReceiptLookup": "Checking the stored operation receipt…",
+  "adminShell.bulkPublishedSuccess": "Published translations in one operation: {count}. Verify the result on the site.",
+  "adminShell.bulkReplacementExample": "Warrior"
 }

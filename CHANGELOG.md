@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 4.02 — перевод сообщений массового редактора, 2026-10-11
+
+<!-- admin-notes:ru -->
+- В массовом редакторе переводов 17 дополнительных подписей, подсказок, счётчиков и сообщений предпросмотра стали D1-управляемыми на RU/EN/JP/TW.
+- Локализация изменяет только текстовые узлы и плейсхолдер примера. Заполненные поля, выделение, ручные исправления, optimistic concurrency и атомарная D1-публикация сохраняются без изменений.
+- Подтверждение публикации переведено на четыре языка; ошибка при неопределённом результате транзакции сохраняет строгое предупреждение о запрете слепой повторной публикации.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Make 17 additional bulk translation preview counters, validation states, prompts and confirmation messages D1-editable in RU/EN/JP/TW.
+- Locale updates change only display text and example placeholder, preserving typed values, selections, manual edits, optimistic concurrency and atomic publication.
+- Keep uncertain transaction outcomes and raw server errors unchanged to avoid unsafe retry messaging.
+<!-- /admin-notes:en -->
+
 ## Modern 4.01 — локализация уведомлений каталога, 2026-10-11
 
 <!-- admin-notes:ru -->

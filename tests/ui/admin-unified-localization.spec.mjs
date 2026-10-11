@@ -590,3 +590,42 @@ test('effective D1 coverage report reads 8 locale groups without posting or muta
   await expect(page.getByRole('combobox',{name:'Язык статуса и покрытия'})).toHaveValue('ru');
   expect((await page.evaluate(()=>window.coverageRequests)).every(row=>row.method==='GET')).toBe(true);
 });
+
+test('D1 bulk-preview feedback changes language without rewriting input or calling publish',async({page})=>{
+  await page.goto('/');
+  await page.setContent('<div id="bulk-host"></div>');
+  await page.evaluate(()=>{
+    let locale='ru';
+    window.bulkApiRequests=[];
+    window.PandoraAdminI18n={
+      t:(key,fallback)=>{
+        if(key==='adminShell.bulkResetPreview')
+          return locale==='jp'?'プレビューをクリアしました。単語と条件を確認してください。':
+            locale==='en'?'Preview cleared. Check the word and filters, then search again.':fallback;
+        return fallback;
+      },apply:()=>{},
+      change:value=>{locale=value;window.dispatchEvent(new Event('pandora-admin:localechange'));}
+    };
+  });
+  await page.addScriptTag({path:'admin-api/public/localization-bulk.js'});
+  await page.evaluate(()=>{
+    window.bulkEditor=PandoraBulkLocalization.mount(document.getElementById('bulk-host'),{
+      api:async(method,payload,url)=>{window.bulkApiRequests.push({method,url});throw Error('No API calls expected');},
+      getContext:()=>({scope:'game',locale:'ru',group:'all'}),
+      hasDraft:()=>false,onPublished:()=>{throw Error('Unexpected publication')}
+    });
+  });
+  const panel=page.locator('#bulk-host');
+  const [word,translation]=[panel.locator('input').nth(0),panel.locator('input').nth(1)];
+  await word.fill('Warrior');
+  await translation.fill('Воин');
+  await expect(panel.locator('.localization-bulk-state')).toHaveText('Предпросмотр сброшен. Проверь слово и параметры, затем выполни поиск.');
+  await page.evaluate(()=>window.PandoraAdminI18n.change('jp'));
+  await expect(panel.locator('.localization-bulk-state')).toHaveText('プレビューをクリアしました。単語と条件を確認してください。');
+  await expect(word).toHaveValue('Warrior');
+  await expect(translation).toHaveValue('Воин');
+  await page.evaluate(()=>window.PandoraAdminI18n.change('en'));
+  await expect(panel.locator('.localization-bulk-state')).toHaveText('Preview cleared. Check the word and filters, then search again.');
+  expect(await page.evaluate(()=>window.bulkApiRequests)).toEqual([]);
+  await page.evaluate(()=>window.bulkEditor.destroy());
+});

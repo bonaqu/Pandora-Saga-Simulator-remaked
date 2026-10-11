@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.02 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Make 17 additional bulk translation preview counters, validation states, prompts and confirmation messages D1-editable in RU/EN/JP/TW.
+- Locale updates change only display text and example placeholder, preserving typed values, selections, manual edits, optimistic concurrency and atomic publication.
+- Keep uncertain transaction outcomes and raw server errors unchanged to avoid unsafe retry messaging.
+
 ## Modern 4.01 — 2026-10-11
 
 ### For users

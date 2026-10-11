@@ -60,16 +60,46 @@
     let active=true,busy=false,epoch=0,proposal=null,selections=new Map();
     const editing=new Set();
     const root=node('details',undefined,'localization-bulk');
+    // Dynamic display-only copy: D1 wins over the approved fallback.
+    // Never translate input.value, proposed edits, IDs or server receipts.
+    const dynamicTranslations=new WeakMap();
+    const translate=(key,fallback,values={})=>{
+      let phrase=window.PandoraAdminI18n?.t?.('adminShell.'+key,fallback)||fallback;
+      const slots=value=>(value.match(/\{[A-Za-z0-9_]+\}/g)||[]).sort().join('|');
+      if(slots(phrase)!==slots(fallback))phrase=fallback;
+      return phrase.replace(/\{([A-Za-z0-9_]+)\}/g,(match,name)=>
+        Object.hasOwn(values,name)?String(values[name]):match);
+    };
+    const live=(element,key,fallback,values={})=>{
+      dynamicTranslations.set(element,{key,fallback,values});
+      element.dataset.bulkLiveKey=key;
+      element.textContent=translate(key,fallback,values);
+      return element;
+    };
+    const raw=(element,text)=>{
+      dynamicTranslations.delete(element);
+      delete element.dataset.bulkLiveKey;
+      element.textContent=text;
+      return element;
+    };
+    const onLocaleChange=()=>{
+      root.querySelectorAll('[data-bulk-live-key]').forEach(element=>{
+        const entry=dynamicTranslations.get(element);
+        if(entry)element.textContent=translate(entry.key,entry.fallback,entry.values);
+      });
+    };
+    window.addEventListener('pandora-admin:localechange',onLocaleChange);
+
     const heading=localized('summary','bulkHeading','Массовая замена слова · предварительный просмотр');
     const intro=localized('p','bulkHelp','Только отдельные слова в действующих текстах выбранного языка и раздела. Регистр поиска не учитывается; части других слов и плейсхолдеры {name} не меняются. Английский оригинал остаётся нетронутым.','localization-bulk-help');
     const controls=node('div',undefined,'localization-bulk-controls');
     const word=node('input');word.placeholder='Warrior';word.maxLength=60;localizedAttribute(word,'aria-label','bulkFindWord','Найти целое слово');
-    const translated=node('input');translated.placeholder='Воин';translated.maxLength=80;localizedAttribute(translated,'aria-label','bulkReplaceWord','Заменить словом');
+    const translated=node('input');translated.placeholder='Воин';localizedAttribute(translated,'placeholder','bulkReplacementExample','Воин');translated.maxLength=80;localizedAttribute(translated,'aria-label','bulkReplaceWord','Заменить словом');
     const missing=node('input');missing.type='checkbox';missing.checked=true;missing.id='bulk-missing-'+Math.random().toString(36).slice(2);
     const missingLabel=node('label');missingLabel.append(missing,localized('span','bulkMissingOnly',' Только без готового перевода'));
     const scan=localized('button','bulkPreview','Показать предварительный просмотр');scan.type='button';
     controls.append(word,translated,missingLabel,scan);
-    const state=node('p','Сначала укажи слово и перевод.','localization-bulk-state');state.setAttribute('role','status');state.setAttribute('aria-live','polite');
+    const state=live(node('p',undefined,'localization-bulk-state'),'bulkReady','Сначала укажи слово и перевод.');state.setAttribute('role','status');state.setAttribute('aria-live','polite');
     const results=node('div',undefined,'localization-bulk-results');
     const actions=node('div',undefined,'localization-bulk-actions');
     const publish=localized('button','bulkPublish','Опубликовать выбранные');publish.type='button';publish.disabled=true;
@@ -94,7 +124,7 @@
     }
     function invalidate(){
       epoch++;proposal=null;selections.clear();editing.clear();results.replaceChildren();
-      state.textContent='Предпросмотр сброшен. Проверь слово и параметры, затем выполни поиск.';
+      live(state,'bulkResetPreview','Предпросмотр сброшен. Проверь слово и параметры, затем выполни поиск.');
       publish.disabled=true;cancel.disabled=true;
     }
     function stillCurrent(current){
@@ -136,9 +166,8 @@
     function render(){
       results.replaceChildren();selections.clear();editing.clear();
       const {found,skipped}=proposal;
-      state.textContent='Совпадений: '+found.length+'. Не обработано: '+skipped.length+
-        '. Исправляй нужные строки карандашом и проверь текст до/после.';
-      if(skipped.length)results.append(node('p','Пропущено: '+skipped.slice(0,8).join(', '),'localization-bulk-warning'));
+      live(state,'bulkFoundCount','Совпадений: {found}. Не обработано: {skipped}. Исправляй нужные строки карандашом и проверь текст до/после.',{found:found.length,skipped:skipped.length});
+      if(skipped.length)results.append(live(node('p',undefined,'localization-bulk-warning'),'bulkSkippedIds','Пропущено: {ids}',{ids:skipped.slice(0,8).join(', ')}));
 
       const selectionBar=node('div',undefined,'localization-bulk-selection');
       const summary=node('output');summary.setAttribute('aria-live','polite');
@@ -148,8 +177,7 @@
       function updateCounts(){
         const selected=found.filter(item=>selections.get(item.id)).length;
         const revised=found.filter(item=>item.after!==item.suggested).length;
-        summary.textContent='Выбрано: '+selected+' / '+found.filter(item=>!item.blocked).length+
-          ' · Исправлено вручную: '+revised;
+        live(summary,'bulkSelectedCount','Выбрано: {selected} / {available} · Исправлено вручную: {revised}',{selected,available:found.filter(item=>!item.blocked).length,revised});
         publish.disabled=busy||!selected||editing.size>0;
       }
       function changeSelection(checked){
@@ -215,7 +243,8 @@
           try{value=reviewedText(input.value,item);}catch(error){warning.textContent=error.message;return;}
           item.after=value;
           after.textContent=value;
-          modified.textContent=value===item.suggested?'':'Исправлено вручную';
+          if(value===item.suggested)raw(modified,'');
+          else live(modified,'bulkManualEdited','Исправлено вручную');
           revert.hidden=value===item.suggested;
           endEdit();
         }
@@ -245,32 +274,31 @@
       if(busy)return;
       invalidate();
       const current=context(),requestId=epoch;
-      if(!cleanWord(current.word)){state.textContent='Введи одно целое слово (буквы, цифры или _), не фразу.';return;}
-      if(!safeText(current.replacement)){state.textContent='Введи безопасный перевод до 80 символов без HTML.';return;}
-      setBusy(true);state.textContent='Ищу совпадения во всех страницах выбранной категории…';
+      if(!cleanWord(current.word)){live(state,'bulkNeedWord','Введи одно целое слово (буквы, цифры или _), не фразу.');return;}
+      if(!safeText(current.replacement)){live(state,'bulkNeedTranslation','Введи безопасный перевод до 80 символов без HTML.');return;}
+      setBusy(true);live(state,'bulkSearching','Ищу совпадения во всех страницах выбранной категории…');
       try{
         const data=await collect(current);
         if(requestId!==epoch||!stillCurrent(current))return;
         proposal={...data,current,signature:fingerprint(current)};
         render();
-      }catch(error){if(requestId===epoch){proposal=null;state.textContent=error.message;}}
+      }catch(error){if(requestId===epoch){proposal=null;raw(state,error.message);}}
       finally{setBusy(false);}
     });
 
     async function commit(){
       if(busy||!proposal||!stillCurrent(proposal.current)){invalidate();return;}
-      if(editing.size){state.textContent='Закончи редактирование открытой строки.';return;}
+      if(editing.size){live(state,'bulkFinishEditing','Закончи редактирование открытой строки.');return;}
       const checked=proposal.found.filter(item=>selections.get(item.id));
       if(!checked.length)return;
       if(checked.some(item=>hasDraft(item))){
-        state.textContent='В выбранных строках есть черновик. Перепроверь данные и обнови предпросмотр.';return;
+        live(state,'bulkDraftCollision','В выбранных строках есть черновик. Перепроверь данные и обнови предпросмотр.');return;
       }
-      if(!window.confirm('Опубликовать '+checked.length+' переводов ОДНОЙ транзакцией для '+proposal.current.locale.toUpperCase()+
-        '? Остальные языки не изменятся.'))return;
+      if(!window.confirm(translate('bulkConfirmPublish','Опубликовать {count} переводов ОДНОЙ транзакцией для {locale}? Остальные языки не изменятся.',{count:checked.length,locale:proposal.current.locale.toUpperCase()})))return;
       const current=proposal.current,requestId=epoch,operationId=window.crypto.randomUUID();
       setBusy(true);let receipt=null,uncertain=false;
       try{
-        state.textContent='Перепроверяю переводы перед атомарной публикацией…';
+        live(state,'bulkRechecking','Перепроверяю переводы перед атомарной публикацией…');
         const latest=await collect(current);
         const actual=new Map(latest.found.map(item=>[item.id,item]));
         for(const before of checked){
@@ -279,7 +307,7 @@
             throw Error('Данные изменились для '+before.id+'. Пересмотри пакет.');
         }
         if(!active||requestId!==epoch||!stillCurrent(current))throw Error('Контекст редактора изменился.');
-        state.textContent='Публикую '+checked.length+' переводов одной транзакцией…';
+        live(state,'bulkPublishingProgress','Публикую {count} переводов одной транзакцией…',{count:checked.length});
         const items=checked.map(item=>({scope:item.scope,id:item.id,locale:item.locale,
           value:item.after,expectedVersion:item.version,expectedEffective:item.before}));
         try{
@@ -287,7 +315,7 @@
         }catch(error){
           // A network failure after a server commit is not proof of rollback.
           // An operation receipt is written in the SAME D1 transaction.
-          state.textContent='Проверяю сохранённый результат операции…';
+          live(state,'bulkReceiptLookup','Проверяю сохранённый результат операции…');
           try{
             const check=await api('GET',null,
               '/api/admin/localization/operations?operationId='+encodeURIComponent(operationId));
@@ -296,12 +324,12 @@
           }catch(checkError){uncertain=true;throw checkError;}
         }
         invalidate();
-        state.textContent='Успешно опубликовано '+receipt.count+' '+plural(receipt.count)+' одной операцией. Проверь результат на сайте.';
+        live(state,'bulkPublishedSuccess','Переводы опубликованы одной операцией: {count}. Проверь результат на сайте.',{count:receipt.count});
       }catch(error){
         if(!uncertain)invalidate();
-        state.textContent=(uncertain
+        raw(state,(uncertain
           ? 'Не удалось подтвердить результат операции. НЕ повторяй публикацию вслепую. Код: '+operationId+'. '
-          : 'Пакет не опубликован: ')+error.message;
+          : 'Пакет не опубликован: ')+error.message);
       }finally{
         setBusy(false);
         if(receipt)onPublished();
@@ -310,7 +338,7 @@
     publish.addEventListener('click',commit);
     cancel.addEventListener('click',invalidate);
     for(const input of [word,translated,missing])input.addEventListener('input',()=>{if(!busy)invalidate();});
-    return {invalidate,destroy(){active=false;invalidate();root.remove();}};
+    return {invalidate,destroy(){active=false;window.removeEventListener('pandora-admin:localechange',onLocaleChange);invalidate();root.remove();}};
   }
 
   window.PandoraBulkLocalization={mount,replaceWholeWord};
