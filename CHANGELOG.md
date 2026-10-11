@@ -1,5 +1,31 @@
 # Changelog
 
+## Modern 3.81 — базовая дальность оружия по текущему справочнику, 2026-10-11
+
+<!-- release-notes:user:ru -->
+- При надетом оружии в «Результатах расчёта» вместо `---` отображается его базовая дальность: отдельно для оружия ближнего и дальнего боя.
+- Значения взяты из актуального справочника Pandora Saga OS для 164 сопоставленных видов оружия. Они показаны в исходных единицах справочника, без неподтверждённого пересчёта в метры.
+- Для пустого слота или неизвестной модели `---` остаётся. Не подтверждённые бонусы навыков к дальности пока не включаются.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Melee and ranged results now display the equipped weapon's verified base reach instead of a permanent dash.
+- Source values cover 164 matched weapons from the current Pandora Saga OS item registry, in original reference units (no unverified meter conversion).
+- Unarmed or unsupported weapons remain unavailable; unverified skill-based range changes are not silently applied.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- 164 оружия 1:1 сопоставлены с публичным `/gamedata/items.json` по утверждённому русскому названию; для каждого значения runtime дополнительно сверяет неизменный японский `engineKey` и тип (лук/арбалет или ближнее).
+- При несовпадении идентичности предмета не выводить потенциально неверное значение. Изменения предметов через D1 по названию не меняют ключ проверки.
+- Отдельные эталонные снимки и браузерные тесты проверяют источники, переключение оружия, чистый слот и возврат к исходному виду. Формулы Legacy и система билдов не изменяются.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Freeze a read-only 164-weapon current-server source map with unambiguous Russian names; runtime validates immutable Japanese engineKey and melee/ranged type before displaying the raw `range` field.
+- Fail closed for unknown or modified identities; do not fabricate conversion units or blend unverified Legacy reach modifiers.
+- Add offline source-map and Playwright test coverage; leave Legacy formulas, catalog mechanics and saved builds unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 3.80 — восстановление расчёта сопротивления магии, 2026-10-11
 
 <!-- release-notes:user:ru -->
