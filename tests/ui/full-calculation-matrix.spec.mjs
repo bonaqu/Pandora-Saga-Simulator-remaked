@@ -93,3 +93,65 @@ test('defense and magic resistance remain additive, reversible and finite across
     expect(frame.buildRestored,tag).toBe(true);
   }
 });
+
+
+test('every class/race preserves 43 outputs through real robe + defense and magic buffs, then restores the build',async({page})=>{
+  test.setTimeout(240_000);
+  await page.goto('/?ui=ru');
+  const run=await page.evaluate(()=>{
+    const jobs=document.getElementById('SelJob'),races=document.getElementById('SelRace');
+    const read=()=>({
+      values:[...document.querySelectorAll('#StatusView .input_gt')].map(node=>node.textContent.trim()),
+      def:document.getElementById('Status_49')?.textContent.trim(),
+      resist:document.getElementById('Status_145')?.textContent.trim()
+    });
+    const frames=[];
+    for(let job=0;job<28;job++){
+      for(let race=0;race<6;race++){
+        races.selectedIndex=race;races.onchange();
+        jobs.selectedIndex=job;jobs.onchange();
+        Flag[7]=0;Flag['0_8']=0;Flag['14_4']=0;
+        PandoraRemaked.adapter.selectEquipment(3,0);
+        CalcSet('ALL');
+        const original=read(),before=Store();
+        const worn=PandoraRemaked.adapter.selectEquipment(3,310015);
+        const robe=read();
+        Flag['0_8']=1;Flag['14_4']=1;CalcSet('ALL');
+        const buffed=read();
+        CalcSet('ALL');const repeated=read();
+        Flag['0_8']=0;Flag['14_4']=0;
+        const removed=PandoraRemaked.adapter.selectEquipment(3,0);
+        CalcSet('ALL');
+        frames.push({job,race,worn,removed,original,robe,buffed,repeated,
+          restored:read(),buildRestored:before===Store()});
+      }
+    }
+    // No persisted build or global buff flags should be left active by this audit.
+    Flag[7]=0;Flag['0_8']=0;Flag['14_4']=0;
+    CalcSet('ALL');
+    return frames;
+  });
+  expect(run).toHaveLength(168);
+  let wearable=0;
+  for(const frame of run){
+    const where='class '+frame.job+', race '+frame.race;
+    expect(frame.removed,where).toBe(true);
+    expect(frame.buildRestored,where).toBe(true);
+    for(const point of [frame.original,frame.robe,frame.buffed,frame.repeated,frame.restored]){
+      expect(point.values,where).toHaveLength(43);
+      expect(point.values.every(text=>Boolean(text)&&!/NaN|Infinity|undefined|null|---\\d/i.test(text)),where).toBe(true);
+      expect(point.def,where).toMatch(STATUS);
+      expect(point.resist,where).toMatch(STATUS);
+    }
+    expect(frame.restored,where).toEqual(frame.original);
+    expect(frame.repeated,where).toEqual(frame.buffed);
+    if(!frame.worn)continue; // Respect genuine equipment restrictions, not forced invalid gear.
+    wearable++;
+    expect(Number(frame.robe.def)-Number(frame.original.def),where).toBe(8);
+    expect(Number(frame.robe.resist)-Number(frame.original.resist),where).toBe(3);
+    expect(Number(frame.buffed.resist)-Number(frame.robe.resist),where).toBe(25);
+    expect(Number(frame.buffed.def),where).toBeGreaterThan(Number(frame.robe.def));
+  }
+  // A real piece of equipment must be accepted for the six known reference jobs.
+  expect(wearable).toBeGreaterThanOrEqual(36);
+});
