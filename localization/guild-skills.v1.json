@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "skills": [
+    {
+      "sourceNameEn": "Clan",
+      "nameRu": "Гильдия",
+      "levels": [
+        {
+          "en": "Applying the effects of all passive skills available at this guild level:\nExperience Lv1: EXP from monsters +2%.",
+          "ru": "Применение эффектов всех пассивных навыков, доступных на этом уровне гильдии:\nОпыт ур. 1: опыт за убийство монстров +2%."
+        },
+        {
+          "en": "Applying the effects of all passive skills available at this guild level:\nPhysical Lv1: maximum LP +2%.\nSpirit Lv1: maximum MP +2%.\nExperience Lv1: EXP from monsters +2%.",
+          "ru": "Применение эффектов всех пассивных навыков, доступных на этом уровне гильдии:\nСила гильдии ур. 1: максимальные ОЗ +2%.\nДух гильдии ур. 1: максимальные ОМ +2%.\nОпыт ур. 1: опыт за убийство монстров +2%."
+        },
+        {
+          "en": "Applying the effects of all passive skills available at this guild level:\nPhysical Lv1: maximum LP +2%.\nSpirit Lv1: maximum MP +2%.\nExperience Lv2: EXP from monsters +3%.",
+          "ru": "Применение эффектов всех пассивных навыков, доступных на этом уровне гильдии:\nСила гильдии ур. 1: максимальные ОЗ +2%.\nДух гильдии ур. 1: максимальные ОМ +2%.\nОпыт ур. 2: опыт за убийство монстров +3%."
+        },
+        {
+          "en": "Applying the effects of all passive skills available at this guild level:\nPhysical Lv2: maximum LP +4%.\nSpirit Lv2: maximum MP +4%.\nPhysical Recovery Lv1: LP recovery speed +5%.\nSpirit Recovery Lv1: MP recovery speed +5%.\nExperience Lv2: EXP from monsters +3%.",
+          "ru": "Применение эффектов всех пассивных навыков, доступных на этом уровне гильдии:\nСила гильдии ур. 2: максимальные ОЗ +4%.\nДух гильдии ур. 2: максимальные ОМ +4%.\nВосстановление силы ур. 1: скорость восстановления ОЗ +5%.\nВосстановление духа ур. 1: скорость восстановления ОМ +5%.\nОпыт ур. 2: опыт за убийство монстров +3%."
+        },
+        {
+          "en": "Applying the effects of all passive skills available at this guild level:\nPhysical Lv2: maximum LP +4%.\nSpirit Lv2: maximum MP +4%.\nPhysical Recovery Lv1: LP recovery speed +5%.\nSpirit Recovery Lv1: MP recovery speed +5%.\nExperience Lv3: EXP from monsters +4%.",
+          "ru": "Применение эффектов всех пассивных навыков, доступных на этом уровне гильдии:\nСила гильдии ур. 2: максимальные ОЗ +4%.\nДух гильдии ур. 2: максимальные ОМ +4%.\nВосстановление силы ур. 1: скорость восстановления ОЗ +5%.\nВосстановление духа ур. 1: скорость восстановления ОМ +5%.\nОпыт ур. 3: опыт за убийство монстров +4%."
+        },
+        {
+          "en": "Applying the effects of all passive skills available at this guild level:\nPhysical Lv3: maximum LP +6%.\nSpirit Lv3: maximum MP +6%.\nPhysical Recovery Lv1: LP recovery speed +5%.\nSpirit Recovery Lv1: MP recovery speed +5%.\nPhysical Resist Lv1: physical damage taken −3%.\nSpirit Resist Lv1: magical damage taken −3%.\nExperience Lv3: EXP from monsters +4%.",
+          "ru": "Применение эффектов всех пассивных навыков, доступных на этом уровне гильдии:\nСила гильдии ур. 3: максимальные ОЗ +6%.\nДух гильдии ур. 3: максимальные ОМ +6%.\nВосстановление силы ур. 1: скорость восстановления ОЗ +5%.\nВосстановление духа ур. 1: скорость восстановления ОМ +5%.\nФизическая устойчивость ур. 1: получаемый физический урон −3%.\nМагическая устойчивость ур. 1: получаемый магический урон −3%.\nОпыт ур. 3: опыт за убийство монстров +4%."
+        },
+        {
+          "en": "Applying the effects of all passive skills available at this guild level:\nPhysical Lv3: maximum LP +6%.\nSpirit Lv3: maximum MP +6%.\nPhysical Recovery Lv1: LP recovery speed +5%.\nSpirit Recovery Lv1: MP recovery speed +5%.\nPhysical Resist Lv1: physical damage taken −3%.\nSpirit Resist Lv1: magical damage taken −3%.\nExperience Lv4: EXP from monsters +5%.",
+          "ru": "Применение эффектов всех пассивных навыков, доступных на этом уровне гильдии:\nСила гильдии ур. 3: максимальные ОЗ +6%.\nДух гильдии ур. 3: максимальные ОМ +6%.\nВосстановление силы ур. 1: скорость восстановления ОЗ +5%.\nВосстановление духа ур. 1: скорость восстановления ОМ +5%.\nФизическая устойчивость ур. 1: получаемый физический урон −3%.\nМагическая устойчивость ур. 1: получаемый магический урон −3%.\nОпыт ур. 4: опыт за убийство монстров +5%."
+        },
+        {
+          "en": "Applying the effects of all passive skills available at this guild level:\nPhysical Lv4: maximum LP +9%.\nSpirit Lv4: maximum MP +9%.\nPhysical Recovery Lv2: LP recovery speed +8%.\nSpirit Recovery Lv2: MP recovery speed +8%.\nPhysical Resist Lv1: physical damage taken −3%.\nSpirit Resist Lv1: magical damage taken −3%.\nExperience Lv4: EXP from monsters +5%.",
+          "ru": "Применение эффектов всех пассивных навыков, доступных на этом уровне гильдии:\nСила гильдии ур. 4: максимальные ОЗ +9%.\nДух гильдии ур. 4: максимальные ОМ +9%.\nВосстановление силы ур. 2: скорость восстановления ОЗ +8%.\nВосстановление духа ур. 2: скорость восстановления ОМ +8%.\nФизическая устойчивость ур. 1: получаемый физический урон −3%.\nМагическая устойчивость ур. 1: получаемый магический урон −3%.\nОпыт ур. 4: опыт за убийство монстров +5%."
+        },
+        {
+          "en": "Applying the effects of all passive skills available at this guild level:\nPhysical Lv4: maximum LP +9%.\nSpirit Lv4: maximum MP +9%.\nPhysical Recovery Lv2: LP recovery speed +8%.\nSpirit Recovery Lv2: MP recovery speed +8%.\nPhysical Resist Lv1: physical damage taken −3%.\nSpirit Resist Lv1: magical damage taken −3%.\nExperience Lv5: EXP from monsters +6%.",
+          "ru": "Применение эффектов всех пассивных навыков, доступных на этом уровне гильдии:\nСила гильдии ур. 4: максимальные ОЗ +9%.\nДух гильдии ур. 4: максимальные ОМ +9%.\nВосстановление силы ур. 2: скорость восстановления ОЗ +8%.\nВосстановление духа ур. 2: скорость восстановления ОМ +8%.\nФизическая устойчивость ур. 1: получаемый физический урон −3%.\nМагическая устойчивость ур. 1: получаемый магический урон −3%.\nОпыт ур. 5: опыт за убийство монстров +6%."
+        },
+        {
+          "en": "Applying the effects of all passive skills available at this guild level:\nPhysical Lv5: maximum LP +12%.\nSpirit Lv5: maximum MP +12%.\nPhysical Recovery Lv2: LP recovery speed +8%.\nSpirit Recovery Lv2: MP recovery speed +8%.\nPhysical Resist Lv2: physical damage taken −6%.\nSpirit Resist Lv2: magical damage taken −6%.\nExperience Lv5: EXP from monsters +6%.",
+          "ru": "Применение эффектов всех пассивных навыков, доступных на этом уровне гильдии:\nСила гильдии ур. 5: максимальные ОЗ +12%.\nДух гильдии ур. 5: максимальные ОМ +12%.\nВосстановление силы ур. 2: скорость восстановления ОЗ +8%.\nВосстановление духа ур. 2: скорость восстановления ОМ +8%.\nФизическая устойчивость ур. 2: получаемый физический урон −6%.\nМагическая устойчивость ур. 2: получаемый магический урон −6%.\nОпыт ур. 5: опыт за убийство монстров +6%."
+        },
+        {
+          "en": "Applying the effects of all passive skills available at this guild level:\nPhysical Lv5: maximum LP +12%.\nSpirit Lv5: maximum MP +12%.\nPhysical Recovery Lv2: LP recovery speed +8%.\nSpirit Recovery Lv2: MP recovery speed +8%.\nPhysical Resist Lv2: physical damage taken −6%.\nSpirit Resist Lv2: magical damage taken −6%.\nExperience Lv5: EXP from monsters +6%.",
+          "ru": "Применение эффектов всех пассивных навыков, доступных на этом уровне гильдии:\nСила гильдии ур. 5: максимальные ОЗ +12%.\nДух гильдии ур. 5: максимальные ОМ +12%.\nВосстановление силы ур. 2: скорость восстановления ОЗ +8%.\nВосстановление духа ур. 2: скорость восстановления ОМ +8%.\nФизическая устойчивость ур. 2: получаемый физический урон −6%.\nМагическая устойчивость ур. 2: получаемый магический урон −6%.\nОпыт ур. 5: опыт за убийство монстров +6%."
+        },
+        {
+          "en": "Applying the effects of all passive skills available at this guild level:\nPhysical Lv5: maximum LP +12%.\nSpirit Lv5: maximum MP +12%.\nPhysical Recovery Lv2: LP recovery speed +8%.\nSpirit Recovery Lv2: MP recovery speed +8%.\nPhysical Resist Lv2: physical damage taken −6%.\nSpirit Resist Lv2: magical damage taken −6%.\nExperience Lv5: EXP from monsters +6%.",
+          "ru": "Применение эффектов всех пассивных навыков, доступных на этом уровне гильдии:\nСила гильдии ур. 5: максимальные ОЗ +12%.\nДух гильдии ур. 5: максимальные ОМ +12%.\nВосстановление силы ур. 2: скорость восстановления ОЗ +8%.\nВосстановление духа ур. 2: скорость восстановления ОМ +8%.\nФизическая устойчивость ур. 2: получаемый физический урон −6%.\nМагическая устойчивость ур. 2: получаемый магический урон −6%.\nОпыт ур. 5: опыт за убийство монстров +6%."
+        }
+      ]
+    },
+    {
+      "sourceNameEn": "Physical",
+      "nameRu": "Сила гильдии",
+      "levels": [
+        {
+          "en": "Passive: increases maximum LP by 2% (of the calculator's base LP; bonus rounded up).",
+          "ru": "Пассивно: увеличивает максимальный запас ОЗ на 2% (от базового значения; прибавка округляется вверх)."
+        },
+        {
+          "en": "Passive: increases maximum LP by 4% (of the calculator's base LP; bonus rounded up).",
+          "ru": "Пассивно: увеличивает максимальный запас ОЗ на 4% (от базового значения; прибавка округляется вверх)."
+        },
+        {
+          "en": "Passive: increases maximum LP by 6% (of the calculator's base LP; bonus rounded up).",
+          "ru": "Пассивно: увеличивает максимальный запас ОЗ на 6% (от базового значения; прибавка округляется вверх)."
+        },
+        {
+          "en": "Passive: increases maximum LP by 9% (of the calculator's base LP; bonus rounded up).",
+          "ru": "Пассивно: увеличивает максимальный запас ОЗ на 9% (от базового значения; прибавка округляется вверх)."
+        },
+        {
+          "en": "Passive: increases maximum LP by 12% (of the calculator's base LP; bonus rounded up).",
+          "ru": "Пассивно: увеличивает максимальный запас ОЗ на 12% (от базового значения; прибавка округляется вверх)."
+        }
+      ]
+    },
+    {
+      "sourceNameEn": "Spirit",
+      "nameRu": "Дух гильдии",
+      "levels": [
+        {
+          "en": "Passive: increases maximum MP by 2% (of the calculator's base MP; bonus rounded up).",
+          "ru": "Пассивно: увеличивает максимальный запас ОМ на 2% (от базового значения; прибавка округляется вверх)."
+        },
+        {
+          "en": "Passive: increases maximum MP by 4% (of the calculator's base MP; bonus rounded up).",
+          "ru": "Пассивно: увеличивает максимальный запас ОМ на 4% (от базового значения; прибавка округляется вверх)."
+        },
+        {
+          "en": "Passive: increases maximum MP by 6% (of the calculator's base MP; bonus rounded up).",
+          "ru": "Пассивно: увеличивает максимальный запас ОМ на 6% (от базового значения; прибавка округляется вверх)."
+        },
+        {
+          "en": "Passive: increases maximum MP by 9% (of the calculator's base MP; bonus rounded up).",
+          "ru": "Пассивно: увеличивает максимальный запас ОМ на 9% (от базового значения; прибавка округляется вверх)."
+        },
+        {
+          "en": "Passive: increases maximum MP by 12% (of the calculator's base MP; bonus rounded up).",
+          "ru": "Пассивно: увеличивает максимальный запас ОМ на 12% (от базового значения; прибавка округляется вверх)."
+        }
+      ]
+    },
+    {
+      "sourceNameEn": "Physical Recovery",
+      "nameRu": "Восстановление силы",
+      "levels": [
+        {
+          "en": "Passive: increases LP recovery speed by 5%.",
+          "ru": "Пассивно: повышает скорость восстановления ОЗ на 5%."
+        },
+        {
+          "en": "Passive: increases LP recovery speed by 8%.",
+          "ru": "Пассивно: повышает скорость восстановления ОЗ на 8%."
+        }
+      ]
+    },
+    {
+      "sourceNameEn": "Spirit Recovery",
+      "nameRu": "Восстановление духа",
+      "levels": [
+        {
+          "en": "Passive: increases MP recovery speed by 5%.",
+          "ru": "Пассивно: повышает скорость восстановления ОМ на 5%."
+        },
+        {
+          "en": "Passive: increases MP recovery speed by 8%.",
+          "ru": "Пассивно: повышает скорость восстановления ОМ на 8%."
+        }
+      ]
+    },
+    {
+      "sourceNameEn": "Physical Resist",
+      "nameRu": "Физическая устойчивость",
+      "levels": [
+        {
+          "en": "Passive: reduces physical damage received by 3%.",
+          "ru": "Пассивно: уменьшает получаемый физического урон на 3%."
+        },
+        {
+          "en": "Passive: reduces physical damage received by 6%.",
+          "ru": "Пассивно: уменьшает получаемый физического урон на 6%."
+        }
+      ]
+    },
+    {
+      "sourceNameEn": "Spirit Resist",
+      "nameRu": "Магическая устойчивость",
+      "levels": [
+        {
+          "en": "Passive: reduces magical damage received by 3%.",
+          "ru": "Пассивно: уменьшает получаемый магического урон на 3%."
+        },
+        {
+          "en": "Passive: reduces magical damage received by 6%.",
+          "ru": "Пассивно: уменьшает получаемый магического урон на 6%."
+        }
+      ]
+    },
+    {
+      "sourceNameEn": "Experience",
+      "nameRu": "Опыт",
+      "levels": [
+        {
+          "en": "Passive: increases experience earned from defeated monsters by 2%.",
+          "ru": "Пассивно: увеличивает опыт за убийство монстров на 2%."
+        },
+        {
+          "en": "Passive: increases experience earned from defeated monsters by 3%.",
+          "ru": "Пассивно: увеличивает опыт за убийство монстров на 3%."
+        },
+        {
+          "en": "Passive: increases experience earned from defeated monsters by 4%.",
+          "ru": "Пассивно: увеличивает опыт за убийство монстров на 4%."
+        },
+        {
+          "en": "Passive: increases experience earned from defeated monsters by 5%.",
+          "ru": "Пассивно: увеличивает опыт за убийство монстров на 5%."
+        },
+        {
+          "en": "Passive: increases experience earned from defeated monsters by 6%.",
+          "ru": "Пассивно: увеличивает опыт за убийство монстров на 6%."
+        }
+      ]
+    },
+    {
+      "sourceNameEn": "Healing",
+      "nameRu": "Магистр исцеления",
+      "levels": [
+        {
+          "en": "Active guild-leader skill that boosts nearby guild members:\nIncreases LP and MP recovery speed by 10% for nearby guild members.\nCost: 1 yellow crystal;\nDuration: 600 seconds (10 minutes).",
+          "ru": "Активное умение главы гильдии, позволяющее усилить находящихся рядом с ним членов гильдии:\nПовышает скорость восстановления ОЗ и ОМ на 10% у ближайших участников.\nРасход: 1 жёлтый кристалл;\nДлительность действия: 600 секунд (10 минут)."
+        },
+        {
+          "en": "Active guild-leader skill that boosts nearby guild members:\nIncreases LP and MP recovery speed by 20% for nearby guild members.\nCost: 1 yellow crystal;\nDuration: 600 seconds (10 minutes).",
+          "ru": "Активное умение главы гильдии, позволяющее усилить находящихся рядом с ним членов гильдии:\nПовышает скорость восстановления ОЗ и ОМ на 20% у ближайших участников.\nРасход: 1 жёлтый кристалл;\nДлительность действия: 600 секунд (10 минут)."
+        },
+        {
+          "en": "Active guild-leader skill that boosts nearby guild members:\nIncreases LP and MP recovery speed by 30% for nearby guild members.\nCost: 1 yellow crystal;\nDuration: 600 seconds (10 minutes).",
+          "ru": "Активное умение главы гильдии, позволяющее усилить находящихся рядом с ним членов гильдии:\nПовышает скорость восстановления ОЗ и ОМ на 30% у ближайших участников.\nРасход: 1 жёлтый кристалл;\nДлительность действия: 600 секунд (10 минут)."
+        }
+      ]
+    },
+    {
+      "sourceNameEn": "Combat",
+      "nameRu": "Магистр битвы",
+      "levels": [
+        {
+          "en": "Active guild-leader skill that boosts nearby guild members:\nGrants +1 to all six core attributes (STA, STR, AGI, DEX, SPR, INT) for nearby guild members.\nCost: 1 silver crystal;\nDuration: 600 seconds (10 minutes).",
+          "ru": "Активное умение главы гильдии, позволяющее усилить находящихся рядом с ним членов гильдии:\n+1 ко всем шести характеристикам (STA, STR, AGI, DEX, SPR, INT) ближайших участников.\nРасход: 1 серебряный кристалл;\nДлительнсть действия: 600 секунд (10 минут)."
+        },
+        {
+          "en": "Active guild-leader skill that boosts nearby guild members:\nGrants +2 to all six core attributes (STA, STR, AGI, DEX, SPR, INT) for nearby guild members.\nCost: 1 Silver crystal;\nDuration: 600 seconds (10 minutes).",
+          "ru": "Активное умение главы гильдии, позволяющее усилить находящихся рядом с ним членов гильдии:\n+2 ко всем шести характеристикам (STA, STR, AGI, DEX, SPR, INT) ближайших участников.\nРасход: 1 серебряный кристалл;\nДлительность действия: 600 секунд (10 минут)."
+        },
+        {
+          "en": "Active guild-leader skill that boosts nearby guild members:\nGrants +3 to all six core attributes (STA, STR, AGI, DEX, SPR, INT) for nearby guild members.\nCost: 1 Silver crystal;\nDuration: 600 seconds (10 minutes).",
+          "ru": "Активное умение главы гильдии, позволяющее усилить находящихся рядом с ним членов гильдии:\n+3 ко всем шести характеристикам (STA, STR, AGI, DEX, SPR, INT) ближайших участников.\nРасход: 1 серебряный кристалл;\nДлительность действия: 600 секунд (10 минут)."
+        }
+      ]
+    },
+    {
+      "sourceNameEn": "Arouse",
+      "nameRu": "Магистр магии",
+      "levels": [
+        {
+          "en": "Active guild-leader skill that boosts nearby guild members:\nIncreases physical and magical attack by 2% for nearby guild members.\nCost: 1 dark crystal;\nDuration: 600 seconds (10 minutes).",
+          "ru": "Активное умение главы гильдии, позволяющее усилить находящихся рядом с ним членов гильдии:\nПовышает физическую и магическую атаку на 2% у ближайших участников.\nРасход: 1 тёмный кристалл;\nДлительность действия: 600 секунд (10 минут)."
+        },
+        {
+          "en": "Active guild-leader skill that boosts nearby guild members:\nIncreases physical and magical attack by 4% for nearby guild members.\nCost: 1 dark crystal;\nDuration: 600 seconds (10 minutes).",
+          "ru": "Активное умение главы гильдии, позволяющее усилить находящихся рядом с ним членов гильдии:\nПовышает физическую и магическую атаку на 4% у ближайших участников.\nРасход: 1 тёмный кристалл;\nДлительность действия: 600 секунд (10 минут)."
+        },
+        {
+          "en": "Active guild-leader skill that boosts nearby guild members:\nIncreases physical and magical attack by 6% for nearby guild members.\nCost: 1 dark crystal;\nDuration: 600 seconds (10 minutes).",
+          "ru": "Активное умение главы гильдии, позволяющее усилить находящихся рядом с ним членов гильдии:\nПовышает физическую и магическую атаку на 6% у ближайших участников.\nРасход: 1 тёмный кристалл;\nДлительность действия: 600 секунд (10 минут)."
+        }
+      ]
+    }
+  ]
+}

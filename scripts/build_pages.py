@@ -28,6 +28,7 @@ REQUIRED_MODERN = (
     "modern/builds.css",
     "modern/compare.css",
     "modern/tooltips.css",
+    "modern/guild-tooltips.css",
     "modern/mobile.css",
     "modern/admin-entry.css",
     "modern/admin-entry.js",
@@ -42,6 +43,7 @@ REQUIRED_MODERN = (
     "modern/calculator-controls.js",
     "modern/skill-controls.js",
     "modern/skill-tooltips.js",
+    "modern/guild-tooltips.js",
     "modern/adapter.js",
     "modern/catalog.js",
     "modern/catalog-text.js",
@@ -62,6 +64,7 @@ REQUIRED_LOCALIZATION = (
     "localization/ui.en.json",
     "localization/game-terms.ru.json",
     "localization/approved-translations.v1.json",
+    "localization/guild-skills.v1.json",
 )
 REQUIRED_GENERATED = (
     "data/generated/equipment.v1.json",
@@ -97,6 +100,7 @@ HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <link rel="stylesheet" href="./modern/builds.css" />
 <link rel="stylesheet" href="./modern/compare.css" />
 <link rel="stylesheet" href="./modern/tooltips.css" />
+<link rel="stylesheet" href="./modern/guild-tooltips.css" />
 <link rel="stylesheet" href="./modern/mobile.css" />
 <link rel="stylesheet" href="./modern/admin-entry.css" />
 <!-- /REMAKED:HEAD -->'''
@@ -131,6 +135,8 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/mobile.js"></script>
 <script src="./modern/equipment-picker.js"></script>
 <script src="./modern/calculator-controls.js"></script>
+<script src="./modern/guild-data.js"></script>
+<script src="./modern/guild-tooltips.js"></script>
 <script src="./modern/skill-controls.js"></script>
 <script src="./modern/skill-tooltips.js"></script>
 <script src="./modern/pwa.js"></script>
@@ -442,6 +448,33 @@ def _materialize_game_terms(output: pathlib.Path, russian: dict[str, str], engli
     )
 
 
+def _materialize_guild_descriptions(root: pathlib.Path, output: pathlib.Path) -> None:
+    """Generate the Modern read-only fallback from the same editable admin baseline."""
+    data = json.loads((root / "localization/guild-skills.v1.json").read_text(encoding="utf-8"))
+    expected = [12, 5, 5, 2, 2, 2, 2, 5, 3, 3, 3]
+    skills = data.get("skills")
+    if data.get("schemaVersion") != 1 or not isinstance(skills, list) or len(skills) != len(expected):
+        raise ValueError("invalid approved guild skill baseline")
+    for index, (skill, count) in enumerate(zip(skills, expected)):
+        if not isinstance(skill, dict) or not isinstance(skill.get("levels"), list) or len(skill["levels"]) != count:
+            raise ValueError(f"incorrect guild skill level count: {index}")
+        if not isinstance(skill.get("sourceNameEn"), str) or not isinstance(skill.get("nameRu"), str):
+            raise ValueError(f"invalid guild skill name: {index}")
+        for level, record in enumerate(skill["levels"], 1):
+            if not isinstance(record, dict) or not all(
+                isinstance(record.get(lang), str) and 0 < len(record[lang]) <= 4000
+                and not any(ord(c) < 32 and c not in "\n\t" for c in record[lang])
+                and "<" not in record[lang] and ">" not in record[lang]
+                for lang in ("en", "ru")
+            ):
+                raise ValueError(f"invalid guild skill description: {index}/{level}")
+    payload = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
+    (output / "modern/guild-data.js").write_text(
+        "window.PandoraRemakedGuildSkills = Object.freeze(" + payload.replace("<", "\\u003c") + ");\n",
+        encoding="utf-8",
+    )
+
+
 def _materialize_generated_data(root: pathlib.Path, output: pathlib.Path) -> None:
     destination = output / "data" / "generated"
     destination.mkdir(parents=True)
@@ -633,6 +666,7 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
         translations.ui_english,
     )
     _materialize_game_terms(output, translations.game_russian, translations.game_english)
+    _materialize_guild_descriptions(root, output)
     _materialize_generated_data(root, output)
     materialize_native_passives(root, output)
 
