@@ -6,14 +6,14 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ### For users
 
-- Restore all five short Russian resistance names, including the corrected lightning caption.
-- Restore 13 approved Russian Honor names and their descriptions, with a safe fallback when localization API is unavailable.
-- Prevent three-digit calculated character totals from overlapping the point-cost indicator.
+- Restore the five approved compact resistance captions and all 13 approved Russian Honor names and tooltips, including when the localization API is temporarily unavailable.
+- Prevent three-digit character totals from overlapping the point-cost badge.
 
 ### Development and technical changes
 
-- Keep published D1 text and user drafts authoritative; bundle approved Honor copy in the site fallback and fix five stale catalog-name priorities.
-- Exact-value D1 migration protects user edits, tombstones and unrelated locales; only presentation changes, not stats, mechanics or Legacy.
+- Keep D1 publications authoritative, bundle the 26 approved Honor strings as offline-safe fallback and prefer five explicitly approved resistance names over stale catalog copy only when D1 is unavailable.
+- Migrate the exact old lightning wording through a versioned, draft-safe D1 update, without touching mechanics or Legacy.
+- Verify localization precedence, recovery, SQL history and three-digit stat geometry.
 
 ## Modern 3.77 — 2026-10-11
 
