@@ -7,7 +7,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 ### For users
 
 - Translate 54 frequently used character-builder UI labels into Japanese and Traditional Chinese, covering language controls, panels, equipment/Soul search and mobile navigation.
-- Published D1 overrides remain authoritative; no saved builds, equipment statistics or formulas are changed.
+- These language changes do not affect equipment statistics, calculations or saved builds.
 
 ### Development and technical changes
 
