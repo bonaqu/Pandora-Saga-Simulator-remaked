@@ -1,0 +1,1648 @@
+{
+  "source": "https://pandorasaga-os.com/gamedata/items.json",
+  "capturedDate": "2026-10-11",
+  "sourceCatalogImpactRevision": 87,
+  "method": "Unique, exact case-insensitive RU item name match for all 164 category 0..13 equipment records; guard runtime identity by unchanged canonical JP engineKey; read-only source distance units",
+  "items": [
+    {
+      "id": "equipment.0.1",
+      "engineKey": "トリートブリンガー",
+      "ru": "Тыквенный меч",
+      "officialId": 51,
+      "range": 110,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 1
+    },
+    {
+      "id": "equipment.0.2",
+      "engineKey": "ショートソード",
+      "ru": "Короткий меч",
+      "officialId": 21,
+      "range": 110,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 2
+    },
+    {
+      "id": "equipment.0.3",
+      "engineKey": "ファルシオン",
+      "ru": "Тяжелый меч",
+      "officialId": 211,
+      "range": 130,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 3
+    },
+    {
+      "id": "equipment.0.4",
+      "engineKey": "レイピア",
+      "ru": "Рапира",
+      "officialId": 31,
+      "range": 125,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 4
+    },
+    {
+      "id": "equipment.0.5",
+      "engineKey": "ロングソード",
+      "ru": "Длинный меч",
+      "officialId": 221,
+      "range": 135,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 5
+    },
+    {
+      "id": "equipment.0.6",
+      "engineKey": "アイスソード",
+      "ru": "Ледяной меч",
+      "officialId": 24,
+      "range": 110,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 6
+    },
+    {
+      "id": "equipment.0.7",
+      "engineKey": "ブロンズソード",
+      "ru": "Широкий меч",
+      "officialId": 22,
+      "range": 100,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 7
+    },
+    {
+      "id": "equipment.0.8",
+      "engineKey": "カトラス",
+      "ru": "Скимитар",
+      "officialId": 11,
+      "range": 110,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 8
+    },
+    {
+      "id": "equipment.0.9",
+      "engineKey": "サーベル",
+      "ru": "Сабля",
+      "officialId": 201,
+      "range": 140,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 9
+    },
+    {
+      "id": "equipment.0.10",
+      "engineKey": "クリスタルソード",
+      "ru": "Кристальный меч",
+      "officialId": 23,
+      "range": 115,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 10
+    },
+    {
+      "id": "equipment.0.11",
+      "engineKey": "ミスリルソード",
+      "ru": "Мифриловый меч",
+      "officialId": 222,
+      "range": 135,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 11
+    },
+    {
+      "id": "equipment.0.12",
+      "engineKey": "グラディウス",
+      "ru": "Спата",
+      "officialId": 1,
+      "range": 100,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 12
+    },
+    {
+      "id": "equipment.0.19",
+      "engineKey": "グラディウス",
+      "ru": "Прочная спата",
+      "officialId": 2,
+      "range": 100,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 19
+    },
+    {
+      "id": "equipment.0.20",
+      "engineKey": "グラディウスＳ",
+      "ru": "Сильная спата",
+      "officialId": 4,
+      "range": 110,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 20
+    },
+    {
+      "id": "equipment.0.21",
+      "engineKey": "グラディウスＡ",
+      "ru": "Разящая спата",
+      "officialId": 3,
+      "range": 100,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 21
+    },
+    {
+      "id": "equipment.0.29",
+      "engineKey": "グロッセスメッサー",
+      "ru": "Гладиус",
+      "officialId": 231,
+      "range": 135,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 29
+    },
+    {
+      "id": "modern.equipment.6acbe08a-0356-4625-a9ac-af9240766657",
+      "engineKey": "Modern:modern.equipment.6acbe08a-0356-4625-a9ac-af9240766657",
+      "ru": "Сильный меч",
+      "officialId": 41,
+      "range": 100,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 30
+    },
+    {
+      "id": "modern.equipment.61fdd82e-9aef-48af-a502-48c19e1c885f",
+      "engineKey": "Modern:modern.equipment.61fdd82e-9aef-48af-a502-48c19e1c885f",
+      "ru": "Меч пирата",
+      "officialId": 241,
+      "range": 100,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 31
+    },
+    {
+      "id": "modern.equipment.e589e66f-6a3e-4526-a550-085b6e6625a7",
+      "engineKey": "Modern:modern.equipment.e589e66f-6a3e-4526-a550-085b6e6625a7",
+      "ru": "Прочный меч пирата",
+      "officialId": 242,
+      "range": 100,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 32
+    },
+    {
+      "id": "modern.equipment.d6361439-fa5f-48f1-ab50-a4cb17b4810e",
+      "engineKey": "Modern:modern.equipment.d6361439-fa5f-48f1-ab50-a4cb17b4810e",
+      "ru": "Сильный меч пирата",
+      "officialId": 243,
+      "range": 100,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 33
+    },
+    {
+      "id": "modern.equipment.330d3768-2145-4b5e-aa93-7979f7367cc9",
+      "engineKey": "Modern:modern.equipment.330d3768-2145-4b5e-aa93-7979f7367cc9",
+      "ru": "Разящий меч пирата",
+      "officialId": 244,
+      "range": 100,
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 34
+    },
+    {
+      "id": "equipment.1.2",
+      "engineKey": "クレイモア",
+      "ru": "Меч двойного удара",
+      "officialId": 401,
+      "range": 160,
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 2
+    },
+    {
+      "id": "equipment.1.3",
+      "engineKey": "斬馬刀",
+      "ru": "Меч-конебой",
+      "officialId": 411,
+      "range": 200,
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 3
+    },
+    {
+      "id": "equipment.1.4",
+      "engineKey": "フランメンシュヴェルト",
+      "ru": "Пламенный клинок",
+      "officialId": 421,
+      "range": 220,
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 4
+    },
+    {
+      "id": "equipment.1.5",
+      "engineKey": "バスタードソード",
+      "ru": "Меч равновесия",
+      "officialId": 432,
+      "range": 220,
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 5
+    },
+    {
+      "id": "equipment.1.6",
+      "engineKey": "ブラッドソード",
+      "ru": "Кровавый меч",
+      "officialId": 403,
+      "range": 170,
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 6
+    },
+    {
+      "id": "equipment.1.7",
+      "engineKey": "ツヴァイハンダー",
+      "ru": "Большой двуручный меч",
+      "officialId": 431,
+      "range": 220,
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 7
+    },
+    {
+      "id": "equipment.1.8",
+      "engineKey": "ブロードソード",
+      "ru": "Клеймор",
+      "officialId": 402,
+      "range": 170,
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 8
+    },
+    {
+      "id": "equipment.1.16",
+      "engineKey": "ブロードソード",
+      "ru": "Прочный клеймор",
+      "officialId": 404,
+      "range": 170,
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 16
+    },
+    {
+      "id": "equipment.1.17",
+      "engineKey": "ブロードソードＳ",
+      "ru": "Сильный клеймор",
+      "officialId": 406,
+      "range": 180,
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 17
+    },
+    {
+      "id": "equipment.1.18",
+      "engineKey": "ブロードソードＡ",
+      "ru": "Разящий клеймор",
+      "officialId": 405,
+      "range": 170,
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 18
+    },
+    {
+      "id": "equipment.1.25",
+      "engineKey": "ハウリングソード",
+      "ru": "Рычащий меч",
+      "officialId": 422,
+      "range": 220,
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 25
+    },
+    {
+      "id": "modern.equipment.410f3943-0a61-4811-ab65-bdb71d10e8a6",
+      "engineKey": "Modern:modern.equipment.410f3943-0a61-4811-ab65-bdb71d10e8a6",
+      "ru": "Огромный меч",
+      "officialId": 441,
+      "range": 220,
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 26
+    },
+    {
+      "id": "equipment.2.1",
+      "engineKey": "アックス",
+      "ru": "Топор",
+      "officialId": 602,
+      "range": 95,
+      "kind": "1H_AXE",
+      "category": 2,
+      "index": 1
+    },
+    {
+      "id": "equipment.2.2",
+      "engineKey": "ハンドアックス",
+      "ru": "Ручной топор",
+      "officialId": 601,
+      "range": 95,
+      "kind": "1H_AXE",
+      "category": 2,
+      "index": 2
+    },
+    {
+      "id": "equipment.2.3",
+      "engineKey": "フランキスカ",
+      "ru": "Топор войны",
+      "officialId": 611,
+      "range": 95,
+      "kind": "1H_AXE",
+      "category": 2,
+      "index": 3
+    },
+    {
+      "id": "equipment.2.4",
+      "engineKey": "ブロンズアックス",
+      "ru": "Бронзовый топор",
+      "officialId": 603,
+      "range": 95,
+      "kind": "1H_AXE",
+      "category": 2,
+      "index": 4
+    },
+    {
+      "id": "equipment.2.5",
+      "engineKey": "クロウビル",
+      "ru": "Клюв ворона",
+      "officialId": 621,
+      "range": 95,
+      "kind": "1H_AXE",
+      "category": 2,
+      "index": 5
+    },
+    {
+      "id": "equipment.2.6",
+      "engineKey": "ブロードアックス",
+      "ru": "Широкий топор",
+      "officialId": 631,
+      "range": 100,
+      "kind": "1H_AXE",
+      "category": 2,
+      "index": 6
+    },
+    {
+      "id": "equipment.2.19",
+      "engineKey": "バトルアックス",
+      "ru": "Боевой топор",
+      "officialId": 641,
+      "range": 105,
+      "kind": "1H_AXE",
+      "category": 2,
+      "index": 19
+    },
+    {
+      "id": "equipment.3.2",
+      "engineKey": "ウォーサイス",
+      "ru": "Боевая коса",
+      "officialId": 801,
+      "range": 180,
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 2
+    },
+    {
+      "id": "equipment.3.3",
+      "engineKey": "ネックスライサー",
+      "ru": "Топор палача",
+      "officialId": 811,
+      "range": 140,
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 3
+    },
+    {
+      "id": "equipment.3.4",
+      "engineKey": "ビークドアックス",
+      "ru": "Жестокий топор",
+      "officialId": 812,
+      "range": 140,
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 4
+    },
+    {
+      "id": "equipment.3.5",
+      "engineKey": "ポールアックス",
+      "ru": "Небесная алебарда",
+      "officialId": 821,
+      "range": 200,
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 5
+    },
+    {
+      "id": "equipment.3.6",
+      "engineKey": "ターミネイター",
+      "ru": "Топор-крушитель",
+      "officialId": 831,
+      "range": 150,
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 6
+    },
+    {
+      "id": "equipment.3.7",
+      "engineKey": "デーンアックス",
+      "ru": "Топор викинга",
+      "officialId": 832,
+      "range": 150,
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 7
+    },
+    {
+      "id": "equipment.3.14",
+      "engineKey": "デーンアックス",
+      "ru": "Прочный топор викинга",
+      "officialId": 833,
+      "range": 150,
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 14
+    },
+    {
+      "id": "equipment.3.15",
+      "engineKey": "デーンアックスＳ",
+      "ru": "Сильный топор викинга",
+      "officialId": 835,
+      "range": 160,
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 15
+    },
+    {
+      "id": "equipment.3.16",
+      "engineKey": "デーンアックスＡ",
+      "ru": "Разящий топор викинга",
+      "officialId": 834,
+      "range": 150,
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 16
+    },
+    {
+      "id": "modern.equipment.9edb0261-00f0-4e87-ab90-4df7316a7f8c",
+      "engineKey": "Modern:modern.equipment.9edb0261-00f0-4e87-ab90-4df7316a7f8c",
+      "ru": "Огромный топор",
+      "officialId": 841,
+      "range": 150,
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 26
+    },
+    {
+      "id": "equipment.4.1",
+      "engineKey": "ウッドランス",
+      "ru": "Деревянное копье",
+      "officialId": 1601,
+      "range": 300,
+      "kind": "LANCE",
+      "category": 4,
+      "index": 1
+    },
+    {
+      "id": "equipment.4.2",
+      "engineKey": "トーナメントランス",
+      "ru": "Турнирное копье",
+      "officialId": 1611,
+      "range": 300,
+      "kind": "LANCE",
+      "category": 4,
+      "index": 2
+    },
+    {
+      "id": "equipment.4.4",
+      "engineKey": "バウンティランス",
+      "ru": "Длинная пика",
+      "officialId": 1613,
+      "range": 300,
+      "kind": "LANCE",
+      "category": 4,
+      "index": 4
+    },
+    {
+      "id": "equipment.4.5",
+      "engineKey": "ライトランス",
+      "ru": "Усиленное копье",
+      "officialId": 1621,
+      "range": 300,
+      "kind": "LANCE",
+      "category": 4,
+      "index": 5
+    },
+    {
+      "id": "equipment.4.6",
+      "engineKey": "ヘビーランス",
+      "ru": "Тяжелое копье",
+      "officialId": 1631,
+      "range": 300,
+      "kind": "LANCE",
+      "category": 4,
+      "index": 6
+    },
+    {
+      "id": "equipment.4.20",
+      "engineKey": "ナイトランス",
+      "ru": "Копье ночи",
+      "officialId": 1641,
+      "range": 300,
+      "kind": "LANCE",
+      "category": 4,
+      "index": 20
+    },
+    {
+      "id": "modern.equipment.31f5a30e-8125-41c7-a034-f70f04cc97c9",
+      "engineKey": "Modern:modern.equipment.31f5a30e-8125-41c7-a034-f70f04cc97c9",
+      "ru": "Прочное тяжелое копье",
+      "officialId": 1632,
+      "range": 300,
+      "kind": "LANCE",
+      "category": 4,
+      "index": 21
+    },
+    {
+      "id": "modern.equipment.86ba8a23-d24b-49be-afe1-6556c823e946",
+      "engineKey": "Modern:modern.equipment.86ba8a23-d24b-49be-afe1-6556c823e946",
+      "ru": "Разящее тяжелое копье",
+      "officialId": 1633,
+      "range": 300,
+      "kind": "LANCE",
+      "category": 4,
+      "index": 22
+    },
+    {
+      "id": "modern.equipment.6a9c6b1f-820f-4bca-a2e1-9c7f8bb3ed2f",
+      "engineKey": "Modern:modern.equipment.6a9c6b1f-820f-4bca-a2e1-9c7f8bb3ed2f",
+      "ru": "Сильное тяжелое копье",
+      "officialId": 1634,
+      "range": 300,
+      "kind": "LANCE",
+      "category": 4,
+      "index": 23
+    },
+    {
+      "id": "equipment.5.2",
+      "engineKey": "スピア",
+      "ru": "Солдатская пика",
+      "officialId": 1401,
+      "range": 160,
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 2
+    },
+    {
+      "id": "equipment.5.3",
+      "engineKey": "トライデント",
+      "ru": "Трезубец",
+      "officialId": 1411,
+      "range": 180,
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 3
+    },
+    {
+      "id": "equipment.5.4",
+      "engineKey": "ロコバーアックス",
+      "ru": "Роккобская алебарда",
+      "officialId": 1421,
+      "range": 220,
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 4
+    },
+    {
+      "id": "equipment.5.5",
+      "engineKey": "ブランディストック",
+      "ru": "Палач",
+      "officialId": 1431,
+      "range": 200,
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 5
+    },
+    {
+      "id": "equipment.5.6",
+      "engineKey": "スペタム",
+      "ru": "Боевое копье",
+      "officialId": 1441,
+      "range": 240,
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 6
+    },
+    {
+      "id": "equipment.5.8",
+      "engineKey": "パイク",
+      "ru": "Пронзающая пика",
+      "officialId": 1451,
+      "range": 280,
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 8
+    },
+    {
+      "id": "equipment.5.26",
+      "engineKey": "ゼピュロス",
+      "ru": "Копье Зефира",
+      "officialId": 1482,
+      "range": 250,
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 26
+    },
+    {
+      "id": "equipment.5.27",
+      "engineKey": "ゼピュロスＲ",
+      "ru": "Разящее копье Зефира",
+      "officialId": 1484,
+      "range": 250,
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 27
+    },
+    {
+      "id": "equipment.5.28",
+      "engineKey": "ゼピュロスＳＲ",
+      "ru": "Сильное копье Зефира",
+      "officialId": 1485,
+      "range": 250,
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 28
+    },
+    {
+      "id": "modern.equipment.b4fcaf6d-e6d6-4b6b-a7aa-c2ccd8eb0c19",
+      "engineKey": "Modern:modern.equipment.b4fcaf6d-e6d6-4b6b-a7aa-c2ccd8eb0c19",
+      "ru": "Лунное копье",
+      "officialId": 1461,
+      "range": 250,
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 29
+    },
+    {
+      "id": "modern.equipment.38f38d1d-7a5d-4fab-a7f5-1d14593b71af",
+      "engineKey": "Modern:modern.equipment.38f38d1d-7a5d-4fab-a7f5-1d14593b71af",
+      "ru": "Прочное копье Зефира",
+      "officialId": 1483,
+      "range": 250,
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 30
+    },
+    {
+      "id": "modern.equipment.da076bd2-bd8a-49fd-a198-9f9e7fbc734b",
+      "engineKey": "Modern:modern.equipment.da076bd2-bd8a-49fd-a198-9f9e7fbc734b",
+      "ru": "Алебарда",
+      "officialId": 1491,
+      "range": 290,
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 31
+    },
+    {
+      "id": "equipment.6.2",
+      "engineKey": "ナイフ",
+      "ru": "Нож",
+      "officialId": 1812,
+      "range": 185,
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 2
+    },
+    {
+      "id": "equipment.6.4",
+      "engineKey": "ダガー",
+      "ru": "Кинжал убийцы",
+      "officialId": 1811,
+      "range": 185,
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 4
+    },
+    {
+      "id": "equipment.6.5",
+      "engineKey": "スティレット",
+      "ru": "Стилет",
+      "officialId": 1801,
+      "range": 185,
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 5
+    },
+    {
+      "id": "equipment.6.6",
+      "engineKey": "ククリ",
+      "ru": "Нож кукри",
+      "officialId": 1813,
+      "range": 185,
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 6
+    },
+    {
+      "id": "equipment.6.7",
+      "engineKey": "キンドジャール",
+      "ru": "Нож ловчего",
+      "officialId": 1814,
+      "range": 185,
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 7
+    },
+    {
+      "id": "equipment.6.8",
+      "engineKey": "クリスナイフ",
+      "ru": "Метеоритный нож",
+      "officialId": 1822,
+      "range": 190,
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 8
+    },
+    {
+      "id": "equipment.6.9",
+      "engineKey": "ロンデル",
+      "ru": "Длинный нож",
+      "officialId": 1821,
+      "range": 190,
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 9
+    },
+    {
+      "id": "equipment.6.10",
+      "engineKey": "マンゴーシュ",
+      "ru": "Стилет убийцы",
+      "officialId": 1831,
+      "range": 90,
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 10
+    },
+    {
+      "id": "equipment.6.11",
+      "engineKey": "ダーク",
+      "ru": "Клинок тьмы",
+      "officialId": 1841,
+      "range": 90,
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 11
+    },
+    {
+      "id": "equipment.6.25",
+      "engineKey": "スクラマサックス",
+      "ru": "Легкий клинок",
+      "officialId": 1851,
+      "range": 90,
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 25
+    },
+    {
+      "id": "modern.equipment.4d91c54b-80cd-4bc1-aac0-b0c3171be600",
+      "engineKey": "Modern:modern.equipment.4d91c54b-80cd-4bc1-aac0-b0c3171be600",
+      "ru": "Серебряный кинжал",
+      "officialId": 1802,
+      "range": 185,
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 26
+    },
+    {
+      "id": "modern.equipment.971649ba-172f-4bd3-a7cd-2306111904ff",
+      "engineKey": "Modern:modern.equipment.971649ba-172f-4bd3-a7cd-2306111904ff",
+      "ru": "Прочный серебряный кинжал",
+      "officialId": 1803,
+      "range": 185,
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 27
+    },
+    {
+      "id": "modern.equipment.cab5b643-1ad1-4186-a108-622c0115e9b8",
+      "engineKey": "Modern:modern.equipment.cab5b643-1ad1-4186-a108-622c0115e9b8",
+      "ru": "Разящий серебряный кинжал",
+      "officialId": 1804,
+      "range": 185,
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 28
+    },
+    {
+      "id": "modern.equipment.7c5fd1b1-9541-4a92-a3bc-0105eeda4867",
+      "engineKey": "Modern:modern.equipment.7c5fd1b1-9541-4a92-a3bc-0105eeda4867",
+      "ru": "Сильный серебряный кинжал",
+      "officialId": 1805,
+      "range": 200,
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 29
+    },
+    {
+      "id": "equipment.7.1",
+      "engineKey": "ナックル",
+      "ru": "Кастет",
+      "officialId": 2002,
+      "range": 150,
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 1
+    },
+    {
+      "id": "equipment.7.2",
+      "engineKey": "セスタス",
+      "ru": "Тэкко",
+      "officialId": 2001,
+      "range": 150,
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 2
+    },
+    {
+      "id": "equipment.7.4",
+      "engineKey": "ベアナックル",
+      "ru": "Убивающий коготь",
+      "officialId": 2003,
+      "range": 150,
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 4
+    },
+    {
+      "id": "equipment.7.5",
+      "engineKey": "バグナグ",
+      "ru": "Тигриная лапа",
+      "officialId": 2004,
+      "range": 150,
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 5
+    },
+    {
+      "id": "equipment.7.6",
+      "engineKey": "ナックルダスター",
+      "ru": "Бойцовский кастет",
+      "officialId": 2011,
+      "range": 150,
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 6
+    },
+    {
+      "id": "equipment.7.7",
+      "engineKey": "クロー",
+      "ru": "Когтистая лапа",
+      "officialId": 2021,
+      "range": 150,
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 7
+    },
+    {
+      "id": "equipment.7.8",
+      "engineKey": "ミスリルクロー",
+      "ru": "Мифриловые когти",
+      "officialId": 2022,
+      "range": 150,
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 8
+    },
+    {
+      "id": "equipment.7.16",
+      "engineKey": "ミスリルクロー",
+      "ru": "Прочные мифриловые когти",
+      "officialId": 2023,
+      "range": 150,
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 16
+    },
+    {
+      "id": "equipment.7.17",
+      "engineKey": "ミスリルクローＳ",
+      "ru": "Сильные мифриловые когти",
+      "officialId": 2025,
+      "range": 165,
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 17
+    },
+    {
+      "id": "equipment.7.18",
+      "engineKey": "ミスリルクローＡ",
+      "ru": "Разящие мифриловые когти",
+      "officialId": 2024,
+      "range": 150,
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 18
+    },
+    {
+      "id": "modern.equipment.d41d1404-b4c8-4b4a-a376-ce3d068a1530",
+      "engineKey": "Modern:modern.equipment.d41d1404-b4c8-4b4a-a376-ce3d068a1530",
+      "ru": "Катар",
+      "officialId": 2031,
+      "range": 150,
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 27
+    },
+    {
+      "id": "equipment.8.3",
+      "engineKey": "ボウ",
+      "ru": "Лук",
+      "officialId": 2202,
+      "range": 2800,
+      "kind": "BOW",
+      "category": 8,
+      "index": 3
+    },
+    {
+      "id": "equipment.8.4",
+      "engineKey": "ショートボウ",
+      "ru": "Короткий лук",
+      "officialId": 2201,
+      "range": 2800,
+      "kind": "BOW",
+      "category": 8,
+      "index": 4
+    },
+    {
+      "id": "equipment.8.5",
+      "engineKey": "グレートボウ",
+      "ru": "Превосходный лук",
+      "officialId": 2203,
+      "range": 2800,
+      "kind": "BOW",
+      "category": 8,
+      "index": 5
+    },
+    {
+      "id": "equipment.8.6",
+      "engineKey": "ロングボウ",
+      "ru": "Длинный лук",
+      "officialId": 2221,
+      "range": 3500,
+      "kind": "BOW",
+      "category": 8,
+      "index": 6
+    },
+    {
+      "id": "equipment.8.7",
+      "engineKey": "サンライトボウ",
+      "ru": "Лук солнечного света",
+      "officialId": 2222,
+      "range": 3200,
+      "kind": "BOW",
+      "category": 8,
+      "index": 7
+    },
+    {
+      "id": "equipment.8.8",
+      "engineKey": "ハンターボウ",
+      "ru": "Охотничий лук",
+      "officialId": 2211,
+      "range": 3200,
+      "kind": "BOW",
+      "category": 8,
+      "index": 8
+    },
+    {
+      "id": "equipment.8.9",
+      "engineKey": "コンポジットボウ",
+      "ru": "Стремительный лук",
+      "officialId": 2231,
+      "range": 2900,
+      "kind": "BOW",
+      "category": 8,
+      "index": 9
+    },
+    {
+      "id": "equipment.8.10",
+      "engineKey": "ルナティックボウ",
+      "ru": "Лук лунного света",
+      "officialId": 2223,
+      "range": 3200,
+      "kind": "BOW",
+      "category": 8,
+      "index": 10
+    },
+    {
+      "id": "equipment.8.11",
+      "engineKey": "ガーディアンボウ",
+      "ru": "Лук стража",
+      "officialId": 2224,
+      "range": 3500,
+      "kind": "BOW",
+      "category": 8,
+      "index": 11
+    },
+    {
+      "id": "equipment.8.18",
+      "engineKey": "ガーディアンボウ",
+      "ru": "Прочный лук стража",
+      "officialId": 2225,
+      "range": 3500,
+      "kind": "BOW",
+      "category": 8,
+      "index": 18
+    },
+    {
+      "id": "equipment.8.19",
+      "engineKey": "ガーディアンボウＳ",
+      "ru": "Сильный лук стража",
+      "officialId": 2227,
+      "range": 3700,
+      "kind": "BOW",
+      "category": 8,
+      "index": 19
+    },
+    {
+      "id": "equipment.8.20",
+      "engineKey": "ガーディアンボウＡ",
+      "ru": "Разящий лук стража",
+      "officialId": 2226,
+      "range": 3500,
+      "kind": "BOW",
+      "category": 8,
+      "index": 20
+    },
+    {
+      "id": "equipment.9.1",
+      "engineKey": "クロスボウ",
+      "ru": "Арбалет",
+      "officialId": 2402,
+      "range": 1250,
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 1
+    },
+    {
+      "id": "equipment.9.2",
+      "engineKey": "ライトクロスボウ",
+      "ru": "Легкий арбалет",
+      "officialId": 2401,
+      "range": 1250,
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 2
+    },
+    {
+      "id": "equipment.9.3",
+      "engineKey": "ヘビークロスボウ",
+      "ru": "Тяжелый арбалет",
+      "officialId": 2411,
+      "range": 1250,
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 3
+    },
+    {
+      "id": "equipment.9.4",
+      "engineKey": "ウォークロスボウ",
+      "ru": "Военный арбалет",
+      "officialId": 2421,
+      "range": 1250,
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 4
+    },
+    {
+      "id": "equipment.9.17",
+      "engineKey": "アーバレスト",
+      "ru": "Мощный арбалет",
+      "officialId": 2431,
+      "range": 2500,
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 17
+    },
+    {
+      "id": "modern.equipment.4003e468-d332-424e-aa1e-3d72c336c1c6",
+      "engineKey": "Modern:modern.equipment.4003e468-d332-424e-aa1e-3d72c336c1c6",
+      "ru": "Прочный военный арбалет",
+      "officialId": 2422,
+      "range": 1250,
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 19
+    },
+    {
+      "id": "modern.equipment.8c875bf5-7266-4cdd-a845-1ec0bf1132fb",
+      "engineKey": "Modern:modern.equipment.8c875bf5-7266-4cdd-a845-1ec0bf1132fb",
+      "ru": "Разящий военный арбалет",
+      "officialId": 2423,
+      "range": 1250,
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 20
+    },
+    {
+      "id": "modern.equipment.6d300e76-18d1-446e-a300-a57b964b9939",
+      "engineKey": "Modern:modern.equipment.6d300e76-18d1-446e-a300-a57b964b9939",
+      "ru": "Сильный военный арбалет",
+      "officialId": 2424,
+      "range": 1250,
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 21
+    },
+    {
+      "id": "equipment.10.1",
+      "engineKey": "クラブ",
+      "ru": "Деревянная палица",
+      "officialId": 1002,
+      "range": 100,
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 1
+    },
+    {
+      "id": "equipment.10.4",
+      "engineKey": "ブラジオン",
+      "ru": "Палица",
+      "officialId": 1001,
+      "range": 100,
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 4
+    },
+    {
+      "id": "equipment.10.5",
+      "engineKey": "メイス",
+      "ru": "Скипетр",
+      "officialId": 1011,
+      "range": 120,
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 5
+    },
+    {
+      "id": "equipment.10.6",
+      "engineKey": "アイアンポール",
+      "ru": "Железная палица",
+      "officialId": 1012,
+      "range": 120,
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 6
+    },
+    {
+      "id": "equipment.10.7",
+      "engineKey": "フレイル",
+      "ru": "Мощная булава",
+      "officialId": 1021,
+      "range": 130,
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 7
+    },
+    {
+      "id": "equipment.10.9",
+      "engineKey": "ウォーハンマー",
+      "ru": "Боевая алебарда",
+      "officialId": 1031,
+      "range": 130,
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 9
+    },
+    {
+      "id": "equipment.10.10",
+      "engineKey": "デーンハンマー",
+      "ru": "Палица викинга",
+      "officialId": 1014,
+      "range": 120,
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 10
+    },
+    {
+      "id": "equipment.10.17",
+      "engineKey": "デーンハンマー",
+      "ru": "Прочная палица викинга",
+      "officialId": 1015,
+      "range": 120,
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 17
+    },
+    {
+      "id": "equipment.10.18",
+      "engineKey": "デーンハンマーＳ",
+      "ru": "Сильная палица викинга",
+      "officialId": 1017,
+      "range": 130,
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 18
+    },
+    {
+      "id": "equipment.10.19",
+      "engineKey": "デーンハンマーＡ",
+      "ru": "Разящая палица викинга",
+      "officialId": 1016,
+      "range": 120,
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 19
+    },
+    {
+      "id": "equipment.10.27",
+      "engineKey": "モーニングスター",
+      "ru": "Моргенштерн",
+      "officialId": 1041,
+      "range": 120,
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 27
+    },
+    {
+      "id": "modern.equipment.b2495c0e-0026-4061-afdb-8d6db58ee14e",
+      "engineKey": "Modern:modern.equipment.b2495c0e-0026-4061-afdb-8d6db58ee14e",
+      "ru": "Веер повелителя ветров",
+      "officialId": 1091,
+      "range": 120,
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 28
+    },
+    {
+      "id": "equipment.11.2",
+      "engineKey": "クォータースタッフ",
+      "ru": "Деревянный дзё",
+      "officialId": 1201,
+      "range": 190,
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 2
+    },
+    {
+      "id": "equipment.11.4",
+      "engineKey": "カジェル",
+      "ru": "Металлическая булава",
+      "officialId": 1211,
+      "range": 190,
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 4
+    },
+    {
+      "id": "equipment.11.5",
+      "engineKey": "セプター",
+      "ru": "Королевский жезл",
+      "officialId": 1221,
+      "range": 190,
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 5
+    },
+    {
+      "id": "equipment.11.6",
+      "engineKey": "ミスリルスタッフ",
+      "ru": "Мифриловый тэцубо",
+      "officialId": 1212,
+      "range": 190,
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 6
+    },
+    {
+      "id": "equipment.11.13",
+      "engineKey": "モール",
+      "ru": "Клиновидный молот",
+      "officialId": 1231,
+      "range": 190,
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 13
+    },
+    {
+      "id": "equipment.11.14",
+      "engineKey": "モール",
+      "ru": "Прочный клиновидный молот",
+      "officialId": 1232,
+      "range": 190,
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 14
+    },
+    {
+      "id": "equipment.11.15",
+      "engineKey": "モールＳ",
+      "ru": "Сильный клиновидный молот",
+      "officialId": 1234,
+      "range": 200,
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 15
+    },
+    {
+      "id": "equipment.11.16",
+      "engineKey": "モールＡ",
+      "ru": "Разящий клиновидный молот",
+      "officialId": 1233,
+      "range": 190,
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 16
+    },
+    {
+      "id": "equipment.11.24",
+      "engineKey": "ルーサーンハンマー",
+      "ru": "Массивная кувалда",
+      "officialId": 1241,
+      "range": 190,
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 24
+    },
+    {
+      "id": "equipment.12.2",
+      "engineKey": "ワンド",
+      "ru": "Волшебный жезл",
+      "officialId": 2602,
+      "range": 100,
+      "kind": "WAND",
+      "category": 12,
+      "index": 2
+    },
+    {
+      "id": "equipment.12.4",
+      "engineKey": "ツイストワンド",
+      "ru": "Жезл магического искажения",
+      "officialId": 2601,
+      "range": 100,
+      "kind": "WAND",
+      "category": 12,
+      "index": 4
+    },
+    {
+      "id": "equipment.12.5",
+      "engineKey": "ブラストワンド",
+      "ru": "Жезл огня",
+      "officialId": 2612,
+      "range": 110,
+      "kind": "WAND",
+      "category": 12,
+      "index": 5
+    },
+    {
+      "id": "equipment.12.6",
+      "engineKey": "スワールワンド",
+      "ru": "Жезл водоворотов",
+      "officialId": 2611,
+      "range": 110,
+      "kind": "WAND",
+      "category": 12,
+      "index": 6
+    },
+    {
+      "id": "equipment.12.7",
+      "engineKey": "クレセントワンド",
+      "ru": "Жезл лунного света",
+      "officialId": 2621,
+      "range": 120,
+      "kind": "WAND",
+      "category": 12,
+      "index": 7
+    },
+    {
+      "id": "equipment.12.8",
+      "engineKey": "フェアリーワンド",
+      "ru": "Жезл фей",
+      "officialId": 2622,
+      "range": 120,
+      "kind": "WAND",
+      "category": 12,
+      "index": 8
+    },
+    {
+      "id": "equipment.12.10",
+      "engineKey": "スターワンド",
+      "ru": "Звездная палочка",
+      "officialId": 2631,
+      "range": 120,
+      "kind": "WAND",
+      "category": 12,
+      "index": 10
+    },
+    {
+      "id": "equipment.12.13",
+      "engineKey": "氷杖フロストワンド",
+      "ru": "Морозный жезл",
+      "officialId": 2651,
+      "range": 120,
+      "kind": "WAND",
+      "category": 12,
+      "index": 13
+    },
+    {
+      "id": "equipment.12.15",
+      "engineKey": "邪杖ペリッシュワンド",
+      "ru": "Посох исчезновения",
+      "officialId": 2655,
+      "range": 120,
+      "kind": "WAND",
+      "category": 12,
+      "index": 15
+    },
+    {
+      "id": "equipment.12.17",
+      "engineKey": "魔杖クルーエルワンド",
+      "ru": "Темный жезл жестокости",
+      "officialId": 2653,
+      "range": 120,
+      "kind": "WAND",
+      "category": 12,
+      "index": 17
+    },
+    {
+      "id": "equipment.12.18",
+      "engineKey": "セラフィックワンド",
+      "ru": "Изящный жезл",
+      "officialId": 2641,
+      "range": 120,
+      "kind": "WAND",
+      "category": 12,
+      "index": 18
+    },
+    {
+      "id": "equipment.12.19",
+      "engineKey": "セラフィックワンド",
+      "ru": "Прочный изящный жезл",
+      "officialId": 2642,
+      "range": 120,
+      "kind": "WAND",
+      "category": 12,
+      "index": 19
+    },
+    {
+      "id": "equipment.12.20",
+      "engineKey": "セラフィックワンドＳ",
+      "ru": "Сильный изящный жезл",
+      "officialId": 2644,
+      "range": 120,
+      "kind": "WAND",
+      "category": 12,
+      "index": 20
+    },
+    {
+      "id": "equipment.12.21",
+      "engineKey": "セラフィックワンドＡ",
+      "ru": "Разящий изящный жезл",
+      "officialId": 2643,
+      "range": 120,
+      "kind": "WAND",
+      "category": 12,
+      "index": 21
+    },
+    {
+      "id": "equipment.13.2",
+      "engineKey": "言霊の杖",
+      "ru": "Таинственный посох",
+      "officialId": 2801,
+      "range": 150,
+      "kind": "STAFF",
+      "category": 13,
+      "index": 2
+    },
+    {
+      "id": "equipment.13.3",
+      "engineKey": "アイアンスタッフ",
+      "ru": "Железный посох",
+      "officialId": 2802,
+      "range": 150,
+      "kind": "STAFF",
+      "category": 13,
+      "index": 3
+    },
+    {
+      "id": "equipment.13.4",
+      "engineKey": "レッドクリスタルロッド",
+      "ru": "Посох с красным кристаллом",
+      "officialId": 2811,
+      "range": 150,
+      "kind": "STAFF",
+      "category": 13,
+      "index": 4
+    },
+    {
+      "id": "equipment.13.5",
+      "engineKey": "ワイズマンロッド",
+      "ru": "Посох мудреца",
+      "officialId": 2821,
+      "range": 150,
+      "kind": "STAFF",
+      "category": 13,
+      "index": 5
+    },
+    {
+      "id": "equipment.13.6",
+      "engineKey": "マイトスタッフ",
+      "ru": "Посох силы",
+      "officialId": 2812,
+      "range": 150,
+      "kind": "STAFF",
+      "category": 13,
+      "index": 6
+    },
+    {
+      "id": "equipment.13.7",
+      "engineKey": "スケルトンロッド",
+      "ru": "Посох скелета",
+      "officialId": 2822,
+      "range": 150,
+      "kind": "STAFF",
+      "category": 13,
+      "index": 7
+    },
+    {
+      "id": "equipment.13.8",
+      "engineKey": "アイ・オブ・オラクル",
+      "ru": "Глаз оракула",
+      "officialId": 2831,
+      "range": 150,
+      "kind": "STAFF",
+      "category": 13,
+      "index": 8
+    },
+    {
+      "id": "equipment.13.15",
+      "engineKey": "スケルトンロッド",
+      "ru": "Прочный посох скелета",
+      "officialId": 2823,
+      "range": 150,
+      "kind": "STAFF",
+      "category": 13,
+      "index": 15
+    },
+    {
+      "id": "equipment.13.16",
+      "engineKey": "スケルトンロッドＳ",
+      "ru": "Сильный посох скелета",
+      "officialId": 2825,
+      "range": 150,
+      "kind": "STAFF",
+      "category": 13,
+      "index": 16
+    },
+    {
+      "id": "equipment.13.17",
+      "engineKey": "スケルトンロッドＡ",
+      "ru": "Разящий посох скелета",
+      "officialId": 2824,
+      "range": 150,
+      "kind": "STAFF",
+      "category": 13,
+      "index": 17
+    },
+    {
+      "id": "equipment.13.19",
+      "engineKey": "宝杖セレスティアルロッド",
+      "ru": "Небесный скипетр",
+      "officialId": 2857,
+      "range": 150,
+      "kind": "STAFF",
+      "category": 13,
+      "index": 19
+    },
+    {
+      "id": "equipment.13.24",
+      "engineKey": "カースドロッド",
+      "ru": "Проклятый посох",
+      "officialId": 2841,
+      "range": 150,
+      "kind": "STAFF",
+      "category": 13,
+      "index": 24
+    },
+    {
+      "id": "modern.equipment.fdd12152-2924-4a88-a824-b9ee8842eb46",
+      "engineKey": "Modern:modern.equipment.fdd12152-2924-4a88-a824-b9ee8842eb46",
+      "ru": "Йормунганд",
+      "officialId": 2855,
+      "range": 150,
+      "kind": "STAFF",
+      "category": 13,
+      "index": 26
+    }
+  ]
+}

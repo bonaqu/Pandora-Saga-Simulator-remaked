@@ -311,3 +311,63 @@ test('real torso equipment and Lapis Medio increase DEF, while mount mode explic
   expect(values.mounted).toBe('---');
   expect(values.restored).toBe(values.initial);
 });
+
+
+test('Modern melee and ranged base reach use current-server weapon values without breaking saved builds',async({page})=>{
+  await page.goto('/?ui=ru');
+  const result=await page.evaluate(()=>{
+    const initial=Store();
+    const output=index=>document.getElementById('Status_'+index).textContent.trim();
+    const snapshot=()=>({melee:output(40),ranged:output(41)});
+    Calc('RangeMelee');Calc('RangeRange');
+    const unarmed=snapshot();
+    const swordEquipped=PandoraRemaked.adapter.selectEquipment(0,10);
+    Calc('RangeMelee');Calc('RangeRange');
+    const sword=snapshot();
+    const bowEquipped=PandoraRemaked.adapter.selectEquipment(0,80003);
+    Calc('RangeMelee');Calc('RangeRange');
+    const bow=snapshot();
+    const wandEquipped=PandoraRemaked.adapter.selectEquipment(0,120002);
+    Calc('RangeMelee');Calc('RangeRange');
+    const wand=snapshot();
+    const equippedReset=PandoraRemaked.adapter.selectEquipment(0,0);
+    Calc('RangeMelee');Calc('RangeRange');
+    const reset=snapshot();
+    return {initial,unarmed,swordEquipped,sword,bowEquipped,bow,wandEquipped,wand,equippedReset,reset};
+  });
+  expect(result.swordEquipped).toBe(true);
+  expect(result.bowEquipped).toBe(true);
+  expect(result.equippedReset).toBe(true);
+  expect(result.sword.melee).toBe('115');
+  expect(result.sword.ranged).toBe('---');
+  expect(result.wandEquipped).toBe(true);
+  expect(result.wand.melee).toBe('100');
+  expect(result.wand.ranged).toBe('---');
+  expect(result.bow.melee).toBe('---');
+  expect(result.bow.ranged).toBe('2800');
+  expect(result.unarmed.melee).toBe('---');
+  expect(result.unarmed.ranged).toBe('---');
+  expect(result.reset).toEqual(result.unarmed);
+  expect(await page.evaluate(()=>Store())).toBe(result.initial);
+});
+
+test('Modern reach fails closed if canonical engine identity changed (no invented weapon range)',async({page})=>{
+  await page.goto('/?ui=en');
+  const result=await page.evaluate(()=>{
+    if(!PandoraRemaked.adapter.selectEquipment(0,10))throw Error('Cannot equip Crystal Sword fixture');
+    const jp=EquipData[0][0][10];
+    const original=jp[0];const output=document.getElementById('Status_40');
+    try {
+      Calc('RangeMelee');const known=output.textContent;
+      jp[0]='UNVERIFIED DIFFERENT ITEM';
+      Calc('RangeMelee');const changed=output.textContent;
+      return {known,changed};
+    } finally {
+      jp[0]=original;
+      PandoraRemaked.adapter.selectEquipment(0,0);
+      Calc('RangeMelee');
+    }
+  });
+  expect(result.known).toBe('115');
+  expect(result.changed).toBe('---');
+});
