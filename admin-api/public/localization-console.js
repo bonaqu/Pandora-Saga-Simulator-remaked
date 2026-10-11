@@ -30,7 +30,7 @@
     const head=tag('div',null,'localization-head');
     head.append(tag('h3','Переводы · единый центр'),
       tag('p','Интерфейс, навыки, предметы, расы и классы · RU / EN / 日本語 / 繁體中文'));
-    const info=tag('p','Все четыре языка открыты одновременно в каждой карточке. Фильтр языка влияет только на поиск, статус и статистику; переключать его для редактирования не нужно. Можно опубликовать изменённые языки одной транзакцией D1. Новые предметы и навыки по-прежнему редактируются в каталоге, без второй копии данных. Названия и описания не влияют на расчёты.','localization-help');
+    const info=tag('p','Все четыре языка открыты одновременно в каждой карточке. Поиск работает по всем четырём языкам. Фильтр языка влияет только на статус переводов и статистику; для редактирования переключать его не нужно. Можно опубликовать изменённые языки одной транзакцией D1. Новые предметы и навыки по-прежнему редактируются в каталоге, без второй копии данных. Названия и описания не влияют на расчёты.','localization-help');
     const filters=tag('div',null,'localization-filters');
     scopeInput=tag('select');scopeInput.setAttribute('aria-label','Раздел');
     [['game','Игровые термины и предметы'],['ui','Интерфейс']].forEach(([id,name])=>{
@@ -43,7 +43,7 @@
     translationStatusInput=tag('select');translationStatusInput.setAttribute('aria-label','Статус перевода');
     [['all','Все строки'],['missing','Не переведено'],['published','Правки из админки']]
       .forEach(([id,name])=>{const option=tag('option',name);option.value=id;translationStatusInput.append(option);});
-    localeInput=tag('select');localeInput.setAttribute('aria-label','Язык поиска и статистики');
+    localeInput=tag('select');localeInput.setAttribute('aria-label','Язык статуса и покрытия');
     [['ru','Русский'],['en','English'],['jp','日本語'],['tw','繁體中文']].forEach(([id,name])=>{
       const o=tag('option',name);o.value=id;localeInput.append(o);
     });
