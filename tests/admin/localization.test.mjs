@@ -347,8 +347,8 @@ test('one paginated query includes four independently versioned translations per
   assert.equal(base.translations[0].effective,'Опубликовано в старом редакторе');
   assert.equal(base.translations[0].origin,'previous-admin');
   assert.equal(base.translations[1].effective,base.translations[1].baseline);
-  assert.equal(base.translations[2].origin,'fallback');
-  assert.equal(base.translations[3].origin,'fallback');
+  assert.equal(base.translations[2].origin,'import');
+  assert.equal(base.translations[3].origin,'import');
   await adminLocalization(post({scope:'ui',id:'header.updates',locale:'en',value:'All updates',
     expectedVersion:0,expectedEffective:base.translations[1].effective}),env);
   await adminLocalization(post({scope:'ui',id:'header.updates',locale:'jp',value:'更新情報',
@@ -424,7 +424,7 @@ test('admin shell returns all current four-locale D1-editable keys without expos
   assert.equal(before.ok,true);
   assert.equal(before.schemaVersion,1);
   for(const locale of ['ru','en','jp','tw']) {
-    assert.equal(Object.keys(before.locales[locale]).length,77);
+    assert.equal(Object.keys(before.locales[locale]).length,111);
     assert.ok(Object.keys(before.locales[locale]).every(key=>key.startsWith('adminShell.')));
     assert.ok(Object.values(before.locales[locale]).every(text=>typeof text==='string'&&text.trim()));
   }
