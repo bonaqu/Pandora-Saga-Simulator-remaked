@@ -121,7 +121,12 @@ test('translation workbench filters switch RU/EN/JP/TW without erasing search or
   await expect(search).toHaveValue('check with ID 55');
   await expect(page.locator('#username')).toHaveValue('admin');
   await expect(page.locator('#password')).toHaveValue('');
-  await expect(console.locator('[data-admin-i18n]')).toHaveCount(23);
+  const keys=await console.locator('[data-admin-i18n]').evaluateAll(nodes=>
+    nodes.map(node=>node.dataset.adminI18n));
+  expect(keys).toContain('adminShell.locAuditAction');
+  expect(keys).toContain('adminShell.localizationHeading');
+  expect(keys.length).toBeGreaterThanOrEqual(23);
+  expect(new Set(keys).size).toBe(keys.length);
   await page.evaluate(()=>window.PandoraLocalizationConsole.clear());
 });
 

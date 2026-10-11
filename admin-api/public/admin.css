@@ -417,3 +417,9 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
   .admin-language-switch {justify-content: space-between;}
   .admin-language-switch select {min-width: 120px;}
 }
+
+/* Published localization coverage: read-only and responsive. */
+.localization-audit-row{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem .75rem;padding:.6rem 0;border-top:1px solid rgba(125,125,125,.28)}
+.localization-audit-row>*{min-width:0;overflow-wrap:anywhere}
+.localization-audit-row button{margin-inline-start:auto}
+@media(max-width:480px){.localization-audit-row button{width:100%;margin-inline-start:0}}

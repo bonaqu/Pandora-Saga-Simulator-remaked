@@ -26,7 +26,7 @@ class TranslationCatalogTests(unittest.TestCase):
         self.assertFalse((LOC / "translations.xlsx").exists())
         self.assertEqual(self.snapshot["schemaVersion"], 1)
         self.assertEqual(self.data.total, 2920)
-        self.assertEqual(len(self.ui_source), 584)
+        self.assertEqual(len(self.ui_source), 594)
         self.assertEqual(len(self.game_source), 2678)
 
     def test_full_stable_registry_and_source_ids_remain_unique(self):
@@ -50,7 +50,7 @@ class TranslationCatalogTests(unittest.TestCase):
         help_text = curated["ru"]["ui"]["skills.help"]
         self.assertEqual(self.data.ui_russian["skills.help"], help_text)
         self.assertNotEqual(self.snapshot["ui"]["ru"]["skills.help"], help_text)
-        self.assertEqual(len(self.ui_source), 584)
+        self.assertEqual(len(self.ui_source), 594)
         self.assertEqual(self.data.total, 2920)
 
     def test_build_manager_has_japanese_and_traditional_chinese_fallbacks(self):
