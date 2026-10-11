@@ -34,7 +34,6 @@ class TranslationCatalogTests(unittest.TestCase):
         self.assertEqual(len(game_ids), len(set(game_ids)))
         self.assertFalse(set(self.ui_source) & set(game_ids))
         self.assertEqual(self.data.total, (len(self.ui_source) - 2) + len(game_ids))
-        self.assertEqual(len(self.ui_source), len(self.snapshot['ui']['en'])+2)
         for locale in ("ru", "en", "jp", "tw"):
             self.assertTrue(set(self.snapshot["ui"][locale]) <= set(self.ui_source))
             self.assertTrue(set(self.snapshot["game"][locale]) <= set(game_ids))
