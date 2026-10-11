@@ -616,6 +616,7 @@ test('D1 bulk-preview feedback changes language without rewriting input or calli
     });
   });
   const panel=page.locator('#bulk-host');
+  await panel.locator('.localization-bulk > summary').click();
   const [word,translation]=[panel.locator('input').nth(0),panel.locator('input').nth(1)];
   await word.fill('Warrior');
   await translation.fill('Воин');
