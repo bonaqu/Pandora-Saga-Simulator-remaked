@@ -675,3 +675,36 @@ test('D1 is authoritative, including old exact wording and no client-side guild 
   expect(await page.evaluate(()=>PandoraRemaked.guildTooltips.description(6,1)))
     .toBe('Окончательная формулировка из D1.');
 });
+
+
+test('four UI locales and D1 text publications cannot mutate numeric character or equipment state', async ({ page }) => {
+  await page.goto('/?ui=en');
+  const snapshot = () => page.evaluate(() => {
+    const keys = ['STA', 'STR', 'AGI', 'DEX', 'SPR', 'INT', 'StP', 'SkP', 'UnP'];
+    const stats = {};
+    for(const key of keys)stats[key] = window.Status[key];
+    return JSON.stringify({
+      job: window.Status.Job, level: window.Status.Lev,
+      equipment: window.Status.Equip, skills: window.Status.Skill,
+      numericStats: stats,
+      computed: Array.from(document.querySelectorAll('#StatusView [id^="Status_"]'))
+        .filter(node => /^[-+]?\\d+(?:[.,]\\d+)?%?$/.test(node.textContent.trim()))
+        .map(node => [node.id, node.textContent.trim()])
+    });
+  });
+  const before = await snapshot();
+  expect(before).toBeTruthy();
+  for(const locale of ['ru','en','jp','tw']){
+    await page.evaluate(lang => window.PandoraRemaked.i18n.setLocale(lang),locale);
+    await expect.poll(snapshot).toBe(before);
+  }
+  const publication = {
+    ok: true, schemaVersion: 1,
+    overrides: {
+      ui: {ru:{'hero.uiBadge':'REMAKED UI {version}'},en:{},jp:{},tw:{}},
+      game: {ru:{'skill_entry.18.8':'Проверочная подпись'},en:{},jp:{},tw:{}}
+    }
+  };
+  await page.evaluate(payload=>window.PandoraRemaked.i18n.applyUnifiedLocalization(payload),publication);
+  await expect.poll(snapshot).toBe(before);
+});

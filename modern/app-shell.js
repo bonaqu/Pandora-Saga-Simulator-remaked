@@ -129,11 +129,11 @@
 
     var uiVersion = document.createElement('span');
     uiVersion.className = 'remaked-version-badge-ui';
-    uiVersion.textContent = 'REMAKED UI ' + version.ui;
+    localizeText(uiVersion, 'hero.uiBadge', '', {version: version.ui});
 
     var legacyVersion = document.createElement('span');
     legacyVersion.className = 'remaked-version-badge-legacy';
-    legacyVersion.textContent = 'Legacy Engine ' + version.legacyEngine;
+    localizeText(legacyVersion, 'hero.engineBadge', '', {version: version.legacyEngine});
 
     versionBadge.appendChild(uiVersion);
     versionBadge.appendChild(legacyVersion);

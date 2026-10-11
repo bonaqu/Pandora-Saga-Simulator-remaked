@@ -210,6 +210,10 @@ jobs:
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
         run: python3 scripts/validate_site.py
 
+      - name: Inventory Modern text and reject unregistered UI keys
+        if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
+        run: node scripts/audit_ui_strings.mjs --check
+
       - name: Syntax-check core JavaScript
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
         shell: bash

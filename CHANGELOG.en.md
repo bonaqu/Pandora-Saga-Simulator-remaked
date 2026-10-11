@@ -2,13 +2,25 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.75 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Audit visible Modern UI strings and introduce automatic registered-key and hard-coded-text detection.
+- Move build-manager copy from embedded JavaScript dictionaries into the unified localization registry, preserving established RU/EN/JP/TW text and protecting existing D1 edits/drafts.
+- Register additional UI captions and secure admin-entry strings as editable localization keys.
+- Run browser and calculation regression checks without modifying Legacy, item mechanics, formulas, or catalog rules. Independent live-game validation remains a separate task.
+- Reclassify Modern 3.74 administration notes as development-only, preventing technical internals from appearing as player-facing changes.
+
 ## Modern 3.74 — 2026-10-11
 
 ### For users
 
-- Published D1 translations now display verbatim without hidden browser-side wording changes. Five legacy Russian resistance labels are safely migrated in D1 with version history.
-- The admin editor can compare each registered text across RU / EN / JP / TW and jump to the chosen locale.
-- Release-summary captions are now editable localization keys.
+- Internal technical improvements.
 
 ### Development and technical changes
 

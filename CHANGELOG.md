@@ -1,18 +1,24 @@
 # Changelog
 
+## Modern 3.75 — аудит пользовательских текстов и сохранности расчётов, 2026-10-11
+
+<!-- admin-notes:ru -->
+- Проведён аудит пользовательских текстов Modern с автоматизированной проверкой зарегистрированных ключей и выявлением оставшихся жёстко заданных строк.
+- Сообщения менеджера билдов, ранее встроенные в JavaScript, перенесены в единый реестр переводов; существовавшие RU/EN/JP/TW значения сохранены, новые публикации не перезаписывают пользовательские правки и черновики.
+- Дополнительные подписи и окно входа в админку используют ключи локализации вместо отдельных статических строк.
+- Выполнены регрессионные проверки браузеров и вычислений. Формулы, характеристики, Legacy и правила каталога не изменены. Полная сверка механики с действующей игрой требует независимого эталона.
+- Для предыдущего релиза 3.74 исправлена ошибочная классификация заметок админки как новостей для пользователей; пользовательская лента показывает только нейтральное уведомление о техническом обновлении.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Audit visible Modern UI strings and introduce automatic registered-key and hard-coded-text detection.
+- Move build-manager copy from embedded JavaScript dictionaries into the unified localization registry, preserving established RU/EN/JP/TW text and protecting existing D1 edits/drafts.
+- Register additional UI captions and secure admin-entry strings as editable localization keys.
+- Run browser and calculation regression checks without modifying Legacy, item mechanics, formulas, or catalog rules. Independent live-game validation remains a separate task.
+- Reclassify Modern 3.74 administration notes as development-only, preventing technical internals from appearing as player-facing changes.
+<!-- /admin-notes:en -->
+
 ## Modern 3.74 — D1 как источник опубликованных переводов, 2026-10-11
-
-<!-- release-notes:user:ru -->
-- Опубликованные переводы в D1 теперь отображаются без скрытой подмены слов и сокращений в браузере. Старые названия пяти сопротивлений обновляются через D1 с сохранением истории.
-- В админке можно сравнить один текст сразу на RU / EN / JP / TW и перейти к редактированию нужного языка.
-- Подпись последнего пользовательского обновления и сообщение о технических улучшениях добавлены в редактор переводов.
-<!-- /release-notes:user:ru -->
-
-<!-- release-notes:user:en -->
-- Published D1 translations now display verbatim without hidden browser-side wording changes. Five legacy Russian resistance labels are safely migrated in D1 with version history.
-- The admin editor can compare each registered text across RU / EN / JP / TW and jump to the chosen locale.
-- Release-summary captions are now editable localization keys.
-<!-- /release-notes:user:en -->
 
 <!-- admin-notes:ru -->
 - Убраны клиентские словари, переписывавшие опубликованные значения. Добавлены ленивое четырёхъязычное сравнение через read-only API, точечная миграция D1 с защитой пользовательских правок и черновиков, тесты приоритета и истории. Каталог, Legacy и расчёты сохранены.

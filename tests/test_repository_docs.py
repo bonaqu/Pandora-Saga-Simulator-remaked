@@ -181,8 +181,8 @@ class RepositoryDocsTests(unittest.TestCase):
         shell = self.read("modern/app-shell.js")
         styles = self.read("modern/modern.css")
 
-        self.assertIn("'REMAKED UI ' + version.ui", shell)
-        self.assertIn("'Legacy Engine ' + version.legacyEngine", shell)
+        self.assertIn("localizeText(uiVersion, 'hero.uiBadge'", shell)
+        self.assertIn("localizeText(legacyVersion, 'hero.engineBadge'", shell)
         self.assertIn("versionBadge.dataset.remakedVersionBadge", shell)
         self.assertNotIn("dataset.remakedVersion =", shell)
         self.assertNotIn("REMAKED UI 3.11", shell)
