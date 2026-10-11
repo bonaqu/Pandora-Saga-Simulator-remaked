@@ -709,3 +709,73 @@ test('four UI locales and D1 text publications cannot mutate numeric character o
   await page.evaluate(payload=>window.PandoraRemaked.i18n.applyUnifiedLocalization(payload),publication);
   await expect.poll(snapshot).toBe(before);
 });
+
+
+test('Honor RU titles and compact resistances survive unavailable D1; current D1 still wins',async({page})=>{
+  await page.goto('/?ui=ru');
+  await page.locator('[data-remaked-tab="4"]').click();
+  const honor=['Сила познания','Золотое сердце','Том огня','Том льда','Том грозы',
+    'Бешенство','Мастер наездника','Тайна стража','Том тьмы','Том света',
+    'Сила воли','Невероятная ловкость','Мастер боя'];
+  // These player-approved texts are now in the static RU catalog. They must
+  // not depend on a successful cross-origin D1 network fetch on every visit.
+  for(let index=0;index<honor.length;index++)
+    await expect(page.locator('#TextBuffHonor_'+index)).toHaveText(honor[index]);
+  const buff=[
+    ['18.8','Сопр. огню'],['18.9','Сопр. льду'],['18.10','Сопр. молниям'],
+    ['20.7','Сопр. тьме'],['21.7','Сопр. чарам']
+  ];
+  // The catalog may lag the explicit approved short captions. The static
+  // fallback must win over the outdated catalog, not over the D1 publication.
+  await page.evaluate(()=>{
+    const catalog=PandoraRemaked.catalog,original=catalog.gameLabel.bind(catalog);
+    catalog.gameLabel=id=>id.startsWith('skill_entry.18.')?'Сопротивляемость из старого каталога':original(id);
+    PandoraRemaked.gameTermDisplay.refresh();
+  });
+  for(const [id,value] of buff)
+    await expect(page.locator('#Buff_'+id.replace('.', '_')+' [data-remaked-buff]')).toContainText(value);
+  await expect(page.locator('#TextStatus_32')).toContainText('Сопр. молниям');
+  const published={ok:true,schemaVersion:1,overrides:{
+    ui:{ru:{},en:{},jp:{},tw:{}},
+    game:{ru:{
+      'skill_entry.18.8':'Мой сохранённый перевод D1',
+      'calculator.honor.12':'Моя версия мастера боя D1'
+    },en:{},jp:{},tw:{}}
+  }};
+  expect(await page.evaluate(x=>PandoraRemaked.i18n.applyUnifiedLocalization(x),published)).toBe(true);
+  await expect(page.locator('#Buff_18_8 [data-remaked-buff]')).toContainText('Мой сохранённый перевод D1');
+  await expect(page.locator('#TextBuffHonor_12')).toHaveText('Моя версия мастера боя D1');
+});
+
+test('three-digit character totals expand their track without hiding 2P or truncating value',async({page})=>{
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto('/?ui=ru');
+  await page.evaluate(()=>{
+    const input=document.querySelector('[data-remaked-number="STA"]');
+    const total=input.nextElementSibling,source=document.querySelector('[data-remaked-number-source="STA"]');
+    window.__testOriginalTotalSource=source.textContent;
+    window.__testOriginalTotalHidden=total.hidden;
+    // Exercise a numeric display-only fixture; do not edit character state.
+    source.textContent='100';
+    total.hidden=false;
+    PandoraRemaked.calculatorControls.refresh();
+  });
+  const row=page.locator('[data-remaked-calculator-attribute]:has([data-remaked-number="STA"])');
+  await expect(row).toHaveAttribute('data-remaked-wide-total','');
+  const total=row.locator('[data-remaked-number-total="STA"]');
+  await expect(total).toHaveText('→ 100');
+  const measurements=await row.evaluate(element=>{
+    const output=element.querySelector('[data-remaked-number-total]'),
+      input=element.querySelector('[data-remaked-number]'),
+      cost=element.querySelector('ul:nth-of-type(2)');
+    const a=output.getBoundingClientRect(),b=input.getBoundingClientRect(),
+      c=cost.getBoundingClientRect();
+    return {outputFits:output.scrollWidth<=output.clientWidth+1,
+      inputFits:b.right<=a.left+1,costSeparated:a.right<=c.left+1,
+      pageFits:document.documentElement.scrollWidth<=document.documentElement.clientWidth+1};
+  });
+  expect(measurements.outputFits).toBe(true);
+  expect(measurements.inputFits).toBe(true);
+  expect(measurements.costSeparated).toBe(true);
+  expect(measurements.pageFits).toBe(true);
+});
