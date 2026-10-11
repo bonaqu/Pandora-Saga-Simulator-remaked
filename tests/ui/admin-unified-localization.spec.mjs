@@ -112,9 +112,9 @@ test('four-language translation editor starts with effective texts, keeps drafts
   await expect(compare).toContainText('Пылающая стрела');
   await expect(compare).toContainText('フレーミングアロー');
   await compare.getByRole('button',{name:'Открыть редактор JP'}).click();
-  await expect(panel.getByRole('combobox',{name:'Язык поиска и статистики'})).toHaveValue('jp');
+  await expect(panel.getByRole('combobox',{name:'Язык статуса и покрытия'})).toHaveValue('jp');
   await expect(panel.locator('[data-localization-id="skill_entry.7.5"] textarea')).toHaveValue('フレーミングアロー');
-  await panel.getByRole('combobox',{name:'Язык поиска и статистики'}).selectOption('ru');
+  await panel.getByRole('combobox',{name:'Язык статуса и покрытия'}).selectOption('ru');
   await expect(russian).toHaveValue('Пылающая стрела');
   // Deep-linking to a locale intentionally filters by the same identity.
   // Clear the filter explicitly before checking the complete editor index.
@@ -127,9 +127,9 @@ test('four-language translation editor starts with effective texts, keeps drafts
   await panel.getByRole('combobox',{name:'Статус перевода'}).selectOption('all');
   await russian.fill('Моя пылающая стрела');
   await expect(panel).toContainText('Не сохранено: 1');
-  await panel.getByRole('combobox',{name:'Язык поиска и статистики'}).selectOption('jp');
+  await panel.getByRole('combobox',{name:'Язык статуса и покрытия'}).selectOption('jp');
   await expect(panel.locator('[data-localization-id="skill_entry.7.5"] textarea')).toHaveValue('フレーミングアロー');
-  await panel.getByRole('combobox',{name:'Язык поиска и статистики'}).selectOption('ru');
+  await panel.getByRole('combobox',{name:'Язык статуса и покрытия'}).selectOption('ru');
   await expect(russian).toHaveValue('Моя пылающая стрела');
   await panel.locator('[data-localization-id="skill_entry.7.5"]').getByRole('button',{name:'Опубликовать'}).click();
   await expect(russian).toHaveValue('Моя пылающая стрела');
@@ -334,7 +334,7 @@ test('full localization console renders and saves all four inline languages with
   await page.evaluate(()=>window.PandoraLocalizationConsole.start(()=>'unit-csrf',()=>{}));
   const panel=page.locator('#localization-console');
   await expect(panel.locator('[data-localization-id="header.updates"] [data-translation-input]')).toHaveCount(4);
-  const filter=panel.getByRole('combobox',{name:'Язык поиска и статистики'});
+  const filter=panel.getByRole('combobox',{name:'Язык статуса и покрытия'});
   await expect(filter).toHaveValue('ru');
   const card=panel.locator('[data-localization-id="header.updates"]');
   await card.locator('[data-translation-input="jp"]').fill('新しい更新');
