@@ -17,7 +17,7 @@
     if (!value) return null;
     var category = Math.floor(value / 10000), index = value % 10000;
     var source = window.EquipData[0]?.[category]?.[index];
-    if (!source || !doubleSlotDresses.indexOf(String(source[0])) !== -1) return null;
+    if (!source || doubleSlotDresses.indexOf(String(source[0])) === -1) return null;
     var localized = namespace.i18n?.game?.('equipment.' + category + '.' + index, '');
     return {ownerSlot:3,lockedSlot:5,equipmentId:value,
       name:localized || window.EquipData[Number(window.Flag?.[0] || 0)]?.[category]?.[index]?.[0] || String(source[0])};
