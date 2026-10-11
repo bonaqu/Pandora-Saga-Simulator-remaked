@@ -361,6 +361,12 @@ test('one paginated query includes four independently versioned translations per
   assert.equal(next.translations[2].effective,'更新情報');
   assert.equal(next.translations[2].version,1);
   assert.equal(next.translations[3].version,0);
+  const crossLanguage=(await (await adminLocalization(
+    get('/api/admin/localization?scope=ui&locale=ru&q='+encodeURIComponent('更新情報')+'&multilingual=1'),env
+  )).json()).items;
+  assert.ok(crossLanguage.some(row=>row.id==='header.updates'),
+    'search must find a Japanese D1 publication while RU remains selected');
+
   assert.deepEqual(next.translations.map(x=>x.locale),['ru','en','jp','tw']);
   assert.equal((await find('/api/admin/localization?scope=ui&q=header.updates')).translations,undefined,
     'legacy filtered editor contract stays unchanged');
