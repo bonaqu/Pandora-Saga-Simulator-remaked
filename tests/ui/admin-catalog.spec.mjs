@@ -668,7 +668,8 @@ test('late item response cannot replace a newer selection, and saving freezes fi
 
 test('admin workflow exposes skill creation from a selected template and four-language coverage', async ({ page }) => {
   const { errors } = await openConsole(page);
-  await expect(page.getByRole('navigation', { name: 'Быстрый переход по админке' })).toBeVisible();
+  await expect(page.locator('nav.workspace-jump[data-admin-i18n-aria="adminShell.navigation"]')).toBeVisible();
+  await expect(page.locator('nav.workspace-jump')).not.toHaveAttribute('aria-label','');
   await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('active');
   const create = page.getByRole('button', { name: 'Новый навык из выбранного', exact: true });
   await expect(create).toBeDisabled();
