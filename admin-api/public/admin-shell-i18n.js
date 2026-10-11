@@ -33,6 +33,9 @@
     document.querySelectorAll('[data-admin-shell-i18n-key]').forEach(node=>{
       text(node,node.dataset.adminShellI18nKey);
     });
+    document.querySelectorAll('[data-admin-shell-i18n-aria-key]').forEach(node=>{
+      node.setAttribute('aria-label',t(node.dataset.adminShellI18nAriaKey));
+    });
     const select=document.getElementById('admin-shell-language');
     if(select){
       select.value=locale;
