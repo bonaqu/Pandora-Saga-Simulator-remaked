@@ -2,6 +2,17 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.94 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Register 30 new catalog form captions for skills, classes, racial abilities, equipment and Souls through the existing four-language D1 registry; reuse the existing extra-language caption.
+- Update label/legend child spans only, preserving form elements, unsaved data and drafts. D1 remains authoritative. Game formulas and Legacy are unchanged.
+
 ## Modern 3.93 — 2026-10-11
 
 ### For users

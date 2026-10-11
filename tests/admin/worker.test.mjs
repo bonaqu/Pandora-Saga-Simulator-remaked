@@ -131,7 +131,7 @@ test('read-only public shell locale API requires no session and never exposes se
   assert.equal(body.ok,true);
   assert.equal(body.locales.en['adminShell.loginTitle'],'GOD MODE REQUIRES AUTHENTICATION');
   assert.equal(body.locales.ru['adminShell.logout'],'ВЫЙТИ');
-  assert.equal(Object.keys(body.locales.ru).length,212);
+  assert.equal(Object.keys(body.locales.ru).length,242);
   assert.ok(!JSON.stringify(body).includes('csrfToken'));
   assert.ok(!JSON.stringify(body).includes('password_hash'));
   assert.equal((await worker.fetch(new Request(origin+'/api/admin-shell-localization',{method:'POST'}),env)).status,404);

@@ -873,3 +873,45 @@ test('D1-localized static catalog captions update in four languages without alte
   }
   expect(errors).toEqual([]);
 });
+
+test('catalog field captions localize through D1 without clearing inputs, altering draft state, or changing auth',async({page})=>{
+  const {errors}=await openConsole(page);
+  const shell={
+    en:{'adminShell.catalogFieldItemName':'Name · English required; other locales optional',
+      'adminShell.catalogFieldItemSockets':'Soul slots'},
+    ru:{'adminShell.catalogFieldItemName':'Название · English обязателен; остальные языки могут быть пустыми',
+      'adminShell.catalogFieldItemSockets':'Слоты для Souls'},
+    jp:{'adminShell.catalogFieldItemName':'名前 · 英語は必須、他言語は任意',
+      'adminShell.catalogFieldItemSockets':'魂スロット'},
+    tw:{'adminShell.catalogFieldItemName':'名稱 · 必填英文，其他語言可留空',
+      'adminShell.catalogFieldItemSockets':'魂插槽'}
+  };
+  await page.route('**/api/admin-shell-localization',route=>route.fulfill({
+    json:{ok:true,schemaVersion:1,locales:shell}
+  }));
+  await page.addScriptTag({path:'admin-api/public/admin-i18n.js'});
+  const language=page.locator('#admin-language');
+  await expect(language).toBeEnabled();
+  await page.locator('.catalog-entry').first().click();
+  const names=page.locator('.catalog-editor [data-field="names"][data-language="en"]');
+  await expect(names).toBeVisible();
+  const form=page.locator('.catalog-editor');
+  const caption=form.locator('[data-admin-i18n="adminShell.catalogFieldItemName"]');
+  await expect(caption).toHaveText(shell.en['adminShell.catalogFieldItemName']);
+  await expect(form.locator('fieldset.translation-fields legend:has([data-admin-i18n="adminShell.catalogFieldItemName"])')).toContainText(shell.en['adminShell.catalogFieldItemName']);
+  const existing=await names.inputValue();
+  await names.fill('Unpublished special editor name');
+  await language.selectOption('jp');
+  await expect(caption).toHaveText(shell.jp['adminShell.catalogFieldItemName']);
+  await expect(names).toHaveValue('Unpublished special editor name');
+  await expect(form).toHaveAttribute('data-unsaved','true');
+  await language.selectOption('tw');
+  await expect(caption).toHaveText(shell.tw['adminShell.catalogFieldItemName']);
+  await expect(names).toHaveValue('Unpublished special editor name');
+  await expect(form).toHaveAttribute('data-unsaved','true');
+  await language.selectOption('ru');
+  await expect(caption).toHaveText(shell.ru['adminShell.catalogFieldItemName']);
+  await expect(names).toHaveValue('Unpublished special editor name');
+  expect(existing).not.toBe('Unpublished special editor name');
+  expect(errors).toEqual([]);
+});

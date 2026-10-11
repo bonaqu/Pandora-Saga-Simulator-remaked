@@ -1,5 +1,17 @@
 # Changelog
 
+## Modern 3.94 — новые переводимые поля админки, 2026-10-11
+
+<!-- admin-notes:ru -->
+- Добавлены 30 уникальных переводимых подписей полей каталога: умения, классы, расовые способности, экипировка и души; существующая подпись выбора языков не дублируется.
+- Меняется только текст внутри label/legend, без замены самих полей ввода, потери несохранённых значений или черновиков. D1 остаётся главным источником. Игровые формулы и Legacy не меняются.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Register 30 new catalog form captions for skills, classes, racial abilities, equipment and Souls through the existing four-language D1 registry; reuse the existing extra-language caption.
+- Update label/legend child spans only, preserving form elements, unsaved data and drafts. D1 remains authoritative. Game formulas and Legacy are unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 3.93 — переводы пояснений каталога в админке, 2026-10-11
 
 <!-- admin-notes:ru -->

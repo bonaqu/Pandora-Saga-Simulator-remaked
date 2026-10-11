@@ -33,6 +33,32 @@ class CatalogChromeLocalizationTests(unittest.TestCase):
                     self.assertNotIn(">", value)
                 self.assertEqual(APPROVED["ui"]["ru"][key], original)
 
+
+    def test_d1_managed_catalog_field_captions_preserve_form_controls(self):
+        match = re.search(r"var catalogFormLabels = (\{.*?\});", CATALOG, re.DOTALL)
+        self.assertIsNotNone(match)
+        captions = json.loads(match.group(1))
+        self.assertEqual(len(captions), 30)
+        self.assertEqual(len(set(captions.values())), 30)
+        for original, suffix in captions.items():
+            key = "adminShell." + suffix
+            with self.subTest(key=key):
+                self.assertIn(original, CATALOG)
+                self.assertIn(key, ENGLISH)
+                self.assertEqual(APPROVED["ui"]["ru"][key], original)
+                for locale in ("ru", "jp", "tw"):
+                    translated = APPROVED["ui"][locale].get(key)
+                    self.assertIsInstance(translated, str)
+                    self.assertTrue(translated.strip())
+                    self.assertEqual(sorted(SLOTS.findall(translated)), sorted(SLOTS.findall(ENGLISH[key])))
+                    self.assertNotIn("<", translated)
+        self.assertIn("wrap.appendChild(formCaption(label))", CATALOG)
+        self.assertIn("wrap.append(input, formCaption(label))", CATALOG)
+        self.assertIn("legend.appendChild(formCaption(label))", CATALOG)
+        self.assertIn("caption.dataset.adminI18n = key", CATALOG)
+        self.assertIn("caption.textContent = window.PandoraAdminI18n", CATALOG)
+        self.assertNotIn("catalogFieldMoreLanguages", CATALOG)
+
     def test_catalog_translation_is_display_only_and_uses_safe_dom_text(self):
         self.assertIn("result.dataset.adminI18n = key", CATALOG)
         self.assertIn("result.textContent = window.PandoraAdminI18n", CATALOG)
