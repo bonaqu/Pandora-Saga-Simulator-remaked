@@ -4,12 +4,12 @@
 
 <!-- release-notes:user:ru -->
 - Для JP и TW добавлены переводы 54 часто используемых элементов интерфейса: выбор языка, заголовки, параметры персонажа, поиск экипировки и душ, мобильная навигация.
-- Текущие опубликованные переводы D1 по-прежнему имеют приоритет; обновление подписей не меняет характеристики, сохранённые билды или игровые формулы.
+- Обновление подписей не меняет характеристики, сохранённые билды или игровые формулы.
 <!-- /release-notes:user:ru -->
 
 <!-- release-notes:user:en -->
 - Translate 54 frequently used character-builder UI labels into Japanese and Traditional Chinese, covering language controls, panels, equipment/Soul search and mobile navigation.
-- Published D1 overrides remain authoritative; no saved builds, equipment statistics or formulas are changed.
+- These language changes do not affect equipment statistics, calculations or saved builds.
 <!-- /release-notes:user:en -->
 
 <!-- admin-notes:ru -->
