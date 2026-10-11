@@ -6,6 +6,7 @@
   <meta name="robots" content="noindex, nofollow">
   <title>Pandora Admin Terminal</title>
   <link rel="stylesheet" href="/admin.css">
+  <script src="/admin-shell-i18n.js" defer></script>
   <script src="/catalog-ui.js" defer></script>
   <script src="/localization-drafts.js" defer></script>
   <script src="/localization-bulk.js" defer></script>
@@ -15,36 +16,36 @@
 </head>
 <body>
   <main class="terminal">
-    <header class="terminal-header"><span>PANDORA FIELD CONSOLE</span><span>ADMIN / SECURE CHANNEL</span></header>
+    <header class="terminal-header"><span data-admin-shell-i18n-key="admin.shell.brand">PANDORA FIELD CONSOLE</span><span data-admin-shell-i18n-key="admin.shell.channel">ADMIN / SECURE CHANNEL</span></header>
     <section class="terminal-body" aria-labelledby="terminal-title">
-      <p class="bootline">IDDQD ACCEPTED</p>
-      <h1 id="terminal-title">GOD MODE REQUIRES AUTHENTICATION</h1>
-      <p id="auth-message" role="status" aria-live="polite">Sign in to manage the Modern catalog. Legacy 2.00 remains preserved.</p>
+      <p class="bootline" data-admin-shell-i18n-key="admin.shell.boot">IDDQD ACCEPTED</p>
+      <h1 id="terminal-title" data-admin-shell-i18n-key="admin.shell.locked">GOD MODE REQUIRES AUTHENTICATION</h1>
+      <p id="auth-message" role="status" aria-live="polite" data-admin-shell-i18n-key="admin.shell.welcome">Sign in to manage the Modern catalog. Legacy 2.00 remains preserved.</p>
       <form action="/api/auth/login" method="post" id="login-form">
-        <label for="username">LOGIN</label>
+        <label for="username" data-admin-shell-i18n-key="admin.shell.login">LOGIN</label>
         <input id="username" name="username" value="admin" autocomplete="username" required maxlength="64">
-        <label for="password">PASSWORD</label>
+        <label for="password" data-admin-shell-i18n-key="admin.shell.password">PASSWORD</label>
         <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="512">
-        <button type="submit">AUTHENTICATE</button>
+        <button type="submit" data-admin-shell-i18n-key="admin.shell.authenticate">AUTHENTICATE</button>
       </form>
       <section id="admin-workspace" hidden aria-label="Catalog management">
-        <div class="workspace-toolbar"><h2>CATALOG CONTROL</h2><button id="logout" type="button">LOGOUT</button></div>
+        <div class="workspace-toolbar"><h2 data-admin-shell-i18n-key="admin.shell.workspace">CATALOG CONTROL</h2><button id="logout" type="button" data-admin-shell-i18n-key="admin.shell.logout">LOGOUT</button></div>
         <nav class="workspace-jump" aria-label="Быстрый переход по админке">
-          <a href="#localization-console">01 / Переводы</a>
-          <a href="#catalog-console">02 / Каталог, предметы и навыки</a>
+          <a href="#localization-console" data-admin-shell-i18n-key="admin.shell.jumpTranslations">01 / Переводы</a>
+          <a href="#catalog-console" data-admin-shell-i18n-key="admin.shell.jumpCatalog">02 / Каталог, предметы и навыки</a>
         </nav>
-        <details class="capability-note"><summary>Возможности и границы редактора</summary><p>Единый центр переводов: интерфейс, навыки, умения, их требования, снаряжение, души, классы, расы и расчётные характеристики. Все четыре языка RU / EN / JP / TW можно редактировать в одной карточке. Поиск работает на четырёх языках; фильтр языка меняет только статус переводов и статистику. Отдельный игровой каталог ниже поддерживает 28 классов (включая прогрессию), 18 расовых пассивок, 178 активных и 33 пассивных навыка, экипировку и души. Новые игровые механики, классы и другие изменения за пределами допустимых правил ещё не поддерживаются. Изменение перевода не меняет расчёты или сохранённые билды.</p></details>
+        <details class="capability-note"><summary data-admin-shell-i18n-key="admin.shell.capabilitiesTitle">Возможности и границы редактора</summary><p data-admin-shell-i18n-key="admin.shell.capabilitiesBody">Единый центр переводов: интерфейс, навыки, умения, их требования, снаряжение, души, классы, расы и расчётные характеристики. Все четыре языка RU / EN / JP / TW можно редактировать в одной карточке. Поиск работает на четырёх языках; фильтр языка меняет только статус переводов и статистику. Отдельный игровой каталог ниже поддерживает 28 классов (включая прогрессию), 18 расовых пассивок, 178 активных и 33 пассивных навыка, экипировку и души. Новые игровые механики, классы и другие изменения за пределами допустимых правил ещё не поддерживаются. Изменение перевода не меняет расчёты или сохранённые билды.</p></details>
         <div id="localization-console"></div>
         <details class="capability-note">
-          <summary>Подсказка по источникам переводов</summary>
-          <p>Утверждённые ранее переводы уже загружены в исходный каталог редактора. Новые публикации сохраняются в Cloudflare D1 с версиями; черновики и историю можно просматривать в закрытой админке. Modern больше не собирает переводы из Excel; загружать Excel для публикации новых переводов не нужно.</p>
+          <summary data-admin-shell-i18n-key="admin.shell.sourcesTitle">Подсказка по источникам переводов</summary>
+          <p data-admin-shell-i18n-key="admin.shell.sourcesBody">Утверждённые ранее переводы уже загружены в исходный каталог редактора. Новые публикации сохраняются в Cloudflare D1 с версиями; черновики и историю можно просматривать в закрытой админке. Modern больше не собирает переводы из Excel; загружать Excel для публикации новых переводов не нужно.</p>
         </details>
-        <p class="help-text">Каталог — единственный редактор для новых предметов, душ и умений: общий центр переводов показывает их опубликованные тексты и открывает здесь нужную карточку. Черновики каталога можно собрать и опубликовать одной версией без дублирования переводов.</p>
-        <p id="catalog-state" role="status" aria-live="polite">Loading the catalog…</p>
+        <p class="help-text" data-admin-shell-i18n-key="admin.shell.catalogHelp">Каталог — единственный редактор для новых предметов, душ и умений: общий центр переводов показывает их опубликованные тексты и открывает здесь нужную карточку. Черновики каталога можно собрать и опубликовать одной версией без дублирования переводов.</p>
+        <p id="catalog-state" role="status" aria-live="polite" data-admin-shell-i18n-key="admin.shell.catalogLoading">Loading the catalog…</p>
         <div id="catalog-console"></div>
       </section>
     </section>
-    <footer>MODERN CATALOG / MUSEUM ENGINE 2.00</footer>
+    <footer data-admin-shell-i18n-key="admin.shell.footer">MODERN CATALOG / MUSEUM ENGINE 2.00</footer>
   </main>
 </body>
 </html>
