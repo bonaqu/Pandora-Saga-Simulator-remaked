@@ -639,7 +639,7 @@
           if (Number.isFinite(base)) resistance.textContent = String(base + 25);
         }
       }
-      if (code === 'RangeMelee' || code === 'RangeRange') {
+      if (!mode && (code === 'RangeMelee' || code === 'RangeRange')) {
         projectWeaponBaseRange(code);
       }
       if (code === 'ATKSPD' && window.Flag[7]) {
