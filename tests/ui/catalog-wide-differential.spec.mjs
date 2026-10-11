@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import equipment from '../../data/generated/equipment.v1.json' with { type: 'json' };
 import souls from '../../data/generated/souls.v1.json' with { type: 'json' };
 import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
+import reachFixture from '../fixtures/pandora-os-weapon-ranges-20261011.json' with { type: 'json' };
 
 // Identical native control callbacks in two genuinely separate runtimes. No
 // test formula, inferred percentage or copied calculator implementation.
@@ -157,8 +158,31 @@ for (const block of blocks) test('catalog differential: ' + block.name, async ({
   expect(modern.unavailable).toEqual(unavailable); expect(legacy.unavailable).toEqual(modern.unavailable);
   const expectedCount = block.gearToAudit.length + block.souls.length - unavailable.length + block.skills.length + (block.auditCharacters ? 46 : 0);
   expect(modern.results).toHaveLength(expectedCount); expect(legacy.results).toHaveLength(expectedCount);
+  // Modern intentionally restores TWO source-verified base weapon reach
+  // displays that the museum hardcodes as '---'. Audit this precise permitted
+  // difference against the separate 164-item official reference fixture, then
+  // keep all other stat/gear/ability comparisons STRICTLY unchanged.
+  const byRangeSlot=new Map(reachFixture.items.map(item=>[
+    item.category+'.'+item.index,item
+  ]));
   for (let index = 0; index < modern.results.length; index++) {
-    if (legacy.errors.some(error => error.id === modern.results[index].id)) continue;
-    expect(modern.results[index], modern.results[index].id).toEqual(legacy.results[index]);
+    const observed=modern.results[index],source=legacy.results[index];
+    if (legacy.errors.some(error => error.id === observed.id)) continue;
+    const equipped=JSON.parse(observed.equipment);
+    const weaponId=Number(equipped?.[0]?.[0]||0);
+    const item=byRangeSlot.get(Math.floor(weaponId/10000)+'.'+(weaponId%10000));
+    const expectedIndex=item?(['BOW','CROSSBOW'].includes(item.kind)?41:40):null;
+    const normalized={...observed,values:observed.values.map(pair=>pair.slice())};
+    for(const statIndex of [40,41]) {
+      const key='Status_'+statIndex;
+      const row=normalized.values.find(pair=>pair[0]===key);
+      const reference=source.values.find(pair=>pair[0]===key);
+      if(!row||!reference)continue;
+      if(expectedIndex!==statIndex)continue;
+      expect(reference[1],observed.id+' museum reach').toBe('---');
+      expect(row[1],observed.id+' verified base reach').toBe(String(item.range));
+      row[1]=reference[1]; // only the independently verified UI delta
+    }
+    expect(normalized,observed.id).toEqual(source);
   }
 });
