@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.93 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Register 31 RU/EN/JP/TW D1-editable catalog-editor form captions for item names, descriptions, skill and race conditions, class progression, equipment slots and effects.
+- Localize only child text spans, never the containing labels/inputs: language changes preserve typed names, unsaved drafts, input/select nodes, CSRF and the active admin session. User-authored item data is never translated opportunistically.
+- Published D1 text keeps precedence, with safe English fallbacks. No modifications to game formulas, item mechanics, Legacy or saved-build serialization. Dynamic select options and secondary help copy remain future audit items.
+
 ## Modern 3.92 — 2026-10-11
 
 ### For users
