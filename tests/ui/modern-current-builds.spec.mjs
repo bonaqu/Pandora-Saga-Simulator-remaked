@@ -133,8 +133,14 @@ test('text-only catalog revisions never report a mechanically changed saved buil
   await page.goto('/?ui=ru');
   const result=await page.evaluate(source=>{
     const api=PandoraRemaked;
+    // This legacy alias is known to load for the default character.
+    // Migrate and load first: directly selecting the new ID is not a valid
+    // native control operation before the published options are rebuilt.
+    api.adapter.selectEquipment(7,350003);
+    const legacy=api.adapter.serialize();
+    const canonical=api.catalog.migratePayload(legacy,source);
     api.catalog.applySnapshot(source,{rebuild:false});
-    api.adapter.selectEquipment(7,350051);
+    api.adapter.load(canonical.payload);
     const old=api.adapter.serialize();
     const revised=structuredClone(source);
     revised.revision=source.revision+1;
