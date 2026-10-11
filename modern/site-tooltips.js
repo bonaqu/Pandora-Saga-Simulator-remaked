@@ -85,8 +85,22 @@
       }, 160);
     }
   }
+  // Other Modern adapters may set title again after their own DOM refresh.
+  // Suppress native bubbles while hovered, without losing the newest text.
+  function preventNativeTitleRestore(records) {
+    if (!current) return;
+    records.forEach(function (record) {
+      var entry = current.titles.find(function (item) { return item.node === record.target; });
+      if (!entry || !record.target.hasAttribute('title')) return;
+      entry.text = record.target.getAttribute('title');
+      record.target.removeAttribute('title');
+    });
+  }
   function init() {
     if (!document.body.classList.contains('remaked-modern')) return;
+    new MutationObserver(preventNativeTitleRestore).observe(document.body, {
+      attributes: true, subtree: true, attributeFilter: ['title']
+    });
     document.addEventListener('pointerover', function (event) {
       if (event.pointerType === 'touch') return;
       var candidate = eligible(event.target);
