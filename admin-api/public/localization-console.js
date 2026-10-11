@@ -13,7 +13,7 @@
     return node;
   }
   function localized(name,key,english,className) {
-    const node=tag(name,english,className);
+    const node=tag(name,window.PandoraAdminI18n?.t?.('adminShell.'+key,english)||english,className);
     node.dataset.adminI18n='adminShell.'+key;
     return node;
   }
@@ -27,6 +27,10 @@
     option.value=id;
     return option;
   }
+  // Whitelisted UI metadata only. IDs, source strings and editable values
+  // are never translated through these display captions.
+  const kindKeys={"interface":"locKindInterface","skill":"locKindSkillMastery","skill_entry":"locKindSkillName","skill_detail":"locKindSkillDetails","equipment":"locKindEquipment","soul":"locKindSoul","job":"locKindClass","class":"locKindClass","race":"locKindRace","racial_skill":"locKindRacialPassive","calculator_label":"locKindStat","calculator_hint":"locKindHint","equipment_category":"locKindEquipmentCategory"};
+  const originKeys={"admin":"locOriginAdmin","previous-admin":"locOriginPrevious","catalog":"locOriginCatalog","import":"locOriginImport","fallback":"locOriginFallback"};
   let status,items,count,draftCount,progress,progressLabel,prev,next,scopeInput,localeInput,searchInput,groupInput,translationStatusInput;
   async function api(method,payload,url='/api/admin/localization'){
     const headers=method!=='GET'?{'Content-Type':'application/json','X-CSRF-Token':csrf()||''}:{};
@@ -135,18 +139,21 @@
         class:'Класс',race:'Раса',racial_skill:'Расовая пассивка',
         calculator_label:'Характеристика',calculator_hint:'Подсказка',equipment_category:'Категория снаряжения'};
       const category=labels[record.kind]||record.kind.replaceAll('.',' · ');
-      identity.append(tag('strong',record.id),tag('small',category));
-      const badge=tag('span','', 'localization-origin');
+      identity.append(tag('strong',record.id),kindKeys[record.kind]
+        ?localized('small',kindKeys[record.kind],category):tag('small',category));
+      const originKey=originKeys[record.origin];
       const description={admin:'Админка · новая','previous-admin':'Админка · ранее',
         catalog:'Опубликовано в каталоге',import:'Утверждённый перевод',
         fallback:'Нет перевода · исходный текст'};
-      badge.textContent=description[record.origin]||record.origin;
+      const badge=originKey
+        ?localized('span',originKey,description[record.origin],'localization-origin')
+        :tag('span',record.origin,'localization-origin');
       header.append(identity,badge);
       const preview=tag('div',null,'localization-preview');
       const original=record.source.en||'';
-      preview.append(tag('small','Оригинал (EN)'),tag('p',original||'—'));
+      preview.append(localized('small','locSourceEnglish','Оригинал (EN)'),tag('p',original||'—'));
       const baseline=tag('div',null,'localization-baseline');
-      baseline.append(tag('small','Перевод, используемый сайтом'),tag('p',record.effective||'—'));
+      baseline.append(localized('small','locEffectiveText','Перевод, используемый сайтом'),tag('p',record.effective||'—'));
       if(record.translations && record.managedBy!=='catalog'){
         // Four languages share this identity without switching search filters.
         // Catalog-managed records instead use their existing revisioned editor.
@@ -162,7 +169,7 @@
       let compare=null;
       if(record.managedBy!=='catalog'){
         compare=tag('details',null,'localization-language-compare');
-        const toggle=tag('summary','Сравнить RU / EN / JP / TW');
+        const toggle=localized('summary','locCompareLanguages','Сравнить RU / EN / JP / TW');
         const matrix=tag('div','Открой сравнение, чтобы увидеть опубликованные значения на всех языках.',
           'localization-language-grid');
         let requestNumber=0;
@@ -224,7 +231,7 @@
           card.append(matrix);
         }
         const actions=tag('div',null,'localization-item-foot');
-        const open=tag('button','Редактировать в каталоге');open.type='button';open.className='secondary';
+        const open=localized('button','locEditInCatalog','Редактировать в каталоге');open.type='button';open.className='secondary';
         open.dataset.openCatalog=record.catalogId;
         open.addEventListener('click',async()=>{
           if(open.disabled)return;

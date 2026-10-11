@@ -2,6 +2,17 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.95 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Register 21 D1-editable, four-language UI captions for translation-center record kinds, provenance badges, original/effective text headings, comparison and catalog editing.
+- Display-only localization preserves IDs, record values, unsaved drafts, published revisions and calculation formulas. Remove outdated spreadsheet guidance from the public roadmap.
+
 ## Modern 3.94 — 2026-10-11
 
 ### For users
