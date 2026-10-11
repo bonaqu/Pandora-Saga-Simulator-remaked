@@ -279,7 +279,9 @@ export async function adminLocalization(request,env) {
     const managed=scope==='game'
       ? catalogManagedRows(legacy.catalogEntries,locale,legacy.catalogRevision) : [];
     const scoped=RECORDS.filter(row=>row.scope===scope&&(group==='all'||groupOf(row.kind,row.id)===group))
-      .map(displayRow);
+      // Array.map passes its numeric index as a second argument. Do not
+      // accidentally treat it as a language code in displayRow.
+      .map(row=>displayRow(row));
     scoped.push(...managed.filter(row=>group==='all'||groupOf(row.kind,row.id)===group));
     const coverage={total:scoped.length,translated:scoped.filter(row=>row.origin!=='fallback').length};
     const matched=scoped.filter(row=>
