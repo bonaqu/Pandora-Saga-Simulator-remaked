@@ -2,6 +2,16 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.91 — 2026-10-11
+
+### For users
+
+- Add 63 Japanese and Traditional Chinese translations for Build Comparison, calculated-stat tooltips and character attribute inputs.
+
+### Development and technical changes
+
+- Baseline-only text additions: published D1 overrides retain priority, with no changes to character stats, formulas or saves.
+
 ## Modern 3.90 — 2026-10-11
 
 ### For users
