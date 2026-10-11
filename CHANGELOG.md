@@ -1,5 +1,25 @@
 # Changelog
 
+## Modern 3.76 — исправление подсказки гильдейского навыка, 2026-10-11
+
+<!-- release-notes:user:ru -->
+- Исправлена опечатка в описании 1-го уровня гильдейского навыка «Магистр битвы». Другие описания и характеристики не изменились.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Fixed a typo in the level 1 tooltip for the Combat guild skill. Other descriptions and character stats are unchanged.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Исправлен точный исходный RU-текст единственной подсказки. Адресная миграция D1 меняет только старую дословную публикацию, сохраняет пользовательские правки и черновики, увеличивает версию с записью истории; остальные локали и расчёты не затрагиваются.
+- Добавлены независимые тесты идемпотентности, истории и защиты локализаций.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Correct one approved Russian tooltip fallback; update only the exact previously published typo in D1 while preserving custom translations, drafts, revision history and all mechanics.
+- Add migration idempotency and editor-safety regression coverage.
+<!-- /admin-notes:en -->
+
 ## Modern 3.75 — аудит пользовательских текстов и сохранности расчётов, 2026-10-11
 
 <!-- admin-notes:ru -->
