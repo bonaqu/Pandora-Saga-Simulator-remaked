@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 3.77 — четырёхъязычный редактор в одной карточке, 2026-10-11
+
+<!-- admin-notes:ru -->
+- Админка теперь показывает RU / EN / JP / TW одновременно в каждой переводимой строке. Поиск охватывает переводы на всех четырёх языках, а языковой фильтр управляет только статусом и статистикой, не ограничивая редактирование.
+- Несколько изменённых языков одного ключа можно публиковать единой атомарной транзакцией D1; отдельные публикации, черновики, восстановление исходного текста и история остаются доступными.
+- Публикация защищена версиями и точными исходными значениями, не перезаписывает переводы и черновики другого редактора. Новые предметы, души и навыки по-прежнему сохраняются через версионированный каталог без второго источника текста.
+- Добавлены проверки четырёхъязычного ответа API, сбросов D1, сохранности других языков и интерфейса редактора. Формулы игры, характеристики и Legacy не изменены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Show RU/EN/JP/TW translation fields together in each admin card. Search spans all four locales; the language filter controls translation status and coverage, not which languages can be edited.
+- Publish multiple changed locales for one identity in a single atomic, optimistic-concurrency-checked D1 batch; retain per-locale publication, drafts, reset and history.
+- Preserve catalog ownership for new equipment, Souls and skills, without a competing localization write path. No game formulas, stats or Legacy calculations were modified.
+- Add tests for four-locale API views, isolated versioned changes, reset semantics and UI editing.
+<!-- /admin-notes:en -->
+
 ## Modern 3.76 — исправление подсказки гильдейского навыка, 2026-10-11
 
 <!-- release-notes:user:ru -->

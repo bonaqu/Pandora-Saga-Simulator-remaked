@@ -30,7 +30,7 @@
     const head=tag('div',null,'localization-head');
     head.append(tag('h3','Переводы · единый центр'),
       tag('p','Интерфейс, навыки, предметы, расы и классы · RU / EN / 日本語 / 繁體中文'));
-    const info=tag('p','Единый поиск показывает старые переводы и новые опубликованные предметы, души и навыки. У новых записей источником остаётся каталог: кнопка «Редактировать в каталоге» открывает одну общую карточку для RU / EN / JP / TW, без второй копии перевода. Изменение текста не влияет на расчёты.','localization-help');
+    const info=tag('p','Все четыре языка открыты одновременно в каждой карточке. Поиск работает по всем четырём языкам. Фильтр языка влияет только на статус переводов и статистику; для редактирования переключать его не нужно. Можно опубликовать изменённые языки одной транзакцией D1. Новые предметы и навыки по-прежнему редактируются в каталоге, без второй копии данных. Названия и описания не влияют на расчёты.','localization-help');
     const filters=tag('div',null,'localization-filters');
     scopeInput=tag('select');scopeInput.setAttribute('aria-label','Раздел');
     [['game','Игровые термины и предметы'],['ui','Интерфейс']].forEach(([id,name])=>{
@@ -43,7 +43,7 @@
     translationStatusInput=tag('select');translationStatusInput.setAttribute('aria-label','Статус перевода');
     [['all','Все строки'],['missing','Не переведено'],['published','Правки из админки']]
       .forEach(([id,name])=>{const option=tag('option',name);option.value=id;translationStatusInput.append(option);});
-    localeInput=tag('select');localeInput.setAttribute('aria-label','Язык перевода');
+    localeInput=tag('select');localeInput.setAttribute('aria-label','Язык статуса и покрытия');
     [['ru','Русский'],['en','English'],['jp','日本語'],['tw','繁體中文']].forEach(([id,name])=>{
       const o=tag('option',name);o.value=id;localeInput.append(o);
     });
@@ -56,7 +56,7 @@
     draftCount=tag('output','Не сохранено: 0');
     filters.append(scopeInput,localeInput,groupInput,translationStatusInput,searchInput,draftCount,resetDrafts);
     const coverage=tag('div',null,'localization-progress');
-    progressLabel=tag('output','Покрытие выбранного языка · загрузка…');
+    progressLabel=tag('output','Покрытие выбранного для фильтра языка · загрузка…');
     progress=tag('progress');progress.max=1;progress.value=0;
     progress.setAttribute('aria-label','Доля имеющихся переводов в выбранной категории');
     coverage.append(progressLabel,progress);
@@ -128,6 +128,16 @@
       preview.append(tag('small','Оригинал (EN)'),tag('p',original||'—'));
       const baseline=tag('div',null,'localization-baseline');
       baseline.append(tag('small','Перевод, используемый сайтом'),tag('p',record.effective||'—'));
+      if(record.translations && record.managedBy!=='catalog'){
+        // Four languages share this identity without switching search filters.
+        // Catalog-managed records instead use their existing revisioned editor.
+        const mounted=window.PandoraFourLanguageEditor?.mount(card,record,{
+          api,queued,drafts,onDirtyChanged:updateDrafts,
+          onPublished:()=>load(),report
+        });
+        if(mounted){card.prepend(header,preview,baseline);items.append(card);continue;}
+      }
+      // Legacy single-language fallback supports older worker responses.
       // Four-language comparison is fetched lazily and read-only; edits keep
       // the existing guarded versioned D1 editor and cloud draft queue.
       let compare=null;
@@ -182,6 +192,18 @@
         const note=tag('p','Источник: опубликованный каталог (версия '+record.catalogRevision+
           '). Правки всех четырёх языков выполняются в карточке предмета или навыка; отдельная публикация перевода здесь не создаётся.',
           'catalog-managed-note');
+        if(Array.isArray(record.translations)){
+          const matrix=tag('div',null,'localization-inline-languages');
+          for(const entry of record.translations){
+            const cell=tag('section',null,'localization-inline-language');
+            cell.dataset.translationLocale=entry.locale;
+            const title=tag('strong',entry.locale.toUpperCase()+' · каталог');
+            const value=tag('p',entry.effective||'—');
+            value.lang=entry.locale==='jp'?'ja':entry.locale==='tw'?'zh-Hant':entry.locale;
+            cell.append(title,value);matrix.append(cell);
+          }
+          card.append(matrix);
+        }
         const actions=tag('div',null,'localization-item-foot');
         const open=tag('button','Редактировать в каталоге');open.type='button';open.className='secondary';
         open.dataset.openCatalog=record.catalogId;
@@ -199,7 +221,8 @@
         });
         actions.append(open);
         card.dataset.managedBy='catalog';
-        card.append(header,preview,baseline,note,actions);
+        card.prepend(header,preview,baseline);
+        card.append(note,actions);
         items.append(card);
         continue;
       }
@@ -309,7 +332,7 @@
   async function load(){
     const token=++generation;
     report('Загружаю переводы…');
-    const params=new URLSearchParams({scope,locale,group,status:translationStatus,page:String(page),q:query});
+    const params=new URLSearchParams({scope,locale,group,status:translationStatus,page:String(page),q:query,multilingual:'1'});
     try{
       const result=await api('GET',null,'/api/admin/localization?'+params);
       if(token!==generation)return;

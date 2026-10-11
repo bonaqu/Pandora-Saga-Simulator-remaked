@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.77 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Show RU/EN/JP/TW translation fields together in each admin card. Search spans all four locales; the language filter controls translation status and coverage, not which languages can be edited.
+- Publish multiple changed locales for one identity in a single atomic, optimistic-concurrency-checked D1 batch; retain per-locale publication, drafts, reset and history.
+- Preserve catalog ownership for new equipment, Souls and skills, without a competing localization write path. No game formulas, stats or Legacy calculations were modified.
+- Add tests for four-locale API views, isolated versioned changes, reset semantics and UI editing.
+
 ## Modern 3.76 — 2026-10-11
 
 ### For users

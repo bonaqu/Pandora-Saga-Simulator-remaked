@@ -255,31 +255,73 @@ export async function adminLocalization(request,env) {
         kind:entry.kind,source:entry.source,translations});
     }
     const page=Number(pageText),pageSize=40;
-    const [newRows,legacy]=await Promise.all([overrides(env,scope,locale),legacyOverrides(env,scope,locale)]);
+    // The four-language editor requests one guarded read for the whole page,
+    // instead of triggering four separate requests per editable identity.
+    // Single-language consumers retain the existing smaller response.
+    const multilingual=url.searchParams.get('multilingual');
+    if(multilingual!==null&&multilingual!=='1')fail('Invalid multilingual mode');
+    const allLanguages=multilingual==='1';
+    const [newRows,legacy]=await Promise.all([
+      overrides(env,scope,allLanguages?null:locale),
+      legacyOverrides(env,scope,allLanguages?null:locale)
+    ]);
     const index=overlayMap(newRows);
-    const displayRow=row=>{
-      const key=keyOf(scope,row.id)+'\0'+locale,override=index.get(key),older=legacy.get(key)||'';
-      // An explicit reset shadows previous editor values, even if the row
-      // still exists for optimistic concurrency.
-      const effective=override ? override.text || row.baseline[locale] : older || row.baseline[locale];
-      const baselineOrigin=row.baselineOrigin[locale];
+    const displayRow=(row,language=locale)=>{
+      const key=keyOf(scope,row.id)+'\0'+language,override=index.get(key),older=legacy.get(key)||'';
+      // A reset tombstone must override older D1 values in every language.
+      const effective=override ? override.text || row.baseline[language] : older || row.baseline[language];
+      const baselineOrigin=row.baselineOrigin[language];
       const origin=override ? override.text ? 'admin' : baselineOrigin : older ? 'previous-admin' : baselineOrigin;
-      return {id:row.id,scope,kind:row.kind,locale,source:row.source,baseline:row.baseline[locale],baselineOrigin,
+      return {id:row.id,scope,kind:row.kind,locale:language,source:row.source,baseline:row.baseline[language],baselineOrigin,
         effective,legacyValue:older,override:override?.text||'',version:override?.version||0,
         updatedAt:override?.updated_at||null,origin};
     };
     const managed=scope==='game'
       ? catalogManagedRows(legacy.catalogEntries,locale,legacy.catalogRevision) : [];
     const scoped=RECORDS.filter(row=>row.scope===scope&&(group==='all'||groupOf(row.kind,row.id)===group))
-      .map(displayRow);
+      // Array.map passes its numeric index as a second argument. Do not
+      // accidentally treat it as a language code in displayRow.
+      .map(row=>displayRow(row));
     scoped.push(...managed.filter(row=>group==='all'||groupOf(row.kind,row.id)===group));
     const coverage={total:scoped.length,translated:scoped.filter(row=>row.origin!=='fallback').length};
+    const otherLanguageTexts=row=>{
+      if(!allLanguages)return [];
+      if(row.managedBy==='catalog')return Object.values(row.source||{});
+      const entry=registry.get(keyOf(scope,row.id));
+      return entry?LOCALES.map(language=>displayRow(entry,language).effective):[];
+    };
     const matched=scoped.filter(row=>
       (status==='all'||status==='missing'&&row.origin==='fallback'||
         status==='published'&&['admin','previous-admin','catalog'].includes(row.origin)) &&
-      (!q || [row.id,row.kind,row.source.en,row.effective,row.legacyValue].some(value=>
+      (!q || [row.id,row.kind,row.source.en,row.effective,row.legacyValue,
+        ...otherLanguageTexts(row)].some(value=>
         String(value||'').toLocaleLowerCase().includes(q))));
     const items=matched.slice(page*pageSize,(page+1)*pageSize);
+    if(allLanguages){
+      // Page-sized, identity-stable translations; no duplicate mutable source
+      // for catalog-managed records. Catalog editing keeps its own revision.
+      const catalogRows=new Map();
+      for(const language of LOCALES){
+        const candidates=scope==='game'?catalogManagedRows(legacy.catalogEntries,language,legacy.catalogRevision):[];
+        catalogRows.set(language,new Map(candidates.map(row=>[row.id,row])));
+      }
+      for(const row of items){
+        row.translations=LOCALES.map(language=>{
+          if(row.managedBy==='catalog'){
+            const managedRow=catalogRows.get(language).get(row.id);
+            if(!managedRow)throw new Error('Missing catalog translation '+row.id+'/'+language);
+            return {locale:language,effective:managedRow.effective,baseline:managedRow.baseline,
+              origin:managedRow.origin,baselineOrigin:managedRow.baselineOrigin,managedBy:'catalog'};
+          }
+          const entry=registry.get(keyOf(scope,row.id));
+          if(!entry)throw new Error('Missing registered translation '+row.id);
+          const state=displayRow(entry,language);
+          return {locale:language,effective:state.effective,baseline:state.baseline,
+            baselineOrigin:state.baselineOrigin,origin:state.origin,
+            version:state.version,updatedAt:state.updatedAt,override:state.override};
+        });
+      }
+    }
     return jsonResponse({ok:true,schemaVersion:1,locale,scope,group,status,coverage,page,pageSize,total:matched.length,
       counts:{ui:RECORDS.filter(r=>r.scope==='ui').length,game:RECORDS.filter(r=>r.scope==='game').length+managed.length},
       items});
