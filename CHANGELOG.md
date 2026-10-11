@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 3.93 — переводы подписей полей каталога, 2026-10-11
+
+<!-- admin-notes:ru -->
+- В редакторе каталога 31 подпись поля стала переводимой на RU/EN/JP/TW и управляемой из D1: названия и описания, условия навыков, расовые эффекты, параметры класса, типы предметов, слоты душ и свойства экипировки.
+- Локализуется только отдельный текстовый элемент рядом с полем, а не родительский label: смена языка сохраняет введённые данные, черновики, input/select, CSRF и текущую сессию. Не производится автоматический перевод введённых названий предметов или описаний.
+- Публикации администратора в D1 имеют приоритет, английская резервная подпись сохраняется при недоступности API. Формулы, характеристики предметов, Legacy и формат билдов не меняются. Не охваченные данным этапом динамические списки выбора и справочные описания остаются отдельной задачей.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Register 31 RU/EN/JP/TW D1-editable catalog-editor form captions for item names, descriptions, skill and race conditions, class progression, equipment slots and effects.
+- Localize only child text spans, never the containing labels/inputs: language changes preserve typed names, unsaved drafts, input/select nodes, CSRF and the active admin session. User-authored item data is never translated opportunistically.
+- Published D1 text keeps precedence, with safe English fallbacks. No modifications to game formulas, item mechanics, Legacy or saved-build serialization. Dynamic select options and secondary help copy remain future audit items.
+<!-- /admin-notes:en -->
+
 ## Modern 3.92 — полный японский и тайваньский реестр UI, 2026-10-11
 
 <!-- release-notes:user:ru -->
