@@ -630,3 +630,57 @@ test('D1 bulk-preview feedback changes language without rewriting input or calli
   expect(await page.evaluate(()=>window.bulkApiRequests)).toEqual([]);
   await page.evaluate(()=>window.bulkEditor.destroy());
 });
+
+test('effective coverage category drilldown stays authenticated GET-only and keeps unsaved drafts',async({page})=>{
+  await page.goto('/');
+  await page.setContent('<div id="localization-console"></div>');
+  await page.evaluate(()=>{
+    window.auditRequests=[];
+    window.PandoraAdminI18n={t:(key,fallback)=>fallback,apply:()=>{}};
+    window.PandoraBulkLocalization={mount:()=>({invalidate(){},destroy(){}})};
+    window.fetch=async(url,options)=>{
+      const route=new URL(String(url),location.href);
+      window.auditRequests.push({url:route.href,method:options?.method||'GET'});
+      const group=route.searchParams.get('group')||'all';
+      if(group==='skills'){
+        return new Response(JSON.stringify({ok:true,counts:{game:2,ui:1},total:1,
+          items:[{id:'skill_entry.7.5',scope:'game',locale:'ru',kind:'skill_entry',
+            origin:'fallback',baseline:'Flaming Arrow',effective:'Flaming Arrow',
+            source:{en:'Flaming Arrow'},version:0,override:''}],
+          coverage:{total:2,translated:1},
+          coverageByGroup:[{id:'skills',total:2,translated:1,missing:1}]}),
+          {headers:{'content-type':'application/json'}});
+      }
+      if(route.searchParams.get('status')==='missing'){
+        const game=route.searchParams.get('scope')==='game';
+        return new Response(JSON.stringify({ok:true,total:game?2:1,items:[],counts:{game:5,ui:2},
+          coverage:{total:game?5:2,translated:game?3:1},
+          coverageByGroup:game?
+            [{id:'skills',total:2,translated:1,missing:1},
+             {id:'equipment',total:3,translated:2,missing:1}]:
+            [{id:'other',total:2,translated:1,missing:1}]}),
+          {headers:{'content-type':'application/json'}});
+      }
+      return new Response(JSON.stringify({ok:true,total:0,items:[],counts:{game:5,ui:2},
+        coverage:{total:5,translated:3}}),{headers:{'content-type':'application/json'}});
+    };
+  });
+  await page.addScriptTag({path:'admin-api/public/localization-console.js'});
+  await page.evaluate(()=>window.PandoraLocalizationConsole.start(()=>'',()=>{}));
+  await page.locator('[data-admin-i18n="adminShell.locAuditAction"]').click();
+  // Surface the exact read-only API validation error before inspecting rows.
+  // A breakdown error must never be mistaken for a successful empty audit.
+  await expect(page.locator('.localization-audit > p').last()).toHaveText(
+    'Проверка покрытия завершена. Изменения не публиковались.');
+  await expect(page.locator('.localization-audit-row')).toHaveCount(8);
+  await expect(page.locator('.localization-audit-breakdown')).toHaveCount(4);
+  const first=page.locator('.localization-audit-breakdown').first();
+  await first.locator('summary').click();
+  await expect(first.locator('.localization-audit-breakdown-row')).toHaveCount(2);
+  await first.locator('.localization-audit-breakdown-row').first()
+    .getByRole('button',{name:'Показать непереведённые записи'}).click();
+  await expect(page.getByRole('combobox',{name:'Категория переводов'})).toHaveValue('skills');
+  await expect(page.getByRole('combobox',{name:'Статус перевода'})).toHaveValue('missing');
+  await expect(page.getByRole('combobox',{name:'Язык статуса и покрытия'})).toHaveValue('ru');
+  expect((await page.evaluate(()=>window.auditRequests)).every(row=>row.method==='GET')).toBe(true);
+});

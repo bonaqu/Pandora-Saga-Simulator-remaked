@@ -423,3 +423,11 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
 .localization-audit-row>*{min-width:0;overflow-wrap:anywhere}
 .localization-audit-row button{margin-inline-start:auto}
 @media(max-width:480px){.localization-audit-row button{width:100%;margin-inline-start:0}}
+
+/* Effective D1 coverage breakdown: collapsed by default, no tables squeezed on mobile. */
+.localization-audit-breakdown{padding:0 0 .45rem .6rem;margin:0 0 .55rem;border-inline-start:2px solid var(--border)}
+.localization-audit-breakdown>summary{cursor:pointer;padding:.4rem 0;font-weight:600}
+.localization-audit-breakdown-row{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem .75rem;padding:.45rem 0;border-top:1px solid rgba(125,125,125,.18)}
+.localization-audit-breakdown-row>*{min-width:0;overflow-wrap:anywhere}
+.localization-audit-breakdown-row button{margin-inline-start:auto}
+@media(max-width:480px){.localization-audit-breakdown-row button{width:100%;margin-inline-start:0}}

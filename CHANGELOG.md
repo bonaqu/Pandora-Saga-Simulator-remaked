@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 4.03 — категории непереведённых записей D1, 2026-10-12
+
+<!-- admin-notes:ru -->
+- В защищённой админке отчёт о фактическом покрытии переводов теперь показывает сводку по категориям: навыки, снаряжение, души, классы, расы, характеристики и прочее для RU/EN/JP/TW.
+- Категории формируются из тех же опубликованных записей, что и общий счётчик, включая приоритет актуальных D1-переводов и reset tombstones. Никаких дополнительных запросов, выгрузок закрытых данных или записей в D1.
+- Из раскрываемой сводки можно открыть конкретные непереведённые записи выбранной категории; адаптивная компоновка и проверка отсутствия записей покрыты тестами.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add per-category effective translation coverage to the authenticated D1 report in RU/EN/JP/TW: skills, equipment, souls, classes, races, stats and other.
+- Derive counts from the same published rows as the existing summary, honoring D1 overrides and reset tombstones; no additional queries or writes.
+- Add collapsible category breakdowns and drill-down into missing records, with responsive layout and API/browser regressions.
+<!-- /admin-notes:en -->
+
 ## Modern 4.02 — перевод сообщений массового редактора, 2026-10-11
 
 <!-- admin-notes:ru -->

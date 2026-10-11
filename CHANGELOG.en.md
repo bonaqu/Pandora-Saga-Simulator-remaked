@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.03 — 2026-10-12
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Add per-category effective translation coverage to the authenticated D1 report in RU/EN/JP/TW: skills, equipment, souls, classes, races, stats and other.
+- Derive counts from the same published rows as the existing summary, honoring D1 overrides and reset tombstones; no additional queries or writes.
+- Add collapsible category breakdowns and drill-down into missing records, with responsive layout and API/browser regressions.
+
 ## Modern 4.02 — 2026-10-11
 
 ### For users

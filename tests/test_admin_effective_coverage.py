@@ -19,11 +19,14 @@ class EffectiveCoverageUI(unittest.TestCase):
         self.assertIn("data.total!==values.total-values.translated",block)
         self.assertIn("translationStatus='missing';query='';page=0",block)
         self.assertIn("generation++;auditRequest++;",SRC)
+        self.assertIn("categories.reduce((sum,entry)=>sum+entry.missing,0)!==data.total",SRC)
+        self.assertIn("openMissing(entry.scope,entry.locale,category.id)",SRC)
+        self.assertIn("const detail=tag('details',null,'localization-audit-breakdown')",SRC)
         self.assertIn("const drafts=new Map()",SRC)
         self.assertIn("input.value=drafts.has(id)",SRC)
         keys=['locAuditAction','locAuditTitle','locAuditDescription','locAuditLoading',
               'locAuditCompleted','locAuditError','locAuditScopeGame','locAuditScopeUi',
-              'locAuditNumbers','locAuditBrowseMissing']
+              'locAuditNumbers','locAuditBrowseMissing','locAuditCategoryBreakdown']
         for name in keys:
             key='adminShell.'+name
             with self.subTest(key=key):

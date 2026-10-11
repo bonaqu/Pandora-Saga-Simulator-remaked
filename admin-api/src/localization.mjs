@@ -299,6 +299,19 @@ export async function adminLocalization(request,env) {
       .map(row=>displayRow(row));
     scoped.push(...managed.filter(row=>group==='all'||groupOf(row.kind,row.id)===group));
     const coverage={total:scoped.length,translated:scoped.filter(row=>row.origin!=='fallback').length};
+    // The exact same effective rows back both the totals and the breakdown.
+    // No extra queries, D1 mutations, drafts or publication state changes.
+    const byGroup=new Map();
+    for(const row of scoped){
+      const id=scope==='ui'?'other':groupOf(row.kind,row.id);
+      let bucket=byGroup.get(id);
+      if(!bucket){bucket={id,total:0,translated:0,missing:0};byGroup.set(id,bucket);}
+      bucket.total++;
+      if(row.origin==='fallback')bucket.missing++;
+      else bucket.translated++;
+    }
+    const coverageByGroup=[...byGroup.values()].sort((a,b)=>
+      [...GROUPS].indexOf(a.id)-[...GROUPS].indexOf(b.id));
     const otherLanguageTexts=row=>{
       if(!allLanguages)return [];
       if(row.managedBy==='catalog')return Object.values(row.source||{});
@@ -337,7 +350,7 @@ export async function adminLocalization(request,env) {
         });
       }
     }
-    return jsonResponse({ok:true,schemaVersion:1,locale,scope,group,status,coverage,page,pageSize,total:matched.length,
+    return jsonResponse({ok:true,schemaVersion:1,locale,scope,group,status,coverage,coverageByGroup,page,pageSize,total:matched.length,
       counts:{ui:RECORDS.filter(r=>r.scope==='ui').length,game:RECORDS.filter(r=>r.scope==='game').length+managed.length},
       items});
   }
