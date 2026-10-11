@@ -13,7 +13,7 @@ class CatalogMetadataLocalizationTests(unittest.TestCase):
     def test_all_identified_kind_and_origin_labels_are_registered(self):
         keys=[]
         for name in ('kindKeys','originKeys'):
-            found=re.search(r'const '+name+r'=(\\{.*?\\});',CODE,re.DOTALL)
+            found=re.search(r'const '+name+r'=(\{.*?\});',CODE,re.DOTALL)
             self.assertIsNotNone(found,name)
             keys.extend('adminShell.'+v for v in json.loads(found.group(1)).values())
         keys.extend('adminShell.'+s for s in
