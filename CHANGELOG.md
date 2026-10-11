@@ -1,5 +1,17 @@
 # Changelog
 
+## Modern 3.96 — аудит покрытия исходных переводов, 2026-10-11
+
+<!-- admin-notes:ru -->
+- Добавлен воспроизводимый отчёт о покрытии исходных переводов интерфейса и исторических игровых идентичностей RU/EN/JP/TW.
+- Источники и опубликованный каталог D1 явно разделены: пустое поле в исходном реестре нельзя считать отсутствующим переводом у игрока. Инструмент работает только на чтение и не меняет переводы.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add reproducible, read-only baseline coverage inventory for RU/EN/JP/TW UI and historical game identities.
+- Distinguish static source gaps from effective D1 publications; the report never overwrites or claims to enumerate live catalog translations.
+<!-- /admin-notes:en -->
+
 ## Modern 3.95 — перевод подписей центра локализации, 2026-10-11
 
 <!-- admin-notes:ru -->
