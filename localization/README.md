@@ -4,7 +4,7 @@
 
 ## Source and runtime
 
-- `ui.en.json`: canonical list of 242 stable interface IDs and their original English source.
+- `ui.en.json`: canonical list of 520 stable interface IDs and their original English source.
 - `game-terms.ru.json`: canonical source index of 2,678 stable game IDs extracted from the preserved engine.
 - `approved-translations.v1.json`: verified and immutable migration snapshot preserving all historical approved source translations (2,920 IDs), with sparse language-specific values.
 - Cloudflare D1 `localization_overrides`: authenticated per-ID and per-locale changes, versioned and conflict-safe.

@@ -99,6 +99,49 @@
     "Очистка примечаний Astir":"catalogAstirCleanup",
     "История / откат":"catalogHistoryRollback"
   };
+  // Strictly whitelisted field captions. Record values stay unchanged.
+  var catalogFormLabels = {
+  "Ветка умений": "catalogFieldSkillBranch",
+  "Нужно очков · 1–200": "catalogFieldSkillPoints",
+  "Как определяется изучение": "catalogFieldLearningMode",
+  "Минимальный уровень · 1–55": "catalogFieldMinimumLevel",
+  "Выбранные классы": "catalogFieldSelectedClasses",
+  "Редактируемый вариант": "catalogFieldSelectedVariant",
+  "Название выбранного варианта": "catalogFieldVariantName",
+  "Описание выбранного варианта": "catalogFieldVariantDescription",
+  "Название навыка · English обязателен": "catalogFieldSkillName",
+  "Описание — текст, не формула": "catalogFieldPlainDescription",
+  "Что делать со встроенным эффектом": "catalogFieldIntrinsicEffectMode",
+  "Числовой эффект требует надетый щит": "catalogFieldPassiveRequiresShield",
+  "Числовой эффект требует включённую верховую езду": "catalogFieldPassiveRequiresRiding",
+  "Название расовой пассивки · English обязателен": "catalogFieldRacialName",
+  "Как применять числовые бонусы": "catalogFieldRacialEffectMode",
+  "Числовые бонусы требуют щит": "catalogFieldRacialRequiresShield",
+  "Числовые бонусы требуют верховую езду": "catalogFieldRacialRequiresRiding",
+  "Ограничения расчёта · если эффект пока только справочный": "catalogFieldCalculationNotes",
+  "Название класса · English обязателен": "catalogFieldClassName",
+  "Описание класса — текст, не формула": "catalogFieldClassDescription",
+  "Тип": "catalogFieldItemType",
+  "Нужный уровень (0 = не указан)": "catalogFieldItemLevel",
+  "Слоты для Souls": "catalogFieldItemSockets",
+  "Базовая атака оружия (пусто = исходная)": "catalogFieldWeaponAttack",
+  "Название · English обязателен; остальные языки могут быть пустыми": "catalogFieldItemName",
+  "Описание / обычные бонусы — текст, не формула": "catalogFieldItemDescription",
+  "Дополнительное описание / особые эффекты — текст": "catalogFieldItemNotes",
+  "Где получить": "catalogFieldAcquisition",
+  "Приставка к названию экипированной вещи": "catalogFieldSoulPrefix",
+  "Как менять исходные числовые эффекты": "catalogFieldEquipmentEffectMode"
+};
+  function formCaption(text) {
+    var caption = node('span', text);
+    var id = catalogFormLabels[text];
+    if (id) {
+      var key = 'adminShell.' + id;
+      caption.dataset.adminI18n = key;
+      caption.textContent = window.PandoraAdminI18n?.t?.(key, text) || text;
+    }
+    return caption;
+  }
   function button(text, action, className) {
     var translationKey = catalogActionKeys[text] ? 'adminShell.' + catalogActionKeys[text] : '';
     var visible = translationKey ? (window.PandoraAdminI18n?.t?.(translationKey,text) || text) : text;
@@ -133,21 +176,21 @@
   }
   function canLeave() { return !dirty || window.confirm('Есть несохранённые изменения. Перейти без сохранения?'); }
   function inputField(label, type, value, field, parent, min, max) {
-    var wrap = node('label', label, 'editor-field'); var input = node('input'); input.type = type; input.value = value; input.dataset.field = field;
+    var wrap = node('label', undefined, 'editor-field'); wrap.appendChild(formCaption(label)); var input = node('input'); input.type = type; input.value = value; input.dataset.field = field;
     if (min !== undefined) input.min = min; if (max !== undefined) input.max = max;
     input.addEventListener('input', changing); wrap.appendChild(input); parent.appendChild(wrap); return input;
   }
   function selectField(label, choices, value, field, parent) {
-    var wrap = node('label', label, 'editor-field'); var select = node('select'); select.dataset.field = field;
+    var wrap = node('label', undefined, 'editor-field'); wrap.appendChild(formCaption(label)); var select = node('select'); select.dataset.field = field;
     choices.forEach(function (choice) { var option = node('option', choice[1]); option.value = choice[0]; select.appendChild(option); });
     select.value = value; select.addEventListener('change', changing); wrap.appendChild(select); parent.appendChild(wrap); return select;
   }
   function checkboxField(label, value, field, parent) {
     var wrap = node('label', undefined, 'flag-label'), input = node('input'); input.type = 'checkbox'; input.checked = value; input.dataset.field = field;
-    input.addEventListener('change', changing); wrap.append(input, document.createTextNode(label)); parent.appendChild(wrap); return input;
+    input.addEventListener('change', changing); wrap.append(input, formCaption(label)); parent.appendChild(wrap); return input;
   }
   function multilingual(label, field, values, parent, multiline) {
-    var section = node('fieldset', undefined, 'translation-fields'); section.appendChild(node('legend', label));
+    var section = node('fieldset', undefined, 'translation-fields'); var legend = node('legend'); legend.appendChild(formCaption(label)); section.appendChild(legend);
     var extra = node('details', undefined, 'extra-languages'); extra.appendChild(node('summary', 'Японский и китайский переводы'));
     var extraFields = node('div', undefined, 'basic-fields'); extra.appendChild(extraFields);
     languages.forEach(function (entry) {
