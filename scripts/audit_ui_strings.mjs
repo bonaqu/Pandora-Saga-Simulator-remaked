@@ -80,11 +80,24 @@ captureKeys(fs.readFileSync(path.join(root,'modern/builds.js'),'utf8'));
 captureKeys(fs.readFileSync(path.join(root,'modern/app-shell.js'),'utf8'));
 if(bindingKeys.size<20)throw Error('UI string audit did not discover expected UI bindings');
 const missing=[...bindingKeys].filter(key=>!Object.hasOwn(english,key)).sort();
+// Fail closed on new unlocalized Modern UI copy while grandfathering only
+// one emergency fallback for browsers where the i18n module is unavailable.
+const unreviewedModern=candidates.filter(x=>x.file.startsWith('modern/') &&
+  x.category==='possible-unregistered-text' &&
+  !(x.file==='modern/tooltips.js' && x.text==='About'));
+const reviewedLocaleRouting={
+  'modern/builds.js': /var locale = .*ru-RU.*en/,
+  'modern/catalog.js': /var language = .*getLocale\(\).*languages\[/,
+  'modern/skill-controls.js': /var descriptionLanguage = .*getLocale\(\).*\['jp', 'en', 'tw'\]/
+};
+const unreviewedLocaleConditions=dynamic.filter(x=>!reviewedLocaleRouting[x.file]?.test(x.expression));
+
 const registered=Object.keys(english).length;
 const summary={files:scanned.length,registeredKeys:registered,staticKeysFound:bindingKeys.size,
   unknownKeys:missing,possibleUnregistered:candidates.filter(x=>x.category==='possible-unregistered-text').length,
   fallbackLiterals:candidates.filter(x=>x.category==='conditional-fallback').length,
-  localeConditionalCandidates:dynamic.length};
+  localeConditionalCandidates:dynamic.length,
+  unreviewedModern:unreviewedModern.length,unreviewedLocaleConditions:unreviewedLocaleConditions.length};
 const result={summary,candidates,localeConditionalCandidates:dynamic};
 if(process.argv.includes('--json'))console.log(JSON.stringify(result,null,2));
 else{
@@ -92,7 +105,9 @@ else{
   for(const finding of [...candidates.filter(x=>x.category==='possible-unregistered-text'),...dynamic].slice(0,100))
     console.log('  '+finding.file+':'+finding.line+' '+(finding.text||finding.expression));
 }
-if(process.argv.includes('--check')&&missing.length){
-  console.error('Unregistered literal UI translation keys: '+missing.join(', '));
-  process.exitCode=1;
+if(process.argv.includes('--check')){
+  if(missing.length)console.error('Unregistered literal UI translation keys: '+missing.join(', '));
+  if(unreviewedModern.length)console.error('Unreviewed Modern text literals:',unreviewedModern);
+  if(unreviewedLocaleConditions.length)console.error('Unreviewed locale-dependent strings:',unreviewedLocaleConditions);
+  if(missing.length||unreviewedModern.length||unreviewedLocaleConditions.length)process.exitCode=1;
 }
