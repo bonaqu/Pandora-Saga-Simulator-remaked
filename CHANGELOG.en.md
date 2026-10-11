@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.98 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Translate seven safety-critical catalog confirmation dialogs into RU/EN/JP/TW using D1-first keys: unsaved edits, variant deletion, publication, Astir cleanup and revision rollback.
+- Keep action guards unchanged; safely interpolate names and counts, falling back to approved wording for invalid placeholders.
+- Remove stale fixed key-count guidance from localization docs. No changes to catalog records, calculations or Legacy.
+
 ## Modern 3.97 — 2026-10-11
 
 ### For users

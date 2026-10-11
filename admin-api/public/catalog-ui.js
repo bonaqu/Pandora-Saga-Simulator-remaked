@@ -174,7 +174,18 @@
       if (preview) preview.replaceChildren(node('h4', 'После публикации'), node('p', 'Изменения ещё не проверены. Нажмите «Проверить изменения».', 'help-text'));
     }
   }
-  function canLeave() { return !dirty || window.confirm('Есть несохранённые изменения. Перейти без сохранения?'); }
+  // Confirmation copy is D1-editable; the existing action guards remain
+  // unchanged. Invalid placeholder overrides fall back to approved wording.
+  function confirmCatalog(key, fallback, values) {
+    var template=window.PandoraAdminI18n?.t?.('adminShell.'+key,fallback)||fallback;
+    var sourceTokens=(fallback.match(/\{[A-Za-z0-9_]+\}/g)||[]).sort().join('|');
+    var targetTokens=(template.match(/\{[A-Za-z0-9_]+\}/g)||[]).sort().join('|');
+    if (sourceTokens!==targetTokens) template=fallback;
+    return window.confirm(template.replace(/\{([A-Za-z0-9_]+)\}/g,function(match,name){
+      return values&&Object.hasOwn(values,name)?String(values[name]):match;
+    }));
+  }
+  function canLeave() { return !dirty || confirmCatalog('catalogConfirmLeaveUnsaved','Есть несохранённые изменения. Перейти без сохранения?'); }
   function inputField(label, type, value, field, parent, min, max) {
     var wrap = node('label', undefined, 'editor-field'); wrap.appendChild(formCaption(label)); var input = node('input'); input.type = type; input.value = value; input.dataset.field = field;
     if (min !== undefined) input.min = min; if (max !== undefined) input.max = max;
@@ -552,7 +563,7 @@
       report('Добавлен приватный вариант. Укажите его класс, уровень/очки и значения; перед публикацией сервер проверит, что условия однозначны.');
     }, 'secondary');
     var remove = button('Удалить выбранный вариант', function () {
-      if (!drafts.length || !window.confirm('Удалить выбранный вариант из черновика? На сайте он останется до отдельной публикации.')) return;
+      if (!drafts.length || !confirmCatalog('catalogConfirmDeleteVariant','Удалить выбранный вариант из черновика? На сайте он останется до отдельной публикации.')) return;
       drafts.splice(index, 1); index = Math.max(0, index - 1); changing(); renderFields();
     }, 'secondary');
     controls.append(add, remove); section.appendChild(panel); editor.appendChild(section);
@@ -631,7 +642,7 @@
   }
   async function publish() {
     if (dirty || !current.hasDraft) { report('Сначала сохраните черновик.'); return; }
-    if (!window.confirm('Опубликовать «' + current.edit.names.en + '»? Названия и характеристики изменятся в Modern. Legacy останется неизменным.')) return;
+    if (!confirmCatalog('catalogConfirmPublishSingle','Опубликовать «{name}»? Названия и характеристики изменятся в Modern. Legacy останется неизменным.',{name:current.edit.names.en})) return;
     var thisGeneration = generation, id = current.identity.id;
     host.inert = true; host.setAttribute('aria-busy', 'true');
     try {
@@ -931,7 +942,7 @@
     if(dirty){report('В текущей записи есть несохранённые изменения. Сохрани или отмени их перед массовой публикацией.',true);return;}
     var targets=knownDrafts.filter(function(item){return all || selectedDrafts.get(item.id)===item.version;});
     if(!targets.length||targets.length>50){report('Выбери от 1 до 50 черновиков.',true);return;}
-    if(!window.confirm('Опубликовать '+targets.length+' сохранённых черновиков как ОДНУ версию каталога? Изменения названий, эффектов и характеристик появятся в Modern. Legacy и старые версии останутся неизменными.'))return;
+    if(!confirmCatalog('catalogConfirmPublishBatch','Опубликовать {count} сохранённых черновиков как ОДНУ версию каталога? Изменения названий, эффектов и характеристик появятся в Modern. Legacy и старые версии останутся неизменными.',{count:targets.length}))return;
     batchPending=true;host.inert=true;host.setAttribute('aria-busy','true');
     var thisGeneration=generation,keepId=current?.edit.id,operationId=crypto.randomUUID(),uncertain=false;
     try{
@@ -1051,8 +1062,7 @@
       var refresh = button('Повторить проверку', astirMaintenance, 'secondary');
       var cleanup = button('Подтвердить очистку Modern', async function () {
         if (!data.ready || host.inert) return;
-        if (!window.confirm('Удалить ' + data.fields.length +
-          ' архивных примечаний Astir из текущей версии Modern? Будет создана новая ревизия с возможностью восстановления.')) return;
+        if (!confirmCatalog('catalogConfirmAstirCleanup','Удалить {count} архивных примечаний Astir из текущей версии Modern? Будет создана новая ревизия с возможностью восстановления.',{count:data.fields.length})) return;
         host.inert = true; host.setAttribute('aria-busy', 'true');
         try {
           var result = await api('astir-notes/clean', {
@@ -1078,8 +1088,7 @@
         row.appendChild(node('span', '#' + revision.version + ' · ' + revision.note));
         let cleanupRevision = revision.version;
         row.appendChild(button('Восстановить примечания #' + cleanupRevision, async function () {
-          if (!window.confirm('Вернуть только архивные примечания из очистки #' + cleanupRevision +
-            '? Это создаст новую версию; опубликованные изменения характеристик не будут отменены.')) return;
+          if (!confirmCatalog('catalogConfirmRestoreAstir','Вернуть только архивные примечания из очистки #{revision}? Это создаст новую версию; опубликованные изменения характеристик не будут отменены.',{revision:cleanupRevision})) return;
           host.inert = true; host.setAttribute('aria-busy', 'true');
           try {
             var result = await api('astir-notes/restore', {
@@ -1117,7 +1126,7 @@
       [{ version: 0, note: 'Исходный Legacy-каталог', created_at: 0 }].concat(result.revisions).forEach(function (revision) {
         var row = node('div', undefined, 'revision-row'); row.appendChild(node('span', '#' + revision.version + ' · ' + revision.note));
         row.appendChild(button('Восстановить #' + revision.version, async function () {
-          if (!window.confirm('Восстановить весь опубликованный каталог из версии ' + revision.version + '? Черновики не удалятся.')) return;
+          if (!confirmCatalog('catalogConfirmRollback','Восстановить весь опубликованный каталог из версии {version}? Черновики не удалятся.',{version:revision.version})) return;
           try { var restored = await api('rollback', { revision: revision.version, expectedCatalogRevision: result.catalogRevision }); await loadList(); await revisions(); report('Восстановлено как новая версия ' + restored.catalogRevision + '.'); } catch (error) { report(error.message, true); }
         }, 'secondary')); editor.appendChild(row);
       });

@@ -575,5 +575,12 @@
   "adminShell.locResetLocalReport": "Baseline restored for {id}. Unpublished draft cancelled.",
   "adminShell.locResetSavedReport": "Baseline for {id} restored and saved: {value}",
   "adminShell.locTranslationPublished": "Translation {id} published and saved.",
-  "adminShell.locWriteNotConfirmed": "{error}. Change not confirmed; review the record before retrying."
+  "adminShell.locWriteNotConfirmed": "{error}. Change not confirmed; review the record before retrying.",
+  "adminShell.catalogConfirmLeaveUnsaved": "There are unsaved changes. Leave without saving?",
+  "adminShell.catalogConfirmDeleteVariant": "Delete the selected variant from the draft? It will remain on the site until you publish separately.",
+  "adminShell.catalogConfirmPublishSingle": "Publish «{name}»? Names and attributes will change in Modern. Legacy will remain unchanged.",
+  "adminShell.catalogConfirmPublishBatch": "Publish {count} saved drafts as ONE catalog revision? Names, effects and attributes will change in Modern. Legacy and earlier versions remain unchanged.",
+  "adminShell.catalogConfirmAstirCleanup": "Delete {count} archived Astir notes from the current Modern catalog? A new revision will be created with restoration available.",
+  "adminShell.catalogConfirmRestoreAstir": "Restore only archived Astir notes from cleanup #{revision}? This creates a new revision and does not undo published attribute changes.",
+  "adminShell.catalogConfirmRollback": "Restore the entire published catalog from version {version}? Saved drafts will not be deleted."
 }
