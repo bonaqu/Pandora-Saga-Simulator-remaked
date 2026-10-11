@@ -627,5 +627,6 @@
   "adminShell.bulkPublishingProgress": "Publishing {count} translations in one transaction…",
   "adminShell.bulkReceiptLookup": "Checking the stored operation receipt…",
   "adminShell.bulkPublishedSuccess": "Published translations in one operation: {count}. Verify the result on the site.",
-  "adminShell.bulkReplacementExample": "Warrior"
+  "adminShell.bulkReplacementExample": "Warrior",
+  "adminShell.locAuditCategoryBreakdown": "Coverage by category"
 }

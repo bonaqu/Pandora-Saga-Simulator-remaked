@@ -125,12 +125,43 @@
               values.total<0||values.translated<0||values.translated>values.total||
               data.total!==values.total-values.translated)
             throw new Error('Invalid coverage response; no data was changed');
+          // Older mocked/rolling server responses may have no breakdown.
+          // If present, reject inconsistent statistics rather than present
+          // false translations. The report is read-only in either case.
+          const categories=data.coverageByGroup;
+          if(categories!==undefined){
+            const allowed=new Set(['skills','equipment','souls','classes','races','stats','other']);
+            if(!Array.isArray(categories)||!categories.length||
+                categories.some(entry=>!entry||!allowed.has(entry.id)||
+                  ![entry.total,entry.translated,entry.missing].every(Number.isSafeInteger)||
+                  entry.total<0||entry.translated<0||entry.missing<0||
+                  entry.translated+entry.missing!==entry.total)||
+                new Set(categories.map(entry=>entry.id)).size!==categories.length||
+                categories.reduce((sum,entry)=>sum+entry.total,0)!==values.total||
+                categories.reduce((sum,entry)=>sum+entry.translated,0)!==values.translated||
+                categories.reduce((sum,entry)=>sum+entry.missing,0)!==data.total)
+              throw Error('Invalid category coverage response; no data was changed');
+          }
           coverage.push({scope:selectedScope,locale:selectedLocale,
-            translated:values.translated,total:values.total,missing:data.total});
+            translated:values.translated,total:values.total,missing:data.total,
+            categories:categories||[]});
           liveText(auditStatus,'locAuditLoading','Проверено {done} из {total} языковых групп…',
             {done:coverage.length,total:8});
         }
         results.replaceChildren();
+        const openMissing=(selectedScope,selectedLocale,selectedGroup)=>{
+          bulk?.invalidate();scope=selectedScope;locale=selectedLocale;group=selectedGroup;
+          translationStatus='missing';query='';page=0;
+          scopeInput.value=scope;localeInput.value=locale;
+          groupInput.value=group;groupInput.disabled=scope==='ui';
+          translationStatusInput.value='missing';searchInput.value='';load();
+        };
+        const categoryMeta={
+          skills:['categorySkills','Навыки и умения'],equipment:['categoryEquipment','Снаряжение'],
+          souls:['categorySouls','Души'],classes:['categoryClasses','Классы'],
+          races:['categoryRaces','Расы и пассивки'],stats:['categoryStats','Характеристики'],
+          other:['categoryOther','Прочее']
+        };
         for(const entry of coverage){
           const row=tag('div',null,'localization-audit-row');
           const label=localized('strong',entry.scope==='game'?'locAuditScopeGame':'locAuditScopeUi',
@@ -140,14 +171,26 @@
             'Переведено {translated} из {total} · отсутствует {missing}',entry);
           const browse=localized('button','locAuditBrowseMissing','Показать непереведённые записи');
           browse.type='button';browse.className='secondary';
-          browse.addEventListener('click',()=>{
-            bulk?.invalidate();scope=entry.scope;locale=entry.locale;group='all';
-            translationStatus='missing';query='';page=0;
-            scopeInput.value=scope;localeInput.value=locale;
-            groupInput.value='all';groupInput.disabled=scope==='ui';
-            translationStatusInput.value='missing';searchInput.value='';load();
-          });
+          browse.addEventListener('click',()=>openMissing(entry.scope,entry.locale,'all'));
           row.append(label,language,numbers,browse);results.append(row);
+          if(entry.scope==='game'&&entry.categories.length){
+            const detail=tag('details',null,'localization-audit-breakdown');
+            detail.append(localized('summary','locAuditCategoryBreakdown','Покрытие по категориям'));
+            const detailRows=tag('div');
+            for(const category of entry.categories){
+              const categoryRow=tag('div',null,'localization-audit-breakdown-row');
+              const [key,fallback]=categoryMeta[category.id];
+              const categoryLabel=localized('strong',key,fallback);
+              const counts=liveText(tag('span'),'locAuditNumbers',
+                'Переведено {translated} из {total} · отсутствует {missing}',category);
+              const view=localized('button','locAuditBrowseMissing','Показать непереведённые записи');
+              view.type='button';view.className='secondary';
+              view.disabled=category.missing===0;
+              view.addEventListener('click',()=>openMissing(entry.scope,entry.locale,category.id));
+              categoryRow.append(categoryLabel,counts,view);detailRows.append(categoryRow);
+            }
+            detail.append(detailRows);results.append(detail);
+          }
         }
         liveText(auditStatus,'locAuditCompleted','Проверка покрытия завершена. Изменения не публиковались.');
       }catch(error){

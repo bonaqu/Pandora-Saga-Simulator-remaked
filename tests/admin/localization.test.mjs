@@ -54,7 +54,7 @@ test('all four languages have a stable index of approved skills and source text'
     assert.equal(exact.effective,locale==='ru'?'Пылающая стрела':exact.baseline);
   }
   const ui=await (await adminLocalization(get('/api/admin/localization?scope=ui&locale=jp'),env)).json();
-  assert.equal(ui.counts.ui,629);
+  assert.equal(ui.counts.ui,630);
   assert.equal(ui.pageSize,40);
   assert.ok(ui.counts.game>2500);
 });
@@ -424,7 +424,7 @@ test('admin shell returns all current four-locale D1-editable keys without expos
   assert.equal(before.ok,true);
   assert.equal(before.schemaVersion,1);
   for(const locale of ['ru','en','jp','tw']) {
-    assert.equal(Object.keys(before.locales[locale]).length,351);
+    assert.equal(Object.keys(before.locales[locale]).length,352);
     assert.ok(Object.keys(before.locales[locale]).every(key=>key.startsWith('adminShell.')));
     assert.ok(Object.values(before.locales[locale]).every(text=>typeof text==='string'&&text.trim()));
   }
@@ -445,4 +445,42 @@ test('admin shell returns all current four-locale D1-editable keys without expos
   assert.equal(restored.locales.ru['adminShell.logout'],'ВЫЙТИ');
   assert.equal(restored.locales.jp['adminShell.logout'],'ログアウト');
   assert.equal(restored.locales.tw['adminShell.logout'],'登出');
+});
+
+test('effective coverage breakdown reconciles with published D1 origins and category filters',async()=>{
+  const env=fixture(),id='equipment.0.2';
+  const lookup=async(locale,group='all')=>(await (await adminLocalization(
+    get('/api/admin/localization?scope=game&locale='+locale+'&group='+group+'&status=missing'),env)).json());
+  const verify=data=>{
+    assert.ok(Array.isArray(data.coverageByGroup));
+    assert.ok(data.coverageByGroup.every(row=>row.total===row.translated+row.missing));
+    assert.equal(data.coverageByGroup.reduce((n,row)=>n+row.total,0),data.coverage.total);
+    assert.equal(data.coverageByGroup.reduce((n,row)=>n+row.translated,0),data.coverage.translated);
+    assert.equal(data.coverageByGroup.reduce((n,row)=>n+row.missing,0),data.total);
+    assert.equal(new Set(data.coverageByGroup.map(row=>row.id)).size,data.coverageByGroup.length);
+  };
+  const before=await lookup('ru');verify(before);
+  const equipment=before.coverageByGroup.find(row=>row.id==='equipment');
+  assert.ok(equipment&&equipment.missing>0);
+  const jp=await lookup('jp');verify(jp);
+  assert.ok(jp.coverageByGroup.some(row=>row.id==='equipment'));
+  const ui=(await (await adminLocalization(get('/api/admin/localization?scope=ui&locale=ru&status=missing'),env)).json());
+  verify(ui);
+  assert.deepEqual(ui.coverageByGroup.map(row=>row.id),['other']);
+  const saved=await (await adminLocalization(post({
+    scope:'game',id,locale:'ru',value:'Короткий меч',expectedVersion:0
+  }),env)).json();
+  assert.equal(saved.version,1);
+  const published=await lookup('ru');verify(published);
+  const current=published.coverageByGroup.find(row=>row.id==='equipment');
+  assert.equal(current.translated,equipment.translated+1);
+  assert.equal(current.missing,equipment.missing-1);
+  const filtered=await lookup('ru','equipment');verify(filtered);
+  assert.deepEqual(filtered.coverageByGroup.map(row=>row.id),['equipment']);
+  assert.deepEqual(filtered.coverage, {total:current.total,translated:current.translated});
+  await adminLocalization(post({scope:'game',id,locale:'ru',value:'',expectedVersion:1}),env);
+  const restored=await lookup('ru');verify(restored);
+  assert.deepEqual(restored.coverageByGroup,before.coverageByGroup,
+    'a D1 tombstone must restore fallback/missing classification without deleting history');
+  assert.equal(env.updates.get('game|'+id+'|ru').version,2);
 });
