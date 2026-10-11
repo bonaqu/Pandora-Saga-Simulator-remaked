@@ -601,6 +601,18 @@
         return result;
       }
       var response = sourceCalc.apply(this, arguments);
+      if (code === 'RESMagic' && !mode && window.Flag?.['0_8']) {
+        // Knight's Providence (skill 0.8) adds 25 magic resistance.
+        // Legacy records the toggle but Calc('RESMagic') never reads it.
+        // Calculate from the freshly regenerated source output each time:
+        // this never accumulates across CalcSet('ALL') or changes a build.
+        // Only the Modern renderer applies this verified historical bonus.
+        var resistance = byId('Status_145');
+        if (resistance) {
+          var base = Number(String(resistance.textContent).replace(/,/g, '').trim());
+          if (Number.isFinite(base)) resistance.textContent = String(base + 25);
+        }
+      }
       if (code === 'ATKSPD' && window.Flag[7]) {
         var speed = byId('Status_73');
         if (speed) speed.textContent = '---';

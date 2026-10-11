@@ -1,5 +1,29 @@
 # Changelog
 
+## Modern 3.80 — восстановление расчёта сопротивления магии, 2026-10-11
+
+<!-- release-notes:user:ru -->
+- «Божественное благословление» (Providence) теперь повышает «Сопр. магии» на 25 согласно документированному эффекту умения; повторный пересчёт не удваивает бонус.
+- Добавлены проверки реального снаряжения на защиту и сопротивление магии и проверка усиления защиты. Значения в режиме верховой езды по-прежнему отображаются по правилам исходного калькулятора.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Providence now applies its documented +25 Magic Resistance bonus in the Modern calculator, without accumulating it on repeated recalculation.
+- Add regression coverage for real armor DEF and Magic Resistance effects, Lapis Medio and the source engine's mounted-defense display.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- В неизменённом Legacy `Calc('RESMagic')` отсутствовала обработка `Flag['0_8']`, несмотря на описание умения и сохранённую кнопку усилений. Современный слой добавляет +25 **после полного нативного пересчёта**, не меняя состояние билда.
+- Тесты используют настоящий предмет «亜麻のローブ» (`310015`, свойства `49=8_145=3`) для доказуемых проверок защиты и сопротивления. Округления и полнота соответствия актуальной игре требуют отдельного аудита.
+- Режим верховой езды (`Flag[7]`) по историческому движку показывает защиту как `---`; числовое значение там не выдумывается.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Preserve the original Legacy engine. Modern applies verified historical Providence +25 via its non-accumulating `Calc('RESMagic')` wrapper, without changing saved builds.
+- Contract tests use native Linen Robe equipment with `49=8_145=3` to verify DEF and magic resistance changes, buff stacking, reset and mount-mode display.
+- Parity with the current game remains an independent open audit; do not extrapolate this historical Providence coefficient to unverified gameplay.
+<!-- /admin-notes:en -->
+
 ## Modern 3.79 — отображение двухслотовых платьев, 2026-10-11
 
 <!-- release-notes:user:ru -->

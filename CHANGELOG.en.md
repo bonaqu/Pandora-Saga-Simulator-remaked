@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.80 — 2026-10-11
+
+### For users
+
+- Providence now applies its documented +25 Magic Resistance bonus in the Modern calculator, without accumulating it on repeated recalculation.
+- Add regression coverage for real armor DEF and Magic Resistance effects, Lapis Medio and the source engine's mounted-defense display.
+
+### Development and technical changes
+
+- Preserve the original Legacy engine. Modern applies verified historical Providence +25 via its non-accumulating `Calc('RESMagic')` wrapper, without changing saved builds.
+- Contract tests use native Linen Robe equipment with `49=8_145=3` to verify DEF and magic resistance changes, buff stacking, reset and mount-mode display.
+- Parity with the current game remains an independent open audit; do not extrapolate this historical Providence coefficient to unverified gameplay.
+
 ## Modern 3.79 — 2026-10-11
 
 ### For users

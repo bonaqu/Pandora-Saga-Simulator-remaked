@@ -252,3 +252,62 @@ test('defense inspector regeneration effects read each equipped stat modifier wi
     expect(pair[1] - pair[0]).toBe(5);
   }
 });
+
+
+test('Providence grants 25 magic resistance and recomputes idempotently with worn item',async({page})=>{
+  await page.goto('/?ui=ru');
+  const values=await page.evaluate(()=>{
+    Flag[7]=0;
+    Flag['0_8']=0;
+    CalcSet('ALL');
+    const read=()=>Number(document.getElementById('Status_145').textContent.replace(/,/g,'').trim());
+    const initial=read();
+    if(!Number.isFinite(initial))throw Error('Magic resistance baseline is not numeric');
+    Flag['0_8']=1;
+    CalcSet('ALL');
+    const buffed=read();
+    CalcSet('ALL');const repeated=read();
+    Flag['0_8']=0;
+    CalcSet('ALL');const restored=read();
+    const equipOk=PandoraRemaked.adapter.selectEquipment(3,310015);
+    const robe=read();
+    Flag['0_8']=1;CalcSet('ALL');const combined=read();
+    Flag['0_8']=0;
+    PandoraRemaked.adapter.selectEquipment(3,0);
+    CalcSet('ALL');
+    return {initial,buffed,repeated,restored,equipOk,robe,combined,reset:read()};
+  });
+  expect(values.buffed-values.initial).toBe(25);
+  expect(values.repeated).toBe(values.buffed);
+  expect(values.restored).toBe(values.initial);
+  expect(values.equipOk).toBe(true);
+  expect(values.robe-values.initial).toBe(3);
+  expect(values.combined-values.initial).toBe(28);
+  expect(values.reset).toBe(values.initial);
+});
+
+test('real torso equipment and Lapis Medio increase DEF, while mount mode explicitly hides it',async({page})=>{
+  await page.goto('/?ui=ru');
+  const values=await page.evaluate(()=>{
+    Flag[7]=0;Flag['14_4']=0;
+    CalcSet('ALL');
+    const display=()=>document.getElementById('Status_49').textContent.trim();
+    const read=()=>Number(display().replace(/,/g,''));
+    const initial=read();
+    const equipped=PandoraRemaked.adapter.selectEquipment(3,310015);
+    const robe=read();
+    Flag['14_4']=1;CalcSet('ALL');
+    const buffed=read();
+    Flag[7]=1;CalcSet('ALL');
+    const mounted=display();
+    Flag[7]=0;Flag['14_4']=0;
+    PandoraRemaked.adapter.selectEquipment(3,0);
+    CalcSet('ALL');
+    return {initial,equipped,robe,buffed,mounted,restored:read()};
+  });
+  expect(values.equipped).toBe(true);
+  expect(values.robe-values.initial).toBe(8);
+  expect(values.buffed).toBeGreaterThan(values.robe);
+  expect(values.mounted).toBe('---');
+  expect(values.restored).toBe(values.initial);
+});
