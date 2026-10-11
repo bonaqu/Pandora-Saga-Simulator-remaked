@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {adminLocalization,publicLocalization} from '../../admin-api/src/localization.mjs';
+import {adminLocalization,publicLocalization,publicAdminShellLocalization} from '../../admin-api/src/localization.mjs';
 import {readFileSync} from 'node:fs';
 import curated from '../../localization/curated-runtime-defaults.ru.v1.json' with {type:'json'};
 
@@ -416,4 +416,33 @@ test('new catalog-managed names expose four languages without creating a second 
   // table: edits to a new catalog identity need catalog revision publication.
   await assert.rejects(()=>adminLocalization(post({scope:'game',id,locale:'jp',
     value:'Unsafe parallel copy',expectedVersion:0}),env),/Invalid translation edit/);
+});
+
+test('admin shell returns all 31 four-locale D1-editable keys without exposing secrets',async()=>{
+  const env=fixture({legacyUi:[{locale:'ru',id:'adminShell.logout',text:'Выйти из старой админки'}]});
+  const before=await (await publicAdminShellLocalization(env)).json();
+  assert.equal(before.ok,true);
+  assert.equal(before.schemaVersion,1);
+  for(const locale of ['ru','en','jp','tw']) {
+    assert.equal(Object.keys(before.locales[locale]).length,31);
+    assert.ok(Object.keys(before.locales[locale]).every(key=>key.startsWith('adminShell.')));
+    assert.ok(Object.values(before.locales[locale]).every(text=>typeof text==='string'&&text.trim()));
+  }
+  assert.equal(before.locales.ru['adminShell.logout'],'Выйти из старой админки');
+  assert.equal(before.locales.en['adminShell.loginLabel'],'LOGIN');
+  assert.equal(before.locales.jp['adminShell.authenticate'],'ログイン');
+  assert.equal(before.locales.tw['adminShell.passwordLabel'],'密碼');
+  assert.ok(!Object.keys(before).some(key=>/token|cookie|csrf|session|draft/i.test(key)));
+  const publish=await (await adminLocalization(post({
+    scope:'ui',id:'adminShell.logout',locale:'ru',
+    expectedVersion:0,value:'Мой личный выход'
+  }),env)).json();
+  assert.equal(publish.version,1);
+  assert.equal((await (await publicAdminShellLocalization(env)).json()).locales.ru['adminShell.logout'],
+    'Мой личный выход');
+  await adminLocalization(post({scope:'ui',id:'adminShell.logout',locale:'ru',value:'',expectedVersion:1}),env);
+  const restored=await (await publicAdminShellLocalization(env)).json();
+  assert.equal(restored.locales.ru['adminShell.logout'],'ВЫЙТИ');
+  assert.equal(restored.locales.jp['adminShell.logout'],'ログアウト');
+  assert.equal(restored.locales.tw['adminShell.logout'],'登出');
 });
