@@ -157,6 +157,8 @@ test('bulk translation editor is D1-localized in four languages without changing
       });
   });
   const panel=page.locator('#bulk-host');
+  // Playwright may inherit a non-English browser locale; select EN explicitly.
+  await page.locator('#admin-language').selectOption('en');
   const word=panel.getByRole('textbox',{name:'Find whole word'});
   const translated=panel.getByRole('textbox',{name:'Replace with word'});
   await word.fill('Warrior');await translated.fill('Воин');
