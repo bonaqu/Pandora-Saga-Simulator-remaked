@@ -216,7 +216,7 @@ jobs:
 
       - name: Verify read-only Pandora OS class-coefficient audit (offline fixture)
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
-        run: node --test tests/tools/pandora-os-class-coefficients.test.mjs
+        run: node --test tests/tools/pandora-os-class-coefficients.test.mjs tests/tools/reference_os_hpmp.test.mjs
 
       - name: Syntax-check core JavaScript
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
