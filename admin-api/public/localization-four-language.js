@@ -31,8 +31,11 @@
     let busy=false;
     const identity=entry=>record.scope+'\0'+record.id+'\0'+entry.locale;
     const saved=entry=>queued?.get(record.scope,record.id,entry.locale)||null;
+    // The D1 editor normalizes surrounding whitespace on save. Match this
+    // client-side so a trailing space never produces an unnecessary write.
+    const modified=entry=>entry.textarea.value.trim()!==String(entry.data.effective||'').trim();
     function states() {
-      return controls.filter(entry=>entry.textarea.value.trim()!==entry.data.effective);
+      return controls.filter(modified);
     }
     function validate(entry,text) {
       if(!safe(text)||!text.trim())return 'Для публикации нужен непустой текст (до 4000 символов).';
@@ -43,9 +46,12 @@
     function synchronize() {
       for(const entry of controls){
         const {data,textarea,dirt,saveButton,stageButton,resetButton,size}=entry;
-        const changed=textarea.value!==data.effective;
+        const changed=modified(entry);
         const cloud=saved(data);
-        if(changed)drafts.set(identity(data),textarea.value);
+        // A draft already persisted in D1 must not be duplicated as an
+        // unsaved browser draft merely because it differs from publication.
+        if(changed && (!cloud || textarea.value!==cloud.text))
+          drafts.set(identity(data),textarea.value);
         else drafts.delete(identity(data));
         dirt.textContent=cloud?'Черновик в D1':changed?'Изменено · не опубликовано':
           data.origin==='fallback'?'Нет перевода':origins[data.origin]||'Без изменений';
@@ -56,9 +62,10 @@
         size.textContent=textarea.value.length+' / 4000';
         entry.container.dataset.dirty=String(changed);
       }
-      const modified=states();
-      publishAll.disabled=busy || modified.length===0 ||
-        modified.some(e=>Boolean(saved(e.data))||Boolean(validate(e,e.textarea.value)));
+      const changedEntries=states();
+      card.dataset.dirty=String(changedEntries.length>0);
+      publishAll.disabled=busy || changedEntries.length===0 ||
+        changedEntries.some(e=>Boolean(saved(e.data))||Boolean(validate(e,e.textarea.value)));
       onDirtyChanged();
     }
     function complete(entry,version,value,reset) {
@@ -157,7 +164,7 @@
     }
     async function publishChanged() {
       if(busy)return;
-      const changed=controls.filter(e=>e.textarea.value!==e.data.effective);
+      const changed=states();
       if(!changed.length)return;
       if(changed.some(e=>Boolean(saved(e.data)))) {
         report('В одном из языков есть черновик D1. Опубликуй или отмени его в очереди.',true);return;
