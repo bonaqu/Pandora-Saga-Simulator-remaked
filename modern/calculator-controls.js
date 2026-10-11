@@ -522,7 +522,16 @@
         if (namespace.i18n) input.title = namespace.i18n.t(key === 'Lev' ? 'calculator.levelInputHelp' : 'calculator.attributeInputHelp');
         var total = input.nextElementSibling, source = document.querySelector('[data-remaked-number-source="' + key + '"]');
         total.hidden = key === 'Lev' || window.Status[key][2] === 0;
-        total.textContent = '→ ' + source.textContent.trim();
+        var finalStat = source.textContent.trim();
+        total.textContent = '→ ' + finalStat;
+        // A three-digit total needs more room than the old 32px output track.
+        // Only affected attribute rows widen; two-digit builds stay compact.
+        var attributeRow = input.closest('[data-remaked-calculator-attribute]');
+        if (attributeRow) {
+          if (!total.hidden && /^[-+]?\\d{3,}$/.test(finalStat))
+            attributeRow.setAttribute('data-remaked-wide-total', '');
+          else attributeRow.removeAttribute('data-remaked-wide-total');
+        }
         if (namespace.i18n) total.title = namespace.i18n.t('calculator.totalWithBonuses');
       });
       document.querySelectorAll('[data-remaked-step]').forEach(function (button) {
