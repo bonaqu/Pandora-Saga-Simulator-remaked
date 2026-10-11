@@ -838,3 +838,38 @@ test('catalog action buttons follow RU/EN/JP/TW admin locale without discarding 
   }
   expect(errors).toEqual([]);
 });
+
+
+test('D1-localized static catalog captions update in four languages without altering unsaved record data',async({page})=>{
+  const {errors}=await openConsole(page);
+  await page.locator('.catalog-entry').first().click();
+  const editor=page.locator('.catalog-editor');
+  const unsaved=editor.locator('[data-field="names"][data-language="ru"]');
+  await unsaved.fill('Проверка черновика с переключением языков');
+  const heading=editor.locator('[data-admin-i18n="adminShell.catalogEditableFields"]');
+  const translated=editor.locator('[data-admin-i18n="adminShell.catalogExtraLanguages"]');
+  await expect(heading).toBeVisible();
+  await expect(translated).toBeVisible();
+  const keys=['adminShell.catalogEditableFields','adminShell.catalogExtraLanguages'];
+  const words={
+    ru:['Редактируемые поля','Японский и китайский переводы'],
+    en:['Editable fields','Japanese and Traditional Chinese translations'],
+    jp:['編集できる項目','日本語・繁体字中国語の翻訳'],
+    tw:['可編輯欄位','日文與繁體中文翻譯']
+  };
+  await page.route(admin+'/api/admin-shell-localization',route=>route.fulfill({
+    json:{ok:true,schemaVersion:1,locales:Object.fromEntries(
+      Object.entries(words).map(([locale,labels])=>[
+        locale,Object.fromEntries(keys.map((key,index)=>[key,labels[index]]))
+      ]))}
+  }));
+  await page.addScriptTag({path:'admin-api/public/admin-i18n.js'});
+  for(const locale of ['en','jp','tw','ru']){
+    await page.locator('#admin-language').selectOption(locale);
+    await expect(heading).toHaveText(words[locale][0]);
+    await expect(translated).toHaveText(words[locale][1]);
+    await expect(unsaved).toHaveValue('Проверка черновика с переключением языков');
+    await expect(editor).toHaveAttribute('data-unsaved','true');
+  }
+  expect(errors).toEqual([]);
+});
