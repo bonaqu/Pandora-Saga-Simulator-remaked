@@ -128,7 +128,9 @@
     if (!watcher) {
       watcher = new MutationObserver(function (changes) {
         if (changes.some(function (change) {
-          return Array.prototype.some.call(change.addedNodes, function (node) {
+          // Prototype.js overrides Array#some/any and requires an Array.each().
+          // MutationRecord.addedNodes is a NodeList, not an Array.
+          return Array.from(change.addedNodes).some(function (node) {
             return node.nodeType === 1 &&
               (node.matches?.('select[id^="SelBuffClan_"]') ||
                node.querySelector?.('select[id^="SelBuffClan_"]'));
