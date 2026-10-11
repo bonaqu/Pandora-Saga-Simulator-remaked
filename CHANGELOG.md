@@ -1,5 +1,18 @@
 # Changelog
 
+## Modern 3.95 — перевод подписей центра локализации, 2026-10-11
+
+<!-- admin-notes:ru -->
+- Подписи типов записей и происхождения перевода в центре локализации теперь доступны для редактирования на RU/EN/JP/TW через существующий D1-реестр; добавлен 21 текстовый ключ.
+- Подписи исходного и опубликованного текста, сравнения языков и перехода в каталог меняются без изменения значений, ID, черновиков, опубликованных версий или игровых формул.
+- В публичной дорожной карте удалено устаревшее указание на Excel: тексты переводятся через админку.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Register 21 D1-editable, four-language UI captions for translation-center record kinds, provenance badges, original/effective text headings, comparison and catalog editing.
+- Display-only localization preserves IDs, record values, unsaved drafts, published revisions and calculation formulas. Remove outdated spreadsheet guidance from the public roadmap.
+<!-- /admin-notes:en -->
+
 ## Modern 3.94 — новые переводимые поля админки, 2026-10-11
 
 <!-- admin-notes:ru -->

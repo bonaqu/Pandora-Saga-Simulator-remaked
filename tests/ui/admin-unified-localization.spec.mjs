@@ -433,3 +433,65 @@ test('four-language editor localizes its buttons and statuses in place without l
   expect(await page.evaluate(()=>window.unsavedDrafts.size)).toBe(0);
   expect(await page.evaluate(()=>window.lastEditorReport.message)).toContain('Published 2 language variants');
 });
+
+
+test('D1 translation-center metadata follows four admin languages without erasing edited values',async({page})=>{
+  await page.goto('/');
+  await page.setContent('<div id="localization-console"></div>');
+  await page.evaluate(()=>{
+    let active='en';
+    const translated={
+      en:{locKindSkillName:'Skill name',locOriginFallback:'Untranslated · source text',
+        locSourceEnglish:'Original (EN)',locEffectiveText:'Translation used by the site',
+        locCompareLanguages:'Compare RU / EN / JP / TW'},
+      ru:{locKindSkillName:'Название умения',locOriginFallback:'Нет перевода · исходный текст',
+        locSourceEnglish:'Оригинал (EN)',locEffectiveText:'Перевод, используемый сайтом',
+        locCompareLanguages:'Сравнить RU / EN / JP / TW'},
+      jp:{locKindSkillName:'スキル名',locOriginFallback:'未翻訳 · 原文',
+        locSourceEnglish:'原文 (EN)',locEffectiveText:'サイトで使用中の翻訳',
+        locCompareLanguages:'RU / EN / JP / TW を比較'},
+      tw:{locKindSkillName:'技能名稱',locOriginFallback:'尚未翻譯 · 原始文字',
+        locSourceEnglish:'原文 (EN)',locEffectiveText:'網站目前使用的翻譯',
+        locCompareLanguages:'比較 RU / EN / JP / TW'}
+    };
+    window.PandoraAdminI18n={
+      t:(key,fallback)=>translated[active][key.replace('adminShell.','')]||fallback,
+      apply:()=>document.querySelectorAll('[data-admin-i18n]').forEach(el=>{
+        const value=translated[active][el.dataset.adminI18n.replace('adminShell.','')];
+        if(value)el.textContent=value;
+      }),
+      change:language=>{active=language;window.PandoraAdminI18n.apply();
+        window.dispatchEvent(new Event('pandora-admin:localechange'));},
+      getLocale:()=>active
+    };
+    window.PandoraBulkLocalization={mount:()=>({invalidate(){},destroy(){}})};
+    window.fetch=async url=>{
+      if(!String(url).includes('/api/admin/localization'))throw Error('Unexpected request '+url);
+      return new Response(JSON.stringify({ok:true,counts:{game:1,ui:0},total:1,
+        items:[{id:'skill_entry.1.2',scope:'game',locale:'ru',kind:'skill_entry',
+          origin:'fallback',baselineOrigin:'fallback',baseline:'Flaming Arrow',
+          effective:'Flaming Arrow',source:{en:'Flaming Arrow'},version:0,
+          override:''}]}),{status:200,headers:{'content-type':'application/json'}});
+    };
+  });
+  await page.addScriptTag({path:'admin-api/public/localization-console.js'});
+  await page.evaluate(()=>window.PandoraLocalizationConsole.start(()=>'',()=>{}));
+  const card=page.locator('[data-localization-id="skill_entry.1.2"]');
+  const input=card.locator('textarea');
+  await expect(card.locator('[data-admin-i18n="adminShell.locKindSkillName"]')).toHaveText('Skill name');
+  await input.fill('Unsaved custom translation');
+  const expected={
+    en:['Skill name','Untranslated · source text','Original (EN)'],
+    ru:['Название умения','Нет перевода · исходный текст','Оригинал (EN)'],
+    jp:['スキル名','未翻訳 · 原文','原文 (EN)'],
+    tw:['技能名稱','尚未翻譯 · 原始文字','原文 (EN)']
+  };
+  for(const language of ['jp','tw','ru','en']){
+    await page.evaluate(language=>window.PandoraAdminI18n.change(language),language);
+    await expect(card.locator('[data-admin-i18n="adminShell.locKindSkillName"]')).toHaveText(expected[language][0]);
+    await expect(card.locator('[data-admin-i18n="adminShell.locOriginFallback"]')).toHaveText(expected[language][1]);
+    await expect(card.locator('[data-admin-i18n="adminShell.locSourceEnglish"]')).toHaveText(expected[language][2]);
+    await expect(input).toHaveValue('Unsaved custom translation');
+    await expect(card).toHaveAttribute('data-dirty','true');
+  }
+});
