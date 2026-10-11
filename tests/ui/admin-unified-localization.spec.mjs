@@ -592,7 +592,7 @@ test('effective D1 coverage report reads 8 locale groups without posting or muta
 });
 
 test('D1 bulk-preview feedback changes language without rewriting input or calling publish',async({page})=>{
-  await page.goto('/');
+  await page.goto('about:blank');
   await page.setContent('<div id="bulk-host"></div>');
   await page.evaluate(()=>{
     let locale='ru';
