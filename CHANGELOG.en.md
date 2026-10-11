@@ -7,7 +7,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 ### For users
 
 - Melee and ranged results now display the equipped weapon's verified base reach instead of a permanent dash.
-- Source values cover 164 matched weapons from the current Pandora Saga OS item registry, in original reference units (no unverified meter conversion).
+- Values are verified for 164 weapons in original game-reference units (no unverified meter conversion).
 - Unarmed or unsupported weapons remain unavailable; unverified skill-based range changes are not silently applied.
 
 ### Development and technical changes
