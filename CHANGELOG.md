@@ -1,5 +1,29 @@
 # Changelog
 
+## Modern 4.05 — точная история обновлений для игроков, 2026-10-12
+
+<!-- release-notes:user:ru -->
+- В «Что нового» теперь показываются последние реальные изменения для игроков, даже если после них выходили только служебные обновления.
+- Номер установленной версии по-прежнему актуален, а технические записи остаются в полном журнале отдельно от пользовательских.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- What's New now displays the most recent actual player-facing changes, even after admin-only releases.
+- The installed version stays current; technical notes remain in the full history, separate from player updates.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Удалена подстановка фиктивных пользовательских сообщений при служебных релизах; генератор выбирает последнее настоящее событие release-notes:user.
+- В локализованных архивах технические релизы теперь содержат только техническую секцию. Добавлены Python и Playwright-регрессионные проверки обеих аудиторий.
+- Формулы, Legacy, D1 и черновики не изменялись.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Remove synthesized player notes for admin-only releases; choose the latest genuine release-notes:user entry.
+- Technical-only releases now have only technical sections in localized archives. Add Python and Playwright audience regression tests.
+- Gameplay formulas, Legacy, D1 and drafts unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 4.04 — компактные заголовки умений, 2026-10-12
 
 <!-- release-notes:user:ru -->

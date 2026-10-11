@@ -15,23 +15,23 @@ class PublicAudienceAndLocalizationTests(unittest.TestCase):
         latest = re.search(r"^## Modern (\d+\.\d+)\b", canonical, re.MULTILINE)
         self.assertIsNotNone(latest)
         self.assertEqual(release["version"], latest.group(1))
-        self.assertEqual(release["userVersion"], latest.group(1))
         latest_section = canonical[latest.end():].split("\n## Modern ", 1)[0]
         latest_player = all(
             ("<!-- release-notes:user:" + locale + " -->") in latest_section
             for locale in ("ru", "en")
         )
-        self.assertEqual(release.get("technicalOnly", False), not latest_player)
+        self.assertFalse(release.get("technicalOnly", False))
+        self.assertNotIn("lastContentVersion", release)
+        self.assertTrue(all(release["highlights"].values()))
         if latest_player:
             self.assertEqual(release["userVersion"], latest.group(1))
-            self.assertNotIn("lastContentVersion", release)
-            for locale in ("ru", "en"):
-                self.assertTrue(release["highlights"][locale])
-                self.assertNotIn("D1", " ".join(release["highlights"][locale]))
-                self.assertNotIn("Cloudflare", " ".join(release["highlights"][locale]))
         else:
-            self.assertEqual(release["highlights"]["ru"], ["Выполнены внутренние технические улучшения."])
-            self.assertEqual(release["highlights"]["en"], ["Internal technical improvements."])
+            self.assertNotEqual(release["userVersion"], latest.group(1))
+        for locale in ("ru", "en"):
+            self.assertNotIn("D1", " ".join(release["highlights"][locale]))
+            self.assertNotIn("Cloudflare", " ".join(release["highlights"][locale]))
+            self.assertNotIn("Выполнены внутренние технические улучшения.", " ".join(release["highlights"][locale]))
+            self.assertNotIn("Internal technical improvements.", " ".join(release["highlights"][locale]))
 
         # Historical releases with developer-only notes must remain hidden from
         # the player-facing stream, regardless of the latest version.
@@ -44,10 +44,8 @@ class PublicAudienceAndLocalizationTests(unittest.TestCase):
             for locale, label in (("ru", "Для пользователей"), ("en", "For users")):
                 translated = (ROOT / ("CHANGELOG." + locale + ".md")).read_text(encoding="utf-8")
                 section = translated.split("## Modern " + version + " —", 1)[1].split("## Modern ", 1)[0]
-                user = section.split("### " + label + "\n", 1)[1].split("\n### ", 1)[0]
-                self.assertNotIn("D1", user)
-                self.assertNotIn("админк", user.lower())
-                self.assertNotIn("Cloudflare", user)
+                self.assertNotIn("### " + label + "\n", section)
+                self.assertIn("### ", section)
 
     def test_376_typo_correction_remains_player_facing(self):
         source = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")

@@ -48,7 +48,7 @@ class LocalizedChangelogTests(unittest.TestCase):
         self.assertIn("Fixed the calculator.", en)
         self.assertNotIn("Служебное обновление", en)
 
-    def test_technical_releases_get_public_neutral_summary_and_separate_details(self):
+    def test_technical_releases_omit_fake_player_summary_and_keep_dev_details(self):
         fixture = """# Changelog
 
 ## Modern 3.67 — Admin only, 2026-10-10
@@ -62,12 +62,12 @@ class LocalizedChangelogTests(unittest.TestCase):
 """
         ru = render(fixture, "ru")
         en = render(fixture, "en")
-        self.assertIn("### Для пользователей\n\n- Выполнены внутренние технические улучшения.", ru)
-        self.assertIn("### For users\n\n- Internal technical improvements.", en)
+        self.assertNotIn("### Для пользователей", ru)
+        self.assertNotIn("### For users", en)
         self.assertIn("### Разработка и технические изменения\n\n- Приватные детали обновления.", ru)
         self.assertIn("### Development and technical changes\n\n- Private admin details.", en)
-        self.assertLess(ru.index("### Для пользователей"), ru.index("### Разработка"))
-        self.assertLess(en.index("### For users"), en.index("### Development"))
+        self.assertNotIn("Выполнены внутренние технические улучшения", ru)
+        self.assertNotIn("Internal technical improvements", en)
 
     def test_historical_player_markers_still_show_under_users(self):
         source = """# Changelog
