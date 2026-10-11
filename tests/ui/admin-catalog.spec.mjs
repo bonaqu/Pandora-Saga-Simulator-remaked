@@ -805,3 +805,36 @@ test('catalog item preview updates live with RU multiline descriptions and Soul 
   expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts WHERE is_dirty=1').get().n).toBe(0);
   expect(errors).toEqual([]);
 });
+
+
+test('catalog action buttons follow RU/EN/JP/TW admin locale without discarding an unsaved draft',async({page})=>{
+  const {errors}=await openConsole(page);
+  await page.locator('.catalog-entry').first().click();
+  const editor=page.locator('.catalog-editor');
+  const original=editor.locator('[data-field="names"][data-language="ru"]');
+  await original.fill('Несохранённое название для проверки языка');
+  const save=editor.getByRole('button',{name:'Сохранить черновик',exact:true});
+  await expect(save).toHaveAttribute('data-admin-i18n','adminShell.catalogSaveDraft');
+  const publish=editor.getByRole('button',{name:'Опубликовать',exact:true});
+  await expect(publish).toHaveAttribute('data-admin-i18n','adminShell.catalogPublish');
+  const i18nKeys=['adminShell.catalogSaveDraft','adminShell.catalogPublish'];
+  const languages={
+    en:['Save draft','Publish'],ru:['Сохранить черновик','Опубликовать'],
+    jp:['下書きを保存','公開'],tw:['儲存草稿','發布']
+  };
+  await page.route(admin+'/api/admin-shell-localization',route=>route.fulfill({
+    json:{ok:true,schemaVersion:1,locales:Object.fromEntries(
+      Object.entries(languages).map(([locale,labels])=>
+        [locale,Object.fromEntries(i18nKeys.map((key,index)=>[key,labels[index]]))]))}
+  }));
+  await page.addScriptTag({path:'admin-api/public/admin-i18n.js'});
+  await expect(page.locator('#admin-language')).toBeEnabled();
+  for(const locale of ['en','jp','tw','ru']){
+    await page.locator('#admin-language').selectOption(locale);
+    await expect(editor.locator('[data-admin-i18n="adminShell.catalogSaveDraft"]')).toHaveText(languages[locale][0]);
+    await expect(editor.locator('[data-admin-i18n="adminShell.catalogPublish"]')).toHaveText(languages[locale][1]);
+    await expect(original).toHaveValue('Несохранённое название для проверки языка');
+    await expect(editor).toHaveAttribute('data-unsaved','true');
+  }
+  expect(errors).toEqual([]);
+});

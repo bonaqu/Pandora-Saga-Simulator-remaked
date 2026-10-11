@@ -26,7 +26,7 @@ class TranslationCatalogTests(unittest.TestCase):
         self.assertFalse((LOC / "translations.xlsx").exists())
         self.assertEqual(self.snapshot["schemaVersion"], 1)
         self.assertEqual(self.data.total, 2920)
-        self.assertEqual(len(self.ui_source), 417)
+        self.assertEqual(len(self.ui_source), 443)
         self.assertEqual(len(self.game_source), 2678)
 
     def test_full_stable_registry_and_source_ids_remain_unique(self):
@@ -50,7 +50,7 @@ class TranslationCatalogTests(unittest.TestCase):
         help_text = curated["ru"]["ui"]["skills.help"]
         self.assertEqual(self.data.ui_russian["skills.help"], help_text)
         self.assertNotEqual(self.snapshot["ui"]["ru"]["skills.help"], help_text)
-        self.assertEqual(len(self.ui_source), 417)
+        self.assertEqual(len(self.ui_source), 443)
         self.assertEqual(self.data.total, 2920)
 
     def test_build_manager_has_japanese_and_traditional_chinese_fallbacks(self):
@@ -63,6 +63,17 @@ class TranslationCatalogTests(unittest.TestCase):
                 value = self.snapshot["ui"][language].get(key)
                 self.assertTrue(isinstance(value, str) and value.strip(), (language, key))
                 self.assertEqual(sorted(SLOTS.findall(value)),
+                                 sorted(SLOTS.findall(self.ui_source[key])))
+
+    def test_catalog_action_buttons_have_four_administratively_editable_locales(self):
+        # Only exact authored captions; actual user-created item names are data.
+        ids = ["adminShell.catalogReviewChanges","adminShell.catalogRemove","adminShell.catalogDeleteRule","adminShell.catalogRemoveRequirement","adminShell.catalogAddBranchRequirement","adminShell.catalogAddVariant","adminShell.catalogDeleteSelectedVariant","adminShell.catalogAddStat","adminShell.catalogSaveDraft","adminShell.catalogPublish","adminShell.catalogNewSkillFromTemplate","adminShell.catalogAddEnhancementBonus","adminShell.catalogCreateVariant","adminShell.catalogBack","adminShell.catalogNext","adminShell.catalogSelectAll","adminShell.catalogClearSelection","adminShell.catalogPublishSelected","adminShell.catalogPublishAllDrafts","adminShell.catalogRefreshList","adminShell.catalogOpen","adminShell.catalogRetryCheck","adminShell.catalogConfirmModernCleanup","adminShell.catalogNewRecord","adminShell.catalogAstirCleanup","adminShell.catalogHistoryRollback"]
+        self.assertEqual(len(ids),26)
+        for key in ids:
+            self.assertIn(key,self.ui_source)
+            for locale in ("ru","jp","tw"):
+                self.assertTrue(self.snapshot["ui"][locale][key])
+                self.assertEqual(sorted(SLOTS.findall(self.snapshot["ui"][locale][key])),
                                  sorted(SLOTS.findall(self.ui_source[key])))
 
     def test_all_localized_ui_placeholders_match_original(self):

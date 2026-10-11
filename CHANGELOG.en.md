@@ -2,6 +2,17 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.90 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- 26 catalog-editor action buttons now use RU/EN/JP/TW D1-managed captions: drafting, review, publishing, variants, rules, navigation and history. Item names and form input remain untouched.
+- Translate exact authored button captions only; preserve draft state, D1 versions, CSRF and editor context on locale changes. No gameplay or Legacy modifications.
+
 ## Modern 3.89 — 2026-10-11
 
 ### For users

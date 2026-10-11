@@ -1,5 +1,17 @@
 # Changelog
 
+## Modern 3.90 — управляемые переводы кнопок каталога, 2026-10-11
+
+<!-- admin-notes:ru -->
+- 26 кнопок действий редактора каталога теперь берут RU/EN/JP/TW-подписи из D1: черновики, проверка, публикация, варианты, правила, навигация и история. Тексты предметов и введённые поля не изменяются.
+- Переводятся только точные подписи штатных действий; смена языка не сбрасывает черновики, CSRF, версии или редакторский контекст. Игровые расчёты и Legacy не затронуты.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- 26 catalog-editor action buttons now use RU/EN/JP/TW D1-managed captions: drafting, review, publishing, variants, rules, navigation and history. Item names and form input remain untouched.
+- Translate exact authored button captions only; preserve draft state, D1 versions, CSRF and editor context on locale changes. No gameplay or Legacy modifications.
+<!-- /admin-notes:en -->
+
 ## Modern 3.89 — японский и традиционный китайский перевод менеджера билдов, 2026-10-11
 
 <!-- release-notes:user:ru -->
