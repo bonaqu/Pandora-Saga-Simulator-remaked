@@ -337,3 +337,51 @@ test('curated fallback help is exposed as an editable baseline, never client-onl
   assert.equal(found.effective,curated.ru.ui['skills.help']);
   assert.equal(found.baselineOrigin,'import');
 });
+
+
+test('one paginated query includes four independently versioned translations per identity', async () => {
+  const env=fixture({legacyUi:[{locale:'ru',id:'header.updates',text:'Опубликовано в старом редакторе'}]});
+  const find=async(url)=>(await (await adminLocalization(get(url),env)).json()).items.find(r=>r.id==='header.updates');
+  const base=await find('/api/admin/localization?scope=ui&q=header.updates&multilingual=1');
+  assert.deepEqual(base.translations.map(x=>x.locale),['ru','en','jp','tw']);
+  assert.equal(base.translations[0].effective,'Опубликовано в старом редакторе');
+  assert.equal(base.translations[0].origin,'previous-admin');
+  assert.equal(base.translations[1].effective,base.translations[1].baseline);
+  assert.equal(base.translations[2].origin,'fallback');
+  assert.equal(base.translations[3].origin,'fallback');
+  await adminLocalization(post({scope:'ui',id:'header.updates',locale:'en',value:'All updates',
+    expectedVersion:0,expectedEffective:base.translations[1].effective}),env);
+  await adminLocalization(post({scope:'ui',id:'header.updates',locale:'jp',value:'更新情報',
+    expectedVersion:0,expectedEffective:base.translations[2].effective}),env);
+  const next=await find('/api/admin/localization?scope=ui&q=header.updates&locale=ru&multilingual=1');
+  assert.equal(next.locale,'ru');
+  assert.equal(next.translations[0].effective,'Опубликовано в старом редакторе');
+  assert.equal(next.translations[1].effective,'All updates');
+  assert.equal(next.translations[1].version,1);
+  assert.equal(next.translations[2].effective,'更新情報');
+  assert.equal(next.translations[2].version,1);
+  assert.equal(next.translations[3].version,0);
+  assert.deepEqual(next.translations.map(x=>x.locale),['ru','en','jp','tw']);
+  assert.equal((await find('/api/admin/localization?scope=ui&q=header.updates')).translations,undefined,
+    'legacy filtered editor contract stays unchanged');
+  await assert.rejects(()=>adminLocalization(get('/api/admin/localization?multilingual=true'),env),
+    /Invalid multilingual mode/);
+});
+
+test('four-locale paged response preserves older D1 reset tombstones without contamination',async()=>{
+  const env=fixture();
+  const id='skill_entry.7.5';
+  const first=(await (await adminLocalization(get('/api/admin/localization?scope=game&locale=ru&q='+id+'&multilingual=1'),env)).json()).items.find(x=>x.id===id);
+  assert.equal(first.translations[0].effective,'Пылающая стрела');
+  await adminLocalization(post({scope:'game',id,locale:'ru',value:'Временное название',expectedVersion:0,
+    expectedEffective:first.translations[0].effective}),env);
+  await adminLocalization(post({scope:'game',id,locale:'ru',value:'',expectedVersion:1,
+    expectedEffective:'Временное название'}),env);
+  const after=(await (await adminLocalization(get('/api/admin/localization?scope=game&locale=jp&q='+id+'&multilingual=1'),env)).json()).items.find(x=>x.id===id);
+  assert.equal(after.translations[0].effective,'Пылающая стрела');
+  assert.equal(after.translations[0].version,2);
+  assert.equal(after.translations[0].origin,'import');
+  assert.equal(after.translations[1].version,0);
+  assert.equal(after.translations[2].version,0);
+  assert.equal(after.translations[3].version,0);
+});
