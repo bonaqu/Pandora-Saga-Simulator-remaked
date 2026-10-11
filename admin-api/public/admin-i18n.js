@@ -31,6 +31,11 @@
       var text = t(key, node.getAttribute('aria-label'));
       if (text) node.setAttribute('aria-label', text);
     });
+    document.querySelectorAll('[data-admin-i18n-placeholder]').forEach(function (node) {
+      var key = node.getAttribute('data-admin-i18n-placeholder');
+      var text = t(key, node.getAttribute('placeholder'));
+      if (text) node.setAttribute('placeholder', text);
+    });
     document.documentElement.lang = languageTags[current] || 'en';
   }
   function change(locale) {

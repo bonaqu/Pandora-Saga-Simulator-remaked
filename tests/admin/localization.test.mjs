@@ -54,7 +54,7 @@ test('all four languages have a stable index of approved skills and source text'
     assert.equal(exact.effective,locale==='ru'?'Пылающая стрела':exact.baseline);
   }
   const ui=await (await adminLocalization(get('/api/admin/localization?scope=ui&locale=jp'),env)).json();
-  assert.equal(ui.counts.ui,308);
+  assert.equal(ui.counts.ui,338);
   assert.equal(ui.pageSize,40);
   assert.ok(ui.counts.game>2500);
 });
@@ -418,13 +418,13 @@ test('new catalog-managed names expose four languages without creating a second 
     value:'Unsafe parallel copy',expectedVersion:0}),env),/Invalid translation edit/);
 });
 
-test('admin shell returns all 31 four-locale D1-editable keys without exposing secrets',async()=>{
+test('admin shell returns all current four-locale D1-editable keys without exposing secrets',async()=>{
   const env=fixture({legacyUi:[{locale:'ru',id:'adminShell.logout',text:'Выйти из старой админки'}]});
   const before=await (await publicAdminShellLocalization(env)).json();
   assert.equal(before.ok,true);
   assert.equal(before.schemaVersion,1);
   for(const locale of ['ru','en','jp','tw']) {
-    assert.equal(Object.keys(before.locales[locale]).length,31);
+    assert.equal(Object.keys(before.locales[locale]).length,61);
     assert.ok(Object.keys(before.locales[locale]).every(key=>key.startsWith('adminShell.')));
     assert.ok(Object.values(before.locales[locale]).every(text=>typeof text==='string'&&text.trim()));
   }

@@ -12,6 +12,21 @@
     if(className)node.className=className;
     return node;
   }
+  function localized(name,key,english,className) {
+    const node=tag(name,english,className);
+    node.dataset.adminI18n='adminShell.'+key;
+    return node;
+  }
+  function aria(node,key,english) {
+    node.dataset.adminI18nAria='adminShell.'+key;
+    node.setAttribute('aria-label',english);
+  }
+  function localizedOption(id,name,prefix) {
+    const key=prefix+id[0].toUpperCase()+id.slice(1);
+    const option=localized('option',key,name);
+    option.value=id;
+    return option;
+  }
   let status,items,count,draftCount,progress,progressLabel,prev,next,scopeInput,localeInput,searchInput,groupInput,translationStatusInput;
   async function api(method,payload,url='/api/admin/localization'){
     const headers=method!=='GET'?{'Content-Type':'application/json','X-CSRF-Token':csrf()||''}:{};
@@ -28,27 +43,27 @@
     host.replaceChildren();
     const panel=tag('section',null,'localization-panel');
     const head=tag('div',null,'localization-head');
-    head.append(tag('h3','Переводы · единый центр'),
-      tag('p','Интерфейс, навыки, предметы, расы и классы · RU / EN / 日本語 / 繁體中文'));
-    const info=tag('p','Все четыре языка открыты одновременно в каждой карточке. Поиск работает по всем четырём языкам. Фильтр языка влияет только на статус переводов и статистику; для редактирования переключать его не нужно. Можно опубликовать изменённые языки одной транзакцией D1. Новые предметы и навыки по-прежнему редактируются в каталоге, без второй копии данных. Названия и описания не влияют на расчёты.','localization-help');
+    head.append(localized('h3','localizationHeading','Переводы · единый центр'),
+      localized('p','localizationSubtitle','Интерфейс, навыки, предметы, расы и классы · RU / EN / 日本語 / 繁體中文'));
+    const info=localized('p','localizationHelp','Все четыре языка открыты одновременно в каждой карточке. Поиск работает по всем четырём языкам. Фильтр языка влияет только на статус переводов и статистику; для редактирования переключать его не нужно. Можно опубликовать изменённые языки одной транзакцией D1. Новые предметы и навыки по-прежнему редактируются в каталоге, без второй копии данных. Названия и описания не влияют на расчёты.','localization-help');
     const filters=tag('div',null,'localization-filters');
-    scopeInput=tag('select');scopeInput.setAttribute('aria-label','Раздел');
+    scopeInput=tag('select');aria(scopeInput,'filterScope','Раздел');
     [['game','Игровые термины и предметы'],['ui','Интерфейс']].forEach(([id,name])=>{
-      const o=tag('option',name);o.value=id;scopeInput.append(o);
+      scopeInput.append(localizedOption(id,name,'scope'));
     });
-    groupInput=tag('select');groupInput.setAttribute('aria-label','Категория переводов');
+    groupInput=tag('select');aria(groupInput,'filterCategory','Категория переводов');
     [['all','Все категории'],['skills','Навыки и умения'],['equipment','Снаряжение'],['souls','Души'],
       ['classes','Классы'],['races','Расы и пассивки'],['stats','Характеристики'],['other','Прочее']]
-      .forEach(([id,name])=>{const option=tag('option',name);option.value=id;groupInput.append(option);});
-    translationStatusInput=tag('select');translationStatusInput.setAttribute('aria-label','Статус перевода');
+      .forEach(([id,name])=>groupInput.append(localizedOption(id,name,'category')));
+    translationStatusInput=tag('select');aria(translationStatusInput,'filterStatus','Статус перевода');
     [['all','Все строки'],['missing','Не переведено'],['published','Правки из админки']]
-      .forEach(([id,name])=>{const option=tag('option',name);option.value=id;translationStatusInput.append(option);});
-    localeInput=tag('select');localeInput.setAttribute('aria-label','Язык статуса и покрытия');
+      .forEach(([id,name])=>translationStatusInput.append(localizedOption(id,name,'status')));
+    localeInput=tag('select');aria(localeInput,'filterCoverageLanguage','Язык статуса и покрытия');
     [['ru','Русский'],['en','English'],['jp','日本語'],['tw','繁體中文']].forEach(([id,name])=>{
-      const o=tag('option',name);o.value=id;localeInput.append(o);
+      localeInput.append(localizedOption(id,name,'language'));
     });
-    searchInput=tag('input');searchInput.type='search';searchInput.placeholder='Название, ID, описание…';searchInput.setAttribute('aria-label','Поиск переводов');
-    const resetDrafts=tag('button','Отменить черновики');resetDrafts.type='button';resetDrafts.className='secondary';
+    searchInput=tag('input');searchInput.type='search';searchInput.placeholder='Название, ID, описание…';searchInput.dataset.adminI18nPlaceholder='adminShell.localizationSearchPlaceholder';aria(searchInput,'localizationSearchLabel','Поиск переводов');
+    const resetDrafts=localized('button','localizationDiscardDrafts','Отменить черновики');resetDrafts.type='button';resetDrafts.className='secondary';
     resetDrafts.addEventListener('click',()=>{
       if(!drafts.size||!confirm('Отменить '+drafts.size+' несохранённых переводов?'))return;
       drafts.clear();updateDrafts();render();
@@ -58,7 +73,7 @@
     const coverage=tag('div',null,'localization-progress');
     progressLabel=tag('output','Покрытие выбранного для фильтра языка · загрузка…');
     progress=tag('progress');progress.max=1;progress.value=0;
-    progress.setAttribute('aria-label','Доля имеющихся переводов в выбранной категории');
+    aria(progress,'coverageProgressAria','Доля имеющихся переводов в выбранной категории');
     coverage.append(progressLabel,progress);
     status=tag('p','Загрузка…','localization-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
     count=tag('output','');
@@ -66,11 +81,15 @@
     const bulkHost=tag('div');
     const queueHost=tag('div');
     const nav=tag('div',null,'localization-pagination');
-    prev=tag('button','← Назад');prev.type='button';
-    next=tag('button','Вперёд →');next.type='button';
+    prev=localized('button','paginationPrevious','← Назад');prev.type='button';
+    next=localized('button','paginationNext','Вперёд →');next.type='button';
     prev.addEventListener('click',()=>{page=Math.max(0,page-1);load();});
     next.addEventListener('click',()=>{page++;load();});
     nav.append(prev,count,next);panel.append(head,info,filters,coverage,queueHost,bulkHost,status,items,nav);host.append(panel);
+    // A D1 localization response may already have arrived before the user
+    // signs in and creates this protected workbench. Apply it in place:
+    // never rebuild the form or clear unsaved translation text on switching.
+    window.PandoraAdminI18n?.apply?.();
     queued=window.PandoraLocalizationDrafts?.mount(queueHost,{
       api,
       onPublished:()=>load(),
