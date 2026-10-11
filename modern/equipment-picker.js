@@ -125,6 +125,27 @@
           if (occupied.textContent !== message) occupied.textContent = message;
           occupied.hidden = !locked;
         }
+        // A normal slot-3 category placeholder is a valid, non-equipped
+        // item selection. Offer a one-click way to remove the occupying dress
+        // without clearing unrelated armor, Souls or user allocations.
+        var removeDress = slotRow.querySelector('[data-remaked-remove-occupying-dress]');
+        if (locked && !removeDress) {
+          removeDress = document.createElement('button');
+          removeDress.type = 'button';
+          removeDress.dataset.remakedRemoveOccupyingDress = '';
+          removeDress.addEventListener('click', function () {
+            var chest = document.getElementById('SelEquip_3_0');
+            if (!chest || !chest.options.length) return;
+            var emptyCategoryValue = chest.options[0].value;
+            if (namespace.adapter.selectEquipment(3, emptyCategoryValue)) refresh();
+          });
+          fields.appendChild(removeDress);
+        }
+        if (removeDress) {
+          removeDress.hidden = !locked;
+          var removeLabel = namespace.i18n?.t?.('equipment.releaseOccupiedDress') || 'Unequip dress';
+          if (removeDress.textContent !== removeLabel) removeDress.textContent = removeLabel;
+        }
         var warning = slotRow.querySelector('[data-remaked-equipment-warning]');
         var message = namespace.adapter.equipmentCalculationWarning(select.value);
         if (message && !warning) {
