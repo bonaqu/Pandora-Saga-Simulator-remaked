@@ -77,3 +77,37 @@ test('Updates provides an accessible on-site release panel without altering the 
   expect(await page.evaluate(() => Store())).toBe(before);
   expect(errors).toEqual([]);
 });
+
+
+test('admin-only deployment keeps the last real user release in RU/EN instead of a technical placeholder', async ({page}) => {
+  await page.goto('/?ui=en');
+  const before=await page.evaluate(()=>Store());
+  await page.evaluate(()=>{
+    const latest=window.PandoraRemakedRelease;
+    window.PandoraRemakedRelease=Object.freeze({
+      ...latest,
+      version:window.PandoraRemakedVersion.ui,
+      userVersion:'4.03',
+      date:'2026-10-11',
+      highlights:{
+        en:['A real, verified update for players.'],
+        ru:['Настоящее обновление для игроков.']
+      }
+    });
+  });
+  await page.getByRole('button',{name:'Updates',exact:true}).click();
+  let dialog=page.getByRole('dialog',{name:"What's new",exact:true});
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('[data-remaked-user-version]')).toContainText('Modern 4.03');
+  await expect(dialog.locator('li')).toHaveText(['A real, verified update for players.']);
+  await expect(dialog).not.toContainText('Internal technical improvements.');
+  await page.keyboard.press('Escape');
+  await page.locator('[data-remaked-ui-locale="ru"]').click();
+  await page.getByRole('button',{name:'Обновления',exact:true}).click();
+  dialog=page.getByRole('dialog',{name:'Что нового',exact:true});
+  await expect(dialog.locator('[data-remaked-user-version]')).toContainText('Modern 4.03');
+  await expect(dialog.locator('li')).toHaveText(['Настоящее обновление для игроков.']);
+  await expect(dialog).not.toContainText('Выполнены внутренние технические улучшения.');
+  await page.keyboard.press('Escape');
+  expect(await page.evaluate(()=>Store())).toBe(before);
+});
