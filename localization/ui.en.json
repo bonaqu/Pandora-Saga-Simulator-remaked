@@ -659,5 +659,9 @@
   "adminShell.catalogDraftFilterPassive": "Passive",
   "adminShell.catalogDraftFilterClass": "Classes",
   "adminShell.catalogDraftFilterRacial": "Racial passives",
-  "adminShell.catalogListAria": "Catalog records"
+  "adminShell.catalogListAria": "Catalog records",
+  "adminShell.bulkEditProposalAria": "Edit proposed “After” for {id}",
+  "adminShell.bulkRevertProposalAria": "Restore automatic proposal for {id}",
+  "adminShell.bulkFinalTranslationAria": "Final translation for {id}",
+  "adminShell.bulkSavedDraftSuffix": " · has an unpublished draft"
 }
