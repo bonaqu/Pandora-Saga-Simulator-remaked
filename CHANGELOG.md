@@ -12,6 +12,7 @@
 <!-- admin-notes:en -->
 - Expand browser regression checks for all 43 visible calculated outputs to 15 widths from 320 to 1920 px in RU/EN/JP/TW.
 - Cover 620/621, 860/861 and 1365/1366 px transitions: untruncated single-line labels, locale-identical geometry and no label/value collisions.
+- WebKit's ten-cycle popup smoke test now separates total scenario time from per-click timeout so slow CI runs remain distinguishable from stuck interactions.
 - This is an interface audit, not independent numerical gameplay validation. Legacy, D1, items and saved builds are unchanged.
 <!-- /admin-notes:en -->
 
