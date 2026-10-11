@@ -84,3 +84,34 @@ test('missing pepper fails closed and does not reveal internal configuration', a
   assert.equal(result.status, 503);
   assert.equal((await result.text()).includes('secret'), false);
 });
+
+
+test('every static admin script referenced by HTML is served by the Worker allowlist',async()=>{
+  const html=fs.readFileSync(new URL('../../admin-api/public/admin.html',import.meta.url),'utf8');
+  const scripts=[...html.matchAll(/<script\s+src="(\/[^"]+\.js)"\s+defer><\/script>/g)]
+    .map(match=>match[1]);
+  assert.ok(scripts.length>=6, 'admin HTML must declare its runtime dependencies');
+  assert.ok(scripts.includes('/localization-four-language.js'));
+  const requested=[];
+  const assetEnv={...env,ASSETS:{fetch:async request=>{
+    const route=new URL(request.url).pathname;requested.push(route);
+    return new Response('// isolated test asset: '+route,{headers:{'Content-Type':'text/javascript'}});
+  }}};
+  for(const route of scripts){
+    const actual=await worker.fetch(new Request(origin+route),assetEnv);
+    assert.equal(actual.status,200,'Worker must serve '+route);
+    assert.equal(actual.headers.get('Content-Type'),'text/javascript');
+    assert.equal(actual.headers.get('Cache-Control'),'no-store');
+    assert.match(actual.headers.get('Content-Security-Policy'),/script-src 'self'/);
+  }
+  assert.deepEqual(requested,scripts);
+  assert.equal((await worker.fetch(
+    new Request(origin+'/localization-four-language.js',{method:'HEAD'}),assetEnv
+  )).status,200);
+  assert.equal((await worker.fetch(
+    new Request(origin+'/localization-four-language.js',{method:'POST'}),assetEnv
+  )).status,404);
+  assert.equal((await worker.fetch(
+    new Request(origin+'/unknown-admin-script.js'),assetEnv
+  )).status,404);
+});
