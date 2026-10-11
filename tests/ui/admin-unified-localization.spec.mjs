@@ -668,6 +668,10 @@ test('effective coverage category drilldown stays authenticated GET-only and kee
   await page.addScriptTag({path:'admin-api/public/localization-console.js'});
   await page.evaluate(()=>window.PandoraLocalizationConsole.start(()=>'',()=>{}));
   await page.locator('[data-admin-i18n="adminShell.locAuditAction"]').click();
+  // Surface the exact read-only API validation error before inspecting rows.
+  // A breakdown error must never be mistaken for a successful empty audit.
+  await expect(page.locator('.localization-audit > p').last()).toHaveText(
+    'Проверка покрытия завершена. Изменения не публиковались.');
   await expect(page.locator('.localization-audit-row')).toHaveCount(8);
   await expect(page.locator('.localization-audit-breakdown')).toHaveCount(4);
   const first=page.locator('.localization-audit-breakdown').first();
