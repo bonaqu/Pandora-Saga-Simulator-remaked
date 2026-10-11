@@ -192,7 +192,7 @@
     // D1's current publication always wins above this explicit fallback.
     var approved = (gameCatalogs[currentLocale] || {})[key];
     if (currentLocale === 'ru' && approved &&
-        /^(?:skill_entry\\.18\\.(?:8|9|10)|skill_entry\\.(?:20|21)\\.7)$/.test(key))
+        /^(?:skill_entry\.18\.(?:8|9|10)|skill_entry\.(?:20|21)\.7)$/.test(key))
       return approved;
     var published = namespace.catalog && namespace.catalog.gameLabel(key);
     if (published) return published;
