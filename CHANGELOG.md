@@ -2,15 +2,15 @@
 
 ## Modern 4.04 — компактные заголовки умений, 2026-10-12
 
-<!-- user-notes:ru -->
+<!-- release-notes:user:ru -->
 - Заголовки «Мастерство» и «Потенциал» в разделе умений теперь остаются в одну строку на экранах шириной 861–1365 px.
 - Подписи на RU/EN/JP/TW занимают одинаковое место, без увеличения блока персонажа и с сохранением пространства под навыки.
-<!-- /user-notes:ru -->
+<!-- /release-notes:user:ru -->
 
-<!-- user-notes:en -->
+<!-- release-notes:user:en -->
 - Skill Adeptness and Potential headings now stay on one line at 861–1365px desktop widths.
 - RU/EN/JP/TW use identical heading geometry without making Character wider or squeezing the Skills panel.
-<!-- /user-notes:en -->
+<!-- /release-notes:user:en -->
 
 <!-- admin-notes:ru -->
 - Добавлены проверки ширин 861/1024/1200/1365 px на RU/EN/JP/TW: однострочность, отсутствие наложений, единая геометрия и четырёхзначные расчётные значения.
