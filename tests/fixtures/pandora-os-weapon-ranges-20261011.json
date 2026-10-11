@@ -10,7 +10,9 @@
       "ru": "Тыквенный меч",
       "officialId": 51,
       "range": 110,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 1
     },
     {
       "id": "equipment.0.2",
@@ -18,7 +20,9 @@
       "ru": "Короткий меч",
       "officialId": 21,
       "range": 110,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 2
     },
     {
       "id": "equipment.0.3",
@@ -26,7 +30,9 @@
       "ru": "Тяжелый меч",
       "officialId": 211,
       "range": 130,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 3
     },
     {
       "id": "equipment.0.4",
@@ -34,7 +40,9 @@
       "ru": "Рапира",
       "officialId": 31,
       "range": 125,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 4
     },
     {
       "id": "equipment.0.5",
@@ -42,7 +50,9 @@
       "ru": "Длинный меч",
       "officialId": 221,
       "range": 135,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 5
     },
     {
       "id": "equipment.0.6",
@@ -50,7 +60,9 @@
       "ru": "Ледяной меч",
       "officialId": 24,
       "range": 110,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 6
     },
     {
       "id": "equipment.0.7",
@@ -58,7 +70,9 @@
       "ru": "Широкий меч",
       "officialId": 22,
       "range": 100,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 7
     },
     {
       "id": "equipment.0.8",
@@ -66,7 +80,9 @@
       "ru": "Скимитар",
       "officialId": 11,
       "range": 110,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 8
     },
     {
       "id": "equipment.0.9",
@@ -74,7 +90,9 @@
       "ru": "Сабля",
       "officialId": 201,
       "range": 140,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 9
     },
     {
       "id": "equipment.0.10",
@@ -82,7 +100,9 @@
       "ru": "Кристальный меч",
       "officialId": 23,
       "range": 115,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 10
     },
     {
       "id": "equipment.0.11",
@@ -90,7 +110,9 @@
       "ru": "Мифриловый меч",
       "officialId": 222,
       "range": 135,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 11
     },
     {
       "id": "equipment.0.12",
@@ -98,7 +120,9 @@
       "ru": "Спата",
       "officialId": 1,
       "range": 100,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 12
     },
     {
       "id": "equipment.0.19",
@@ -106,7 +130,9 @@
       "ru": "Прочная спата",
       "officialId": 2,
       "range": 100,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 19
     },
     {
       "id": "equipment.0.20",
@@ -114,7 +140,9 @@
       "ru": "Сильная спата",
       "officialId": 4,
       "range": 110,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 20
     },
     {
       "id": "equipment.0.21",
@@ -122,7 +150,9 @@
       "ru": "Разящая спата",
       "officialId": 3,
       "range": 100,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 21
     },
     {
       "id": "equipment.0.29",
@@ -130,7 +160,9 @@
       "ru": "Гладиус",
       "officialId": 231,
       "range": 135,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 29
     },
     {
       "id": "modern.equipment.6acbe08a-0356-4625-a9ac-af9240766657",
@@ -138,7 +170,9 @@
       "ru": "Сильный меч",
       "officialId": 41,
       "range": 100,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 30
     },
     {
       "id": "modern.equipment.61fdd82e-9aef-48af-a502-48c19e1c885f",
@@ -146,7 +180,9 @@
       "ru": "Меч пирата",
       "officialId": 241,
       "range": 100,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 31
     },
     {
       "id": "modern.equipment.e589e66f-6a3e-4526-a550-085b6e6625a7",
@@ -154,7 +190,9 @@
       "ru": "Прочный меч пирата",
       "officialId": 242,
       "range": 100,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 32
     },
     {
       "id": "modern.equipment.d6361439-fa5f-48f1-ab50-a4cb17b4810e",
@@ -162,7 +200,9 @@
       "ru": "Сильный меч пирата",
       "officialId": 243,
       "range": 100,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 33
     },
     {
       "id": "modern.equipment.330d3768-2145-4b5e-aa93-7979f7367cc9",
@@ -170,7 +210,9 @@
       "ru": "Разящий меч пирата",
       "officialId": 244,
       "range": 100,
-      "kind": "1H_SWORD"
+      "kind": "1H_SWORD",
+      "category": 0,
+      "index": 34
     },
     {
       "id": "equipment.1.2",
@@ -178,7 +220,9 @@
       "ru": "Меч двойного удара",
       "officialId": 401,
       "range": 160,
-      "kind": "2H_SWORD"
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 2
     },
     {
       "id": "equipment.1.3",
@@ -186,7 +230,9 @@
       "ru": "Меч-конебой",
       "officialId": 411,
       "range": 200,
-      "kind": "2H_SWORD"
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 3
     },
     {
       "id": "equipment.1.4",
@@ -194,7 +240,9 @@
       "ru": "Пламенный клинок",
       "officialId": 421,
       "range": 220,
-      "kind": "2H_SWORD"
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 4
     },
     {
       "id": "equipment.1.5",
@@ -202,7 +250,9 @@
       "ru": "Меч равновесия",
       "officialId": 432,
       "range": 220,
-      "kind": "2H_SWORD"
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 5
     },
     {
       "id": "equipment.1.6",
@@ -210,7 +260,9 @@
       "ru": "Кровавый меч",
       "officialId": 403,
       "range": 170,
-      "kind": "2H_SWORD"
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 6
     },
     {
       "id": "equipment.1.7",
@@ -218,7 +270,9 @@
       "ru": "Большой двуручный меч",
       "officialId": 431,
       "range": 220,
-      "kind": "2H_SWORD"
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 7
     },
     {
       "id": "equipment.1.8",
@@ -226,7 +280,9 @@
       "ru": "Клеймор",
       "officialId": 402,
       "range": 170,
-      "kind": "2H_SWORD"
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 8
     },
     {
       "id": "equipment.1.16",
@@ -234,7 +290,9 @@
       "ru": "Прочный клеймор",
       "officialId": 404,
       "range": 170,
-      "kind": "2H_SWORD"
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 16
     },
     {
       "id": "equipment.1.17",
@@ -242,7 +300,9 @@
       "ru": "Сильный клеймор",
       "officialId": 406,
       "range": 180,
-      "kind": "2H_SWORD"
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 17
     },
     {
       "id": "equipment.1.18",
@@ -250,7 +310,9 @@
       "ru": "Разящий клеймор",
       "officialId": 405,
       "range": 170,
-      "kind": "2H_SWORD"
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 18
     },
     {
       "id": "equipment.1.25",
@@ -258,7 +320,9 @@
       "ru": "Рычащий меч",
       "officialId": 422,
       "range": 220,
-      "kind": "2H_SWORD"
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 25
     },
     {
       "id": "modern.equipment.410f3943-0a61-4811-ab65-bdb71d10e8a6",
@@ -266,7 +330,9 @@
       "ru": "Огромный меч",
       "officialId": 441,
       "range": 220,
-      "kind": "2H_SWORD"
+      "kind": "2H_SWORD",
+      "category": 1,
+      "index": 26
     },
     {
       "id": "equipment.2.1",
@@ -274,7 +340,9 @@
       "ru": "Топор",
       "officialId": 602,
       "range": 95,
-      "kind": "1H_AXE"
+      "kind": "1H_AXE",
+      "category": 2,
+      "index": 1
     },
     {
       "id": "equipment.2.2",
@@ -282,7 +350,9 @@
       "ru": "Ручной топор",
       "officialId": 601,
       "range": 95,
-      "kind": "1H_AXE"
+      "kind": "1H_AXE",
+      "category": 2,
+      "index": 2
     },
     {
       "id": "equipment.2.3",
@@ -290,7 +360,9 @@
       "ru": "Топор войны",
       "officialId": 611,
       "range": 95,
-      "kind": "1H_AXE"
+      "kind": "1H_AXE",
+      "category": 2,
+      "index": 3
     },
     {
       "id": "equipment.2.4",
@@ -298,7 +370,9 @@
       "ru": "Бронзовый топор",
       "officialId": 603,
       "range": 95,
-      "kind": "1H_AXE"
+      "kind": "1H_AXE",
+      "category": 2,
+      "index": 4
     },
     {
       "id": "equipment.2.5",
@@ -306,7 +380,9 @@
       "ru": "Клюв ворона",
       "officialId": 621,
       "range": 95,
-      "kind": "1H_AXE"
+      "kind": "1H_AXE",
+      "category": 2,
+      "index": 5
     },
     {
       "id": "equipment.2.6",
@@ -314,7 +390,9 @@
       "ru": "Широкий топор",
       "officialId": 631,
       "range": 100,
-      "kind": "1H_AXE"
+      "kind": "1H_AXE",
+      "category": 2,
+      "index": 6
     },
     {
       "id": "equipment.2.19",
@@ -322,7 +400,9 @@
       "ru": "Боевой топор",
       "officialId": 641,
       "range": 105,
-      "kind": "1H_AXE"
+      "kind": "1H_AXE",
+      "category": 2,
+      "index": 19
     },
     {
       "id": "equipment.3.2",
@@ -330,7 +410,9 @@
       "ru": "Боевая коса",
       "officialId": 801,
       "range": 180,
-      "kind": "2H_AXE"
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 2
     },
     {
       "id": "equipment.3.3",
@@ -338,7 +420,9 @@
       "ru": "Топор палача",
       "officialId": 811,
       "range": 140,
-      "kind": "2H_AXE"
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 3
     },
     {
       "id": "equipment.3.4",
@@ -346,7 +430,9 @@
       "ru": "Жестокий топор",
       "officialId": 812,
       "range": 140,
-      "kind": "2H_AXE"
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 4
     },
     {
       "id": "equipment.3.5",
@@ -354,7 +440,9 @@
       "ru": "Небесная алебарда",
       "officialId": 821,
       "range": 200,
-      "kind": "2H_AXE"
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 5
     },
     {
       "id": "equipment.3.6",
@@ -362,7 +450,9 @@
       "ru": "Топор-крушитель",
       "officialId": 831,
       "range": 150,
-      "kind": "2H_AXE"
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 6
     },
     {
       "id": "equipment.3.7",
@@ -370,7 +460,9 @@
       "ru": "Топор викинга",
       "officialId": 832,
       "range": 150,
-      "kind": "2H_AXE"
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 7
     },
     {
       "id": "equipment.3.14",
@@ -378,7 +470,9 @@
       "ru": "Прочный топор викинга",
       "officialId": 833,
       "range": 150,
-      "kind": "2H_AXE"
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 14
     },
     {
       "id": "equipment.3.15",
@@ -386,7 +480,9 @@
       "ru": "Сильный топор викинга",
       "officialId": 835,
       "range": 160,
-      "kind": "2H_AXE"
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 15
     },
     {
       "id": "equipment.3.16",
@@ -394,7 +490,9 @@
       "ru": "Разящий топор викинга",
       "officialId": 834,
       "range": 150,
-      "kind": "2H_AXE"
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 16
     },
     {
       "id": "modern.equipment.9edb0261-00f0-4e87-ab90-4df7316a7f8c",
@@ -402,7 +500,9 @@
       "ru": "Огромный топор",
       "officialId": 841,
       "range": 150,
-      "kind": "2H_AXE"
+      "kind": "2H_AXE",
+      "category": 3,
+      "index": 26
     },
     {
       "id": "equipment.4.1",
@@ -410,7 +510,9 @@
       "ru": "Деревянное копье",
       "officialId": 1601,
       "range": 300,
-      "kind": "LANCE"
+      "kind": "LANCE",
+      "category": 4,
+      "index": 1
     },
     {
       "id": "equipment.4.2",
@@ -418,7 +520,9 @@
       "ru": "Турнирное копье",
       "officialId": 1611,
       "range": 300,
-      "kind": "LANCE"
+      "kind": "LANCE",
+      "category": 4,
+      "index": 2
     },
     {
       "id": "equipment.4.4",
@@ -426,7 +530,9 @@
       "ru": "Длинная пика",
       "officialId": 1613,
       "range": 300,
-      "kind": "LANCE"
+      "kind": "LANCE",
+      "category": 4,
+      "index": 4
     },
     {
       "id": "equipment.4.5",
@@ -434,7 +540,9 @@
       "ru": "Усиленное копье",
       "officialId": 1621,
       "range": 300,
-      "kind": "LANCE"
+      "kind": "LANCE",
+      "category": 4,
+      "index": 5
     },
     {
       "id": "equipment.4.6",
@@ -442,7 +550,9 @@
       "ru": "Тяжелое копье",
       "officialId": 1631,
       "range": 300,
-      "kind": "LANCE"
+      "kind": "LANCE",
+      "category": 4,
+      "index": 6
     },
     {
       "id": "equipment.4.20",
@@ -450,7 +560,9 @@
       "ru": "Копье ночи",
       "officialId": 1641,
       "range": 300,
-      "kind": "LANCE"
+      "kind": "LANCE",
+      "category": 4,
+      "index": 20
     },
     {
       "id": "modern.equipment.31f5a30e-8125-41c7-a034-f70f04cc97c9",
@@ -458,7 +570,9 @@
       "ru": "Прочное тяжелое копье",
       "officialId": 1632,
       "range": 300,
-      "kind": "LANCE"
+      "kind": "LANCE",
+      "category": 4,
+      "index": 21
     },
     {
       "id": "modern.equipment.86ba8a23-d24b-49be-afe1-6556c823e946",
@@ -466,7 +580,9 @@
       "ru": "Разящее тяжелое копье",
       "officialId": 1633,
       "range": 300,
-      "kind": "LANCE"
+      "kind": "LANCE",
+      "category": 4,
+      "index": 22
     },
     {
       "id": "modern.equipment.6a9c6b1f-820f-4bca-a2e1-9c7f8bb3ed2f",
@@ -474,7 +590,9 @@
       "ru": "Сильное тяжелое копье",
       "officialId": 1634,
       "range": 300,
-      "kind": "LANCE"
+      "kind": "LANCE",
+      "category": 4,
+      "index": 23
     },
     {
       "id": "equipment.5.2",
@@ -482,7 +600,9 @@
       "ru": "Солдатская пика",
       "officialId": 1401,
       "range": 160,
-      "kind": "POLE_ARM"
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 2
     },
     {
       "id": "equipment.5.3",
@@ -490,7 +610,9 @@
       "ru": "Трезубец",
       "officialId": 1411,
       "range": 180,
-      "kind": "POLE_ARM"
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 3
     },
     {
       "id": "equipment.5.4",
@@ -498,7 +620,9 @@
       "ru": "Роккобская алебарда",
       "officialId": 1421,
       "range": 220,
-      "kind": "POLE_ARM"
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 4
     },
     {
       "id": "equipment.5.5",
@@ -506,7 +630,9 @@
       "ru": "Палач",
       "officialId": 1431,
       "range": 200,
-      "kind": "POLE_ARM"
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 5
     },
     {
       "id": "equipment.5.6",
@@ -514,7 +640,9 @@
       "ru": "Боевое копье",
       "officialId": 1441,
       "range": 240,
-      "kind": "POLE_ARM"
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 6
     },
     {
       "id": "equipment.5.8",
@@ -522,7 +650,9 @@
       "ru": "Пронзающая пика",
       "officialId": 1451,
       "range": 280,
-      "kind": "POLE_ARM"
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 8
     },
     {
       "id": "equipment.5.26",
@@ -530,7 +660,9 @@
       "ru": "Копье Зефира",
       "officialId": 1482,
       "range": 250,
-      "kind": "POLE_ARM"
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 26
     },
     {
       "id": "equipment.5.27",
@@ -538,7 +670,9 @@
       "ru": "Разящее копье Зефира",
       "officialId": 1484,
       "range": 250,
-      "kind": "POLE_ARM"
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 27
     },
     {
       "id": "equipment.5.28",
@@ -546,7 +680,9 @@
       "ru": "Сильное копье Зефира",
       "officialId": 1485,
       "range": 250,
-      "kind": "POLE_ARM"
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 28
     },
     {
       "id": "modern.equipment.b4fcaf6d-e6d6-4b6b-a7aa-c2ccd8eb0c19",
@@ -554,7 +690,9 @@
       "ru": "Лунное копье",
       "officialId": 1461,
       "range": 250,
-      "kind": "POLE_ARM"
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 29
     },
     {
       "id": "modern.equipment.38f38d1d-7a5d-4fab-a7f5-1d14593b71af",
@@ -562,7 +700,9 @@
       "ru": "Прочное копье Зефира",
       "officialId": 1483,
       "range": 250,
-      "kind": "POLE_ARM"
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 30
     },
     {
       "id": "modern.equipment.da076bd2-bd8a-49fd-a198-9f9e7fbc734b",
@@ -570,7 +710,9 @@
       "ru": "Алебарда",
       "officialId": 1491,
       "range": 290,
-      "kind": "POLE_ARM"
+      "kind": "POLE_ARM",
+      "category": 5,
+      "index": 31
     },
     {
       "id": "equipment.6.2",
@@ -578,7 +720,9 @@
       "ru": "Нож",
       "officialId": 1812,
       "range": 185,
-      "kind": "1H_TRUMP_WEAPON"
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 2
     },
     {
       "id": "equipment.6.4",
@@ -586,7 +730,9 @@
       "ru": "Кинжал убийцы",
       "officialId": 1811,
       "range": 185,
-      "kind": "1H_TRUMP_WEAPON"
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 4
     },
     {
       "id": "equipment.6.5",
@@ -594,7 +740,9 @@
       "ru": "Стилет",
       "officialId": 1801,
       "range": 185,
-      "kind": "1H_TRUMP_WEAPON"
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 5
     },
     {
       "id": "equipment.6.6",
@@ -602,7 +750,9 @@
       "ru": "Нож кукри",
       "officialId": 1813,
       "range": 185,
-      "kind": "1H_TRUMP_WEAPON"
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 6
     },
     {
       "id": "equipment.6.7",
@@ -610,7 +760,9 @@
       "ru": "Нож ловчего",
       "officialId": 1814,
       "range": 185,
-      "kind": "1H_TRUMP_WEAPON"
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 7
     },
     {
       "id": "equipment.6.8",
@@ -618,7 +770,9 @@
       "ru": "Метеоритный нож",
       "officialId": 1822,
       "range": 190,
-      "kind": "1H_TRUMP_WEAPON"
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 8
     },
     {
       "id": "equipment.6.9",
@@ -626,7 +780,9 @@
       "ru": "Длинный нож",
       "officialId": 1821,
       "range": 190,
-      "kind": "1H_TRUMP_WEAPON"
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 9
     },
     {
       "id": "equipment.6.10",
@@ -634,7 +790,9 @@
       "ru": "Стилет убийцы",
       "officialId": 1831,
       "range": 90,
-      "kind": "1H_TRUMP_WEAPON"
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 10
     },
     {
       "id": "equipment.6.11",
@@ -642,7 +800,9 @@
       "ru": "Клинок тьмы",
       "officialId": 1841,
       "range": 90,
-      "kind": "1H_TRUMP_WEAPON"
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 11
     },
     {
       "id": "equipment.6.25",
@@ -650,7 +810,9 @@
       "ru": "Легкий клинок",
       "officialId": 1851,
       "range": 90,
-      "kind": "1H_TRUMP_WEAPON"
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 25
     },
     {
       "id": "modern.equipment.4d91c54b-80cd-4bc1-aac0-b0c3171be600",
@@ -658,7 +820,9 @@
       "ru": "Серебряный кинжал",
       "officialId": 1802,
       "range": 185,
-      "kind": "1H_TRUMP_WEAPON"
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 26
     },
     {
       "id": "modern.equipment.971649ba-172f-4bd3-a7cd-2306111904ff",
@@ -666,7 +830,9 @@
       "ru": "Прочный серебряный кинжал",
       "officialId": 1803,
       "range": 185,
-      "kind": "1H_TRUMP_WEAPON"
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 27
     },
     {
       "id": "modern.equipment.cab5b643-1ad1-4186-a108-622c0115e9b8",
@@ -674,7 +840,9 @@
       "ru": "Разящий серебряный кинжал",
       "officialId": 1804,
       "range": 185,
-      "kind": "1H_TRUMP_WEAPON"
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 28
     },
     {
       "id": "modern.equipment.7c5fd1b1-9541-4a92-a3bc-0105eeda4867",
@@ -682,7 +850,9 @@
       "ru": "Сильный серебряный кинжал",
       "officialId": 1805,
       "range": 200,
-      "kind": "1H_TRUMP_WEAPON"
+      "kind": "1H_TRUMP_WEAPON",
+      "category": 6,
+      "index": 29
     },
     {
       "id": "equipment.7.1",
@@ -690,7 +860,9 @@
       "ru": "Кастет",
       "officialId": 2002,
       "range": 150,
-      "kind": "2H_TRUMP_WEAPON"
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 1
     },
     {
       "id": "equipment.7.2",
@@ -698,7 +870,9 @@
       "ru": "Тэкко",
       "officialId": 2001,
       "range": 150,
-      "kind": "2H_TRUMP_WEAPON"
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 2
     },
     {
       "id": "equipment.7.4",
@@ -706,7 +880,9 @@
       "ru": "Убивающий коготь",
       "officialId": 2003,
       "range": 150,
-      "kind": "2H_TRUMP_WEAPON"
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 4
     },
     {
       "id": "equipment.7.5",
@@ -714,7 +890,9 @@
       "ru": "Тигриная лапа",
       "officialId": 2004,
       "range": 150,
-      "kind": "2H_TRUMP_WEAPON"
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 5
     },
     {
       "id": "equipment.7.6",
@@ -722,7 +900,9 @@
       "ru": "Бойцовский кастет",
       "officialId": 2011,
       "range": 150,
-      "kind": "2H_TRUMP_WEAPON"
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 6
     },
     {
       "id": "equipment.7.7",
@@ -730,7 +910,9 @@
       "ru": "Когтистая лапа",
       "officialId": 2021,
       "range": 150,
-      "kind": "2H_TRUMP_WEAPON"
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 7
     },
     {
       "id": "equipment.7.8",
@@ -738,7 +920,9 @@
       "ru": "Мифриловые когти",
       "officialId": 2022,
       "range": 150,
-      "kind": "2H_TRUMP_WEAPON"
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 8
     },
     {
       "id": "equipment.7.16",
@@ -746,7 +930,9 @@
       "ru": "Прочные мифриловые когти",
       "officialId": 2023,
       "range": 150,
-      "kind": "2H_TRUMP_WEAPON"
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 16
     },
     {
       "id": "equipment.7.17",
@@ -754,7 +940,9 @@
       "ru": "Сильные мифриловые когти",
       "officialId": 2025,
       "range": 165,
-      "kind": "2H_TRUMP_WEAPON"
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 17
     },
     {
       "id": "equipment.7.18",
@@ -762,7 +950,9 @@
       "ru": "Разящие мифриловые когти",
       "officialId": 2024,
       "range": 150,
-      "kind": "2H_TRUMP_WEAPON"
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 18
     },
     {
       "id": "modern.equipment.d41d1404-b4c8-4b4a-a376-ce3d068a1530",
@@ -770,7 +960,9 @@
       "ru": "Катар",
       "officialId": 2031,
       "range": 150,
-      "kind": "2H_TRUMP_WEAPON"
+      "kind": "2H_TRUMP_WEAPON",
+      "category": 7,
+      "index": 27
     },
     {
       "id": "equipment.8.3",
@@ -778,7 +970,9 @@
       "ru": "Лук",
       "officialId": 2202,
       "range": 2800,
-      "kind": "BOW"
+      "kind": "BOW",
+      "category": 8,
+      "index": 3
     },
     {
       "id": "equipment.8.4",
@@ -786,7 +980,9 @@
       "ru": "Короткий лук",
       "officialId": 2201,
       "range": 2800,
-      "kind": "BOW"
+      "kind": "BOW",
+      "category": 8,
+      "index": 4
     },
     {
       "id": "equipment.8.5",
@@ -794,7 +990,9 @@
       "ru": "Превосходный лук",
       "officialId": 2203,
       "range": 2800,
-      "kind": "BOW"
+      "kind": "BOW",
+      "category": 8,
+      "index": 5
     },
     {
       "id": "equipment.8.6",
@@ -802,7 +1000,9 @@
       "ru": "Длинный лук",
       "officialId": 2221,
       "range": 3500,
-      "kind": "BOW"
+      "kind": "BOW",
+      "category": 8,
+      "index": 6
     },
     {
       "id": "equipment.8.7",
@@ -810,7 +1010,9 @@
       "ru": "Лук солнечного света",
       "officialId": 2222,
       "range": 3200,
-      "kind": "BOW"
+      "kind": "BOW",
+      "category": 8,
+      "index": 7
     },
     {
       "id": "equipment.8.8",
@@ -818,7 +1020,9 @@
       "ru": "Охотничий лук",
       "officialId": 2211,
       "range": 3200,
-      "kind": "BOW"
+      "kind": "BOW",
+      "category": 8,
+      "index": 8
     },
     {
       "id": "equipment.8.9",
@@ -826,7 +1030,9 @@
       "ru": "Стремительный лук",
       "officialId": 2231,
       "range": 2900,
-      "kind": "BOW"
+      "kind": "BOW",
+      "category": 8,
+      "index": 9
     },
     {
       "id": "equipment.8.10",
@@ -834,7 +1040,9 @@
       "ru": "Лук лунного света",
       "officialId": 2223,
       "range": 3200,
-      "kind": "BOW"
+      "kind": "BOW",
+      "category": 8,
+      "index": 10
     },
     {
       "id": "equipment.8.11",
@@ -842,7 +1050,9 @@
       "ru": "Лук стража",
       "officialId": 2224,
       "range": 3500,
-      "kind": "BOW"
+      "kind": "BOW",
+      "category": 8,
+      "index": 11
     },
     {
       "id": "equipment.8.18",
@@ -850,7 +1060,9 @@
       "ru": "Прочный лук стража",
       "officialId": 2225,
       "range": 3500,
-      "kind": "BOW"
+      "kind": "BOW",
+      "category": 8,
+      "index": 18
     },
     {
       "id": "equipment.8.19",
@@ -858,7 +1070,9 @@
       "ru": "Сильный лук стража",
       "officialId": 2227,
       "range": 3700,
-      "kind": "BOW"
+      "kind": "BOW",
+      "category": 8,
+      "index": 19
     },
     {
       "id": "equipment.8.20",
@@ -866,7 +1080,9 @@
       "ru": "Разящий лук стража",
       "officialId": 2226,
       "range": 3500,
-      "kind": "BOW"
+      "kind": "BOW",
+      "category": 8,
+      "index": 20
     },
     {
       "id": "equipment.9.1",
@@ -874,7 +1090,9 @@
       "ru": "Арбалет",
       "officialId": 2402,
       "range": 1250,
-      "kind": "CROSSBOW"
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 1
     },
     {
       "id": "equipment.9.2",
@@ -882,7 +1100,9 @@
       "ru": "Легкий арбалет",
       "officialId": 2401,
       "range": 1250,
-      "kind": "CROSSBOW"
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 2
     },
     {
       "id": "equipment.9.3",
@@ -890,7 +1110,9 @@
       "ru": "Тяжелый арбалет",
       "officialId": 2411,
       "range": 1250,
-      "kind": "CROSSBOW"
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 3
     },
     {
       "id": "equipment.9.4",
@@ -898,7 +1120,9 @@
       "ru": "Военный арбалет",
       "officialId": 2421,
       "range": 1250,
-      "kind": "CROSSBOW"
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 4
     },
     {
       "id": "equipment.9.17",
@@ -906,7 +1130,9 @@
       "ru": "Мощный арбалет",
       "officialId": 2431,
       "range": 2500,
-      "kind": "CROSSBOW"
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 17
     },
     {
       "id": "modern.equipment.4003e468-d332-424e-aa1e-3d72c336c1c6",
@@ -914,7 +1140,9 @@
       "ru": "Прочный военный арбалет",
       "officialId": 2422,
       "range": 1250,
-      "kind": "CROSSBOW"
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 19
     },
     {
       "id": "modern.equipment.8c875bf5-7266-4cdd-a845-1ec0bf1132fb",
@@ -922,7 +1150,9 @@
       "ru": "Разящий военный арбалет",
       "officialId": 2423,
       "range": 1250,
-      "kind": "CROSSBOW"
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 20
     },
     {
       "id": "modern.equipment.6d300e76-18d1-446e-a300-a57b964b9939",
@@ -930,7 +1160,9 @@
       "ru": "Сильный военный арбалет",
       "officialId": 2424,
       "range": 1250,
-      "kind": "CROSSBOW"
+      "kind": "CROSSBOW",
+      "category": 9,
+      "index": 21
     },
     {
       "id": "equipment.10.1",
@@ -938,7 +1170,9 @@
       "ru": "Деревянная палица",
       "officialId": 1002,
       "range": 100,
-      "kind": "1H_BLUNT_WEAPON"
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 1
     },
     {
       "id": "equipment.10.4",
@@ -946,7 +1180,9 @@
       "ru": "Палица",
       "officialId": 1001,
       "range": 100,
-      "kind": "1H_BLUNT_WEAPON"
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 4
     },
     {
       "id": "equipment.10.5",
@@ -954,7 +1190,9 @@
       "ru": "Скипетр",
       "officialId": 1011,
       "range": 120,
-      "kind": "1H_BLUNT_WEAPON"
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 5
     },
     {
       "id": "equipment.10.6",
@@ -962,7 +1200,9 @@
       "ru": "Железная палица",
       "officialId": 1012,
       "range": 120,
-      "kind": "1H_BLUNT_WEAPON"
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 6
     },
     {
       "id": "equipment.10.7",
@@ -970,7 +1210,9 @@
       "ru": "Мощная булава",
       "officialId": 1021,
       "range": 130,
-      "kind": "1H_BLUNT_WEAPON"
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 7
     },
     {
       "id": "equipment.10.9",
@@ -978,7 +1220,9 @@
       "ru": "Боевая алебарда",
       "officialId": 1031,
       "range": 130,
-      "kind": "1H_BLUNT_WEAPON"
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 9
     },
     {
       "id": "equipment.10.10",
@@ -986,7 +1230,9 @@
       "ru": "Палица викинга",
       "officialId": 1014,
       "range": 120,
-      "kind": "1H_BLUNT_WEAPON"
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 10
     },
     {
       "id": "equipment.10.17",
@@ -994,7 +1240,9 @@
       "ru": "Прочная палица викинга",
       "officialId": 1015,
       "range": 120,
-      "kind": "1H_BLUNT_WEAPON"
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 17
     },
     {
       "id": "equipment.10.18",
@@ -1002,7 +1250,9 @@
       "ru": "Сильная палица викинга",
       "officialId": 1017,
       "range": 130,
-      "kind": "1H_BLUNT_WEAPON"
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 18
     },
     {
       "id": "equipment.10.19",
@@ -1010,7 +1260,9 @@
       "ru": "Разящая палица викинга",
       "officialId": 1016,
       "range": 120,
-      "kind": "1H_BLUNT_WEAPON"
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 19
     },
     {
       "id": "equipment.10.27",
@@ -1018,7 +1270,9 @@
       "ru": "Моргенштерн",
       "officialId": 1041,
       "range": 120,
-      "kind": "1H_BLUNT_WEAPON"
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 27
     },
     {
       "id": "modern.equipment.b2495c0e-0026-4061-afdb-8d6db58ee14e",
@@ -1026,7 +1280,9 @@
       "ru": "Веер повелителя ветров",
       "officialId": 1091,
       "range": 120,
-      "kind": "1H_BLUNT_WEAPON"
+      "kind": "1H_BLUNT_WEAPON",
+      "category": 10,
+      "index": 28
     },
     {
       "id": "equipment.11.2",
@@ -1034,7 +1290,9 @@
       "ru": "Деревянный дзё",
       "officialId": 1201,
       "range": 190,
-      "kind": "2H_BLUNT_WEAPON"
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 2
     },
     {
       "id": "equipment.11.4",
@@ -1042,7 +1300,9 @@
       "ru": "Металлическая булава",
       "officialId": 1211,
       "range": 190,
-      "kind": "2H_BLUNT_WEAPON"
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 4
     },
     {
       "id": "equipment.11.5",
@@ -1050,7 +1310,9 @@
       "ru": "Королевский жезл",
       "officialId": 1221,
       "range": 190,
-      "kind": "2H_BLUNT_WEAPON"
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 5
     },
     {
       "id": "equipment.11.6",
@@ -1058,7 +1320,9 @@
       "ru": "Мифриловый тэцубо",
       "officialId": 1212,
       "range": 190,
-      "kind": "2H_BLUNT_WEAPON"
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 6
     },
     {
       "id": "equipment.11.13",
@@ -1066,7 +1330,9 @@
       "ru": "Клиновидный молот",
       "officialId": 1231,
       "range": 190,
-      "kind": "2H_BLUNT_WEAPON"
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 13
     },
     {
       "id": "equipment.11.14",
@@ -1074,7 +1340,9 @@
       "ru": "Прочный клиновидный молот",
       "officialId": 1232,
       "range": 190,
-      "kind": "2H_BLUNT_WEAPON"
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 14
     },
     {
       "id": "equipment.11.15",
@@ -1082,7 +1350,9 @@
       "ru": "Сильный клиновидный молот",
       "officialId": 1234,
       "range": 200,
-      "kind": "2H_BLUNT_WEAPON"
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 15
     },
     {
       "id": "equipment.11.16",
@@ -1090,7 +1360,9 @@
       "ru": "Разящий клиновидный молот",
       "officialId": 1233,
       "range": 190,
-      "kind": "2H_BLUNT_WEAPON"
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 16
     },
     {
       "id": "equipment.11.24",
@@ -1098,7 +1370,9 @@
       "ru": "Массивная кувалда",
       "officialId": 1241,
       "range": 190,
-      "kind": "2H_BLUNT_WEAPON"
+      "kind": "2H_BLUNT_WEAPON",
+      "category": 11,
+      "index": 24
     },
     {
       "id": "equipment.12.2",
@@ -1106,7 +1380,9 @@
       "ru": "Волшебный жезл",
       "officialId": 2602,
       "range": 100,
-      "kind": "WAND"
+      "kind": "WAND",
+      "category": 12,
+      "index": 2
     },
     {
       "id": "equipment.12.4",
@@ -1114,7 +1390,9 @@
       "ru": "Жезл магического искажения",
       "officialId": 2601,
       "range": 100,
-      "kind": "WAND"
+      "kind": "WAND",
+      "category": 12,
+      "index": 4
     },
     {
       "id": "equipment.12.5",
@@ -1122,7 +1400,9 @@
       "ru": "Жезл огня",
       "officialId": 2612,
       "range": 110,
-      "kind": "WAND"
+      "kind": "WAND",
+      "category": 12,
+      "index": 5
     },
     {
       "id": "equipment.12.6",
@@ -1130,7 +1410,9 @@
       "ru": "Жезл водоворотов",
       "officialId": 2611,
       "range": 110,
-      "kind": "WAND"
+      "kind": "WAND",
+      "category": 12,
+      "index": 6
     },
     {
       "id": "equipment.12.7",
@@ -1138,7 +1420,9 @@
       "ru": "Жезл лунного света",
       "officialId": 2621,
       "range": 120,
-      "kind": "WAND"
+      "kind": "WAND",
+      "category": 12,
+      "index": 7
     },
     {
       "id": "equipment.12.8",
@@ -1146,7 +1430,9 @@
       "ru": "Жезл фей",
       "officialId": 2622,
       "range": 120,
-      "kind": "WAND"
+      "kind": "WAND",
+      "category": 12,
+      "index": 8
     },
     {
       "id": "equipment.12.10",
@@ -1154,7 +1440,9 @@
       "ru": "Звездная палочка",
       "officialId": 2631,
       "range": 120,
-      "kind": "WAND"
+      "kind": "WAND",
+      "category": 12,
+      "index": 10
     },
     {
       "id": "equipment.12.13",
@@ -1162,7 +1450,9 @@
       "ru": "Морозный жезл",
       "officialId": 2651,
       "range": 120,
-      "kind": "WAND"
+      "kind": "WAND",
+      "category": 12,
+      "index": 13
     },
     {
       "id": "equipment.12.15",
@@ -1170,7 +1460,9 @@
       "ru": "Посох исчезновения",
       "officialId": 2655,
       "range": 120,
-      "kind": "WAND"
+      "kind": "WAND",
+      "category": 12,
+      "index": 15
     },
     {
       "id": "equipment.12.17",
@@ -1178,7 +1470,9 @@
       "ru": "Темный жезл жестокости",
       "officialId": 2653,
       "range": 120,
-      "kind": "WAND"
+      "kind": "WAND",
+      "category": 12,
+      "index": 17
     },
     {
       "id": "equipment.12.18",
@@ -1186,7 +1480,9 @@
       "ru": "Изящный жезл",
       "officialId": 2641,
       "range": 120,
-      "kind": "WAND"
+      "kind": "WAND",
+      "category": 12,
+      "index": 18
     },
     {
       "id": "equipment.12.19",
@@ -1194,7 +1490,9 @@
       "ru": "Прочный изящный жезл",
       "officialId": 2642,
       "range": 120,
-      "kind": "WAND"
+      "kind": "WAND",
+      "category": 12,
+      "index": 19
     },
     {
       "id": "equipment.12.20",
@@ -1202,7 +1500,9 @@
       "ru": "Сильный изящный жезл",
       "officialId": 2644,
       "range": 120,
-      "kind": "WAND"
+      "kind": "WAND",
+      "category": 12,
+      "index": 20
     },
     {
       "id": "equipment.12.21",
@@ -1210,7 +1510,9 @@
       "ru": "Разящий изящный жезл",
       "officialId": 2643,
       "range": 120,
-      "kind": "WAND"
+      "kind": "WAND",
+      "category": 12,
+      "index": 21
     },
     {
       "id": "equipment.13.2",
@@ -1218,7 +1520,9 @@
       "ru": "Таинственный посох",
       "officialId": 2801,
       "range": 150,
-      "kind": "STAFF"
+      "kind": "STAFF",
+      "category": 13,
+      "index": 2
     },
     {
       "id": "equipment.13.3",
@@ -1226,7 +1530,9 @@
       "ru": "Железный посох",
       "officialId": 2802,
       "range": 150,
-      "kind": "STAFF"
+      "kind": "STAFF",
+      "category": 13,
+      "index": 3
     },
     {
       "id": "equipment.13.4",
@@ -1234,7 +1540,9 @@
       "ru": "Посох с красным кристаллом",
       "officialId": 2811,
       "range": 150,
-      "kind": "STAFF"
+      "kind": "STAFF",
+      "category": 13,
+      "index": 4
     },
     {
       "id": "equipment.13.5",
@@ -1242,7 +1550,9 @@
       "ru": "Посох мудреца",
       "officialId": 2821,
       "range": 150,
-      "kind": "STAFF"
+      "kind": "STAFF",
+      "category": 13,
+      "index": 5
     },
     {
       "id": "equipment.13.6",
@@ -1250,7 +1560,9 @@
       "ru": "Посох силы",
       "officialId": 2812,
       "range": 150,
-      "kind": "STAFF"
+      "kind": "STAFF",
+      "category": 13,
+      "index": 6
     },
     {
       "id": "equipment.13.7",
@@ -1258,7 +1570,9 @@
       "ru": "Посох скелета",
       "officialId": 2822,
       "range": 150,
-      "kind": "STAFF"
+      "kind": "STAFF",
+      "category": 13,
+      "index": 7
     },
     {
       "id": "equipment.13.8",
@@ -1266,7 +1580,9 @@
       "ru": "Глаз оракула",
       "officialId": 2831,
       "range": 150,
-      "kind": "STAFF"
+      "kind": "STAFF",
+      "category": 13,
+      "index": 8
     },
     {
       "id": "equipment.13.15",
@@ -1274,7 +1590,9 @@
       "ru": "Прочный посох скелета",
       "officialId": 2823,
       "range": 150,
-      "kind": "STAFF"
+      "kind": "STAFF",
+      "category": 13,
+      "index": 15
     },
     {
       "id": "equipment.13.16",
@@ -1282,7 +1600,9 @@
       "ru": "Сильный посох скелета",
       "officialId": 2825,
       "range": 150,
-      "kind": "STAFF"
+      "kind": "STAFF",
+      "category": 13,
+      "index": 16
     },
     {
       "id": "equipment.13.17",
@@ -1290,7 +1610,9 @@
       "ru": "Разящий посох скелета",
       "officialId": 2824,
       "range": 150,
-      "kind": "STAFF"
+      "kind": "STAFF",
+      "category": 13,
+      "index": 17
     },
     {
       "id": "equipment.13.19",
@@ -1298,7 +1620,9 @@
       "ru": "Небесный скипетр",
       "officialId": 2857,
       "range": 150,
-      "kind": "STAFF"
+      "kind": "STAFF",
+      "category": 13,
+      "index": 19
     },
     {
       "id": "equipment.13.24",
@@ -1306,7 +1630,9 @@
       "ru": "Проклятый посох",
       "officialId": 2841,
       "range": 150,
-      "kind": "STAFF"
+      "kind": "STAFF",
+      "category": 13,
+      "index": 24
     },
     {
       "id": "modern.equipment.fdd12152-2924-4a88-a824-b9ee8842eb46",
@@ -1314,7 +1640,9 @@
       "ru": "Йормунганд",
       "officialId": 2855,
       "range": 150,
-      "kind": "STAFF"
+      "kind": "STAFF",
+      "category": 13,
+      "index": 26
     }
   ]
 }
