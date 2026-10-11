@@ -41,6 +41,14 @@ class TranslationCatalogTests(unittest.TestCase):
                 self.assertTrue(all(isinstance(v, str) and v.strip()
                                     for v in self.snapshot[scope][locale].values()))
 
+    def test_curated_ui_display_fallbacks_do_not_modify_frozen_approved_snapshot(self):
+        curated = json.loads((LOC / "curated-runtime-defaults.ru.v1.json").read_text(encoding="utf8"))
+        help_text = curated["ru"]["ui"]["skills.help"]
+        self.assertEqual(self.data.ui_russian["skills.help"], help_text)
+        self.assertNotEqual(self.snapshot["ui"]["ru"]["skills.help"], help_text)
+        self.assertEqual(len(self.ui_source), 244)
+        self.assertEqual(self.data.total, 2920)
+
     def test_all_localized_ui_placeholders_match_original(self):
         for language in ("ru", "en", "jp", "tw"):
             for identifier, text in self.snapshot["ui"][language].items():

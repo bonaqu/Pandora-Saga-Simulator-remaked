@@ -116,6 +116,9 @@ test('four-language translation editor starts with effective texts, keeps drafts
   await expect(panel.locator('[data-localization-id="skill_entry.7.5"] textarea')).toHaveValue('フレーミングアロー');
   await panel.getByRole('combobox',{name:'Язык перевода'}).selectOption('ru');
   await expect(russian).toHaveValue('Пылающая стрела');
+  // Deep-linking to a locale intentionally filters by the same identity.
+  // Clear the filter explicitly before checking the complete editor index.
+  await panel.getByRole('searchbox',{name:'Поиск переводов'}).fill('');
   const missing=panel.locator('[data-localization-id="equipment.0.2"]');
   await expect(missing).toContainText('Нет перевода · исходный текст');
   await panel.getByRole('combobox',{name:'Статус перевода'}).selectOption('missing');
