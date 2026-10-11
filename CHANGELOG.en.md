@@ -7,7 +7,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 ### For users
 
 - Dresses that occupy both chest and pants now clearly show why the pants and Soul slots are unavailable.
-- Unequipping the dress restores the pants slot. Ordinary robes remain single-slot equipment.
+- A dedicated Unequip dress button frees the slot without resetting other equipment; ordinary robes remain single-slot equipment.
 
 ### Development and technical changes
 
