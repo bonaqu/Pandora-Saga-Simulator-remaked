@@ -1,109 +1,78 @@
-/* Modern-only guild dropdown: reliable per-level previews, native selects remain
-   the source of truth (including their onchange handlers and stored values). */
+/* Compact dropdown, with a separate contextual hover tooltip. */
 .remaked-modern #body [data-remaked-buff-column] .remaked-guild-field {
-  position: relative;
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
+  position: relative; box-sizing: border-box; width: 100%; min-width: 0;
 }
 .remaked-modern #body [data-remaked-guild-source] {
-  position: absolute;
-  inset: 0;
-  width: 100% !important;
-  height: 100% !important;
-  opacity: 0;
-  pointer-events: none;
+  position: absolute; inset: 0; width: 100% !important; height: 100% !important;
+  opacity: 0; pointer-events: none;
 }
 .remaked-modern #body .remaked-guild-trigger {
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px;
-  width: 100%;
-  min-height: 26px;
-  padding: 3px 5px;
-  color: var(--rm-text);
-  background: #f7fbf2;
-  border: 1px solid var(--rm-border);
-  border-radius: 3px;
-  font: 12px/1.4 var(--rm-font);
-  text-align: left;
+  box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;
+  gap: 4px; width: 100%; height: 28px; min-height: 28px; padding: 3px 6px;
+  color: var(--rm-text); background: #f7fbf2; border: 1px solid var(--rm-border);
+  border-radius: 3px; font: 12px/1.4 var(--rm-font); text-align: left;
   cursor: pointer;
 }
-.remaked-modern #body .remaked-guild-trigger > span:first-child { min-width: 0; white-space: normal; }
+.remaked-modern #body .remaked-guild-trigger > span:first-child {
+  min-width: 0; white-space: nowrap; overflow: visible;
+}
+.remaked-modern #body .remaked-guild-chevron {
+  display: block; flex: 0 0 7px; width: 7px; height: 7px;
+  margin-right: 1px; margin-top: -4px; transform: rotate(45deg);
+  border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+}
 .remaked-modern #body .remaked-guild-trigger:focus-visible {
-  outline: 2px solid var(--rm-accent);
-  outline-offset: 2px;
+  outline: 2px solid var(--rm-accent); outline-offset: 2px;
 }
-.remaked-modern #body .remaked-guild-chevron { flex: 0 0 auto; font-size: 16px; }
+/* Guild and Honor rows use identical dimensions and vertical rhythm. */
+.remaked-modern #body #BUFFView [id^="BuffClan_"],
+.remaked-modern #body #BUFFView [id^="BuffHonor_"] {
+  box-sizing: border-box; height: 28px !important; min-height: 28px;
+}
+.remaked-modern #body #BUFFView [id^="BuffHonor_"] > [data-remaked-buff] {
+  box-sizing: border-box; height: 28px; min-height: 28px;
+}
+.remaked-modern #body #BUFFView [id^="BuffHonor_"] [id^="TextBuffHonor_"] {
+  white-space: nowrap !important; overflow: visible; word-break: normal;
+}
+/* Only the menu appears on opening: no large permanent information pane. */
 body.remaked-modern .remaked-guild-popup {
-  position: fixed;
-  z-index: 110;
-  box-sizing: border-box;
-  display: grid;
-  grid-template-columns: minmax(160px, .76fr) minmax(0, 1.4fr);
-  width: min(630px, calc(100vw - 16px));
-  max-height: min(535px, calc(100dvh - 16px));
-  gap: 10px;
-  padding: 9px;
-  color: var(--rm-text);
-  background: #fbfdf7;
-  border: 1px solid var(--rm-border-strong);
-  border-radius: 8px;
-  box-shadow: 0 14px 36px rgba(40, 55, 30, .24);
-  font: 12px/1.45 var(--rm-font);
-}
-body.remaked-modern .remaked-guild-options {
-  min-height: 0;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  position: fixed; z-index: 115; box-sizing: border-box;
+  display: flex; flex-direction: column; gap: 2px;
+  width: min(235px, calc(100vw - 16px));
+  max-height: min(365px, calc(100dvh - 16px));
+  padding: 5px; overflow-y: auto; overscroll-behavior: contain;
+  border: 1px solid #a7be90; border-radius: 6px; background: #f9fcf4;
+  box-shadow: 0 12px 30px rgba(31, 42, 25, .2);
 }
 body.remaked-modern .remaked-guild-option {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 7px 9px;
-  border: 1px solid transparent;
-  border-radius: 5px;
-  background: #eef4e4;
-  color: var(--rm-text);
-  font: 12px/1.4 var(--rm-font);
-  text-align: left;
-  white-space: normal;
+  box-sizing: border-box; flex: 0 0 auto; width: 100%; min-height: 27px;
+  padding: 5px 8px; border: 1px solid transparent; border-radius: 4px;
+  color: var(--rm-text); background: #edf4e4;
+  font: 12px/1.35 var(--rm-font); text-align: left;
   cursor: pointer;
 }
 body.remaked-modern .remaked-guild-option:is(:hover, :focus-visible, .remaked-guild-hovered) {
-  border-color: var(--rm-accent);
-  background: #dfefca;
-  outline-offset: -1px;
+  border-color: #94b470; background: #dfeecf;
 }
 body.remaked-modern .remaked-guild-option[aria-selected="true"] {
-  font-weight: 750;
-  background: #d5e7bf;
+  background: #d4e8bd; font-weight: 650;
 }
-body.remaked-modern .remaked-guild-preview {
-  min-width: 0;
-  min-height: 110px;
-  overflow: auto;
-  padding: 10px;
-  border: 1px solid #d6e3c7;
-  border-radius: 5px;
-  background: #fff;
-  color: #33422b;
-  font: 12px/1.55 var(--rm-font);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  user-select: text;
+body.remaked-modern .remaked-guild-hover-tip {
+  position: fixed; z-index: 120; box-sizing: border-box;
+  width: min(322px, calc(100vw - 16px));
+  max-height: min(330px, 55dvh); overflow: auto; pointer-events: none;
+  border: 1px solid #9db887; border-radius: 7px;
+  padding: 9px 11px; color: #f6faef; background: #2c3928;
+  box-shadow: 0 10px 25px rgba(25, 36, 21, .28);
+  font: 12px/1.5 var(--rm-font); white-space: pre-wrap;
+  overflow-wrap: anywhere; text-align: left; user-select: text;
 }
+body.remaked-modern .remaked-guild-hover-tip[hidden] { display: none !important; }
 @media (max-width: 620px) {
-  .remaked-modern #body .remaked-guild-trigger { min-height: 44px; font-size: 16px; }
-  body.remaked-modern .remaked-guild-popup {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(90px, 190px) minmax(100px, 1fr);
-    gap: 7px;
-    max-height: min(520px, calc(100dvh - 16px));
-  }
+  .remaked-modern #body .remaked-guild-trigger,
+  .remaked-modern #body #BUFFView [id^="BuffHonor_"] > [data-remaked-buff] { min-height: 44px; height: 44px; font-size: 14px; }
+  .remaked-modern #body #BUFFView [id^="BuffClan_"],
+  .remaked-modern #body #BUFFView [id^="BuffHonor_"] { height: 44px !important; min-height: 44px; }
   body.remaked-modern .remaked-guild-option { min-height: 40px; font-size: 14px; }
 }

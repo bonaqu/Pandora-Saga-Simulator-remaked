@@ -1,0 +1,14 @@
+/* Site-wide native-title replacement for Modern; existing specialized popovers remain. */
+body.remaked-modern .remaked-site-tooltip {
+  position: fixed; z-index: 135;
+  box-sizing: border-box; pointer-events: none;
+  width: max-content; max-width: min(340px, calc(100vw - 16px));
+  max-height: min(340px, 55dvh); overflow: auto;
+  padding: 9px 11px;
+  border: 1px solid #a9c18d; border-radius: 7px;
+  background: #2c3928; color: #f6faef;
+  box-shadow: 0 10px 26px rgba(25, 36, 21, .28);
+  font: 12px/1.5 var(--rm-font, Inter, system-ui, sans-serif);
+  text-align: left; white-space: pre-line; overflow-wrap: anywhere;
+}
+body.remaked-modern .remaked-site-tooltip[hidden] { display: none !important; }

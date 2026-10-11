@@ -1,5 +1,27 @@
 # Changelog
 
+## Modern 3.73 — компактные подсказки и выравнивание усилений, 2026-10-11
+
+<!-- release-notes:user:ru -->
+- При наведении на уровень гильдийского навыка появляется небольшая подсказка рядом с ним вместо большого окна с постоянно открытым описанием.
+- Названия сопротивлений снова компактные («Сопр. огню», «Сопр. льду», «Сопр. молнии», «Сопр. тьме», «Сопр. чарам»); столбцы «Гильдия» и «Честь» выровнены, стрелки расположены по центру.
+- Из описаний пассивных навыков удалены вводные «Passive:» и «Пассивно:». Стандартные подсказки Modern оформлены в стиле сайта.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Guild skill dropdowns now show compact hover/focus tooltips next to the selected option rather than a full-width preview panel.
+- Guild/Honor rows and dropdown chevrons are aligned, resistance names remain compact without wrapping, and passive descriptions no longer have redundant prefixes.
+- Standard Modern hover titles now use a site-styled tooltip rather than the browser default.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Изменён только Modern UI и согласованная базовая локализация гильдийских эффектов. D1-редактирование и его приоритет, исходные select, игровые расчёты, сохранения и Legacy сохранены. Добавлены проверки компактных подсказок, опубликованных длинных названий, клавиатуры и мобильной ширины.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Modern-only presentation and approved guild description baseline update; preserve D1 override precedence, original selects, calculations, saves and Legacy. Add checks for compact hover/focus help, old published full-length resistance names, keyboard and mobile layout.
+<!-- /admin-notes:en -->
+
 ## Modern 3.72 — описания гильдийских усилений по уровням, 2026-10-11
 
 <!-- release-notes:user:ru -->

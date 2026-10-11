@@ -211,10 +211,10 @@
 
   function translateGameTerm(key, fallback) {
     var unified = unifiedOverrides.game[currentLocale]?.[key];
-    if (unified) return unified;
+    if (unified) return compactActionLabel(key, normalizeRussianLabel(key, unified));
     if (currentLocale === 'ru' && Object.prototype.hasOwnProperty.call(publishedResultLabels, key)) return publishedResultLabels[key];
     var published = namespace.catalog && namespace.catalog.gameLabel(key);
-    if (published) return compactActionLabel(key, published);
+    if (published) return compactActionLabel(key, normalizeRussianLabel(key, published));
     // JP/TW keep the original game's language for Legacy game terms while the
     // Modern shell uses its sparse JP/TW catalog with English fallback.
     // An English game-name override must not silently replace source languages.

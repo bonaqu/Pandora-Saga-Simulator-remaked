@@ -605,3 +605,47 @@ test('approved UI wording may be overridden live without editing game calculatio
   await expect(page.locator('[data-remaked-i18n="header.updates"]')).toContainText('История версий');
   expect(await page.evaluate(()=>window.Store())).toBe(before);
 });
+
+
+test('previously published resistance captions are compact without modifying custom names', async ({ page }) => {
+  await page.goto('/?ui=ru');
+  await page.locator('[data-remaked-tab="4"]').click();
+  const data = { ok:true, schemaVersion:1, overrides:{
+    ui:{ru:{},en:{},jp:{},tw:{}},
+    game:{ru:{
+      'skill_entry.18.8':'Сопротивляемость огню',
+      'skill_entry.18.9':'Сопротивляемость льду',
+      'skill_entry.18.10':'Сопротивляемость молниям',
+      'skill_entry.20.7':'Сопротивляемость магии тьмы',
+      'skill_entry.21.7':'Сопротивляемость чарам'
+    },en:{},jp:{},tw:{}}
+  }};
+  expect(await page.evaluate(x=>PandoraRemaked.i18n.applyUnifiedLocalization(x),data)).toBe(true);
+  for(const [id,name] of [
+    ['Buff_18_8','Сопр. огню'],['Buff_18_9','Сопр. льду'],
+    ['Buff_18_10','Сопр. молнии'],['Buff_20_7','Сопр. тьме'],['Buff_21_7','Сопр. чарам']
+  ]) {
+    const label=page.locator('#'+id+' [data-remaked-buff]');
+    await expect(label).toContainText(name);
+    const overflow=await label.evaluate(node=>node.scrollWidth>node.clientWidth+1);
+    expect(overflow,id).toBe(false);
+  }
+  data.overrides.game.ru['skill_entry.18.8']='Огненная стойкость';
+  expect(await page.evaluate(x=>PandoraRemaked.i18n.applyUnifiedLocalization(x),data)).toBe(true);
+  await expect(page.locator('#Buff_18_8 [data-remaked-buff]')).toContainText('Огненная стойкость');
+});
+
+test('standard title help has Modern theme and original title returns after leaving', async ({ page }) => {
+  await page.goto('/?ui=ru');
+  await page.locator('[data-remaked-tab="4"]').click();
+  const button=page.locator('#Buff_14_2 [data-remaked-buff]');
+  await expect(button).toHaveAttribute('title',/./);
+  const original=await button.getAttribute('title');
+  await button.hover();
+  await expect(page.locator('[data-remaked-site-tooltip]')).toBeVisible();
+  await expect(page.locator('[data-remaked-site-tooltip]')).toContainText(original.split('\n')[0]);
+  await expect(button).not.toHaveAttribute('title');
+  await page.mouse.move(0,0);
+  await expect(button).toHaveAttribute('title',original);
+  await expect(page.locator('[data-remaked-site-tooltip]')).toBeHidden();
+});

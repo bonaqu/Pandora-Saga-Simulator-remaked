@@ -1,86 +1,105 @@
 import { test, expect } from '@playwright/test';
 
-async function guildPanel(page) {
+async function openGuild(page) {
   await page.locator('[data-remaked-tab="4"]').click();
-  await expect(page.locator('#BUFFView [data-remaked-guild-trigger]')).toHaveCount(11);
+  await expect(page.locator('[data-remaked-guild-trigger]')).toHaveCount(11);
 }
-async function previewLevel(page, index, level) {
+async function hoverLevel(page, index, level) {
   await page.locator('[data-remaked-guild-trigger="' + index + '"]').click();
   const item = page.locator('[data-remaked-guild-option="' + level + '"]');
   await item.hover();
-  return { item, preview: page.locator('.remaked-guild-preview') };
+  await expect(page.locator('[data-remaked-guild-tooltip]')).toBeVisible();
+  return item;
 }
-
-test('all 44 approved guild descriptions are reachable without changing the calculator', async ({ page }) => {
+test('44 guild effects use contextual styled hover help, not a huge two-column pane', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?ui=ru');
-  await guildPanel(page);
+  await openGuild(page);
   const before = await page.evaluate(() => window.Store());
-  const sizes = await page.evaluate(() => window.PandoraRemakedGuildSkills.skills.map(s => s.levels.length));
-  expect(sizes).toEqual([12, 5, 5, 2, 2, 2, 2, 5, 3, 3, 3]);
-  for (const [index, count] of sizes.entries()) {
-    const { preview } = await previewLevel(page, index, count);
+  const counts = [12,5,5,2,2,2,2,5,3,3,3];
+  for (const [index, count] of counts.entries()) {
+    await page.locator('[data-remaked-guild-trigger="' + index + '"]').click();
+    await expect(page.locator('[data-remaked-guild-tooltip]')).toBeHidden();
+    const popup = page.locator('[data-remaked-guild-popup]');
+    const rect = await popup.boundingBox();
+    expect(rect.width).toBeLessThanOrEqual(240);
+    expect(await popup.locator('[data-remaked-guild-option]').count()).toBe(count+1);
+    const item = page.locator('[data-remaked-guild-option="' + count + '"]');
+    await item.hover();
     const expected = await page.evaluate(([i, level]) =>
-      window.PandoraRemakedGuildSkills.skills[i].levels[level - 1].ru, [index, count]);
-    await expect(preview).toHaveText(expected);
+      window.PandoraRemakedGuildSkills.skills[i].levels[level-1].ru, [index, count]);
+    await expect(page.locator('[data-remaked-guild-tooltip]')).toHaveText(expected);
     expect(await page.locator('#SelBuffClan_' + index).inputValue()).toBe('0');
     await page.keyboard.press('Escape');
   }
   expect(await page.evaluate(() => window.Store())).toBe(before);
 });
-
-test('choosing guild level uses the existing preset callbacks and keeps native source values', async ({ page }) => {
-  await page.goto('/?ui=ru');
-  await guildPanel(page);
-  const { item, preview } = await previewLevel(page, 0, 12);
-  await expect(preview).toContainText('Сила гильдии ур. 5: максимальные ОЗ +12%.');
+test('guild level presets retain calculations and native original selects', async ({ page }) => {
+  await page.goto('/?ui=ru'); await openGuild(page);
+  const item = await hoverLevel(page, 0, 12);
+  await expect(page.locator('[data-remaked-guild-tooltip]')).toContainText('максимальные ОЗ +12%');
   await item.click();
-  await expect(page.locator('#SelBuffClan_0')).toHaveValue('12');
-  await expect(page.locator('#SelBuffClan_1')).toHaveValue('5');
-  await expect(page.locator('#SelBuffClan_2')).toHaveValue('5');
-  await expect(page.locator('#SelBuffClan_7')).toHaveValue('5');
-  const options = page.locator('#SelBuffClan_0 option');
-  await expect(options).toHaveCount(13);
+  for(const [idx,value] of [[0,'12'],[1,'5'],[2,'5'],[7,'5']])
+    await expect(page.locator('#SelBuffClan_'+idx)).toHaveValue(value);
   await page.locator('[data-remaked-guild-trigger="0"]').click();
   await page.locator('[data-remaked-guild-option="0"]').click();
   await expect(page.locator('#SelBuffClan_0')).toHaveValue('0');
   await expect(page.locator('#SelBuffClan_1')).toHaveValue('0');
 });
-
-test('approved English text, D1 localization precedence and keyboard selection are preserved', async ({ page }) => {
-  await page.goto('/?ui=en');
-  await guildPanel(page);
-  let { preview } = await previewLevel(page, 10, 3);
-  await expect(preview).toContainText('Increases physical and magical attack by 6%');
+test('passive descriptions are clean, D1 overrides retain priority, keyboard works', async ({ page }) => {
+  await page.goto('/?ui=ru'); await openGuild(page);
+  await hoverLevel(page,6,1);
+  await expect(page.locator('[data-remaked-guild-tooltip]')).toHaveText('Уменьшает получаемый магический урон на 3%.');
+  await expect(page.locator('[data-remaked-guild-tooltip]')).not.toContainText('Пассивно:');
   await page.keyboard.press('Escape');
-  const published = { ok: true, schemaVersion: 1, overrides: {
-    ui: { ru: {}, en: {}, jp: {}, tw: {} },
-    game: { ru: { 'calculator.clan.10.level.3.hint': 'Редактор D1: временное подтверждение эффекта.' },
-      en: {}, jp: {}, tw: {} }
-  } };
-  expect(await page.evaluate(x => window.PandoraRemaked.i18n.applyUnifiedLocalization(x), published)).toBe(true);
-  await page.locator('[data-remaked-ui-locale="ru"]').click();
+  const published = { ok:true,schemaVersion:1, overrides:{
+    ui:{ru:{},en:{},jp:{},tw:{}},
+    game:{ru:{'calculator.clan.10.level.3.hint':'Проверенный текст, опубликованный в D1.'},en:{},jp:{},tw:{}}
+  }};
+  expect(await page.evaluate(x=>PandoraRemaked.i18n.applyUnifiedLocalization(x),published)).toBe(true);
   await page.locator('[data-remaked-guild-trigger="10"]').focus();
   await page.keyboard.press('Enter');
-  const option = page.locator('[data-remaked-guild-option="3"]');
-  await option.focus();
-  await expect(page.locator('.remaked-guild-preview')).toHaveText('Редактор D1: временное подтверждение эффекта.');
-  await option.press('Enter');
+  await page.locator('[data-remaked-guild-option="2"]').focus();
+  await page.keyboard.press('ArrowDown');
+  await expect(page.locator('[data-remaked-guild-tooltip]')).toHaveText('Проверенный текст, опубликованный в D1.');
+  await page.keyboard.press('Enter');
   await expect(page.locator('#SelBuffClan_10')).toHaveValue('3');
+  await page.locator('[data-remaked-ui-locale="en"]').click();
+  await hoverLevel(page,10,3);
+  await expect(page.locator('[data-remaked-guild-tooltip]')).toContainText('physical and magical attack by 6%');
 });
-
-test('guild option preview stays within the mobile viewport and closes on Escape', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 780 });
-  await page.goto('/?ui=ru');
-  await guildPanel(page);
-  const { preview } = await previewLevel(page, 8, 2);
-  await expect(preview).toContainText('1 жёлтый кристалл');
-  await expect(preview).toContainText('600 секунд');
-  const bounds = await page.locator('.remaked-guild-popup').boundingBox();
-  expect(bounds.x).toBeGreaterThanOrEqual(0);
-  expect(bounds.x + bounds.width).toBeLessThanOrEqual(390);
-  expect(bounds.y).toBeGreaterThanOrEqual(0);
-  expect(bounds.y + bounds.height).toBeLessThanOrEqual(780);
+test('guild and Honor rows are aligned and chevron is vertically centered', async ({ page }) => {
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto('/?ui=ru'); await openGuild(page);
+  const geometry = await page.evaluate(() => {
+    const values=[];
+    for(let i=0;i<11;i++){
+    const guild=document.querySelector('#BuffClan_'+i+' .remaked-guild-trigger').getBoundingClientRect();
+    const honor=document.querySelector('#BuffHonor_'+i+' [data-remaked-buff]').getBoundingClientRect();
+    const arrow=document.querySelector('#BuffClan_'+i+' .remaked-guild-chevron').getBoundingClientRect();
+    values.push({guildTop:guild.top,honorTop:honor.top,guildHeight:guild.height,honorHeight:honor.height,
+      arrowDelta: Math.abs(arrow.top+arrow.height/2-guild.top-guild.height/2)});
+    }
+    return values;
+  });
+  for(const [index,g] of geometry.entries()){
+    expect(Math.abs(g.guildTop-g.honorTop),'row '+index).toBeLessThanOrEqual(1);
+    expect(g.guildHeight).toBe(g.honorHeight);
+    expect(g.arrowDelta).toBeLessThanOrEqual(4);
+  }
+});
+test('phone retains a compact dropdown and a viewport-safe detached hover tip', async ({ page }) => {
+  await page.setViewportSize({width:390,height:780});
+  await page.goto('/?ui=ru');await openGuild(page);
+  await hoverLevel(page,8,2);
+  await expect(page.locator('[data-remaked-guild-tooltip]')).toContainText('1 жёлтый кристалл');
+  for(const selector of ['[data-remaked-guild-popup]','[data-remaked-guild-tooltip]']){
+    const box=await page.locator(selector).boundingBox();
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x+box.width).toBeLessThanOrEqual(391);
+    expect(box.y).toBeGreaterThanOrEqual(0);
+    expect(box.y+box.height).toBeLessThanOrEqual(781);
+  }
   await page.keyboard.press('Escape');
-  await expect(page.locator('.remaked-guild-popup')).toHaveCount(0);
+  await expect(page.locator('[data-remaked-guild-popup]')).toHaveCount(0);
 });
