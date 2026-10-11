@@ -15,7 +15,9 @@ class BulkLiveLocalization(unittest.TestCase):
                'bulkSelectedCount','bulkManualEdited','bulkNeedWord','bulkNeedTranslation',
                'bulkSearching','bulkFinishEditing','bulkDraftCollision','bulkConfirmPublish',
                'bulkRechecking','bulkPublishingProgress','bulkReceiptLookup',
-               'bulkPublishedSuccess','bulkReplacementExample']
+               'bulkPublishedSuccess','bulkReplacementExample',
+               'bulkEditProposalAria','bulkRevertProposalAria','bulkFinalTranslationAria',
+               'bulkSavedDraftSuffix']
         for suffix in names:
             key='adminShell.'+suffix
             with self.subTest(key=key):
@@ -31,4 +33,11 @@ class BulkLiveLocalization(unittest.TestCase):
         self.assertIn("raw(state,(uncertain",CODE)
         self.assertIn("if(slots(phrase)!==slots(fallback))phrase=fallback",CODE)
         self.assertIn("Object.hasOwn(values,name)",CODE)
+        self.assertIn('dynamicAria=new WeakMap()',CODE)
+        self.assertIn("root.querySelectorAll('[data-bulk-live-aria]')",CODE)
+        self.assertIn("liveAria(pencil,'bulkEditProposalAria'",CODE)
+        self.assertIn("liveAria(revert,'bulkRevertProposalAria'",CODE)
+        self.assertIn("liveAria(input,'bulkFinalTranslationAria'",CODE)
+        self.assertIn("if(item.blocked)label.append(live(node('span'),'bulkSavedDraftSuffix'",CODE)
+
         self.assertIn("const items=checked.map(item=>",CODE)
