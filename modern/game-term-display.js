@@ -18,36 +18,20 @@
     var source = document.createElement('span');
     source.innerHTML = String(sourceHtml == null ? '' : sourceHtml);
     var previous = node._remakedGameDisplay;
-    // Restore the changing Legacy source BEFORE applying the D1 translation.
-    // Previously this reconciliation ran at the end and silently replaced
-    // every translated buff/Honor label with the old English/JP/TW markup.
-    // Reconcile .help in place to retain its event listeners and attributes.
-    var sourceHelp = source.childNodes.length === 1 && source.firstElementChild;
-    var currentHelp = node.childNodes.length === 1 && node.firstElementChild;
-    if (sourceHelp && currentHelp && sourceHelp.matches('.help') &&
-        currentHelp.matches('.help') && sourceHelp.tagName === currentHelp.tagName) {
-      if (currentHelp.textContent !== sourceHelp.textContent) currentHelp.textContent = sourceHelp.textContent;
-      if (sourceHelp.hasAttribute('title')) currentHelp.title = sourceHelp.title;
-      else currentHelp.removeAttribute('title');
-    } else if (node.innerHTML !== source.innerHTML) {
-      node.innerHTML = source.innerHTML;
-    }
     if (translated) {
       if (!previous) {
         previous = { title: node.getAttribute('title'), implicitValue: node.tagName === 'OPTION' && !node.hasAttribute('value') };
-        // OPTION values must remain numerical/canonical even when labels change.
+        // An option without a value attribute derives its value from its text.
+        // Preserve that value while changing only the displayed translation.
         if (previous.implicitValue) node.setAttribute('value', node.value);
       }
       previous.sourceText = source.textContent.trim();
-      var label = node.querySelector('.help') || node;
-      var sourceLabel = source.querySelector('.help') || source;
-      var hint = sourceLabel.getAttribute('title');
+      var label = source.querySelector('.help') || source;
+      var hint = label.getAttribute('title');
       var prefix = document.createElement('span');
       prefix.innerHTML = prefixHtml || '';
-      var suffix = document.createElement('span');
-      suffix.innerHTML = suffixHtml || '';
-      var text = prefix.textContent + translated + suffix.textContent;
-      if (label.textContent !== text) label.textContent = text;
+      var suffix = document.createElement('span'); suffix.innerHTML = suffixHtml || '';
+      label.textContent = prefix.textContent + translated + suffix.textContent;
       if (hint) label.title = translated + '\n' + hint;
       node._remakedGameDisplay = previous;
       node.dataset.remakedGameName = id;
@@ -60,6 +44,14 @@
       delete node._remakedGameDisplay;
       delete node.dataset.remakedGameName;
     }
+    var sourceHelp = source.childNodes.length === 1 && source.firstElementChild;
+    var currentHelp = node.childNodes.length === 1 && node.firstElementChild;
+    if (sourceHelp && currentHelp && sourceHelp.matches('.help') && currentHelp.matches('.help') && sourceHelp.tagName === currentHelp.tagName) {
+      // Keep focus, listeners and attributes installed by other Modern adapters.
+      if (currentHelp.textContent !== sourceHelp.textContent) currentHelp.textContent = sourceHelp.textContent;
+      if (sourceHelp.hasAttribute('title')) currentHelp.title = sourceHelp.title;
+      else currentHelp.removeAttribute('title');
+    } else if (node.innerHTML !== source.innerHTML) node.innerHTML = source.innerHTML;
   }
 
   function options(select, map) {
