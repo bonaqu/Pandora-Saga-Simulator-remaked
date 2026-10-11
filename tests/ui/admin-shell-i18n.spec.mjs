@@ -81,7 +81,7 @@ test('translation workbench filters switch RU/EN/JP/TW without erasing search or
         return new Response(JSON.stringify(dict),{status:200,headers:{'content-type':'application/json'}});
       if(String(url).startsWith('/api/admin/localization?'))
         return new Response(JSON.stringify({ok:true,schemaVersion:1,scope:'game',locale:'ru',
-          page:0,pageSize:40,total:0,counts:{game:2800,ui:338},
+          page:0,pageSize:40,total:0,counts:{game:2800,ui:354},
           coverage:{translated:0,total:0},items:[]}),{status:200,headers:{'content-type':'application/json'}});
       throw Error('Unexpected request: '+url);
     };
