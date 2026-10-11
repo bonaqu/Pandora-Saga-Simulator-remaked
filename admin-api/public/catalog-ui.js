@@ -100,7 +100,7 @@
     input.addEventListener('change', changing); wrap.append(input, formCaption(label)); parent.appendChild(wrap); return input;
   }
   function multilingual(label, field, values, parent, multiline) {
-    var section = node('fieldset', undefined, 'translation-fields'); section.appendChild(formCaption(label));
+    var section = node('fieldset', undefined, 'translation-fields'); var legend=node('legend'); legend.appendChild(formCaption(label)); section.appendChild(legend);
     var extra = node('details', undefined, 'extra-languages'); extra.appendChild(node('summary', '')); extra.firstChild.appendChild(formCaption('Японский и китайский переводы'));
     var extraFields = node('div', undefined, 'basic-fields'); extra.appendChild(extraFields);
     languages.forEach(function (entry) {
