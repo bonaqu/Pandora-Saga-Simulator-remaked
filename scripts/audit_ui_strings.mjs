@@ -36,7 +36,9 @@ function captureKeys(code) {
 function inspect(file) {
   const code=fs.readFileSync(path.join(root,file),'utf8');
   scanned.push(file);
-  // Worker Admin has its own Russian-only control chrome; inventory it,\n  // but do not confuse its local button names with site UI registry keys.\n  if(file.startsWith('modern/'))captureKeys(code);
+  // Worker Admin has its own Russian-only control chrome; inventory it,
+  // but do not confuse its local button names with site UI registry keys.
+  if(file.startsWith('modern/'))captureKeys(code);
   const lines=code.split(/\r?\n/);
   for(let index=0;index<lines.length;index++) {
     const original=lines[index],line=original.trim();
