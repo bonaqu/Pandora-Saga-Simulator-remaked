@@ -256,8 +256,8 @@
     var lang = playerUpdatesLocale();
     var userVersion = updatesDialog.querySelector('[data-remaked-user-version]');
     if (userVersion && release && release.userVersion) {
-      userVersion.textContent = (lang === 'ru' ? 'Последние изменения для пользователей: ' : 'Latest changes for users: ')
-        + 'Modern ' + release.userVersion + (release.date ? ' · ' + release.date : '');
+      localizeText(userVersion, 'updates.latestForUsers', '',
+        {version:'Modern ' + release.userVersion + (release.date ? ' · ' + release.date : '')});
     }
     var fullChangelog = updatesDialog.querySelector('[data-remaked-full-changelog]');
     if (fullChangelog && updatesChangelogUrl) {
@@ -276,7 +276,7 @@
       Boolean(release && release.userVersion && window.PandoraRemakedVersion &&
         String(window.PandoraRemakedVersion.ui) !== String(release.userVersion));
     var notes = technicalOnly
-      ? [lang === 'ru' ? 'Выполнены внутренние технические улучшения.' : 'Internal technical improvements.']
+      ? [namespace.i18n.t('updates.technicalSummary')]
       : latestReleaseHighlights();
     if (notes.length) {
       notes.forEach(function (note) {

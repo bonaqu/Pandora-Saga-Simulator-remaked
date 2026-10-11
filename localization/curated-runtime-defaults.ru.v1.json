@@ -3,7 +3,9 @@
   "ru": {
     "ui": {
       "skills.adeptness": "Изучено (ОЧ)",
-      "skills.potential": "Потенциал."
+      "skills.potential": "Потенциал.",
+      "updates.latestForUsers": "Последние изменения для пользователей: {version}",
+      "updates.technicalSummary": "Выполнены внутренние технические улучшения."
     },
     "game": {
       "calculator.text.3": "Учитывать умения",

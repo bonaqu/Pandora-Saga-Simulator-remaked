@@ -54,7 +54,7 @@ test('all four languages have a stable index of approved skills and source text'
     assert.equal(exact.effective,locale==='ru'?'Пылающая стрела':exact.baseline);
   }
   const ui=await (await adminLocalization(get('/api/admin/localization?scope=ui&locale=jp'),env)).json();
-  assert.equal(ui.counts.ui,242);
+  assert.equal(ui.counts.ui,244);
   assert.equal(ui.pageSize,40);
   assert.ok(ui.counts.game>2500);
 });
@@ -180,7 +180,7 @@ test('curated approved-display defaults stay identical to visible Modern fallbac
     assert.ok(runtime.includes("'"+id+"': '"+value+"'")||runtime.includes("'"+id+"': \""+value+"\""),
       'Runtime fallback drift for '+id);
   }
-  assert.equal(Object.keys(curated.ru.ui).length+Object.keys(curated.ru.game).length,27);
+  assert.equal(Object.keys(curated.ru.ui).length+Object.keys(curated.ru.game).length,30);
 });
 
 test('preview-guarded bulk writes preserve English and reject stale effective UI/catalog texts',async()=>{
@@ -292,4 +292,48 @@ test('admin localization queries only the selected locale/scope and does not rea
   assert.ok(!queries.some(sql=>sql.includes('FROM ui_translation_overrides')),'game editing should not load legacy UI rows');
   assert.ok(!queries.some(sql=>sql.includes('FROM result_label_overrides')),'non-Russian locale does not use old RU result labels');
   assert.ok(queries.some(sql=>sql.includes('FROM localization_overrides WHERE scope=? AND locale=?')));
+});
+
+
+test('one translation identity compares all four D1 languages with precise origins',async()=>{
+  const env=fixture(),id='skill_entry.7.5';
+  const compare=async()=>(await (await adminLocalization(
+    get('/api/admin/localization?scope=game&compareId='+id),env)).json());
+  const baseline=await compare();
+  assert.deepEqual(baseline.translations.map(x=>x.locale),['ru','en','jp','tw']);
+  assert.equal(baseline.id,id);
+  assert.equal(baseline.translations[0].effective,'Пылающая стрела');
+  assert.equal(baseline.translations[0].origin,'import');
+  await adminLocalization(post({scope:'game',id,locale:'ru',value:'Проверка RU',
+    expectedVersion:0,expectedEffective:'Пылающая стрела'}),env);
+  await adminLocalization(post({scope:'game',id,locale:'jp',value:'試験翻訳',
+    expectedVersion:0,expectedEffective:baseline.translations[2].effective}),env);
+  const updated=await compare();
+  assert.equal(updated.translations[0].effective,'Проверка RU');
+  assert.equal(updated.translations[0].origin,'admin');
+  assert.equal(updated.translations[0].version,1);
+  assert.equal(updated.translations[2].effective,'試験翻訳');
+  assert.equal(updated.translations[2].origin,'admin');
+  assert.equal(updated.translations[1].effective,baseline.translations[1].effective);
+  assert.equal(updated.translations[3].effective,baseline.translations[3].effective);
+  await adminLocalization(post({scope:'game',id,locale:'ru',value:'',
+    expectedVersion:1,expectedEffective:'Проверка RU'}),env);
+  const reset=await compare();
+  assert.equal(reset.translations[0].effective,'Пылающая стрела');
+  assert.equal(reset.translations[0].version,2);
+  assert.equal(reset.translations[0].origin,'import');
+  assert.equal(reset.translations[2].effective,'試験翻訳');
+  await assert.rejects(()=>adminLocalization(
+    get('/api/admin/localization?scope=game&compareId=unknown.id'),env),/Translation entry not found/);
+  await assert.rejects(()=>adminLocalization(
+    get('/api/admin/localization?scope=game&compareId=%3Cscript%3E'),env),/Invalid comparison ID/);
+});
+
+test('curated fallback help is exposed as an editable baseline, never client-only',async()=>{
+  const env=fixture();
+  const found=(await(await adminLocalization(get(
+    '/api/admin/localization?scope=ui&locale=ru&q=skills.help'),env)).json()).items
+    .find(row=>row.id==='skills.help');
+  assert.equal(found.effective,curated.ru.ui['skills.help']);
+  assert.equal(found.baselineOrigin,'import');
 });

@@ -240,5 +240,7 @@
   "character.status": "Status",
   "character.skill": "Skill",
   "character.potential": "Potential",
-  "character.potentialHelp": "Unspent Potential points raise the available development limit of skill branches. Skill points raise their learned mastery."
+  "character.potentialHelp": "Unspent Potential points raise the available development limit of skill branches. Skill points raise their learned mastery.",
+  "updates.latestForUsers": "Latest changes for users: {version}",
+  "updates.technicalSummary": "Internal technical improvements."
 }

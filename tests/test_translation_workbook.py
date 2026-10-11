@@ -26,14 +26,15 @@ class TranslationCatalogTests(unittest.TestCase):
         self.assertFalse((LOC / "translations.xlsx").exists())
         self.assertEqual(self.snapshot["schemaVersion"], 1)
         self.assertEqual(self.data.total, 2920)
-        self.assertEqual(len(self.ui_source), 242)
+        self.assertEqual(len(self.ui_source), 244)
         self.assertEqual(len(self.game_source), 2678)
 
     def test_full_stable_registry_and_source_ids_remain_unique(self):
         game_ids = [term["id"] for term in self.game_source]
         self.assertEqual(len(game_ids), len(set(game_ids)))
         self.assertFalse(set(self.ui_source) & set(game_ids))
-        self.assertEqual(self.data.total, len(self.ui_source) + len(game_ids))
+        self.assertEqual(self.data.total, len(self.snapshot['ui']['en']) + len(game_ids))
+        self.assertEqual(len(self.ui_source), len(self.snapshot['ui']['en'])+2)
         for locale in ("ru", "en", "jp", "tw"):
             self.assertTrue(set(self.snapshot["ui"][locale]) <= set(self.ui_source))
             self.assertTrue(set(self.snapshot["game"][locale]) <= set(game_ids))

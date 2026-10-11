@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.74 — 2026-10-11
+
+### For users
+
+- Published D1 translations now display verbatim without hidden browser-side wording changes. Five legacy Russian resistance labels are safely migrated in D1 with version history.
+- The admin editor can compare each registered text across RU / EN / JP / TW and jump to the chosen locale.
+- Release-summary captions are now editable localization keys.
+
+### Development and technical changes
+
+- Remove browser-side transformations of published translations; add lazy four-locale comparison endpoint, guarded D1 migration protecting custom edits and drafts, and regression tests for precedence, reset and history. Keep calculations, catalog ownership and Legacy unchanged.
+
 ## Modern 3.73 — 2026-10-11
 
 ### For users
