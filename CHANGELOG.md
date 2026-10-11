@@ -14,14 +14,14 @@
 
 <!-- admin-notes:ru -->
 - В неизменённом Legacy `Calc('RESMagic')` отсутствовала обработка `Flag['0_8']`, несмотря на описание умения и сохранённую кнопку усилений. Современный слой добавляет +25 **после полного нативного пересчёта**, не меняя состояние билда.
-- Тесты используют настоящий предмет «亜麻のローブ» (`310015`, свойства `49=8_145=3`) для доказуемых проверок защиты и сопротивления. Округления и полнота сравнения с Pandora Saga OS требуют отдельного аудита.
+- Тесты используют настоящий предмет «亜麻のローブ» (`310015`, свойства `49=8_145=3`) для доказуемых проверок защиты и сопротивления. Округления и полнота соответствия актуальной игре требуют отдельного аудита.
 - Режим верховой езды (`Flag[7]`) по историческому движку показывает защиту как `---`; числовое значение там не выдумывается.
 <!-- /admin-notes:ru -->
 
 <!-- admin-notes:en -->
 - Preserve the original Legacy engine. Modern applies verified historical Providence +25 via its non-accumulating `Calc('RESMagic')` wrapper, without changing saved builds.
 - Contract tests use native Linen Robe equipment with `49=8_145=3` to verify DEF and magic resistance changes, buff stacking, reset and mount-mode display.
-- Current Pandora Saga OS parity remains an independent open audit; do not extrapolate this historical Providence coefficient to unverified live-game behavior.
+- Parity with the current game remains an independent open audit; do not extrapolate this historical Providence coefficient to unverified gameplay.
 <!-- /admin-notes:en -->
 
 ## Modern 3.79 — отображение двухслотовых платьев, 2026-10-11
