@@ -1,5 +1,27 @@
 # Changelog
 
+## Modern 4.04 — компактные заголовки умений, 2026-10-12
+
+<!-- user-notes:ru -->
+- Заголовки «Мастерство» и «Потенциал» в разделе умений теперь остаются в одну строку на экранах шириной 861–1365 px.
+- Подписи на RU/EN/JP/TW занимают одинаковое место, без увеличения блока персонажа и с сохранением пространства под навыки.
+<!-- /user-notes:ru -->
+
+<!-- user-notes:en -->
+- Skill Adeptness and Potential headings now stay on one line at 861–1365px desktop widths.
+- RU/EN/JP/TW use identical heading geometry without making Character wider or squeezing the Skills panel.
+<!-- /user-notes:en -->
+
+<!-- admin-notes:ru -->
+- Добавлены проверки ширин 861/1024/1200/1365 px на RU/EN/JP/TW: однострочность, отсутствие наложений, единая геометрия и четырёхзначные расчётные значения.
+- Тест меняет только временные текстовые значения в браузере; формулы, D1, сохранения и Legacy не затронуты.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Added 861/1024/1200/1365px × RU/EN/JP/TW browser checks for one-line headings, equal geometry, no text collision and 4-digit result displays.
+- Browser test modifies only temporary DOM copy, not formulas, published D1, saved builds or Legacy.
+<!-- /admin-notes:en -->
+
 ## Modern 4.03 — категории непереведённых записей D1, 2026-10-12
 
 <!-- admin-notes:ru -->
