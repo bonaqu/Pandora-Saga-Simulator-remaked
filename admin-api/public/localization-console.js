@@ -128,6 +128,16 @@
       preview.append(tag('small','Оригинал (EN)'),tag('p',original||'—'));
       const baseline=tag('div',null,'localization-baseline');
       baseline.append(tag('small','Перевод, используемый сайтом'),tag('p',record.effective||'—'));
+      if(record.translations && record.managedBy!=='catalog'){
+        // Four languages share this identity without switching search filters.
+        // Catalog-managed records instead use their existing revisioned editor.
+        const mounted=window.PandoraFourLanguageEditor?.mount(card,record,{
+          api,queued,drafts,onDirtyChanged:updateDrafts,
+          onPublished:()=>load(),report
+        });
+        if(mounted){card.prepend(header,preview,baseline);items.append(card);continue;}
+      }
+      // Legacy single-language fallback supports older worker responses.
       // Four-language comparison is fetched lazily and read-only; edits keep
       // the existing guarded versioned D1 editor and cloud draft queue.
       let compare=null;
@@ -174,15 +184,6 @@
           }
         });
         compare.append(toggle,matrix);
-      }
-      if(record.translations && record.managedBy!=='catalog'){
-        // One four-language card per identity. Each field has its own D1 lease;
-        // publishing 2-4 fields together uses the guarded atomic batch API.
-        const mounted=window.PandoraFourLanguageEditor?.mount(card,record,{
-          api,queued,drafts,onDirtyChanged:updateDrafts,
-          onPublished:()=>load(),report
-        });
-        if(mounted){card.prepend(header,preview);items.append(card);continue;}
       }
       if(record.managedBy==='catalog'){
         // Canonical item text belongs to the catalog's draft/publish revision,
