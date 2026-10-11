@@ -106,6 +106,23 @@ class CIWorkflowArchitectureTests(unittest.TestCase):
         self.assertIn("if: needs.classify.outputs.duplicate_pr != 'true'", workflow)
         self.assertIn("ci_profile=duplicate-pr", workflow)
 
+
+    def test_admin_workflow_tracks_every_imported_translation_baseline(self):
+        # Prevent the D1 editor's source registry from diverging from Pages:
+        # pure approved-fallback changes must also rebuild the Worker.
+        workflow = self.read(".github/workflows/admin-api.yml")
+        module = self.read("admin-api/src/localization.mjs")
+        for name in (
+            "ui.en.json",
+            "approved-translations.v1.json",
+            "curated-runtime-defaults.ru.v1.json",
+            "game-terms.ru.json",
+            "guild-skills.v1.json",
+        ):
+            with self.subTest(name=name):
+                self.assertIn("../../localization/" + name, module)
+                self.assertEqual(workflow.count("'localization/" + name + "'"), 2)
+
     def test_admin_workflow_is_not_pages_deployment_infrastructure(self):
         workflow = self.read(".github/workflows/pages.yml")
         sensitive_case = ".github/workflows/pages.yml|.github/workflows/feature-ci.yml|.github/actions/*|scripts/build_pages.py|scripts/deploy_change_policy.py"

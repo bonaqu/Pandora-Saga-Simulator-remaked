@@ -12,10 +12,12 @@
 
 <!-- admin-notes:ru -->
 - Добавлены только утверждённые резервные текстовые значения локализации. Более свежие публикации через D1 сохраняют приоритет; формулы, экипировка, импорт сохранений и Legacy не изменены.
+- Исправлены GitHub Actions: Cloudflare Worker теперь пересобирается при изменении английского реестра UI, утверждённых и вручную проверенных резервных переводов. Это предотвращает рассинхронизацию админки с опубликованным сайтом.
 <!-- /admin-notes:ru -->
 
 <!-- admin-notes:en -->
 - These are baseline localization values only; existing D1 overrides keep priority. No changes to calculations, persisted builds, import/export mechanics, equipment or Legacy.
+- Fix Cloudflare Admin API path filters so baseline translation sources (`ui.en`, approved and curated fallbacks) trigger a Worker redeploy; avoid mismatched admin D1 fallback indexes versus the published site.
 <!-- /admin-notes:en -->
 
 ## Modern 3.88 — четырёхъязычная карточка переводов в админке, 2026-10-11
