@@ -389,7 +389,13 @@ test('off-screen Equipment keyboard review survives automatic scroll but not whe
   await page.evaluate(() => document.querySelector('[data-remaked-picker-panel] [data-remaked-search-results]').dispatchEvent(new Event('scroll', { bubbles: true })));
   await expect(row.locator('details')).toHaveAttribute('open', '');
   expect(await page.evaluate(() => Store())).toBe(before);
-  await row.locator('button').hover();
+  // WebKit may keep the focus-opened option outside the viewport after
+  // asynchronous focus scrolling. Wheel over the visible picker container:
+  // this is genuine pointer wheel input, not synthetic scroll noise.
+  const picker=page.locator('[data-remaked-picker-panel]');
+  const rect=await picker.boundingBox();
+  expect(rect).not.toBeNull();
+  await page.mouse.move(rect.x+Math.min(12,rect.width/2),rect.y+Math.min(12,rect.height/2));
   await page.mouse.wheel(0, -1);
   await page.waitForTimeout(550);
   await expect(row.locator('details')).not.toHaveAttribute('open', '');
