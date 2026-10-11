@@ -284,10 +284,17 @@ export async function adminLocalization(request,env) {
       .map(row=>displayRow(row));
     scoped.push(...managed.filter(row=>group==='all'||groupOf(row.kind,row.id)===group));
     const coverage={total:scoped.length,translated:scoped.filter(row=>row.origin!=='fallback').length};
+    const otherLanguageTexts=row=>{
+      if(!allLanguages)return [];
+      if(row.managedBy==='catalog')return Object.values(row.source||{});
+      const entry=registry.get(keyOf(scope,row.id));
+      return entry?LOCALES.map(language=>displayRow(entry,language).effective):[];
+    };
     const matched=scoped.filter(row=>
       (status==='all'||status==='missing'&&row.origin==='fallback'||
         status==='published'&&['admin','previous-admin','catalog'].includes(row.origin)) &&
-      (!q || [row.id,row.kind,row.source.en,row.effective,row.legacyValue].some(value=>
+      (!q || [row.id,row.kind,row.source.en,row.effective,row.legacyValue,
+        ...otherLanguageTexts(row)].some(value=>
         String(value||'').toLocaleLowerCase().includes(q))));
     const items=matched.slice(page*pageSize,(page+1)*pageSize);
     if(allLanguages){
