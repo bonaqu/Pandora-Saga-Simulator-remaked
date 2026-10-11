@@ -3,7 +3,7 @@ import { adminCatalog, publicCatalog, publicCatalogHead } from './catalog.mjs';
 import { CatalogError } from './catalog-model.mjs';
 import { publicResultLabels, adminResultLabels } from './result-labels.mjs';
 import { publicUiTranslations, adminUiTranslations } from './ui-translations.mjs';
-import { publicLocalization, adminLocalization } from './localization.mjs';
+import { publicLocalization, publicAdminShellLocalization, adminLocalization } from './localization.mjs';
 import { adminLocalizationWorkflow } from './localization-workflow.mjs';
 import { sharedBuild } from './share-links.mjs';
 
@@ -59,6 +59,7 @@ async function route(request, env) {
   if (url.pathname === '/api/result-labels' && request.method === 'GET') return publicResultLabels(env);
   if (url.pathname === '/api/ui-translations' && request.method === 'GET') return publicUiTranslations(env);
   if (url.pathname === '/api/localization' && request.method === 'GET') return publicLocalization(env);
+  if (url.pathname === '/api/admin-shell-localization' && request.method === 'GET') return publicAdminShellLocalization(env);
   // Anonymous, opt-in short build sharing. Protected by strict origins, safe
   // code limits and per-IP/global rate budgets in an isolated D1 table.
   if (url.pathname === '/api/share' || url.pathname.startsWith('/api/share/'))
@@ -78,7 +79,7 @@ async function route(request, env) {
   }
 
   if (url.pathname === '/health' && request.method === 'GET') return jsonResponse({ ok: true, service: 'pandora-admin-api', apiVersion: 1, workerVersion: env.CF_VERSION_METADATA?.id || null });
-  if (['/admin', '/admin.css', '/admin.js', '/catalog-ui.js', '/localization-console.js', '/localization-bulk.js', '/localization-drafts.js', '/localization-four-language.js'].includes(url.pathname) && ['GET', 'HEAD'].includes(request.method)) {
+  if (['/admin', '/admin.css', '/admin.js', '/catalog-ui.js', '/localization-console.js', '/localization-bulk.js', '/localization-drafts.js', '/localization-four-language.js', '/admin-i18n.js'].includes(url.pathname) && ['GET', 'HEAD'].includes(request.method)) {
     if (!env.ASSETS) return jsonResponse({ ok: false }, 503);
     const assetUrl = new URL(request.url);
     if (url.pathname === '/admin') assetUrl.pathname = '/admin.html';
