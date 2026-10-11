@@ -43,3 +43,12 @@ SELECT 'ui','updates.technicalSummary','ru',
  'Выполнены внутренние технические улучшения.',1,CAST(strftime('%s','now') AS INTEGER),NULL
 WHERE NOT EXISTS(SELECT 1 FROM localization_drafts
  WHERE scope='ui' AND term_id='updates.technicalSummary' AND locale='ru');
+
+-- One-time D1 publication of the previously client-only corrected help.
+INSERT OR IGNORE INTO localization_overrides
+ (scope,term_id,locale,text,version,updated_at,last_operation)
+SELECT 'ui','skills.help','ru',
+ 'Изучение расходует очки умений. Потенциал использует отдельные очки, запас которых показан рядом с уровнем персонажа. Ограничения и стоимость определяются правилами калькулятора.',
+ 1,CAST(strftime('%s','now') AS INTEGER),NULL
+WHERE NOT EXISTS(SELECT 1 FROM localization_drafts
+ WHERE scope='ui' AND term_id='skills.help' AND locale='ru');

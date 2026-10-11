@@ -20,7 +20,11 @@ const originOf=(source,approvedValue={})=>Object.fromEntries(LOCALES.map(locale=
 // immutable historical approved JSON or shadowing any published D1 value.
 function migratedBaseline(scope,id) {
   const values=Object.fromEntries(LOCALES.map(locale=>[locale,approved[scope][locale]?.[id]]));
-  if(!values.ru)values.ru=curated.ru[scope]?.[id]||'';
+  const approvedCorrection=curated.ru[scope]?.[id]||'';
+  // This historical mixed RU/EN help was already corrected in Modern. Make
+  // the approved baseline identical in Admin; D1 remains authoritative.
+  if(approvedCorrection && (!values.ru || (scope==='ui' && id==='skills.help')))
+    values.ru=approvedCorrection;
   return values;
 }
 const keyOf=(scope,id)=>scope+'\0'+id;
