@@ -21,9 +21,10 @@ class PublicAudienceAndLocalizationTests(unittest.TestCase):
             ("<!-- release-notes:user:" + locale + " -->") in latest_section
             for locale in ("ru", "en")
         )
-        self.assertEqual(release["technicalOnly"], not latest_player)
+        self.assertEqual(release.get("technicalOnly", False), not latest_player)
         if latest_player:
-            self.assertEqual(release["lastContentVersion"], latest.group(1))
+            self.assertEqual(release["userVersion"], latest.group(1))
+            self.assertNotIn("lastContentVersion", release)
             for locale in ("ru", "en"):
                 self.assertTrue(release["highlights"][locale])
                 self.assertNotIn("D1", " ".join(release["highlights"][locale]))
