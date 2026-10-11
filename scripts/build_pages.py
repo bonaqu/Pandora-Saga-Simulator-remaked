@@ -542,7 +542,7 @@ def _release_marker_bullets(section: str, locale: str, version: str) -> list[str
 
 
 def _read_latest_release(root: pathlib.Path) -> dict[str, object]:
-    """Latest real player release; deployed UI version is tracked separately."""
+    """Latest player-facing update, including neutral technical releases."""
     source = (root / "CHANGELOG.md").read_text(encoding="utf-8")
     matches = list(RELEASE_HEADING_RE.finditer(source))
     if not matches:
@@ -550,6 +550,15 @@ def _read_latest_release(root: pathlib.Path) -> dict[str, object]:
     top = matches[0]
     top_end = matches[1].start() if len(matches) > 1 else len(source)
     top_section = source[top.end():top_end]
+    technical_only = (
+        tuple(map(int, top.group("version").split("."))) >= (3, 59)
+        and "<!-- admin-notes:" in top_section
+        and not re.search(r"<!-- release-notes:(?:user|player):(?:en|ru) -->", top_section)
+    )
+    neutral_highlights = {
+        "ru": ["Выполнены внутренние технические улучшения."],
+        "en": ["Internal technical improvements."],
+    }
     for index, match in enumerate(matches):
         end = matches[index + 1].start() if index + 1 < len(matches) else len(source)
         section = source[match.end():end]
@@ -564,12 +573,34 @@ def _read_latest_release(root: pathlib.Path) -> dict[str, object]:
             raise ValueError("user release must contain both en and ru nonempty notes")
         if not any(highlights.values()):
             continue
+        if technical_only:
+            # Indicate a new deployment without disclosing admin-only changes
+            # or pretending older game improvements just shipped.
+            return {
+                "version": top.group("version"),
+                "userVersion": top.group("version"),
+                "lastContentVersion": match.group("version"),
+                "title": "Technical improvements",
+                "date": top.group("date"),
+                "technicalOnly": True,
+                "highlights": neutral_highlights,
+            }
         return {
             "version": _read_ui_version(root),
             "userVersion": match.group("version"),
             "title": match.group("title").strip(),
             "date": match.group("date"),
             "highlights": highlights,
+        }
+    if technical_only:
+        return {
+            "version": top.group("version"),
+            "userVersion": top.group("version"),
+            "lastContentVersion": None,
+            "title": "Technical improvements",
+            "date": top.group("date"),
+            "technicalOnly": True,
+            "highlights": neutral_highlights,
         }
     raise ValueError("CHANGELOG.md has no explicitly user-marked release notes")
 

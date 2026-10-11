@@ -59,6 +59,10 @@ def render(source: str, lang: str) -> str:
         if not user:
             user = marker(section, "release-notes", lang)
         dev = marker(section, "admin-notes", lang)
+        if not user and dev and tuple(map(int, match.group("version").split("."))) >= (3, 59):
+            # A neutral note signals the deployment without disclosing internals.
+            user = ("- Выполнены внутренние технические улучшения."
+                    if lang == "ru" else "- Internal technical improvements.")
         lines.extend(["## Modern " + match.group("version") + " — " + match.group("date"), ""])
         if user:
             lines.extend(["### " + user_label, "", user, ""])

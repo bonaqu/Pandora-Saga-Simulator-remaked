@@ -20,18 +20,18 @@ class PublicAudienceAndLocalizationTests(unittest.TestCase):
             ("<!-- release-notes:user:" + locale + " -->") in latest_section
             for locale in ("ru", "en")
         )
-        self.assertFalse(release.get("technicalOnly", False))
-        self.assertNotIn("lastContentVersion", release)
-        self.assertTrue(all(release["highlights"].values()))
+        self.assertEqual(release["userVersion"], latest.group(1))
+        self.assertEqual(release.get("technicalOnly", False), not latest_player)
         if latest_player:
-            self.assertEqual(release["userVersion"], latest.group(1))
+            self.assertNotIn("lastContentVersion", release)
+            for locale in ("ru", "en"):
+                self.assertTrue(release["highlights"][locale])
+                self.assertNotIn("D1", " ".join(release["highlights"][locale]))
+                self.assertNotIn("Cloudflare", " ".join(release["highlights"][locale]))
         else:
-            self.assertNotEqual(release["userVersion"], latest.group(1))
-        for locale in ("ru", "en"):
-            self.assertNotIn("D1", " ".join(release["highlights"][locale]))
-            self.assertNotIn("Cloudflare", " ".join(release["highlights"][locale]))
-            self.assertNotIn("Выполнены внутренние технические улучшения.", " ".join(release["highlights"][locale]))
-            self.assertNotIn("Internal technical improvements.", " ".join(release["highlights"][locale]))
+            self.assertEqual(release["highlights"]["ru"], ["Выполнены внутренние технические улучшения."])
+            self.assertEqual(release["highlights"]["en"], ["Internal technical improvements."])
+            self.assertIn("lastContentVersion", release)
 
         # Historical releases with developer-only notes must remain hidden from
         # the player-facing stream, regardless of the latest version.
@@ -44,8 +44,10 @@ class PublicAudienceAndLocalizationTests(unittest.TestCase):
             for locale, label in (("ru", "Для пользователей"), ("en", "For users")):
                 translated = (ROOT / ("CHANGELOG." + locale + ".md")).read_text(encoding="utf-8")
                 section = translated.split("## Modern " + version + " —", 1)[1].split("## Modern ", 1)[0]
-                self.assertNotIn("### " + label + "\n", section)
-                self.assertIn("### ", section)
+                user = section.split("### " + label + "\n", 1)[1].split("\n### ", 1)[0]
+                self.assertIn("Выполнены внутренние технические улучшения." if locale == "ru" else "Internal technical improvements.", user)
+                self.assertNotIn("D1", user)
+                self.assertNotIn("Cloudflare", user)
 
     def test_376_typo_correction_remains_player_facing(self):
         source = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
