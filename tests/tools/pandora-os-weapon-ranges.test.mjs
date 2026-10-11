@@ -18,14 +18,16 @@ test('source-confirmed 164 weapon ranges are one-to-one, exact identity guarded 
     assert.equal(ids.has(item.id),false,item.id);ids.add(item.id);
     assert.equal(names.has(item.ru.trim().toLowerCase()),false,item.ru);names.add(item.ru.trim().toLowerCase());
     assert.equal(official.has(item.officialId),false,String(item.officialId));official.add(item.officialId);
-    assert.match(item.id,/^equipment\.(?:[0-9]|1[0-3])\.[1-9]\d*$/);
+    assert.match(item.id,/^(?:equipment\.(?:[0-9]|1[0-3])\.[1-9]\d*|modern\.equipment\.[a-f0-9-]{36})$/);
+    assert.ok(Number.isSafeInteger(item.category)&&item.category>=0&&item.category<=13);
+    assert.ok(Number.isSafeInteger(item.index)&&item.index>=1);
     assert.ok(item.engineKey && item.ru && item.kind);
     assert.ok(Number.isSafeInteger(item.range) && item.range>0);
-    const key=item.id.replace('equipment.','');
+    const key=item.category+'.'+item.index;
     assert.deepEqual(runtime[key],[item.range,item.engineKey,Number(['BOW','CROSSBOW'].includes(item.kind))]);
   }
   assert.equal(ids.size,164);
-  assert.deepEqual(Object.keys(runtime).sort(),[...ids].map(x=>x.replace('equipment.','')).sort());
+  assert.deepEqual(Object.keys(runtime).sort(),fixture.items.map(x=>x.category+'.'+x.index).sort());
 });
 
 test('weapon-range reference never infers meters, makes up unarmed reach or applies unused bonuses',()=>{
