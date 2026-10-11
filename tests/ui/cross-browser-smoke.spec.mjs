@@ -46,9 +46,9 @@ import { variant, snapshot } from './helpers/skill-variants.mjs';
 
 test('every inspector switches, floats and closes without changing the build, even after scroll or short-screen resize', async ({ page }) => {
   // This deliberately performs ten full popup switch/close/resize cycles.
-  // WebKit can cross the default 30s whole-test budget under CI load even
-  // when every interaction succeeds, so give this smoke contract its own cap.
-  test.setTimeout(60_000);
+  // WebKit can exceed 60 seconds for these 10 real interaction cycles on CI.
+  // A separate, short action timeout still catches obstructed/unresponsive clicks.
+  test.setTimeout(120_000);
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 1440, height: 900 }); await page.goto('/');
   const before = await page.evaluate(() => PandoraRemaked.adapter.serialize());
@@ -63,9 +63,10 @@ test('every inspector switches, floats and closes without changing the build, ev
       await expect(panel).toHaveAttribute('role', 'dialog');
       expect(await panel.evaluate(node => getComputedStyle(node).position)).toBe('fixed');
       const next = (tab + 1) % 5;
-      await page.locator('[data-remaked-tab="' + next + '"]').click();
+      const nextOpener = page.locator('[data-remaked-tab="' + next + '"]');
+      await nextOpener.click({ timeout: 15_000 });
       await expect(panel).toBeHidden(); await expect(opener).toHaveAttribute('aria-expanded', 'false');
-      await page.locator('[data-remaked-tab="' + next + '"]').click();
+      await nextOpener.click({ timeout: 15_000 });
       await expect(page.locator('[data-remaked-native-panel]:visible')).toHaveCount(0);
       await opener.click(); await opener.press('Escape'); await expect(panel).toBeHidden();
       await opener.click();
