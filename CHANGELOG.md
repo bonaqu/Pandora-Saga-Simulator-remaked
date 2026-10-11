@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 3.98 — подтверждения операций каталога, 2026-10-11
+
+<!-- admin-notes:ru -->
+- Семь подтверждений опасных операций редактора каталога переведены на RU/EN/JP/TW через D1: выход с несохранёнными правками, удаление варианта, публикации, очистка Astir и откаты.
+- Подтверждения по-прежнему блокируют действия при отмене. Имена, версии и количество записей подставляются безопасно; если опубликованный шаблон содержит неверные переменные, применяется корректный резервный текст.
+- Публичная документация больше не содержит устаревший фиксированный размер реестра ключей. Числовые данные, публикации, сохранения и Legacy не меняются.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Translate seven safety-critical catalog confirmation dialogs into RU/EN/JP/TW using D1-first keys: unsaved edits, variant deletion, publication, Astir cleanup and revision rollback.
+- Keep action guards unchanged; safely interpolate names and counts, falling back to approved wording for invalid placeholders.
+- Remove stale fixed key-count guidance from localization docs. No changes to catalog records, calculations or Legacy.
+<!-- /admin-notes:en -->
+
 ## Modern 3.97 — сообщения центра переводов, 2026-10-11
 
 <!-- admin-notes:ru -->

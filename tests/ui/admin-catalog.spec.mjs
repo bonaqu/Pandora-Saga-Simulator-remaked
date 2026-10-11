@@ -915,3 +915,34 @@ test('catalog field captions localize through D1 without clearing inputs, alteri
   expect(existing).not.toBe('Unpublished special editor name');
   expect(errors).toEqual([]);
 });
+
+test('localized destructive confirmation keeps an unsaved catalog edit on dismissal',async({page})=>{
+  const {sqlite,errors}=await openConsole(page);
+  await page.locator('.catalog-entry').first().click();
+  const input=page.locator('.catalog-editor [data-field="names"][data-language="en"]');
+  await expect(input).toBeVisible();
+  await input.fill('Unsaved player-facing catalog name');
+  const seen=[];
+  page.on('dialog',async dialog=>{seen.push(dialog.message());await dialog.dismiss();});
+  await page.evaluate(()=>{
+    window.__testConfirmationLocale='en';
+    window.PandoraAdminI18n={
+      t:(key,fallback)=>key==='adminShell.catalogConfirmLeaveUnsaved'?
+        (window.__testConfirmationLocale==='jp'
+          ?'未保存の変更があります。保存せずに移動しますか？'
+          :'Leave without saving this draft?'):fallback
+    };
+  });
+  for(const [lang,expected] of [
+    ['en','Leave without saving this draft?'],
+    ['jp','未保存の変更があります。保存せずに移動しますか？']
+  ]){
+    await page.evaluate(value=>window.__testConfirmationLocale=value,lang);
+    await page.locator('.catalog-entry').nth(1).click();
+    await expect(input).toHaveValue('Unsaved player-facing catalog name');
+    await expect(page.locator('.catalog-editor')).toHaveAttribute('data-unsaved','true');
+    expect(seen.at(-1)).toBe(expected);
+  }
+  expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n).toBe(0);
+  expect(errors).toEqual([]);
+});
