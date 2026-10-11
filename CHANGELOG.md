@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 4.08 — список исторических пробелов JP/TW, 2026-10-12
+
+<!-- admin-notes:ru -->
+- Офлайн-отчёт исходных переводов теперь выводит точные стабильные ID без JP/TW текста: 48 JP и 60 TW из 2678 исторических записей.
+- Для каждой категории предусмотрен отсортированный список отсутствующих исходных ID; новые тесты сверяют все подытоги, исключают дубликаты и подтверждают повторяемость отчёта.
+- Дополнена документация различий между исходным реестром и актуальными опубликованными D1-переводами; никакие данные каталога, черновики, формулы или Legacy не изменены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Offline source localization report now lists the exact stable IDs with missing Japanese (48) or Traditional Chinese (60) historical text out of 2,678 entries.
+- Add sorted missing-source ID lists per category, with automated reconciliation of totals, uniqueness and report determinism.
+- Document the difference between historical source gaps and effective published D1 translations. No catalog data, drafts, game formulas or Legacy changes.
+<!-- /admin-notes:en -->
+
 ## Modern 4.07 — восстановлено уведомление о технических обновлениях, 2026-10-12
 
 <!-- admin-notes:ru -->

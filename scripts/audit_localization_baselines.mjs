@@ -17,17 +17,29 @@ const count=(items,predicate)=>items.reduce((n,v)=>n+(predicate(v)?1:0),0);
 const present=text=>typeof text==='string'&&text.trim().length>0;
 const ids=new Set(),duplicateIds=[],emptyEnglish=[];
 const byCategory={};
+const missingSourceIds={jp:[],tw:[]};
 for(const term of terms){
   if(ids.has(term.id))duplicateIds.push(term.id);
   ids.add(term.id);
   if(!present(term.source_en))emptyEnglish.push(term.id);
   const category=term.category||'other';
-  const bucket=byCategory[category]??={total:0,ruApproved:0,jpSource:0,twSource:0};
+  const bucket=byCategory[category]??={
+    total:0,ruApproved:0,jpSource:0,twSource:0,
+    missingSourceIds:{jp:[],tw:[]}
+  };
   bucket.total++;
   if(present(approved.game?.ru?.[term.id]))bucket.ruApproved++;
-  if(present(term.source_jp))bucket.jpSource++;
-  if(present(term.source_tw))bucket.twSource++;
+  for(const lang of ['jp','tw']){
+    if(present(term['source_'+lang]))bucket[lang+'Source']++;
+    else {
+      bucket.missingSourceIds[lang].push(term.id);
+      missingSourceIds[lang].push(term.id);
+    }
+  }
 }
+for(const lang of ['jp','tw'])missingSourceIds[lang].sort();
+for(const group of Object.values(byCategory))
+  for(const lang of ['jp','tw'])group.missingSourceIds[lang].sort();
 const uiKeys=Object.keys(english);
 const uiCoverage={};
 for(const locale of locales){
@@ -45,7 +57,7 @@ const report={basis:'source snapshot only; no live D1 overrides or catalog effec
   effectiveProductionCoverageKnown:false,
   metadata:{legacyTermCount:terms.length,uiKeyCount:uiKeys.length,
     duplicateIds,emptyEnglish},
-  legacySource,uiCoverage,byCategory};
+  legacySource,uiCoverage,byCategory,missingSourceIds};
 if(process.argv.includes('--check')&&(duplicateIds.length||emptyEnglish.length))
   throw Error('Duplicate game identities or missing English source terms');
 if(process.argv.includes('--json'))console.log(JSON.stringify(report,null,2));

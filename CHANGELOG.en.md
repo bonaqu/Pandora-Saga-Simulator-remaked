@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.08 — 2026-10-12
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Offline source localization report now lists the exact stable IDs with missing Japanese (48) or Traditional Chinese (60) historical text out of 2,678 entries.
+- Add sorted missing-source ID lists per category, with automated reconciliation of totals, uniqueness and report determinism.
+- Document the difference between historical source gaps and effective published D1 translations. No catalog data, drafts, game formulas or Legacy changes.
+
 ## Modern 4.07 — 2026-10-12
 
 ### For users
