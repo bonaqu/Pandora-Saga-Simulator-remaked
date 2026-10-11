@@ -328,7 +328,9 @@ test('missing catalog never replaces protected autosave; failed import leaves a 
   await context.route(publicApi + '**', route => route.abort());
   await context.addInitScript(value => localStorage.setItem('pandora-remaked.autosave.v1', JSON.stringify(value)), stored);
   const offline = await context.newPage(); await offline.goto('http://127.0.0.1:8000/');
-  await expect(offline.locator('[data-remaked-autosave-status]')).toContainText('Current catalog unavailable');
+  // UI text comes from the registered locale/D1 source, not an old hardcoded copy.
+  await expect(offline.locator('[data-remaked-autosave-status]')).toContainText(
+    await offline.evaluate(() => PandoraRemaked.i18n.t('builds.catalogUnavailable')));
   const result = await offline.evaluate(async () => {
     const before = window.PandoraRemaked.adapter.serialize(); const saved = localStorage.getItem('pandora-remaked.autosave.v1');
     const flushed = window.PandoraRemaked.builds.flushAutosave();
