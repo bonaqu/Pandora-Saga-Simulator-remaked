@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.92 — 2026-10-11
+
+### For users
+
+- Add 94 Japanese and Traditional Chinese UI translations covering skill learning, build migration, safety messages, changelog controls and other interface areas.
+- Replace obsolete workbook and Legacy-only descriptions with accurate current admin, catalog and calculator guidance.
+
+### Development and technical changes
+
+- Provide JP/TW static fallback coverage for 442/443 common UI entries, reserving test.englishOnly for intentional English-fallback testing. Verify placeholder parity.
+- Correct three outdated English/Russian source descriptions; any newer published D1 strings remain authoritative.
+- No gameplay formula, equipment stat, calculator geometry, persisted build or Legacy behavior changes. Admin-only and catalog-managed text coverage remain separately tracked.
+
 ## Modern 3.91 — 2026-10-11
 
 ### For users
