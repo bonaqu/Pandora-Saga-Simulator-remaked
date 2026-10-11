@@ -418,13 +418,13 @@ test('new catalog-managed names expose four languages without creating a second 
     value:'Unsafe parallel copy',expectedVersion:0}),env),/Invalid translation edit/);
 });
 
-test('admin shell returns all 31 four-locale D1-editable keys without exposing secrets',async()=>{
+test('admin shell returns all current four-locale D1-editable keys without exposing secrets',async()=>{
   const env=fixture({legacyUi:[{locale:'ru',id:'adminShell.logout',text:'Выйти из старой админки'}]});
   const before=await (await publicAdminShellLocalization(env)).json();
   assert.equal(before.ok,true);
   assert.equal(before.schemaVersion,1);
   for(const locale of ['ru','en','jp','tw']) {
-    assert.equal(Object.keys(before.locales[locale]).length,31);
+    assert.equal(Object.keys(before.locales[locale]).length,61);
     assert.ok(Object.keys(before.locales[locale]).every(key=>key.startsWith('adminShell.')));
     assert.ok(Object.values(before.locales[locale]).every(text=>typeof text==='string'&&text.trim()));
   }
