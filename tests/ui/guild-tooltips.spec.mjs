@@ -71,13 +71,17 @@ test('passive descriptions are clean, D1 overrides retain priority, keyboard wor
 test('guild and Honor rows are aligned and chevron is vertically centered', async ({ page }) => {
   await page.setViewportSize({width:1440,height:900});
   await page.goto('/?ui=ru'); await openGuild(page);
-  const geometry = await page.evaluate(() => Array.from({length:11},(_,i)=>{
+  const geometry = await page.evaluate(() => {
+    const values=[];
+    for(let i=0;i<11;i++){
     const guild=document.querySelector('#BuffClan_'+i+' .remaked-guild-trigger').getBoundingClientRect();
     const honor=document.querySelector('#BuffHonor_'+i+' [data-remaked-buff]').getBoundingClientRect();
     const arrow=document.querySelector('#BuffClan_'+i+' .remaked-guild-chevron').getBoundingClientRect();
-    return {guildTop:guild.top,honorTop:honor.top,guildHeight:guild.height,honorHeight:honor.height,
-      arrowDelta: Math.abs(arrow.top+arrow.height/2-guild.top-guild.height/2)};
-  }));
+    values.push({guildTop:guild.top,honorTop:honor.top,guildHeight:guild.height,honorHeight:honor.height,
+      arrowDelta: Math.abs(arrow.top+arrow.height/2-guild.top-guild.height/2)});
+    }
+    return values;
+  });
   for(const [index,g] of geometry.entries()){
     expect(Math.abs(g.guildTop-g.honorTop),'row '+index).toBeLessThanOrEqual(1);
     expect(g.guildHeight).toBe(g.honorHeight);

@@ -30,9 +30,13 @@
     if (popup) popup.hidden = true;
     if (current) {
       var node = current.node;
+      // All title-bearing ancestors are temporarily suppressed while hovering
+      // a nested .help span; otherwise the browser displays a second tooltip.
+      current.titles.forEach(function (entry) {
+        if (entry.node.isConnected && !entry.node.hasAttribute('title'))
+          entry.node.setAttribute('title', entry.text);
+      });
       if (node.isConnected) {
-        // If a live translation changed title while this was open, retain it.
-        if (!node.hasAttribute('title')) node.setAttribute('title', current.text);
         if (current.previousDescribedBy === null) node.removeAttribute('aria-describedby');
         else node.setAttribute('aria-describedby', current.previousDescribedBy);
       }
@@ -60,9 +64,15 @@
     if (!node) return;
     var title = node.getAttribute('title');
     if (!title || !title.trim()) return;
-    current = { node: node, text: title, previousDescribedBy: node.getAttribute('aria-describedby') };
-    // Remove before hover delay to prevent competing OS/browser bubbles.
-    node.removeAttribute('title');
+    current = { node: node, text: title, previousDescribedBy: node.getAttribute('aria-describedby'), titles: [] };
+    // Remove title from this node AND the ancestor chain. The browser can
+    // otherwise find a parent's native title while a nested span is hovered.
+    for (var cursor = node; cursor && cursor !== document.body; cursor = cursor.parentElement) {
+      var inherited = cursor.getAttribute('title');
+      if (!inherited) continue;
+      current.titles.push({ node: cursor, text: inherited });
+      cursor.removeAttribute('title');
+    }
     if (popup) node.setAttribute('aria-describedby', popup.id);
     if (immediate) {
       show();
@@ -79,8 +89,10 @@
     if (!document.body.classList.contains('remaked-modern')) return;
     document.addEventListener('pointerover', function (event) {
       if (event.pointerType === 'touch') return;
-      if (current?.node.contains(event.target)) return;
-      open(eligible(event.target), false);
+      var candidate = eligible(event.target);
+      if (current?.node.contains(event.target) && !candidate) return;
+      if (current?.node === candidate) return;
+      open(candidate, false);
     });
     document.addEventListener('pointerout', function (event) {
       if (!current || event.pointerType === 'touch') return;
