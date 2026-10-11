@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.09 — 2026-10-12
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Add 35 D1-managed RU/EN/JP/TW localization keys covering live catalog status, draft counters and filters, search labels, catalog types, bulk-editor accessibility names and saved-draft markers.
+- Locale switching refreshes display-only nodes without losing search values, selected drafts, editable data or publication-version guards. D1 overrides remain authoritative; actual catalog text and raw server errors are never automatically translated.
+- Extend the browser regression matrix across 28 classes and 6 races, 43 calculated slots, Linen Robe and combined Providence/Lapis Medio effects, stable repeated calculations and exact build restoration. Add catalog language-switch and bulk accessible-label regression tests.
+- Validate all 35 keys for complete locale coverage, matching interpolation tokens and safe text. Game mechanics remain unchanged; independent current-client gameplay parity is not asserted. Legacy 2.00 and published D1 records are unaffected.
+
 ## Modern 4.08 — 2026-10-12
 
 ### For users
