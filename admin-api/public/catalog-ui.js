@@ -151,7 +151,47 @@
     result.addEventListener('click', action);
     return result;
   }
-  function report(text, error) { status.textContent = text; status.classList.toggle('denied', Boolean(error)); }
+  // Only known display-only feedback is translated. Raw server errors,
+  // identity strings and the editable form data are never rewritten.
+  var catalogStatusKeys = {
+  "Изменения проверены. Чтобы применить: сохраните черновик → опубликуйте.": "catalogStatusReviewed",
+  "Добавлен приватный вариант. Укажите его класс, уровень/очки и значения; перед публикацией сервер проверит, что условия однозначны.": "catalogStatusPrivateVariant",
+  "Черновик сохранён. На сайте он ещё не опубликован.": "catalogStatusDraftSaved",
+  "Сначала сохраните черновик.": "catalogStatusSaveFirst",
+  "Новый вариант получит отдельный ID. Перед сохранением явно задайте его числовые эффекты.": "catalogStatusNewVariant",
+  "В текущей записи есть несохранённые изменения. Сохрани или отмени их перед массовой публикацией.": "catalogStatusBatchUnsaved",
+  "Выбери от 1 до 50 черновиков.": "catalogStatusBatchLimit",
+  "Ответ публикации не получен. Проверяю результат по коду операции…": "catalogStatusBatchChecking",
+  "Для этого каталога пока поддерживаются только существующие слоты.": "catalogStatusSlotsOnly",
+  "Исходный навык не изменён. Укажите название нового навыка, сохраните черновик, затем опубликуйте его отдельно.": "catalogStatusOriginalUnchanged",
+  "Сначала выбери существующий навык как шаблон.": "catalogStatusSelectSkill",
+  "Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.": "catalogStatusLoaded"
+};
+  var activeCatalogStatus = null;
+  function statusTranslation(entry) {
+    var value=window.PandoraAdminI18n?.t?.('adminShell.'+entry.key,entry.fallback)||entry.fallback;
+    var slots=function(text){return (text.match(/\{[A-Za-z0-9_]+\}/g)||[]).sort().join('|');};
+    if(slots(value)!==slots(entry.fallback))value=entry.fallback;
+    return value.replace(/\{([A-Za-z0-9_]+)\}/g,function(original,name){
+      return Object.hasOwn(entry.values,name)?String(entry.values[name]):original;
+    });
+  }
+  function reportTranslated(key,fallback,values,error) {
+    activeCatalogStatus={key:key,fallback:fallback,values:values||{}};
+    status.textContent=statusTranslation(activeCatalogStatus);
+    status.classList.toggle('denied',Boolean(error));
+  }
+  function report(text,error) {
+    var key=catalogStatusKeys[text];
+    if(key){reportTranslated(key,text,{},error);return;}
+    activeCatalogStatus=null;
+    status.textContent=text;
+    status.classList.toggle('denied',Boolean(error));
+  }
+  window.addEventListener('pandora-admin:localechange',function(){
+    if(activeCatalogStatus && status?.isConnected)
+      status.textContent=statusTranslation(activeCatalogStatus);
+  });
   async function api(path, input) {
     var response = await fetch('/api/admin/' + path, { method: input ? 'POST' : 'GET', credentials: 'same-origin', cache: 'no-store',
       headers: input ? { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrf() || '' } : {}, body: input ? JSON.stringify(input) : undefined, signal: AbortSignal.timeout(15000) });
@@ -652,7 +692,7 @@
       current = refreshed; renderEditor(); await Promise.all([loadList(),refreshDrafts()]);
       if (thisGeneration === generation) {
         window.dispatchEvent(new Event('pandora:catalog-published'));
-        report('Опубликована версия каталога ' + result.catalogRevision + '.');
+        reportTranslated('catalogStatusRevisionPublished','Опубликована версия каталога {revision}.',{revision:result.catalogRevision});
       }
     } catch (error) { if (thisGeneration === generation) report(error.message, true); }
     finally { if (thisGeneration === generation) { host.inert = false; host.removeAttribute('aria-busy'); } }
@@ -825,7 +865,7 @@
       var result = await api('item?id=' + encodeURIComponent(id)); if (thisGeneration !== generation || sequence !== editorRequest) return;
       current = result; renderEditor(); syncNewButton();
       listHost.querySelectorAll('.catalog-entry').forEach(function (entry) { if (entry.dataset.recordId === id) entry.setAttribute('aria-current', 'true'); else entry.removeAttribute('aria-current'); });
-      report('Выбрано: ' + current.edit.names.en + '. Изменения пока не опубликованы.');
+      reportTranslated('catalogStatusRecordSelected','Выбрано: {name}. Изменения пока не опубликованы.',{name:current.edit.names.en});
     } catch (error) { if (thisGeneration === generation && sequence === editorRequest) report(error.message, true); }
   }
   async function loadList() {
@@ -973,7 +1013,7 @@
       await Promise.all([loadList(),refreshDrafts()]);
       if(thisGeneration===generation){
         window.dispatchEvent(new Event('pandora:catalog-published'));
-        report('Опубликовано '+reply.count+' черновиков одной версией #'+reply.catalogRevision+'.');
+        reportTranslated('catalogStatusBatchPublished','Опубликовано {count} черновиков одной версией #{revision}.',{count:reply.count,revision:reply.catalogRevision});
       }
     }catch(error){
       if(thisGeneration===generation){
@@ -1070,8 +1110,7 @@
             expectedFields: data.fields.map(function (field) { return field.id + ':' + field.locale; }).sort()
           });
           window.dispatchEvent(new Event('pandora:catalog-published'));
-          report('Очищено ' + result.cleanedCount + ' архивных примечаний. Новая версия #' + result.catalogRevision +
-            '. Бонусы заточки и старые билды не затронуты.');
+          reportTranslated('catalogStatusAstirCleaned','Очищено {count} архивных примечаний. Новая версия #{revision}. Бонусы заточки и старые билды не затронуты.',{count:result.cleanedCount,revision:result.catalogRevision});
           catalogRevision = result.catalogRevision;
           await loadList();
         } catch (error) { report(error.message, true); }
@@ -1095,7 +1134,7 @@
               cleanupRevision: cleanupRevision, expectedCatalogRevision: data.catalogRevision
             });
             window.dispatchEvent(new Event('pandora:catalog-published'));
-            report('Примечания восстановлены как версия #' + result.catalogRevision + '.');
+            reportTranslated('catalogStatusAstirRestored','Примечания восстановлены как версия #{revision}.',{revision:result.catalogRevision});
             catalogRevision = result.catalogRevision;
             await loadList();
           } catch(error) { report(error.message, true); }
@@ -1127,7 +1166,7 @@
         var row = node('div', undefined, 'revision-row'); row.appendChild(node('span', '#' + revision.version + ' · ' + revision.note));
         row.appendChild(button('Восстановить #' + revision.version, async function () {
           if (!confirmCatalog('catalogConfirmRollback','Восстановить весь опубликованный каталог из версии {version}? Черновики не удалятся.',{version:revision.version})) return;
-          try { var restored = await api('rollback', { revision: revision.version, expectedCatalogRevision: result.catalogRevision }); await loadList(); await revisions(); report('Восстановлено как новая версия ' + restored.catalogRevision + '.'); } catch (error) { report(error.message, true); }
+          try { var restored = await api('rollback', { revision: revision.version, expectedCatalogRevision: result.catalogRevision }); await loadList(); await revisions(); reportTranslated('catalogStatusRollback','Восстановлено как новая версия {revision}.',{revision:restored.catalogRevision}); } catch (error) { report(error.message, true); }
         }, 'secondary')); editor.appendChild(row);
       });
     } catch (error) { if (thisGeneration === generation && sequence === editorRequest) report(error.message, true); }

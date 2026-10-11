@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.01 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Localize 18 catalog editor feedback messages in RU/EN/JP/TW through existing D1-first admin copy, covering review, draft, successful publication and rollback feedback.
+- Language changes refresh only the current status leaf, never resubmitting catalog operations or changing draft values, revisions or calculations.
+- Leave unconfirmed batch publication outcomes and raw server errors unchanged to preserve safety-critical behavior.
+
 ## Modern 4.00 — 2026-10-11
 
 ### For users

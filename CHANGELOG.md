@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 4.01 — локализация уведомлений каталога, 2026-10-11
+
+<!-- admin-notes:ru -->
+- В админке ещё 18 сообщений каталога переведены на RU/EN/JP/TW и доступны через D1: статусы проверки, черновиков, публикаций, восстановления и отката.
+- Сообщение обновляется при смене языка без нового запроса к серверу и без изменения содержимого полей, черновиков, ревизий или игровых формул.
+- Неподтверждённые результаты публикаций и необработанные серверные ошибки намеренно не изменялись: предупреждения о возможной уже выполненной операции остаются прежними.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Localize 18 catalog editor feedback messages in RU/EN/JP/TW through existing D1-first admin copy, covering review, draft, successful publication and rollback feedback.
+- Language changes refresh only the current status leaf, never resubmitting catalog operations or changing draft values, revisions or calculations.
+- Leave unconfirmed batch publication outcomes and raw server errors unchanged to preserve safety-critical behavior.
+<!-- /admin-notes:en -->
+
 ## Modern 4.00 — матрица регрессий расчёта, 2026-10-11
 
 <!-- admin-notes:ru -->
