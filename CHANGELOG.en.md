@@ -2,6 +2,17 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.96 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Add reproducible, read-only baseline coverage inventory for RU/EN/JP/TW UI and historical game identities.
+- Distinguish static source gaps from effective D1 publications; the report never overwrites or claims to enumerate live catalog translations.
+
 ## Modern 3.95 — 2026-10-11
 
 ### For users
