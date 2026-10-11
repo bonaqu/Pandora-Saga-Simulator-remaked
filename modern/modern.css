@@ -2400,3 +2400,28 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
 .remaked-modern #body [data-remaked-calculator-results] [data-remaked-mounted-defense-note][hidden] {
   display: none !important;
 }
+
+
+/* Intermediate desktop (861–1365px): keep both Skill headings on one line
+   with the exact same size on RU/EN/JP/TW. The previous RU-only rule allowed
+   wrapping and made the header geometry language-dependent. */
+@media (min-width: 861px) and (max-width: 1365px) {
+  html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(2),
+  html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(3),
+  html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(5),
+  html[lang] body.remaked-modern #body [data-remaked-skill-column-header] > span:nth-child(6) {
+    box-sizing: border-box;
+    width: 64px;
+    max-width: 64px;
+    justify-self: end;
+    /* Center on the retained 52px control, not the wider 64px caption. */
+    transform: translateX(4px);
+    white-space: nowrap;
+    overflow: visible;
+    overflow-wrap: normal;
+    font-size: 9px;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    text-align: center;
+  }
+}

@@ -484,3 +484,55 @@ test('regular unmounted results must not mask DEF or Magic Resistance with an un
   expect(Number(out.buffed[145])-Number(out.empty[145])).toBe(25);
   expect(Number(out.buffed[49])).toBeGreaterThan(Number(out.empty[49]));
 });
+
+
+test('intermediate desktop Skill headings are single-line and identical across RU/EN/JP/TW with 4-digit stats',async({page})=>{
+  test.setTimeout(180_000);
+  for(const width of [861,1024,1200,1365]){
+    await page.setViewportSize({width,height:900});
+    let baseline;
+    for(const locale of ['en','ru','jp','tw']){
+      await page.goto('/?ui='+locale);
+      const metrics=await page.evaluate(()=>{
+        const round=n=>Math.round(n*10)/10;
+        const headings=[2,3].map(index=>{
+          const element=document.querySelector('[data-remaked-skill-column-header] > span:nth-child('+index+')');
+          if(!element)throw Error('Skill column missing: '+index);
+          const box=element.getBoundingClientRect();
+          const range=document.createRange();range.selectNodeContents(element);
+          const textRects=[...range.getClientRects()].filter(r=>r.width>0&&r.height>0);
+          return {title:element.textContent.trim(),whiteSpace:getComputedStyle(element).whiteSpace,
+            geometry:[box.x,box.y,box.width,box.height].map(round),
+            lines:textRects.length,
+            clipped:textRects.some(r=>r.left<box.left-1||r.right>box.right+1||
+              r.top<box.top-1||r.bottom>box.bottom+1)};
+        });
+        const stats=[...document.querySelectorAll('#StatusView [data-remaked-calculator-pair]')].map(pair=>{
+          const name=pair.querySelector('[id^="TextStatus_"]');
+          const numberBox=pair.querySelector('.input_gt');
+          const value=numberBox?.querySelector('[id^="Status_"]')||numberBox;
+          if(!name||!numberBox||!value)throw Error('Missing a calculated result');
+          value.textContent='1234'; // Visual stress only, no game calculation changes.
+          const range=document.createRange();range.selectNodeContents(value);
+          const text=range.getBoundingClientRect();
+          const number=numberBox.getBoundingClientRect();
+          const labelRange=document.createRange();labelRange.selectNodeContents(name);
+          const label=labelRange.getBoundingClientRect();
+          return {fits:text.left>=number.left-1&&text.right<=number.right+1,
+            separated:label.right<=number.left-1};
+        });
+        return {headings,stats,scrollWidth:document.documentElement.scrollWidth};
+      });
+      const where=String(width)+':'+locale;
+      expect(metrics.headings.every(x=>x.whiteSpace==='nowrap'&&x.lines===1&&!x.clipped),
+        where+':'+JSON.stringify(metrics.headings)).toBe(true);
+      expect(metrics.stats).toHaveLength(43);
+      expect(metrics.stats.every(x=>x.fits&&x.separated),
+        where+':'+JSON.stringify(metrics.stats.filter(x=>!x.fits||!x.separated))).toBe(true);
+      expect(metrics.scrollWidth,where).toBeLessThanOrEqual(width+1);
+      const geom=metrics.headings.map(x=>x.geometry);
+      if(!baseline)baseline=geom;
+      else expect(geom,where).toEqual(baseline);
+    }
+  }
+});

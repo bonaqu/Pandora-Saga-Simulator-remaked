@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.04 — 2026-10-12
+
+### For users
+
+- Skill Adeptness and Potential headings now stay on one line at 861–1365px desktop widths.
+- RU/EN/JP/TW use identical heading geometry without making Character wider or squeezing the Skills panel.
+
+### Development and technical changes
+
+- Added 861/1024/1200/1365px × RU/EN/JP/TW browser checks for one-line headings, equal geometry, no text collision and 4-digit result displays.
+- Browser test modifies only temporary DOM copy, not formulas, published D1, saved builds or Legacy.
+
 ## Modern 4.03 — 2026-10-12
 
 ### For users
