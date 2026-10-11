@@ -1,3 +1,4 @@
+import json
 import pathlib
 import sqlite3
 import unittest
@@ -16,6 +17,7 @@ class LocalizationD1MigrationTests(unittest.TestCase):
           PRIMARY KEY(scope,term_id,locale)
         );
         CREATE TABLE localization_drafts (scope TEXT,term_id TEXT,locale TEXT,text TEXT);
+        CREATE TABLE catalog_head (id INTEGER PRIMARY KEY,snapshot_json TEXT NOT NULL);
         CREATE TABLE localization_history (
           term_id TEXT,locale TEXT,previous_text TEXT,published_text TEXT,version INTEGER
         );
@@ -26,6 +28,7 @@ class LocalizationD1MigrationTests(unittest.TestCase):
           );
         END;
         """)
+        self.db.execute("INSERT INTO catalog_head(id,snapshot_json) VALUES(1,'[]')")
         self.old = {
             "skill_entry.18.8": ("Сопротивляемость огню", "Сопр. огню"),
             "skill_entry.18.9": ("Сопротивляемость льду", "Сопр. льду"),
@@ -75,6 +78,46 @@ class LocalizationD1MigrationTests(unittest.TestCase):
         # Reapplying accidentally has no further effect or duplicate history.
         self.db.executescript(SQL)
         self.assertEqual(self.db.execute("SELECT count(*) FROM localization_history").fetchone()[0], 2)
+
+
+    def test_catalog_only_legacy_names_become_versioned_localization_records(self):
+        entries = [{
+            'identity': {'id': term},
+            'edit': {'names': {'ru': original}}
+        } for term,(original,_) in self.old.items()]
+        self.db.execute("UPDATE catalog_head SET snapshot_json=? WHERE id=1",
+                        (json.dumps(entries,ensure_ascii=False),))
+        # Previously edited and reset values cannot be shadowed by new rows.
+        self.db.execute("INSERT INTO localization_overrides VALUES(?,?,?,?,?,?,?)",
+                        ("game","skill_entry.18.8","ru","Собственное имя",3,100,None))
+        self.db.execute("INSERT INTO localization_overrides VALUES(?,?,?,?,?,?,?)",
+                        ("game","skill_entry.18.9","ru","",4,100,None))
+        self.db.execute("INSERT INTO localization_drafts VALUES(?,?,?,?)",
+                        ("game","skill_entry.18.10","ru","Черновик владельца"))
+        self.db.executescript(SQL)
+        expected = {
+          "skill_entry.18.8": ("Собственное имя",3),
+          "skill_entry.18.9": ("",4),
+          "skill_entry.18.10": None,
+          "skill_entry.20.7": ("Сопр. тьме",1),
+          "skill_entry.21.7": ("Сопр. чарам",1)
+        }
+        for term,wanted in expected.items():
+            actual=self.db.execute(
+                "SELECT text,version FROM localization_overrides WHERE scope=? AND term_id=? AND locale=?",
+                ("game",term,"ru")
+            ).fetchone()
+            self.assertEqual(actual,wanted,term)
+        self.db.executescript(SQL)
+        for term,wanted in expected.items():
+            actual=self.db.execute(
+                "SELECT text,version FROM localization_overrides WHERE scope=? AND term_id=? AND locale=?",
+                ("game",term,"ru")
+            ).fetchone()
+            self.assertEqual(actual,wanted,term)
+        # Catalog mechanics and original names never change.
+        self.assertEqual(json.loads(self.db.execute(
+            "SELECT snapshot_json FROM catalog_head WHERE id=1").fetchone()[0]),entries)
 
 
 if __name__ == "__main__":

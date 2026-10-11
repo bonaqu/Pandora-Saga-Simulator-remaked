@@ -29,6 +29,32 @@ WHERE scope='game' AND locale='ru'
       AND draft.locale=localization_overrides.locale
   );
 
+-- Some legacy skill names are owned by the published D1 catalog, not yet by
+-- localization_overrides. Promote only exact unchanged source captions to
+-- editor-owned D1 translations, without rewriting catalog revisions/stats.
+-- Existing D1 overrides (including reset tombstones) and drafts win.
+INSERT OR IGNORE INTO localization_overrides
+  (scope,term_id,locale,text,version,updated_at,last_operation)
+SELECT 'game', candidate.term_id, 'ru', candidate.new_text,
+       1, CAST(strftime('%s','now') AS INTEGER), NULL
+FROM (
+  SELECT 'skill_entry.18.8' AS term_id, 'Сопротивляемость огню' AS old_text, 'Сопр. огню' AS new_text
+  UNION ALL SELECT 'skill_entry.18.9', 'Сопротивляемость льду', 'Сопр. льду'
+  UNION ALL SELECT 'skill_entry.18.10', 'Сопротивляемость молниям', 'Сопр. молнии'
+  UNION ALL SELECT 'skill_entry.20.7', 'Сопротивляемость магии тьмы', 'Сопр. тьме'
+  UNION ALL SELECT 'skill_entry.21.7', 'Сопротивляемость чарам', 'Сопр. чарам'
+) AS candidate
+WHERE NOT EXISTS (
+  SELECT 1 FROM localization_drafts AS draft
+  WHERE draft.scope='game' AND draft.term_id=candidate.term_id AND draft.locale='ru'
+)
+AND EXISTS (
+  SELECT 1 FROM catalog_head AS catalog, json_each(catalog.snapshot_json) AS item
+  WHERE catalog.id=1
+    AND json_extract(item.value,'$.identity.id')=candidate.term_id
+    AND json_extract(item.value,'$.edit.names.ru')=candidate.old_text
+);
+
 -- New Modern release labels are administered like any other site text.
 -- Do not insert over an existing publication or an unpublished editor draft.
 INSERT OR IGNORE INTO localization_overrides
