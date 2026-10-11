@@ -415,3 +415,71 @@ test('clicking real Enhancement buttons recalculates Providence magic resistance
   await expect.poll(()=>getValue(145)).toBe(initialMagic);
   await expect.poll(()=>getValue(49)).toBe(initialDef);
 });
+
+
+test('riding explains intentionally unavailable DEF without changing equipment, buff state or numeric calculation',async({page})=>{
+  await page.goto('/?ui=ru');
+  await page.evaluate(()=>{
+    Flag[7]=0;Flag['14_4']=0;
+    CalcSet('ALL');PandoraRemaked.calculatorControls.refresh();
+  });
+  const note=page.locator('[data-remaked-mounted-defense-note]');
+  await expect(note).toHaveCount(1);
+  await expect(note).toBeHidden();
+  const baseline=await page.evaluate(()=>Number(document.querySelector('#Status_49').textContent));
+  expect(Number.isFinite(baseline)).toBe(true);
+  const after=await page.evaluate(()=>{
+    if(!PandoraRemaked.adapter.selectEquipment(3,310015))throw Error('Linen Robe fixture unavailable');
+    Flag['14_4']=1;CalcSet('ALL');
+    return {def:Number(document.querySelector('#Status_49').textContent),build:Store()};
+  });
+  expect(after.def).toBeGreaterThanOrEqual(baseline+13);
+  await page.evaluate(()=>{
+    Flag[7]=1;CalcSet('ALL');PandoraRemaked.calculatorControls.refresh();
+  });
+  await expect(page.locator('#Status_49')).toHaveText('---');
+  await expect(note).toBeVisible();
+  for(const [locale,fragment] of [
+    ['ru','исходный калькулятор скрывает защиту'],
+    ['en','the retained calculator hides DEF'],
+    ['jp','防御力を「---」と表示'],
+    ['tw','防禦力顯示為']
+  ]){
+    await page.evaluate(locale=>PandoraRemaked.i18n.setLocale(locale),locale);
+    await expect(note).toContainText(fragment);
+    await page.setViewportSize({width:390,height:850});
+    expect(await note.evaluate(n=>n.scrollWidth<=n.clientWidth+1)).toBe(true);
+    await page.setViewportSize({width:1440,height:900});
+  }
+  expect(await page.evaluate(()=>Store())).toBe(after.build);
+  await page.evaluate(()=>{
+    Flag[7]=0;CalcSet('ALL');PandoraRemaked.calculatorControls.refresh();
+  });
+  await expect(note).toBeHidden();
+  await expect(page.locator('#Status_49')).toHaveText(String(after.def));
+  expect(await page.evaluate(()=>Store())).toBe(after.build);
+});
+
+test('regular unmounted results must not mask DEF or Magic Resistance with an unavailable marker',async({page})=>{
+  await page.goto('/?ui=ru');
+  const out=await page.evaluate(()=>{
+    Flag[7]=0;Flag['0_8']=0;Flag['14_4']=0;
+    CalcSet('ALL');
+    const ids=[18,42,49,60,70,138,139,140,141,142,143,144,145];
+    const read=()=>Object.fromEntries(ids.map(id=>[id,document.getElementById('Status_'+id)?.textContent.trim()]));
+    const empty=read();
+    Flag['0_8']=1;Flag['14_4']=1;CalcSet('ALL');
+    const buffed=read();
+    CalcSet('ALL');
+    const repeated=read();
+    Flag['0_8']=0;Flag['14_4']=0;CalcSet('ALL');
+    return {empty,buffed,repeated,restored:read()};
+  });
+  for(const result of Object.values(out))for(const [id,value] of Object.entries(result)){
+    expect(value,'Status_'+id).toMatch(/^-?\d+(?:[.,]\d+)?%?$/);
+  }
+  expect(out.buffed).toEqual(out.repeated);
+  expect(out.empty).toEqual(out.restored);
+  expect(Number(out.buffed[145])-Number(out.empty[145])).toBe(25);
+  expect(Number(out.buffed[49])).toBeGreaterThan(Number(out.empty[49]));
+});
