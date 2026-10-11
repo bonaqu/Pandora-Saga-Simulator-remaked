@@ -2360,3 +2360,20 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
 .remaked-modern #body [data-remaked-calculator-results] [id^="TextStatus_"] .help {
   letter-spacing: -0.03em;
 }
+/* Modern 3.78: numeric totals of 100+ cannot overlap the 2P/3P cost badge.
+   Widen only the affected character sheet, never truncate actual numbers,
+   and preserve the existing 44px spinner input / full Skills track. */
+.remaked-modern #body [data-remaked-calculator-attribute][data-remaked-wide-total] > ul:first-child > .input_gt {
+  grid-template-columns: 44px minmax(44px, 1fr);
+}
+.remaked-modern #body [data-remaked-calculator-attribute][data-remaked-wide-total] [data-remaked-number-total] {
+  min-width: 44px;
+  overflow: visible;
+  white-space: nowrap;
+}
+@media (min-width: 621px) {
+  .remaked-modern #body [data-remaked-calculator-attribute-results]:has([data-remaked-wide-total]),
+  .remaked-modern #body [data-remaked-calculator-character]:has([data-remaked-wide-total]) [data-remaked-calculator-settings] {
+    grid-template-columns: 156px minmax(0, 1fr);
+  }
+}
