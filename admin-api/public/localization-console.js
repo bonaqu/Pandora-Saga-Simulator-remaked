@@ -130,13 +130,13 @@
           // false translations. The report is read-only in either case.
           const categories=data.coverageByGroup;
           if(categories!==undefined){
-            const allowed=new Set(['skills','equipment','souls','classes','races','stats','other']);
+            const allowed=['skills','equipment','souls','classes','races','stats','other'];
             if(!Array.isArray(categories)||!categories.length||
-                categories.some(entry=>!entry||!allowed.has(entry.id)||
+                categories.some(entry=>!entry||!allowed.includes(entry.id)||
                   ![entry.total,entry.translated,entry.missing].every(Number.isSafeInteger)||
                   entry.total<0||entry.translated<0||entry.missing<0||
                   entry.translated+entry.missing!==entry.total)||
-                new Set(categories.map(entry=>entry.id)).size!==categories.length||
+                categories.map(entry=>entry.id).filter((id,index,ids)=>ids.indexOf(id)===index).length!==categories.length||
                 categories.reduce((sum,entry)=>sum+entry.total,0)!==values.total||
                 categories.reduce((sum,entry)=>sum+entry.translated,0)!==values.translated||
                 categories.reduce((sum,entry)=>sum+entry.missing,0)!==data.total)
