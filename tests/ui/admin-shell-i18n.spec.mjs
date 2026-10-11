@@ -70,3 +70,57 @@ test('admin login stays accessible in original English if D1 locale endpoint fai
   await expect(page.locator('form button')).toBeEnabled();
   await expect(page.locator('html')).toHaveAttribute('lang','en');
 });
+
+
+test('translation workbench filters switch RU/EN/JP/TW without erasing search or saving changes',async({page})=>{
+  await page.goto('about:blank');
+  await page.setContent(fragment+'<div id="localization-console"></div>');
+  await page.evaluate(dict=>{
+    window.fetch=async (url)=>{
+      if(url==='/api/admin-shell-localization')
+        return new Response(JSON.stringify(dict),{status:200,headers:{'content-type':'application/json'}});
+      if(String(url).startsWith('/api/admin/localization?'))
+        return new Response(JSON.stringify({ok:true,schemaVersion:1,scope:'game',locale:'ru',
+          page:0,pageSize:40,total:0,counts:{game:2800,ui:338},
+          coverage:{translated:0,total:0},items:[]}),{status:200,headers:{'content-type':'application/json'}});
+      throw Error('Unexpected request: '+url);
+    };
+    window.PandoraBulkLocalization={mount:()=>({invalidate(){},destroy(){}})};
+    window.PandoraLocalizationDrafts={mount:()=>({
+      get:()=>null,history:()=>{},refresh:async()=>{},destroy:()=>{}
+    })};
+  },fixture());
+  await page.addScriptTag({path:'admin-api/public/admin-i18n.js'});
+  await page.addScriptTag({path:'admin-api/public/localization-console.js'});
+  await page.evaluate(()=>window.PandoraLocalizationConsole.start(()=>'synthetic-csrf',()=>{}));
+  const language=page.locator('#admin-language');
+  await expect(language).toBeEnabled();
+  const console=page.locator('#localization-console');
+  const heading=console.locator('[data-admin-i18n="adminShell.localizationHeading"]');
+  const search=console.locator('input[type="search"]');
+  await search.fill('check with ID 55');
+  await language.selectOption('ru');
+  await expect(heading).toHaveText(approved.ui.ru['adminShell.localizationHeading']);
+  await expect(console.locator('[data-admin-i18n="adminShell.scopeGame"]'))
+    .toHaveText(approved.ui.ru['adminShell.scopeGame']);
+  await expect(search).toHaveAttribute('placeholder',approved.ui.ru['adminShell.localizationSearchPlaceholder']);
+  await language.selectOption('jp');
+  await expect(heading).toHaveText(approved.ui.jp['adminShell.localizationHeading']);
+  await expect(console.locator('[data-admin-i18n="adminShell.categorySkills"]'))
+    .toHaveText(approved.ui.jp['adminShell.categorySkills']);
+  await expect(search).toHaveAttribute('placeholder',approved.ui.jp['adminShell.localizationSearchPlaceholder']);
+  await language.selectOption('tw');
+  await expect(heading).toHaveText(approved.ui.tw['adminShell.localizationHeading']);
+  await expect(console.locator('[data-admin-i18n-aria="adminShell.filterScope"]'))
+    .toHaveAttribute('aria-label',approved.ui.tw['adminShell.filterScope']);
+  await language.selectOption('en');
+  await expect(heading).toHaveText(english['adminShell.localizationHeading']);
+  await expect(console.locator('[data-admin-i18n="adminShell.paginationNext"]'))
+    .toHaveText(english['adminShell.paginationNext']);
+  await expect(search).toHaveAttribute('placeholder',english['adminShell.localizationSearchPlaceholder']);
+  await expect(search).toHaveValue('check with ID 55');
+  await expect(page.locator('#username')).toHaveValue('admin');
+  await expect(page.locator('#password')).toHaveValue('');
+  await expect(console.locator('[data-admin-i18n]')).toHaveCount(23);
+  await page.evaluate(()=>window.PandoraLocalizationConsole.clear());
+});
