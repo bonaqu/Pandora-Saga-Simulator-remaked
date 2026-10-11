@@ -36,6 +36,11 @@
       var text = t(key, node.getAttribute('placeholder'));
       if (text) node.setAttribute('placeholder', text);
     });
+    document.querySelectorAll('[data-admin-i18n-title]').forEach(function (node) {
+      var key = node.getAttribute('data-admin-i18n-title');
+      var text = t(key, node.getAttribute('title'));
+      if (text) node.setAttribute('title', text);
+    });
     document.documentElement.lang = languageTags[current] || 'en';
   }
   function change(locale) {
