@@ -6,6 +6,8 @@
   var locales = ['ru','en','jp','tw'];
   var languageTags = {ru:'ru',en:'en',jp:'ja',tw:'zh-Hant'};
   var current = 'en', dictionary = null;
+  // The login must stay explicitly English even if the localization API fails.
+  document.documentElement.lang = 'en';
   function originalLanguage() {
     var native = String(navigator.language || '').toLowerCase();
     if (native.startsWith('ru')) return 'ru';
