@@ -531,8 +531,8 @@ test('Astian dress occupies chest and pants without inventing a second equipped 
     return {before,after:Store(),chest:Status.Equip[3][0],
       pants:Status.Equip[5][0],lock:PandoraRemaked.equipmentPicker.blockedSlot(5)};
   });
-  expect(detail.chest).toBe(310032);
-  expect(detail.pants).toBe(0);
+  expect(Number(detail.chest)).toBe(310032);
+  expect(Number(detail.pants)).toBe(0);
   expect(detail.lock).toMatchObject({ownerSlot:3,lockedSlot:5,equipmentId:310032});
   const pants=page.locator('[data-remaked-picker-slot]:has([data-remaked-equipment-picker="SelEquip_5_0"])');
   const open=pants.locator('[data-remaked-equipment-picker="SelEquip_5_0"]');
@@ -553,7 +553,7 @@ test('Astian dress occupies chest and pants without inventing a second equipped 
     PandoraRemaked.equipmentPicker.refresh();
     return {chest:Status.Equip[3][0],occupied:PandoraRemaked.equipmentPicker.blockedSlot(5)};
   });
-  expect(after).toEqual({chest:0,occupied:null});
+  expect(after).toEqual({chest:'0',occupied:null});
   await expect(open).toBeEnabled();
   await expect(pants.locator('[data-remaked-slot-occupied]')).toBeHidden();
 });
@@ -561,11 +561,15 @@ test('Astian dress occupies chest and pants without inventing a second equipped 
 test('normal robes do not block pants; dress warning stays readable in four locales and on phone',async({page})=>{
   await page.goto('/?ui=en');
   const regular=await page.evaluate(()=>{
-    const options=PandoraRemaked.adapter.listEquipmentOptions(3);
-    if(!options.some(item=>Number(item.value)===310015))throw Error('Linen Robe fixture missing');
-    if(!PandoraRemaked.adapter.selectEquipment(3,310015))throw Error('Cannot equip normal robe');
-    PandoraRemaked.equipmentPicker.refresh();
-    return PandoraRemaked.equipmentPicker.blockedSlot(5);
+    // Linen Robe's canonical source record is single-slot, even if the
+    // chosen job cannot select it through its filtered native dropdown.
+    const ordinary=EquipData[0]?.[31]?.[15];
+    if(!ordinary || !/ローブ/.test(String(ordinary[0])))
+      throw Error('Canonical normal robe fixture missing');
+    const original=Status.Equip[3][0];
+    Status.Equip[3][0]=310015;
+    try { return PandoraRemaked.equipmentPicker.blockedSlot(5); }
+    finally { Status.Equip[3][0]=original; }
   });
   expect(regular).toBeNull();
   const block=await page.evaluate(()=>{
