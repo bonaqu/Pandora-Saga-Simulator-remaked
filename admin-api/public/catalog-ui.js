@@ -9,7 +9,44 @@
   var draftRequest=0, batchPending=false;
   var languages = [['en', 'English'], ['ru', 'Русский'], ['jp', '日本語'], ['tw', '繁體中文']];
   function node(tag, text, className) { var result = document.createElement(tag); if (text !== undefined) result.textContent = text; if (className) result.className = className; return result; }
-  function button(text, action, className) { var result = node('button', text, className); result.type = 'button'; result.addEventListener('click', action); return result; }
+  // Static action captions are D1-localized; catalog record names are not.
+  var catalogActionKeys = {
+    "Проверить изменения":"catalogReviewChanges",
+    "Убрать":"catalogRemove",
+    "Удалить правило":"catalogDeleteRule",
+    "Убрать требование":"catalogRemoveRequirement",
+    "Добавить требование ветки":"catalogAddBranchRequirement",
+    "Добавить вариант":"catalogAddVariant",
+    "Удалить выбранный вариант":"catalogDeleteSelectedVariant",
+    "Добавить характеристику":"catalogAddStat",
+    "Сохранить черновик":"catalogSaveDraft",
+    "Опубликовать":"catalogPublish",
+    "Создать новый навык по этому шаблону":"catalogNewSkillFromTemplate",
+    "Добавить бонус заточки":"catalogAddEnhancementBonus",
+    "Создать вариант":"catalogCreateVariant",
+    "← Назад":"catalogBack",
+    "Далее →":"catalogNext",
+    "Выбрать все":"catalogSelectAll",
+    "Снять выделение":"catalogClearSelection",
+    "Опубликовать выбранные":"catalogPublishSelected",
+    "Опубликовать все черновики":"catalogPublishAllDrafts",
+    "Обновить список":"catalogRefreshList",
+    "Открыть":"catalogOpen",
+    "Повторить проверку":"catalogRetryCheck",
+    "Подтвердить очистку Modern":"catalogConfirmModernCleanup",
+    "Новая запись":"catalogNewRecord",
+    "Очистка примечаний Astir":"catalogAstirCleanup",
+    "История / откат":"catalogHistoryRollback"
+  };
+  function button(text, action, className) {
+    var translationKey = catalogActionKeys[text] ? 'adminShell.' + catalogActionKeys[text] : '';
+    var visible = translationKey ? (window.PandoraAdminI18n?.t?.(translationKey,text) || text) : text;
+    var result = node('button', visible, className);
+    if (translationKey) result.dataset.adminI18n = translationKey;
+    result.type = 'button';
+    result.addEventListener('click', action);
+    return result;
+  }
   function report(text, error) { status.textContent = text; status.classList.toggle('denied', Boolean(error)); }
   async function api(path, input) {
     var response = await fetch('/api/admin/' + path, { method: input ? 'POST' : 'GET', credentials: 'same-origin', cache: 'no-store',
