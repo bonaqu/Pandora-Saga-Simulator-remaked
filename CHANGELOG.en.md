@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.93 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- 47 explicitly whitelisted static catalog editor headings and help messages now use the editable RU/EN/JP/TW D1 translation registry.
+- Scope is presentation-only; never translate record names, typed values, formula data, versions, auth/CSRF tokens, drafts or catalog writes.
+- Provide four-language fallbacks and source-coverage checks. Existing D1 publications retain priority.
+
 ## Modern 3.92 — 2026-10-11
 
 ### For users
