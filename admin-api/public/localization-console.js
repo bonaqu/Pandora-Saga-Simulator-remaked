@@ -182,7 +182,7 @@
           api,queued,drafts,onDirtyChanged:updateDrafts,
           onPublished:()=>load(),report
         });
-        if(mounted){card.append(header,preview);items.append(card);continue;}
+        if(mounted){card.prepend(header,preview);items.append(card);continue;}
       }
       if(record.managedBy==='catalog'){
         // Canonical item text belongs to the catalog's draft/publish revision,
