@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 3.88 — четырёхъязычная карточка переводов в админке, 2026-10-11
+
+<!-- admin-notes:ru -->
+- Все 28 статических и динамических сообщений четырёхъязычной карточки (кнопки, состояния D1, проверка плейсхолдеров, предупреждения и квитанции публикации) управляются через RU/EN/JP/TW с отдельными D1-ключами.
+- Переключение языка меняет подписи в открытой карточке, сохраняя введённые тексты, версии, локальные черновики и блокировку конфликтных публикаций. Английская резервная версия не зависит от доступности API.
+- Изменены только подписи, не сохранение, авторизация, формулы, каталог и Legacy.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Localize 28 editable D1-backed RU/EN/JP/TW captions and dynamic messages in the four-language admin card: draft states, validation, actions, errors, publication receipts and placeholders.
+- Switching admin locale refreshes a mounted card's captions without resetting unsaved translations, D1 versions, drafts or optimistic-concurrency safeguards.
+- Leave authentication, catalog writes, game mechanics and Legacy unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 3.87 — пояснение защиты в режиме верховой езды, 2026-10-11
 
 <!-- release-notes:user:ru -->

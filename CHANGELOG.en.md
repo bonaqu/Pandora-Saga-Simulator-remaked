@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.88 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Localize 28 editable D1-backed RU/EN/JP/TW captions and dynamic messages in the four-language admin card: draft states, validation, actions, errors, publication receipts and placeholders.
+- Switching admin locale refreshes a mounted card's captions without resetting unsaved translations, D1 versions, drafts or optimistic-concurrency safeguards.
+- Leave authentication, catalog writes, game mechanics and Legacy unchanged.
+
 ## Modern 3.87 — 2026-10-11
 
 ### For users

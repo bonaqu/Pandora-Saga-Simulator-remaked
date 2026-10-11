@@ -5,10 +5,14 @@
     ['jp', '日本語'], ['tw', '繁體中文']
   ]);
   const localeTag = {ru:'ru',en:'en',jp:'ja',tw:'zh-Hant'};
-  const origins = {
-    admin:'Опубликовано в D1', 'previous-admin':'Ранее опубликовано',
-    import:'Утверждённый текст', fallback:'Нужен перевод'
-  };
+  const origins = {admin:'fourOriginAdmin','previous-admin':'fourOriginPrevious',import:'fourOriginImport',fallback:'fourOriginFallback'};
+  // All labels use the same versioned D1-backed admin-shell locale source.
+  // String interpolation is text-only, never HTML or executable markup.
+  function tx(id,fallback,values){
+    const source=window.PandoraAdminI18n?.t?.('adminShell.'+id,fallback) || fallback;
+    return String(source).replace(/\{([A-Za-z0-9_]+)\}/g,(match,key)=>
+      values && Object.prototype.hasOwnProperty.call(values,key)?String(values[key]):match);
+  }
   function element(tag, text, css) {
     const node=document.createElement(tag);
     if(text!==undefined&&text!==null)node.textContent=text;
@@ -25,8 +29,10 @@
     grid.dataset.fourLanguages='';
     const foot=element('div',null,'localization-item-foot');
     const publishAll=element('button','Опубликовать изменения во всех языках');
+    publishAll.dataset.adminI18n='adminShell.fourPublishAll';
     publishAll.type='button';publishAll.dataset.publishAllLanguages='';
     const hint=element('small','Изменённые языки публикуются одним действием; остальные сохраняются без изменений.');
+    hint.dataset.adminI18n='adminShell.fourPublishHint';
     const controls=[];
     let busy=false;
     const identity=entry=>record.scope+'\0'+record.id+'\0'+entry.locale;
@@ -38,14 +44,15 @@
       return controls.filter(modified);
     }
     function validate(entry,text) {
-      if(!safe(text)||!text.trim())return 'Для публикации нужен непустой текст (до 4000 символов).';
+      if(!safe(text)||!text.trim())return tx('fourRequired','Для публикации нужен непустой текст (до 4000 символов).');
       if(record.scope==='ui' && placeholders(text)!==placeholders(record.source.en||''))
-        return 'Набор {плейсхолдеров} должен совпадать с английским оригиналом.';
+        return tx('fourPlaceholderGuard','Плейсхолдеры должны совпадать с английским оригиналом.');
       return '';
     }
     function synchronize() {
       for(const entry of controls){
-        const {data,textarea,dirt,saveButton,stageButton,resetButton,size}=entry;
+        const {data,textarea,dirt,saveButton,stageButton,resetButton,size,originLabel}=entry;
+        originLabel.textContent=origins[data.origin]?tx(origins[data.origin],data.origin):data.origin;
         const changed=modified(entry);
         const cloud=saved(data);
         // A draft already persisted in D1 must not be duplicated as an
@@ -53,13 +60,17 @@
         if(changed && (!cloud || textarea.value!==cloud.text))
           drafts.set(identity(data),textarea.value);
         else drafts.delete(identity(data));
-        dirt.textContent=cloud?'Черновик в D1':changed?'Изменено · не опубликовано':
-          data.origin==='fallback'?'Нет перевода':origins[data.origin]||'Без изменений';
+        dirt.textContent=cloud?tx('fourDraftStatus','Черновик в D1'):changed?tx('fourUnsavedStatus','Изменено · не опубликовано'):
+          data.origin==='fallback'?tx('fourMissingStatus','Нет перевода'):
+          origins[data.origin]?tx(origins[data.origin],data.origin):data.origin;
         textarea.disabled=busy;
         saveButton.disabled=busy || Boolean(cloud) || !changed || !textarea.value.trim();
         stageButton.disabled=busy || !changed || !textarea.value.trim();
         resetButton.disabled=busy || Boolean(cloud) || !(changed || ['admin','previous-admin'].includes(data.origin));
         size.textContent=textarea.value.length+' / 4000';
+        saveButton.textContent=tx('fourPublishLocale','Опубликовать {locale}',{locale:data.locale.toUpperCase()});
+        textarea.placeholder=tx('fourLanguagePlaceholder','Перевод на {language}',{language:entry.languageName});
+        resetButton.title=tx('fourBaselineTitle','Базовый текст: {value}',{value:data.baseline||'—'});
         entry.container.dataset.dirty=String(changed);
       }
       const changedEntries=states();
@@ -86,12 +97,12 @@
         if(error){report(data.locale.toUpperCase()+': '+error,true);return;}
         if(value===data.effective)return;
       }
-      if(saved(data)){report('Сначала обработай уже сохранённый черновик для '+data.locale.toUpperCase()+'.',true);return;}
+      if(saved(data)){report(tx('fourDraftBlock','Сначала обработай уже сохранённый черновик для {locale}.',{locale:data.locale.toUpperCase()}),true);return;}
       if(reset && !['admin','previous-admin'].includes(data.origin)) {
         entry.textarea.value=data.effective;
         drafts.delete(identity(data));
         synchronize();
-        report('Неопубликованное изменение отменено.');
+        report(tx('fourCancelled','Неопубликованное изменение отменено.'));
         return;
       }
       busy=true;synchronize();
@@ -99,11 +110,10 @@
         const result=await api('POST',{scope:record.scope,id:record.id,locale:data.locale,
           value:reset?'':value,expectedVersion:data.version,expectedEffective:data.effective});
         complete(entry,result.version,reset?'':value,reset);
-        report('Сохранено: '+record.id+' · '+data.locale.toUpperCase()+'.');
+        report(tx('fourSaved','Сохранено: {id} · {locale}.',{id:record.id,locale:data.locale.toUpperCase()}));
         if(card.isConnected)onPublished();
       } catch (error) {
-        report('Изменение не подтверждено: '+error.message+
-          '. Перепроверь запись перед повторной отправкой.',true);
+        report(tx('fourWriteUnconfirmed','Изменение не подтверждено: {error}. Перепроверь запись перед повторной отправкой.',{error:error.message}),true);
       } finally {busy=false;if(card.isConnected)synchronize();}
     }
     async function stageOne(entry) {
@@ -118,9 +128,9 @@
           expectedDraftVersion:saved(data)?.version||0},'/api/admin/localization/draft');
         drafts.delete(identity(data));
         if(queued)await queued.refresh();
-        report('Черновик '+data.locale.toUpperCase()+' сохранён в D1. Ещё не опубликован.');
+        report(tx('fourDraftSaved','Черновик {locale} сохранён в D1. Ещё не опубликован.',{locale:data.locale.toUpperCase()}));
         if(card.isConnected)onPublished();
-      } catch(error){report('Не удалось сохранить черновик: '+error.message,true);}
+      } catch(error){report(tx('fourDraftError','Не удалось сохранить черновик: {error}',{error:error.message}),true);}
       finally {busy=false;if(card.isConnected)synchronize();}
     }
     for(const [locale,name] of LANGUAGES){
@@ -129,7 +139,7 @@
       section.dataset.translationLocale=locale;
       const label=element('label',null,'localization-inline-label');
       const heading=element('strong',name+' · '+locale.toUpperCase());
-      const state=element('small',origins[data.origin]||data.origin,'localization-inline-origin');
+      const state=element('small',origins[data.origin]?tx(origins[data.origin],data.origin):data.origin,'localization-inline-origin');
       label.append(heading,state);
       const textarea=element('textarea');
       textarea.rows=record.kind.includes('description')||record.kind.includes('hint')?4:2;
@@ -142,10 +152,12 @@
       const buttons=element('div',null,'localization-inline-actions');
       const dirt=element('small','');const size=element('small','');
       const stageButton=element('button','В черновики');stageButton.type='button';stageButton.className='secondary';
+      stageButton.dataset.adminI18n='adminShell.fourStage';
       const saveButton=element('button','Опубликовать '+locale.toUpperCase());saveButton.type='button';
       const resetButton=element('button','Вернуть базовый');resetButton.type='button';resetButton.className='secondary';
+      resetButton.dataset.adminI18n='adminShell.fourReset';
       resetButton.title='Базовый текст: '+(data.baseline||'—');
-      const entry={data,textarea,dirt,size,stageButton,saveButton,resetButton,container:section};
+      const entry={data,textarea,dirt,size,stageButton,saveButton,resetButton,container:section,languageName:name,originLabel:state};
       controls.push(entry);
       textarea.addEventListener('input',synchronize);
       textarea.addEventListener('keydown',e=>{
@@ -167,7 +179,7 @@
       const changed=states();
       if(!changed.length)return;
       if(changed.some(e=>Boolean(saved(e.data)))) {
-        report('В одном из языков есть черновик D1. Опубликуй или отмени его в очереди.',true);return;
+        report(tx('fourBatchDraftBlock','В одном из языков есть черновик D1. Опубликуй или отмени его в очереди.'),true);return;
       }
       for(const e of changed) {
         const error=validate(e,e.textarea.value.trim());
@@ -180,9 +192,9 @@
       try {
         // One D1 transaction; stale versions or drafts reject all four languages.
         const result=await api('POST',{operationId,items},'/api/admin/localization/publish-batch');
-        if(!result.ok || result.count!==items.length)throw Error('Неожиданный ответ публикации');
+        if(!result.ok || result.count!==items.length)throw Error(tx('fourBatchUnexpected','Неожиданный ответ публикации'));
         for(const e of changed)complete(e,e.data.version+1,e.textarea.value.trim(),false);
-        report('Опубликовано '+changed.length+' языковых вариантов для '+record.id+'.');
+        report(tx('fourBatchPublished','Опубликовано {count} языковых вариантов для {id}.',{count:changed.length,id:record.id}));
         if(card.isConnected)onPublished();
       } catch(error) {
         // A dropped HTTP response may happen AFTER commit. Avoid false rollback claims.
@@ -191,19 +203,24 @@
             '/api/admin/localization/operations?operationId='+encodeURIComponent(operationId));
           if(receipt.found && receipt.receipt?.count===items.length){
             for(const e of changed)complete(e,e.data.version+1,e.textarea.value.trim(),false);
-            report('Публикация '+changed.length+' языков подтверждена по квитанции D1.');
+            report(tx('fourBatchReceipt','Публикация {count} языков подтверждена по квитанции D1.',{count:changed.length}));
             if(card.isConnected)onPublished();
-          } else report('Публикация не подтверждена: '+error.message+
-            '. Обнови карточку и сравни версии перед повтором.',true);
+          } else report(tx('fourBatchUnconfirmed','Публикация не подтверждена: {error}. Обнови карточку и сравни версии перед повтором.',{error:error.message}),true);
         } catch(recoveryError){
-          report('Неизвестный результат публикации: '+error.message+
-            '. Не отправляй повторно без проверки истории D1.',true);
+          report(tx('fourBatchUnknown','Результат публикации неизвестен: {error}. Проверь историю D1 перед повтором.',{error:error.message}),true);
         }
       } finally {busy=false;if(card.isConnected)synchronize();}
     }
     publishAll.addEventListener('click',publishChanged);
     foot.append(publishAll,hint);
     card.append(grid,foot);
+    // The admin locale switch keeps all editors and their unsaved text intact.
+    // Release the listener once a detached card is observed on the next switch.
+    const updateLocale=()=>{
+      if(!card.isConnected){window.removeEventListener('pandora-admin:localechange',updateLocale);return;}
+      synchronize();
+    };
+    window.addEventListener('pandora-admin:localechange',updateLocale);
     synchronize();
     return true;
   }
