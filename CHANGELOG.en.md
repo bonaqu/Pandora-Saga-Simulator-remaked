@@ -2,6 +2,20 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.83 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Register 30 additional D1-editable admin console labels for RU/EN/JP/TW: headings, explanations, filters, groups, search controls and pagination.
+- Update translated DOM controls in place, retaining search queries, unsaved editor text, selected filters and existing authentication/publishing contracts.
+- Reuse the existing public read-only admin-localization projection and guarded D1 precedence; create no new data source.
+- Dynamic catalog, bulk editor and draft-queue messages remain for a separate review.
+- No game formulas, numerical data or Legacy changes.
+
 ## Modern 3.82 — 2026-10-11
 
 ### For users
