@@ -13,11 +13,11 @@ SLOTS = re.compile(r"\{([A-Za-z0-9_]+)\}")
 
 class Modern392CoverageTests(unittest.TestCase):
     def test_all_core_ui_japanese_and_traditional_chinese_except_english_sentinel(self):
-        self.assertEqual(len(EN), 443)
+        self.assertEqual(len(EN), 474)
         for lang in ("jp", "tw"):
             missing = set(EN) - set(APPROVED["ui"][lang])
             self.assertEqual(missing, {"test.englishOnly"})
-            self.assertEqual(len(APPROVED["ui"][lang]), 442)
+            self.assertEqual(len(APPROVED["ui"][lang]), 473)
             self.assertFalse(any(not value.strip() for value in APPROVED["ui"][lang].values()))
         self.assertNotIn("test.englishOnly", APPROVED["ui"]["ru"])
         self.assertNotIn("test.englishOnly", APPROVED["ui"]["jp"])
