@@ -961,12 +961,12 @@ test('catalog status localizes through D1 without discarding draft edits or repe
       lang=next;
       window.dispatchEvent(new Event('pandora-admin:localechange'));
     };
-    window.PandoraAdminI18n.t=(key,fallback)=>{
+    window.PandoraAdminI18n={t:(key,fallback)=>{
       if(key==='adminShell.catalogStatusLoaded')
         return lang==='en'?'Catalog loaded. Drafts are private; batch publication is available above the catalog.':
           'カタログを読み込みました。下書きは非公開です。';
       return fallback;
-    };
+    }};
     window.__testCatalogStatusLocale('en');
   });
   await expect(status).toHaveText('Catalog loaded. Drafts are private; batch publication is available above the catalog.');
