@@ -352,3 +352,84 @@ test('full localization console renders and saves all four inline languages with
   await page.evaluate(()=>window.PandoraLocalizationConsole.clear());
   await expect(panel.locator('[data-localization-id]')).toHaveCount(0);
 });
+
+
+test('four-language editor localizes its buttons and statuses in place without losing drafts',async({page})=>{
+  await page.goto('/');
+  await page.setContent('<article id="four-locales"></article>');
+  await page.evaluate(()=>{
+    const dictionaries={
+      ru:{fourPublishAll:'Опубликовать изменения во всех языках',
+        fourStage:'В черновики',fourReset:'Вернуть базовый',
+        fourPublishLocale:'Опубликовать {locale}',fourUnsavedStatus:'Изменено · не опубликовано',
+        fourBatchPublished:'Опубликовано {count} языковых вариантов для {id}.'},
+      en:{fourPublishAll:'Publish changes in all languages',fourStage:'Save draft',
+        fourReset:'Restore baseline',fourPublishLocale:'Publish {locale}',
+        fourUnsavedStatus:'Modified · not published',
+        fourBatchPublished:'Published {count} language variants for {id}.'},
+      jp:{fourPublishAll:'変更した言語をすべて公開',fourStage:'下書きを保存',
+        fourReset:'基準に戻す',fourPublishLocale:'{locale}を公開',
+        fourUnsavedStatus:'変更済み · 未公開'},
+      tw:{fourPublishAll:'發布所有已修改的語言',fourStage:'儲存草稿',
+        fourReset:'還原基準文字',fourPublishLocale:'發布 {locale}',
+        fourUnsavedStatus:'已修改 · 尚未發布'}
+    };
+    let current='en';
+    window.editorWrites=[];
+    window.PandoraAdminI18n={
+      t:(key,fallback)=>dictionaries[current]?.[key.replace('adminShell.','')]||fallback,
+      change:locale=>{current=locale;window.dispatchEvent(new Event('pandora-admin:localechange'));},
+      getLocale:()=>current
+    };
+  });
+  await page.addScriptTag({path:'admin-api/public/localization-four-language.js'});
+  await page.evaluate(()=>{
+    const translations=['ru','en','jp','tw'].map((locale,i)=>({
+      locale,effective:['Обновления','Updates','更新','更新資訊'][i],
+      baseline:['Обновления','Updates','更新','更新資訊'][i],
+      origin:'import',baselineOrigin:'import',version:0
+    }));
+    window.unsavedDrafts=new Map();
+    window.PandoraFourLanguageEditor.mount(document.getElementById('four-locales'),{
+      scope:'ui',id:'header.updates',kind:'interface',source:{en:'Updates'},translations
+    },{
+      drafts:window.unsavedDrafts,queued:{get:()=>null,history:()=>{}},
+      api:async(method,payload,path)=>{
+        if(path==='/api/admin/localization/publish-batch'){
+          window.editorWrites.push(payload);
+          return {ok:true,count:payload.items.length};
+        }
+        throw Error('Unexpected route '+path);
+      },
+      report:(message,isError)=>{window.lastEditorReport={message,isError};},
+      onPublished:()=>{},onDirtyChanged:()=>{}
+    });
+  });
+  const card=page.locator('#four-locales');
+  await expect(card.locator('[data-publish-all-languages]')).toHaveText('Publish changes in all languages');
+  await expect(card.getByRole('button',{name:'Save draft'})).toHaveCount(4);
+  await card.locator('[data-translation-input="ru"]').fill('Обновления страницы');
+  await card.locator('[data-translation-input="jp"]').fill('最新の更新');
+  const values=['Обновления страницы','Updates','最新の更新','更新資訊'];
+  for(const [locale,expected] of [
+    ['ru','Опубликовать изменения во всех языках'],
+    ['jp','変更した言語をすべて公開'],
+    ['tw','發布所有已修改的語言'],
+    ['en','Publish changes in all languages']
+  ]){
+    await page.evaluate(language=>window.PandoraAdminI18n.change(language),locale);
+    await expect(card.locator('[data-publish-all-languages]')).toHaveText(expected);
+    for(const [i,code] of ['ru','en','jp','tw'].entries())
+      await expect(card.locator('[data-translation-input="'+code+'"]')).toHaveValue(values[i]);
+    expect(await page.evaluate(()=>window.unsavedDrafts.size)).toBe(2);
+  }
+  await expect(card.locator('[data-dirty="true"]')).toHaveCount(2);
+  await card.locator('[data-publish-all-languages]').click();
+  await expect(card.locator('[data-publish-all-languages]')).toBeDisabled();
+  const saved=await page.evaluate(()=>window.editorWrites);
+  expect(saved).toHaveLength(1);
+  expect(saved[0].items.map(item=>item.locale)).toEqual(['ru','jp']);
+  expect(saved[0].items.every(item=>item.expectedVersion===0)).toBe(true);
+  expect(await page.evaluate(()=>window.unsavedDrafts.size)).toBe(0);
+  expect(await page.evaluate(()=>window.lastEditorReport.message)).toContain('Published 2 language variants');
+});
