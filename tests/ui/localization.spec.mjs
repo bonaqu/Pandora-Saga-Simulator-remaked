@@ -688,12 +688,13 @@ test('four UI locales and D1 text publications cannot mutate numeric character o
       equipment: window.Status.Equip, skills: window.Status.Skill,
       numericStats: stats,
       computed: Array.from(document.querySelectorAll('#StatusView [id^="Status_"]'))
-        .filter(node => /^[-+]?\\d+(?:[.,]\\d+)?%?$/.test(node.textContent.trim()))
+        .filter(node => /^[-+]?\d+(?:[.,]\d+)?%?$/.test(node.textContent.trim()))
         .map(node => [node.id, node.textContent.trim()])
     });
   });
   const before = await snapshot();
-  expect(before).toBeTruthy();
+  const parsed = JSON.parse(before);
+  expect(parsed.computed.length, 'a numeric comparison must inspect actual calculated results').toBeGreaterThan(10);
   for(const locale of ['ru','en','jp','tw']){
     await page.evaluate(lang => window.PandoraRemaked.i18n.setLocale(lang),locale);
     await expect.poll(snapshot).toBe(before);
