@@ -76,6 +76,17 @@ class TranslationCatalogTests(unittest.TestCase):
                 self.assertEqual(sorted(SLOTS.findall(self.snapshot["ui"][locale][key])),
                                  sorted(SLOTS.findall(self.ui_source[key])))
 
+    def test_compare_tooltips_and_calculator_controls_have_jp_tw_fallbacks(self):
+        keys = ["compare.button","compare.title","compare.close","compare.buildA","compare.buildB","compare.refresh","compare.choose","compare.level","compare.chooseTwo","compare.chooseDifferent","compare.missing","compare.deltaHelp","compare.evaluateFailed","compare.needTwoEmpty","compare.needTwoStatus","compare.column.stat","compare.column.delta","compare.hideIdentical","compare.allIdentical","tooltip.about","tooltip.source","calculator.inputInvalid","calculator.inputMaximum","calculator.inputMinimum","calculator.inputWholeNumber","calculator.inputRequired","calculator.inputBudget","calculator.inputBudgetForField","calculator.levelInputHelp","calculator.attributeInputHelp","calculator.totalWithBonuses","calculator.calculationLimit","character.level","character.status","character.skill","character.potential","character.potentialHelp","tooltip.definition.lp","tooltip.definition.mp","tooltip.definition.physicalAttack","tooltip.definition.magicAttack","tooltip.definition.defense","tooltip.definition.physicalDamageResist","tooltip.definition.magicDamageResist","tooltip.definition.accuracy","tooltip.definition.dodge","tooltip.definition.crit","tooltip.definition.critResist","tooltip.definition.critDamage","tooltip.definition.critDamageResist","tooltip.definition.attackSpeed","tooltip.definition.moveSpeed","tooltip.definition.castSpeed","tooltip.definition.castTime","tooltip.definition.cooldown","tooltip.definition.fireResist","tooltip.definition.iceResist","tooltip.definition.lightningResist","tooltip.definition.poisonResist","tooltip.definition.charmResist","tooltip.definition.lightResist","tooltip.definition.darkResist","tooltip.definition.magicResist"]
+        self.assertEqual(len(keys),63)
+        for key in keys:
+            self.assertIn(key,self.ui_source)
+            for locale in ("jp","tw"):
+                value = self.snapshot["ui"][locale].get(key)
+                self.assertTrue(isinstance(value,str) and value.strip(),(key,locale))
+                self.assertEqual(sorted(SLOTS.findall(value)),
+                                 sorted(SLOTS.findall(self.ui_source[key])))
+
     def test_all_localized_ui_placeholders_match_original(self):
         for language in ("ru", "en", "jp", "tw"):
             for identifier, text in self.snapshot["ui"][language].items():

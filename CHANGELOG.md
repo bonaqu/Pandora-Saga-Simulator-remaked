@@ -1,5 +1,23 @@
 # Changelog
 
+## Modern 3.91 — подсказки и сравнение билдов на JP/TW, 2026-10-11
+
+<!-- release-notes:user:ru -->
+- Добавлено 63 новых перевода на японский и традиционный китайский для сравнения билдов, подсказок расчётных характеристик и полей персонажа.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Add 63 Japanese and Traditional Chinese translations for Build Comparison, calculated-stat tooltips and character attribute inputs.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Переведены только утверждённые базовые тексты. Версии и пользовательские правки в D1 имеют приоритет, параметры и формулы персонажа не изменены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Baseline-only text additions: published D1 overrides retain priority, with no changes to character stats, formulas or saves.
+<!-- /admin-notes:en -->
+
 ## Modern 3.90 — управляемые переводы кнопок каталога, 2026-10-11
 
 <!-- admin-notes:ru -->
