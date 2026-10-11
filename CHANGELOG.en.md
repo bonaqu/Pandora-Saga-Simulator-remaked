@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.00 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Add 28-class × 6-race all-43-result Modern regression matrix checking missing/invalid output and repeatable recalculation.
+- Exercise armor and magic resistance effects and their exact reversibility in six representative classes; leave legacy formulas, published D1 catalog and saved builds untouched.
+- This is runtime regression coverage, not a claim of validated current-game numerical parity.
+
 ## Modern 3.99 — 2026-10-11
 
 ### For users
