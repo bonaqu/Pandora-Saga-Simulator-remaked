@@ -1,5 +1,7 @@
 # Release history — English
 
+Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
+
 ## Modern 3.93 — 2026-10-11
 
 ### For users
