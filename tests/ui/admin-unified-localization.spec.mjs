@@ -177,12 +177,12 @@ test('four-language translation editor starts with effective texts, keeps drafts
   const sword=panel.locator('[data-localization-id="equipment.0.2"]');
   await sword.locator('textarea').fill('Меч в облачном черновике');
   await sword.getByRole('button',{name:'Сохранить черновик'}).click();
-  await expect(panel.locator('.localization-queue summary')).toContainText('Сохранённые черновики переводов: 1');
+  await expect(panel.locator('.localization-queue summary')).toContainText('Saved translation drafts: 1');
   await expect(sword.locator('textarea')).toHaveValue('Меч в облачном черновике');
   await expect(sword).toContainText('Черновик сохранён в D1');
   await expect(panel).toContainText('Не сохранено: 0');
   await page.reload();
-  await expect(panel.locator('.localization-queue summary')).toContainText('Сохранённые черновики переводов: 1');
+  await expect(panel.locator('.localization-queue summary')).toContainText('Saved translation drafts: 1');
   await expect(panel.locator('[data-localization-id="equipment.0.2"] textarea')).toHaveValue('Меч в облачном черновике');
   expect(saved.has(key('game','ru','equipment.0.2'))).toBe(false,
     'Saving to D1 drafts must not publish the translation override');
@@ -190,17 +190,17 @@ test('four-language translation editor starts with effective texts, keeps drafts
   const queue=panel.locator('.localization-queue');
   await queue.locator('summary').click();
   await expect(queue.locator('.localization-queue-row')).toHaveCount(1);
-  await queue.getByRole('combobox',{name:'Язык черновиков'}).selectOption('en');
+  await queue.getByRole('combobox',{name:'Draft language'}).selectOption('en');
   await expect(queue.locator('.localization-queue-row')).toHaveCount(0);
-  await queue.getByRole('combobox',{name:'Язык черновиков'}).selectOption('ru');
-  const filter=queue.getByRole('searchbox',{name:'Поиск среди сохранённых переводов'});
+  await queue.getByRole('combobox',{name:'Draft language'}).selectOption('ru');
+  const filter=queue.getByRole('searchbox',{name:'Search saved draft translations'});
   await filter.fill('другой перевод');
   await expect(queue.locator('.localization-queue-row')).toHaveCount(0);
   await filter.fill('Меч в облачном');
   await expect(queue.locator('.localization-queue-row')).toHaveCount(1);
   const checkbox=queue.locator('.localization-queue-row input[type="checkbox"]');
   await checkbox.check();
-  await expect(queue).toContainText('Выбрано: 1 из 1');
+  await expect(queue).toContainText('Selected: 1 of 1');
   await expect(checkbox).toBeFocused();
 
   for(const width of [390,320]){

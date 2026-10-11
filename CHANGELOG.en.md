@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.86 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Localize 34 D1-editable RU/EN/JP/TW draft-queue and history captions: search, filters, selection, deletion, publication receipts, revision history and restoration.
+- Update visible labels and interpolated counts in place on language change, retaining filters, focused search text, selected drafts and all optimistic publication safeguards.
+- Preserve login, CSRF, permissions, D1 history, batch atomicity, Legacy and game calculations. The dynamic catalog editor remains a separate localization task.
+
 ## Modern 3.85 — 2026-10-11
 
 ### For users

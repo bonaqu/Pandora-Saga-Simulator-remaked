@@ -6,31 +6,70 @@ function el(tag,text,klass){
   if(klass)e.className=klass;
   return e;
 }
-  function plural(number){const n=Number(number),t=n%10,h=n%100;return t===1&&h!==11?'перевод':t>=2&&t<=4&&(h<12||h>14)?'перевода':'переводов';}
 function mount(host,{api,onPublished,onJump,onQueueChanged}){
   let drafts=new Map(),selected=new Set(),busy=false,active=true;
   const key=item=>item.scope+'\0'+item.id+'\0'+item.locale;
+  // Dynamic messages are projected into existing nodes on locale changes.
+  // Never remount filters, selections, drafts or optimistic D1 publication.
+  const dynamic=new Map();
+  function tr(key,fallback,values){
+    const template=window.PandoraAdminI18n?.t?.('adminShell.'+key,fallback)||fallback;
+    return String(template).replace(/\{([A-Za-z0-9_]+)\}/g,(_match,name)=>
+      Object.prototype.hasOwnProperty.call(values||{},name)?String(values[name]):_match);
+  }
+  function localized(node,key,fallback){
+    node.setAttribute('data-admin-i18n','adminShell.'+key);
+    node.textContent=tr(key,fallback);
+    return node;
+  }
+  function attribute(node,kind,key,fallback){
+    const field=kind==='aria'?'aria-label':kind;
+    node.setAttribute('data-admin-i18n-'+kind,'adminShell.'+key);
+    node.setAttribute(field,tr(key,fallback));
+    return node;
+  }
+  function messageNode(node,key,fallback,getValues){
+    dynamic.set(node,{key,fallback,getValues});
+    node.textContent=tr(key,fallback,getValues());
+    return node;
+  }
+  function switchLanguage(){
+    for(const [node,msg] of dynamic){
+      if(!node.isConnected){dynamic.delete(node);continue;}
+      node.textContent=tr(msg.key,msg.fallback,msg.getValues());
+    }
+  }
+  window.addEventListener('pandora-admin:localechange',switchLanguage);
   const wrapper=el('details',undefined,'localization-queue');
-  const summary=el('summary','Облачные черновики переводов · загрузка…');
+  const summary=localized(el('summary'),'draftQueueLoading','Cloud translation drafts · loading…');
   const status=el('p','', 'localization-queue-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
   const content=el('div',undefined,'localization-queue-content');
   // Keep the filters mounted during queue refreshes. Replacing a focused
   // searchbox on every keystroke makes large editorial lists unusable.
   const filters=el('div',undefined,'localization-queue-filters');
-  const search=el('input');search.type='search';search.placeholder='Найти ID или текст черновика…';
-  search.setAttribute('aria-label','Поиск среди сохранённых переводов');
-  const localeFilter=el('select');localeFilter.setAttribute('aria-label','Язык черновиков');
-  [['all','Все языки'],['ru','Русский'],['en','English'],['jp','日本語'],['tw','繁體中文']]
-    .forEach(function(option){const elOption=el('option',option[1]);elOption.value=option[0];localeFilter.append(elOption);});
-  const scopeFilter=el('select');scopeFilter.setAttribute('aria-label','Раздел черновиков');
-  [['all','Все разделы'],['game','Игровые термины'],['ui','Интерфейс']]
-    .forEach(function(option){const elOption=el('option',option[1]);elOption.value=option[0];scopeFilter.append(elOption);});
+  const search=el('input');search.type='search';
+  attribute(search,'placeholder','draftQueueSearchPlaceholder','Search draft ID or text…');
+  attribute(search,'aria','draftQueueSearchAria','Search saved draft translations');
+  const localeFilter=el('select');attribute(localeFilter,'aria','draftQueueLocaleFilter','Draft language');
+  [['all','draftQueueAllLocales','All languages'],['ru','languageRu','Russian'],
+   ['en','languageEn','English'],['jp','languageJp','Japanese'],['tw','languageTw','Traditional Chinese']]
+    .forEach(function(option){const elOption=localized(el('option'),option[1],option[2]);elOption.value=option[0];localeFilter.append(elOption);});
+  const scopeFilter=el('select');attribute(scopeFilter,'aria','draftQueueScopeFilter','Draft section');
+  [['all','draftQueueAllScopes','All sections'],['game','draftQueueGameScope','Game terms'],['ui','draftQueueUiScope','Interface']]
+    .forEach(function(option){const elOption=localized(el('option'),option[1],option[2]);elOption.value=option[0];scopeFilter.append(elOption);});
   filters.append(search,localeFilter,scopeFilter);
   search.addEventListener('input',()=>render());
   localeFilter.addEventListener('change',()=>render());
   scopeFilter.addEventListener('change',()=>render());
   wrapper.append(summary,status,filters,content);host.append(wrapper);
-  function message(value,failed=false){status.textContent=value;status.dataset.error=String(failed);}
+  function message(value,failed=false){
+    dynamic.delete(status);status.textContent=value;status.dataset.error=String(failed);
+  }
+  function notify(key,fallback,values={},failed=false){
+    const snapshot={...values};
+    messageNode(status,key,fallback,()=>snapshot);
+    status.dataset.error=String(failed);
+  }
   function get(scope,id,locale){return drafts.get(key({scope,id,locale}))||null;}
   async function refresh(){
     if(!active)return;
@@ -39,13 +78,14 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
       if(!active)return;
       drafts=new Map(reply.items.map(item=>[key(item),item]));
       selected=new Set([...selected].filter(x=>drafts.has(x)));
-      summary.textContent='Сохранённые черновики переводов: '+reply.count;
+      messageNode(summary,'draftQueueCount','Saved translation drafts: {count}',()=>({count:drafts.size}));
       render();onQueueChanged?.();
-    }catch(error){if(active)message('Не удалось перечитать черновики: '+error.message,true);}
+    }catch(error){if(active)notify('draftQueueRefreshError','Could not refresh drafts: {error}',{error:error.message},true);}
   }
   function render(){
     content.replaceChildren();
-    if(!drafts.size){content.append(el('p','Сохранённых черновиков переводов нет.','help-text'));return;}
+    for(const node of dynamic.keys())if(!node.isConnected)dynamic.delete(node);
+    if(!drafts.size){content.append(localized(el('p',undefined,'help-text'),'draftQueueEmpty','No saved translation drafts.'));return;}
     const q=search.value.trim().toLocaleLowerCase();
     const visible=[...drafts.entries()].filter(([,entry])=>
       (localeFilter.value==='all'||entry.locale===localeFilter.value)&&
@@ -53,13 +93,14 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
       (!q||[entry.id,entry.text,entry.locale,entry.scope].some(text=>String(text||'').toLocaleLowerCase().includes(q))));
     const bar=el('div',undefined,'localization-queue-toolbar');
     const output=el('output');
-    const selectAll=el('button','Выбрать первые 50');selectAll.type='button';selectAll.className='secondary';
+    const selectAll=localized(el('button'),'draftQueueSelectFirst','Select first 50');selectAll.type='button';selectAll.className='secondary';
     selectAll.onclick=()=>{for(const [id] of visible.slice(0,50))selected.add(id);render();};
-    const clear=el('button','Снять выделение');clear.type='button';clear.className='secondary';
+    const clear=localized(el('button'),'draftQueueClearSelected','Clear selection');clear.type='button';clear.className='secondary';
     clear.onclick=()=>{selected.clear();render();};
-    const publish=el('button','Опубликовать выбранные');publish.type='button';
+    const publish=localized(el('button'),'draftQueuePublishSelected','Publish selected');publish.type='button';
     function updateSelection(){
-      output.textContent='Выбрано: '+selected.size+' из '+drafts.size+' · найдено: '+visible.length;
+      messageNode(output,'draftQueueSelectedCount','Selected: {selected} of {total} · found: {found}',
+        ()=>({selected:selected.size,total:drafts.size,found:visible.length}));
       publish.disabled=busy||!selected.size||selected.size>50;
     }
     updateSelection();
@@ -73,74 +114,80 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
       check.onchange=()=>{if(check.checked)selected.add(id);else selected.delete(id);updateSelection();};
       const details=el('span',undefined,'localization-queue-row-text');
       details.append(el('strong',draft.id+' · '+draft.locale.toUpperCase()),
-        el('small',draft.scope+' · версия черновика '+draft.version),
+        messageNode(el('small'),'draftQueueDraftVersion','{scope} · draft version {version}',
+          ()=>({scope:draft.scope,version:draft.version})),
         el('p',draft.text));
       label.append(check,details);
       const actions=el('div',undefined,'localization-queue-row-actions');
-      const open=el('button','Открыть');open.type='button';open.className='secondary';
+      const open=localized(el('button'),'draftQueueOpen','Open');open.type='button';open.className='secondary';
       open.onclick=()=>onJump(draft);
-      const remove=el('button','Удалить черновик');remove.type='button';remove.className='secondary';
+      const remove=localized(el('button'),'draftQueueRemove','Delete draft');remove.type='button';remove.className='secondary';
       remove.onclick=async()=>{
-        if(busy||!window.confirm('Удалить сохранённый черновик '+draft.id+'? Публикация не изменится.'))return;
+        if(busy||!window.confirm(tr('draftQueueConfirmRemove',
+          'Delete saved draft {id}? Published translation will not change.',{id:draft.id})))return;
         busy=true;render();
         try{await api('DELETE',{scope:draft.scope,id:draft.id,locale:draft.locale,
           expectedDraftVersion:draft.version},'/api/admin/localization/draft');
-          selected.delete(id);await refresh();message('Черновик удалён. Опубликованный перевод не изменён.');
+          selected.delete(id);await refresh();notify('draftQueueRemoved','Draft deleted. Published translation unchanged.');
         }catch(error){message(error.message,true);}finally{busy=false;render();}
       };
       actions.append(open,remove);row.append(label,actions);items.append(row);
     }
-    if(!visible.length)items.append(el('p','По этому фильтру сохранённых черновиков нет.','help-text'));
+    if(!visible.length)items.append(localized(el('p',undefined,'help-text'),'draftQueueNoResults','No saved drafts match these filters.'));
     content.append(items);
   }
   async function publishSelected(){
     if(busy||!selected.size||selected.size>50)return;
     const items=[...selected].map(id=>drafts.get(id)).filter(Boolean);
     if(!items.length)return;
-    if(!window.confirm('Опубликовать '+items.length+' сохранённых переводов ОДНОЙ атомарной операцией?'))return;
+    if(!window.confirm(tr('draftQueueConfirmPublish',
+      'Publish {count} saved translations in ONE atomic operation?',{count:items.length})))return;
     const operationId=window.crypto.randomUUID();
-    busy=true;render();message('Публикую выбранные черновики…');
+    busy=true;render();notify('draftQueuePublishing','Publishing selected drafts…');
     let receipt=null;
     try{
       receipt=await api('POST',{operationId,items:items.map(item=>({
         scope:item.scope,id:item.id,locale:item.locale,expectedDraftVersion:item.version
       }))},'/api/admin/localization/publish-batch');
     }catch(error){
-      message('Проверяю результат после ошибки ответа сервера…');
+      notify('draftQueueCheckingReceipt','Checking publication after an unexpected server response…');
       try{
         const check=await api('GET',null,'/api/admin/localization/operations?operationId='+encodeURIComponent(operationId));
         if(check.found)receipt=check.receipt;
-        else message('Подтверждение публикации не получено. Черновики не удаляй; обнови список и проверь состояние. '+error.message,true);
+        else notify('draftQueueUnconfirmed',
+          'Publication could not be confirmed. Keep drafts and review history before retrying. {error}',{error:error.message},true);
       }catch(second){
-        message('Не удалось проверить результат. Повтори проверку после восстановления соединения; не публикуй вслепую. '+second.message,true);
+        notify('draftQueueCheckFailed',
+          'Could not check publication. Reconnect and verify before retrying. {error}',{error:second.message},true);
       }
     }finally{
       busy=false;
       if(receipt){
-        selected.clear();message('Опубликовано '+receipt.count+' '+plural(receipt.count)+' одной операцией.');
+        selected.clear();notify('draftQueuePublished','Published {count} translations in one operation.',{count:receipt.count});
         await refresh();onPublished();
       }else await refresh();
       render();
     }
   }
   function history(target,record,onRestore){
-    const button=el('button','История');button.type='button';button.className='secondary';
+    const button=localized(el('button'),'draftQueueHistory','History');button.type='button';button.className='secondary';
     const holder=el('div',undefined,'localization-history');
     button.onclick=async()=>{
       if(holder.childElementCount){holder.replaceChildren();return;}
-      holder.append(el('p','Загружаю историю…'));
+      holder.append(localized(el('p'),'draftQueueLoadingHistory','Loading history…'));
       try{
         const params=new URLSearchParams({scope:record.scope,id:record.id,locale:record.locale});
         const result=await api('GET',null,'/api/admin/localization/history?'+params);
         holder.replaceChildren();
-        if(!result.items.length){holder.append(el('p','Новые версии пока не зафиксированы; история начинается с установки нового журнала.'));return;}
+        if(!result.items.length){holder.append(localized(el('p'),'draftQueueNoHistory','No saved history yet. Tracking began when version history was introduced.'));return;}
         for(const item of result.items){
           const article=el('div',undefined,'localization-history-entry');
-          article.append(el('small','Версия '+item.version+' · '+new Date(item.publishedAt*1000).toLocaleString()),
+          article.append(messageNode(el('small'),'draftQueueVersion','Version {version} · {date}',
+            ()=>({version:item.version,date:new Date(item.publishedAt*1000).toLocaleString()})),
             el('p',item.after||record.baseline||'—'));
-          const restore=el('button','Вернуть эту версию');restore.type='button';restore.className='secondary';
+          const restore=localized(el('button'),'draftQueueRestoreVersion','Restore this version');restore.type='button';restore.className='secondary';
           restore.onclick=async()=>{
-            if(!window.confirm('Восстановить эту формулировку как НОВУЮ версию перевода?'))return;
+            if(!window.confirm(tr('draftQueueConfirmRestore','Restore this wording as a NEW translation version?')))return;
             restore.disabled=true;
             try{
               await api('POST',{scope:record.scope,id:record.id,locale:record.locale,value:item.after,
@@ -156,7 +203,10 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
     target.append(button,holder);
   }
   refresh();
-  return {get,refresh,history,destroy(){active=false;wrapper.remove();}};
+  return {get,refresh,history,destroy(){
+    active=false;window.removeEventListener('pandora-admin:localechange',switchLanguage);
+    dynamic.clear();wrapper.remove();
+  }};
 }
 window.PandoraLocalizationDrafts={mount};
 })();
