@@ -8,6 +8,17 @@
   // CSRF is not an authentication token. Keep it only in this page's memory.
   // The actual server session is an HttpOnly cookie, inaccessible to this JS.
   var csrf = null;
+  // Preserve the original security messages if the localization asset or D1
+  // is temporarily unavailable; authentication must remain independently usable.
+  var englishErrors = {
+    'admin.shell.enter':'Enter your administrator credentials.',
+    'admin.shell.denied':'CHEAT FAILED / ACCESS DENIED',
+    'admin.shell.rate':'CHEAT FAILED / ACCESS DENIED. Too many attempts. Try again later.',
+    'admin.shell.origin':'CHEAT FAILED / ACCESS DENIED. Sign-in must start from the production simulator or this secure page. Try again here; your password has not changed.',
+    'admin.shell.expired':'Session expired. Sign in again.',
+    'admin.shell.unavailable':'Secure service unavailable. Please try again later.',
+    'admin.shell.loggedOut':'GOD MODE DISABLED'
+  };
   function bind(node,key,fallback) {
     if(window.PandoraAdminShellI18n)window.PandoraAdminShellI18n.text(node,key);
     else node.textContent=fallback;
@@ -20,7 +31,7 @@
     if (window.PandoraLocalizationConsole) window.PandoraLocalizationConsole.clear();
     csrf = null; form.hidden = false; workspace.hidden = true;
     bind(title,'admin.shell.locked','GOD MODE REQUIRES AUTHENTICATION');
-    bind(message,key,'Enter your administrator credentials.');
+    bind(message,key,englishErrors[key]||englishErrors['admin.shell.enter']);
     message.classList.toggle('denied', ['admin.shell.denied','admin.shell.origin','admin.shell.rate'].includes(key));
     if (leavingWorkspace) document.getElementById('password').value = '';
   }
