@@ -847,7 +847,7 @@ test('D1-localized static catalog captions update in four languages without alte
   const unsaved=editor.locator('[data-field="names"][data-language="ru"]');
   await unsaved.fill('Проверка черновика с переключением языков');
   const heading=editor.locator('[data-admin-i18n="adminShell.catalogEditableFields"]');
-  const translated=editor.locator('[data-admin-i18n="adminShell.catalogExtraLanguages"]');
+  const translated=editor.locator('[data-admin-i18n="adminShell.catalogExtraLanguages"]').first();
   await expect(heading).toBeVisible();
   await expect(translated).toBeVisible();
   const keys=['adminShell.catalogEditableFields','adminShell.catalogExtraLanguages'];
