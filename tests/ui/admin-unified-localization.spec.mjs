@@ -495,3 +495,60 @@ test('D1 translation-center metadata follows four admin languages without erasin
     await expect(card).toHaveAttribute('data-dirty','true');
   }
 });
+
+test('dynamic D1 status translations follow locale switches without replacing unsaved textarea values',async({page})=>{
+  await page.goto('/');
+  await page.setContent('<div id="localization-console"></div>');
+  await page.evaluate(()=>{
+    let locale='en';
+    const dictionaries={
+      en:{locUnsavedCount:'Unsaved: {count}',locDirtyLocal:'Modified locally',
+        locPageCount:'{first}–{last} of {total}',locCoverageCount:'Translated: {translated} / {total} · {percent}% ({locale})',
+        locSectionSummary:'Section: {count} keys. On this page: {pageCount}.'},
+      ru:{locUnsavedCount:'Не сохранено: {count}',locDirtyLocal:'Изменено локально',
+        locPageCount:'{first}–{last} из {total}',locCoverageCount:'Переведено: {translated} / {total} · {percent}% ({locale})',
+        locSectionSummary:'Раздел: {count} ключей. В этой странице: {pageCount}.'},
+      jp:{locUnsavedCount:'未保存: {count}',locDirtyLocal:'ローカルで変更済み',
+        locPageCount:'{total} 件中 {first}～{last} 件'},
+      tw:{locUnsavedCount:'未儲存：{count}',locDirtyLocal:'已在本機修改',
+        locPageCount:'{total} 筆中的第 {first}–{last} 筆'}
+    };
+    window.PandoraAdminI18n={
+      t:(key,fallback)=>dictionaries[locale]?.[key.replace('adminShell.','')]||fallback,
+      apply:()=>{},
+      change:language=>{locale=language;window.dispatchEvent(new Event('pandora-admin:localechange'));},
+      getLocale:()=>locale
+    };
+    window.PandoraBulkLocalization={mount:()=>({invalidate(){},destroy(){}})};
+    window.fetch=async url=>{
+      if(!String(url).includes('/api/admin/localization'))throw Error('Unexpected route');
+      return new Response(JSON.stringify({ok:true,counts:{game:1,ui:0},total:1,
+        coverage:{translated:0,total:1},items:[{id:'skill_entry.1.2',scope:'game',
+          locale:'ru',kind:'skill_entry',origin:'fallback',baselineOrigin:'fallback',
+          baseline:'Flaming Arrow',effective:'Flaming Arrow',
+          source:{en:'Flaming Arrow'},version:0,override:''}]}),
+        {status:200,headers:{'content-type':'application/json'}});
+    };
+  });
+  await page.addScriptTag({path:'admin-api/public/localization-console.js'});
+  await page.evaluate(()=>window.PandoraLocalizationConsole.start(()=>'',()=>{}));
+  const card=page.locator('[data-localization-id="skill_entry.1.2"]');
+  const input=card.locator('textarea');
+  await input.fill('Manually edited untranslated record');
+  const expected={
+    ru:['Не сохранено: 1','Изменено локально','1–1 из 1'],
+    en:['Unsaved: 1','Modified locally','1–1 of 1'],
+    jp:['未保存: 1','ローカルで変更済み','1 件中 1～1 件'],
+    tw:['未儲存：1','已在本機修改','1 筆中的第 1–1 筆']
+  };
+  for(const lang of ['jp','tw','ru','en']){
+    await page.evaluate(value=>window.PandoraAdminI18n.change(value),lang);
+    await expect(page.locator('.localization-filters output')).toHaveText(expected[lang][0]);
+    await expect(card.locator('.localization-dirty')).toHaveText(expected[lang][1]);
+    await expect(page.locator('.localization-pagination output')).toHaveText(expected[lang][2]);
+    await expect(input).toHaveValue('Manually edited untranslated record');
+    await expect(card).toHaveAttribute('data-dirty','true');
+  }
+  await expect(page.locator('.localization-status')).toContainText('Section: 1 keys');
+  expect(await page.evaluate(()=>document.querySelectorAll('[data-admin-live-i18n] textarea').length)).toBe(0);
+});

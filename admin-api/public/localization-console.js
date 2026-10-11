@@ -17,6 +17,27 @@
     node.dataset.adminI18n='adminShell.'+key;
     return node;
   }
+
+  // Dynamic localization never attaches data-admin-i18n to a parent containing
+  // textareas, inputs, or response-owned children. It only mutates leaf text.
+  const liveValues=new WeakMap();
+  function translated(key,fallback,values={}) {
+    const template=window.PandoraAdminI18n?.t?.('adminShell.'+key,fallback)||fallback;
+    return template.replace(/\{([A-Za-z0-9_]+)\}/g,(match,name)=>
+      Object.hasOwn(values,name)?String(values[name]):match);
+  }
+  function liveText(element,key,fallback,values={}) {
+    liveValues.set(element,{key,fallback,values});
+    element.dataset.adminLiveI18n=key;
+    element.textContent=translated(key,fallback,values);
+    return element;
+  }
+  window.addEventListener('pandora-admin:localechange',()=>{
+    host.querySelectorAll('[data-admin-live-i18n]').forEach(element=>{
+      const entry=liveValues.get(element);
+      if(entry)element.textContent=translated(entry.key,entry.fallback,entry.values);
+    });
+  });
   function aria(node,key,english) {
     node.dataset.adminI18nAria='adminShell.'+key;
     node.setAttribute('aria-label',english);
@@ -41,8 +62,9 @@
     if(!reply.ok||result.ok!==true)throw Error(result.message||'Сбой запроса ('+reply.status+')');
     return result;
   }
-  function report(text,bad=false){if(status){status.textContent=text;status.dataset.error=String(bad);}}
-  function updateDrafts(){if(draftCount)draftCount.textContent='Не сохранено: '+drafts.size;}
+  function report(text,bad=false){if(status){liveValues.delete(status);delete status.dataset.adminLiveI18n;status.textContent=text;status.dataset.error=String(bad);}}
+  function reportLive(key,fallback,values={},bad=false){if(status){liveText(status,key,fallback,values);status.dataset.error=String(bad);}}
+  function updateDrafts(){if(draftCount)liveText(draftCount,'locUnsavedCount','Не сохранено: {count}',{count:drafts.size});}
   function newPage(){
     host.replaceChildren();
     const panel=tag('section',null,'localization-panel');
@@ -69,17 +91,17 @@
     searchInput=tag('input');searchInput.type='search';searchInput.placeholder='Название, ID, описание…';searchInput.dataset.adminI18nPlaceholder='adminShell.localizationSearchPlaceholder';aria(searchInput,'localizationSearchLabel','Поиск переводов');
     const resetDrafts=localized('button','localizationDiscardDrafts','Отменить черновики');resetDrafts.type='button';resetDrafts.className='secondary';
     resetDrafts.addEventListener('click',()=>{
-      if(!drafts.size||!confirm('Отменить '+drafts.size+' несохранённых переводов?'))return;
+      if(!drafts.size||!confirm(translated('locDiscardConfirm','Отменить {count} несохранённых переводов?',{count:drafts.size})))return;
       drafts.clear();updateDrafts();render();
     });
-    draftCount=tag('output','Не сохранено: 0');
+    draftCount=liveText(tag('output'),'locUnsavedCount','Не сохранено: {count}',{count:0});
     filters.append(scopeInput,localeInput,groupInput,translationStatusInput,searchInput,draftCount,resetDrafts);
     const coverage=tag('div',null,'localization-progress');
-    progressLabel=tag('output','Покрытие выбранного для фильтра языка · загрузка…');
+    progressLabel=liveText(tag('output'),'locCoverageLoading','Покрытие выбранного для фильтра языка · загрузка…');
     progress=tag('progress');progress.max=1;progress.value=0;
     aria(progress,'coverageProgressAria','Доля имеющихся переводов в выбранной категории');
     coverage.append(progressLabel,progress);
-    status=tag('p','Загрузка…','localization-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
+    status=liveText(tag('p',null,'localization-status'),'locLoading','Загрузка…');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
     count=tag('output','');
     items=tag('div',null,'localization-items');
     const bulkHost=tag('div');
@@ -170,8 +192,8 @@
       if(record.managedBy!=='catalog'){
         compare=tag('details',null,'localization-language-compare');
         const toggle=localized('summary','locCompareLanguages','Сравнить RU / EN / JP / TW');
-        const matrix=tag('div','Открой сравнение, чтобы увидеть опубликованные значения на всех языках.',
-          'localization-language-grid');
+        const matrix=tag('div',null,'localization-language-grid');
+        matrix.append(localized('p','locCompareIntro','Открой сравнение, чтобы увидеть опубликованные значения на всех языках.'));
         let requestNumber=0;
         function jumpTo(language){
           bulk?.invalidate();
@@ -183,7 +205,7 @@
         compare.addEventListener('toggle',async()=>{
           if(!compare.open)return;
           const token=++requestNumber;
-          matrix.textContent='Загружаю четыре языка…';
+          matrix.replaceChildren(localized('p','locCompareLoading','Загружаю четыре языка…'));
           try{
             const params=new URLSearchParams({scope:record.scope,compareId:record.id});
             const response=await api('GET',null,'/api/admin/localization?'+params);
@@ -192,21 +214,24 @@
             for(const language of response.translations){
               const cell=tag('section',null,'localization-language-cell');
               const identity=tag('div',null,'localization-language-head');
+              const compareLabels={admin:['locCompareOriginAdmin','D1 · опубликовано'],
+                'previous-admin':['locCompareOriginPrevious','D1 · ранее'],
+                import:['locCompareOriginImport','Исходный утверждённый'],
+                catalog:['locCompareOriginCatalog','Каталог D1'],
+                fallback:['locCompareOriginFallback','Не переведено · резерв']};
+              const originLabel=compareLabels[language.origin];
               identity.append(tag('strong',language.locale.toUpperCase()),
-                tag('small',({
-                  admin:'D1 · опубликовано', 'previous-admin':'D1 · ранее',
-                  import:'Исходный утверждённый',catalog:'Каталог D1',
-                  fallback:'Не переведено · резерв'
-                })[language.origin]||language.origin));
+                originLabel?localized('small',originLabel[0],originLabel[1]):tag('small',language.origin));
               const value=tag('p',language.effective||'—');
               value.lang=language.locale==='jp'?'ja':language.locale==='tw'?'zh-Hant':language.locale;
-              const action=tag('button','Открыть редактор '+language.locale.toUpperCase());
+              const action=liveText(tag('button'),'locOpenLocale','Открыть редактор {locale}',{locale:language.locale.toUpperCase()});
               action.type='button';action.className='secondary';
               action.addEventListener('click',()=>jumpTo(language.locale));
               cell.append(identity,value,action);matrix.append(cell);
             }
           }catch(error){
-            if(token===requestNumber&&compare.isConnected)matrix.textContent='Не удалось сравнить: '+error.message;
+            if(token===requestNumber&&compare.isConnected)
+              matrix.replaceChildren(liveText(tag('p'),'locCompareFailed','Не удалось сравнить: {error}',{error:error.message}));
           }
         });
         compare.append(toggle,matrix);
@@ -215,15 +240,15 @@
         // Canonical item text belongs to the catalog's draft/publish revision,
         // not to localization_overrides. Show it in unified search without a
         // second writable field, and open the exact catalog editor on demand.
-        const note=tag('p','Источник: опубликованный каталог (версия '+record.catalogRevision+
-          '). Правки всех четырёх языков выполняются в карточке предмета или навыка; отдельная публикация перевода здесь не создаётся.',
-          'catalog-managed-note');
+        const note=liveText(tag('p',null,'catalog-managed-note'),'locCatalogSourceNote',
+          'Источник: опубликованный каталог (версия {revision}). Правки всех четырёх языков выполняются в карточке предмета или навыка; отдельная публикация перевода здесь не создаётся.',
+          {revision:record.catalogRevision});
         if(Array.isArray(record.translations)){
           const matrix=tag('div',null,'localization-inline-languages');
           for(const entry of record.translations){
             const cell=tag('section',null,'localization-inline-language');
             cell.dataset.translationLocale=entry.locale;
-            const title=tag('strong',entry.locale.toUpperCase()+' · каталог');
+            const title=liveText(tag('strong'),'locCatalogTag','{locale} · каталог',{locale:entry.locale.toUpperCase()});
             const value=tag('p',entry.effective||'—');
             value.lang=entry.locale==='jp'?'ja':entry.locale==='tw'?'zh-Hant':entry.locale;
             cell.append(title,value);matrix.append(cell);
@@ -240,9 +265,9 @@
             const editor=window.PandoraCatalogConsole;
             if(!editor?.openFromLocalization)throw Error('Редактор каталога недоступен.');
             const opened=await editor.openFromLocalization(record.catalogId,record.catalogKind);
-            if(opened)report('Открыта карточка «'+record.catalogId+'». Изменения будут опубликованы только через каталог.');
-            else report('Переход отменён; несохранённые изменения оставлены на месте.');
-          }catch(error){report('Не удалось открыть запись: '+error.message,true);}
+            if(opened)reportLive('locOpenCatalogSuccess','Открыта карточка «{id}». Изменения будут опубликованы только через каталог.',{id:record.catalogId});
+            else reportLive('locOpenCatalogCancelled','Переход отменён; несохранённые изменения оставлены на месте.');
+          }catch(error){reportLive('locOpenCatalogFailed','Не удалось открыть запись: {error}',{error:error.message},true);}
           finally{if(card.isConnected)open.disabled=false;}
         });
         actions.append(open);
@@ -255,13 +280,14 @@
       const savedDraft=()=>queued?.get(record.scope,record.id,record.locale);
       const input=tag('textarea');input.rows=record.kind.includes('description')?4:2;
       input.maxLength=4000;input.value=drafts.has(id)?drafts.get(id):savedDraft()?.text??record.effective??'';
-      input.placeholder='Введите перевод или оставьте пустым для возврата к существующей версии';
+      input.dataset.adminI18nPlaceholder='adminShell.locInputPlaceholder';
+      input.placeholder=translated('locInputPlaceholder','Введите перевод или оставьте пустым для возврата к существующей версии');
       input.setAttribute('aria-label',record.locale.toUpperCase()+' '+record.id);
       const foot=tag('div',null,'localization-item-foot');
       const dirty=tag('span','', 'localization-dirty');
-      const save=tag('button','Опубликовать');save.type='button';
-      const stage=tag('button','Сохранить черновик');stage.type='button';stage.className='secondary';
-      const reset=tag('button','Вернуть базовый текст');reset.type='button';reset.className='secondary';
+      const save=localized('button','locLegacyPublish','Опубликовать');save.type='button';
+      const stage=localized('button','locLegacyStage','Сохранить черновик');stage.type='button';stage.className='secondary';
+      const reset=localized('button','locLegacyReset','Вернуть базовый текст');reset.type='button';reset.className='secondary';
       const length=tag('small');
       reset.title='Восстановить базовый текст и сохранить: '+(record.baseline||'—');
       function sync(){
@@ -270,9 +296,10 @@
         if(isDirty)drafts.set(id,input.value);else drafts.delete(id);
         const published=record.origin==='admin'||record.origin==='previous-admin';
         card.dataset.dirty=String(isDirty);
-        dirty.textContent=isDirty?'Изменено локально':
-          savedDraft()?'Черновик сохранён в D1':
-          record.justReset?'Базовый текст восстановлен · сохранено':'Опубликовано / без изменений';
+        if(isDirty)liveText(dirty,'locDirtyLocal','Изменено локально');
+        else if(savedDraft())liveText(dirty,'locDirtySaved','Черновик сохранён в D1');
+        else if(record.justReset)liveText(dirty,'locDirtyRestored','Базовый текст восстановлен · сохранено');
+        else liveText(dirty,'locDirtyPublished','Опубликовано / без изменений');
         // Even an untranslated fallback may have an unsaved draft that can
         // be discarded locally; resetting a published value needs a D1 write.
         save.disabled=Boolean(record.pending)||Boolean(savedDraft())||!isDirty;
@@ -294,8 +321,8 @@
             expectedDraftVersion:draft?.version||0},'/api/admin/localization/draft');
           drafts.delete(id);
           if(queued)await queued.refresh();
-          if(token===generation){render();report('Черновик '+record.id+' сохранён в Cloudflare D1. Публикации пока нет.');}
-        }catch(error){if(token===generation)report('Не удалось сохранить черновик: '+error.message,true);}
+          if(token===generation){render();reportLive('locDraftSavedReport','Черновик {id} сохранён в Cloudflare D1. Публикации пока нет.',{id:record.id});}
+        }catch(error){if(token===generation)reportLive('locDraftSaveFailed','Не удалось сохранить черновик: {error}',{error:error.message},true);}
         finally{record.pending=false;if(token===generation&&card.isConnected)sync();}
       });
       async function commit(value,resetToBaseline=false){
@@ -308,7 +335,7 @@
           input.value=record.effective||'';
           record.justReset=true;
           render();
-          report('Базовый текст для '+record.id+' восстановлен. Неопубликованный черновик отменён.');
+          reportLive('locResetLocalReport','Базовый текст для {id} восстановлен. Неопубликованный черновик отменён.',{id:record.id});
           return;
         }
         record.pending=true;sync();
@@ -325,12 +352,12 @@
           input.value=record.effective||'';
           drafts.delete(id);
           saved=true;
-          report(resetToBaseline
-            ? 'Базовый текст для '+record.id+' восстановлен и сохранён: '+(record.effective||'—')
-            : 'Перевод '+record.id+' опубликован и сохранён.');
+          if(resetToBaseline)reportLive('locResetSavedReport','Базовый текст для {id} восстановлен и сохранён: {value}',
+            {id:record.id,value:record.effective||'—'});
+          else reportLive('locTranslationPublished','Перевод {id} опубликован и сохранён.',{id:record.id});
         }catch(error){
           if(viewToken===generation)
-            report(error.message+'. Изменение не подтверждено; проверь строку перед повторной попыткой.',true);
+            reportLive('locWriteNotConfirmed','{error}. Изменение не подтверждено; проверь строку перед повторной попыткой.',{error:error.message},true);
         }finally{
           record.pending=false;
           if(viewToken===generation){
@@ -352,12 +379,13 @@
       card.append(header,preview,baseline,compare,input,foot);items.append(card);
       sync();
     }
-    const start=page*40;count.textContent=(total?start+1:0)+'–'+Math.min(total,start+rows.length)+' из '+total;
+    const start=page*40;liveText(count,'locPageCount','{first}–{last} из {total}',
+      {first:total?start+1:0,last:Math.min(total,start+rows.length),total});
     prev.disabled=page<=0;next.disabled=(page+1)*40>=total;
   }
   async function load(){
     const token=++generation;
-    report('Загружаю переводы…');
+    reportLive('locLoadingTranslations','Загружаю переводы…');
     const params=new URLSearchParams({scope,locale,group,status:translationStatus,page:String(page),q:query,multilingual:'1'});
     try{
       const result=await api('GET',null,'/api/admin/localization?'+params);
@@ -367,11 +395,12 @@
         progress.max=Math.max(1,result.coverage.total);
         progress.value=result.coverage.translated;
         const percent=result.coverage.total?Math.round(100*result.coverage.translated/result.coverage.total):100;
-        progressLabel.textContent='Переведено: '+result.coverage.translated+' / '+result.coverage.total+
-          ' · '+percent+'% ('+locale.toUpperCase()+')';
+        liveText(progressLabel,'locCoverageCount','Переведено: {translated} / {total} · {percent}% ({locale})',
+          {translated:result.coverage.translated,total:result.coverage.total,percent,locale:locale.toUpperCase()});
       }
       render();
-      report('Раздел: '+result.counts[scope]+' ключей. В этой странице: '+rows.length+'.');
+      reportLive('locSectionSummary','Раздел: {count} ключей. В этой странице: {pageCount}.',
+        {count:result.counts[scope],pageCount:rows.length});
     }catch(error){if(token===generation)report(error.message,true);}
   }
   function catalogPublished(){
