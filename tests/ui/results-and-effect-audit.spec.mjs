@@ -327,7 +327,7 @@ test('Modern melee and ranged base reach use current-server weapon values withou
     const bowEquipped=PandoraRemaked.adapter.selectEquipment(0,80003);
     Calc('RangeMelee');Calc('RangeRange');
     const bow=snapshot();
-    const wandEquipped=PandoraRemaked.adapter.selectEquipment(0,120001);
+    const wandEquipped=PandoraRemaked.adapter.selectEquipment(0,120002);
     Calc('RangeMelee');Calc('RangeRange');
     const wand=snapshot();
     const equippedReset=PandoraRemaked.adapter.selectEquipment(0,0);
@@ -340,6 +340,9 @@ test('Modern melee and ranged base reach use current-server weapon values withou
   expect(result.equippedReset).toBe(true);
   expect(result.sword.melee).toBe('115');
   expect(result.sword.ranged).toBe('---');
+  expect(result.wandEquipped).toBe(true);
+  expect(result.wand.melee).toBe('100');
+  expect(result.wand.ranged).toBe('---');
   expect(result.bow.melee).toBe('---');
   expect(result.bow.ranged).toBe('2800');
   expect(result.unarmed.melee).toBe('---');
