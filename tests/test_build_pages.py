@@ -334,6 +334,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             (modern / "compare.css").write_text("/* compare */", encoding="utf-8")
             (modern / "tooltips.css").write_text("/* tooltips */", encoding="utf-8")
             (modern / "guild-tooltips.css").write_text("/* guild preview */", encoding="utf-8")
+            (modern / "site-tooltips.css").write_text("/* site tooltips */", encoding="utf-8")
             (modern / "mobile.css").write_text("/* mobile */", encoding="utf-8")
             (modern / "version.js").write_text(
                 "window.PandoraRemakedVersion = { ui: '2026.09.4' };",
@@ -346,6 +347,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             (modern / "skill-controls.js").write_text("// native skills", encoding="utf-8")
             (modern / "skill-tooltips.js").write_text("// skill tooltip surface", encoding="utf-8")
             (modern / "guild-tooltips.js").write_text("// guild hover descriptions", encoding="utf-8")
+            (modern / "site-tooltips.js").write_text("// custom title hover", encoding="utf-8")
             (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
             (modern / "share-codec.js").write_text("// share codec", encoding="utf-8")
             (modern / "catalog-text.js").write_text("// text", encoding="utf-8")

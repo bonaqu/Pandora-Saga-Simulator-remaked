@@ -60,24 +60,24 @@
       "nameRu": "Сила гильдии",
       "levels": [
         {
-          "en": "Passive: increases maximum LP by 2% (of the calculator's base LP; bonus rounded up).",
-          "ru": "Пассивно: увеличивает максимальный запас ОЗ на 2% (от базового значения; прибавка округляется вверх)."
+          "en": "Increases maximum LP by 2% (of the calculator's base LP; bonus rounded up).",
+          "ru": "Увеличивает максимальный запас ОЗ на 2% (от базового значения; прибавка округляется вверх)."
         },
         {
-          "en": "Passive: increases maximum LP by 4% (of the calculator's base LP; bonus rounded up).",
-          "ru": "Пассивно: увеличивает максимальный запас ОЗ на 4% (от базового значения; прибавка округляется вверх)."
+          "en": "Increases maximum LP by 4% (of the calculator's base LP; bonus rounded up).",
+          "ru": "Увеличивает максимальный запас ОЗ на 4% (от базового значения; прибавка округляется вверх)."
         },
         {
-          "en": "Passive: increases maximum LP by 6% (of the calculator's base LP; bonus rounded up).",
-          "ru": "Пассивно: увеличивает максимальный запас ОЗ на 6% (от базового значения; прибавка округляется вверх)."
+          "en": "Increases maximum LP by 6% (of the calculator's base LP; bonus rounded up).",
+          "ru": "Увеличивает максимальный запас ОЗ на 6% (от базового значения; прибавка округляется вверх)."
         },
         {
-          "en": "Passive: increases maximum LP by 9% (of the calculator's base LP; bonus rounded up).",
-          "ru": "Пассивно: увеличивает максимальный запас ОЗ на 9% (от базового значения; прибавка округляется вверх)."
+          "en": "Increases maximum LP by 9% (of the calculator's base LP; bonus rounded up).",
+          "ru": "Увеличивает максимальный запас ОЗ на 9% (от базового значения; прибавка округляется вверх)."
         },
         {
-          "en": "Passive: increases maximum LP by 12% (of the calculator's base LP; bonus rounded up).",
-          "ru": "Пассивно: увеличивает максимальный запас ОЗ на 12% (от базового значения; прибавка округляется вверх)."
+          "en": "Increases maximum LP by 12% (of the calculator's base LP; bonus rounded up).",
+          "ru": "Увеличивает максимальный запас ОЗ на 12% (от базового значения; прибавка округляется вверх)."
         }
       ]
     },
@@ -86,24 +86,24 @@
       "nameRu": "Дух гильдии",
       "levels": [
         {
-          "en": "Passive: increases maximum MP by 2% (of the calculator's base MP; bonus rounded up).",
-          "ru": "Пассивно: увеличивает максимальный запас ОМ на 2% (от базового значения; прибавка округляется вверх)."
+          "en": "Increases maximum MP by 2% (of the calculator's base MP; bonus rounded up).",
+          "ru": "Увеличивает максимальный запас ОМ на 2% (от базового значения; прибавка округляется вверх)."
         },
         {
-          "en": "Passive: increases maximum MP by 4% (of the calculator's base MP; bonus rounded up).",
-          "ru": "Пассивно: увеличивает максимальный запас ОМ на 4% (от базового значения; прибавка округляется вверх)."
+          "en": "Increases maximum MP by 4% (of the calculator's base MP; bonus rounded up).",
+          "ru": "Увеличивает максимальный запас ОМ на 4% (от базового значения; прибавка округляется вверх)."
         },
         {
-          "en": "Passive: increases maximum MP by 6% (of the calculator's base MP; bonus rounded up).",
-          "ru": "Пассивно: увеличивает максимальный запас ОМ на 6% (от базового значения; прибавка округляется вверх)."
+          "en": "Increases maximum MP by 6% (of the calculator's base MP; bonus rounded up).",
+          "ru": "Увеличивает максимальный запас ОМ на 6% (от базового значения; прибавка округляется вверх)."
         },
         {
-          "en": "Passive: increases maximum MP by 9% (of the calculator's base MP; bonus rounded up).",
-          "ru": "Пассивно: увеличивает максимальный запас ОМ на 9% (от базового значения; прибавка округляется вверх)."
+          "en": "Increases maximum MP by 9% (of the calculator's base MP; bonus rounded up).",
+          "ru": "Увеличивает максимальный запас ОМ на 9% (от базового значения; прибавка округляется вверх)."
         },
         {
-          "en": "Passive: increases maximum MP by 12% (of the calculator's base MP; bonus rounded up).",
-          "ru": "Пассивно: увеличивает максимальный запас ОМ на 12% (от базового значения; прибавка округляется вверх)."
+          "en": "Increases maximum MP by 12% (of the calculator's base MP; bonus rounded up).",
+          "ru": "Увеличивает максимальный запас ОМ на 12% (от базового значения; прибавка округляется вверх)."
         }
       ]
     },
@@ -112,12 +112,12 @@
       "nameRu": "Восстановление силы",
       "levels": [
         {
-          "en": "Passive: increases LP recovery speed by 5%.",
-          "ru": "Пассивно: повышает скорость восстановления ОЗ на 5%."
+          "en": "Increases LP recovery speed by 5%.",
+          "ru": "Повышает скорость восстановления ОЗ на 5%."
         },
         {
-          "en": "Passive: increases LP recovery speed by 8%.",
-          "ru": "Пассивно: повышает скорость восстановления ОЗ на 8%."
+          "en": "Increases LP recovery speed by 8%.",
+          "ru": "Повышает скорость восстановления ОЗ на 8%."
         }
       ]
     },
@@ -126,12 +126,12 @@
       "nameRu": "Восстановление духа",
       "levels": [
         {
-          "en": "Passive: increases MP recovery speed by 5%.",
-          "ru": "Пассивно: повышает скорость восстановления ОМ на 5%."
+          "en": "Increases MP recovery speed by 5%.",
+          "ru": "Повышает скорость восстановления ОМ на 5%."
         },
         {
-          "en": "Passive: increases MP recovery speed by 8%.",
-          "ru": "Пассивно: повышает скорость восстановления ОМ на 8%."
+          "en": "Increases MP recovery speed by 8%.",
+          "ru": "Повышает скорость восстановления ОМ на 8%."
         }
       ]
     },
@@ -140,12 +140,12 @@
       "nameRu": "Физическая устойчивость",
       "levels": [
         {
-          "en": "Passive: reduces physical damage received by 3%.",
-          "ru": "Пассивно: уменьшает получаемый физического урон на 3%."
+          "en": "Reduces physical damage received by 3%.",
+          "ru": "Уменьшает получаемый физический урон на 3%."
         },
         {
-          "en": "Passive: reduces physical damage received by 6%.",
-          "ru": "Пассивно: уменьшает получаемый физического урон на 6%."
+          "en": "Reduces physical damage received by 6%.",
+          "ru": "Уменьшает получаемый физический урон на 6%."
         }
       ]
     },
@@ -154,12 +154,12 @@
       "nameRu": "Магическая устойчивость",
       "levels": [
         {
-          "en": "Passive: reduces magical damage received by 3%.",
-          "ru": "Пассивно: уменьшает получаемый магического урон на 3%."
+          "en": "Reduces magical damage received by 3%.",
+          "ru": "Уменьшает получаемый магический урон на 3%."
         },
         {
-          "en": "Passive: reduces magical damage received by 6%.",
-          "ru": "Пассивно: уменьшает получаемый магического урон на 6%."
+          "en": "Reduces magical damage received by 6%.",
+          "ru": "Уменьшает получаемый магический урон на 6%."
         }
       ]
     },
@@ -168,24 +168,24 @@
       "nameRu": "Опыт",
       "levels": [
         {
-          "en": "Passive: increases experience earned from defeated monsters by 2%.",
-          "ru": "Пассивно: увеличивает опыт за убийство монстров на 2%."
+          "en": "Increases experience earned from defeated monsters by 2%.",
+          "ru": "Увеличивает опыт за убийство монстров на 2%."
         },
         {
-          "en": "Passive: increases experience earned from defeated monsters by 3%.",
-          "ru": "Пассивно: увеличивает опыт за убийство монстров на 3%."
+          "en": "Increases experience earned from defeated monsters by 3%.",
+          "ru": "Увеличивает опыт за убийство монстров на 3%."
         },
         {
-          "en": "Passive: increases experience earned from defeated monsters by 4%.",
-          "ru": "Пассивно: увеличивает опыт за убийство монстров на 4%."
+          "en": "Increases experience earned from defeated monsters by 4%.",
+          "ru": "Увеличивает опыт за убийство монстров на 4%."
         },
         {
-          "en": "Passive: increases experience earned from defeated monsters by 5%.",
-          "ru": "Пассивно: увеличивает опыт за убийство монстров на 5%."
+          "en": "Increases experience earned from defeated monsters by 5%.",
+          "ru": "Увеличивает опыт за убийство монстров на 5%."
         },
         {
-          "en": "Passive: increases experience earned from defeated monsters by 6%.",
-          "ru": "Пассивно: увеличивает опыт за убийство монстров на 6%."
+          "en": "Increases experience earned from defeated monsters by 6%.",
+          "ru": "Увеличивает опыт за убийство монстров на 6%."
         }
       ]
     },

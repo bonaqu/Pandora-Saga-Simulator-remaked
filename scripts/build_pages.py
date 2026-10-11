@@ -29,6 +29,7 @@ REQUIRED_MODERN = (
     "modern/compare.css",
     "modern/tooltips.css",
     "modern/guild-tooltips.css",
+    "modern/site-tooltips.css",
     "modern/mobile.css",
     "modern/admin-entry.css",
     "modern/admin-entry.js",
@@ -44,6 +45,7 @@ REQUIRED_MODERN = (
     "modern/skill-controls.js",
     "modern/skill-tooltips.js",
     "modern/guild-tooltips.js",
+    "modern/site-tooltips.js",
     "modern/adapter.js",
     "modern/catalog.js",
     "modern/catalog-text.js",
@@ -101,6 +103,7 @@ HEAD_INJECTION = '''<!-- REMAKED:HEAD -->
 <link rel="stylesheet" href="./modern/compare.css" />
 <link rel="stylesheet" href="./modern/tooltips.css" />
 <link rel="stylesheet" href="./modern/guild-tooltips.css" />
+<link rel="stylesheet" href="./modern/site-tooltips.css" />
 <link rel="stylesheet" href="./modern/mobile.css" />
 <link rel="stylesheet" href="./modern/admin-entry.css" />
 <!-- /REMAKED:HEAD -->'''
@@ -137,6 +140,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/calculator-controls.js"></script>
 <script src="./modern/guild-data.js"></script>
 <script src="./modern/guild-tooltips.js"></script>
+<script src="./modern/site-tooltips.js"></script>
 <script src="./modern/skill-controls.js"></script>
 <script src="./modern/skill-tooltips.js"></script>
 <script src="./modern/pwa.js"></script>

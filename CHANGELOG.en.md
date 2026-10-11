@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.73 — 2026-10-11
+
+### For users
+
+- Compact per-level guild hover help replaces the oversized preview panel.
+- Guild/Honor rows and dropdown arrows are vertically aligned; resistance names stay abbreviated.
+- Redundant passive prefixes are removed, and common Modern tooltips follow the site's styling.
+
+### Development and technical changes
+
+- Only Modern presentation and approved guild description baselines change. Calculations, Legacy, saved builds and D1 editing precedence are unchanged.
+
 ## Modern 3.72 — 2026-10-11
 
 ### For users
