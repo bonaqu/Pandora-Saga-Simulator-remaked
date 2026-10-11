@@ -2414,7 +2414,8 @@ body.remaked-modern :is(button, a, input, select, textarea):focus-visible {
     width: 64px;
     max-width: 64px;
     justify-self: end;
-    transform: none;
+    /* Center on the retained 52px control, not the wider 64px caption. */
+    transform: translateX(4px);
     white-space: nowrap;
     overflow: visible;
     overflow-wrap: normal;
