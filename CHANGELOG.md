@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 4.00 — матрица регрессий расчёта, 2026-10-11
+
+<!-- admin-notes:ru -->
+- Добавлена автоматическая регрессионная матрица расчётных результатов: 28 классов × 6 рас, 43 показателя, отсутствие недопустимых значений и повторяемость пересчёта.
+- Шесть представительных классов дополнительно проверяются с предметом, сопротивлением магии и защитными баффами с последующим снятием. Legacy, формулы и опубликованные характеристики не изменены.
+- Тесты защищают от новых регрессий, но не являются доказательством полного соответствия актуальному серверу игры.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add 28-class × 6-race all-43-result Modern regression matrix checking missing/invalid output and repeatable recalculation.
+- Exercise armor and magic resistance effects and their exact reversibility in six representative classes; leave legacy formulas, published D1 catalog and saved builds untouched.
+- This is runtime regression coverage, not a claim of validated current-game numerical parity.
+<!-- /admin-notes:en -->
+
 ## Modern 3.99 — проверка фактического покрытия переводов, 2026-10-11
 
 <!-- admin-notes:ru -->
