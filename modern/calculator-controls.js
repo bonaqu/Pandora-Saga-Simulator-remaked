@@ -679,6 +679,7 @@
     installCalculatorCorrections();
     observer = new MutationObserver(schedule); refresh();
     window.addEventListener('resize', schedule);
+    window.addEventListener('pandora-remaked:localechange', schedule);
   }
   namespace.calculatorControls = { refresh: refresh };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
