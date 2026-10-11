@@ -548,12 +548,17 @@ test('Astian dress occupies chest and pants without inventing a second equipped 
     return {pants,soul,before,after:Store()};
   });
   expect(guarded).toEqual({pants:false,soul:false,before:guarded.before,after:guarded.before});
+  const remove=page.locator('[data-remaked-remove-occupying-dress]');
+  await expect(remove).toHaveText('Снять платье');
+  await remove.click();
   const after=await page.evaluate(()=>{
-    if(!PandoraRemaked.adapter.selectEquipment(3,0))throw Error('Cannot unequip dress');
-    PandoraRemaked.equipmentPicker.refresh();
-    return {chest:Status.Equip[3][0],occupied:PandoraRemaked.equipmentPicker.blockedSlot(5)};
+    const owner=document.getElementById('SelEquip_3_0');
+    return {chest:Number(Status.Equip[3][0]),placeholder:Number(owner.options[0].value),
+      occupied:PandoraRemaked.equipmentPicker.blockedSlot(5)};
   });
-  expect(after).toEqual({chest:'0',occupied:null});
+  expect(after.chest).toBe(after.placeholder);
+  expect(after.occupied).toBeNull();
+  await expect(remove).toBeHidden();
   await expect(open).toBeEnabled();
   await expect(pants.locator('[data-remaked-slot-occupied]')).toBeHidden();
 });
