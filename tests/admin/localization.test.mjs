@@ -4,7 +4,7 @@ import {adminLocalization,publicLocalization} from '../../admin-api/src/localiza
 import {readFileSync} from 'node:fs';
 import curated from '../../localization/curated-runtime-defaults.ru.v1.json' with {type:'json'};
 
-function fixture({legacyUi=[]}={}){
+function fixture({legacyUi=[],catalogSnapshot=[]}={}){
   const updates=new Map();
   const database={prepare(sql){
     let args=[];
@@ -16,7 +16,7 @@ function fixture({legacyUi=[]}={}){
         throw Error('Unrecognized query '+sql);
       },
       async first(){
-        if(sql.includes('FROM catalog_head'))return {snapshot_json:'[]'};
+        if(sql.includes('FROM catalog_head'))return {snapshot_json:JSON.stringify(catalogSnapshot),version:88};
         if(sql.includes('FROM localization_overrides'))return updates.get(args.slice(0,3).join('|'))||null;
         throw Error('Unrecognized query '+sql);
       },
@@ -384,4 +384,30 @@ test('four-locale paged response preserves older D1 reset tombstones without con
   assert.equal(after.translations[1].version,0);
   assert.equal(after.translations[2].version,0);
   assert.equal(after.translations[3].version,0);
+});
+
+
+test('new catalog-managed names expose four languages without creating a second D1 editor',async()=>{
+  const id='modern.equipment.qa-multilingual';
+  const catalogSnapshot=[{identity:{id,kind:'equipment'},
+    edit:{names:{en:'New armor',ru:'Новые доспехи',jp:'新しい鎧',tw:'新盔甲'},
+      description:{en:'Armor description',ru:'Описание доспехов',jp:'',tw:''}}}];
+  const env=fixture({catalogSnapshot});
+  const data=await (await adminLocalization(get('/api/admin/localization?scope=game&group=equipment&locale=ru&q='+id+'&multilingual=1'),env)).json();
+  const name=data.items.find(row=>row.id===id);
+  assert.ok(name);
+  assert.equal(name.managedBy,'catalog');
+  assert.deepEqual(name.translations.map(row=>row.locale),['ru','en','jp','tw']);
+  assert.deepEqual(name.translations.map(row=>row.effective),['Новые доспехи','New armor','新しい鎧','新盔甲']);
+  assert.ok(name.translations.every(row=>row.managedBy==='catalog'));
+  const desc=data.items.find(row=>row.id===id+'.description');
+  assert.ok(desc);
+  assert.equal(desc.managedBy,'catalog');
+  assert.equal(desc.translations[2].origin,'fallback');
+  assert.equal(desc.translations[2].effective,'Armor description');
+  assert.equal(desc.translations[3].origin,'fallback');
+  // The same key must not become independently writable in the translation
+  // table: edits to a new catalog identity need catalog revision publication.
+  await assert.rejects(()=>adminLocalization(post({scope:'game',id,locale:'jp',
+    value:'Unsafe parallel copy',expectedVersion:0}),env),/Invalid translation edit/);
 });
