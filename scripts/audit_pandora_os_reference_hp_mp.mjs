@@ -36,6 +36,35 @@ export function currentClassBaseHpMp(cls,{level,vit,spi}) {
     mp:roundHalfToEven(spi*m.spi+level*m.lv+m.base)
   };
 }
+/**
+ * The current public calculator builds six effective abilities before
+ * calculating class HP/MP. Its build-state input to this function is the
+ * race/class baseline + allocated points, NOT unmodified player allocation.
+ * API here is read-only, and no assumptions are made about which equip/guild
+ * effects contribute to these modifier channels.
+ */
+export function projectEffectiveAbilities(basicAbilities,modifiers={}) {
+  if(!Array.isArray(basicAbilities)||basicAbilities.length!==6||
+     !basicAbilities.every(Number.isFinite))throw new Error('Expected six finite base abilities');
+  const flat=modifiers.abiConst??[0,0,0,0,0,0];
+  const percent=modifiers.abiScaleP??[0,0,0,0,0,0];
+  if(!Array.isArray(flat)||flat.length!==6||!flat.every(Number.isFinite)||
+     !Array.isArray(percent)||percent.length!==6||!percent.every(Number.isFinite))
+    throw new Error('Invalid attribute modifiers');
+  return basicAbilities.map((base,index)=>
+    Math.max(1,base+flat[index]+Math.floor(base*percent[index]/100)));
+}
+
+export function currentVitalsWithModifiers(cls,{level,basicAbilities,modifiers={}}) {
+  const effective=projectEffectiveAbilities(basicAbilities,modifiers);
+  const base=currentClassBaseHpMp(cls,{level,vit:effective[0],spi:effective[4]});
+  const maxLifeConst=modifiers.maxLifeConst??0,maxManaConst=modifiers.maxManaConst??0;
+  if(!Number.isFinite(maxLifeConst)||!Number.isFinite(maxManaConst))
+    throw new Error('Invalid flat HP/MP modifiers');
+  return {effectiveAbilities:effective,
+    hp:base.hp+maxLifeConst,mp:base.mp+maxManaConst};
+}
+
 export function generateReferenceVectors(classes,levels=[1,10,20,30,40,45],attributes=[
   {vit:5,spi:5},{vit:7,spi:4},{vit:35,spi:45},{vit:100,spi:100}
 ]) {
