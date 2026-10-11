@@ -946,3 +946,33 @@ test('localized destructive confirmation keeps an unsaved catalog edit on dismis
   expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n).toBe(0);
   expect(errors).toEqual([]);
 });
+
+test('catalog status localizes through D1 without discarding draft edits or repeating an operation',async({page})=>{
+  const {sqlite,errors}=await openConsole(page);
+  const status=page.locator('#catalog-state');
+  await expect(status).toContainText('Каталог загружен');
+  const requests=[];
+  page.on('request',request=>{
+    if(request.url().includes('/api/admin/')&&request.method()==='POST')requests.push(request.url());
+  });
+  await page.evaluate(()=>{
+    let lang='en';
+    window.__testCatalogStatusLocale=next=>{
+      lang=next;
+      window.dispatchEvent(new Event('pandora-admin:localechange'));
+    };
+    window.PandoraAdminI18n.t=(key,fallback)=>{
+      if(key==='adminShell.catalogStatusLoaded')
+        return lang==='en'?'Catalog loaded. Drafts are private; batch publication is available above the catalog.':
+          'カタログを読み込みました。下書きは非公開です。';
+      return fallback;
+    };
+    window.__testCatalogStatusLocale('en');
+  });
+  await expect(status).toHaveText('Catalog loaded. Drafts are private; batch publication is available above the catalog.');
+  await page.evaluate(()=>window.__testCatalogStatusLocale('jp'));
+  await expect(status).toHaveText('カタログを読み込みました。下書きは非公開です。');
+  expect(requests).toEqual([]);
+  expect(errors).toEqual([]);
+  expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n).toBe(0);
+});
