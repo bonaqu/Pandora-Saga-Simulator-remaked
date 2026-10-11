@@ -4,13 +4,13 @@
 
 <!-- release-notes:user:ru -->
 - При надетом оружии в «Результатах расчёта» вместо `---` отображается его базовая дальность: отдельно для оружия ближнего и дальнего боя.
-- Значения взяты из актуального справочника Pandora Saga OS для 164 сопоставленных видов оружия. Они показаны в исходных единицах справочника, без неподтверждённого пересчёта в метры.
+- Значения проверены для 164 видов оружия. Они показаны в исходных единицах справочника, без неподтверждённого пересчёта в метры.
 - Для пустого слота или неизвестной модели `---` остаётся. Не подтверждённые бонусы навыков к дальности пока не включаются.
 <!-- /release-notes:user:ru -->
 
 <!-- release-notes:user:en -->
 - Melee and ranged results now display the equipped weapon's verified base reach instead of a permanent dash.
-- Source values cover 164 matched weapons from the current Pandora Saga OS item registry, in original reference units (no unverified meter conversion).
+- Values are verified for 164 weapons in original game-reference units (no unverified meter conversion).
 - Unarmed or unsupported weapons remain unavailable; unverified skill-based range changes are not silently applied.
 <!-- /release-notes:user:en -->
 
