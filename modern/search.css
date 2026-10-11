@@ -632,3 +632,34 @@
 }
 
 .remaked-item-description p { white-space: pre-wrap; }
+
+/* A dress has one actual item in the chest slot but occupies the pants slot,
+   too. This is an explanation for Legacy's existing slot-clearing rule, not
+   a second virtual equipped item or an extra stat source. */
+.remaked-modern #body [data-remaked-slot-occupied] {
+  box-sizing: border-box;
+  display: block;
+  clear: both;
+  width: 100%;
+  height: auto;
+  margin: 5px 0;
+  padding: 8px 10px;
+  border-inline-start: 3px solid #7b9862;
+  border-radius: 5px;
+  color: #3d512e;
+  background: #eaf1df;
+  font: 12px/1.5 var(--rm-font);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.remaked-modern #body [data-remaked-slot-occupied][hidden] { display: none !important; }
+.remaked-modern #body [data-remaked-picker-slot]:has([data-remaked-slot-occupied]:not([hidden])) {
+  border-inline-start: 3px solid #8aa67a;
+}
+.remaked-modern #body [data-remaked-picker-slot]:has([data-remaked-slot-occupied]:not([hidden])) .remaked-equipment-picker:disabled {
+  cursor: not-allowed;
+  border-color: #b2bba8;
+  background: #e8ece4;
+  color: #5b6d51;
+  opacity: 1;
+}
