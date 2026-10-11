@@ -20,7 +20,11 @@ const originOf=(source,approvedValue={})=>Object.fromEntries(LOCALES.map(locale=
 // immutable historical approved JSON or shadowing any published D1 value.
 function migratedBaseline(scope,id) {
   const values=Object.fromEntries(LOCALES.map(locale=>[locale,approved[scope][locale]?.[id]]));
-  if(!values.ru)values.ru=curated.ru[scope]?.[id]||'';
+  const approvedCorrection=curated.ru[scope]?.[id]||'';
+  // This historical mixed RU/EN help was already corrected in Modern. Make
+  // the approved baseline identical in Admin; D1 remains authoritative.
+  if(approvedCorrection && (!values.ru || (scope==='ui' && id==='skills.help')))
+    values.ru=approvedCorrection;
   return values;
 }
 const keyOf=(scope,id)=>scope+'\0'+id;
@@ -224,6 +228,32 @@ export async function adminLocalization(request,env) {
       status=url.searchParams.get('status')||'all';
     if(!['game','ui'].includes(scope)||!LOCALES.includes(locale)||q.length>120||!GROUPS.has(group)||
        !/^\d{1,5}$/.test(pageText)||!['all','missing','published'].includes(status))fail('Invalid search filters');
+    // Read-only four-language comparison for one editable identity. Fetch it
+    // only on demand; do not rescan every D1 language on normal pagination.
+    const compareId=url.searchParams.get('compareId');
+    if(compareId!==null){
+      if(!/^[a-z][a-z0-9._-]{0,120}$/.test(compareId))fail('Invalid comparison ID');
+      const entry=localizationEntry(scope,compareId);
+      if(!entry)fail('Translation entry not found',404);
+      const [matching,legacy]=await Promise.all([
+        env.DB.prepare(
+          'SELECT scope,term_id,locale,text,version,updated_at FROM localization_overrides WHERE scope=? AND term_id=?'
+        ).bind(scope,compareId).all(),
+        legacyOverrides(env,scope)
+      ]);
+      const latest=new Map(matching.results.filter(row=>row.scope===scope&&row.term_id===compareId)
+        .map(row=>[row.locale,row]));
+      const translations=LOCALES.map(lang=>{
+        const row=latest.get(lang),older=legacy.get(keyOf(scope,compareId)+'\0'+lang)||'';
+        const baseline=entry.baseline[lang],baselineOrigin=entry.baselineOrigin[lang];
+        const effective=row ? row.text||baseline : older||baseline;
+        const origin=row ? row.text?'admin':baselineOrigin : older?'previous-admin':baselineOrigin;
+        return {locale:lang,effective,baseline,baselineOrigin,origin,version:row?.version||0,
+          updatedAt:row?.updated_at||null,hasDraft:false};
+      });
+      return jsonResponse({ok:true,schemaVersion:1,scope,id:compareId,
+        kind:entry.kind,source:entry.source,translations});
+    }
     const page=Number(pageText),pageSize=40;
     const [newRows,legacy]=await Promise.all([overrides(env,scope,locale),legacyOverrides(env,scope,locale)]);
     const index=overlayMap(newRows);

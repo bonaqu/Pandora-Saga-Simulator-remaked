@@ -1,5 +1,27 @@
 # Changelog
 
+## Modern 3.74 — D1 как источник опубликованных переводов, 2026-10-11
+
+<!-- release-notes:user:ru -->
+- Опубликованные переводы в D1 теперь отображаются без скрытой подмены слов и сокращений в браузере. Старые названия пяти сопротивлений обновляются через D1 с сохранением истории.
+- В админке можно сравнить один текст сразу на RU / EN / JP / TW и перейти к редактированию нужного языка.
+- Подпись последнего пользовательского обновления и сообщение о технических улучшениях добавлены в редактор переводов.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Published D1 translations now display verbatim without hidden browser-side wording changes. Five legacy Russian resistance labels are safely migrated in D1 with version history.
+- The admin editor can compare each registered text across RU / EN / JP / TW and jump to the chosen locale.
+- Release-summary captions are now editable localization keys.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Убраны клиентские словари, переписывавшие опубликованные значения. Добавлены ленивое четырёхъязычное сравнение через read-only API, точечная миграция D1 с защитой пользовательских правок и черновиков, тесты приоритета и истории. Каталог, Legacy и расчёты сохранены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Remove browser-side transformations of published translations; add lazy four-locale comparison endpoint, guarded D1 migration protecting custom edits and drafts, and regression tests for precedence, reset and history. Keep calculations, catalog ownership and Legacy unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 3.73 — компактные подсказки и выравнивание усилений, 2026-10-11
 
 <!-- release-notes:user:ru -->

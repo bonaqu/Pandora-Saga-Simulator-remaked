@@ -19,7 +19,9 @@
       ui: Object.freeze({
         'skills.adeptness': 'Изучено (ОЧ)',
         'skills.potential': 'Потенциал.',
-        'skills.help': "Изучение расходует очки умений. Потенциал использует отдельные очки, запас которых показан рядом с уровнем персонажа. Ограничения и стоимость определяются правилами калькулятора."
+        'skills.help': "Изучение расходует очки умений. Потенциал использует отдельные очки, запас которых показан рядом с уровнем персонажа. Ограничения и стоимость определяются правилами калькулятора.",
+        'updates.latestForUsers': 'Последние изменения для пользователей: {version}',
+        'updates.technicalSummary': 'Выполнены внутренние технические улучшения.'
       }),
       game: Object.freeze({
         'calculator.text.3': 'Учитывать умения',
@@ -157,25 +159,9 @@
     return group && Object.prototype.hasOwnProperty.call(group, key) ? group[key] : '';
   }
 
-  // Presentation-only abbreviations for two legacy Russian captions.
-  // Apply only to their previous exact text, so other catalog/admin edits win.
-  var COMPACT_RU_ACTIONS = Object.freeze({
-    'calculator.text.5': ['Учитывать мастерство умений', 'Учитывать мастерство'],
-    'calculator.text.6': ['Учитывать эффекты зелий', 'Учитывать эфф. зелий']
-  });
-  function compactActionLabel(key, value) {
-    var entry = currentLocale === 'ru' && COMPACT_RU_ACTIONS[key];
-    return entry && value === entry[0] ? entry[1] : value;
-  }
-
-  // Normalize only the previously published mixed-language help text. A fully
-  // translated workbook/admin value retains precedence over this compatibility fix.
-  var OLD_RU_SKILLS_HELP = 'Adeptness использует очки Skill. Potential использует свой запас очков рядом с уровнем. Ограничения и стоимость определяет движок Legacy.';
-  function localizedUiValue(key, value) {
-    if (currentLocale === 'ru' && key === 'skills.help' && value === OLD_RU_SKILLS_HELP)
-      return terminology('ui', key);
-    return value;
-  }
+  // Do not post-process wording from D1 (including historical publications).
+  // Compact labels and corrected translations are published through the admin
+  // editor, not silently rewritten by browser-side heuristics.
 
   function interpolate(template, values) {
     values = values || {};
@@ -191,30 +177,15 @@
       (publishedUi[currentLocale] && publishedUi[currentLocale][key]);
     var value = override || (Object.prototype.hasOwnProperty.call(active, key) ? active[key] : terminology('ui', key));
     if (!value) value = english[key];
-    return interpolate(typeof value === 'string' ? localizedUiValue(key, value) : key, values);
-  }
-
-  // Older workbook labels are normalized only when they still match that exact
-  // approved old wording. Independently published/admin-customized text wins.
-  var RU_LABEL_RENAMES = Object.freeze({
-    'skill_entry.18.8': ['Сопротивляемость огню', 'Сопр. огню'],
-    'skill_entry.18.9': ['Сопротивляемость льду', 'Сопр. льду'],
-    'skill_entry.18.10': ['Сопротивляемость молниям', 'Сопр. молнии'],
-    'skill_entry.20.7': ['Сопротивляемость магии тьмы', 'Сопр. тьме'],
-    'skill_entry.21.7': ['Сопротивляемость чарам', 'Сопр. чарам'],
-    'calculator.status.39': ['Сопр. тьмы', 'Сопр. тьме']
-  });
-  function normalizeRussianLabel(key, value) {
-    var replacement = RU_LABEL_RENAMES[key];
-    return currentLocale === 'ru' && replacement && value === replacement[0] ? replacement[1] : value;
+    return interpolate(typeof value === 'string' ? value : key, values);
   }
 
   function translateGameTerm(key, fallback) {
     var unified = unifiedOverrides.game[currentLocale]?.[key];
-    if (unified) return compactActionLabel(key, normalizeRussianLabel(key, unified));
+    if (unified) return unified;
     if (currentLocale === 'ru' && Object.prototype.hasOwnProperty.call(publishedResultLabels, key)) return publishedResultLabels[key];
     var published = namespace.catalog && namespace.catalog.gameLabel(key);
-    if (published) return compactActionLabel(key, normalizeRussianLabel(key, published));
+    if (published) return published;
     // JP/TW keep the original game's language for Legacy game terms while the
     // Modern shell uses its sparse JP/TW catalog with English fallback.
     // An English game-name override must not silently replace source languages.
@@ -222,7 +193,7 @@
     var active = currentLocale === 'en' && !useEnglish ? {} : gameCatalogs[currentLocale] || {};
     var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : terminology('game', key);
     if (!value && currentLocale === 'ru' && useEnglish) value = (gameCatalogs.en || {})[key] || '';
-    return compactActionLabel(key, normalizeRussianLabel(key, typeof value === 'string' && value ? value : String(fallback == null ? '' : fallback)));
+    return typeof value === 'string' && value ? value : String(fallback == null ? '' : fallback);
   }
 
   function storedValues(node) {

@@ -263,3 +263,56 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
 @media(max-width:600px) {
   .localization-queue-filters { display:grid; grid-template-columns:minmax(0,1fr); }
 }
+
+/* Four-locale inspection — read-only comparison, one canonical edit path. */
+.localization-language-compare {
+  margin: 10px 0;
+  padding: 8px 10px;
+  border: 1px solid #5c754f;
+  border-radius: 7px;
+  background: #192719;
+}
+.localization-language-compare > summary {
+  cursor: pointer;
+  color: #dceccf;
+  font-size: 12px;
+  font-weight: 650;
+}
+.localization-language-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  padding-top: 10px;
+  overflow-wrap: anywhere;
+}
+.localization-language-cell {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #536c49;
+  border-radius: 7px;
+  background: #233522;
+}
+.localization-language-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 10px;
+}
+.localization-language-head strong { color: #e7f5d6; }
+.localization-language-head small { color: #b9c9ad; }
+.localization-language-cell p {
+  min-height: 2.5em;
+  margin: 8px 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: #e1f0d5;
+  font-size: 13px;
+}
+.localization-language-cell button {
+  min-height: 30px;
+  font-size: 12px;
+}
+@media (max-width: 760px) {
+  .localization-language-grid { grid-template-columns: minmax(0, 1fr); }
+}

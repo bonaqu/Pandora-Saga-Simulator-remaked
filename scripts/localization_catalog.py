@@ -33,8 +33,22 @@ def load_migrated_catalogs(root: pathlib.Path) -> TranslationCatalogs:
                 for key, value in rows.items()
             ):
                 raise ValueError("Invalid translation record")
+    # Keep the frozen approved snapshot immutable. A handful of subsequently
+    # reviewed Modern UI corrections are a *build fallback* only: the public
+    # Cloudflare D1 publication still has higher priority on every locale.
+    ui_ru = dict(data["ui"]["ru"])
+    # Minimal test fixtures may intentionally supply only the frozen snapshot.
+    # The real site ships both additional resources and validates their shape.
+    curated_path = root / "localization/curated-runtime-defaults.ru.v1.json"
+    if curated_path.exists():
+        curated = json.loads(curated_path.read_text(encoding="utf-8"))
+        english_source = json.loads((root / "localization/ui.en.json").read_text(encoding="utf-8"))
+        for key, value in curated["ru"]["ui"].items():
+            if key not in english_source or not isinstance(value, str) or not value.strip():
+                raise ValueError(f"Curated UI fallback not in registered source: {key}")
+            ui_ru[key] = value
     return TranslationCatalogs(
-        ui_russian=data["ui"]["ru"],
+        ui_russian=ui_ru,
         ui_japanese=data["ui"]["jp"],
         ui_traditional_chinese=data["ui"]["tw"],
         game_russian=data["game"]["ru"],

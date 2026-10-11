@@ -15,13 +15,7 @@
     if (!levelInfo) return '';
     var id = 'calculator.clan.' + index + '.level.' + level + '.hint';
     var approved = ns.i18n?.game(id, '') || (locale() === 'ru' ? levelInfo.ru : levelInfo.en);
-    // Old D1 publications with exactly the obsolete prefix remain readable;
-    // an independently edited description is not overwritten.
-    if (index >= 1 && index <= 7) {
-      approved = approved.replace(/^Passive:\s*/i, '').replace(/^Пассивно:\s*/i, '');
-      approved = approved.replace(/^увеличивает\b/, 'Увеличивает').replace(/^повышает\b/, 'Повышает')
-        .replace(/^уменьшает\b/, 'Уменьшает');
-    }
+    // Every published locale value is authoritative; never strip words from D1.
     return approved;
   }
   function updateTriggers() {

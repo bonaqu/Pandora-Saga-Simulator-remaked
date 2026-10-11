@@ -128,6 +128,53 @@
       preview.append(tag('small','Оригинал (EN)'),tag('p',original||'—'));
       const baseline=tag('div',null,'localization-baseline');
       baseline.append(tag('small','Перевод, используемый сайтом'),tag('p',record.effective||'—'));
+      // Four-language comparison is fetched lazily and read-only; edits keep
+      // the existing guarded versioned D1 editor and cloud draft queue.
+      let compare=null;
+      if(record.managedBy!=='catalog'){
+        compare=tag('details',null,'localization-language-compare');
+        const toggle=tag('summary','Сравнить RU / EN / JP / TW');
+        const matrix=tag('div','Открой сравнение, чтобы увидеть опубликованные значения на всех языках.',
+          'localization-language-grid');
+        let requestNumber=0;
+        function jumpTo(language){
+          bulk?.invalidate();
+          locale=language;localeInput.value=language;
+          group='all';groupInput.value='all';groupInput.disabled=scope==='ui';
+          translationStatus='all';translationStatusInput.value='all';
+          query=record.id;searchInput.value=query;page=0;load();
+        }
+        compare.addEventListener('toggle',async()=>{
+          if(!compare.open)return;
+          const token=++requestNumber;
+          matrix.textContent='Загружаю четыре языка…';
+          try{
+            const params=new URLSearchParams({scope:record.scope,compareId:record.id});
+            const response=await api('GET',null,'/api/admin/localization?'+params);
+            if(token!==requestNumber||!compare.isConnected||!compare.open)return;
+            matrix.replaceChildren();
+            for(const language of response.translations){
+              const cell=tag('section',null,'localization-language-cell');
+              const identity=tag('div',null,'localization-language-head');
+              identity.append(tag('strong',language.locale.toUpperCase()),
+                tag('small',({
+                  admin:'D1 · опубликовано', 'previous-admin':'D1 · ранее',
+                  import:'Исходный утверждённый',catalog:'Каталог D1',
+                  fallback:'Не переведено · резерв'
+                })[language.origin]||language.origin));
+              const value=tag('p',language.effective||'—');
+              value.lang=language.locale==='jp'?'ja':language.locale==='tw'?'zh-Hant':language.locale;
+              const action=tag('button','Открыть редактор '+language.locale.toUpperCase());
+              action.type='button';action.className='secondary';
+              action.addEventListener('click',()=>jumpTo(language.locale));
+              cell.append(identity,value,action);matrix.append(cell);
+            }
+          }catch(error){
+            if(token===requestNumber&&compare.isConnected)matrix.textContent='Не удалось сравнить: '+error.message;
+          }
+        });
+        compare.append(toggle,matrix);
+      }
       if(record.managedBy==='catalog'){
         // Canonical item text belongs to the catalog's draft/publish revision,
         // not to localization_overrides. Show it in unified search without a
@@ -253,7 +300,7 @@
       });
       foot.append(dirty,length,stage,save,reset);
       queued?.history(foot,record,()=>{queued.refresh();load();});
-      card.append(header,preview,baseline,input,foot);items.append(card);
+      card.append(header,preview,baseline,compare,input,foot);items.append(card);
       sync();
     }
     const start=page*40;count.textContent=(total?start+1:0)+'–'+Math.min(total,start+rows.length)+' из '+total;

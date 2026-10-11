@@ -607,17 +607,17 @@ test('approved UI wording may be overridden live without editing game calculatio
 });
 
 
-test('previously published resistance captions are compact without modifying custom names', async ({ page }) => {
+test('approved D1 resistance captions remain compact without modifying custom names', async ({ page }) => {
   await page.goto('/?ui=ru');
   await page.locator('[data-remaked-tab="4"]').click();
   const data = { ok:true, schemaVersion:1, overrides:{
     ui:{ru:{},en:{},jp:{},tw:{}},
     game:{ru:{
-      'skill_entry.18.8':'Сопротивляемость огню',
-      'skill_entry.18.9':'Сопротивляемость льду',
-      'skill_entry.18.10':'Сопротивляемость молниям',
-      'skill_entry.20.7':'Сопротивляемость магии тьмы',
-      'skill_entry.21.7':'Сопротивляемость чарам'
+      'skill_entry.18.8':'Сопр. огню',
+      'skill_entry.18.9':'Сопр. льду',
+      'skill_entry.18.10':'Сопр. молнии',
+      'skill_entry.20.7':'Сопр. тьме',
+      'skill_entry.21.7':'Сопр. чарам'
     },en:{},jp:{},tw:{}}
   }};
   expect(await page.evaluate(x=>PandoraRemaked.i18n.applyUnifiedLocalization(x),data)).toBe(true);
@@ -648,4 +648,30 @@ test('standard title help has Modern theme and original title returns after leav
   await page.mouse.move(0,0);
   await expect(button).toHaveAttribute('title',original);
   await expect(page.locator('[data-remaked-site-tooltip]')).toBeHidden();
+});
+
+
+test('D1 is authoritative, including old exact wording and no client-side guild prefix removal',async({page})=>{
+  await page.goto('/?ui=ru');
+  await page.locator('[data-remaked-tab="4"]').click();
+  const make=(game)=>({ok:true,schemaVersion:1,overrides:{
+    ui:{ru:{},en:{},jp:{},tw:{}},
+    game:{ru:game,en:{},jp:{},tw:{}}
+  }});
+  expect(await page.evaluate(payload=>PandoraRemaked.i18n.applyUnifiedLocalization(payload),make({
+    'skill_entry.18.8':'Сопротивляемость огню',
+    'calculator.clan.6.level.1.hint':'Пассивно: пользовательская редакция из D1.'
+  }))).toBe(true);
+  // Even an old publication is shown as-is until its D1 revision is updated.
+  await expect(page.locator('#Buff_18_8 [data-remaked-buff]')).toContainText('Сопротивляемость огню');
+  expect(await page.evaluate(()=>PandoraRemaked.i18n.game('skill_entry.18.8',''))).toBe('Сопротивляемость огню');
+  expect(await page.evaluate(()=>PandoraRemaked.guildTooltips.description(6,1)))
+    .toBe('Пассивно: пользовательская редакция из D1.');
+  expect(await page.evaluate(payload=>PandoraRemaked.i18n.applyUnifiedLocalization(payload),make({
+    'skill_entry.18.8':'Сопр. огню',
+    'calculator.clan.6.level.1.hint':'Окончательная формулировка из D1.'
+  }))).toBe(true);
+  await expect(page.locator('#Buff_18_8 [data-remaked-buff]')).toContainText('Сопр. огню');
+  expect(await page.evaluate(()=>PandoraRemaked.guildTooltips.description(6,1)))
+    .toBe('Окончательная формулировка из D1.');
 });

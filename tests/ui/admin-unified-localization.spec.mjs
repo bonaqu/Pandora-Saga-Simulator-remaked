@@ -59,6 +59,21 @@ test('four-language translation editor starts with effective texts, keeps drafts
         return route.fulfill({json:{ok:true,id:input.id,scope:input.scope,locale:input.locale,
           override:input.value,version:(prior?.version||0)+1}});
       }
+      const compareId=url.searchParams.get('compareId');
+      if(compareId){
+        const item=texts.find(row=>row.scope===(url.searchParams.get('scope')||'game')&&row.id===compareId);
+        if(!item)return route.fulfill({status:404,json:{ok:false,message:'Not found'}});
+        const translations=['ru','en','jp','tw'].map(lang=>{
+          const row=saved.get(key(item.scope,lang,item.id)),legacy=item.legacy[lang]||'';
+          return {locale:lang,effective:expected(item,lang),baseline:item.baseline[lang],
+            baselineOrigin:item.baselineOrigin?.[lang]||'import',
+            origin:row?row.text?'admin':item.baselineOrigin?.[lang]||'import':
+              legacy?'previous-admin':item.baselineOrigin?.[lang]||'import',
+            version:row?.version||0};
+        });
+        return route.fulfill({json:{ok:true,schemaVersion:1,scope:item.scope,id:item.id,
+          source:item.source,kind:item.kind,translations}});
+      }
       const scope=url.searchParams.get('scope')||'game',lang=url.searchParams.get('locale')||'ru',
         query=(url.searchParams.get('q')||'').toLocaleLowerCase(),
         pageNumber=Number(url.searchParams.get('page')||0);
@@ -73,7 +88,7 @@ test('four-language translation editor starts with effective texts, keeps drafts
         status==='published'&&['admin','previous-admin'].includes(row.origin))&&
         (!query||[row.id,row.effective,row.source.en].some(word=>String(word).toLocaleLowerCase().includes(query))));
       return route.fulfill({json:{ok:true,schemaVersion:1,scope,locale:lang,
-        total:rows.length,page:pageNumber,pageSize:40,counts:{ui:242,game:2900},
+        total:rows.length,page:pageNumber,pageSize:40,counts:{ui:244,game:2900},
         items:rows.slice(pageNumber*40,(pageNumber+1)*40)}});
     }
     const asset=(pathname==='/admin'||pathname==='/admin/')?'admin.html':pathname.slice(1);
@@ -90,6 +105,20 @@ test('four-language translation editor starts with effective texts, keeps drafts
   const panel=page.locator('#localization-console');
   const russian=panel.locator('[data-localization-id="skill_entry.7.5"] textarea');
   await expect(russian).toHaveValue('Пылающая стрела');
+  // Compare all four locales for one stable term without creating extra records.
+  const compare=panel.locator('[data-localization-id="skill_entry.7.5"] .localization-language-compare');
+  await compare.locator('summary').click();
+  await expect(compare.locator('.localization-language-cell')).toHaveCount(4);
+  await expect(compare).toContainText('Пылающая стрела');
+  await expect(compare).toContainText('フレーミングアロー');
+  await compare.getByRole('button',{name:'Открыть редактор JP'}).click();
+  await expect(panel.getByRole('combobox',{name:'Язык перевода'})).toHaveValue('jp');
+  await expect(panel.locator('[data-localization-id="skill_entry.7.5"] textarea')).toHaveValue('フレーミングアロー');
+  await panel.getByRole('combobox',{name:'Язык перевода'}).selectOption('ru');
+  await expect(russian).toHaveValue('Пылающая стрела');
+  // Deep-linking to a locale intentionally filters by the same identity.
+  // Clear the filter explicitly before checking the complete editor index.
+  await panel.getByRole('searchbox',{name:'Поиск переводов'}).fill('');
   const missing=panel.locator('[data-localization-id="equipment.0.2"]');
   await expect(missing).toContainText('Нет перевода · исходный текст');
   await panel.getByRole('combobox',{name:'Статус перевода'}).selectOption('missing');
