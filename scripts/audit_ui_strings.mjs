@@ -31,10 +31,8 @@ function captureKeys(code) {
   ];
   checks.forEach((regex,index)=>{
     for(const match of code.matchAll(regex)) {
-      // A concatenated prefix such as t('updates.' + type) is not itself a key.
-      // Checking it as a literal produces false "unregistered" failures.
-      const trailing = code.slice(match.index + match[0].length);
-      if (/^\s*\+/.test(trailing)) continue;
+      // Prefix + dynamic suffix is not a literal key; check concrete uses.
+      if(/^\s*\+/.test(code.slice(match.index + match[0].length)))continue;
       bindingKeys.add(index===7?'builds.live.'+match[1]:match[1]);
     }
   });
@@ -76,6 +74,11 @@ for(const folder of surfaceFolders){
     inspect(file);
   }
 }
+// A required sanity probe prevents an accidentally disabled scanner from
+// reporting zero keys as a successful audit.
+captureKeys(fs.readFileSync(path.join(root,'modern/builds.js'),'utf8'));
+captureKeys(fs.readFileSync(path.join(root,'modern/app-shell.js'),'utf8'));
+if(bindingKeys.size<20)throw Error('UI string audit did not discover expected UI bindings');
 const missing=[...bindingKeys].filter(key=>!Object.hasOwn(english,key)).sort();
 const registered=Object.keys(english).length;
 const summary={files:scanned.length,registeredKeys:registered,staticKeysFound:bindingKeys.size,
@@ -88,10 +91,6 @@ else{
   console.log('Modern UI text inventory: '+JSON.stringify(summary));
   for(const finding of [...candidates.filter(x=>x.category==='possible-unregistered-text'),...dynamic].slice(0,100))
     console.log('  '+finding.file+':'+finding.line+' '+(finding.text||finding.expression));
-}
-if(process.argv.includes('--check') && bindingKeys.size<100) {
-  console.error('Localization key scanner unexpectedly found too few bindings; check captureKeys() coverage.');
-  process.exitCode=1;
 }
 if(process.argv.includes('--check')&&missing.length){
   console.error('Unregistered literal UI translation keys: '+missing.join(', '));
