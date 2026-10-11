@@ -2,6 +2,17 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.87 — 2026-10-11
+
+### For users
+
+- Mounted mode now explains why the retained calculator shows DEF as `---`. Dismount to display numeric defense again, without losing equipped items or bonuses.
+
+### Development and technical changes
+
+- Add one D1-editable RU/EN/JP/TW status note for the retained engine's intentionally unavailable mounted DEF field; preserve all source calculations and builds.
+- Add strict numeric-output and repeated-buff regression coverage for 11 defense/resistance scalar results, including reversible mount state.
+
 ## Modern 3.86 — 2026-10-11
 
 ### For users

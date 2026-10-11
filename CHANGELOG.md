@@ -1,5 +1,25 @@
 # Changelog
 
+## Modern 3.87 — пояснение защиты в режиме верховой езды, 2026-10-11
+
+<!-- release-notes:user:ru -->
+- При верховой езде рядом с результатами теперь объясняется, почему исторический калькулятор показывает защиту как `---`. Числовая защита снова видна после отключения верховой езды; характеристики и усиления не сбрасываются.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Mounted mode now explains why the retained calculator shows DEF as `---`. Dismount to display numeric defense again, without losing equipped items or bonuses.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Добавлено локализуемое через D1 пояснение для особого режима DEF (RU/EN/JP/TW), без изменения оригинального порядка расчётов и без выдуманных игровых значений.
+- Усилены браузерные тесты: 11 скалярных полей защиты и сопротивлений должны иметь число, повторное включение усилений не должно накапливать бонусы, после отключения верховой езды отображение восстанавливается.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add one D1-editable RU/EN/JP/TW status note for the retained engine's intentionally unavailable mounted DEF field; preserve all source calculations and builds.
+- Add strict numeric-output and repeated-buff regression coverage for 11 defense/resistance scalar results, including reversible mount state.
+<!-- /admin-notes:en -->
+
 ## Modern 3.86 — локализация очереди черновиков и истории, 2026-10-11
 
 <!-- admin-notes:ru -->

@@ -497,6 +497,27 @@
     codeActions(code);
   }
 
+  function refreshMountedDefenseNote() {
+    var holder=byId('StatusView'),value=byId('Status_49');
+    if (!holder || !value) return;
+    // The original engine computes tmp[1] but renders '---' while riding.
+    // Explain this intentionally unavailable display; never invent a DEF
+    // value, mutate Flag[7] or tamper with other derived calculations.
+    var note=holder.querySelector('[data-remaked-mounted-defense-note]');
+    if (!note) {
+      note=document.createElement('p');
+      note.dataset.remakedMountedDefenseNote='';
+      note.setAttribute('role','note');
+      holder.appendChild(note);
+    }
+    var unavailable=Boolean(window.Flag?.[7]) && value.textContent.trim()==='---';
+    if (note.hidden !== !unavailable) note.hidden=!unavailable;
+    if (unavailable) {
+      var text=namespace.i18n?.t?.('workbench.mountedDefenseNote') ||
+        'Riding hides the legacy DEF value. Disable Riding to see numeric defense.';
+      if (note.textContent!==text) note.textContent=text;
+    }
+  }
   function refresh(options) {
     if (observer) observer.disconnect();
     try {
@@ -556,6 +577,7 @@
       });
       refreshNumberFeedback();
       refreshBudgetWarning();
+      refreshMountedDefenseNote();
     } finally {
       if (observer) observer.observe(byId('body'), { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['class', 'title', 'disabled'] });
     }
@@ -657,6 +679,7 @@
     installCalculatorCorrections();
     observer = new MutationObserver(schedule); refresh();
     window.addEventListener('resize', schedule);
+    window.addEventListener('pandora-remaked:localechange', schedule);
   }
   namespace.calculatorControls = { refresh: refresh };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
