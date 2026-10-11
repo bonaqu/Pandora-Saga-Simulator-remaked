@@ -2,6 +2,17 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.89 — 2026-10-11
+
+### For users
+
+- Add 58 Japanese and Traditional Chinese translations for Build Manager: save/load, import/export, sharing, error and recovery messages.
+
+### Development and technical changes
+
+- These are baseline localization values only; existing D1 overrides keep priority. No changes to calculations, persisted builds, import/export mechanics, equipment or Legacy.
+- Fix Cloudflare Admin API path filters so baseline translation sources (`ui.en`, approved and curated fallbacks) trigger a Worker redeploy; avoid mismatched admin D1 fallback indexes versus the published site.
+
 ## Modern 3.88 — 2026-10-11
 
 ### For users
