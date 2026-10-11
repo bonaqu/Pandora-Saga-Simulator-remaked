@@ -864,7 +864,7 @@ test('catalog field captions localize through D1 without clearing inputs, alteri
   const form=page.locator('.catalog-editor');
   const caption=form.locator('[data-admin-i18n="adminShell.catalogFieldItemName"]');
   await expect(caption).toHaveText(shell.en['adminShell.catalogFieldItemName']);
-  await expect(form.locator('fieldset.translation-fields legend')).toContainText(shell.en['adminShell.catalogFieldItemName']);
+  await expect(form.locator('fieldset.translation-fields legend:has([data-admin-i18n="adminShell.catalogFieldItemName"])')).toContainText(shell.en['adminShell.catalogFieldItemName']);
   const existing=await names.inputValue();
   await names.fill('Unpublished special editor name');
   await language.selectOption('jp');
