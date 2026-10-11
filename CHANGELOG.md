@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 3.86 — локализация очереди черновиков и истории, 2026-10-11
+
+<!-- admin-notes:ru -->
+- Очередь черновиков и история переводов в админке получили 34 новых редактируемых через D1 строк для RU/EN/JP/TW: поиск, фильтры, выделение, удаление, публикация, подтверждения, статусы, версии и восстановление.
+- При смене языка все видимые надписи и динамические счётчики обновляются на месте. Поиск, выбранные языки, выделенные записи и черновики не теряются; сетевые статусы сохраняют честную проверку квитанций публикации.
+- Пароль, вход, CSRF, права доступа, версии D1, атомарная публикация и журнал изменений не меняются. Базовые формулы и Legacy не затрагиваются. Полный перевод редактора каталога остаётся отдельным этапом.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Localize 34 D1-editable RU/EN/JP/TW draft-queue and history captions: search, filters, selection, deletion, publication receipts, revision history and restoration.
+- Update visible labels and interpolated counts in place on language change, retaining filters, focused search text, selected drafts and all optimistic publication safeguards.
+- Preserve login, CSRF, permissions, D1 history, batch atomicity, Legacy and game calculations. The dynamic catalog editor remains a separate localization task.
+<!-- /admin-notes:en -->
+
 ## Modern 3.85 — японский и тайваньский интерфейс симулятора, 2026-10-11
 
 <!-- release-notes:user:ru -->
