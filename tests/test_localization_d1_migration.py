@@ -49,6 +49,8 @@ class LocalizationD1MigrationTests(unittest.TestCase):
                         ("", "skill_entry.18.9"))
         self.db.execute("INSERT INTO localization_drafts VALUES(?,?,?,?)",
                         ("game", "skill_entry.18.10", "ru", "Несохранённый текст"))
+        # History before this migration belongs to earlier writes, not migration.
+        self.db.execute("DELETE FROM localization_history")
         self.db.executescript(SQL)
         for id,expected_ui in [('updates.latestForUsers','Последние изменения для пользователей: {version}'),
                                ('updates.technicalSummary','Выполнены внутренние технические улучшения.')]:
