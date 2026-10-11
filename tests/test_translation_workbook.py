@@ -26,14 +26,18 @@ class TranslationCatalogTests(unittest.TestCase):
         self.assertFalse((LOC / "translations.xlsx").exists())
         self.assertEqual(self.snapshot["schemaVersion"], 1)
         self.assertEqual(self.data.total, 2920)
-        self.assertEqual(len(self.ui_source), 244)
+        self.assertEqual(len(self.ui_source), 275)
         self.assertEqual(len(self.game_source), 2678)
 
     def test_full_stable_registry_and_source_ids_remain_unique(self):
         game_ids = [term["id"] for term in self.game_source]
         self.assertEqual(len(game_ids), len(set(game_ids)))
         self.assertFalse(set(self.ui_source) & set(game_ids))
-        self.assertEqual(self.data.total, (len(self.ui_source) - 2) + len(game_ids))
+        # The historical approved snapshot is immutable. New Admin-editable
+        # UI keys intentionally extend the current registry without altering
+        # the frozen 2920-row migration source.
+        self.assertEqual(self.data.total, 2920)
+        self.assertGreaterEqual(len(self.ui_source) + len(game_ids), self.data.total)
         for locale in ("ru", "en", "jp", "tw"):
             self.assertTrue(set(self.snapshot["ui"][locale]) <= set(self.ui_source))
             self.assertTrue(set(self.snapshot["game"][locale]) <= set(game_ids))
@@ -46,7 +50,7 @@ class TranslationCatalogTests(unittest.TestCase):
         help_text = curated["ru"]["ui"]["skills.help"]
         self.assertEqual(self.data.ui_russian["skills.help"], help_text)
         self.assertNotEqual(self.snapshot["ui"]["ru"]["skills.help"], help_text)
-        self.assertEqual(len(self.ui_source), 244)
+        self.assertEqual(len(self.ui_source), 275)
         self.assertEqual(self.data.total, 2920)
 
     def test_all_localized_ui_placeholders_match_original(self):

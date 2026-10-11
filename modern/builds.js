@@ -34,51 +34,10 @@
     return text === key && fallback ? fallback : text;
   }
 
+  // Every caption lives in the versioned D1 UI translation registry.
+  // No four-language strings are stored in this runtime anymore.
   function liveText(key, values) {
-    var locale = i18n && typeof i18n.getLocale === 'function' ? i18n.getLocale() : 'en';
-    var copy = {
-      loadedUpdated: {
-        en: 'Loaded and updated “{name}” to the current catalog.',
-        ru: '«{name}» загружен и обновлён до актуального каталога.',
-        jp: '「{name}」を読み込み、最新カタログへ更新しました。',
-        tw: '已載入「{name}」並更新至最新目錄。'
-      },
-      autoApplied: {
-        en: 'Catalog {revision} applied automatically.',
-        ru: 'Каталог {revision} применён автоматически.',
-        jp: 'カタログ {revision} を自動適用しました。',
-        tw: '已自動套用目錄 {revision}。'
-      },
-      catalogHelp: {
-        en: 'The site updates items, skills and other game data automatically. Saved builds always use current data; specific automatic changes are listed.',
-        ru: 'Сайт сам обновляет предметы, навыки и другие игровые данные. Сохранённые билды используют текущие данные; конкретные изменения показываются в отчёте.',
-        jp: 'アイテムやスキルなどのゲームデータは自動で更新されます。保存したビルドに影響する更新がある場合は、ビルドの横に警告が表示されます。',
-        tw: '網站會自動更新物品、技能和其他遊戲資料。如果更新可能影響已儲存的配置，配置旁會顯示提醒。'
-      },
-      catalogLine: {
-        en: 'Game data: version {revision} · updates automatically',
-        ru: 'Игровые данные: версия {revision} · обновляются автоматически',
-        jp: 'ゲームデータ: バージョン {revision} · 自動更新',
-        tw: '遊戲資料：版本 {revision} · 自動更新'
-      },
-      catalogSourceLine: {
-        en: 'Game data: base version · updates automatically',
-        ru: 'Игровые данные: базовая версия · обновляются автоматически',
-        jp: 'ゲームデータ: 基本バージョン · 自動更新',
-        tw: '遊戲資料：基礎版本 · 自動更新'
-      },
-      catalogCheckingLine: {
-        en: 'Game data: version {revision} · checking for updates…',
-        ru: 'Игровые данные: версия {revision} · проверяем обновления…',
-        jp: 'ゲームデータ: バージョン {revision} · 更新を確認中…',
-        tw: '遊戲資料：版本 {revision} · 正在檢查更新…'
-      }
-    };
-    var text = (copy[key] && (copy[key][locale] || copy[key].en)) || key;
-    Object.keys(values || {}).forEach(function (name) {
-      text = text.replace(new RegExp('\\{' + name + '\\}', 'g'), String(values[name]));
-    });
-    return text;
+    return t('builds.live.' + key, values, key);
   }
 
   function nowLabel() {
@@ -148,12 +107,17 @@
   }
 
   function migrationText(changes) {
-    var ru = i18n && i18n.getLocale() === 'ru';
     var lines = (changes || []).map(function (change) {
-      return change.type === 'changed' ? change.name + ': ' + change.details.join(', ')
-        : (ru ? 'Снято: ' : 'Removed: ') + change.name + ' (' +
-          (ru ? { missing: 'больше нет в каталоге', incompatible: 'несовместимо', slots: 'меньше слотов душ' }
-            : { missing: 'no longer in catalog', incompatible: 'incompatible', slots: 'fewer Soul slots' })[change.reason] + ')';
+      if (change.type === 'changed') return change.name + ': ' + change.details.join(', ');
+      var reasonKey = {
+        missing: 'builds.migration.reasonMissing',
+        incompatible: 'builds.migration.reasonIncompatible',
+        slots: 'builds.migration.reasonSlots'
+      }[change.reason] || 'builds.migration.reasonUnknown';
+      return t('builds.migration.removed', {
+        name: change.name,
+        reason: t(reasonKey)
+      });
     });
     return lines.filter(function (line, index) { return lines.indexOf(line) === index; }).join('; ');
   }
@@ -201,10 +165,10 @@
         ? liveText('catalogLine', { revision: revision })
         : liveText('catalogSourceLine');
     var changes = catalogMessage?.changes;
-    catalogStatus.textContent = changes ? changes.length <= 2 ? migrationText(changes) : (i18n?.getLocale() === 'ru' ? 'Изменений в билде: ' : 'Build changes: ') + changes.length : catalogMessage ? t(catalogMessage.key, catalogMessage.values, catalogMessage.fallback) : '';
+    catalogStatus.textContent = changes ? changes.length <= 2 ? migrationText(changes) : t('builds.migration.count', {count: changes.length}) : catalogMessage ? t(catalogMessage.key, catalogMessage.values, catalogMessage.fallback) : '';
     if (catalogReport) {
       catalogReport.hidden = !changes || changes.length <= 2;
-      catalogReport.querySelector('summary').textContent = i18n?.getLocale() === 'ru' ? 'Показать изменения' : 'Show changes';
+      catalogReport.querySelector('summary').textContent = t('builds.migration.showChanges');
       catalogReport.querySelector('p').textContent = changes ? migrationText(changes) : '';
     }
     catalogStatus.dataset.state = catalogMessage?.state || 'ready';
@@ -257,7 +221,7 @@
       }
       var migratedBuilds = store.migrateBuilds(function (payload) { return catalog.migratePayload(payload, snapshot); });
       if (!migratedBuilds.ok) {
-        setCatalogStatus('builds.migrationSaveFailed', 'warning', null, i18n?.getLocale() === 'ru' ? 'Билд обновлён. Сохранённые билды не удалось записать; исходные данные сохранены.' : 'Current build updated. Saved builds could not be written; original data kept.');
+        setCatalogStatus('builds.migrationSaveFailed', 'warning');
         return migratedBuilds;
       }
       store.finishRecovery();
@@ -628,7 +592,7 @@
     }
 
     if (namespace.catalog?.needsRecovery()) {
-      setAutosaveStatus(i18n?.getLocale() === 'ru' ? 'Текущий каталог недоступен. Билд сохранён; повторите загрузку онлайн.' : 'Current catalog unavailable. Saved build kept; retry online.', 'warning'); return;
+      setAutosaveStatus(t('builds.catalogUnavailable'), 'warning'); return;
     }
     var loaded = loadPayloadSafely(read.record.payload);
     if (!loaded.ok) {
@@ -706,7 +670,7 @@
       name.className = 'remaked-build-row-name';
       if (build.migrationReport?.length) {
         var report = document.createElement('details');
-        var caption = document.createElement('summary'); caption.textContent = i18n?.getLocale() === 'ru' ? 'Изменения билда' : 'Build changes';
+        var caption = document.createElement('summary'); caption.textContent = t('builds.migration.title');
         report.appendChild(caption);
         var text = document.createElement('p'); text.textContent = migrationText(build.migrationReport); report.appendChild(text);
         name.appendChild(report);
@@ -981,11 +945,13 @@
       catalogStatus.className = 'remaked-build-status'; catalogStatus.dataset.remakedCatalogStatus = '';
       catalogStatus.setAttribute('role', 'status'); catalogSection.appendChild(catalogStatus); catalogSection.appendChild(catalogReport);
       body.appendChild(catalogSection); refreshCatalogControls();
-      window.addEventListener('pandora-remaked:localechange', function () {
+      function refreshTranslatedCatalog() {
         catalogRevision.title = liveText('catalogHelp');
         refreshCatalogControls();
         if (managerOverlay && managerOverlay.open) renderBuilds();
-      });
+      }
+      window.addEventListener('pandora-remaked:localechange', refreshTranslatedCatalog);
+      window.addEventListener('pandora-remaked:translationchange', refreshTranslatedCatalog);
     }
 
     managerStatus = document.createElement('p');

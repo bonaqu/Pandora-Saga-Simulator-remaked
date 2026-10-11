@@ -1,12 +1,25 @@
 (function () {
   'use strict';
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
+  var i18n = namespace.i18n;
   if (namespace.adminEntry) return;
   var sequence = 'iddqd', progress = '', lastKey = 0, dialog = null, opener = null;
   var ADMIN_ORIGIN = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
   function element(tag, className, text) {
     var node = document.createElement(tag); if (className) node.className = className;
     if (text) node.textContent = text; return node;
+  }
+  function localText(node, key, fallback) {
+    if (i18n?.bindText) i18n.bindText(node, key);
+    else node.textContent = fallback;
+    return node;
+  }
+  function label(tag, className, key, fallback) {
+    return localText(element(tag, className), key, fallback);
+  }
+  function localAttr(node, attribute, key, fallback) {
+    if (i18n?.bindAttribute) i18n.bindAttribute(node, attribute, key);
+    else node.setAttribute(attribute, fallback);
   }
   function clear() { progress = ''; lastKey = 0; }
   function close() { if (dialog?.open) dialog.close(); }
@@ -15,37 +28,38 @@
     dialog.setAttribute('aria-labelledby', 'remaked-admin-title');
     dialog.setAttribute('aria-describedby', 'remaked-admin-hint');
     var header = element('div', 'remaked-admin-terminal-header');
-    header.appendChild(element('span', '', 'PANDORA / SECURE CHANNEL'));
+    header.appendChild(label('span', '', 'adminEntry.channel', 'PANDORA / SECURE CHANNEL'));
     var dismiss = element('button', 'remaked-admin-close', '×'); dismiss.type = 'button';
-    dismiss.setAttribute('aria-label', 'Close administrator login'); dismiss.addEventListener('click', close); header.appendChild(dismiss);
+    localAttr(dismiss, 'aria-label', 'adminEntry.close', 'Close administrator login'); dismiss.addEventListener('click', close); header.appendChild(dismiss);
     dialog.appendChild(header);
     var body = element('div', 'remaked-admin-terminal-body');
-    body.appendChild(element('p', 'remaked-admin-accepted', 'IDDQD ACCEPTED'));
-    var title = element('h2', '', 'GOD MODE REQUIRES AUTHENTICATION'); title.id = 'remaked-admin-title'; body.appendChild(title);
-    var hint = element('p', 'remaked-admin-hint', 'Authentication opens the secure Cloudflare console. This code does not grant access.');
+    body.appendChild(label('p', 'remaked-admin-accepted', 'adminEntry.accepted', 'IDDQD ACCEPTED'));
+    var title = label('h2', '', 'adminEntry.title', 'GOD MODE REQUIRES AUTHENTICATION'); title.id = 'remaked-admin-title'; body.appendChild(title);
+    var hint = label('p', 'remaked-admin-hint', 'adminEntry.hint', 'Authentication opens the secure Cloudflare console. This code does not grant access.');
     hint.id = 'remaked-admin-hint'; body.appendChild(hint);
     var form = null;
     if (window.location.origin !== 'https://bonaqu.github.io') {
-      hint.textContent = 'This is a local preview or a non-production site. Sign in on the secure console; do not enter credentials here.';
-      var secureLogin = element('a', 'remaked-admin-authenticate', 'OPEN SECURE LOGIN');
+      localText(hint, 'adminEntry.previewHint', 'This is a local preview or a non-production site. Sign in on the secure console; do not enter credentials here.');
+      var secureLogin = label('a', 'remaked-admin-authenticate', 'adminEntry.openLogin', 'OPEN SECURE LOGIN');
       secureLogin.href = ADMIN_ORIGIN + '/admin'; secureLogin.rel = 'noreferrer'; secureLogin.setAttribute('autofocus', '');
       body.appendChild(secureLogin);
     } else {
       form = element('form'); form.method = 'post'; form.action = ADMIN_ORIGIN + '/api/auth/login';
-      [['username', 'LOGIN', 'text', 'admin', 'username'], ['password', 'PASSWORD', 'password', '', 'current-password']].forEach(function (field) {
-        var label = element('label', '', field[1]); label.htmlFor = 'remaked-admin-' + field[0]; form.appendChild(label);
-        var input = element('input'); input.id = label.htmlFor; input.name = field[0]; input.type = field[2]; input.value = field[3];
-        input.autocomplete = field[4]; input.maxLength = field[0] === 'password' ? 512 : 64; input.required = true;
+      [['username', 'adminEntry.username', 'LOGIN', 'text', 'admin', 'username'], ['password', 'adminEntry.password', 'PASSWORD', 'password', '', 'current-password']].forEach(function (field) {
+        var inputLabel = label('label', '', field[1], field[2]);
+        inputLabel.htmlFor = 'remaked-admin-' + field[0]; form.appendChild(inputLabel);
+        var input = element('input'); input.id = inputLabel.htmlFor; input.name = field[0]; input.type = field[3]; input.value = field[4];
+        input.autocomplete = field[5]; input.maxLength = field[0] === 'password' ? 512 : 64; input.required = true;
         if (field[0] === 'password') input.autofocus = true;
         form.appendChild(input);
       });
-      var submit = element('button', 'remaked-admin-authenticate', 'AUTHENTICATE'); submit.type = 'submit'; form.appendChild(submit);
+      var submit = label('button', 'remaked-admin-authenticate', 'adminEntry.authenticate', 'AUTHENTICATE'); submit.type = 'submit'; form.appendChild(submit);
       // Native HTTPS navigation makes the session first-party on Worker, even
       // with third-party cookies blocked. Never fetch/persist the password here.
       body.appendChild(form);
     }
     dialog.appendChild(body);
-    dialog.appendChild(element('div', 'remaked-admin-terminal-footer', 'MODERN CATALOG / MUSEUM ENGINE 2.00'));
+    dialog.appendChild(label('div', 'remaked-admin-terminal-footer', 'adminEntry.footer', 'MODERN CATALOG / MUSEUM ENGINE 2.00'));
     dialog.addEventListener('cancel', function (event) { event.preventDefault(); close(); });
     dialog.addEventListener('click', function (event) { if (event.target === dialog) close(); });
     dialog.addEventListener('close', function () {

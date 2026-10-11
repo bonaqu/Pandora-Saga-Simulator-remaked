@@ -54,7 +54,7 @@ test('all four languages have a stable index of approved skills and source text'
     assert.equal(exact.effective,locale==='ru'?'Пылающая стрела':exact.baseline);
   }
   const ui=await (await adminLocalization(get('/api/admin/localization?scope=ui&locale=jp'),env)).json();
-  assert.equal(ui.counts.ui,244);
+  assert.equal(ui.counts.ui,275);
   assert.equal(ui.pageSize,40);
   assert.ok(ui.counts.game>2500);
 });

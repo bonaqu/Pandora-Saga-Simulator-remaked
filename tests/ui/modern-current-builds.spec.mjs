@@ -127,3 +127,32 @@ for (const conflict of ['changed stats','deleted canonical','disabled canonical'
     expect(result.changes).toContainEqual(expect.objectContaining({kind:'equipment',type:conflict==='changed stats'?'changed':'removed'}));
   });
 }
+
+
+test('text-only catalog revisions never report a mechanically changed saved build',async({page})=>{
+  await page.goto('/?ui=ru');
+  const result=await page.evaluate(source=>{
+    const api=PandoraRemaked;
+    // This legacy alias is known to load for the default character.
+    // Migrate and load first: directly selecting the new ID is not a valid
+    // native control operation before the published options are rebuilt.
+    api.adapter.selectEquipment(7,350003);
+    const legacy=api.adapter.serialize();
+    const canonical=api.catalog.migratePayload(legacy,source);
+    api.catalog.applySnapshot(source,{rebuild:false});
+    api.adapter.load(canonical.payload);
+    const old=api.adapter.serialize();
+    const revised=structuredClone(source);
+    revised.revision=source.revision+1;
+    revised.impactRevision=source.impactRevision;
+    const item=revised.records.find(row=>row.engineId===350051);
+    item.names.ru='Плащ с уточнённым названием';
+    item.description.ru='Обновлённое описание без изменений характеристик.';
+    const migrated=api.catalog.migratePayload(old,revised);
+    return {changes:migrated.changes,oldBuild:old,newBuild:migrated.payload,
+      selected:Number(Status.Equip[7][0])};
+  },snapshot(86));
+  expect(result.selected).toBe(350051);
+  expect(result.changes).toEqual([]);
+  expect(result.newBuild).toMatch(/^PS3:87:/);
+});
