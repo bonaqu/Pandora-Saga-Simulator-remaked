@@ -333,6 +333,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             (modern / "builds.css").write_text("/* builds */", encoding="utf-8")
             (modern / "compare.css").write_text("/* compare */", encoding="utf-8")
             (modern / "tooltips.css").write_text("/* tooltips */", encoding="utf-8")
+            (modern / "guild-tooltips.css").write_text("/* guild preview */", encoding="utf-8")
             (modern / "mobile.css").write_text("/* mobile */", encoding="utf-8")
             (modern / "version.js").write_text(
                 "window.PandoraRemakedVersion = { ui: '2026.09.4' };",
@@ -344,6 +345,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             (modern / "calculator-controls.js").write_text("// native controls", encoding="utf-8")
             (modern / "skill-controls.js").write_text("// native skills", encoding="utf-8")
             (modern / "skill-tooltips.js").write_text("// skill tooltip surface", encoding="utf-8")
+            (modern / "guild-tooltips.js").write_text("// guild hover descriptions", encoding="utf-8")
             (modern / "adapter.js").write_text("// adapter", encoding="utf-8")
             (modern / "share-codec.js").write_text("// share codec", encoding="utf-8")
             (modern / "catalog-text.js").write_text("// text", encoding="utf-8")
@@ -364,7 +366,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             localization = root / "localization"
             localization.mkdir()
             repository_localization = pathlib.Path(__file__).resolve().parents[1] / "localization"
-            for name in ("ui.en.json", "game-terms.ru.json", "approved-translations.v1.json"):
+            for name in ("ui.en.json", "game-terms.ru.json", "approved-translations.v1.json", "guild-skills.v1.json"):
                 shutil.copy2(repository_localization / name, localization / name)
             generated = root / "data" / "generated"
             generated.mkdir(parents=True)

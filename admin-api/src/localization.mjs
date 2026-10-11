@@ -2,6 +2,7 @@ import english from '../../localization/ui.en.json' with { type: 'json' };
 import sourceTerms from '../../localization/game-terms.ru.json' with { type: 'json' };
 import approved from '../../localization/approved-translations.v1.json' with { type: 'json' };
 import curated from '../../localization/curated-runtime-defaults.ru.v1.json' with { type: 'json' };
+import guildSkills from '../../localization/guild-skills.v1.json' with { type: 'json' };
 import { baselineRecords, baselineById } from './catalog-baseline.mjs';
 import { CatalogError } from './catalog-model.mjs';
 import { jsonResponse } from './auth.mjs';
@@ -52,6 +53,18 @@ for (const record of baselineRecords) {
       baseline:src(values),baselineOrigin:originOf(values)});
   }
 }
+// Per-level descriptions are the same approved EN/RU texts shown in Modern.
+// D1 edits remain canonical overrides; adding registry rows does not publish
+// a second copy or rewrite unrelated translations.
+for (const [index,skill] of guildSkills.skills.entries()) for (const [offset,description] of skill.levels.entries()) {
+  const id='calculator.clan.'+index+'.level.'+(offset+1)+'.hint';
+  registry.set(keyOf('game',id),{
+    scope:'game',id,kind:'calculator_hint',
+    source:{en:description.en},
+    baseline:{en:description.en,ru:description.ru,jp:'',tw:''},
+    baselineOrigin:{en:'import',ru:'import',jp:'fallback',tw:'fallback'}
+  });
+}
 const RECORDS=[...registry.values()].sort((a,b)=>a.scope.localeCompare(b.scope)||a.id.localeCompare(b.id));
 
 // New catalog entries are not a second translation database. This read-only
@@ -90,7 +103,7 @@ function catalogManagedRows(snapshot,locale,revision=0){
 
 const GROUPS=new Set(['all','skills','equipment','souls','classes','races','stats','other']);
 function groupOf(kind,id='') {
-  if(id.startsWith('calculator.honor.'))return 'skills';
+  if(id.startsWith('calculator.honor.')||id.startsWith('calculator.clan.'))return 'skills';
   if(kind==='skill'||kind==='skill_entry'||kind==='skill_detail'||kind.startsWith('active.')||kind.startsWith('passive.'))return 'skills';
   if(kind==='equipment'||kind.startsWith('equipment.')||kind==='equipment_category')return 'equipment';
   if(kind==='soul'||kind.startsWith('soul.'))return 'souls';

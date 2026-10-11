@@ -1,5 +1,23 @@
 # Changelog
 
+## Modern 3.72 — описания гильдийских усилений по уровням, 2026-10-11
+
+<!-- release-notes:user:ru -->
+- У всех 11 гильдийских навыков в «Усилениях» появились подробные описания каждого уровня на русском и английском. Наведи курсор на уровень в раскрытом списке или выбери его клавиатурой, чтобы прочитать эффект, не применяя его.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- All 11 guild enhancements now show level-specific Russian and English descriptions when browsing their dropdown options by mouse or keyboard, before applying the chosen level.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- 44 согласованных EN/RU описания включены в единый реестр переводов как редактируемые значения с приоритетом опубликованных D1-изменений. Сохранены исходные select, обработчики, расчёты, сохранённые билды и Legacy; проверена работа с клавиатуры и на мобильных экранах.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Register 44 approved EN/RU descriptions in the unified translation editor, respecting existing published D1 precedence. Keep source selects and handlers, calculations, saved builds and Legacy untouched, with keyboard/mobile regression tests.
+<!-- /admin-notes:en -->
+
 ## Modern 3.71 — вертикальное выравнивание названий усилений, 2026-10-10
 
 <!-- release-notes:user:ru -->

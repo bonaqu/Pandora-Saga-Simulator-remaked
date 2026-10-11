@@ -2,6 +2,16 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.72 — 2026-10-11
+
+### For users
+
+- All 11 guild enhancements now show level-specific Russian and English descriptions when browsing their dropdown options by mouse or keyboard, before applying the chosen level.
+
+### Development and technical changes
+
+- Register 44 approved EN/RU descriptions in the unified translation editor, respecting existing published D1 precedence. Keep source selects and handlers, calculations, saved builds and Legacy untouched, with keyboard/mobile regression tests.
+
 ## Modern 3.71 — 2026-10-10
 
 ### For users
