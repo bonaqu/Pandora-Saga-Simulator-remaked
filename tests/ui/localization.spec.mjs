@@ -799,3 +799,36 @@ test('JP and TW core workbench/search labels are complete in the checked-in cata
     expect(await page.evaluate(()=>Store())).toBe(before);
   }
 });
+
+
+test('modern 3.92 JP/TW skill and migration fallback is complete and published D1 remains authoritative',async({page})=>{
+  await page.goto('/?ui=jp');
+  const originals=await page.evaluate(()=>{
+    const current=Store();
+    const keys=[
+      'skills.learned','skills.notLearned','skills.bonusApplied',
+      'builds.migration.reasonSlots','builds.migration.showChanges',
+      'updates.translations','search.itemSource'
+    ];
+    const values=Object.fromEntries(keys.map(k=>[k,PandoraRemaked.i18n.t(k)]));
+    return {current,values};
+  });
+  expect(originals.values['skills.learned']).toBe('習得済み');
+  expect(originals.values['builds.migration.reasonSlots']).toBe('魂スロット数が減少');
+  expect(originals.values['updates.translations']).toContain('管理画面');
+  expect(originals.values['search.itemSource']).toContain('カタログ');
+  await page.evaluate(()=>PandoraRemaked.i18n.setLocale('tw'));
+  expect(await page.evaluate(()=>PandoraRemaked.i18n.t('skills.learned'))).toBe('已學習');
+  expect(await page.evaluate(()=>PandoraRemaked.i18n.t('builds.migration.reasonSlots'))).toBe('魂插槽數量減少');
+  expect(await page.evaluate(()=>PandoraRemaked.i18n.t('updates.translations'))).toContain('管理介面');
+  const override={ok:true,schemaVersion:1,overrides:{
+    ui:{ru:{},en:{},jp:{'skills.learned':'D1 承認済み'},tw:{}},
+    game:{ru:{},en:{},jp:{},tw:{}}
+  }};
+  expect(await page.evaluate(o=>PandoraRemaked.i18n.applyUnifiedLocalization(o),override)).toBe(true);
+  await page.evaluate(()=>PandoraRemaked.i18n.setLocale('jp'));
+  expect(await page.evaluate(()=>PandoraRemaked.i18n.t('skills.learned'))).toBe('D1 承認済み');
+  expect(await page.evaluate(()=>Store())).toBe(originals.current);
+  await page.evaluate(()=>PandoraRemaked.i18n.setLocale('tw'));
+  expect(await page.evaluate(()=>PandoraRemaked.i18n.t('skills.learned'))).toBe('已學習');
+});

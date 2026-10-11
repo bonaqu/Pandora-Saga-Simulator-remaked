@@ -1,5 +1,29 @@
 # Changelog
 
+## Modern 3.92 — полный японский и тайваньский реестр UI, 2026-10-11
+
+<!-- release-notes:user:ru -->
+- Добавлены 94 перевода на японский и традиционный китайский для умений, условий изучения, истории обновлений, безопасности сохранений, миграции билдов и других элементов интерфейса.
+- Исправлены устаревшие описания: для перевода используется админка, а Modern и Legacy не смешиваются в пояснениях о расчётах и предметах.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Add 94 Japanese and Traditional Chinese UI translations covering skill learning, build migration, safety messages, changelog controls and other interface areas.
+- Replace obsolete workbook and Legacy-only descriptions with accurate current admin, catalog and calculator guidance.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Локально переведены 442 из 443 общих UI-ключей на JP и TW. test.englishOnly специально оставлен только на английском для проверки fallback-механизма. Все шаблонные параметры проверяются на совпадение с английским ключом.
+- Исправлены три ранее устаревшие базовые строки на английском и русском. Приоритет опубликованного администратором D1, черновики и история не затронуты.
+- Не изменены формулы, числовые характеристики, графическая геометрия калькулятора, Legacy и формат билдов. Динамические тексты самой админки и игровой каталог имеют отдельные источники покрытия.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Provide JP/TW static fallback coverage for 442/443 common UI entries, reserving test.englishOnly for intentional English-fallback testing. Verify placeholder parity.
+- Correct three outdated English/Russian source descriptions; any newer published D1 strings remain authoritative.
+- No gameplay formula, equipment stat, calculator geometry, persisted build or Legacy behavior changes. Admin-only and catalog-managed text coverage remain separately tracked.
+<!-- /admin-notes:en -->
+
 ## Modern 3.91 — подсказки и сравнение билдов на JP/TW, 2026-10-11
 
 <!-- release-notes:user:ru -->
