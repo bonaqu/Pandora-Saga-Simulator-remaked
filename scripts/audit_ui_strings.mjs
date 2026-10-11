@@ -30,7 +30,13 @@ function captureKeys(code) {
     /\bliveText\(\s*['"]([A-Za-z][\w.]+)['"]/g
   ];
   checks.forEach((regex,index)=>{
-    for(const match of code.matchAll(regex)) bindingKeys.add(index===7?'builds.live.'+match[1]:match[1]);
+    for(const match of code.matchAll(regex)) {
+      // A concatenated prefix such as t('updates.' + type) is not itself a key.
+      // Checking it as a literal produces false "unregistered" failures.
+      const trailing = code.slice(match.index + match[0].length);
+      if (/^\\s*\\+/.test(trailing)) continue;
+      bindingKeys.add(index===7?'builds.live.'+match[1]:match[1]);
+    }
   });
 }
 function inspect(file) {
@@ -82,6 +88,10 @@ else{
   console.log('Modern UI text inventory: '+JSON.stringify(summary));
   for(const finding of [...candidates.filter(x=>x.category==='possible-unregistered-text'),...dynamic].slice(0,100))
     console.log('  '+finding.file+':'+finding.line+' '+(finding.text||finding.expression));
+}
+if(process.argv.includes('--check') && bindingKeys.size<100) {
+  console.error('Localization key scanner unexpectedly found too few bindings; check captureKeys() coverage.');
+  process.exitCode=1;
 }
 if(process.argv.includes('--check')&&missing.length){
   console.error('Unregistered literal UI translation keys: '+missing.join(', '));
