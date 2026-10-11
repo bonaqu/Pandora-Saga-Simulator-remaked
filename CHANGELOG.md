@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 4.07 — восстановлено уведомление о технических обновлениях, 2026-10-12
+
+<!-- admin-notes:ru -->
+- Возвращено согласованное поведение «Что нового»: для релиза только с техническими изменениями показывается актуальная версия и нейтральное уведомление «Выполнены внутренние технические улучшения.» вместо повторного показа более старых игровых изменений.
+- Для RU/EN возвращены нейтральные пользовательские строки в архиве технических релизов; технические детали остаются исключительно в отдельном разделе, без утечек в окно обновлений.
+- Добавлены тесты на обе локали, номер релиза, отсутствие подмены предыдущими игровыми изменениями и неизменность сохранённого билда. Формулы, Legacy 2.00 и D1 не затронуты.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Restore the agreed What's New behavior: technical-only deployments show the current version and the neutral "Internal technical improvements." message, not older gameplay changes.
+- Restore neutral RU/EN player notices in archived technical-only releases; implementation details remain confined to the separate development section and never enter the popup.
+- Verify both locales, current release version, absence of older gameplay details and unchanged builds. Game formulas, Legacy 2.00 and D1 remain untouched.
+<!-- /admin-notes:en -->
+
 ## Modern 4.06 — аудит адаптивных границ результатов, 2026-10-12
 
 <!-- admin-notes:ru -->
