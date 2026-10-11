@@ -145,7 +145,7 @@ test('bulk translation editor is D1-localized in four languages without changing
         api:async(method,payload,url)=>{
           window.bulkRequests.push({method,url,payload});
           if(method==='POST')throw Error('Bulk test must never publish');
-          const path=new URL(url,location.href);
+          const path=new URL(url,'https://admin.test.invalid');
           return {ok:true,schemaVersion:1,page:Number(path.searchParams.get('page')),
             total:1,items:[{scope:'game',id:'equipment.30.37',locale:'ru',
               kind:'equipment',managedBy:null,source:{en:'Warrior Hat'},
