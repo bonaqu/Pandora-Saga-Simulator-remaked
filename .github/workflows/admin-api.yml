@@ -59,6 +59,24 @@ jobs:
       - name: Verify deployed health route
         run: |
           node --input-type=module -e 'const r = await fetch("https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/health"); const j = await r.json(); if (!r.ok || j.ok !== true || j.service !== "pandora-admin-api") throw new Error("Worker health failed"); console.log("Worker health passed");'
+      - name: Verify every deployed admin JavaScript asset is reachable
+        run: |
+          node --input-type=module <<'NODE'
+          const base = "https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev";
+          const htmlReply = await fetch(base + "/admin", {cache:"no-store"});
+          if (!htmlReply.ok) throw new Error("Published admin HTML unavailable");
+          const html = await htmlReply.text();
+          const scripts = [...html.matchAll(/<script\s+src="(\/[^"]+\.js)"\s+defer><\/script>/g)]
+            .map(match => match[1]);
+          if (!scripts.includes("/localization-four-language.js") || scripts.length < 6)
+            throw new Error("Published admin HTML is missing runtime scripts");
+          for (const route of scripts) {
+            const result = await fetch(base + route, {cache:"no-store"});
+            if (!result.ok || !/javascript/i.test(result.headers.get("content-type") || ""))
+              throw new Error("Admin script unavailable: " + route + " HTTP " + result.status);
+          }
+          console.log("Published admin script routes verified:", scripts.length);
+          NODE
       - name: Verify deployed catalog revision and Astir localization
         run: |
           node --input-type=module <<'NODE'
