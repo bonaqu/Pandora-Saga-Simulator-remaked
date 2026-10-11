@@ -62,7 +62,14 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
   localeFilter.addEventListener('change',()=>render());
   scopeFilter.addEventListener('change',()=>render());
   wrapper.append(summary,status,filters,content);host.append(wrapper);
-  function message(value,failed=false){status.textContent=value;status.dataset.error=String(failed);}
+  function message(value,failed=false){
+    dynamic.delete(status);status.textContent=value;status.dataset.error=String(failed);
+  }
+  function notify(key,fallback,values={},failed=false){
+    const snapshot={...values};
+    messageNode(status,key,fallback,()=>snapshot);
+    status.dataset.error=String(failed);
+  }
   function get(scope,id,locale){return drafts.get(key({scope,id,locale}))||null;}
   async function refresh(){
     if(!active)return;
@@ -73,10 +80,11 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
       selected=new Set([...selected].filter(x=>drafts.has(x)));
       messageNode(summary,'draftQueueCount','Saved translation drafts: {count}',()=>({count:drafts.size}));
       render();onQueueChanged?.();
-    }catch(error){if(active)message(tr('draftQueueRefreshError','Could not refresh drafts: {error}',{error:error.message}),true);}
+    }catch(error){if(active)notify('draftQueueRefreshError','Could not refresh drafts: {error}',{error:error.message},true);}
   }
   function render(){
     content.replaceChildren();
+    for(const node of dynamic.keys())if(!node.isConnected)dynamic.delete(node);
     if(!drafts.size){content.append(localized(el('p',undefined,'help-text'),'draftQueueEmpty','No saved translation drafts.'));return;}
     const q=search.value.trim().toLocaleLowerCase();
     const visible=[...drafts.entries()].filter(([,entry])=>
@@ -120,7 +128,7 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
         busy=true;render();
         try{await api('DELETE',{scope:draft.scope,id:draft.id,locale:draft.locale,
           expectedDraftVersion:draft.version},'/api/admin/localization/draft');
-          selected.delete(id);await refresh();message(tr('draftQueueRemoved','Draft deleted. Published translation unchanged.'));
+          selected.delete(id);await refresh();notify('draftQueueRemoved','Draft deleted. Published translation unchanged.');
         }catch(error){message(error.message,true);}finally{busy=false;render();}
       };
       actions.append(open,remove);row.append(label,actions);items.append(row);
@@ -135,27 +143,27 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
     if(!window.confirm(tr('draftQueueConfirmPublish',
       'Publish {count} saved translations in ONE atomic operation?',{count:items.length})))return;
     const operationId=window.crypto.randomUUID();
-    busy=true;render();message(tr('draftQueuePublishing','Publishing selected drafts…'));
+    busy=true;render();notify('draftQueuePublishing','Publishing selected drafts…');
     let receipt=null;
     try{
       receipt=await api('POST',{operationId,items:items.map(item=>({
         scope:item.scope,id:item.id,locale:item.locale,expectedDraftVersion:item.version
       }))},'/api/admin/localization/publish-batch');
     }catch(error){
-      message(tr('draftQueueCheckingReceipt','Checking publication after an unexpected server response…'));
+      notify('draftQueueCheckingReceipt','Checking publication after an unexpected server response…');
       try{
         const check=await api('GET',null,'/api/admin/localization/operations?operationId='+encodeURIComponent(operationId));
         if(check.found)receipt=check.receipt;
-        else message(tr('draftQueueUnconfirmed',
-          'Publication could not be confirmed. Keep drafts and review history before retrying. {error}',{error:error.message}),true);
+        else notify('draftQueueUnconfirmed',
+          'Publication could not be confirmed. Keep drafts and review history before retrying. {error}',{error:error.message},true);
       }catch(second){
-        message(tr('draftQueueCheckFailed',
-          'Could not check publication. Reconnect and verify before retrying. {error}',{error:second.message}),true);
+        notify('draftQueueCheckFailed',
+          'Could not check publication. Reconnect and verify before retrying. {error}',{error:second.message},true);
       }
     }finally{
       busy=false;
       if(receipt){
-        selected.clear();message(tr('draftQueuePublished','Published {count} translations in one operation.',{count:receipt.count}));
+        selected.clear();notify('draftQueuePublished','Published {count} translations in one operation.',{count:receipt.count});
         await refresh();onPublished();
       }else await refresh();
       render();
