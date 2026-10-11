@@ -268,9 +268,14 @@
     var list = updatesDialog.querySelector('[data-remaked-updates-list]');
     if (!list) return;
     list.replaceChildren();
-    // Show only real player-facing changes, even after an admin-only deployment.
-    // The currently deployed UI version is displayed independently above.
-    var notes = latestReleaseHighlights();
+    // Technical deployments are user-visible updates too. Display only a
+    // neutral summary; never replay old user changes as newly deployed ones.
+    var technicalOnly = Boolean(release && release.technicalOnly) ||
+      Boolean(release && release.userVersion && window.PandoraRemakedVersion &&
+        String(window.PandoraRemakedVersion.ui) !== String(release.userVersion));
+    var notes = technicalOnly
+      ? [namespace.i18n.t('updates.technicalSummary')]
+      : latestReleaseHighlights();
     if (notes.length) {
       notes.forEach(function (note) {
         var item = document.createElement('li');
