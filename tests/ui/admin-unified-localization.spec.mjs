@@ -209,3 +209,89 @@ test('four-language translation editor starts with effective texts, keeps drafts
     expect(dimension.scroll).toBeLessThanOrEqual(dimension.width+1);
   }
 });
+
+
+test('four inline languages publish changed texts atomically without language filter navigation',async({page})=>{
+  await page.goto('/');
+  await page.setContent('<main><article class="localization-item" id="four-language-test"></article></main>');
+  await page.addScriptTag({path:'admin-api/public/localization-four-language.js'});
+  const source=()=>({
+    id:'header.updates',scope:'ui',kind:'interface',source:{en:'Updates'},
+    translations:['ru','en','jp','tw'].map((locale)=>({
+      locale,effective:({ru:'Обновления',en:'Updates',jp:'更新',tw:'更新資訊'})[locale],
+      baseline:({ru:'Обновления',en:'Updates',jp:'更新',tw:'更新資訊'})[locale],
+      origin:'import',baselineOrigin:'import',version:0
+    }))
+  });
+  const record=source();
+  await page.evaluate(record=>{
+    const requests=[],changed=new Map();
+    window.editorRequests=requests;
+    const drafts=new Map();
+    const api=async(method,payload,path)=>{
+      requests.push({method,payload,path});
+      if(path==='/api/admin/localization/publish-batch'){
+        if(payload.items.some(i=>i.expectedVersion!==0))throw Error('409 version conflict');
+        for(const item of payload.items)changed.set(item.locale,item.value);
+        return {ok:true,count:payload.items.length,operationId:payload.operationId};
+      }
+      if(path?.startsWith('/api/admin/localization/operations'))return {ok:true,found:false};
+      return {ok:true,version:1};
+    };
+    window.PandoraFourLanguageEditor.mount(document.getElementById('four-language-test'),record,{
+      api,drafts,queued:{get:()=>null,history:()=>{}},
+      onPublished:()=>{window.publishCount=(window.publishCount||0)+1;},
+      onDirtyChanged:()=>{},report:(text,bad)=>{window.editorMessage={text,bad};}
+    });
+  },record);
+  const card=page.locator('#four-language-test');
+  const boxes=card.locator('[data-translation-input]');
+  await expect(boxes).toHaveCount(4);
+  await expect(card.locator('[data-translation-locale]')).toHaveCount(4);
+  await expect(card.locator('[data-publish-all-languages]')).toBeDisabled();
+  await card.locator('[data-translation-input="ru"]').fill('Новые обновления');
+  await card.locator('[data-translation-input="jp"]').fill('新しい更新');
+  await card.locator('[data-publish-all-languages]').click();
+  await expect(card.locator('[data-translation-input="ru"]')).toHaveValue('Новые обновления');
+  await expect(card.locator('[data-translation-input="jp"]')).toHaveValue('新しい更新');
+  await expect(card.locator('[data-publish-all-languages]')).toBeDisabled();
+  const requests=await page.evaluate(()=>window.editorRequests);
+  const batch=requests.find(x=>x.path==='/api/admin/localization/publish-batch');
+  expect(batch).toBeTruthy();
+  expect(batch.payload.items.map(x=>x.locale)).toEqual(['ru','jp']);
+  expect(batch.payload.items.map(x=>x.value)).toEqual(['Новые обновления','新しい更新']);
+  expect(batch.payload.items.every(x=>x.expectedVersion===0)).toBe(true);
+  expect(requests.filter(x=>x.path==='/api/admin/localization/publish-batch')).toHaveLength(1);
+  expect(await page.evaluate(()=>window.publishCount)).toBe(1);
+  // These fields were not published and keep their original wording.
+  await expect(card.locator('[data-translation-input="en"]')).toHaveValue('Updates');
+  await expect(card.locator('[data-translation-input="tw"]')).toHaveValue('更新資訊');
+});
+
+test('four-language card rejects invalid placeholder edits and leaves other locales unchanged',async({page})=>{
+  await page.goto('/');
+  await page.setContent('<article class="localization-item" id="guarded-languages"></article>');
+  await page.addScriptTag({path:'admin-api/public/localization-four-language.js'});
+  await page.evaluate(()=>{
+    window.writeAttempts=[];
+    const translations=['ru','en','jp','tw'].map(locale=>({
+      locale,effective:'Language '+locale+' {version}',baseline:'Language '+locale+' {version}',
+      version:0,origin:'import',baselineOrigin:'import'
+    }));
+    window.PandoraFourLanguageEditor.mount(document.getElementById('guarded-languages'),
+      {scope:'ui',id:'updates.latestForUsers',kind:'interface',source:{en:'Updates: {version}'},translations},{
+        api:async(method,payload,path)=>{window.writeAttempts.push({method,payload,path});return {ok:true,count:1,version:1};},
+        queued:{get:()=>null,history:()=>{}},drafts:new Map(),onDirtyChanged:()=>{},
+        onPublished:()=>{},report:(text,bad)=>window.lastGuard={text,bad}
+      });
+  });
+  const card=page.locator('#guarded-languages');
+  const russian=card.locator('[data-translation-input="ru"]');
+  await russian.fill('Обновления без версии');
+  await expect(card.locator('[data-publish-all-languages]')).toBeDisabled();
+  await card.getByRole('button',{name:'Опубликовать RU'}).click();
+  expect(await page.evaluate(()=>window.lastGuard.bad)).toBe(true);
+  expect(await page.evaluate(()=>window.writeAttempts)).toHaveLength(0);
+  await russian.fill('Обновления: {version}');
+  await expect(card.locator('[data-publish-all-languages]')).toBeEnabled();
+});
