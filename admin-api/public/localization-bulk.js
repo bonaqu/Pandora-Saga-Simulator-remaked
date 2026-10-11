@@ -41,26 +41,42 @@
     return el;
   }
 
+  // All player-visible static bulk-editor chrome is managed by the same
+  // versioned D1 adminShell registry; input values are NEVER localized.
+  const localized=(tag,key,fallback,css)=>{
+    const el=node(tag,fallback,css);
+    el.setAttribute('data-admin-i18n','adminShell.'+key);
+    return el;
+  };
+  const localeRefresh=()=>window.PandoraAdminI18n?.apply?.();
+  function localizedAttribute(el,name,key,fallback){
+    el.setAttribute(name,fallback);
+    el.setAttribute('data-admin-i18n-'+(name==='aria-label'?'aria':name),
+      'adminShell.'+key);
+    return el;
+  }
+
   function mount(host,{api,getContext,hasDraft,onPublished}){
     let active=true,busy=false,epoch=0,proposal=null,selections=new Map();
     const editing=new Set();
     const root=node('details',undefined,'localization-bulk');
-    const heading=node('summary','Массовая замена слова · предварительный просмотр');
-    const intro=node('p','Только отдельные слова в действующих текстах выбранного языка и раздела. Регистр поиска не учитывается; части других слов и плейсхолдеры {name} не меняются. Английский оригинал остаётся нетронутым.','localization-bulk-help');
+    const heading=localized('summary','bulkHeading','Массовая замена слова · предварительный просмотр');
+    const intro=localized('p','bulkHelp','Только отдельные слова в действующих текстах выбранного языка и раздела. Регистр поиска не учитывается; части других слов и плейсхолдеры {name} не меняются. Английский оригинал остаётся нетронутым.','localization-bulk-help');
     const controls=node('div',undefined,'localization-bulk-controls');
-    const word=node('input');word.placeholder='Warrior';word.maxLength=60;word.setAttribute('aria-label','Найти целое слово');
-    const translated=node('input');translated.placeholder='Воин';translated.maxLength=80;translated.setAttribute('aria-label','Заменить словом');
+    const word=node('input');word.placeholder='Warrior';word.maxLength=60;localizedAttribute(word,'aria-label','bulkFindWord','Найти целое слово');
+    const translated=node('input');translated.placeholder='Воин';translated.maxLength=80;localizedAttribute(translated,'aria-label','bulkReplaceWord','Заменить словом');
     const missing=node('input');missing.type='checkbox';missing.checked=true;missing.id='bulk-missing-'+Math.random().toString(36).slice(2);
-    const missingLabel=node('label');missingLabel.append(missing,document.createTextNode(' Только без готового перевода'));
-    const scan=node('button','Показать предварительный просмотр');scan.type='button';
+    const missingLabel=node('label');missingLabel.append(missing,localized('span','bulkMissingOnly',' Только без готового перевода'));
+    const scan=localized('button','bulkPreview','Показать предварительный просмотр');scan.type='button';
     controls.append(word,translated,missingLabel,scan);
     const state=node('p','Сначала укажи слово и перевод.','localization-bulk-state');state.setAttribute('role','status');state.setAttribute('aria-live','polite');
     const results=node('div',undefined,'localization-bulk-results');
     const actions=node('div',undefined,'localization-bulk-actions');
-    const publish=node('button','Опубликовать выбранные');publish.type='button';publish.disabled=true;
-    const cancel=node('button','Очистить предпросмотр');cancel.type='button';cancel.className='secondary';cancel.disabled=true;
+    const publish=localized('button','bulkPublish','Опубликовать выбранные');publish.type='button';publish.disabled=true;
+    const cancel=localized('button','bulkClearPreview','Очистить предпросмотр');cancel.type='button';cancel.className='secondary';cancel.disabled=true;
     actions.append(publish,cancel);
     root.append(heading,intro,controls,state,results,actions);host.append(root);
+    localeRefresh();
 
     function context(){
       const selected=getContext();
@@ -126,8 +142,8 @@
 
       const selectionBar=node('div',undefined,'localization-bulk-selection');
       const summary=node('output');summary.setAttribute('aria-live','polite');
-      const selectAll=node('button','Выбрать все');selectAll.type='button';selectAll.className='secondary';
-      const selectNone=node('button','Снять выделение');selectNone.type='button';selectNone.className='secondary';
+      const selectAll=localized('button','bulkSelectAll','Выбрать все');selectAll.type='button';selectAll.className='secondary';
+      const selectNone=localized('button','bulkSelectNone','Снять выделение');selectNone.type='button';selectNone.className='secondary';
       const checkboxes=new Map();
       function updateCounts(){
         const selected=found.filter(item=>selections.get(item.id)).length;
@@ -160,14 +176,14 @@
 
         const afterTitle=node('div',undefined,'localization-bulk-after-title');
         const pencil=node('button','✎','localization-bulk-icon');
-        pencil.type='button';pencil.title='Редактировать предложенный перевод';
+        pencil.type='button';localizedAttribute(pencil,'title','bulkEditTitle','Редактировать предложенный перевод');
         pencil.setAttribute('aria-label','Редактировать «Станет» для '+item.id);
         const revert=node('button','↶','localization-bulk-icon');
-        revert.type='button';revert.title='Вернуть автоматическую замену';
+        revert.type='button';localizedAttribute(revert,'title','bulkRevertTitle','Вернуть автоматическую замену');
         revert.setAttribute('aria-label','Вернуть автоматический вариант для '+item.id);
         revert.hidden=true;
         const modified=node('small','', 'localization-bulk-modified');
-        afterTitle.append(node('small','Станет'),modified,pencil,revert);
+        afterTitle.append(localized('small','bulkAfter','Станет'),modified,pencil,revert);
         const after=node('p',item.after,'localization-bulk-after');
 
         const editForm=node('div',undefined,'localization-bulk-edit');
@@ -176,8 +192,8 @@
         input.maxLength=4000;
         input.setAttribute('aria-label','Итоговый перевод '+item.id);
         const editFoot=node('div',undefined,'localization-bulk-edit-actions');
-        const apply=node('button','Применить в предпросмотре');apply.type='button';
-        const discard=node('button','Отмена');discard.type='button';discard.className='secondary';
+        const apply=localized('button','bulkApplyPreview','Применить в предпросмотре');apply.type='button';
+        const discard=localized('button','bulkCancelEdit','Отмена');discard.type='button';discard.className='secondary';
         const warning=node('span',undefined,'localization-bulk-edit-error');warning.setAttribute('role','alert');
         editFoot.append(apply,discard,warning);
         editForm.append(input,editFoot);
@@ -216,12 +232,13 @@
           item.after=item.suggested;after.textContent=item.suggested;
           modified.textContent='';revert.hidden=true;updateCounts();
         });
-        card.append(label,node('small','Было'),node('p',item.before,'localization-bulk-before'),
+        card.append(label,localized('small','bulkBefore','Было'),node('p',item.before,'localization-bulk-before'),
           afterTitle,after,editForm);
         results.append(card);
       }
       updateCounts();
       cancel.disabled=false;
+      localeRefresh();
     }
 
     scan.addEventListener('click',async()=>{

@@ -336,5 +336,21 @@
   "adminShell.localizationDiscardDrafts": "Discard unsaved edits",
   "adminShell.coverageProgressAria": "Available translations in the selected category",
   "adminShell.paginationPrevious": "← Previous",
-  "adminShell.paginationNext": "Next →"
+  "adminShell.paginationNext": "Next →",
+  "adminShell.bulkHeading": "Bulk word replacement · review before publishing",
+  "adminShell.bulkHelp": "Replace whole words only in existing translations of the selected language and section. Case-insensitive search never replaces word fragments or placeholders such as {name}. English source text remains unchanged.",
+  "adminShell.bulkFindWord": "Find whole word",
+  "adminShell.bulkReplaceWord": "Replace with word",
+  "adminShell.bulkMissingOnly": "Only entries without an approved translation",
+  "adminShell.bulkPreview": "Preview replacements",
+  "adminShell.bulkPublish": "Publish selected",
+  "adminShell.bulkClearPreview": "Clear preview",
+  "adminShell.bulkSelectAll": "Select all",
+  "adminShell.bulkSelectNone": "Clear selection",
+  "adminShell.bulkBefore": "Before",
+  "adminShell.bulkAfter": "After",
+  "adminShell.bulkEditTitle": "Edit proposed translation",
+  "adminShell.bulkRevertTitle": "Restore automatic replacement",
+  "adminShell.bulkApplyPreview": "Apply to preview",
+  "adminShell.bulkCancelEdit": "Cancel"
 }

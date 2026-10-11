@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.84 — 2026-10-11
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Make 16 bulk-replacement labels D1-editable and translated in RU/EN/JP/TW: header, guidance, inputs, preview, selection, edit and publish actions.
+- Switching interface languages updates visible controls without clearing the search, replacement, selected rows or unsaved editor contents.
+- Preserve protected D1 publication, CSRF, login, game catalog, calculations and Legacy. Dynamic bulk status messages, drafts queue and catalog editor remain separate work.
+
 ## Modern 3.83 — 2026-10-11
 
 ### For users

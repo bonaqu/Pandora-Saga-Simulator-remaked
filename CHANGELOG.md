@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 3.84 — локализация массового редактора переводов, 2026-10-11
+
+<!-- admin-notes:ru -->
+- 16 подписей массовой замены в защищённой админке теперь переводятся на RU/EN/JP/TW и редактируются через существующий реестр D1: заголовок, инструкция, поля, выделение, предпросмотр, действия и кнопки правки.
+- Переключение языка меняет видимые элементы без удаления поиска, текста замены, выбранных карточек или введённого вручную перевода.
+- Не меняются защищённые публикации D1, CSRF, форма входа, игровой каталог, расчёты и Legacy. Динамические уведомления массового редактора, очередь черновиков и редактор каталога остаются на следующем этапе аудита.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Make 16 bulk-replacement labels D1-editable and translated in RU/EN/JP/TW: header, guidance, inputs, preview, selection, edit and publish actions.
+- Switching interface languages updates visible controls without clearing the search, replacement, selected rows or unsaved editor contents.
+- Preserve protected D1 publication, CSRF, login, game catalog, calculations and Legacy. Dynamic bulk status messages, drafts queue and catalog editor remain separate work.
+<!-- /admin-notes:en -->
+
 ## Modern 3.83 — локализация фильтров и навигации центра переводов, 2026-10-11
 
 <!-- admin-notes:ru -->
