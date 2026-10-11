@@ -385,3 +385,35 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
   .localization-inline-actions button { flex-basis: 100%; }
   .localization-item-foot [data-publish-all-languages] { width: 100%; }
 }
+
+/* Four-locale admin shell selector; no changes to authentication or editor grid. */
+.admin-language-switch {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding: 8px 14px;
+  background: #101c14;
+  color: #d8ebce;
+  font-size: 12px;
+}
+.admin-language-switch select {
+  min-width: 130px;
+  max-width: 100%;
+  min-height: 34px;
+  border: 1px solid #79916c;
+  border-radius: 6px;
+  color: #f0f7e7;
+  background: #283b29;
+  padding: 5px 8px;
+  font: inherit;
+}
+.admin-language-switch select:disabled {opacity: .65;}
+.admin-language-switch select:focus-visible {
+  outline: 2px solid #d2ef8d;outline-offset: 2px;
+}
+@media (max-width: 430px) {
+  .admin-language-switch {justify-content: space-between;}
+  .admin-language-switch select {min-width: 120px;}
+}
