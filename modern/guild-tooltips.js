@@ -155,7 +155,8 @@
       chevron.setAttribute('aria-hidden', 'true');
       chevron.textContent = '⌄';
       button.append(caption, chevron);
-      select.before(field);
+      // Prototype.js overrides Element.before(); use the standard DOM insertion API.
+      select.parentNode.insertBefore(field, select);
       field.append(select, button);
       select.dataset.remakedGuildSource = '';
       select.dataset.remakedGuildIndex = String(index);
