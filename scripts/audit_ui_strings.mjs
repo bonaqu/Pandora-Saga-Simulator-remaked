@@ -34,7 +34,7 @@ function captureKeys(code) {
       // A concatenated prefix such as t('updates.' + type) is not itself a key.
       // Checking it as a literal produces false "unregistered" failures.
       const trailing = code.slice(match.index + match[0].length);
-      if (/^\\s*\\+/.test(trailing)) continue;
+      if (/^\s*\+/.test(trailing)) continue;
       bindingKeys.add(index===7?'builds.live.'+match[1]:match[1]);
     }
   });
