@@ -4,11 +4,11 @@
   var timer = null;
   // Match the exact equipment identity rule in preserved EquipCheck(), NOT
   // translated item names or generic "Robe" text (most robes use one slot).
-  var doubleSlotDresses = new Set([
+  var doubleSlotDresses = [
     'アスティアンドレス','碧色アスティアンドレス','雪色アスティアンドレス',
     '翠色アスティアンドレス','夜色アスティアンドレス','緋色アスティアンドレス',
     '芳色アスティアンドレス','月色アスティアンドレス','クリスマスドレス'
-  ]);
+  ];
   function blockedSlot(slot) {
     // Legacy equips these outfits into body slot #3, clearing pants #5.
     // A pants-slot dress picker is not part of the original engine contract.
@@ -17,7 +17,7 @@
     if (!value) return null;
     var category = Math.floor(value / 10000), index = value % 10000;
     var source = window.EquipData[0]?.[category]?.[index];
-    if (!source || !doubleSlotDresses.has(String(source[0]))) return null;
+    if (!source || !doubleSlotDresses.indexOf(String(source[0])) !== -1) return null;
     var localized = namespace.i18n?.game?.('equipment.' + category + '.' + index, '');
     return {ownerSlot:3,lockedSlot:5,equipmentId:value,
       name:localized || window.EquipData[Number(window.Flag?.[0] || 0)]?.[category]?.[index]?.[0] || String(source[0])};
