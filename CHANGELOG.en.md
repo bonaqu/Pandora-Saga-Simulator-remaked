@@ -2,6 +2,20 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 3.81 — 2026-10-11
+
+### For users
+
+- Melee and ranged results now display the equipped weapon's verified base reach instead of a permanent dash.
+- Source values cover 164 matched weapons from the current Pandora Saga OS item registry, in original reference units (no unverified meter conversion).
+- Unarmed or unsupported weapons remain unavailable; unverified skill-based range changes are not silently applied.
+
+### Development and technical changes
+
+- Freeze a read-only 164-weapon current-server source map with unambiguous Russian names; runtime validates immutable Japanese engineKey and melee/ranged type before displaying the raw `range` field.
+- Fail closed for unknown or modified identities; do not fabricate conversion units or blend unverified Legacy reach modifiers.
+- Add offline source-map and Playwright test coverage; leave Legacy formulas, catalog mechanics and saved builds unchanged.
+
 ## Modern 3.80 — 2026-10-11
 
 ### For users
