@@ -48,12 +48,17 @@ test('Updates provides an accessible on-site release panel without altering the 
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText(await page.evaluate(() => PandoraRemakedVersion.ui));
   await expect(dialog).toContainText('Legacy engine: 2.00');
-  const latestEnglishNotes = await page.evaluate(() => PandoraRemakedRelease.highlights.en);
-  expect(await page.evaluate(() => Boolean(PandoraRemakedRelease.technicalOnly))).toBe(false);
-  await expect(dialog.locator('li')).toHaveCount(latestEnglishNotes.length);
-  await expect(dialog.locator('li').first()).toHaveText(latestEnglishNotes[0]);
-  await expect(dialog).not.toContainText('Internal technical improvements.');
+  const release = await page.evaluate(() => ({
+    technicalOnly: Boolean(PandoraRemakedRelease.technicalOnly),
+    ui: PandoraRemakedVersion.ui,
+    userVersion: PandoraRemakedRelease.userVersion,
+    english: PandoraRemakedRelease.highlights.en
+  }));
+  await expect(dialog.locator('li')).toHaveCount(release.technicalOnly ? 1 : release.english.length);
+  await expect(dialog.locator('li').first()).toHaveText(
+    release.technicalOnly ? 'Internal technical improvements.' : release.english[0]);
   await expect(dialog).not.toContainText('catalog_head.snapshot_json');
+  expect(release.userVersion).toBe(release.ui);
   await expect(dialog.locator('li').first()).toHaveCSS('font-size', '15px');
   await expect(dialog.locator('li').first()).toHaveCSS('letter-spacing', 'normal');
   await expect(dialog.getByRole('link', { name: 'Full changelog', exact: true })).toHaveAttribute('href', /CHANGELOG\.en\.md$/);
@@ -70,16 +75,16 @@ test('Updates provides an accessible on-site release panel without altering the 
   await expect(russianDialog.getByRole('link', { name: 'Полный список изменений' }))
     .toHaveAttribute('href', /CHANGELOG\.ru\.md$/);
   await expect(russianDialog.locator('[data-remaked-user-version]')).toContainText('Последние изменения для пользователей:');
-  await expect(russianDialog.locator('li').first())
-    .toHaveText(await page.evaluate(() => PandoraRemakedRelease.highlights.ru[0]));
-  await expect(russianDialog).not.toContainText('Выполнены внутренние технические улучшения.');
+  await expect(russianDialog.locator('li').first()).toHaveText(
+    release.technicalOnly ? 'Выполнены внутренние технические улучшения.'
+      : await page.evaluate(() => PandoraRemakedRelease.highlights.ru[0]));
   await page.keyboard.press('Escape');
   expect(await page.evaluate(() => Store())).toBe(before);
   expect(errors).toEqual([]);
 });
 
 
-test('admin-only deployment keeps the last real user release in RU/EN instead of a technical placeholder', async ({page}) => {
+test('admin-only deployment shows neutral RU/EN notice for the current version, never older gameplay details', async ({page}) => {
   await page.goto('/?ui=en');
   const before=await page.evaluate(()=>Store());
   await page.evaluate(()=>{
@@ -87,27 +92,28 @@ test('admin-only deployment keeps the last real user release in RU/EN instead of
     window.PandoraRemakedRelease=Object.freeze({
       ...latest,
       version:window.PandoraRemakedVersion.ui,
-      userVersion:'4.03',
-      date:'2026-10-11',
+      userVersion:window.PandoraRemakedVersion.ui,
+      technicalOnly:true,
+      lastContentVersion:'4.05',
       highlights:{
-        en:['A real, verified update for players.'],
-        ru:['Настоящее обновление для игроков.']
+        en:['A previous gameplay update should not appear.'],
+        ru:['Старое игровое обновление не должно отображаться.']
       }
     });
   });
   await page.getByRole('button',{name:'Updates',exact:true}).click();
   let dialog=page.getByRole('dialog',{name:"What's new",exact:true});
   await expect(dialog).toBeVisible();
-  await expect(dialog.locator('[data-remaked-user-version]')).toContainText('Modern 4.03');
-  await expect(dialog.locator('li')).toHaveText(['A real, verified update for players.']);
-  await expect(dialog).not.toContainText('Internal technical improvements.');
+  await expect(dialog.locator('li')).toHaveText(['Internal technical improvements.']);
+  await expect(dialog.locator('[data-remaked-user-version]')).toContainText(
+    'Modern '+await page.evaluate(()=>PandoraRemakedVersion.ui));
+  await expect(dialog).not.toContainText('A previous gameplay update');
   await page.keyboard.press('Escape');
   await page.locator('[data-remaked-ui-locale="ru"]').click();
   await page.getByRole('button',{name:'Обновления',exact:true}).click();
   dialog=page.getByRole('dialog',{name:'Что нового',exact:true});
-  await expect(dialog.locator('[data-remaked-user-version]')).toContainText('Modern 4.03');
-  await expect(dialog.locator('li')).toHaveText(['Настоящее обновление для игроков.']);
-  await expect(dialog).not.toContainText('Выполнены внутренние технические улучшения.');
+  await expect(dialog.locator('li')).toHaveText(['Выполнены внутренние технические улучшения.']);
+  await expect(dialog).not.toContainText('Старое игровое обновление');
   await page.keyboard.press('Escape');
   expect(await page.evaluate(()=>Store())).toBe(before);
 });
