@@ -578,7 +578,7 @@ test('enhancement captions keep fixed positions for RU EN JP TW and Honor select
 
   for (const [id, name] of [
     ['Buff_18_8','Сопр. огню'],['Buff_18_9','Сопр. льду'],
-    ['Buff_18_10','Сопр. молнии'],['Buff_20_7','Сопр. тьме'],
+    ['Buff_18_10','Сопр. молниям'],['Buff_20_7','Сопр. тьме'],
     ['Buff_21_7','Сопр. чарам']
   ]) await expect(page.locator('#'+id+' [data-remaked-buff]')).toContainText(name);
   await expect(page.locator('#TextStatus_39')).toContainText('Сопр. тьме');
@@ -756,8 +756,10 @@ test('three-digit character totals expand their track without hiding 2P or trunc
     window.__testOriginalTotalSource=source.textContent;
     window.__testOriginalTotalHidden=total.hidden;
     // Exercise a numeric display-only fixture; do not edit character state.
+    // The original fixture has no equipment bonus, hence the total is hidden.
+    // Simulate a real positive bonus before testing an actually visible 100+.
+    Status.STA[2]=1;
     source.textContent='100';
-    total.hidden=false;
     PandoraRemaked.calculatorControls.refresh();
   });
   const row=page.locator('[data-remaked-calculator-attribute]:has([data-remaked-number="STA"])');
