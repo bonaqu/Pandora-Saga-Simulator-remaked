@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 4.15 — выгрузка отсутствующих переводов из D1, 2026-10-12
+
+<!-- admin-notes:ru -->
+- В авторизованный единый центр переводов добавлена явная выгрузка JSON со стабильными ID **фактически отсутствующих опубликованных переводов** для game/ui × RU/EN/JP/TW. Это расширяет существующий аудит по восьми языковым группам, не путая текущую D1 с историческим файлом.
+- Выгрузка работает через GET с проверкой полноты каждой страницы, счётчиков и дублей; при обнаружении изменений во время чтения частичный файл не создаётся. Результат не атомарен и явно помечен как таковой.
+- Экспортируются только ID, тип категории и пометка управления каталогом; в отчёт не входят тексты, черновики, токены, данные входа или квитанции. Нет автоматической публикации, изменений D1, систем авторизации, ревизий билдов, игровых формул или Legacy 2.00.
+- Добавлены четыре D1-first подписи RU/EN/JP/TW и браузерные регрессии скачивания и отказа при неполных ответах.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add an explicit authorized JSON export in the unified translation console listing genuinely missing effective published IDs for all game/ui × RU/EN/JP/TW combinations. This uses current D1 and the published catalog, not old repository-only coverage.
+- Paginated GET-only reads validate group totals, pages and unique IDs; abort on observed data drift and never download partial results. The report explicitly declares its non-atomic nature.
+- Export IDs, category kinds and catalog ownership markers only—no translations, drafts, credentials, secrets, receipts, D1 writes or automatic publication. Preserve Legacy 2.00, game calculations, auth, and saved-build semantics.
+- Add four D1-first RU/EN/JP/TW labels and positive/negative browser tests for downloaded content and incomplete responses.
+<!-- /admin-notes:en -->
+
 ## Modern 4.14 — русские подсказки и локализация админки, 2026-10-12
 
 <!-- release-notes:user:ru -->
