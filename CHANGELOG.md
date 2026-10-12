@@ -1,19 +1,31 @@
 # Changelog
 
-## Modern 4.14 — дополнительные D1-переводы рабочих процессов админки, 2026-10-12
+## Modern 4.14 — русские подсказки и локализация админки, 2026-10-12
+
+<!-- release-notes:user:ru -->
+- Переведены на русский подсказки **26 характеристик** персонажа, а также подписи «Мастерство» и «Потенциал» — без лишних технических названий в тексте для игроков.
+- Улучшены сообщения **менеджера билдов**: автоматические обновления игровых данных, изменение числа ячеек для душ и причины несовместимости теперь понятнее на русском.
+- Русский текст для технических обновлений в «Что нового» снова однозначный: «Выполнены внутренние технические улучшения.»
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Complete Russian help texts for **26 character attributes** and the Adeptness/Potential labels with clearer, player-oriented explanations.
+- Improve Russian build manager messages for automatically updated game data, Soul socket changes and incompatible saved entries.
+- Keep the neutral Russian What's New notice for technical-only updates.
+<!-- /release-notes:user:en -->
 
 <!-- admin-notes:ru -->
-- В D1-first реестр добавлены 14 строк RU/EN/JP/TW для предупреждений массовой замены, причин пропуска строк, конфликтов и неопределённой квитанции транзакции; обновляются без потери текущего предпросмотра и переведённого текста.
-- В восстановлении исходного перевода подсказывается, когда сначала нужно обработать облачный черновик, а в четырёхъязычном редакторе локализуются доступные имена полей с сохранением введённых пользователем значений.
-- Отдельные проверки убеждаются в корректных плейсхолдерах, отсутствии HTML, D1-приоритете и отсутствии дополнительных API-запросов/публикаций при смене языка во время ошибки просмотра.
-- Уточнено локальное fallback-покрытие: UI 726 ключей; RU 659, JP/TW 725. Это не данные о реальных опубликованных D1-переводах. Сессии, CSRF, серверный контракт, механика Modern, сохранения и Legacy 2.00 не изменены.
+- Утверждены 48 дополнительных русских fallback-строк пользовательского UI. Эти строки не заменяют существующие опубликованные переводы Cloudflare D1, не меняют описание фактических игровых эффектов и не обещают непроверенной точности расчётов.
+- В D1-first реестр добавлены ещё 14 ключей RU/EN/JP/TW для предупреждений массовой замены, причин пропуска строк и неопределённой квитанции; динамические сообщения обновляются при смене языка без нового запроса или публикации.
+- В четырёхъязычном редакторе теперь локализуются доступные имена полей; подсказка восстановления учитывает неопубликованный облачный черновик. Черновики, CSRF, optimistic concurrency и операция публикации по квитанции защищены как прежде.
+- Добавлены автоматические проверки полей и безопасных плейсхолдеров, браузерные сценарии для ошибок и пропущенных записей, а также инвентаризация UI fallback: 726 EN, 707 RU, 725 JP/TW. Настоящую покрытость опубликованной D1 эти числа не измеряют. Legacy 2.00 и формулы не изменены.
 <!-- /admin-notes:ru -->
 
 <!-- admin-notes:en -->
-- Add 14 D1-first RU/EN/JP/TW strings for bulk preview conflicts, skipped reasons, unconfirmed transaction receipts and safe recovery messages. Locale switches refresh feedback without losing proposals.
-- Localize baseline-versus-cloud-draft reset hints and the accessible names of four-language translation inputs without changing unsaved text or optimistic publication guards.
-- Add placeholder/HTML safety tests and a Playwright locale-switch regression proving that a failed preview is translated without repeating an API request or publishing data.
-- Record offline UI fallback totals: 726 EN source keys, 659 RU, 725 JP/TW. They are not production D1 coverage figures. Auth, CSRF, server contracts, gameplay formulas, saved builds and Legacy 2.00 are unchanged.
+- Approve 48 more Russian player-facing UI fallbacks. Existing Cloudflare D1 publications remain authoritative, and no game-effect formulas or unverifiable parity claims are changed.
+- Add 14 D1-first RU/EN/JP/TW labels for bulk workflow conflicts, skipped catalog items and unconfirmed D1 receipts, with locale-switch refresh and no extra network request or write.
+- Make four-language translation input accessibility and single-language cloud-draft reset hints switch live, retaining draft values, CSRF, optimistic concurrency and receipt-safe publication.
+- Add locale-completeness tests, two Playwright failure/skip scenarios and source-only fallback inventory: 726 EN, 707 RU, 725 JP/TW. This is NOT published D1 coverage. Frozen Legacy 2.00 and numerical mechanics are untouched.
 <!-- /admin-notes:en -->
 
 ## Modern 4.13 — понятные подсказки о дальности атак, 2026-10-12
