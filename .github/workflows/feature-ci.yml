@@ -239,7 +239,9 @@ jobs:
       - name: Probe current skill variants from primary registry (read-only)
         if: github.event_name == 'pull_request' && github.head_ref == 'audit/healing-input-parity-20261012'
         continue-on-error: true
-        run: node scripts/audit_current_skill_source.mjs
+        run: |
+          node scripts/audit_current_skill_source.mjs --output /tmp/healing-current-skills.json
+          node --input-type=module -e "import fs from 'node:fs';const x=JSON.parse(fs.readFileSync('/tmp/healing-current-skills.json','utf8'));const rows=x.rows.filter(r=>r.sourceId===100091001||/potion|healing|recovery|heal|brewer/i.test([r.text?.en?.name,r.text?.en?.description].join(' ')));console.log('HEALING_SKILL_CURRENT='+JSON.stringify(rows.slice(0,30).map(r=>({sourceId:r.sourceId,name:r.text?.en?.name,status:r.status,comps:r.comparisons.map(c=>({id:c.simulatorId,match:c.learningDefinition.matches,timings:c.timingDifferences})),current:r.current}))));"
 
       - name: Syntax-check core JavaScript
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
