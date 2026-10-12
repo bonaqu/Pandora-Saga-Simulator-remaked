@@ -58,8 +58,14 @@ class RussianUiFallbackTests(unittest.TestCase):
                 )
         self.assertEqual(RU['updates.technicalSummary'],
                          'Выполнены внутренние технические улучшения.')
-        self.assertEqual(RU['skills.adeptness'],'Мастерство')
-        self.assertEqual(RU['skills.potential'],'Потенциал')
+        self.assertEqual(RU['skills.adeptness'],'Изучено (ОЧ)')
+        self.assertEqual(RU['skills.potential'],'Потенциал.')
+
+    def test_preexisting_curated_ru_labels_never_get_rewritten(self):
+        curated=json.loads((ROOT/'localization/curated-runtime-defaults.ru.v1.json').read_text(encoding='utf-8'))['ru']['ui']
+        for key,wording in curated.items():
+            with self.subTest(key=key):
+                self.assertEqual(RU.get(key),wording)
 
     def test_no_unexpected_ru_gaps_and_keep_stylized_identifiers_intact(self):
         missing={key for key in EN if not RU.get(key)}
