@@ -39,7 +39,9 @@ class PotionSourceAuditTests(unittest.TestCase):
         self.assertIn("Status['Job'][2] <= 6",CALC)
         self.assertIn("tmp[0] = 8;",CALC)
         self.assertIn("tmp[0] = 11;",CALC)
-        self.assertIn("window.Flag?.[8]",MODERN)
+        self.assertIn("function refreshPotionEffectsPreview()",MODERN)
+        self.assertNotIn("installPotionTabAccessibility",MODERN)
+        self.assertNotIn("window.Flag[6]=",MODERN)
         self.assertIn("without changing Flag[6]",MODERN)
         self.assertIn("potionPercentRecovery=[5,15,30,18]",MODERN)
 
