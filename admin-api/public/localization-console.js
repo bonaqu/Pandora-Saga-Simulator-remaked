@@ -318,11 +318,51 @@
             }
             if(verifiedCount!==completed)
               throw Error('Verification total changed; no file created');
+            // Compare only identities verified by BOTH export passes.
+            // The intersection is metadata-only: never use source/effective
+            // text, draft values or an unverified historical repository map.
+            const jpTwComparison=[];
+            for(const selectedScope of ['game','ui']){
+              const japanese=missing.find(group=>group.scope===selectedScope&&group.locale==='jp');
+              const chinese=missing.find(group=>group.scope===selectedScope&&group.locale==='tw');
+              if(!japanese||!chinese)throw Error('Incomplete JP/TW scope; no file created');
+              const jpById=new Map(japanese.ids.map(item=>[item.id,item]));
+              const twById=new Map(chinese.ids.map(item=>[item.id,item]));
+              const both=[],jpOnly=[],twOnly=[];
+              for(const item of japanese.ids){
+                const translated=twById.get(item.id);
+                if(!translated){jpOnly.push(item);continue;}
+                // The same catalog identity must not change kind or ownership
+                // across languages. Such a read cannot be safely triaged.
+                if(translated.kind!==item.kind||translated.managedBy!==item.managedBy)
+                  throw Error('JP/TW identity metadata conflict; no file created');
+                both.push(item);
+              }
+              for(const item of chinese.ids)if(!jpById.has(item.id))twOnly.push(item);
+              const byKind=Object.create(null);
+              for(const [group,items] of [['both',both],['jpOnly',jpOnly],['twOnly',twOnly]])
+                for(const item of items){
+                  if(!Object.hasOwn(byKind,item.kind))
+                    byKind[item.kind]={kind:item.kind,both:0,jpOnly:0,twOnly:0};
+                  byKind[item.kind][group]++;
+                }
+              const sorted=items=>items.sort((x,y)=>x.id.localeCompare(y.id,'en'));
+              jpTwComparison.push({scope:selectedScope,counts:{
+                both:both.length,jpOnly:jpOnly.length,twOnly:twOnly.length},
+                byKind:Object.values(byKind).sort((x,y)=>x.kind.localeCompare(y.kind,'en')),
+                both:sorted(both),jpOnly:sorted(jpOnly),twOnly:sorted(twOnly)});
+            }
+            if(jpTwComparison.some(group=>{
+              const jp=missing.find(item=>item.scope===group.scope&&item.locale==='jp');
+              const tw=missing.find(item=>item.scope===group.scope&&item.locale==='tw');
+              return group.counts.both+group.counts.jpOnly!==jp.ids.length||
+                group.counts.both+group.counts.twOnly!==tw.ids.length;
+            }))throw Error('JP/TW overlap count mismatch; no file created');
             const report={schemaVersion:1,createdAt:new Date().toISOString(),
               basis:'Authorized published effective D1 + catalog status; double-checked non-atomic read-only snapshot',
               atomic:false,readOnly:true,includesTranslationText:false,
               verificationPasses:2,identitiesCompared:true,
-              coverage,missing,observedMissingCount:completed};
+              coverage,missing,jpTwComparison,observedMissingCount:completed};
             const blob=new Blob([JSON.stringify(report,null,2)+'\n'],
               {type:'application/json;charset=utf-8'});
             const url=URL.createObjectURL(blob);
@@ -330,6 +370,21 @@
             link.download='pandora-effective-missing-translations-'+new Date().toISOString().slice(0,10)+'.json';
             link.hidden=true;auditPanel.append(link);
             try{link.click();}finally{link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+            const compareSummary=tag('div',null,'localization-audit-jptw-summary');
+            compareSummary.append(localized('strong','locAuditCompareTitle','JP/TW · общие и уникальные пропуски'));
+            for(const entry of jpTwComparison){
+              const line=tag('p',null,'localization-audit-jptw-row');
+              line.append(localized('strong',entry.scope==='game'?'locAuditScopeGame':'locAuditScopeUi',
+                entry.scope==='game'?'Игровые данные и каталог':'Интерфейс'),
+                liveText(tag('span'),'locAuditCompareCounts',
+                  ' · оба языка: {both} · только JP: {jpOnly} · только TW: {twOnly}',
+                  entry.counts));
+              compareSummary.append(line);
+            }
+            compareSummary.append(localized('small','locAuditCompareCaution',
+              'Сравниваются только ID из проверенного отчёта; снимок не атомарен. Изменения не публиковались.'));
+            results.querySelector('.localization-audit-jptw-summary')?.remove();
+            results.append(compareSummary);
             liveText(auditStatus,'locAuditExportReady',
               'Отчёт собран: {count} ID. Переводы и черновики не выгружались.',
               {count:completed});
