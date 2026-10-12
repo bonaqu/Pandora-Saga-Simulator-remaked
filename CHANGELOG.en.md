@@ -2,6 +2,20 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.21 — 2026-10-12
+
+### For users
+
+- **Fixed the Potion Effects tab:** all 14 items now show calculated HP recovery instead of unavailable dashes, including flat and maximum-HP percentage potions.
+- The preview appears even when the separate "Use potion effects" switch is off. Inspecting potion values never enables that switch or modifies your build.
+- Values update when character stats, gear or Souls change. Potion and Skill Effects tabs also support clicking and keyboard navigation.
+
+### Development and technical changes
+
+- Add Modern-only display calculation of all 14 flat/percentage potion amounts using the preserved floor/ceil order, without changing Flag[6], gameplay formulas or archived Legacy 2.00.
+- Regress against source Potion Soul `103018` (+8 POT) for 1/2/3/4-Soul combinations and Paladin melee-branch mastery 101. Illustrative values are not independent live-client parity claims.
+- Independent server snapshot confirms **145** base HP for `50061` Mysterious Potion despite obsolete **175** historical tooltip; never overwrite owner-published D1 translations. Include browser checks of four locales, toggle and build integrity.
+
 ## Modern 4.20 — 2026-10-12
 
 ### For users
