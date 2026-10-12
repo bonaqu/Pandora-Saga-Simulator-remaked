@@ -13,6 +13,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 - Preserved Legacy 2.00 and saved builds. Exactly ten of fourteen historic potion rows have verified current item identities; four remain explicitly unverified.
 - Added read-only bilingual content coverage and stable healing identity checks. No automatic D1 publication or unverified gameplay formula changes.
+
 ## Modern 4.22 — 2026-10-12
 
 ### For users
