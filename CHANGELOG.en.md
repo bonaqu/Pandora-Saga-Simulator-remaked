@@ -6,14 +6,16 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ### For users
 
-- Internal technical improvements.
+- Complete Russian help texts for **26 character attributes** and the Adeptness/Potential labels with clearer, player-oriented explanations.
+- Improve Russian build manager messages for automatically updated game data, Soul socket changes and incompatible saved entries.
+- Keep the neutral Russian What's New notice for technical-only updates.
 
 ### Development and technical changes
 
-- Add 14 D1-first RU/EN/JP/TW strings for bulk preview conflicts, skipped reasons, unconfirmed transaction receipts and safe recovery messages. Locale switches refresh feedback without losing proposals.
-- Localize baseline-versus-cloud-draft reset hints and the accessible names of four-language translation inputs without changing unsaved text or optimistic publication guards.
-- Add placeholder/HTML safety tests and a Playwright locale-switch regression proving that a failed preview is translated without repeating an API request or publishing data.
-- Record offline UI fallback totals: 726 EN source keys, 659 RU, 725 JP/TW. They are not production D1 coverage figures. Auth, CSRF, server contracts, gameplay formulas, saved builds and Legacy 2.00 are unchanged.
+- Approve 48 more Russian player-facing UI fallbacks. Existing Cloudflare D1 publications remain authoritative, and no game-effect formulas or unverifiable parity claims are changed.
+- Add 14 D1-first RU/EN/JP/TW labels for bulk workflow conflicts, skipped catalog items and unconfirmed D1 receipts, with locale-switch refresh and no extra network request or write.
+- Make four-language translation input accessibility and single-language cloud-draft reset hints switch live, retaining draft values, CSRF, optimistic concurrency and receipt-safe publication.
+- Add locale-completeness tests, two Playwright failure/skip scenarios and source-only fallback inventory: 726 EN, 707 RU, 725 JP/TW. This is NOT published D1 coverage. Frozen Legacy 2.00 and numerical mechanics are untouched.
 
 ## Modern 4.13 — 2026-10-12
 
