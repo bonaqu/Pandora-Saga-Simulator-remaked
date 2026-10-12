@@ -17,6 +17,22 @@ export const VERIFIED_POTION_SLOTS=Object.freeze([
   [8,50062,'EP_HEAL_LIFE',200],[9,50065,'EP_HEAL_LIFE',150],
   [10,50063,'EP_HEAL_LIFE_RATE',5],[11,50004,'EP_HEAL_LIFE_RATE',15]
 ]);
+// These five external game-engine records are siege/zone infrastructure, NOT
+// character skills. Never offer them for D1 character-skill imports or treat
+// them as untranslated player abilities. Leave the external server untouched.
+export const NON_CHARACTER_SKILL_IDS=Object.freeze([
+  620002071,620002072,700000021,700000023,700000024
+]);
+const nonCharacterIds=new Set(NON_CHARACTER_SKILL_IDS);
+export const RETAINED_QUADRUPLE_STAB=Object.freeze({
+  simulatorId:'skill_entry.2.6',sourceLegacyId:'skill.2.6',serverInternalVariantId:121703511,
+  ru:'Четверной укол',en:'Quadruple Stab'
+});
+export function playerCharacterSkill(source){
+  return !!source&&source.learnable===true&&source.classes&&
+    typeof source.classes==='object'&&!Array.isArray(source.classes)&&
+    Object.values(source.classes).some(Boolean);
+}
 const validText=t=>typeof t==='string'&&t.trim().length>0;
 const table=x=>x&&!Array.isArray(x)&&typeof x==='object'?x:null;
 const names=(data,kind,id)=>data?.[kind]?.[String(id)]??null;
@@ -64,6 +80,32 @@ export function auditBilingual(snapshot,{limit=20}={}){
       missingENDescriptionExamples:values.filter(row=>!row.en.description).slice(0,limit).map(row=>row.id)
     };
   }
+  // Public client skills.json is a superset of real character abilities.
+  // Keep a full-source coverage report for diagnostics, but expose a separate,
+  // correctly scoped report for learnable abilities. Do not alter the source.
+  const sourceSkills=snapshot['skills.json'];
+  const forbidden=NON_CHARACTER_SKILL_IDS.filter(id=>sourceSkills[String(id)]);
+  for(const id of forbidden)
+    if(sourceSkills[String(id)].learnable!==false)
+      throw Error('Technical skill unexpectedly became learnable: '+id);
+  const characterRows=rows.skills.filter(row=>playerCharacterSkill(sourceSkills[String(row.id)]));
+  const missing=(language,field)=>characterRows.filter(row=>!row[language][field]);
+  const characterSkillCoverage={
+    sourceRecords:rows.skills.length,
+    learnablePlayerRecords:characterRows.length,
+    excludedTechnicalIds:forbidden,
+    excludedTechnicalNames:forbidden.map(id=>({id,name:sourceSkills[String(id)].name})),
+    internalNonLearnableQuadrupleVariant:
+      sourceSkills[String(RETAINED_QUADRUPLE_STAB.serverInternalVariantId)]?.learnable===false,
+    ruNames:characterRows.length-missing('ru','name').length,
+    enNames:characterRows.length-missing('en','name').length,
+    ruDescriptions:characterRows.length-missing('ru','description').length,
+    enDescriptions:characterRows.length-missing('en','description').length,
+    missingRuNameIds:missing('ru','name').slice(0,limit).map(row=>row.id),
+    missingEnNameIds:missing('en','name').slice(0,limit).map(row=>row.id),
+    missingRuDescriptionIds:missing('ru','description').slice(0,limit).map(row=>row.id),
+    missingEnDescriptionIds:missing('en','description').slice(0,limit).map(row=>row.id)
+  };
   const currentItems=snapshot['items.json'];
   const confirmed=VERIFIED_POTION_SLOTS.map(([slot,id,func,base])=>{
     const item=currentItems[String(id)];
@@ -79,7 +121,7 @@ export function auditBilingual(snapshot,{limit=20}={}){
     sourceOrigins:FILES.map(file=>BASE+file),
     localeSections:{ru:Object.fromEntries(categories.map(kind=>[kind,Object.keys(ru[kind]).length])),
       en:Object.fromEntries(categories.map(kind=>[kind,Object.keys(en[kind]).length]))},
-    summary,verifiedPotions:confirmed,
+    summary,characterSkillCoverage,verifiedPotions:confirmed,
     notConfirmedLegacyPotionRows:[4,7,12,13],
     independentlyVerifiedFullGameParity:false};
 }
@@ -109,6 +151,7 @@ async function main(args){
   if(output)await fs.writeFile(output,JSON.stringify(report,null,2)+'\n');
   if(json)console.log(JSON.stringify(report,null,2));
   else console.log('BILINGUAL_AUDIT='+JSON.stringify({origin,summary:report.summary,localeSections:report.localeSections,
+    characterSkillCoverage:report.characterSkillCoverage,
     verifiedPotions:report.verifiedPotions.map(({slot,id,base,name,englishName})=>({slot,id,base,name,englishName}))}));
   if(strict&&Object.values(report.summary).some(v=>v.missingRussianNames||v.missingEnglishNames||v.missingRussianDescriptions||v.missingEnglishDescriptions))process.exitCode=1;
 }
