@@ -75,6 +75,12 @@
       error.localizedCopy={key,fallback,values};
       return error;
     };
+    const liveComputed=(element,key,fallback,compute)=>{
+      dynamicTranslations.set(element,{key,fallback,compute});
+      element.dataset.bulkLiveKey=key;
+      element.textContent=translate(key,fallback,compute());
+      return element;
+    };
     const live=(element,key,fallback,values={})=>{
       dynamicTranslations.set(element,{key,fallback,values});
       element.dataset.bulkLiveKey=key;
@@ -98,7 +104,8 @@
     const onLocaleChange=()=>{
       root.querySelectorAll('[data-bulk-live-key]').forEach(element=>{
         const entry=dynamicTranslations.get(element);
-        if(entry)element.textContent=translate(entry.key,entry.fallback,entry.values);
+        if(entry)element.textContent=translate(entry.key,entry.fallback,
+          entry.compute?entry.compute():entry.values);
       });
       root.querySelectorAll('[data-bulk-live-aria]').forEach(element=>{
         const entry=dynamicAria.get(element);
@@ -164,11 +171,11 @@
         for(const row of response.items){
           // Catalog-owned text is shown in unified search, but published only
           // by catalog revisions. Never add it to independent bulk D1 writes.
-          if(row.managedBy==='catalog'){skipped.push(row.id+translate('bulkCatalogManagedSuffix',' (редактируется в каталоге)'));continue;}
+          if(row.managedBy==='catalog'){skipped.push({id:row.id,reason:'catalog'});continue;}
           const before=row.effective||'',after=replaceWholeWord(before,current.word,current.replacement);
           if(before===after)continue;
           if(after.length>4000||after!==after.trim()||/[\x00-\x09\x0b-\x1f\x7f<>]/.test(after)){
-            skipped.push(row.id+translate('bulkInvalidFieldSuffix',' (ограничение поля)'));continue;
+            skipped.push({id:row.id,reason:'field'});continue;
           }
           const item={id:row.id,scope:row.scope,locale:row.locale,version:row.version,
             before,after,suggested:after,sourceEn:row.source?.en||'',origin:row.origin,kind:row.kind,blocked:hasDraft(row)};
@@ -184,7 +191,10 @@
       results.replaceChildren();selections.clear();editing.clear();
       const {found,skipped}=proposal;
       live(state,'bulkFoundCount','Совпадений: {found}. Не обработано: {skipped}. Исправляй нужные строки карандашом и проверь текст до/после.',{found:found.length,skipped:skipped.length});
-      if(skipped.length)results.append(live(node('p',undefined,'localization-bulk-warning'),'bulkSkippedIds','Пропущено: {ids}',{ids:skipped.slice(0,8).join(', ')}));
+      if(skipped.length)results.append(liveComputed(node('p',undefined,'localization-bulk-warning'),
+        'bulkSkippedIds','Пропущено: {ids}',()=>({ids:skipped.slice(0,8).map(item=>
+          item.id+translate(item.reason==='catalog'?'bulkCatalogManagedSuffix':'bulkInvalidFieldSuffix',
+            item.reason==='catalog'?' (редактируется в каталоге)':' (ограничение поля)')).join(', ')})));
 
       const selectionBar=node('div',undefined,'localization-bulk-selection');
       const summary=node('output');summary.setAttribute('aria-live','polite');
