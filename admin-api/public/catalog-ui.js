@@ -76,6 +76,12 @@
     node.textContent=catalogTranslate(key,fallback,values);
     return node;
   }
+  function catalogRaw(node,text) {
+    catalogLiveValues.delete(node);
+    delete node.dataset.catalogLiveI18n;
+    node.textContent=text;
+    return node;
+  }
   function catalogAttribute(node,attribute,key,fallback) {
     node.setAttribute('data-admin-i18n-'+(attribute==='aria-label'?'aria':attribute),'adminShell.'+key);
     node.setAttribute(attribute,catalogTranslate(key,fallback));
@@ -608,7 +614,7 @@
         input.step = position === 0 ? '1' : '.001'; input.required = true;
       });
       panel.querySelectorAll('[data-field]').forEach(function (input) { input.dataset.profileField = input.dataset.field; delete input.dataset.field; });
-      summary.textContent = learningSummary(profile.learningRequirements);
+      catalogRaw(summary,learningSummary(profile.learningRequirements));
       } finally { rendering = false; }
     }
     function updateSummary() {
@@ -616,7 +622,7 @@
       // event. Never collect that DOM into the newly selected profile.
       if (rendering) return;
       saveFields(); if (!drafts.length) return;
-      summary.textContent = learningSummary(drafts[index].learningRequirements);
+      catalogRaw(summary,learningSummary(drafts[index].learningRequirements));
       catalogLive(choice.options[index],'catalogProfileOptionName','Вариант {index} · {name}',{index:index+1,name:drafts[index].names.ru||drafts[index].names.en});
     }
     panel.addEventListener('input', updateSummary); panel.addEventListener('change', updateSummary);
