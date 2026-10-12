@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 // Native potion source factors. Percent entries MUST remain percentages until
 // the user explicitly opts into "Use potion effects" (#SwitchUse_3 / Flag[6]).
-const FIXED=[20,60,120,180,450,145,10,25,200,150];
+const FIXED=[20,60,120,180,450,145,20,25,200,150];
 const PERCENT=[5,15,30,18];
 const BASE=[...FIXED.map(String),...PERCENT.map(value=>value+'%')];
 function calculated(state){
@@ -153,4 +153,39 @@ test('RU/EN/JP/TW language switches preserve base values OFF and calculated valu
   await page.locator('#SwitchUse_3').click();
   await expect.poll(async()=>(await read(page)).values).toEqual(BASE);
   expect((await read(page)).build).toBe(saved.build);
+});
+
+test('Modern distinguishes source-confirmed potions from archived-only rows and fixes Hepatica',async({page})=>{
+  await page.goto('/?ui=ru');
+  await page.locator('#EfTab_1').click();
+  const data=await page.evaluate(()=>{
+    const verified=[0,1,2,3,5,6,8,9,10,11],historical=[4,7,12,13];
+    const row=i=>{const el=document.getElementById('ViewPOT_'+i+'_1');
+      return {index:i,value:Number(el.textContent),source:el.dataset.remakedCurrentItem||null,
+        evidence:el.dataset.remakedPotionEvidence,title:el.title};};
+    return {pot:Status.POT,rows:[...verified,...historical].map(row)};
+  });
+  const byId=Object.fromEntries(data.rows.map(r=>[r.index,r]));
+  expect(data.rows).toHaveLength(14);
+  expect(byId[6]).toMatchObject({source:'50023',evidence:'current'});
+  expect(byId[11]).toMatchObject({source:'50004',evidence:'current'});
+  expect(byId[6].value).toBe(20);
+  expect(byId[6].title).toContain('Подснежник');
+  await expect(page.locator('#ViewPOT_6_0')).toContainText('Подснежник');
+  await expect(page.locator('#ViewPOT_6_0 .help')).toHaveAttribute('title',/20/);
+  for(const i of [4,7,12,13]) {
+    expect(byId[i].evidence).toBe('historical');
+    expect(byId[i].source).toBe(null);
+    expect(byId[i].title).toContain('Историческое значение');
+  }
+  await expect(page.locator('#ViewPOT_11_1')).toHaveText('15%');
+  await page.locator('#SwitchUse_3').click();
+  await expect.poll(async()=>page.locator('#ViewPOT_6_1').textContent())
+    .toBe(String(Math.floor(20*data.pot/100)));
+  await expect.poll(async()=>page.locator('#ViewPOT_11_1').textContent())
+    .not.toBe('15%');
+  await page.evaluate(()=>PandoraRemaked.i18n.setLocale('en'));
+  await expect.poll(()=>page.locator('#ViewPOT_6_1').getAttribute('title')).toContain('Hepatica');
+  await expect(page.locator('#ViewPOT_11_1')).toHaveAttribute('data-remaked-current-item','50004');
+  await expect(page.locator('#ViewPOT_12_1')).toHaveAttribute('data-remaked-potion-evidence','historical');
 });

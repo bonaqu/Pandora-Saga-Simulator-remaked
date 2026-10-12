@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.23 — 2026-10-12
+
+### For users
+
+- **Corrected Hepatica healing:** the Modern calculator now uses 20 base HP rather than the older 10 HP.
+- Potion Effects results now show full Russian/English names and base recovery in tooltips for confirmed current items. When an archived entry has no confirmed current item match, its tooltip clearly identifies the calculation as historical.
+
+### Development and technical changes
+
+- Preserved Legacy 2.00 and saved builds. Exactly ten of fourteen historic potion rows have verified current item identities; four remain explicitly unverified.
+- Added read-only bilingual content coverage and stable healing identity checks. No automatic D1 publication or unverified gameplay formula changes.
+
 ## Modern 4.22 — 2026-10-12
 
 ### For users
