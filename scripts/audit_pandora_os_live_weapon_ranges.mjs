@@ -31,7 +31,7 @@ export function canonicalWeaponFixture(fixture){
   const seenIds=new Set(),seenOfficial=new Set(),seenPositions=new Set();
   return fixture.items.map(row=>{
     if(!row||typeof row!=='object'||
-       !/^equipment\.(?:[0-9]|1[0-3])\.[1-9]\d*$/.test(row.id)||
+       !(/^(?:equipment\.(?:[0-9]|1[0-3])\.[1-9]\d*|modern\.equipment\.[a-f0-9-]{36})$/.test(row.id))||
        !Number.isSafeInteger(row.officialId)||row.officialId<=0||
        !Number.isSafeInteger(row.range)||row.range<=0||
        !Number.isSafeInteger(row.category)||row.category<0||row.category>13||
@@ -41,7 +41,8 @@ export function canonicalWeaponFixture(fixture){
       throw Error('Invalid saved weapon identity/range');
     const pos=row.category+'.'+row.index;
     if(seenIds.has(row.id)||seenOfficial.has(row.officialId)||seenPositions.has(pos)||
-       row.id!=='equipment.'+pos)
+       (row.id.startsWith('equipment.')&&row.id!=='equipment.'+pos)||
+       (row.id.startsWith('modern.')&&row.engineKey!=='Modern:'+row.id))
       throw Error('Duplicate or inconsistent weapon reference identity');
     seenIds.add(row.id);seenOfficial.add(row.officialId);seenPositions.add(pos);
     return {id:row.id,officialId:row.officialId,range:row.range,
