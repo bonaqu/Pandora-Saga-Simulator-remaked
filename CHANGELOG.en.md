@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.14 — 2026-10-12
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Add 14 D1-first RU/EN/JP/TW strings for bulk preview conflicts, skipped reasons, unconfirmed transaction receipts and safe recovery messages. Locale switches refresh feedback without losing proposals.
+- Localize baseline-versus-cloud-draft reset hints and the accessible names of four-language translation inputs without changing unsaved text or optimistic publication guards.
+- Add placeholder/HTML safety tests and a Playwright locale-switch regression proving that a failed preview is translated without repeating an API request or publishing data.
+- Record offline UI fallback totals: 726 EN source keys, 659 RU, 725 JP/TW. They are not production D1 coverage figures. Auth, CSRF, server contracts, gameplay formulas, saved builds and Legacy 2.00 are unchanged.
+
 ## Modern 4.13 — 2026-10-12
 
 ### For users
