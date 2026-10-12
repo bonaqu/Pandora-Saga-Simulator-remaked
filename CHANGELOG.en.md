@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.10 — 2026-10-12
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Complete D1-first locale switching for conditional skill variants and catalog previews by adding 14 approved RU/EN/JP/TW keys.
+- Localize learning conditions, branch explanations, variant names and counts, MP/timing values, empty editor states and publication review workflow.
+- Fix a dynamic-update trap: once a variant is created or changed, switching locales cannot restore stale "no variants" copy or erase the current condition summary. Add regression coverage for preserving entered fields without D1 writes.
+- Validate interpolation placeholders and disallow HTML in all approved copy; D1 remains authoritative over fallback. Server APIs, game mechanics, authentication, saved-build revisions and frozen Legacy 2.00 are unchanged.
+
 ## Modern 4.09 — 2026-10-12
 
 ### For users
