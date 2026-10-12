@@ -30,7 +30,7 @@ class BulkLiveLocalization(unittest.TestCase):
         self.assertIn("dynamicTranslations=new WeakMap()",CODE)
         self.assertIn("window.addEventListener('pandora-admin:localechange',onLocaleChange)",CODE)
         self.assertIn("window.removeEventListener('pandora-admin:localechange',onLocaleChange)",CODE)
-        self.assertIn("raw(state,(uncertain",CODE)
+        self.assertIn("live(state,uncertain?'bulkUncertainPublish':'bulkFailedPublish'",CODE)
         self.assertIn("if(slots(phrase)!==slots(fallback))phrase=fallback",CODE)
         self.assertIn("Object.hasOwn(values,name)",CODE)
         self.assertIn('dynamicAria=new WeakMap()',CODE)
