@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.16 — 2026-10-12
+
+### For users
+
+- Prevent a legacy global `Set` override from interfering with learned and unavailable skill icons after allocating skill points.
+- Extend recalculated equipment-and-buff result layout tests to phone, tablet and wide-screen widths in all four locales, including four-digit values.
+
+### Development and technical changes
+
+- Strengthen authorized effective-D1 missing-ID export with a second read of all eight locale/scope groups, including initially empty groups. Detect same-count identity swaps, changed category/ownership and newly missing IDs; never download an incomplete report.
+- Reports add `verificationPasses: 2` and `identitiesCompared: true`, explicitly retaining `atomic: false`. All requests remain GET-only, without changing published translations, D1, drafts, CSRF or credentials.
+- Add race-condition tests and a 28-combination responsive calculation layout matrix (43 results, equipment, buffs, four-digit numbers). Guard all browser-facing scripts against the shadowed global `Set`. Frozen Legacy 2.00 and numeric game coefficients are unchanged.
+
 ## Modern 4.15 — 2026-10-12
 
 ### For users
