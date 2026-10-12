@@ -14,6 +14,7 @@ function initMock(){
   window.coverageDrift=false;
   window.sameCountIdDrift=false;
   window.sameCountKindDrift=false;
+  window.previouslyEmptyGroupDrift=false;
   window.fetch=async(url,options)=>{
     const route=new URL(String(url),location.href),scope=route.searchParams.get('scope')||'game',
       locale=route.searchParams.get('locale')||'ru',status=route.searchParams.get('status'),
@@ -38,6 +39,11 @@ function initMock(){
       if(window.sameCountKindDrift)rows[0].kind='skill_entry';
     }
     const drift=window.coverageDrift&&audited>8&&scope==='game'&&locale==='jp';
+    if(audited>=12&&window.previouslyEmptyGroupDrift&&
+        scope==='ui'&&locale==='en'&&status==='missing'){
+      rows.push({scope,locale,id:'toolbar.newlyMissing',kind:'interface',
+        origin:'fallback',effective:'',source:{en:'PRIVATE_EN'}});
+    }
     const response={ok:true,schemaVersion:1,scope,locale,status,page,pageSize:40,
       coverage:{total:rows.length+4,translated:4},total:status==='missing'?rows.length:0,
       items:status==='missing'?rows.slice(page*40,(page+1)*40):[],
@@ -81,7 +87,7 @@ test('owner can download 8-locale effective missing IDs with no D1 writes or tra
   for(const secret of ['PRIVATE_REDACT_ME','PRIVATE_BASELINE','PRIVATE_EN',
     'csrfToken','password','override','drafts'])expect(reportText).not.toContain(secret);
   const traffic=await page.evaluate(()=>window.auditTraffic);
-  expect(traffic.filter(x=>new URL(x.url).searchParams.get('status')==='missing')).toHaveLength(14);
+  expect(traffic.filter(x=>new URL(x.url).searchParams.get('status')==='missing')).toHaveLength(19);
   expect(traffic.every(x=>x.method==='GET')).toBe(true);
   await expect(page.locator('.localization-audit > p').last()).toContainText('Отчёт собран: 4 ID');
 });
@@ -131,3 +137,20 @@ for(const [flag,description] of [
     await expect(page.locator('[data-coverage-export]')).toBeEnabled();
   });
 }
+
+
+test('a locale group that was empty during audit is rechecked before export',async({page})=>{
+  await page.goto('/');
+  await page.setContent('<div id="localization-console"></div>');
+  await page.evaluate(initMock);
+  await page.addScriptTag({path:'admin-api/public/localization-console.js'});
+  await page.evaluate(()=>window.PandoraLocalizationConsole.start(()=>'',()=>{}));
+  await page.locator('[data-admin-i18n="adminShell.locAuditAction"]').click();
+  await expect(page.locator('.localization-audit-row')).toHaveCount(8);
+  await page.evaluate(()=>window.previouslyEmptyGroupDrift=true);
+  const downloads=[];page.on('download',x=>downloads.push(x));
+  await page.locator('[data-coverage-export]').click();
+  await expect(page.locator('.localization-audit > p').last()).toContainText('Выгрузка остановлена');
+  expect(downloads).toHaveLength(0);
+  expect((await page.evaluate(()=>window.auditTraffic)).every(x=>x.method==='GET')).toBe(true);
+});
