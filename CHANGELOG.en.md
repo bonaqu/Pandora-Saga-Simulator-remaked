@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.18 — 2026-10-12
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Add `scripts/audit_pandora_os_live_vitals.mjs`, a read-only comparison of all six HP/MP coefficients for 28 class identities against the dated 2026-10-11 fixture, replaying **672** independent class/level/STA/SPR vectors and reporting exact changes.
+- Read the current public `classes.json` or an explicitly supplied local copy, never silently falling back to stale data on HTTP failure. Emit normalized SHA-256 hashes and bounded JSON examples, with strict non-zero exit on drift.
+- Add deterministic offline tests for drift, invalid data and source integrity plus a required CI step. It does not modify game mechanics or prove equipped character/game-client parity; frozen Legacy 2.00, D1 and saved builds remain unchanged.
+
 ## Modern 4.17 — 2026-10-12
 
 ### For users
