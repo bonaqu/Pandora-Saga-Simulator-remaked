@@ -61,7 +61,7 @@
   };
   // Display-only metadata, never draft or form values. Weak references avoid
   // leaking discarded list rows across catalog refreshes and locale changes.
-  var catalogLiveValues = new WeakMap();
+  var catalogLiveValues = new WeakMap(),catalogRecordValues=new WeakMap();
   function catalogTranslate(key, fallback, values) {
     var template=window.PandoraAdminI18n?.t?.('adminShell.'+key,fallback)||fallback;
     var slots=function(value){return (String(value).match(/\{[A-Za-z0-9_]+\}/g)||[]).sort().join('|');};
@@ -69,6 +69,30 @@
     return String(template).replace(/\{([A-Za-z0-9_]+)\}/g,function(original,name){
       return values&&Object.hasOwn(values,name)?String(values[name]):original;
     });
+  }
+  function catalogRecordLocale(names) {
+    if(!names || typeof names!=='object')return '';
+    var locale=window.PandoraAdminI18n?.getLocale?.()||'ru';
+    // Read current, versioned catalog API fields; never write between locales.
+    return names[locale]||names.en||names.ru||names.jp||names.tw||'';
+  }
+  function catalogRecordText(node,names) {
+    node.dataset.catalogRecordLocale='true';
+    catalogRecordValues.set(node,names);
+    node.textContent=catalogRecordLocale(names);
+    return node;
+  }
+  function catalogLiveName(node,key,fallback,values,names){
+    node.dataset.catalogLiveI18n=key;
+    catalogLiveValues.set(node,{key:key,fallback:fallback,values:values||{},names:names});
+    node.textContent=catalogTranslate(key,fallback,{...values,name:catalogRecordLocale(names)});
+    return node;
+  }
+  function catalogLiveComputed(node,key,fallback,compute){
+    node.dataset.catalogLiveI18n=key;
+    catalogLiveValues.set(node,{key:key,fallback:fallback,compute:compute});
+    node.textContent=catalogTranslate(key,fallback,compute());
+    return node;
   }
   function catalogLive(node,key,fallback,values) {
     node.dataset.catalogLiveI18n=key;
@@ -227,7 +251,12 @@
     if(!host)return;
     host.querySelectorAll('[data-catalog-live-i18n]').forEach(function(node){
       var entry=catalogLiveValues.get(node);
-      if(entry)node.textContent=catalogTranslate(entry.key,entry.fallback,entry.values);
+      if(entry)node.textContent=catalogTranslate(entry.key,entry.fallback,
+        entry.compute?entry.compute():entry.names?{...entry.values,name:catalogRecordLocale(entry.names)}:entry.values);
+    });
+    host.querySelectorAll('[data-catalog-record-locale]').forEach(function(node){
+      var names=catalogRecordValues.get(node);
+      if(names)node.textContent=catalogRecordLocale(names);
     });
   });
   async function api(path, input) {
@@ -308,58 +337,57 @@
   function recordView(record, target, title) {
     target.replaceChildren(title.startsWith('Сейчас на сайте · версия ') ? catalogLive(node('h4'),'catalogPublishedVersion','Сейчас на сайте · версия {revision}',{revision:current.catalogRevision}):node('h4',title));
     if (!record) { target.appendChild(node('p', 'Запись ещё не опубликована и на сайте не используется.', 'help-text')); return; }
-    target.appendChild(node('p', record.names.ru || record.names.en, 'record-name'));
-    var description = record.description.ru || record.description.en;
-    if (description) target.appendChild(node('p', description, 'record-description'));
+    target.appendChild(catalogRecordText(node('p',undefined,'record-name'),record.names));
+    var description = catalogRecordLocale(record.description);
+    if (description) target.appendChild(catalogRecordText(node('p',undefined,'record-description'),record.description));
     var values = node('ul', undefined, 'record-values');
-    if (record.kind === 'equipment') values.appendChild(node('li', 'Уровень: ' + record.level + ' · Слоты душ: ' + record.sockets));
+    if (record.kind === 'equipment') values.appendChild(catalogLive(node('li'),'catalogPreviewLevelSockets','Уровень: {level} · Слоты душ: {sockets}',{level:record.level,sockets:record.sockets}));
     if(record.kind==='equipment'&&record.upgradeBonuses?.length)
       record.upgradeBonuses.forEach(function(rule){
-        values.appendChild(node('li','Заточка: '+effectText(rule.stat,rule.value,rule.unit)+
-          ' с +' +rule.from+' за каждые '+rule.every+' уровня до +'+rule.to));
+        values.appendChild(catalogLive(node('li'),'catalogPreviewEnhancement','Заточка: {effect} с +{from} за каждые {every} уровня до +{to}',{effect:effectText(rule.stat,rule.value,rule.unit),from:rule.from,every:rule.every,to:rule.to}));
       });
-    if (record.kind === 'soul' && !record.compatibility.includes(1)) values.appendChild(node('li', 'Нет допустимого слота для вставки. Эта душа не предлагается для экипировки, пока не заданы ограничения.'));
+    if (record.kind === 'soul' && !record.compatibility.includes(1)) values.appendChild(catalogStatic(node('li'),'catalogPreviewNoSoulSlot','Нет допустимого слота для вставки. Эта душа не предлагается для экипировки, пока не заданы ограничения.'));
     if (record.calculationCode !== undefined) {
       record.calculationCode.split('_').filter(Boolean).forEach(function (token) {
         var pair = token.split('='), value = pair.slice(1).join('=');
         if (!/^\d+=(?:[+-]?\d+(?:\.\d+)?%?|W\d+)$/.test(token)) {
-          values.appendChild(node('li', 'Исходный маркер: ' + token + '. Числовой эффект не подтверждён.'));
+          values.appendChild(catalogLive(node('li'),'catalogPreviewInvalidMarker','Исходный маркер: {token}. Числовой эффект не подтверждён.',{token}));
           return;
         }
-        values.appendChild(node('li', pair[0] === '18' && /^W\d+$/.test(value) ? 'Базовая атака оружия: ' + value.slice(1) : effectText(pair[0], value.endsWith('%') ? value.slice(0, -1) : value, value.endsWith('%') ? 'percent' : 'flat')));
+        values.appendChild(pair[0]==='18' && /^W\d+$/.test(value) ? catalogLive(node('li'),'catalogPreviewBaseAttack','Базовая атака оружия: {value}',{value:value.slice(1)}):node('li',effectText(pair[0],value.endsWith('%')?value.slice(0,-1):value,value.endsWith('%')?'percent':'flat')));
       });
-      if (!record.calculationCode) values.appendChild(node('li', 'Числовых бонусов в расчётной строке нет.'));
+      if (!record.calculationCode) values.appendChild(catalogStatic(node('li'),'catalogPreviewNoNumericModifiers','Числовых бонусов в расчётной строке нет.'));
     }
-    if (record.kind === 'active') ['Стоимость MP', 'Время применения, с', 'Перезарядка, с', 'Длительность, с'].forEach(function (label, index) { values.appendChild(node('li', label + ': ' + record.timing[index])); });
+    if (record.kind === 'active') ['catalogPreviewActiveMp','catalogPreviewActiveCast','catalogPreviewActiveCooldown','catalogPreviewActiveDuration'].forEach(function (key,index) { var labels=['Стоимость MP: {value}','Время применения, с: {value}','Перезарядка, с: {value}','Длительность, с: {value}']; values.appendChild(catalogLive(node('li'),key,labels[index],{value:record.timing[index]})); });
     if (record.kind === 'active' || record.kind === 'passive') {
       if (record.kind === 'passive' && !record.templateId && current.nativeSkill?.intrinsicEffect) {
-        values.appendChild(node('li', record.intrinsicEffectMode === 'replace' ? 'Встроенный эффект заменён: работают только числа ниже при выполнении условий.' : 'Встроенный эффект сохранён; числа ниже добавляются к нему.'));
+        values.appendChild(catalogStatic(node('li'),record.intrinsicEffectMode==='replace'?'catalogPreviewIntrinsicReplaced':'catalogPreviewIntrinsicKept',record.intrinsicEffectMode==='replace'?'Встроенный эффект заменён: работают только числа ниже при выполнении условий.':'Встроенный эффект сохранён; числа ниже добавляются к нему.'));
         values.appendChild(node('li', current.nativeSkill.intrinsicEffect.noteRu));
       }
       var learning = record.learningRequirements;
       if (learning) {
-        values.appendChild(node('li', 'Минимальный уровень: ' + learning.minimumLevel));
+        values.appendChild(catalogLive(node('li'),'catalogPreviewLearningLevel','Минимальный уровень: {level}',{level:learning.minimumLevel}));
         var classes = learning.classIds.map(function (id) { return meta.compatibilityLabels.job.find(function (row) { return 'job.' + row.index === id; })?.label || id; });
-        values.appendChild(node('li', 'Классы: ' + (classes.length ? classes.join(', ') + (learning.classScope === 'descendants' ? ' и их последующие профессии' : ' — только отмеченные') : 'любой')));
-        learning.branches.forEach(function (gate) { values.appendChild(node('li', 'Ветка: ' + (meta.skillCategories.find(function (row) { return row.id === gate.branchId; })?.name.en || gate.branchId) + ' ≥ ' + gate.minimumPoints)); });
-        if (!learning.branches.length) values.appendChild(node('li', 'Требований к очкам веток нет.'));
-      } else values.appendChild(node('li', 'Исходные условия изучения: ' + (current.nativeSkill?.prerequisites.en || record.prerequisiteCode)));
+        values.appendChild(catalogLiveComputed(node('li'),'catalogPreviewLearningClasses','Классы: {classes}',function(){return {classes:classes.length ? classes.join(', ') + catalogTranslate(learning.classScope==='descendants'?'catalogPreviewDescendants':'catalogPreviewOnlySelected',learning.classScope==='descendants'?' и их последующие профессии':' — только отмеченные') : catalogTranslate('catalogPreviewAnyClass','любой')};}));
+        learning.branches.forEach(function (gate) { values.appendChild(catalogLive(node('li'),'catalogPreviewLearningBranch','Ветка: {branch} ≥ {points}',{branch:meta.skillCategories.find(function (row) { return row.id === gate.branchId; })?.name.en || gate.branchId,points:gate.minimumPoints})); });
+        if (!learning.branches.length) values.appendChild(catalogStatic(node('li'),'catalogPreviewNoBranchRequirements','Требований к очкам веток нет.'));
+      } else values.appendChild(catalogLive(node('li'),'catalogPreviewNativePrerequisites','Исходные условия изучения: {text}',{text:current.nativeSkill?.prerequisites.en || record.prerequisiteCode}));
     }
     if (record.kind === 'class') ['Базовое LP', 'Базовое MP', 'Делитель роста LP от уровня', 'Делитель роста MP от уровня', 'Делитель роста LP от STA', 'Делитель роста MP от SPR'].forEach(function (label, index) { values.appendChild(node('li', label + ': ' + record.progression[index])); });
     if (record.kind === 'racial') {
-      values.appendChild(node('li', record.effectMode === 'replace' ? 'Исходная механика отключена. Действуют только числа ниже.' : 'Исходная механика: ' + current.nativeMechanics));
+      values.appendChild(record.effectMode==='replace'?catalogStatic(node('li'),'catalogPreviewRacialReplaced','Исходная механика отключена. Действуют только числа ниже.'):catalogLive(node('li'),'catalogPreviewRacialNative','Исходная механика: {mechanic}',{mechanic:current.nativeMechanics}));
       var required = record.bonusRequirements;
       if (required) {
         var names = required.weaponCategories.map(function (id) { return id === -1 ? 'без оружия' : meta.categories.find(function (entry) { return entry.legacy_id === id; })?.name.en || '#' + id; });
-        values.appendChild(node('li', 'Условие оружия: ' + (names.length ? names.join(', ') : 'любое')));
-        if (required.shieldRequired) values.appendChild(node('li', 'Требуется щит.'));
-        if (required.ridingRequired) values.appendChild(node('li', 'Требуется верховая езда.'));
+        values.appendChild(catalogLiveComputed(node('li'),'catalogPreviewWeaponCondition','Условие оружия: {weapons}',function(){return {weapons:names.length?names.join(', '):catalogTranslate('catalogPreviewAnyWeapon','любое')};}));
+        if (required.shieldRequired) values.appendChild(catalogStatic(node('li'),'catalogPreviewShieldRequired','Требуется щит.'));
+        if (required.ridingRequired) values.appendChild(catalogStatic(node('li'),'catalogPreviewRidingRequired','Требуется верховая езда.'));
       }
-      if (record.calculationNotes?.ru || record.calculationNotes?.en) target.appendChild(node('p', 'Ограничение расчёта: ' + (record.calculationNotes.ru || record.calculationNotes.en), 'help-text'));
+      if (catalogRecordLocale(record.calculationNotes)) target.appendChild(catalogLiveComputed(node('p',undefined,'help-text'),'catalogPreviewCalculationLimit','Ограничение расчёта: {note}',function(){return {note:catalogRecordLocale(record.calculationNotes)};}));
     }
-    if (record.kind === 'passive' && (record.templateId || !current.nativeSkill?.intrinsicEffect)) values.appendChild(node('li', record.templateId ? 'Новый навык: встроенный эффект шаблона не копируется.' : 'Исходная механика сохраняется. Описание — справка; эффект зависит от изучения, класса и снаряжения.'));
+    if (record.kind === 'passive' && (record.templateId || !current.nativeSkill?.intrinsicEffect)) values.appendChild(catalogStatic(node('li'),record.templateId?'catalogPreviewNewSkill':'catalogPreviewPassiveOriginal',record.templateId?'Новый навык: встроенный эффект шаблона не копируется.':'Исходная механика сохраняется. Описание — справка; эффект зависит от изучения, класса и снаряжения.'));
     (record.effects || []).forEach(function (effect) { values.appendChild(node('li', effectText(effect.stat, effect.value, effect.unit))); });
-    if ((record.kind === 'racial' || record.kind === 'passive') && !record.effects.length) values.appendChild(node('li', record.effectMode === 'replace' || record.intrinsicEffectMode === 'replace' ? 'Рассчитываемых числовых бонусов нет. Справочные эффекты см. в описании и ограничениях.' : 'Дополнительных числовых бонусов нет. Это не означает отсутствие исходного эффекта.'));
+    if ((record.kind === 'racial' || record.kind === 'passive') && !record.effects.length) values.appendChild(catalogStatic(node('li'),record.effectMode==='replace'||record.intrinsicEffectMode==='replace'?'catalogPreviewNoNumericReplace':'catalogPreviewNoNumericExtra',record.effectMode==='replace'||record.intrinsicEffectMode==='replace'?'Рассчитываемых числовых бонусов нет. Справочные эффекты см. в описании и ограничениях.':'Дополнительных числовых бонусов нет. Это не означает отсутствие исходного эффекта.'));
     target.appendChild(values);
     if (record.profiles) {
       var variants = node('details'); variants.dataset.recordProfiles = '';
@@ -367,11 +395,11 @@
       variants.appendChild(catalogStatic(node('p',undefined,'help-text'),'catalogProfileSelectionHelp','Самый конкретный изученный вариант заменяет название, описание и время. Пока его условия не выполнены, действуют основные значения выше. Это не расчёт боевого урона.'));
       var entries = node('ul', undefined, 'record-values');
       record.profiles.forEach(function (profile, position) {
-        var entry = node('li'); entry.appendChild(catalogLive(node('strong'),'catalogProfileNameColon','Вариант {index}: {name}',{index:position+1,name:profile.names.ru||profile.names.en}));
+        var entry = node('li'); entry.appendChild(catalogLiveName(node('strong'),'catalogProfileNameColon','Вариант {index}: {name}',{index:position+1},profile.names));
         entry.appendChild(node('p', learningSummary(profile.learningRequirements), 'help-text'));
         entry.appendChild(catalogLive(node('p',undefined,'help-text'),'catalogProfileTiming','MP: {mp} · применение: {cast} с · перезарядка: {cooldown} с · длительность: {duration} с',{mp:profile.timing[0],cast:profile.timing[1],cooldown:profile.timing[2],duration:profile.timing[3]}));
-        var description = profile.description.ru || profile.description.en;
-        if (description) entry.appendChild(node('p', description, 'record-description'));
+        var description = catalogRecordLocale(profile.description);
+        if (description) entry.appendChild(catalogRecordText(node('p',undefined,'record-description'),profile.description));
         entries.appendChild(entry);
       });
       variants.appendChild(entries); target.appendChild(variants);

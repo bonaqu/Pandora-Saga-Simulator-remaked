@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.11 — 2026-10-12
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Fix the language of published and reviewed catalog previews: equipment, skill, Soul and skill-profile names/descriptions now follow the selected admin RU/EN/JP/TW language with explicit fallback, rather than defaulting to RU. Switching language changes presentation only; it cannot copy data across catalog fields or publish to D1.
+- Add 31 D1-editable EN/RU/JP/TW labels for level, Soul sockets, upgrades, MP and timing, learning requirements, weapon/shield/riding conditions, base weapon attack, unsupported source markers and informational-effect notices.
+- Refresh derived locale labels without remounting editable fields or drafts. Composite labels recalculate nested locale-specific text on every language switch.
+- Add four-language text-safety/placeholder tests and browser coverage of a published record switching all locales without data writes. Frozen Legacy 2.00, formulas, auth and published D1 data remain unchanged.
+
 ## Modern 4.10 — 2026-10-12
 
 ### For users
