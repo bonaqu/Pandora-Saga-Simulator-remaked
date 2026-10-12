@@ -232,6 +232,8 @@ jobs:
       - name: Verify bilingual current-source potion identities offline
         run: node --test tests/tools/pandora-os-bilingual-current.test.mjs
 
+      - name: Verify all-gameplay-fields reference coverage offline
+        run: node --test tests/tools/pandora-os-gameplay-reference.test.mjs
       - name: Syntax-check core JavaScript
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
         shell: bash
