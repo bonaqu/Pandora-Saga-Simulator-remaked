@@ -1,5 +1,31 @@
 # Changelog
 
+## Modern 4.22 — корректный учёт эффективности зелий, 2026-10-12
+
+<!-- release-notes:user:ru -->
+- Исправлена вкладка **«Эффекты зелий»**: при выключенной кнопке **«Учитывать эфф. зелий»** показывается только **базовое восстановление** — исходные единицы ОЗ для обычных зелий и исходный процент для процентных.
+- Например, **Rest POT** с выключенной кнопкой показывает **15%**, без повышения от характеристики **«Леч. зельями»**. При включении кнопки проценты и обычные зелья рассчитываются в ОЗ с учётом соответствующего бонуса.
+- Если выключить кнопку обратно, сразу возвращаются исходные значения. Переключение вкладок не включает учёт автоматически. Существующие формулы, снаряжение и сохранённые билды не изменены.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Fixed the **Potion Effects** tab: when **Use potion effects** is off, show only original potion recovery — base HP amounts for fixed potions and original percentages for percentage potions.
+- For example, **Rest POT** shows **15%** while disabled, without applying **Potion Healing** bonuses. Enable the switch to see calculated HP recovery including the character's applicable potion bonus.
+- Turning the switch off immediately restores the base values. Changing tabs never opts in to the calculation, and character builds and formulas are unchanged.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Исправлена ошибочная независимость Modern-only предпросмотра от `Flag[6]`, введённая в 4.21. В 4.22 рассчитываемые числа выводятся **только при активной кнопке**; при неактивной выводятся 10 фиксированных базовых сумм и 4 исходных процента (5/15/30/18).
+- При включении сохранены прежние `floor(fixed*POT/100)` и `floor(LP*ceil(percent*POT)/10000)`. Убрано сохранение устаревших значений при выключении и при недопустимых числах. Переработаны Playwright-проверки для 14 предметов, обеих сторон переключателя, 1–4 Душ зелий и RU/EN/JP/TW.
+- `js/calc.js`, `js/create.js`, архивный Legacy 2.00, D1, механика изучения и ревизии билдов не менялись.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Correct the unintended Flag[6]-independent Modern potion preview introduced in 4.21. Display calculated HP only when the native switch is ON; otherwise show 10 flat source HP amounts and four original 5/15/30/18-percent labels.
+- Preserve the native `floor(fixed*POT/100)` and `floor(LP*ceil(percent*POT)/10000)` order when enabled; avoid stale values when toggled off or when calculated inputs are invalid. Update Playwright coverage for 14 items, both toggle directions, 1–4 potion Souls and RU/EN/JP/TW.
+- Frozen Legacy 2.00, `js/calc.js`, `js/create.js`, D1 publications and saved-build revision semantics remain unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 4.21 — восстановлены расчёты эффектов зелий, 2026-10-12
 
 <!-- release-notes:user:ru -->
