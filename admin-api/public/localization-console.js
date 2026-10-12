@@ -211,6 +211,85 @@
             detail.append(detailRows);results.append(detail);
           }
         }
+
+        // Explicit, read-only export of EFFECTIVE missing identities. Never
+        // include translation text, session secrets, drafts or API receipts.
+        // Every page is validated against the previously checked 8-group
+        // coverage. D1 does not offer an atomic multi-request snapshot, so any
+        // observed revision/count drift aborts rather than exporting a partial
+        // report that could be mistaken for authoritative game data.
+        const exportButton=localized('button','locAuditExportMissing','Скачать непереведённые ID (JSON)');
+        exportButton.type='button';exportButton.className='secondary';
+        exportButton.dataset.coverageExport='';
+        exportButton.addEventListener('click',async()=>{
+          if(exportButton.disabled||token!==auditRequest)return;
+          exportButton.disabled=true;
+          const missing=[],maxPerGroup=6000,pageSize=40;
+          let completed=0;
+          try{
+            const totalMissing=coverage.reduce((sum,entry)=>sum+entry.missing,0);
+            liveText(auditStatus,'locAuditExportProgress',
+              'Собираю непереведённые ID: {done} из {total}',{done:0,total:totalMissing});
+            for(const entry of coverage){
+              if(entry.missing>maxPerGroup)
+                throw Error('Export safety limit reached; no partial file created');
+              const ids=[],seen=Object.create(null),pages=Math.ceil(entry.missing/pageSize);
+              for(let pageIndex=0;pageIndex<pages;pageIndex++){
+                if(token!==auditRequest||!exportButton.isConnected)return;
+                const params=new URLSearchParams({scope:entry.scope,locale:entry.locale,
+                  group:'all',status:'missing',page:String(pageIndex)});
+                const data=await api('GET',null,'/api/admin/localization?'+params);
+                if(token!==auditRequest||!exportButton.isConnected)return;
+                const remaining=entry.missing-ids.length;
+                if(data.total!==entry.missing||data.page!==pageIndex||
+                   data.pageSize!==pageSize||data.scope!==entry.scope||
+                   data.locale!==entry.locale||data.status!=='missing'||
+                   !Array.isArray(data.items)||
+                   data.items.length!==Math.min(pageSize,remaining))
+                  throw Error('Coverage changed or incomplete page; no file created');
+                for(const row of data.items){
+                  if(row.scope!==entry.scope||row.locale!==entry.locale||
+                     typeof row.id!=='string'||!row.id||row.id.length>256||
+                     typeof row.kind!=='string'||!row.kind||
+                     row.origin!=='fallback'||Object.hasOwn(seen,row.id))
+                    throw Error('Invalid or duplicate missing identity; no file created');
+                  seen[row.id]=true;
+                  // No source/effective/baseline text or drafts in the file.
+                  ids.push({id:row.id,kind:row.kind,managedBy:row.managedBy==='catalog'?'catalog':'translation'});
+                }
+                completed+=data.items.length;
+                liveText(auditStatus,'locAuditExportProgress',
+                  'Собираю непереведённые ID: {done} из {total}',
+                  {done:completed,total:totalMissing});
+              }
+              if(ids.length!==entry.missing)throw Error('Unverified missing identity count');
+              missing.push({scope:entry.scope,locale:entry.locale,
+                expectedMissing:entry.missing,ids:ids.sort((a,b)=>a.id.localeCompare(b.id,'en'))});
+            }
+            // Never imply atomicity or invent D1 revision numbers: these are
+            // eight independent authorized reads plus paginated GETs.
+            const report={schemaVersion:1,createdAt:new Date().toISOString(),
+              basis:'Authorized published effective D1 + catalog status; non-atomic read-only snapshot',
+              atomic:false,readOnly:true,includesTranslationText:false,
+              coverage,missing,observedMissingCount:completed};
+            const blob=new Blob([JSON.stringify(report,null,2)+'\n'],
+              {type:'application/json;charset=utf-8'});
+            const url=URL.createObjectURL(blob);
+            const link=tag('a');link.href=url;
+            link.download='pandora-effective-missing-translations-'+new Date().toISOString().slice(0,10)+'.json';
+            link.hidden=true;auditPanel.append(link);
+            try{link.click();}finally{link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+            liveText(auditStatus,'locAuditExportReady',
+              'Отчёт собран: {count} ID. Переводы и черновики не выгружались.',
+              {count:completed});
+          }catch(error){
+            if(token===auditRequest&&auditPanel.isConnected)
+              liveText(auditStatus,'locAuditExportFailure',
+                'Выгрузка остановлена: {error}. Неполный файл не создан.',
+                {error:error.message});
+          }finally{if(exportButton.isConnected)exportButton.disabled=false;}
+        });
+        results.prepend(exportButton);
         liveText(auditStatus,'locAuditCompleted','Проверка покрытия завершена. Изменения не публиковались.');
       }catch(error){
         if(token===auditRequest&&auditPanel.isConnected){

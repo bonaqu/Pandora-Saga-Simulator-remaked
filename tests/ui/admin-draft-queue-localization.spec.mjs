@@ -41,7 +41,8 @@ test('draft queue changes RU/EN/JP/TW texts without clearing search, checks or D
   const q=page.locator('.localization-queue');
   await expect(q.locator('summary')).toHaveText('Saved translation drafts: 1');
   await q.locator('summary').click();
-  const input=q.getByRole('searchbox',{name:'Search saved draft translations'});
+  const input=q.locator('input[type="search"]');
+  await expect(input).toHaveAttribute('aria-label','Search saved draft translations');
   await input.fill('Providence');
   const language=q.locator('select').first();
   await language.selectOption('ru');
