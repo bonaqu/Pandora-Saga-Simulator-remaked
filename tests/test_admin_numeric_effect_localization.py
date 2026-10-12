@@ -26,10 +26,10 @@ class NumericEditorLocalizationTests(unittest.TestCase):
     def test_all_60_new_strings_have_safe_four_language_coverage(self):
         self.assertEqual(len(CODES),33)
         self.assertEqual(len(SUPPORT),27)
-        mapping=re.search(r'var effectTranslationKeys = \\{(.*?)\\};',CODE,re.DOTALL)
+        mapping=re.search(r'var effectTranslationKeys = \{(.*?)\};',CODE,re.DOTALL)
         self.assertIsNotNone(mapping)
         aliases=dict((int(number),key) for number,key in re.findall(
-            r"(\\d+):\\s*'([A-Za-z]+)'",mapping.group(1)))
+            r"(\d+):\s*'([A-Za-z]+)'",mapping.group(1)))
         self.assertEqual(set(aliases),set(CODES))
         self.assertEqual(len(set(aliases.values())),33)
         names=list(aliases.values())+list(SUPPORT)
