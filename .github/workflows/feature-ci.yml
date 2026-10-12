@@ -232,61 +232,32 @@ jobs:
       - name: Verify bilingual current-source potion identities offline
         run: node --test tests/tools/pandora-os-bilingual-current.test.mjs
 
-      # Temporary read-only deep live probe; remove after capturing the verified result.
-      - name: One-off all-gameplay-fields server/client drift probe
+      - name: Verify all-gameplay-fields reference coverage offline
+        run: node --test tests/tools/pandora-os-gameplay-reference.test.mjs
+      # Temporary read-only probe: remove this step before merge.
+      - name: One-off live broad reference audit and published calculator rules
         if: github.event_name == 'pull_request' && github.head_ref == 'audit/live-gameplay-parity-20261012'
         continue-on-error: true
         run: |
+          node scripts/audit_pandora_os_gameplay_reference.mjs
+          node scripts/audit_current_racial_source.mjs
+          node scripts/audit_current_skill_source.mjs
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';
           import crypto from 'node:crypto';
-          const base='https://pandorasaga-os.com/gamedata/';
-          const names=['classes','items','souls','skills','racialPassives','strings.en','strings.ru'];
-          const data={};
-          await Promise.all(names.map(async name=>{
-            const response=await fetch(base+name+'.json',{signal:AbortSignal.timeout(25000)});
-            if(!response.ok)throw Error(name+' '+response.status);
-            data[name]=await response.json();
-          }));
-          const skip=new Set(['name','desc','icon','iconId']);
-          const canonical=x=>Array.isArray(x)?x.map(canonical):x&&typeof x==='object'?
-            Object.fromEntries(Object.keys(x).filter(k=>!skip.has(k)).sort().map(k=>[k,canonical(x[k])])):x;
-          const oldItems=JSON.parse(fs.readFileSync('admin-api/data/pandora-os-live-items-20261007.json','utf8'));
-          const oldSouls=JSON.parse(fs.readFileSync('admin-api/data/pandora-os-live-souls-20261007.json','utf8'));
-          const oldClasses=JSON.parse(fs.readFileSync('tests/fixtures/pandora-os-classes-20261011.json','utf8'));
-          function diff(now,old){const changed=[],added=[],removed=[];
-            for(const [id,v] of Object.entries(old)){
-              if(!now[id]){removed.push(id);continue}
-              const a=canonical(v),b=canonical(now[id]);
-              if(JSON.stringify(a)!==JSON.stringify(b)){
-                const keys=[...new Set([...Object.keys(a),...Object.keys(b)])].sort()
-                  .filter(k=>JSON.stringify(a[k])!==JSON.stringify(b[k]));
-                changed.push({id,keys,fieldExamples:keys.slice(0,3).map(k=>({key:k,old:a[k],current:b[k]}))});
-              }
-            }
-            for(const id of Object.keys(now))if(!old[id])added.push(id);
-            return {datedCount:Object.keys(old).length,currentCount:Object.keys(now).length,changed:changed.length,added:added.length,removed:removed.length,
-              changeExamples:changed.slice(0,10),newExamples:added.slice(0,15),removedExamples:removed.slice(0,10)};
+          const url='https://pandorasaga-os.com/assets/BuildCalculator-BiybySwQ.js';
+          const r=await fetch(url,{signal:AbortSignal.timeout(22000)});
+          if(!r.ok)throw Error('Calculator JS '+r.status);
+          const body=await r.text();
+          const terms=['abiScaleP','abiConst','maxLifeConst','maxManaConst','maxLifeScaleP','maxManaScaleP',
+            'Math.floor','Math.round','critical','skillBonus','calcStats','effects','attackInterval',
+            'masteryPotion','physicalDefense','magicResistance'];
+          const hit={};
+          for(const term of terms){
+            const indexes=[];let start=0;
+            while(indexes.length<2){const i=body.indexOf(term,start);if(i<0)break;indexes.push(i);start=i+term.length;}
+            hit[term]=indexes.map(i=>body.slice(Math.max(0,i-110),Math.min(body.length,i+term.length+185)));
           }
-          const skills=Object.values(data.skills);
-          const eligible=skills.filter(r=>r.learnable===true&&Object.values(r.classes||{}).some(Boolean));
-          const effects=(rows,field)=>{const counts={};for(const v of Object.values(rows))
-            for(const eff of v[field]||[]){const k=eff.func||eff.ep;if(typeof k==='string')counts[k]=(counts[k]||0)+1;}
-            return {total:Object.values(counts).reduce((a,b)=>a+b,0),unique:Object.keys(counts).length,
-              unexplained:Object.entries(counts).filter(([k])=>/LIFE|MANA|POTION|CAST|RES|CRIT|DAMAGE|RANGE|ATTACK|EQUIP/.test(k)).sort((a,b)=>b[1]-a[1]).slice(0,20)};};
-          const frontend=await fetch('https://pandorasaga-os.com/assets/BuildCalculator-BiybySwQ.js',{signal:AbortSignal.timeout(25000)});
-          const js=frontend.ok?await frontend.text():'';
-          console.log('LIVE_GAMEPLAY_FIELDS='+JSON.stringify({
-            ipReference:'206.221.176.5 (historical DNS); current resources fetched by HTTPS hostname, NOT IP scan',
-            items:diff(data.items,oldItems),souls:diff(data.souls,oldSouls),classes:diff(data.classes,oldClasses),
-            counts:{classes:Object.keys(data.classes).length,skills:skills.length,learnableCharacter:eligible.length,
-              racial:Object.keys(data.racialPassives).length,englishSkills:Object.keys(data['strings.en'].skills||{}).length},
-            effects:{items:effects(data.items,'effects'),souls:effects(data.souls,'effects'),skills:effects(data.skills,'funcs')},
-            frontend:{ok:frontend.ok,status:frontend.status,size:js.length,sha256:crypto.createHash('sha256').update(js).digest('hex'),
-              mentions:{round:js.includes('Math.round'),floor:js.includes('Math.floor'),ceil:js.includes('Math.ceil'),
-                abiScaleP:js.includes('abiScaleP'),maxLifeConst:js.includes('maxLifeConst'),EP_MAXLIFE_SCALE:js.includes('EP_MAXLIFE_SCALE')}},
-            racial:data.racialPassives
-          }));
+          console.log('CURRENT_CALCULATOR_SOURCE='+JSON.stringify({sha256:crypto.createHash('sha256').update(body).digest('hex'),length:body.length,hit}));
           NODE
 
       - name: Syntax-check core JavaScript
