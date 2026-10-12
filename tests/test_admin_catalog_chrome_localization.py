@@ -38,7 +38,11 @@ class CatalogChromeLocalizationTests(unittest.TestCase):
         match = re.search(r"var catalogFormLabels = (\{.*?\});", CATALOG, re.DOTALL)
         self.assertIsNotNone(match)
         captions = json.loads(match.group(1))
-        self.assertEqual(len(captions), 30)
+        self.assertEqual(len(captions), 36)
+        for label in ('Базовое LP','Базовое MP','Делитель роста LP от уровня',
+                      'Делитель роста MP от уровня','Делитель роста LP от STA',
+                      'Делитель роста MP от SPR'):
+            self.assertIn(label,captions)
         self.assertEqual(len(set(captions.values())), 30)
         for original, suffix in captions.items():
             key = "adminShell." + suffix
