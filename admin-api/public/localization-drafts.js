@@ -7,7 +7,8 @@ function el(tag,text,klass){
   return e;
 }
 function mount(host,{api,onPublished,onJump,onQueueChanged}){
-  let drafts=new Map(),selected=new Set(),busy=false,active=true;
+  // Legacy replaces window.Set; Map retains the required id-selection semantics.
+  let drafts=new Map(),selected=new Map(),busy=false,active=true;
   const key=item=>item.scope+'\0'+item.id+'\0'+item.locale;
   // Dynamic messages are projected into existing nodes on locale changes.
   // Never remount filters, selections, drafts or optimistic D1 publication.
@@ -77,7 +78,7 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
       const reply=await api('GET',null,'/api/admin/localization/drafts');
       if(!active)return;
       drafts=new Map(reply.items.map(item=>[key(item),item]));
-      selected=new Set([...selected].filter(x=>drafts.has(x)));
+      selected=new Map([...selected].filter(([id])=>drafts.has(id)));
       messageNode(summary,'draftQueueCount','Saved translation drafts: {count}',()=>({count:drafts.size}));
       render();onQueueChanged?.();
     }catch(error){if(active)notify('draftQueueRefreshError','Could not refresh drafts: {error}',{error:error.message},true);}
@@ -94,7 +95,7 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
     const bar=el('div',undefined,'localization-queue-toolbar');
     const output=el('output');
     const selectAll=localized(el('button'),'draftQueueSelectFirst','Select first 50');selectAll.type='button';selectAll.className='secondary';
-    selectAll.onclick=()=>{for(const [id] of visible.slice(0,50))selected.add(id);render();};
+    selectAll.onclick=()=>{for(const [id] of visible.slice(0,50))selected.set(id,true);render();};
     const clear=localized(el('button'),'draftQueueClearSelected','Clear selection');clear.type='button';clear.className='secondary';
     clear.onclick=()=>{selected.clear();render();};
     const publish=localized(el('button'),'draftQueuePublishSelected','Publish selected');publish.type='button';
@@ -111,7 +112,7 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
     for(const [id,draft] of visible){
       const row=el('div',undefined,'localization-queue-row');
       const label=el('label'),check=el('input');check.type='checkbox';check.checked=selected.has(id);check.disabled=busy;
-      check.onchange=()=>{if(check.checked)selected.add(id);else selected.delete(id);updateSelection();};
+      check.onchange=()=>{if(check.checked)selected.set(id,true);else selected.delete(id);updateSelection();};
       const details=el('span',undefined,'localization-queue-row-text');
       details.append(el('strong',draft.id+' · '+draft.locale.toUpperCase()),
         messageNode(el('small'),'draftQueueDraftVersion','{scope} · draft version {version}',
@@ -138,7 +139,7 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
   }
   async function publishSelected(){
     if(busy||!selected.size||selected.size>50)return;
-    const items=[...selected].map(id=>drafts.get(id)).filter(Boolean);
+    const items=[...selected.keys()].map(id=>drafts.get(id)).filter(Boolean);
     if(!items.length)return;
     if(!window.confirm(tr('draftQueueConfirmPublish',
       'Publish {count} saved translations in ONE atomic operation?',{count:items.length})))return;
