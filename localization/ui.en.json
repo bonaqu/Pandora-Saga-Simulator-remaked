@@ -724,5 +724,9 @@
   "adminShell.bulkEditorChanged": "The editor context changed.",
   "adminShell.bulkReceiptUnconfirmed": "Publication state unconfirmed: {error}",
   "adminShell.bulkUncertainPublish": "Unable to confirm operation. DO NOT blindly publish again. Operation ID: {operationId}. {error}",
-  "adminShell.bulkFailedPublish": "Batch not published: {error}"
+  "adminShell.bulkFailedPublish": "Batch not published: {error}",
+  "adminShell.locAuditExportMissing": "Download untranslated IDs (JSON)",
+  "adminShell.locAuditExportProgress": "Collecting untranslated IDs: {done} of {total}",
+  "adminShell.locAuditExportReady": "Report ready: {count} IDs. Translation texts and drafts were not exported.",
+  "adminShell.locAuditExportFailure": "Export stopped: {error}. No incomplete file was created."
 }
