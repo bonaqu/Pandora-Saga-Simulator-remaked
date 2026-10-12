@@ -61,6 +61,15 @@ class AdminWorkflowLiveTranslationsTests(unittest.TestCase):
         self.assertIn("textarea.value=drafts.has(identity(data))",src)
         self.assertIn("expectedVersion:data.version",src)
 
+    def test_browser_regressions_are_wired_into_both_ui_suites(self):
+        package=json.loads((ROOT/'package.json').read_text(encoding='utf-8'))
+        for script in ('test:ui:admin','test:ui:ci'):
+            with self.subTest(script=script):
+                self.assertIn('tests/ui/admin-bulk-error-localization.spec.mjs',
+                              package['scripts'][script])
+                self.assertIn('tests/ui/admin-bulk-localization.spec.mjs',
+                              package['scripts'][script])
+
     def test_bulk_uncertain_publication_requires_receipt_and_never_autoretries(self):
         src=SOURCES['bulk']
         self.assertIn("bulkUncertainPublish",src)
