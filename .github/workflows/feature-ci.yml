@@ -226,6 +226,21 @@ jobs:
       - name: Validate independent live/offline 164-weapon base-range drift comparator
         run: node --test tests/tools/pandora-os-live-weapon-ranges-drift.test.mjs
 
+      - name: Verify healing input source drift comparator against dated registries
+        run: node --test tests/tools/pandora-os-live-healing-inputs.test.mjs
+
+      # An exploratory one-PR live probe only; external network is not a
+      # permanent dependency of the required CI validation matrix.
+      - name: Probe current healing inputs from primary registry (read-only)
+        if: github.event_name == 'pull_request' && github.head_ref == 'audit/healing-input-parity-20261012'
+        continue-on-error: true
+        run: node scripts/audit_pandora_os_live_healing_inputs.mjs
+
+      - name: Probe current skill variants from primary registry (read-only)
+        if: github.event_name == 'pull_request' && github.head_ref == 'audit/healing-input-parity-20261012'
+        continue-on-error: true
+        run: node scripts/audit_current_skill_source.mjs
+
       - name: Syntax-check core JavaScript
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
         shell: bash
