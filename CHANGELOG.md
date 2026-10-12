@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 4.20 — независимый аудит дальности оружия, 2026-10-12
+
+<!-- admin-notes:ru -->
+- Добавлен читающий анализатор `scripts/audit_pandora_os_live_weapon_ranges.mjs`, проверяющий **164 стабильных модели оружия**, включая 23 современных UUID-записи, по текущему публичному справочнику оружия Pandora Saga OS либо явно переданному локальному JSON.
+- По независимым датированным снимкам 7 и 11 октября 2026 года 164 исходные дистанции/типы совпали. Новые тесты определяют изменения диапазонов, типов и слотов, исчезновение идентичностей, неизвестные дистанции и недоверенные источники. В журнале ограничено число примеров, SHA-256 идентифицирует сравнённые данные, `--strict` сигнализирует расхождения.
+- При неудаче живого запроса сохранённый снимок не подменяет его. Измеряется **только базовая дальность**, без Riding, EquipOpt[40/41], навыков и пассивок; полное совпадение с игровой механикой не заявляется. Legacy, формулы Modern, D1, авторизация и сохранённые билды не изменены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add a read-only `scripts/audit_pandora_os_live_weapon_ranges.mjs` audit of **164 stable weapon identities** (including 23 Modern UUID rows), comparing current public Pandora Saga OS item JSON or an explicitly supplied local source with the dated baseline.
+- Two separately dated October 7 and October 11, 2026 source snapshots agree on all 164 base ranges, kinds and slots. Offline tests independently flag range, kind and slot drift, removed IDs, missing numbers and untrusted inputs; deterministic SHA-256, bounded examples and strict exit status support verification.
+- Live HTTP failures never silently substitute the historical fixture. This does **not** calculate effective attack range with Riding, EquipOpt[40/41], skills or passives, or claim game-client parity. No changes to Legacy, Modern formulas, D1, auth or saved builds.
+<!-- /admin-notes:en -->
+
 ## Modern 4.19 — восстановление четырёхъязычного редактора числовых эффектов, 2026-10-12
 
 <!-- admin-notes:ru -->
