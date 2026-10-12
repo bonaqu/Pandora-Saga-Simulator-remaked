@@ -728,5 +728,6 @@
   "adminShell.locAuditExportMissing": "Download untranslated IDs (JSON)",
   "adminShell.locAuditExportProgress": "Collecting untranslated IDs: {done} of {total}",
   "adminShell.locAuditExportReady": "Report ready: {count} IDs. Translation texts and drafts were not exported.",
-  "adminShell.locAuditExportFailure": "Export stopped: {error}. No incomplete file was created."
+  "adminShell.locAuditExportFailure": "Export stopped: {error}. No incomplete file was created.",
+  "adminShell.locAuditExportVerify": "Checking that {count} missing IDs remain unchanged with a second read…"
 }
