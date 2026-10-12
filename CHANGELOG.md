@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 4.10 — перевод редактора вариантов навыков, 2026-10-12
+
+<!-- admin-notes:ru -->
+- Доработано D1-приоритетное переключение языка в редакторе условных вариантов навыков и в предпросмотре каталога: добавлены 14 безопасных ключей RU/EN/JP/TW.
+- Локализованы условия применения, объяснения веток, названия и количество вариантов, характеристики MP/времени, пустые состояния редактора и этапы проверки перед публикацией.
+- Исправлена ловушка динамического обновления: после создания или изменения варианта смена языка не возвращает прежнюю надпись «Вариантов пока нет» и не затирает описание выбранных условий. Добавлены регрессионные проверки неизменности введённых данных и отсутствия записи в D1.
+- Плейсхолдеры переводов и отсутствие HTML проходят автоматическую валидацию. Тексты D1 приоритетнее утверждённых fallback. Изменений серверных API, механики, авторизации, ревизий сохранённых билдов и Legacy 2.00 нет.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Complete D1-first locale switching for conditional skill variants and catalog previews by adding 14 approved RU/EN/JP/TW keys.
+- Localize learning conditions, branch explanations, variant names and counts, MP/timing values, empty editor states and publication review workflow.
+- Fix a dynamic-update trap: once a variant is created or changed, switching locales cannot restore stale "no variants" copy or erase the current condition summary. Add regression coverage for preserving entered fields without D1 writes.
+- Validate interpolation placeholders and disallow HTML in all approved copy; D1 remains authoritative over fallback. Server APIs, game mechanics, authentication, saved-build revisions and frozen Legacy 2.00 are unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 4.09 — доступность каталога и комбинированные тесты, 2026-10-12
 
 <!-- admin-notes:ru -->

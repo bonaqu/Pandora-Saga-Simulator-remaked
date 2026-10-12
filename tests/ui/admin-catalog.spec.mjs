@@ -976,3 +976,55 @@ test('catalog status localizes through D1 without discarding draft edits or repe
   expect(errors).toEqual([]);
   expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n).toBe(0);
 });
+
+
+test('D1 profile captions switch locales without resurrecting empty text or wiping unsaved variants',async({page})=>{
+  const {sqlite,errors}=await openConsole(page);
+  await page.getByRole('combobox',{name:'Каталог',exact:true}).selectOption('active');
+  await page.getByRole('searchbox',{name:'Поиск в каталоге'}).fill('skill_entry.5.3');
+  await page.locator('.catalog-entry').first().click();
+  const section=page.locator('[data-skill-profiles]');
+  const summary=section.locator(':scope > p.help-text').nth(1);
+  await expect(summary).toHaveText('Вариантов пока нет. Используются основные поля навыка выше.');
+  await page.evaluate(()=>{
+    window.__catalogPriorTranslator=window.PandoraAdminI18n;
+    window.PandoraAdminI18n={t:(key,fallback)=>({
+      'adminShell.catalogProfileEmptyEdit':'No variants published (D1 locale)!',
+      'adminShell.catalogProfileOptionName':'Live variant {index}: {name}',
+      'adminShell.catalogProfileCount':'Conditional profiles: {count}'
+    })[key]||fallback};
+    window.dispatchEvent(new Event('pandora-admin:localechange'));
+  });
+  await expect(summary).toHaveText('No variants published (D1 locale)!');
+  await section.getByRole('button',{name:'Добавить вариант',exact:true}).click();
+  const input=section.locator('[data-profile-field="names"][data-language="en"]');
+  await input.fill('Preview D1 Variant');
+  const translatedName=section.locator('[data-profile-field="names"][data-language="ru"]');
+  await translatedName.fill('Профиль D1');
+  const options=section.locator('[data-profile-choice] option');
+  await expect(options.first()).toContainText('Live variant 1: Профиль D1');
+  await expect(summary).not.toContainText('No variants published (D1 locale)!');
+  await page.evaluate(()=>{
+    // Re-publish locale-only text after a variant is created. The editor
+    // summary is now data-derived, no longer an empty-state translation.
+    window.PandoraAdminI18n={t:(key,fallback)=>({
+      'adminShell.catalogProfileEmptyEdit':'OLD EMPTY MESSAGE MUST NOT RETURN',
+      'adminShell.catalogProfileOptionName':'改訂 {index} · {name}'
+    })[key]||fallback};
+    window.dispatchEvent(new Event('pandora-admin:localechange'));
+  });
+  await expect(input).toHaveValue('Preview D1 Variant');
+  await expect(translatedName).toHaveValue('Профиль D1');
+  await expect(options.first()).toContainText('改訂 1 · Профиль D1');
+  await expect(summary).not.toContainText('OLD EMPTY MESSAGE MUST NOT RETURN');
+  await page.evaluate(()=>{
+    if(window.__catalogPriorTranslator===undefined)delete window.PandoraAdminI18n;
+    else window.PandoraAdminI18n=window.__catalogPriorTranslator;
+    delete window.__catalogPriorTranslator;
+    window.dispatchEvent(new Event('pandora-admin:localechange'));
+  });
+  await expect(input).toHaveValue('Preview D1 Variant');
+  await expect(translatedName).toHaveValue('Профиль D1');
+  expect(sqlite.prepare('SELECT COUNT(*) AS count FROM catalog_drafts').get().count).toBe(0);
+  expect(errors).toEqual([]);
+});

@@ -76,6 +76,12 @@
     node.textContent=catalogTranslate(key,fallback,values);
     return node;
   }
+  function catalogRaw(node,text) {
+    catalogLiveValues.delete(node);
+    delete node.dataset.catalogLiveI18n;
+    node.textContent=text;
+    return node;
+  }
   function catalogAttribute(node,attribute,key,fallback) {
     node.setAttribute('data-admin-i18n-'+(attribute==='aria-label'?'aria':attribute),'adminShell.'+key);
     node.setAttribute(attribute,catalogTranslate(key,fallback));
@@ -300,7 +306,7 @@
     return effectLabel(id) + ': ' + (Number.isFinite(number) ? (number > 0 ? '+' : '') + number : value) + (suffix ? ' ' + suffix : '');
   }
   function recordView(record, target, title) {
-    target.replaceChildren(node('h4', title));
+    target.replaceChildren(title.startsWith('Сейчас на сайте · версия ') ? catalogLive(node('h4'),'catalogPublishedVersion','Сейчас на сайте · версия {revision}',{revision:current.catalogRevision}):node('h4',title));
     if (!record) { target.appendChild(node('p', 'Запись ещё не опубликована и на сайте не используется.', 'help-text')); return; }
     target.appendChild(node('p', record.names.ru || record.names.en, 'record-name'));
     var description = record.description.ru || record.description.en;
@@ -357,13 +363,13 @@
     target.appendChild(values);
     if (record.profiles) {
       var variants = node('details'); variants.dataset.recordProfiles = '';
-      variants.appendChild(node('summary', 'Условные варианты: ' + record.profiles.length));
-      variants.appendChild(node('p', 'Самый конкретный изученный вариант заменяет название, описание и время. Пока его условия не выполнены, действуют основные значения выше. Это не расчёт боевого урона.', 'help-text'));
+      variants.appendChild(catalogLive(node('summary'),'catalogProfileCount','Условные варианты: {count}',{count:record.profiles.length}));
+      variants.appendChild(catalogStatic(node('p',undefined,'help-text'),'catalogProfileSelectionHelp','Самый конкретный изученный вариант заменяет название, описание и время. Пока его условия не выполнены, действуют основные значения выше. Это не расчёт боевого урона.'));
       var entries = node('ul', undefined, 'record-values');
       record.profiles.forEach(function (profile, position) {
-        var entry = node('li'); entry.appendChild(node('strong', 'Вариант ' + (position + 1) + ': ' + (profile.names.ru || profile.names.en)));
+        var entry = node('li'); entry.appendChild(catalogLive(node('strong'),'catalogProfileNameColon','Вариант {index}: {name}',{index:position+1,name:profile.names.ru||profile.names.en}));
         entry.appendChild(node('p', learningSummary(profile.learningRequirements), 'help-text'));
-        entry.appendChild(node('p', 'MP: ' + profile.timing[0] + ' · применение: ' + profile.timing[1] + ' с · перезарядка: ' + profile.timing[2] + ' с · длительность: ' + profile.timing[3] + ' с', 'help-text'));
+        entry.appendChild(catalogLive(node('p',undefined,'help-text'),'catalogProfileTiming','MP: {mp} · применение: {cast} с · перезарядка: {cooldown} с · длительность: {duration} с',{mp:profile.timing[0],cast:profile.timing[1],cooldown:profile.timing[2],duration:profile.timing[3]}));
         var description = profile.description.ru || profile.description.en;
         if (description) entry.appendChild(node('p', description, 'record-description'));
         entries.appendChild(entry);
@@ -391,7 +397,7 @@
     finally { if (thisGeneration === generation) { host.inert = false; host.removeAttribute('aria-busy'); } }
   }
   function review() {
-    var workflow = node('p', '1. Измените поля → 2. Проверьте изменения → 3. Сохраните черновик → 4. Опубликуйте. Черновик виден только вам; публикация меняет Modern, но не музей Legacy и не старые версии билдов.', 'editor-workflow');
+    var workflow = catalogStatic(node('p',undefined,'editor-workflow'),'catalogReviewWorkflow','1. Измените поля → 2. Проверьте изменения → 3. Сохраните черновик → 4. Опубликуйте. Черновик виден только вам; публикация меняет Modern, но не музей Legacy и не старые версии билдов.');
     workflow.dataset.editorWorkflow = ''; editor.appendChild(workflow);
     var panels = node('div', undefined, 'record-review');
     var live = node('section', undefined, 'record-panel'), preview = node('section', undefined, 'record-panel');
@@ -546,7 +552,7 @@
       var checkbox = checkboxField(entry.label, required.classIds.indexOf(id) !== -1, 'learningClass', classOptions);
       checkbox.dataset.learningClass = id;
     }); custom.appendChild(choices);
-    custom.appendChild(node('p', 'Все указанные ниже ветки нужны одновременно. Числа — очки ветки, включая бонусы снаряжения. Доступные очки определяют наличие навыка в списке; вложенные — изучен ли он.', 'help-text'));
+    custom.appendChild(catalogStatic(node('p',undefined,'help-text'),'catalogLearningBranchesHelp','Все указанные ниже ветки нужны одновременно. Числа — очки ветки, включая бонусы снаряжения. Доступные очки определяют наличие навыка в списке; вложенные — изучен ли он.'));
     var branches = node('div'); branches.dataset.learningBranches = ''; custom.appendChild(branches);
     required.branches.forEach(function (gate) { learningBranchRow(gate, branches); });
     custom.appendChild(button('Добавить требование ветки', function () { learningBranchRow({ branchId: 'skill_category.1', minimumPoints: 1 }, branches); changing(); }, 'secondary'));
@@ -559,14 +565,14 @@
     var drafts = structuredClone(edit.profiles || []), index = 0, rendering = false;
     var section = node('fieldset', undefined, 'numeric-effects'); section.dataset.skillProfiles = '';
     section.appendChild(node('legend', 'Варианты этого навыка для разных классов и уровней'));
-    section.appendChild(node('p', 'Это один навык, а не новые копии. Применяется самый конкретный изученный вариант. Если его условия ещё не выполнены, используются основные поля выше. Условия вариантов не должны совпадать или конфликтовать.', 'help-text'));
+    section.appendChild(catalogStatic(node('p',undefined,'help-text'),'catalogProfileRulesIntro','Это один навык, а не новые копии. Применяется самый конкретный изученный вариант. Если его условия ещё не выполнены, используются основные поля выше. Условия вариантов не должны совпадать или конфликтовать.'));
     var controls = node('div', undefined, 'basic-fields profile-controls'); section.appendChild(controls);
     var choice = selectField('Редактируемый вариант', [], '', 'profileChoice', controls); choice.dataset.profileChoice = '';
     var panel = node('div'); panel.dataset.profileEditor = '';
     var summary = node('p', undefined, 'help-text'); section.appendChild(summary);
     function value(field) { return panel.querySelector('[data-profile-field="' + field + '"]').value; }
     function saveFields() {
-      if (!drafts.length) { summary.textContent = 'Вариантов пока нет. Основная запись остаётся без изменений.'; return; }
+      if (!drafts.length) { catalogLive(summary,'catalogProfileEmptySave','Вариантов пока нет. Основная запись остаётся без изменений.'); return; }
       var profile = drafts[index];
       ['names', 'description'].forEach(function (field) {
         panel.querySelectorAll('[data-profile-field="' + field + '"][data-language]').forEach(function (input) { profile[field][input.dataset.language] = input.value; });
@@ -584,11 +590,11 @@
       rendering = true;
       try {
       choice.replaceChildren();
-      drafts.forEach(function (profile, position) { var option = node('option', 'Вариант ' + (position + 1) + ' · ' + (profile.names.ru || profile.names.en)); option.value = position; choice.appendChild(option); });
+      drafts.forEach(function (profile, position) { var option = catalogLive(node('option'),'catalogProfileOptionName','Вариант {index} · {name}',{index:position+1,name:profile.names.ru||profile.names.en}); option.value = position; choice.appendChild(option); });
       if (!drafts.length) { var empty = node('option', 'Вариантов нет — основные поля выше'); empty.value = ''; choice.appendChild(empty); }
       choice.disabled = !drafts.length; choice.value = drafts.length ? String(index) : '';
       add.disabled = drafts.length >= 8; remove.disabled = !drafts.length; panel.replaceChildren();
-      if (!drafts.length) { summary.textContent = 'Вариантов пока нет. Используются основные поля навыка выше.'; return; }
+      if (!drafts.length) { catalogLive(summary,'catalogProfileEmptyEdit','Вариантов пока нет. Используются основные поля навыка выше.'); return; }
       var profile = drafts[index];
       multilingual('Название выбранного варианта', 'names', profile.names, panel, false);
       multilingual('Описание выбранного варианта', 'description', profile.description, panel, true);
@@ -597,18 +603,18 @@
       var learning = panel.querySelector('fieldset.numeric-effects'), conditions = learning.querySelector('[data-custom-learning]');
       // Profiles always have explicit conditions; no misleading native fallback
       // selector inside the profile itself. The main record remains the fallback.
-      conditions.querySelector('legend').textContent = 'Когда применяется выбранный вариант';
+      catalogStatic(conditions.querySelector('legend'),'catalogProfileConditions','Когда применяется выбранный вариант');
       learning.replaceWith(conditions);
       var help = conditions.querySelectorAll('p.help-text');
-      help[0].textContent = 'Все отмеченные ветки нужны одновременно. Вариант включается после достижения класса, уровня и вложенных очков, включая бонусы снаряжения.';
-      help[1].textContent = 'Название, описание и MP/время меняются вместе. Эти поля не создают новую формулу боевого урона.';
+      catalogStatic(help[0],'catalogProfileBranchesHelp','Все отмеченные ветки нужны одновременно. Вариант включается после достижения класса, уровня и вложенных очков, включая бонусы снаряжения.');
+      catalogStatic(help[1],'catalogProfileTimingHelp','Название, описание и MP/время меняются вместе. Эти поля не создают новую формулу боевого урона.');
       var timing = node('div', undefined, 'basic-fields'); panel.appendChild(timing);
       [['mpCost', 'MP варианта'], ['castSeconds', 'Применение, секунд'], ['cooldownSeconds', 'Перезарядка, секунд'], ['durationSeconds', 'Длительность, секунд']].forEach(function (field, position) {
         var input = inputField(field[1], 'number', profile[field[0]], field[0], timing, 0, position === 0 ? 100000 : 86400);
         input.step = position === 0 ? '1' : '.001'; input.required = true;
       });
       panel.querySelectorAll('[data-field]').forEach(function (input) { input.dataset.profileField = input.dataset.field; delete input.dataset.field; });
-      summary.textContent = learningSummary(profile.learningRequirements);
+      catalogRaw(summary,learningSummary(profile.learningRequirements));
       } finally { rendering = false; }
     }
     function updateSummary() {
@@ -616,8 +622,8 @@
       // event. Never collect that DOM into the newly selected profile.
       if (rendering) return;
       saveFields(); if (!drafts.length) return;
-      summary.textContent = learningSummary(drafts[index].learningRequirements);
-      choice.options[index].textContent = 'Вариант ' + (index + 1) + ' · ' + (drafts[index].names.ru || drafts[index].names.en);
+      catalogRaw(summary,learningSummary(drafts[index].learningRequirements));
+      catalogLive(choice.options[index],'catalogProfileOptionName','Вариант {index} · {name}',{index:index+1,name:drafts[index].names.ru||drafts[index].names.en});
     }
     panel.addEventListener('input', updateSummary); panel.addEventListener('change', updateSummary);
     choice.addEventListener('change', function () {

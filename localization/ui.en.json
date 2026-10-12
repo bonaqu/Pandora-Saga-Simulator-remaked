@@ -663,5 +663,19 @@
   "adminShell.bulkEditProposalAria": "Edit proposed “After” for {id}",
   "adminShell.bulkRevertProposalAria": "Restore automatic proposal for {id}",
   "adminShell.bulkFinalTranslationAria": "Final translation for {id}",
-  "adminShell.bulkSavedDraftSuffix": " · has an unpublished draft"
+  "adminShell.bulkSavedDraftSuffix": " · has an unpublished draft",
+  "adminShell.catalogPublishedVersion": "Currently published · revision {revision}",
+  "adminShell.catalogProfileCount": "Conditional variants: {count}",
+  "adminShell.catalogProfileSelectionHelp": "The most specific learned variant replaces the name, description and timing. Until its conditions are met, the base values above apply. This is not a combat damage formula.",
+  "adminShell.catalogProfileNameColon": "Variant {index}: {name}",
+  "adminShell.catalogProfileTiming": "MP: {mp} · cast: {cast} s · cooldown: {cooldown} s · duration: {duration} s",
+  "adminShell.catalogReviewWorkflow": "1. Edit fields → 2. Review changes → 3. Save draft → 4. Publish. Drafts are private; publication changes Modern, not frozen Legacy or existing build versions.",
+  "adminShell.catalogLearningBranchesHelp": "Every branch listed below is required. Values are branch points including equipment bonuses. Available points determine whether a skill appears; invested points determine whether it is learned.",
+  "adminShell.catalogProfileRulesIntro": "This is one skill, not copies. The most specific learned variant applies. Until its conditions are met, the base fields above remain active. Variant conditions must not overlap ambiguously.",
+  "adminShell.catalogProfileEmptySave": "No variants yet. The base record remains unchanged.",
+  "adminShell.catalogProfileOptionName": "Variant {index} · {name}",
+  "adminShell.catalogProfileEmptyEdit": "No variants yet. The base skill fields above are used.",
+  "adminShell.catalogProfileConditions": "When the selected variant applies",
+  "adminShell.catalogProfileBranchesHelp": "All selected branches are required. This variant applies after the class, level and invested point requirements are met, including equipment bonuses.",
+  "adminShell.catalogProfileTimingHelp": "Name, description and MP/timing change together. These fields do not define a new combat damage formula."
 }
