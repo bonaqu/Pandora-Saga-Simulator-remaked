@@ -63,7 +63,6 @@ class PublishedCatalogPreviewTests(unittest.TestCase):
         self.assertNotIn('input.dataset.catalogRecordLocale',CODE)
         self.assertNotIn('select.dataset.catalogRecordLocale',CODE)
         self.assertIn('input.value = values[entry[0]]',CODE)
-        self.assertIn('var edits = ',CODE) if False else None
 
 
 if __name__=='__main__':
