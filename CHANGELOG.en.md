@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.20 — 2026-10-12
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Add a read-only `scripts/audit_pandora_os_live_weapon_ranges.mjs` audit of **164 stable weapon identities** (including 23 Modern UUID rows), comparing current public Pandora Saga OS item JSON or an explicitly supplied local source with the dated baseline.
+- Two separately dated October 7 and October 11, 2026 source snapshots agree on all 164 base ranges, kinds and slots. Offline tests independently flag range, kind and slot drift, removed IDs, missing numbers and untrusted inputs; deterministic SHA-256, bounded examples and strict exit status support verification.
+- Live HTTP failures never silently substitute the historical fixture. This does **not** calculate effective attack range with Riding, EquipOpt[40/41], skills or passives, or claim game-client parity. No changes to Legacy, Modern formulas, D1, auth or saved builds.
+
 ## Modern 4.19 — 2026-10-12
 
 ### For users

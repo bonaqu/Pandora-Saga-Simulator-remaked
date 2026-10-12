@@ -223,6 +223,8 @@ jobs:
         run: node --test tests/tools/pandora-os-live-vitals-drift.test.mjs
       - name: Verify 164 current-server weapon reach reference records
         run: node --test tests/tools/pandora-os-weapon-ranges.test.mjs
+      - name: Validate independent live/offline 164-weapon base-range drift comparator
+        run: node --test tests/tools/pandora-os-live-weapon-ranges-drift.test.mjs
 
       - name: Syntax-check core JavaScript
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
