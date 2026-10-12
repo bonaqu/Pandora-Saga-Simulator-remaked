@@ -362,17 +362,21 @@ test('four-language editor localizes its buttons and statuses in place without l
       ru:{fourPublishAll:'Опубликовать изменения во всех языках',
         fourStage:'В черновики',fourReset:'Вернуть базовый',
         fourPublishLocale:'Опубликовать {locale}',fourUnsavedStatus:'Изменено · не опубликовано',
-        fourBatchPublished:'Опубликовано {count} языковых вариантов для {id}.'},
+        fourBatchPublished:'Опубликовано {count} языковых вариантов для {id}.',
+         fourEditorAria:'Редактор {language} · {id}'},
       en:{fourPublishAll:'Publish changes in all languages',fourStage:'Save draft',
         fourReset:'Restore baseline',fourPublishLocale:'Publish {locale}',
         fourUnsavedStatus:'Modified · not published',
-        fourBatchPublished:'Published {count} language variants for {id}.'},
+        fourBatchPublished:'Published {count} language variants for {id}.',
+         fourEditorAria:'Translation editor for {language} · {id}'},
       jp:{fourPublishAll:'変更した言語をすべて公開',fourStage:'下書きを保存',
         fourReset:'基準に戻す',fourPublishLocale:'{locale}を公開',
-        fourUnsavedStatus:'変更済み · 未公開'},
+        fourUnsavedStatus:'変更済み · 未公開',
+         fourEditorAria:'{language} の翻訳エディター · {id}'},
       tw:{fourPublishAll:'發布所有已修改的語言',fourStage:'儲存草稿',
         fourReset:'還原基準文字',fourPublishLocale:'發布 {locale}',
-        fourUnsavedStatus:'已修改 · 尚未發布'}
+        fourUnsavedStatus:'已修改 · 尚未發布',
+         fourEditorAria:'{language} 翻譯編輯器 · {id}'}
     };
     let current='en';
     window.editorWrites=[];
@@ -419,6 +423,13 @@ test('four-language editor localizes its buttons and statuses in place without l
   ]){
     await page.evaluate(language=>window.PandoraAdminI18n.change(language),locale);
     await expect(card.locator('[data-publish-all-languages]')).toHaveText(expected);
+    const aria={
+      ru:'Редактор Русский · header.updates',
+      jp:'Русский の翻訳エディター · header.updates',
+      tw:'Русский 翻譯編輯器 · header.updates',
+      en:'Translation editor for Русский · header.updates'
+    };
+    await expect(card.locator('[data-translation-input="ru"]')).toHaveAttribute('aria-label',aria[locale]);
     for(const [i,code] of ['ru','en','jp','tw'].entries())
       await expect(card.locator('[data-translation-input="'+code+'"]')).toHaveValue(values[i]);
     expect(await page.evaluate(()=>window.unsavedDrafts.size)).toBe(2);
