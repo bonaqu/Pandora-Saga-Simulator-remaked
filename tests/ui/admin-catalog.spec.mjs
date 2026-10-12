@@ -999,8 +999,10 @@ test('D1 profile captions switch locales without resurrecting empty text or wipi
   await section.getByRole('button',{name:'Добавить вариант',exact:true}).click();
   const input=section.locator('[data-profile-field="names"][data-language="en"]');
   await input.fill('Preview D1 Variant');
+  const translatedName=section.locator('[data-profile-field="names"][data-language="ru"]');
+  await translatedName.fill('Профиль D1');
   const options=section.locator('[data-profile-choice] option');
-  await expect(options.first()).toContainText('Live variant 1: Preview D1 Variant');
+  await expect(options.first()).toContainText('Live variant 1: Профиль D1');
   await expect(summary).not.toContainText('No variants published (D1 locale)!');
   await page.evaluate(()=>{
     // Re-publish locale-only text after a variant is created. The editor
@@ -1012,7 +1014,8 @@ test('D1 profile captions switch locales without resurrecting empty text or wipi
     window.dispatchEvent(new Event('pandora-admin:localechange'));
   });
   await expect(input).toHaveValue('Preview D1 Variant');
-  await expect(options.first()).toContainText('改訂 1 · Preview D1 Variant');
+  await expect(translatedName).toHaveValue('Профиль D1');
+  await expect(options.first()).toContainText('改訂 1 · Профиль D1');
   await expect(summary).not.toContainText('OLD EMPTY MESSAGE MUST NOT RETURN');
   await page.evaluate(()=>{
     if(window.__catalogPriorTranslator===undefined)delete window.PandoraAdminI18n;
@@ -1021,6 +1024,7 @@ test('D1 profile captions switch locales without resurrecting empty text or wipi
     window.dispatchEvent(new Event('pandora-admin:localechange'));
   });
   await expect(input).toHaveValue('Preview D1 Variant');
+  await expect(translatedName).toHaveValue('Профиль D1');
   expect(sqlite.prepare('SELECT COUNT(*) AS count FROM catalog_drafts').get().count).toBe(0);
   expect(errors).toEqual([]);
 });
