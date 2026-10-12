@@ -241,7 +241,9 @@
                 const data=await api('GET',null,'/api/admin/localization?'+params);
                 if(token!==auditRequest||!exportButton.isConnected)return;
                 const remaining=entry.missing-ids.length;
-                if(data.total!==entry.missing||data.page!==pageIndex||
+                if(!data.coverage||data.coverage.total!==entry.total||
+                    data.coverage.translated!==entry.translated||
+                    data.total!==entry.missing||data.page!==pageIndex||
                    data.pageSize!==pageSize||data.scope!==entry.scope||
                    data.locale!==entry.locale||data.status!=='missing'||
                    !Array.isArray(data.items)||
@@ -266,11 +268,60 @@
               missing.push({scope:entry.scope,locale:entry.locale,
                 expectedMissing:entry.missing,ids:ids.sort((a,b)=>a.id.localeCompare(b.id,'en'))});
             }
-            // Never imply atomicity or invent D1 revision numbers: these are
-            // eight independent authorized reads plus paginated GETs.
+            // A constant missing total does not prove stable identities:
+            // one resolved translation and one newly missing translation may
+            // cancel out. Re-fetch each page independently, then compare
+            // ID, kind and catalog ownership for every missing identity.
+            // D1 multi-request reads still remain non-atomic.
+            let verifiedCount=0;
+            liveText(auditStatus,'locAuditExportVerify',
+              'Проверяю неизменность {count} ID повторным чтением…',
+              {count:completed});
+            for(const entry of missing){
+              if(token!==auditRequest||!exportButton.isConnected)return;
+              const reference=coverage.find(item=>
+                item.scope===entry.scope&&item.locale===entry.locale);
+              if(!reference)throw Error('Missing audited locale group; no file created');
+              const verified=[],seenAgain=Object.create(null);
+              const pages=Math.ceil(entry.expectedMissing/pageSize);
+              for(let pageIndex=0;pageIndex<pages;pageIndex++){
+                if(token!==auditRequest||!exportButton.isConnected)return;
+                const params=new URLSearchParams({scope:entry.scope,locale:entry.locale,
+                  group:'all',status:'missing',page:String(pageIndex)});
+                const data=await api('GET',null,'/api/admin/localization?'+params);
+                if(token!==auditRequest||!exportButton.isConnected)return;
+                const rest=entry.expectedMissing-verified.length;
+                if(data.total!==entry.expectedMissing||data.page!==pageIndex||
+                    data.pageSize!==pageSize||data.scope!==entry.scope||
+                    data.locale!==entry.locale||data.status!=='missing'||
+                    !data.coverage||
+                    data.coverage.total!==reference.total||
+                    data.coverage.translated!==reference.translated||
+                    !Array.isArray(data.items)||
+                    data.items.length!==Math.min(pageSize,rest))
+                  throw Error('Coverage changed during verification; no file created');
+                for(const row of data.items){
+                  if(row.scope!==entry.scope||row.locale!==entry.locale||
+                      typeof row.id!=='string'||!row.id||row.id.length>256||
+                      typeof row.kind!=='string'||!row.kind||
+                      row.origin!=='fallback'||Object.hasOwn(seenAgain,row.id))
+                    throw Error('Invalid or duplicate verification identity; no file created');
+                  seenAgain[row.id]=true;
+                  verified.push({id:row.id,kind:row.kind,
+                    managedBy:row.managedBy==='catalog'?'catalog':'translation'});
+                }
+              }
+              verified.sort((a,b)=>a.id.localeCompare(b.id,'en'));
+              if(JSON.stringify(verified)!==JSON.stringify(entry.ids))
+                throw Error('Missing identity set changed during export; no file created');
+              verifiedCount+=verified.length;
+            }
+            if(verifiedCount!==completed)
+              throw Error('Verification total changed; no file created');
             const report={schemaVersion:1,createdAt:new Date().toISOString(),
-              basis:'Authorized published effective D1 + catalog status; non-atomic read-only snapshot',
+              basis:'Authorized published effective D1 + catalog status; double-checked non-atomic read-only snapshot',
               atomic:false,readOnly:true,includesTranslationText:false,
+              verificationPasses:2,identitiesCompared:true,
               coverage,missing,observedMissingCount:completed};
             const blob=new Blob([JSON.stringify(report,null,2)+'\n'],
               {type:'application/json;charset=utf-8'});
