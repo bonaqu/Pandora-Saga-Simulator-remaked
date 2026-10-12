@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.15 — 2026-10-12
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Add an explicit authorized JSON export in the unified translation console listing genuinely missing effective published IDs for all game/ui × RU/EN/JP/TW combinations. This uses current D1 and the published catalog, not old repository-only coverage.
+- Paginated GET-only reads validate group totals, pages and unique IDs; abort on observed data drift and never download partial results. The report explicitly declares its non-atomic nature.
+- Export IDs, category kinds and catalog ownership markers only—no translations, drafts, credentials, secrets, receipts, D1 writes or automatic publication. Preserve Legacy 2.00, game calculations, auth, and saved-build semantics.
+- Add four D1-first RU/EN/JP/TW labels and positive/negative browser tests for downloaded content and incomplete responses.
+
 ## Modern 4.14 — 2026-10-12
 
 ### For users
