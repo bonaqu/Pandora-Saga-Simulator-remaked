@@ -1,5 +1,29 @@
 # Changelog
 
+## Modern 4.13 — понятные подсказки о дальности атак, 2026-10-12
+
+<!-- release-notes:user:ru -->
+- При наведении на значение дальности ближнего или дальнего боя теперь поясняется, что показана **базовая дальность оружия в игровых единицах**, а не итог с бонусами навыков, снаряжения и верховой езды.
+- Если дальность не подтверждена, подсказка прямо сообщает об этом: отсутствие значения не означает, что оружие бьёт на нулевое расстояние.
+- Подсказки доступны на русском, английском, японском и традиционном китайском языках, включая экранные дикторы.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Hovering over melee or ranged reach now explains that it shows **base weapon reach in raw game units**, not effective reach after skill, equipment or Riding modifiers.
+- An unverified reach is clearly marked: an unavailable value does not mean the weapon has zero range.
+- Hints support all four languages and accessible screen readers.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- В Modern внедрены два D1-first UI-ключа для состояния подтверждённой базовой / неподтверждённой дальности; события пересчёта и смены локали обновляют `title` и `aria-description` без изменения исходных метрик `Status_40/41`.
+- Добавлены браузерные проверки для подтверждённого меча с дальностью 115, отсутствия дальности и четырёх локалей. Legacy 2.00, D1, формулы, сохранения и ревизии механики не изменены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Introduce two D1-first UI keys marking verified base reach versus unavailable reach. Recalculation/locale updates refresh `title` and `aria-description` without rewriting `Status_40/41` or inferring effective range.
+- Add browser coverage of the 115-unit verified sword, missing range and all four locales. Legacy 2.00, D1, game formulas, saved builds and mechanic revisions are unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 4.12 — регрессионный аудит сочетания снаряжения и усилений, 2026-10-12
 
 <!-- admin-notes:ru -->

@@ -578,6 +578,7 @@
       refreshNumberFeedback();
       refreshBudgetWarning();
       refreshMountedDefenseNote();
+      refreshWeaponRangeProvenance();
     } finally {
       if (observer) observer.observe(byId('body'), { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['class', 'title', 'disabled'] });
     }
@@ -605,6 +606,22 @@
     // change freely in D1 without changing this original Japanese engine key.
     if (!row || row[0] !== record[1]) return null;
     return record[0];
+  }
+  function refreshWeaponRangeProvenance() {
+    ['RangeMelee','RangeRange'].forEach(function(code){
+      var number=byId(code==='RangeMelee'?'Status_40':'Status_41');
+      if(!number)return;
+      var verified=currentWeaponBaseRange(code)!==null;
+      var key=verified?'calculator.weaponBaseRangeVerified':'calculator.weaponBaseRangeUnverified';
+      var fallback=verified
+        ? 'Only the equipped weapon’s base range is shown (raw game units). Riding, skill and equipment modifiers are not yet verified.'
+        : 'Effective attack range is not verified for this weapon. An unavailable value is not zero.';
+      var notice=namespace.i18n?.t?.(key)||fallback;
+      if(number.title!==notice)number.title=notice;
+      if(number.getAttribute('aria-description')!==notice)
+        number.setAttribute('aria-description',notice);
+      number.dataset.remakedRangeEvidence=verified?'base':'unverified';
+    });
   }
   function projectWeaponBaseRange(code) {
     var output = byId(code === 'RangeMelee' ? 'Status_40' : 'Status_41');

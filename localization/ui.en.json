@@ -708,5 +708,7 @@
   "adminShell.catalogPreviewNewSkill": "New skill: built-in template effect is not copied.",
   "adminShell.catalogPreviewPassiveOriginal": "Native mechanic is retained. Description is informational; the effect depends on learning, class and equipment.",
   "adminShell.catalogPreviewNoNumericReplace": "No calculated numeric bonuses. See descriptions and restrictions for informational effects.",
-  "adminShell.catalogPreviewNoNumericExtra": "No additional numeric bonuses. The original effect may still apply."
+  "adminShell.catalogPreviewNoNumericExtra": "No additional numeric bonuses. The original effect may still apply.",
+  "calculator.weaponBaseRangeVerified": "Only the equipped weapon's base range is shown (raw game units). Riding, skill and equipment modifiers are not yet verified.",
+  "calculator.weaponBaseRangeUnverified": "Effective attack range is not verified for this weapon. An unavailable value is not zero."
 }

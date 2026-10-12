@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.13 — 2026-10-12
+
+### For users
+
+- Hovering over melee or ranged reach now explains that it shows **base weapon reach in raw game units**, not effective reach after skill, equipment or Riding modifiers.
+- An unverified reach is clearly marked: an unavailable value does not mean the weapon has zero range.
+- Hints support all four languages and accessible screen readers.
+
+### Development and technical changes
+
+- Introduce two D1-first UI keys marking verified base reach versus unavailable reach. Recalculation/locale updates refresh `title` and `aria-description` without rewriting `Status_40/41` or inferring effective range.
+- Add browser coverage of the 115-unit verified sword, missing range and all four locales. Legacy 2.00, D1, game formulas, saved builds and mechanic revisions are unchanged.
+
 ## Modern 4.12 — 2026-10-12
 
 ### For users
