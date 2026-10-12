@@ -6,13 +6,13 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ### For users
 
-- Complete Russian help texts for **26 character attributes** and improve skill help while preserving previously approved Russian skill labels.
+- Complete Russian help texts for **26 character attributes**, preserving the previously approved skill labels.
 - Improve Russian build manager messages for automatically updated game data, Soul socket changes and incompatible saved entries.
 - Keep the neutral Russian What's New notice for technical-only updates.
 
 ### Development and technical changes
 
-- Approve 48 more Russian player-facing UI fallbacks while retaining established curated skill wording and restoring the approved skill help. D1 publications remain authoritative and game formulas remain unchanged.
+- Approve 48 more Russian player-facing UI fallbacks while retaining established curated skill wording without collapsing the distinct frozen approved skill-help snapshot. D1 publications remain authoritative and game formulas remain unchanged.
 - Add 14 D1-first RU/EN/JP/TW labels for bulk workflow conflicts, skipped catalog items and unconfirmed D1 receipts, with locale-switch refresh and no extra network request or write.
 - Make four-language translation input accessibility and single-language cloud-draft reset hints switch live, retaining draft values, CSRF, optimistic concurrency and receipt-safe publication.
 - Add locale-completeness tests, two Playwright failure/skip scenarios and source-only fallback inventory: 726 EN, 707 RU, 725 JP/TW. This is NOT published D1 coverage. Frozen Legacy 2.00 and numerical mechanics are untouched.
