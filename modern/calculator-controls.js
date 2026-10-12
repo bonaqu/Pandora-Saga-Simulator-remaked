@@ -629,37 +629,6 @@
       var output=byId('ViewPOT_'+index+'_1');
       if (output && output.textContent!==String(value))output.textContent=String(value);
     });
-    ['EfTab_0','EfTab_1'].forEach(function(id,index){
-      var tab=byId(id);
-      if(tab)tab.setAttribute('aria-selected',String(Number(window.Flag?.[8])===index));
-    });
-  }
-  function installPotionTabAccessibility(){
-    ['EfTab_0','EfTab_1'].forEach(function(id,index){
-      var tab=byId(id);
-      if(!tab || tab.hasAttribute('data-remaked-potion-tab'))return;
-      tab.dataset.remakedPotionTab='';
-      tab.setAttribute('role','tab');
-      tab.setAttribute('tabindex','0');
-      tab.setAttribute('aria-controls',index===0?'SkillView':'POTView');
-      // Keep the archived hover action, but add mouse-click/touch/keyboard.
-      var activate=function(){
-        if (typeof tab.onmouseover==='function')tab.onmouseover();
-        refreshPotionEffectsPreview();
-        schedule();
-      };
-      tab.addEventListener('click',activate);
-      tab.addEventListener('keydown',function(event){
-        if(event.key==='Enter'||event.key===' '){
-          event.preventDefault();activate();
-        }
-        if(event.key==='ArrowLeft'||event.key==='ArrowRight'){
-          event.preventDefault();
-          var other=byId(index===0?'EfTab_1':'EfTab_0');
-          if(other){other.focus();other.click();}
-        }
-      });
-    });
   }
   function refreshWeaponRangeProvenance() {
     ['RangeMelee','RangeRange'].forEach(function(code){
@@ -748,7 +717,6 @@
   function init() {
     if (!byId('body')) return;
     installCalculatorCorrections();
-    installPotionTabAccessibility();
     observer = new MutationObserver(schedule); refresh();
     window.addEventListener('resize', schedule);
     window.addEventListener('pandora-remaked:localechange', schedule);
