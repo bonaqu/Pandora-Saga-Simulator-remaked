@@ -93,14 +93,14 @@ test('1–4 Potion Souls and 101 melee points do not change the OFF preview; ON 
           const first=read(),ready=Store();
           EquipCheck();CalcSet('ALL');
           PandoraRemaked.calculatorControls.refresh();
-          const repeated=read();
+          const repeated=read(),buildStable=ready===Store();
           Flag[6]=0;
           CalcSet('ViewPOT');
           PandoraRemaked.calculatorControls.refresh();
           const restoredOff=read();
           results.push({
             selected,count,off,first,repeated,restoredOff,
-            stable:ready===Store()||flag===0,
+            buildStable,
             bonusDelta:previous===undefined?0:first.bonus-previous
           });
           previous=first.bonus;
@@ -124,6 +124,7 @@ test('1–4 Potion Souls and 101 melee points do not change the OFF preview; ON 
     expect(frame.first.flag,label).toBe(1);
     expect(frame.first.values,label).toEqual(calculated({potion:frame.first.bonus,lp:frame.first.lp}));
     expect(frame.repeated,label).toEqual(frame.first);
+    expect(frame.buildStable,label).toBe(true);
     expect(frame.restoredOff.values,label).toEqual(BASE);
     expect(frame.restoredOff.bonus,label).toBe(frame.first.bonus);
     if(frame.count>0)expect(frame.bonusDelta,label).toBe(8);
