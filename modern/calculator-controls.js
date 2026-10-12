@@ -613,7 +613,22 @@
   // When OFF, display unmodified potion recovery (fixed HP or % of maximum
   // HP). When ON, reuse the native floor/ceil ordering and Status.POT bonus.
   // Never change Flag[6], archived Legacy 2.00, game data or saved builds.
-  var potionFixedRecovery=[20,60,120,180,450,145,10,25,200,150];
+  // Only these ten historical slots have an individually verified current
+  // identity. Null retains the historical preview but explicitly labels it
+  // as unverified for the current game; no invented item identity is assigned.
+  // Names are complete client references for the numeric result tooltip;
+  // published owner D1 translations for the main labels remain authoritative.
+  var potionSourceRefs = [
+    [50060,'Мясо','Chunk of Meat'],[50001,'Легкое исцеляющее зелье','Painkiller'],
+    [50002,'Слабое исцеляющее зелье','Salve'],[50003,'Простое исцеляющее зелье','Remedy'],
+    null,[50061,'Таинственное зелье','Mysterious Potion'],
+    [50023,'Подснежник','Hepatica'],null,
+    [50062,'Тыквенное печенье','Pumpkin Cookie'],[50065,'Астирская конфета','Astian Candy'],
+    [50063,'Вкусное шампанское','Elegant Champagne'],
+    [50004,'Сильное исцеляющее зелье','Restoration Potion'],null,null
+  ];
+  // Current 50023 Hepatica heals 20 HP, not the archived calculator's 10.
+  var potionFixedRecovery=[20,60,120,180,450,145,20,25,200,150];
   var potionPercentRecovery=[5,15,30,18];
   function refreshPotionEffectsPreview() {
     var panel=byId('POTView'),status=window.Status;
@@ -639,7 +654,20 @@
     }
     totals.forEach(function(value,index) {
       var output=byId('ViewPOT_'+index+'_1');
-      if (output && output.textContent!==value)output.textContent=value;
+      if (!output) return;
+      if (output.textContent!==value)output.textContent=value;
+      var reference=potionSourceRefs[index],locale=namespace.i18n?.getLocale?.();
+      var ru=locale==='ru';
+      var note=reference
+        ? (ru?reference[1]:reference[2])+' · '+(index<10
+          ? potionFixedRecovery[index]+(ru?' ОЗ (базовое)':' base HP')
+          : potionPercentRecovery[index-10]+(ru?'% от максимальных ОЗ':'% of maximum HP'))
+        : (ru?'Историческое значение: актуальный предмет не подтверждён.':
+            'Historical calculation only: no confirmed current-game item match.');
+      if (output.title!==note)output.title=note;
+      output.dataset.remakedPotionEvidence=reference?'current':'historical';
+      if(reference)output.dataset.remakedCurrentItem=String(reference[0]);
+      else delete output.dataset.remakedCurrentItem;
     });
   }
   function refreshWeaponRangeProvenance() {

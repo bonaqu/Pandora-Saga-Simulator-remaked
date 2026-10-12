@@ -1,5 +1,26 @@
 # Changelog
 
+## Modern 4.23 — уточнение эффектов зелий, 2026-10-12
+
+<!-- release-notes:user:ru -->
+- **Уточнено восстановление ОЗ от Подснежника (Hepatica):** в современном калькуляторе базовое исцеление исправлено с 10 на 20 ОЗ.
+- Во вкладке «Эффекты зелий» у результатов появились подсказки с полными русскими/английскими названиями подтверждённых предметов и их исходным лечением. Если аналог старого предмета не подтверждён, подсказка прямо предупреждает об историческом расчёте.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **Corrected Hepatica healing:** the Modern calculator now uses 20 base HP rather than the older 10 HP.
+- Potion Effects results now show full Russian/English names and base recovery in tooltips for confirmed current items. When an archived entry has no confirmed current item match, its tooltip clearly identifies the calculation as historical.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Исходные правила Legacy 2.00 и сохранённые билды не изменены. Привязаны 10 из 14 исторических строк зелий по проверенным ID, четыре строки оставлены как неподтверждённые.
+- Для двух языков введены независимые проверки полноты игровых текстов с приоритетом оригинальных русских полей предметов и навыков, если отдельный словарь перевода пуст. Никаких публикаций D1 и автоматических исправлений непроверенных механик.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Preserved Legacy 2.00 and saved builds. Exactly ten of fourteen historic potion rows have verified current item identities; four remain explicitly unverified.
+- Added read-only bilingual content coverage and stable healing identity checks. No automatic D1 publication or unverified gameplay formula changes.
+<!-- /admin-notes:en -->
 ## Modern 4.22 — корректный учёт эффективности зелий, 2026-10-12
 
 <!-- release-notes:user:ru -->

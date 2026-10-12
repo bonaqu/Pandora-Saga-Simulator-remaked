@@ -32,7 +32,12 @@ class PotionSourceAuditTests(unittest.TestCase):
             (effect['func'],effect['a']) for effect in item['effects']
         ],[('EP_HEAL_LIFE',145),('EP_HEAL_MANA',75)])
         self.assertIn("Math.floor(145 * Status['POT'] / 100)",CALC)
-        self.assertIn("var potionFixedRecovery=[20,60,120,180,450,145,10,25,200,150]",MODERN)
+        self.assertIn("var potionFixedRecovery=[20,60,120,180,450,145,20,25,200,150]",MODERN)
+        hepatica=ITEMS['50023']
+        self.assertEqual(hepatica['name'],'Подснежник')
+        self.assertIn(('EP_HEAL_LIFE',20),[(e['func'],e['a']) for e in hepatica['effects']])
+        self.assertIn("Math.floor(10 * Status['POT'] / 100)",CALC)
+        self.assertIn("50023,'Подснежник','Hepatica'",MODERN)
 
     def test_monk_and_paladin_potion_mastery_stays_separate_from_magic_healing(self):
         self.assertIn("Math.floor((Status['Skill'][0][0] + Status['Skill'][0][1]) / 10) * 10",CALC)

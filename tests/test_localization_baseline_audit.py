@@ -22,7 +22,8 @@ class LocalizationBaselineAuditTests(unittest.TestCase):
         self.assertEqual(data['legacySource']['en'],2678)
         self.assertEqual(data['legacySource']['jp'],2630)
         self.assertEqual(data['legacySource']['tw'],2618)
-        self.assertEqual(data['legacySource']['ruApproved'],644)
+        # Two source-verified Hepatica fallbacks: visible RU name and 20-HP tooltip.
+        self.assertEqual(data['legacySource']['ruApproved'],646)
         self.assertGreaterEqual(data['uiCoverage']['ru']['approved'],data['metadata']['uiKeyCount']-19)
         for lang in ('jp','tw'):
             self.assertEqual(data['uiCoverage'][lang]['missingIds'],['test.englishOnly'])
