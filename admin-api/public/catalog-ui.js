@@ -335,54 +335,53 @@
     var description = record.description.ru || record.description.en;
     if (description) target.appendChild(catalogRecordText(node('p',undefined,'record-description'),record.description));
     var values = node('ul', undefined, 'record-values');
-    if (record.kind === 'equipment') values.appendChild(node('li', 'Уровень: ' + record.level + ' · Слоты душ: ' + record.sockets));
+    if (record.kind === 'equipment') values.appendChild(catalogLive(node('li'),'catalogPreviewLevelSockets','Уровень: {level} · Слоты душ: {sockets}',{level:record.level,sockets:record.sockets}));
     if(record.kind==='equipment'&&record.upgradeBonuses?.length)
       record.upgradeBonuses.forEach(function(rule){
-        values.appendChild(node('li','Заточка: '+effectText(rule.stat,rule.value,rule.unit)+
-          ' с +' +rule.from+' за каждые '+rule.every+' уровня до +'+rule.to));
+        values.appendChild(catalogLive(node('li'),'catalogPreviewEnhancement','Заточка: {effect} с +{from} за каждые {every} уровня до +{to}',{effect:effectText(rule.stat,rule.value,rule.unit),from:rule.from,every:rule.every,to:rule.to}));
       });
-    if (record.kind === 'soul' && !record.compatibility.includes(1)) values.appendChild(node('li', 'Нет допустимого слота для вставки. Эта душа не предлагается для экипировки, пока не заданы ограничения.'));
+    if (record.kind === 'soul' && !record.compatibility.includes(1)) values.appendChild(catalogStatic(node('li'),'catalogPreviewNoSoulSlot','Нет допустимого слота для вставки. Эта душа не предлагается для экипировки, пока не заданы ограничения.'));
     if (record.calculationCode !== undefined) {
       record.calculationCode.split('_').filter(Boolean).forEach(function (token) {
         var pair = token.split('='), value = pair.slice(1).join('=');
         if (!/^\d+=(?:[+-]?\d+(?:\.\d+)?%?|W\d+)$/.test(token)) {
-          values.appendChild(node('li', 'Исходный маркер: ' + token + '. Числовой эффект не подтверждён.'));
+          values.appendChild(catalogLive(node('li'),'catalogPreviewInvalidMarker','Исходный маркер: {token}. Числовой эффект не подтверждён.',{token}));
           return;
         }
-        values.appendChild(node('li', pair[0] === '18' && /^W\d+$/.test(value) ? 'Базовая атака оружия: ' + value.slice(1) : effectText(pair[0], value.endsWith('%') ? value.slice(0, -1) : value, value.endsWith('%') ? 'percent' : 'flat')));
+        values.appendChild(node('li', pair[0] === '18' && /^W\d+$/.test(value) ? catalogTranslate('catalogPreviewBaseAttack','Базовая атака оружия: {value}',{value:value.slice(1)}) : effectText(pair[0], value.endsWith('%') ? value.slice(0, -1) : value, value.endsWith('%') ? 'percent' : 'flat')));
       });
-      if (!record.calculationCode) values.appendChild(node('li', 'Числовых бонусов в расчётной строке нет.'));
+      if (!record.calculationCode) values.appendChild(catalogStatic(node('li'),'catalogPreviewNoNumericModifiers','Числовых бонусов в расчётной строке нет.'));
     }
-    if (record.kind === 'active') ['Стоимость MP', 'Время применения, с', 'Перезарядка, с', 'Длительность, с'].forEach(function (label, index) { values.appendChild(node('li', label + ': ' + record.timing[index])); });
+    if (record.kind === 'active') ['catalogPreviewActiveMp','catalogPreviewActiveCast','catalogPreviewActiveCooldown','catalogPreviewActiveDuration'].forEach(function (key,index) { var labels=['Стоимость MP: {value}','Время применения, с: {value}','Перезарядка, с: {value}','Длительность, с: {value}']; values.appendChild(catalogLive(node('li'),key,labels[index],{value:record.timing[index]})); });
     if (record.kind === 'active' || record.kind === 'passive') {
       if (record.kind === 'passive' && !record.templateId && current.nativeSkill?.intrinsicEffect) {
-        values.appendChild(node('li', record.intrinsicEffectMode === 'replace' ? 'Встроенный эффект заменён: работают только числа ниже при выполнении условий.' : 'Встроенный эффект сохранён; числа ниже добавляются к нему.'));
+        values.appendChild(catalogStatic(node('li'),record.intrinsicEffectMode==='replace'?'catalogPreviewIntrinsicReplaced':'catalogPreviewIntrinsicKept',record.intrinsicEffectMode==='replace'?'Встроенный эффект заменён: работают только числа ниже при выполнении условий.':'Встроенный эффект сохранён; числа ниже добавляются к нему.'));
         values.appendChild(node('li', current.nativeSkill.intrinsicEffect.noteRu));
       }
       var learning = record.learningRequirements;
       if (learning) {
-        values.appendChild(node('li', 'Минимальный уровень: ' + learning.minimumLevel));
+        values.appendChild(catalogLive(node('li'),'catalogPreviewLearningLevel','Минимальный уровень: {level}',{level:learning.minimumLevel}));
         var classes = learning.classIds.map(function (id) { return meta.compatibilityLabels.job.find(function (row) { return 'job.' + row.index === id; })?.label || id; });
-        values.appendChild(node('li', 'Классы: ' + (classes.length ? classes.join(', ') + (learning.classScope === 'descendants' ? ' и их последующие профессии' : ' — только отмеченные') : 'любой')));
-        learning.branches.forEach(function (gate) { values.appendChild(node('li', 'Ветка: ' + (meta.skillCategories.find(function (row) { return row.id === gate.branchId; })?.name.en || gate.branchId) + ' ≥ ' + gate.minimumPoints)); });
-        if (!learning.branches.length) values.appendChild(node('li', 'Требований к очкам веток нет.'));
-      } else values.appendChild(node('li', 'Исходные условия изучения: ' + (current.nativeSkill?.prerequisites.en || record.prerequisiteCode)));
+        values.appendChild(catalogLive(node('li'),'catalogPreviewLearningClasses','Классы: {classes}',{classes:classes.length ? classes.join(', ') + catalogTranslate(learning.classScope === 'descendants'?'catalogPreviewDescendants':'catalogPreviewOnlySelected',learning.classScope==='descendants'?' и их последующие профессии':' — только отмеченные') : catalogTranslate('catalogPreviewAnyClass','любой')}));
+        learning.branches.forEach(function (gate) { values.appendChild(catalogLive(node('li'),'catalogPreviewLearningBranch','Ветка: {branch} ≥ {points}',{branch:meta.skillCategories.find(function (row) { return row.id === gate.branchId; })?.name.en || gate.branchId,points:gate.minimumPoints})); });
+        if (!learning.branches.length) values.appendChild(catalogStatic(node('li'),'catalogPreviewNoBranchRequirements','Требований к очкам веток нет.'));
+      } else values.appendChild(catalogLive(node('li'),'catalogPreviewNativePrerequisites','Исходные условия изучения: {text}',{text:current.nativeSkill?.prerequisites.en || record.prerequisiteCode}));
     }
     if (record.kind === 'class') ['Базовое LP', 'Базовое MP', 'Делитель роста LP от уровня', 'Делитель роста MP от уровня', 'Делитель роста LP от STA', 'Делитель роста MP от SPR'].forEach(function (label, index) { values.appendChild(node('li', label + ': ' + record.progression[index])); });
     if (record.kind === 'racial') {
-      values.appendChild(node('li', record.effectMode === 'replace' ? 'Исходная механика отключена. Действуют только числа ниже.' : 'Исходная механика: ' + current.nativeMechanics));
+      values.appendChild(record.effectMode==='replace'?catalogStatic(node('li'),'catalogPreviewRacialReplaced','Исходная механика отключена. Действуют только числа ниже.'):catalogLive(node('li'),'catalogPreviewRacialNative','Исходная механика: {mechanic}',{mechanic:current.nativeMechanics}));
       var required = record.bonusRequirements;
       if (required) {
         var names = required.weaponCategories.map(function (id) { return id === -1 ? 'без оружия' : meta.categories.find(function (entry) { return entry.legacy_id === id; })?.name.en || '#' + id; });
-        values.appendChild(node('li', 'Условие оружия: ' + (names.length ? names.join(', ') : 'любое')));
-        if (required.shieldRequired) values.appendChild(node('li', 'Требуется щит.'));
-        if (required.ridingRequired) values.appendChild(node('li', 'Требуется верховая езда.'));
+        values.appendChild(catalogLive(node('li'),'catalogPreviewWeaponCondition','Условие оружия: {weapons}',{weapons:names.length?names.join(', '):catalogTranslate('catalogPreviewAnyWeapon','любое')}));
+        if (required.shieldRequired) values.appendChild(catalogStatic(node('li'),'catalogPreviewShieldRequired','Требуется щит.'));
+        if (required.ridingRequired) values.appendChild(catalogStatic(node('li'),'catalogPreviewRidingRequired','Требуется верховая езда.'));
       }
-      if (record.calculationNotes?.ru || record.calculationNotes?.en) target.appendChild(node('p', 'Ограничение расчёта: ' + (record.calculationNotes.ru || record.calculationNotes.en), 'help-text'));
+      if (record.calculationNotes?.ru || record.calculationNotes?.en) target.appendChild(catalogLive(node('p',undefined,'help-text'),'catalogPreviewCalculationLimit','Ограничение расчёта: {note}',{note:catalogRecordLocale(record.calculationNotes)}));
     }
-    if (record.kind === 'passive' && (record.templateId || !current.nativeSkill?.intrinsicEffect)) values.appendChild(node('li', record.templateId ? 'Новый навык: встроенный эффект шаблона не копируется.' : 'Исходная механика сохраняется. Описание — справка; эффект зависит от изучения, класса и снаряжения.'));
+    if (record.kind === 'passive' && (record.templateId || !current.nativeSkill?.intrinsicEffect)) values.appendChild(catalogStatic(node('li'),record.templateId?'catalogPreviewNewSkill':'catalogPreviewPassiveOriginal',record.templateId?'Новый навык: встроенный эффект шаблона не копируется.':'Исходная механика сохраняется. Описание — справка; эффект зависит от изучения, класса и снаряжения.'));
     (record.effects || []).forEach(function (effect) { values.appendChild(node('li', effectText(effect.stat, effect.value, effect.unit))); });
-    if ((record.kind === 'racial' || record.kind === 'passive') && !record.effects.length) values.appendChild(node('li', record.effectMode === 'replace' || record.intrinsicEffectMode === 'replace' ? 'Рассчитываемых числовых бонусов нет. Справочные эффекты см. в описании и ограничениях.' : 'Дополнительных числовых бонусов нет. Это не означает отсутствие исходного эффекта.'));
+    if ((record.kind === 'racial' || record.kind === 'passive') && !record.effects.length) values.appendChild(catalogStatic(node('li'),record.effectMode==='replace'||record.intrinsicEffectMode==='replace'?'catalogPreviewNoNumericReplace':'catalogPreviewNoNumericExtra',record.effectMode==='replace'||record.intrinsicEffectMode==='replace'?'Рассчитываемых числовых бонусов нет. Справочные эффекты см. в описании и ограничениях.':'Дополнительных числовых бонусов нет. Это не означает отсутствие исходного эффекта.'));
     target.appendChild(values);
     if (record.profiles) {
       var variants = node('details'); variants.dataset.recordProfiles = '';
