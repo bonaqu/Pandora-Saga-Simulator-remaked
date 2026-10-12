@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 4.17 — четырёхъязычные числовые эффекты админки, 2026-10-12
+
+<!-- admin-notes:ru -->
+- В D1-first реестр добавлены 60 новых EN/RU/JP/TW строк для **33 идентификаторов числовых эффектов**, процентных и плоских единиц, шести коэффициентов LP/MP классов, отображения уровня и ячеек душ, доступных имён управления и известных сообщений об ошибках условных вариантов.
+- Редактор числовых эффектов и предпросмотр обновляют подписи при смене языка без пересоздания элементов ввода: значение, статический игровой ID, тип единицы, выбранные черновики и несохранённый текст не меняются. Составные строки заточки и числовых эффектов пересчитывают локализуемые части, а не оставляют исходный русский текст.
+- Неизвестные механические коды остаются техническими именами/ID, без выдумывания игрового эффекта. Включены автоматические проверки полноты четырёх языков, шаблонов плейсхолдеров, HTML-безопасности и браузерное переключение языков с сохранением числовых полей.
+- Публикации владельца D1 по-прежнему приоритетнее утверждённых fallback. Игровые коэффициенты, Legacy 2.00, сохранённые билды, серверные API, аутентификация, CSRF и D1-публикации не изменены. Аудит игровых HP/MP и дальности по внешнему клиенту остаётся открытым.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add 60 D1-first EN/RU/JP/TW UI keys for **33 stable numeric effect IDs**, percentage and flat units, six class LP/MP coefficient labels, Soul socket/level previews, accessible edit controls and known conditional-profile validation failures.
+- Change only presentational labels across locales. Effect IDs, selected options, entered numeric values, draft selections and form state are preserved. Live previews recompute nested effect/upgrade copy instead of retaining Russian text after a locale switch.
+- Leave unknown engine codes visibly unresolved rather than inventing semantics. Add four-language key/placeholder/HTML checks and Playwright regression for language switching with unpublished numeric edits.
+- D1-published owner translations override these fallbacks. Frozen Legacy 2.00, source formulas, saved builds, server contracts, auth/CSRF and D1 publications are unchanged. Independent current-game formula/range verification is not asserted.
+<!-- /admin-notes:en -->
+
 ## Modern 4.16 — безопасные иконки умений и повторная проверка D1, 2026-10-12
 
 <!-- release-notes:user:ru -->
