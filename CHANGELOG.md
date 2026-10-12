@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 4.16 — аудит исходных HP/MP и дальности оружия, 2026-10-12
+
+<!-- admin-notes:ru -->
+- Создан независимый read-only отчёт о **896 гипотетических состояниях HP/MP**: 28 классов × 8 уровней × 4 одинаковые пары STA/SPR. Формула сохранённого Legacy сопоставляется с датированным снимком текущего серверного калькулятора, не подменяя расчёты игрового движка.
+- На контрольном уровне 45 при STA 7 / SPR 4: Warrior имеет HP 917 / MP 130 в Legacy против HP 915 / MP 139 в зафиксированном источнике; Gladiator — HP 1644 / MP 163 против HP 1643 / MP 163. Это изолированные математические различия, не готовые персонажи.
+- Тот же аудитор проверяет все **164** зафиксированные пары базовой дальности и неизменных исходных ключей оружия (14 категорий, 20 луков/арбалетов) против карты Modern. Эффективные модификаторы Riding, навыков и снаряжения остаются неподтверждёнными.
+- Новый CLI принимает только явный локальный JSON через `--source`, не обращается к сети и D1. Регрессия включена в обязательный CI; исходные формулы, D1-публикации, сохранённые билды и Legacy 2.00 не менялись.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add a read-only **896-state HP/MP comparison**: 28 classes × 8 levels × 4 identical hypothetical VIT/SPI pairs. Contrast the preserved Legacy nested-ceiling formula against the dated current-server calculator coefficient snapshot without modifying the runtime.
+- At level 45/VIT 7/SPI 4, Warrior's retained HP 917 / MP 130 differs from snapshot HP 915 / MP 139; Gladiator HP 1644 / MP 163 differs from HP 1643 / MP 163. These are isolated arithmetic inputs, NOT actual equipped game character results.
+- Verify all **164** pinned weapon base-range values and unchanged engine keys across 14 categories, including 20 bows/crossbows. Effective Riding, skill and equipment reach modifiers remain unverified.
+- New CLI accepts explicitly supplied local JSON via `--source`, never accesses the network or D1, and is run in mandatory CI. No game formula changes, D1 publications, saved-build changes or edits to frozen Legacy 2.00.
+<!-- /admin-notes:en -->
+
 ## Modern 4.15 — выгрузка отсутствующих переводов из D1, 2026-10-12
 
 <!-- admin-notes:ru -->
