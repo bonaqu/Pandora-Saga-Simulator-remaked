@@ -1,5 +1,31 @@
 # Changelog
 
+## Modern 4.21 — восстановлены расчёты эффектов зелий, 2026-10-12
+
+<!-- release-notes:user:ru -->
+- **Исправлена вкладка «Эффекты зелий»:** вместо прочерков теперь отображается рассчитанное восстановление ОЗ для всех 14 предметов, включая обычные и процентные зелья.
+- Расчёты видны сразу при открытии вкладки, даже если отдельная кнопка «Учитывать эфф. зелий» выключена. Просмотр не включает эффекты самовольно и не меняет билд.
+- Результаты обновляются после изменения персонажа, экипировки и душ. Переключение между «Эффектами умений» и «Эффектами зелий» теперь доступно также нажатием и с клавиатуры.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **Fixed the Potion Effects tab:** all 14 items now show calculated HP recovery instead of unavailable dashes, including flat and maximum-HP percentage potions.
+- The preview appears even when the separate "Use potion effects" switch is off. Inspecting potion values never enables that switch or modifies your build.
+- Values update when character stats, gear or Souls change. Potion and Skill Effects tabs also support clicking and keyboard navigation.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- В Modern-only `modern/calculator-controls.js` добавлен вывод 14 фиксированных и процентных значений с сохранением точного исторического порядка floor/ceil и без изменения `Flag[6]`, числовых формул или музейного Legacy 2.00.
+- Проверяется добавка +8 POT от «Души зелий» (`103018`) для конфигураций 1/2/3/4 душ, источник сервера и 101 очко ближнего боя паладина. Демонстрационные числа не выдаются за полностью подтверждённую клиентскую механику.
+- Сверка с независимым серверным снимком подтвердила исходное исцеление **145** ОЗ у `50061` («Таинственное зелье»); историческая подсказка **175** признана устаревшей, существующие D1-переводы не перезаписываются автоматически. Добавлены браузерные регрессии четырёх языков, кнопки эффектов и целостности билда.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add Modern-only display calculation of all 14 flat/percentage potion amounts using the preserved floor/ceil order, without changing Flag[6], gameplay formulas or archived Legacy 2.00.
+- Regress against source Potion Soul `103018` (+8 POT) for 1/2/3/4-Soul combinations and Paladin melee-branch mastery 101. Illustrative values are not independent live-client parity claims.
+- Independent server snapshot confirms **145** base HP for `50061` Mysterious Potion despite obsolete **175** historical tooltip; never overwrite owner-published D1 translations. Include browser checks of four locales, toggle and build integrity.
+<!-- /admin-notes:en -->
+
 ## Modern 4.20 — независимый аудит дальности оружия, 2026-10-12
 
 <!-- admin-notes:ru -->
