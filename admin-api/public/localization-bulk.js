@@ -70,6 +70,17 @@
       return phrase.replace(/\{([A-Za-z0-9_]+)\}/g,(match,name)=>
         Object.hasOwn(values,name)?String(values[name]):match);
     };
+    const localizedError=(key,fallback,values={})=>{
+      const error=new Error(translate(key,fallback,values));
+      error.localizedCopy={key,fallback,values};
+      return error;
+    };
+    const liveComputed=(element,key,fallback,compute)=>{
+      dynamicTranslations.set(element,{key,fallback,compute});
+      element.dataset.bulkLiveKey=key;
+      element.textContent=translate(key,fallback,compute());
+      return element;
+    };
     const live=(element,key,fallback,values={})=>{
       dynamicTranslations.set(element,{key,fallback,values});
       element.dataset.bulkLiveKey=key;
@@ -93,7 +104,8 @@
     const onLocaleChange=()=>{
       root.querySelectorAll('[data-bulk-live-key]').forEach(element=>{
         const entry=dynamicTranslations.get(element);
-        if(entry)element.textContent=translate(entry.key,entry.fallback,entry.values);
+        if(entry)element.textContent=translate(entry.key,entry.fallback,
+          entry.compute?entry.compute():entry.values);
       });
       root.querySelectorAll('[data-bulk-live-aria]').forEach(element=>{
         const entry=dynamicAria.get(element);
@@ -151,24 +163,24 @@
       const found=[],skipped=[];
       let total=Infinity,page=0;
       while(page*40<total){
-        if(!active||!stillCurrent(current))throw Error('Параметры изменились. Повтори предпросмотр.');
+        if(!active||!stillCurrent(current))throw localizedError('bulkContextChanged','Параметры изменились. Повтори предпросмотр.');
         const response=await api('GET',null,searchUrl(current,page));
         total=response.total;
-        if(total>MAX_SCAN)throw Error('Слишком много строк для безопасного предпросмотра. Выбери более узкую категорию.');
-        if(!Array.isArray(response.items)||response.page!==page)throw Error('Неполная страница переводов.');
+        if(total>MAX_SCAN)throw localizedError('bulkTooManyToScan','Слишком много строк для безопасного предпросмотра. Выбери более узкую категорию.');
+        if(!Array.isArray(response.items)||response.page!==page)throw localizedError('bulkIncompletePage','Неполная страница переводов.');
         for(const row of response.items){
           // Catalog-owned text is shown in unified search, but published only
           // by catalog revisions. Never add it to independent bulk D1 writes.
-          if(row.managedBy==='catalog'){skipped.push(row.id+' (редактируется в каталоге)');continue;}
+          if(row.managedBy==='catalog'){skipped.push({id:row.id,reason:'catalog'});continue;}
           const before=row.effective||'',after=replaceWholeWord(before,current.word,current.replacement);
           if(before===after)continue;
           if(after.length>4000||after!==after.trim()||/[\x00-\x09\x0b-\x1f\x7f<>]/.test(after)){
-            skipped.push(row.id+' (ограничение поля)');continue;
+            skipped.push({id:row.id,reason:'field'});continue;
           }
           const item={id:row.id,scope:row.scope,locale:row.locale,version:row.version,
             before,after,suggested:after,sourceEn:row.source?.en||'',origin:row.origin,kind:row.kind,blocked:hasDraft(row)};
           found.push(item);
-          if(found.length>MAX_MATCHES)throw Error('Найдено больше '+MAX_MATCHES+' строк. Сузь категорию или слово: частичный пакет не создаётся.');
+          if(found.length>MAX_MATCHES)throw localizedError('bulkTooManyMatches','Найдено больше {limit} строк. Сузь категорию или слово: частичный пакет не создаётся.',{limit:MAX_MATCHES});
         }
         page++;
       }
@@ -179,7 +191,10 @@
       results.replaceChildren();selections.clear();editing.clear();
       const {found,skipped}=proposal;
       live(state,'bulkFoundCount','Совпадений: {found}. Не обработано: {skipped}. Исправляй нужные строки карандашом и проверь текст до/после.',{found:found.length,skipped:skipped.length});
-      if(skipped.length)results.append(live(node('p',undefined,'localization-bulk-warning'),'bulkSkippedIds','Пропущено: {ids}',{ids:skipped.slice(0,8).join(', ')}));
+      if(skipped.length)results.append(liveComputed(node('p',undefined,'localization-bulk-warning'),
+        'bulkSkippedIds','Пропущено: {ids}',()=>({ids:skipped.slice(0,8).map(item=>
+          item.id+translate(item.reason==='catalog'?'bulkCatalogManagedSuffix':'bulkInvalidFieldSuffix',
+            item.reason==='catalog'?' (редактируется в каталоге)':' (ограничение поля)')).join(', ')})));
 
       const selectionBar=node('div',undefined,'localization-bulk-selection');
       const summary=node('output');summary.setAttribute('aria-live','polite');
@@ -295,7 +310,10 @@
         if(requestId!==epoch||!stillCurrent(current))return;
         proposal={...data,current,signature:fingerprint(current)};
         render();
-      }catch(error){if(requestId===epoch){proposal=null;raw(state,error.message);}}
+      }catch(error){if(requestId===epoch){proposal=null;
+          if(error.localizedCopy)live(state,error.localizedCopy.key,error.localizedCopy.fallback,error.localizedCopy.values);
+          else raw(state,error.message);
+        }}
       finally{setBusy(false);}
     });
 
@@ -317,9 +335,9 @@
         for(const before of checked){
           const now=actual.get(before.id);
           if(!now||now.version!==before.version||now.before!==before.before||now.after!==before.suggested||now.blocked)
-            throw Error('Данные изменились для '+before.id+'. Пересмотри пакет.');
+            throw localizedError('bulkStaleRow','Данные изменились для {id}. Пересмотри пакет.',{id:before.id});
         }
-        if(!active||requestId!==epoch||!stillCurrent(current))throw Error('Контекст редактора изменился.');
+        if(!active||requestId!==epoch||!stillCurrent(current))throw localizedError('bulkEditorChanged','Контекст редактора изменился.');
         live(state,'bulkPublishingProgress','Публикую {count} переводов одной транзакцией…',{count:checked.length});
         const items=checked.map(item=>({scope:item.scope,id:item.id,locale:item.locale,
           value:item.after,expectedVersion:item.version,expectedEffective:item.before}));
@@ -333,16 +351,14 @@
             const check=await api('GET',null,
               '/api/admin/localization/operations?operationId='+encodeURIComponent(operationId));
             if(check.found)receipt=check.receipt;
-            else{uncertain=true;throw Error('Состояние публикации не подтверждено: '+error.message);}
+            else{uncertain=true;throw localizedError('bulkReceiptUnconfirmed','Состояние публикации не подтверждено: {error}',{error:error.message});}
           }catch(checkError){uncertain=true;throw checkError;}
         }
         invalidate();
         live(state,'bulkPublishedSuccess','Переводы опубликованы одной операцией: {count}. Проверь результат на сайте.',{count:receipt.count});
       }catch(error){
         if(!uncertain)invalidate();
-        raw(state,(uncertain
-          ? 'Не удалось подтвердить результат операции. НЕ повторяй публикацию вслепую. Код: '+operationId+'. '
-          : 'Пакет не опубликован: ')+error.message);
+        live(state,uncertain?'bulkUncertainPublish':'bulkFailedPublish',uncertain?'Не удалось подтвердить результат операции. НЕ повторяй публикацию вслепую. Код: {operationId}. {error}':'Пакет не опубликован: {error}',{operationId,error:error.message});
       }finally{
         setBusy(false);
         if(receipt)onPublished();

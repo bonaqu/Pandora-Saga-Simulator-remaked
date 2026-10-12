@@ -72,6 +72,7 @@
         resetButton.textContent=tx('fourReset','Вернуть базовый');
         saveButton.textContent=tx('fourPublishLocale','Опубликовать {locale}',{locale:data.locale.toUpperCase()});
         textarea.placeholder=tx('fourLanguagePlaceholder','Перевод на {language}',{language:entry.languageName});
+        textarea.setAttribute('aria-label',tx('fourEditorAria','Редактор {language} · {id}',{language:entry.languageName,id:record.id}));
         resetButton.title=tx('fourBaselineTitle','Базовый текст: {value}',{value:data.baseline||'—'});
         entry.container.dataset.dirty=String(changed);
       }
@@ -151,7 +152,7 @@
       textarea.dataset.translationInput=locale;
       textarea.value=drafts.has(identity(data))?drafts.get(identity(data)):saved(data)?.text??data.effective??'';
       textarea.placeholder='Перевод на '+name;
-      textarea.setAttribute('aria-label',name+' · '+record.id);
+      textarea.setAttribute('aria-label',tx('fourEditorAria','Редактор {language} · {id}',{language:name,id:record.id}));
       label.append(textarea);
       const buttons=element('div',null,'localization-inline-actions');
       const dirt=element('small','');const size=element('small','');

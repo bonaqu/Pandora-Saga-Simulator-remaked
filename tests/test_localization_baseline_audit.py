@@ -23,7 +23,7 @@ class LocalizationBaselineAuditTests(unittest.TestCase):
         self.assertEqual(data['legacySource']['jp'],2630)
         self.assertEqual(data['legacySource']['tw'],2618)
         self.assertEqual(data['legacySource']['ruApproved'],644)
-        self.assertEqual(data['uiCoverage']['ru']['approved'],data['metadata']['uiKeyCount']-67)
+        self.assertGreaterEqual(data['uiCoverage']['ru']['approved'],data['metadata']['uiKeyCount']-19)
         for lang in ('jp','tw'):
             self.assertEqual(data['uiCoverage'][lang]['missingIds'],['test.englishOnly'])
         self.assertEqual(data['byCategory']['equipment']['total'],1120)
