@@ -43,7 +43,7 @@ class CatalogChromeLocalizationTests(unittest.TestCase):
                       'Делитель роста MP от уровня','Делитель роста LP от STA',
                       'Делитель роста MP от SPR'):
             self.assertIn(label,captions)
-        self.assertEqual(len(set(captions.values())), 30)
+        self.assertEqual(len(set(captions.values())), len(captions))
         for original, suffix in captions.items():
             key = "adminShell." + suffix
             with self.subTest(key=key):
