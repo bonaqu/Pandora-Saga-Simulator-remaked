@@ -781,5 +781,13 @@
   "adminShell.catalogProgressionMpSpr": "MP growth divisor from SPR",
   "adminShell.catalogErrorOverlappingProfiles": "Variant requirements overlap ambiguously. Adjust class, level or branch points so one variant is strictly more specific, or use distinct classes.",
   "adminShell.catalogErrorProfileCount": "A skill supports up to 8 variants. Remove unused ones to keep the base skill values.",
-  "adminShell.catalogErrorProfileSize": "Variant descriptions are too large. Shorten the text or reduce the number of variants."
+  "adminShell.catalogErrorProfileSize": "Variant descriptions are too large. Shorten the text or reduce the number of variants.",
+  "adminShell.catalogEffectStatAria": "Statistic to modify",
+  "adminShell.catalogEffectValueAria": "Modifier value",
+  "adminShell.catalogEffectUnitAria": "Modifier unit",
+  "adminShell.catalogLivePreviewMissingName": "Unnamed item",
+  "adminShell.catalogLivePreviewLevel": "Level: {level}",
+  "adminShell.catalogLivePreviewSockets": "Soul sockets: {count}",
+  "adminShell.catalogLivePreviewFreeSockets": "Available Soul sockets: {count}",
+  "adminShell.catalogLivePreviewLanguageAria": "Item preview language"
 }
