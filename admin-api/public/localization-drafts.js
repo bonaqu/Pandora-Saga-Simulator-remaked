@@ -78,7 +78,9 @@ function mount(host,{api,onPublished,onJump,onQueueChanged}){
       const reply=await api('GET',null,'/api/admin/localization/drafts');
       if(!active)return;
       drafts=new Map(reply.items.map(item=>[key(item),item]));
-      selected=new Map([...selected].filter(([id])=>drafts.has(id)));
+      const retained=new Map();
+      for(const id of selected.keys())if(drafts.has(id))retained.set(id,true);
+      selected=retained;
       messageNode(summary,'draftQueueCount','Saved translation drafts: {count}',()=>({count:drafts.size}));
       render();onQueueChanged?.();
     }catch(error){if(active)notify('draftQueueRefreshError','Could not refresh drafts: {error}',{error:error.message},true);}
