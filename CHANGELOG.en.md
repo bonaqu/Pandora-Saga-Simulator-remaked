@@ -14,6 +14,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 - Paginated GET-only reads validate group totals, pages and unique IDs; abort on observed data drift and never download partial results. The report explicitly declares its non-atomic nature.
 - Export IDs, category kinds and catalog ownership markers only—no translations, drafts, credentials, secrets, receipts, D1 writes or automatic publication. Preserve Legacy 2.00, game calculations, auth, and saved-build semantics.
 - Add four D1-first RU/EN/JP/TW labels and positive/negative browser tests for downloaded content and incomplete responses.
+- Expand the required admin browser suite with catalog localization, draft queue and export checks. Fix an actual frozen Legacy runtime collision with the global `Set`: draft selection, bulk editing and export deduplication now use compatible `Map`/null-prototype dictionaries, without changing inputs or published D1.
 
 ## Modern 4.14 — 2026-10-12
 
