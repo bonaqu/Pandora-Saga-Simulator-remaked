@@ -61,7 +61,7 @@
   };
   // Display-only metadata, never draft or form values. Weak references avoid
   // leaking discarded list rows across catalog refreshes and locale changes.
-  var catalogLiveValues = new WeakMap(),catalogRecordValues=new WeakMap();
+  var catalogLiveValues = new WeakMap(),catalogRecordValues=new WeakMap(),catalogLiveAttributes=new WeakMap();
   function catalogTranslate(key, fallback, values) {
     var template=window.PandoraAdminI18n?.t?.('adminShell.'+key,fallback)||fallback;
     var slots=function(value){return (String(value).match(/\{[A-Za-z0-9_]+\}/g)||[]).sort().join('|');};
@@ -104,6 +104,12 @@
     catalogLiveValues.delete(node);
     delete node.dataset.catalogLiveI18n;
     node.textContent=text;
+    return node;
+  }
+  function catalogLiveAttribute(node,attribute,key,fallback,values) {
+    node.dataset.catalogLiveAttribute=key;
+    catalogLiveAttributes.set(node,{attribute,key,fallback,values:values||{}});
+    node.setAttribute(attribute,catalogTranslate(key,fallback,values));
     return node;
   }
   function catalogAttribute(node,attribute,key,fallback) {
@@ -187,7 +193,13 @@
   "Дополнительное описание / особые эффекты — текст": "catalogFieldItemNotes",
   "Где получить": "catalogFieldAcquisition",
   "Приставка к названию экипированной вещи": "catalogFieldSoulPrefix",
-  "Как менять исходные числовые эффекты": "catalogFieldEquipmentEffectMode"
+  "Как менять исходные числовые эффекты": "catalogFieldEquipmentEffectMode",
+  "Базовое LP": "catalogProgressionHp",
+  "Базовое MP": "catalogProgressionMp",
+  "Делитель роста LP от уровня": "catalogProgressionHpLevel",
+  "Делитель роста MP от уровня": "catalogProgressionMpLevel",
+  "Делитель роста LP от STA": "catalogProgressionHpSta",
+  "Делитель роста MP от SPR": "catalogProgressionMpSpr"
 };
   function formCaption(text) {
     var caption = node('span', text);
@@ -254,6 +266,11 @@
       if(entry)node.textContent=catalogTranslate(entry.key,entry.fallback,
         entry.compute?entry.compute():entry.names?{...entry.values,name:catalogRecordLocale(entry.names)}:entry.values);
     });
+    host.querySelectorAll('[data-catalog-live-attribute]').forEach(function(node){
+      var entry=catalogLiveAttributes.get(node);
+      if(entry)node.setAttribute(entry.attribute,catalogTranslate(entry.key,entry.fallback,entry.values));
+    });
+    if(current&&editor?.querySelector('[data-catalog-item-live-preview]'))refreshItemPreview();
     host.querySelectorAll('[data-catalog-record-locale]').forEach(function(node){
       var names=catalogRecordValues.get(node);
       if(names)node.textContent=catalogRecordLocale(names);
@@ -474,7 +491,7 @@
     if(!display)return;
     var value=field=>editor.querySelector('[data-field="'+field+'"][data-language="'+locale+'"]')?.value||'';
     var original=field=>editor.querySelector('[data-field="'+field+'"][data-language="en"]')?.value||'';
-    var name=value('names')||original('names')||'Без названия';
+    var name=value('names')||original('names')||catalogTranslate('catalogLivePreviewMissingName','Без названия');
     var text=value('description')||original('description');
     var notes=value('notes')||original('notes');
     var n=Math.max(0,Math.min(3,Number(editor.querySelector('[data-field="sockets"]')?.value)||0));
@@ -482,13 +499,14 @@
     if(current.edit.kind==='equipment'){
       var facts=node('div',undefined,'catalog-item-preview-facts');
       var type=editor.querySelector('[data-field="category"]');
-      var kind=type?.selectedOptions[0]?.textContent||'Снаряжение';
+      var kind=type?.selectedOptions[0]?.textContent||catalogTranslate('catalogKindEquipment','Снаряжение');
       var level=editor.querySelector('[data-field="level"]')?.value||'0';
-      [kind,'Уровень: '+level,'Слоты душ: '+n].forEach(function(t){facts.append(node('span',t));});
+      facts.append(node('span',kind),catalogLive(node('span'),'catalogLivePreviewLevel','Уровень: {level}',{level}),
+        catalogLive(node('span'),'catalogLivePreviewSockets','Слоты душ: {count}',{count:n}));
       display.append(facts);
       if(n){
         var circles=node('div',undefined,'catalog-item-preview-sockets');
-        circles.setAttribute('aria-label','Свободные слоты душ: '+n);
+        catalogLiveAttribute(circles,'aria-label','catalogLivePreviewFreeSockets','Свободные слоты душ: {count}',{count:n});
         for(var i=0;i<n;i++)circles.append(node('span',undefined,'catalog-item-preview-socket'));
         display.append(circles);
       }
@@ -508,7 +526,7 @@
     top.append(node('strong','Как карточка будет выглядеть на сайте'));
     var languagesSelect=node('select');
     languagesSelect.dataset.catalogPreviewLocale='';
-    languagesSelect.setAttribute('aria-label','Язык предпросмотра предмета');
+    catalogAttribute(languagesSelect,'aria-label','catalogLivePreviewLanguageAria','Язык предпросмотра предмета');
     [['ru','RU'],['en','EN'],['jp','JP'],['tw','TW']].forEach(function(pair){
       var option=node('option',pair[1]);option.value=pair[0];languagesSelect.append(option);
     });
@@ -546,10 +564,10 @@
   }
   function effectRow(effect, parent) {
     var row = node('div', undefined, 'effect-row');
-    var stat = node('select'); stat.setAttribute('aria-label', 'Характеристика');
+    var stat = node('select'); catalogAttribute(stat,'aria-label','catalogEffectStatAria','Характеристика');
     meta.effects.forEach(function (definition) { var option = effectOption(definition); option.value = definition.id; stat.appendChild(option); });
-    stat.value = effect.stat; var value = node('input'); value.type = 'number'; value.step = '.01'; value.min = '-10000'; value.max = '10000'; value.value = effect.value; value.required = true; value.setAttribute('aria-label', 'Значение');
-    var unit = node('select'); unit.setAttribute('aria-label', 'Единица');
+    stat.value = effect.stat; var value = node('input'); value.type = 'number'; value.step = '.01'; value.min = '-10000'; value.max = '10000'; value.value = effect.value; value.required = true; catalogAttribute(value,'aria-label','catalogEffectValueAria','Значение');
+    var unit = node('select'); catalogAttribute(unit,'aria-label','catalogEffectUnitAria','Единица');
     function units() {
       var previous = unit.value || effect.unit; unit.replaceChildren();
       var definition = meta.effects.find(function (definition) { return definition.id === Number(stat.value); });
