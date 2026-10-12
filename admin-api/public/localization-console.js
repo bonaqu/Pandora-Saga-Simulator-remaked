@@ -283,7 +283,7 @@
                 item.scope===entry.scope&&item.locale===entry.locale);
               if(!reference)throw Error('Missing audited locale group; no file created');
               const verified=[],seenAgain=Object.create(null);
-              const pages=Math.ceil(entry.expectedMissing/pageSize);
+              const pages=Math.max(1,Math.ceil(entry.expectedMissing/pageSize));
               for(let pageIndex=0;pageIndex<pages;pageIndex++){
                 if(token!==auditRequest||!exportButton.isConnected)return;
                 const params=new URLSearchParams({scope:entry.scope,locale:entry.locale,
