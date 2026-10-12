@@ -221,6 +221,8 @@ jobs:
         run: node --test tests/tools/pandora-os-reference-hp-mp.test.mjs
       - name: Verify 164 current-server weapon reach reference records
         run: node --test tests/tools/pandora-os-weapon-ranges.test.mjs
+      - name: Verify isolated 896-vector class arithmetic divergence and 164 pinned base ranges
+        run: node --test tests/tools/pandora-os-base-deltas.test.mjs
 
       - name: Syntax-check core JavaScript
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
