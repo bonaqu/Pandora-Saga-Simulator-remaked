@@ -70,6 +70,11 @@
       return phrase.replace(/\{([A-Za-z0-9_]+)\}/g,(match,name)=>
         Object.hasOwn(values,name)?String(values[name]):match);
     };
+    const localizedError=(key,fallback,values={})=>{
+      const error=new Error(translate(key,fallback,values));
+      error.localizedCopy={key,fallback,values};
+      return error;
+    };
     const live=(element,key,fallback,values={})=>{
       dynamicTranslations.set(element,{key,fallback,values});
       element.dataset.bulkLiveKey=key;
@@ -151,11 +156,11 @@
       const found=[],skipped=[];
       let total=Infinity,page=0;
       while(page*40<total){
-        if(!active||!stillCurrent(current))throw Error(translate('bulkContextChanged','Параметры изменились. Повтори предпросмотр.'));
+        if(!active||!stillCurrent(current))throw localizedError('bulkContextChanged','Параметры изменились. Повтори предпросмотр.');
         const response=await api('GET',null,searchUrl(current,page));
         total=response.total;
-        if(total>MAX_SCAN)throw Error(translate('bulkTooManyToScan','Слишком много строк для безопасного предпросмотра. Выбери более узкую категорию.'));
-        if(!Array.isArray(response.items)||response.page!==page)throw Error(translate('bulkIncompletePage','Неполная страница переводов.'));
+        if(total>MAX_SCAN)throw localizedError('bulkTooManyToScan','Слишком много строк для безопасного предпросмотра. Выбери более узкую категорию.');
+        if(!Array.isArray(response.items)||response.page!==page)throw localizedError('bulkIncompletePage','Неполная страница переводов.');
         for(const row of response.items){
           // Catalog-owned text is shown in unified search, but published only
           // by catalog revisions. Never add it to independent bulk D1 writes.
@@ -168,7 +173,7 @@
           const item={id:row.id,scope:row.scope,locale:row.locale,version:row.version,
             before,after,suggested:after,sourceEn:row.source?.en||'',origin:row.origin,kind:row.kind,blocked:hasDraft(row)};
           found.push(item);
-          if(found.length>MAX_MATCHES)throw Error(translate('bulkTooManyMatches','Найдено больше {limit} строк. Сузь категорию или слово: частичный пакет не создаётся.',{limit:MAX_MATCHES}));
+          if(found.length>MAX_MATCHES)throw localizedError('bulkTooManyMatches','Найдено больше {limit} строк. Сузь категорию или слово: частичный пакет не создаётся.',{limit:MAX_MATCHES});
         }
         page++;
       }
@@ -295,7 +300,10 @@
         if(requestId!==epoch||!stillCurrent(current))return;
         proposal={...data,current,signature:fingerprint(current)};
         render();
-      }catch(error){if(requestId===epoch){proposal=null;raw(state,error.message);}}
+      }catch(error){if(requestId===epoch){proposal=null;
+          if(error.localizedCopy)live(state,error.localizedCopy.key,error.localizedCopy.fallback,error.localizedCopy.values);
+          else raw(state,error.message);
+        }}
       finally{setBusy(false);}
     });
 
@@ -317,9 +325,9 @@
         for(const before of checked){
           const now=actual.get(before.id);
           if(!now||now.version!==before.version||now.before!==before.before||now.after!==before.suggested||now.blocked)
-            throw Error(translate('bulkStaleRow','Данные изменились для {id}. Пересмотри пакет.',{id:before.id}));
+            throw localizedError('bulkStaleRow','Данные изменились для {id}. Пересмотри пакет.',{id:before.id});
         }
-        if(!active||requestId!==epoch||!stillCurrent(current))throw Error(translate('bulkEditorChanged','Контекст редактора изменился.'));
+        if(!active||requestId!==epoch||!stillCurrent(current))throw localizedError('bulkEditorChanged','Контекст редактора изменился.');
         live(state,'bulkPublishingProgress','Публикую {count} переводов одной транзакцией…',{count:checked.length});
         const items=checked.map(item=>({scope:item.scope,id:item.id,locale:item.locale,
           value:item.after,expectedVersion:item.version,expectedEffective:item.before}));
@@ -333,7 +341,7 @@
             const check=await api('GET',null,
               '/api/admin/localization/operations?operationId='+encodeURIComponent(operationId));
             if(check.found)receipt=check.receipt;
-            else{uncertain=true;throw Error(translate('bulkReceiptUnconfirmed','Состояние публикации не подтверждено: {error}',{error:error.message}));}
+            else{uncertain=true;throw localizedError('bulkReceiptUnconfirmed','Состояние публикации не подтверждено: {error}',{error:error.message});}
           }catch(checkError){uncertain=true;throw checkError;}
         }
         invalidate();
