@@ -710,5 +710,19 @@
   "adminShell.catalogPreviewNoNumericReplace": "No calculated numeric bonuses. See descriptions and restrictions for informational effects.",
   "adminShell.catalogPreviewNoNumericExtra": "No additional numeric bonuses. The original effect may still apply.",
   "calculator.weaponBaseRangeVerified": "Only the equipped weapon's base range is shown (raw game units). Riding, skill and equipment modifiers are not yet verified.",
-  "calculator.weaponBaseRangeUnverified": "Effective attack range is not verified for this weapon. An unavailable value is not zero."
+  "calculator.weaponBaseRangeUnverified": "Effective attack range is not verified for this weapon. An unavailable value is not zero.",
+  "adminShell.locResetBaselineTitle": "Restore base text and save: {value}",
+  "adminShell.locResetCloudDraftTitle": "Resolve the saved cloud draft in the queue above first",
+  "adminShell.fourEditorAria": "Translation editor for {language} · {id}",
+  "adminShell.bulkContextChanged": "Filter settings changed. Run the preview again.",
+  "adminShell.bulkTooManyToScan": "Too many records for a safe preview. Select a narrower category.",
+  "adminShell.bulkIncompletePage": "Incomplete translation page returned.",
+  "adminShell.bulkCatalogManagedSuffix": " (managed in catalog)",
+  "adminShell.bulkInvalidFieldSuffix": " (field limit)",
+  "adminShell.bulkTooManyMatches": "More than {limit} records matched. Narrow the category or word; no partial batch was created.",
+  "adminShell.bulkStaleRow": "Record {id} changed. Review the entire batch again.",
+  "adminShell.bulkEditorChanged": "The editor context changed.",
+  "adminShell.bulkReceiptUnconfirmed": "Publication state unconfirmed: {error}",
+  "adminShell.bulkUncertainPublish": "Unable to confirm operation. DO NOT blindly publish again. Operation ID: {operationId}. {error}",
+  "adminShell.bulkFailedPublish": "Batch not published: {error}"
 }
