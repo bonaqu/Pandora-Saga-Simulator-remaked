@@ -20,11 +20,17 @@
 
   // Dynamic localization never attaches data-admin-i18n to a parent containing
   // textareas, inputs, or response-owned children. It only mutates leaf text.
-  const liveValues=new WeakMap();
+  const liveValues=new WeakMap(),liveTitles=new WeakMap();
   function translated(key,fallback,values={}) {
     const template=window.PandoraAdminI18n?.t?.('adminShell.'+key,fallback)||fallback;
     return template.replace(/\{([A-Za-z0-9_]+)\}/g,(match,name)=>
       Object.hasOwn(values,name)?String(values[name]):match);
+  }
+  function liveTitle(element,key,fallback,values={}) {
+    liveTitles.set(element,{key,fallback,values});
+    element.dataset.adminLiveTitle=key;
+    element.title=translated(key,fallback,values);
+    return element;
   }
   function liveText(element,key,fallback,values={}) {
     liveValues.set(element,{key,fallback,values});
@@ -36,6 +42,10 @@
     host.querySelectorAll('[data-admin-live-i18n]').forEach(element=>{
       const entry=liveValues.get(element);
       if(entry)element.textContent=translated(entry.key,entry.fallback,entry.values);
+    });
+    host.querySelectorAll('[data-admin-live-title]').forEach(element=>{
+      const entry=liveTitles.get(element);
+      if(entry)element.title=translated(entry.key,entry.fallback,entry.values);
     });
   });
   function aria(node,key,english) {
@@ -402,7 +412,7 @@
       const stage=localized('button','locLegacyStage','Сохранить черновик');stage.type='button';stage.className='secondary';
       const reset=localized('button','locLegacyReset','Вернуть базовый текст');reset.type='button';reset.className='secondary';
       const length=tag('small');
-      reset.title='Восстановить базовый текст и сохранить: '+(record.baseline||'—');
+      liveTitle(reset,'locResetBaselineTitle','Восстановить базовый текст и сохранить: {value}',{value:record.baseline||'—'});
       function sync(){
         const isDirty=input.value!==(savedDraft()?.text??record.effective??'');
         if(isDirty)record.justReset=false;
@@ -418,7 +428,8 @@
         save.disabled=Boolean(record.pending)||Boolean(savedDraft())||!isDirty;
         stage.disabled=Boolean(record.pending)||!isDirty||!input.value.trim();
         reset.disabled=Boolean(record.pending)||Boolean(savedDraft())||(!published&&!isDirty);
-        if(savedDraft())reset.title='Сначала отмени облачный черновик в очереди выше';
+        if(savedDraft())liveTitle(reset,'locResetCloudDraftTitle','Сначала отмени облачный черновик в очереди выше');
+        else liveTitle(reset,'locResetBaselineTitle','Восстановить базовый текст и сохранить: {value}',{value:record.baseline||'—'});
         input.disabled=Boolean(record.pending);
         length.textContent=input.value.length+' / 4000';
         updateDrafts();
