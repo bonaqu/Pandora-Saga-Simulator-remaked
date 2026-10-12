@@ -53,3 +53,48 @@ test('safe bulk preview errors switch D1 languages in place without rescanning o
   await expect(pane.locator('.localization-bulk-row')).toHaveCount(0);
   await expect(pane.getByRole('button',{name:'Опубликовать выбранные'})).toBeDisabled();
 });
+
+
+test('catalog-only skip explanation re-translates without changing batch or catalog ownership',async({page})=>{
+  await page.goto('about:blank');
+  await page.setContent('<main id="localization-console"></main>');
+  await page.evaluate(()=>{
+    window.localeForAudit='ru';
+    window.auditCalls=[];
+    window.PandoraAdminI18n={
+      t:(key,fallback)=>window.localeForAudit==='en'?({
+        'adminShell.bulkSkippedIds':'Skipped D1: {ids}',
+        'adminShell.bulkCatalogManagedSuffix':' (owned by catalog)'
+      }[key]||fallback):fallback,
+      apply:()=>{}
+    };
+  });
+  await page.addScriptTag({path:'admin-api/public/localization-bulk.js'});
+  await page.evaluate(()=>{
+    window.PandoraBulkLocalization.mount(document.getElementById('localization-console'),{
+      api:async(method,payload,url)=>{
+        window.auditCalls.push({method,url});
+        return {ok:true,page:0,total:1,items:[{
+          scope:'game',locale:'ru',id:'skill_detail.7.5.3',kind:'skill_detail',
+          source:{en:'Warrior'},effective:'Warrior',managedBy:'catalog',version:3
+        }]};
+      },
+      getContext:()=>({scope:'game',locale:'ru',group:'skills',status:'all'}),
+      hasDraft:()=>false,onPublished:()=>{throw Error('Must never publish')}
+    });
+  });
+  const pane=page.locator('.localization-bulk');
+  await pane.locator('summary').click();
+  await pane.locator('input:not([type])').first().fill('Warrior');
+  await pane.locator('input:not([type])').nth(1).fill('Воин');
+  await pane.getByRole('button',{name:'Показать предварительный просмотр'}).click();
+  const skipped=pane.locator('.localization-bulk-warning');
+  await expect(skipped).toContainText('skill_detail.7.5.3 (редактируется в каталоге)');
+  await page.evaluate(()=>{
+    window.localeForAudit='en';
+    window.dispatchEvent(new Event('pandora-admin:localechange'));
+  });
+  await expect(skipped).toHaveText('Skipped D1: skill_detail.7.5.3 (owned by catalog)');
+  await expect(pane.locator('.localization-bulk-row')).toHaveCount(0);
+  expect(await page.evaluate(()=>window.auditCalls.length)).toBe(1);
+});
