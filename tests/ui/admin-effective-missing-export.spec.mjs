@@ -41,7 +41,7 @@ function initMock(){
 }
 
 test('owner can download 8-locale effective missing IDs with no D1 writes or translation text',async({page})=>{
-  await page.goto('about:blank');
+  await page.goto('/');
   await page.setContent('<div id="localization-console"></div>');
   await page.evaluate(initMock);
   await page.addScriptTag({path:'admin-api/public/localization-console.js'});
@@ -78,7 +78,7 @@ test('owner can download 8-locale effective missing IDs with no D1 writes or tra
 });
 
 test('a changing D1 coverage total aborts safely without a partial download',async({page})=>{
-  await page.goto('about:blank');
+  await page.goto('/');
   await page.setContent('<div id="localization-console"></div>');
   await page.evaluate(initMock);
   await page.addScriptTag({path:'admin-api/public/localization-console.js'});
