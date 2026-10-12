@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.16 — 2026-10-12
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Add a read-only **896-state HP/MP comparison**: 28 classes × 8 levels × 4 identical hypothetical VIT/SPI pairs. Contrast the preserved Legacy nested-ceiling formula against the dated current-server calculator coefficient snapshot without modifying the runtime.
+- At level 45/VIT 7/SPI 4, Warrior's retained HP 917 / MP 130 differs from snapshot HP 915 / MP 139; Gladiator HP 1644 / MP 163 differs from HP 1643 / MP 163. These are isolated arithmetic inputs, NOT actual equipped game character results.
+- Verify all **164** pinned weapon base-range values and unchanged engine keys across 14 categories, including 20 bows/crossbows. Effective Riding, skill and equipment reach modifiers remain unverified.
+- New CLI accepts explicitly supplied local JSON via `--source`, never accesses the network or D1, and is run in mandatory CI. No game formula changes, D1 publications, saved-build changes or edits to frozen Legacy 2.00.
+
 ## Modern 4.15 — 2026-10-12
 
 ### For users
