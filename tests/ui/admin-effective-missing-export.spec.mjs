@@ -14,6 +14,7 @@ function initMock(){
   window.coverageDrift=false;
   window.sameCountIdDrift=false;
   window.sameCountKindDrift=false;
+  window.crossLocaleKindConflict=false;
   window.previouslyEmptyGroupDrift=false;
   window.fetch=async(url,options)=>{
     const route=new URL(String(url),location.href),scope=route.searchParams.get('scope')||'game',
@@ -32,6 +33,8 @@ function initMock(){
         id.includes('skill')?'skill_entry':'interface',origin:'fallback',
         // These values must NEVER leak into downloaded diagnostic metadata.
         effective:'PRIVATE_REDACT_ME',baseline:'PRIVATE_BASELINE',source:{en:'PRIVATE_EN'}}));
+    if(window.crossLocaleKindConflict&&scope==='game'&&locale==='tw')
+      rows.find(row=>row.id==='equipment.0.2').kind='skill_entry';
     const audited=window.auditTraffic.filter(x=>new URL(x.url).searchParams.get('status')==='missing').length;
     // 8 audit reads, 3 first-pass rows: the first verification GET is #12.
     if(audited>=12&&scope==='game'&&locale==='jp'&&status==='missing'){
@@ -78,6 +81,29 @@ test('owner can download 8-locale effective missing IDs with no D1 writes or tra
   expect(report.coverage).toHaveLength(8);
   expect(report.missing).toHaveLength(8);
   expect(report.observedMissingCount).toBe(4);
+  expect(report.jpTwComparison).toHaveLength(2);
+  expect(report.jpTwComparison[0].scope).toBe('game');
+  expect(report.jpTwComparison[0].counts).toEqual({both:1,jpOnly:1,twOnly:0});
+  expect(report.jpTwComparison[0].both)
+    .toEqual([{id:'equipment.0.2',kind:'equipment',managedBy:'translation'}]);
+  expect(report.jpTwComparison[0].jpOnly.map(x=>x.id)).toEqual(['skill_entry.7.5']);
+  expect(report.jpTwComparison[0].twOnly).toEqual([]);
+  expect(report.jpTwComparison[0].byKind).toEqual([
+    {kind:'equipment',both:1,jpOnly:0,twOnly:0},
+    {kind:'skill_entry',both:0,jpOnly:1,twOnly:0}
+  ]);
+  expect(report.jpTwComparison[1].scope).toBe('ui');
+  expect(report.jpTwComparison[1].counts).toEqual({both:0,jpOnly:0,twOnly:0});
+  await expect(page.locator('.localization-audit-jptw-summary .localization-audit-jptw-row')).toHaveCount(2);
+  await expect(page.locator('.localization-audit-jptw-row').first())
+    .toContainText('оба языка: 1 · только JP: 1 · только TW: 0');
+  await page.evaluate(()=>{
+    window.PandoraAdminI18n.t=(key,fallback)=>key==='adminShell.locAuditCompareCounts'
+      ? 'D1 both {both} · JP {jpOnly} · TW {twOnly}' : fallback;
+    window.dispatchEvent(new Event('pandora-admin:localechange'));
+  });
+  await expect(page.locator('.localization-audit-jptw-row').first())
+    .toContainText('D1 both 1 · JP 1 · TW 0');
   expect(report.missing.find(e=>e.scope==='game'&&e.locale==='jp').ids.map(x=>x.id))
     .toEqual(['equipment.0.2','skill_entry.7.5']);
   expect(report.missing.find(e=>e.scope==='game'&&e.locale==='tw').ids.map(x=>x.id))
@@ -153,4 +179,26 @@ test('a locale group that was empty during audit is rechecked before export',asy
   await expect(page.locator('.localization-audit > p').last()).toContainText('Выгрузка остановлена');
   expect(downloads).toHaveLength(0);
   expect((await page.evaluate(()=>window.auditTraffic)).every(x=>x.method==='GET')).toBe(true);
+});
+
+test('incompatible JP and TW catalog metadata blocks overlap export even with stable two-pass counts',async({page})=>{
+  await page.goto('/');
+  await page.setContent('<div id="localization-console"></div>');
+  await page.evaluate(initMock);
+  await page.addScriptTag({path:'admin-api/public/localization-console.js'});
+  await page.evaluate(()=>window.PandoraLocalizationConsole.start(()=>'',()=>{}));
+  await page.locator('[data-admin-i18n="adminShell.locAuditAction"]').click();
+  await expect(page.locator('.localization-audit-row')).toHaveCount(8);
+  await page.evaluate(()=>window.crossLocaleKindConflict=true);
+  const downloads=[];page.on('download',x=>downloads.push(x));
+  await page.locator('[data-coverage-export]').click();
+  await expect(page.locator('.localization-audit > p').last())
+    .toContainText('Выгрузка остановлена');
+  await expect(page.locator('.localization-audit > p').last())
+    .toContainText('JP/TW identity metadata conflict');
+  expect(downloads).toHaveLength(0);
+  await expect(page.locator('.localization-audit-jptw-summary')).toHaveCount(0);
+  const traffic=await page.evaluate(()=>window.auditTraffic);
+  expect(traffic.every(x=>x.method==='GET')).toBe(true);
+  expect(traffic.filter(x=>new URL(x.url).searchParams.get('status')==='missing')).toHaveLength(19);
 });
