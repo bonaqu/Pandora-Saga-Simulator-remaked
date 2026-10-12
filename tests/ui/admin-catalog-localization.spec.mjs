@@ -208,5 +208,36 @@ test('live catalog counters and filters switch RU/EN/JP/TW without losing draft 
     .toContainText('Selected: 1 of 1');
   await expect(search).toHaveValue('Sample');
   await expect(drafts.locator('.catalog-draft-entry input[type="checkbox"]')).toBeChecked();
+
+  // Create a purely local editor row; locale changes must never reset the
+  // numeric stat identity, input value or unpublished draft selections.
+  await language.selectOption('ru');
+  await catalog.getByRole('button',{name:'Новая запись',exact:true}).click();
+  await catalog.getByRole('button',{name:'Добавить характеристику',exact:true}).click();
+  const effect=catalog.locator('.effect-row').first();
+  const stat=effect.locator('select').first();
+  const value=effect.locator('input[type="number"]');
+  const unit=effect.locator('select').nth(1);
+  await stat.selectOption('49');
+  await value.fill('8');
+  await expect(stat.locator('option[value="49"]')).toHaveText('Защита');
+  await expect(unit).toHaveValue('flat');
+  for(const [locale,caption,unitCaption,levelCaption] of [
+    ['en','Defense (DEF)','Flat number (5 = +5)','Level:'],
+    ['jp','防御力 (DEF)','固定値 (5 = +5)','レベル:'],
+    ['tw','防禦力 (DEF)','固定數值 (5 = +5)','等級：'],
+    ['ru','Защита','Число (5 = +5)','Уровень:']
+  ]){
+    await language.selectOption(locale);
+    await expect(stat.locator('option[value="49"]')).toHaveText(caption);
+    await expect(stat).toHaveValue('49');
+    await expect(value).toHaveValue('8');
+    await expect(unit).toHaveValue('flat');
+    await expect(unit.locator('option[value="flat"]')).toHaveText(unitCaption);
+    await expect(catalog.locator('[data-catalog-live-i18n="catalogLivePreviewLevel"]'))
+      .toContainText(levelCaption);
+    await expect(drafts.locator('.catalog-draft-entry input[type="checkbox"]')).toBeChecked();
+    await expect(search).toHaveValue('Sample');
+  }
   expect(posts).toEqual([]); // no publication or draft writes from changing UI language
 });
