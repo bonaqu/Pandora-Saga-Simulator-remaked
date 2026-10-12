@@ -42,7 +42,11 @@ class PotionSourceAuditTests(unittest.TestCase):
         self.assertIn("function refreshPotionEffectsPreview()",MODERN)
         self.assertNotIn("installPotionTabAccessibility",MODERN)
         self.assertNotIn("window.Flag[6]=",MODERN)
-        self.assertIn("without changing Flag[6]",MODERN)
+        self.assertIn("var enabled=Boolean(window.Flag?.[6])",MODERN)
+        self.assertIn("potionPercentRecovery.map(function(percent){return percent+'%';})",MODERN)
+        self.assertIn("if (!enabled) {",MODERN)
+        self.assertIn("} else if (valid) {",MODERN)
+        self.assertNotIn("window.Flag[6]=",MODERN)
         self.assertIn("potionPercentRecovery=[5,15,30,18]",MODERN)
 
 
