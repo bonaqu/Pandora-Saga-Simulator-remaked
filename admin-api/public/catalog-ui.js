@@ -88,6 +88,12 @@
     node.textContent=catalogTranslate(key,fallback,{...values,name:catalogRecordLocale(names)});
     return node;
   }
+  function catalogLiveComputed(node,key,fallback,compute){
+    node.dataset.catalogLiveI18n=key;
+    catalogLiveValues.set(node,{key:key,fallback:fallback,compute:compute});
+    node.textContent=catalogTranslate(key,fallback,compute());
+    return node;
+  }
   function catalogLive(node,key,fallback,values) {
     node.dataset.catalogLiveI18n=key;
     catalogLiveValues.set(node,{key:key,fallback:fallback,values:values||{}});
@@ -246,7 +252,7 @@
     host.querySelectorAll('[data-catalog-live-i18n]').forEach(function(node){
       var entry=catalogLiveValues.get(node);
       if(entry)node.textContent=catalogTranslate(entry.key,entry.fallback,
-        entry.names?{...entry.values,name:catalogRecordLocale(entry.names)}:entry.values);
+        entry.compute?entry.compute():entry.names?{...entry.values,name:catalogRecordLocale(entry.names)}:entry.values);
     });
     host.querySelectorAll('[data-catalog-record-locale]').forEach(function(node){
       var names=catalogRecordValues.get(node);
@@ -332,7 +338,7 @@
     target.replaceChildren(title.startsWith('Сейчас на сайте · версия ') ? catalogLive(node('h4'),'catalogPublishedVersion','Сейчас на сайте · версия {revision}',{revision:current.catalogRevision}):node('h4',title));
     if (!record) { target.appendChild(node('p', 'Запись ещё не опубликована и на сайте не используется.', 'help-text')); return; }
     target.appendChild(catalogRecordText(node('p',undefined,'record-name'),record.names));
-    var description = record.description.ru || record.description.en;
+    var description = catalogRecordLocale(record.description);
     if (description) target.appendChild(catalogRecordText(node('p',undefined,'record-description'),record.description));
     var values = node('ul', undefined, 'record-values');
     if (record.kind === 'equipment') values.appendChild(catalogLive(node('li'),'catalogPreviewLevelSockets','Уровень: {level} · Слоты душ: {sockets}',{level:record.level,sockets:record.sockets}));
@@ -348,7 +354,7 @@
           values.appendChild(catalogLive(node('li'),'catalogPreviewInvalidMarker','Исходный маркер: {token}. Числовой эффект не подтверждён.',{token}));
           return;
         }
-        values.appendChild(node('li', pair[0] === '18' && /^W\d+$/.test(value) ? catalogTranslate('catalogPreviewBaseAttack','Базовая атака оружия: {value}',{value:value.slice(1)}) : effectText(pair[0], value.endsWith('%') ? value.slice(0, -1) : value, value.endsWith('%') ? 'percent' : 'flat')));
+        values.appendChild(pair[0]==='18' && /^W\d+$/.test(value) ? catalogLive(node('li'),'catalogPreviewBaseAttack','Базовая атака оружия: {value}',{value:value.slice(1)}):node('li',effectText(pair[0],value.endsWith('%')?value.slice(0,-1):value,value.endsWith('%')?'percent':'flat')));
       });
       if (!record.calculationCode) values.appendChild(catalogStatic(node('li'),'catalogPreviewNoNumericModifiers','Числовых бонусов в расчётной строке нет.'));
     }
@@ -362,7 +368,7 @@
       if (learning) {
         values.appendChild(catalogLive(node('li'),'catalogPreviewLearningLevel','Минимальный уровень: {level}',{level:learning.minimumLevel}));
         var classes = learning.classIds.map(function (id) { return meta.compatibilityLabels.job.find(function (row) { return 'job.' + row.index === id; })?.label || id; });
-        values.appendChild(catalogLive(node('li'),'catalogPreviewLearningClasses','Классы: {classes}',{classes:classes.length ? classes.join(', ') + catalogTranslate(learning.classScope === 'descendants'?'catalogPreviewDescendants':'catalogPreviewOnlySelected',learning.classScope==='descendants'?' и их последующие профессии':' — только отмеченные') : catalogTranslate('catalogPreviewAnyClass','любой')}));
+        values.appendChild(catalogLiveComputed(node('li'),'catalogPreviewLearningClasses','Классы: {classes}',function(){return {classes:classes.length ? classes.join(', ') + catalogTranslate(learning.classScope==='descendants'?'catalogPreviewDescendants':'catalogPreviewOnlySelected',learning.classScope==='descendants'?' и их последующие профессии':' — только отмеченные') : catalogTranslate('catalogPreviewAnyClass','любой')};}));
         learning.branches.forEach(function (gate) { values.appendChild(catalogLive(node('li'),'catalogPreviewLearningBranch','Ветка: {branch} ≥ {points}',{branch:meta.skillCategories.find(function (row) { return row.id === gate.branchId; })?.name.en || gate.branchId,points:gate.minimumPoints})); });
         if (!learning.branches.length) values.appendChild(catalogStatic(node('li'),'catalogPreviewNoBranchRequirements','Требований к очкам веток нет.'));
       } else values.appendChild(catalogLive(node('li'),'catalogPreviewNativePrerequisites','Исходные условия изучения: {text}',{text:current.nativeSkill?.prerequisites.en || record.prerequisiteCode}));
@@ -373,11 +379,11 @@
       var required = record.bonusRequirements;
       if (required) {
         var names = required.weaponCategories.map(function (id) { return id === -1 ? 'без оружия' : meta.categories.find(function (entry) { return entry.legacy_id === id; })?.name.en || '#' + id; });
-        values.appendChild(catalogLive(node('li'),'catalogPreviewWeaponCondition','Условие оружия: {weapons}',{weapons:names.length?names.join(', '):catalogTranslate('catalogPreviewAnyWeapon','любое')}));
+        values.appendChild(catalogLiveComputed(node('li'),'catalogPreviewWeaponCondition','Условие оружия: {weapons}',function(){return {weapons:names.length?names.join(', '):catalogTranslate('catalogPreviewAnyWeapon','любое')};}));
         if (required.shieldRequired) values.appendChild(catalogStatic(node('li'),'catalogPreviewShieldRequired','Требуется щит.'));
         if (required.ridingRequired) values.appendChild(catalogStatic(node('li'),'catalogPreviewRidingRequired','Требуется верховая езда.'));
       }
-      if (record.calculationNotes?.ru || record.calculationNotes?.en) target.appendChild(catalogLive(node('p',undefined,'help-text'),'catalogPreviewCalculationLimit','Ограничение расчёта: {note}',{note:catalogRecordLocale(record.calculationNotes)}));
+      if (catalogRecordLocale(record.calculationNotes)) target.appendChild(catalogLiveComputed(node('p',undefined,'help-text'),'catalogPreviewCalculationLimit','Ограничение расчёта: {note}',function(){return {note:catalogRecordLocale(record.calculationNotes)};}));
     }
     if (record.kind === 'passive' && (record.templateId || !current.nativeSkill?.intrinsicEffect)) values.appendChild(catalogStatic(node('li'),record.templateId?'catalogPreviewNewSkill':'catalogPreviewPassiveOriginal',record.templateId?'Новый навык: встроенный эффект шаблона не копируется.':'Исходная механика сохраняется. Описание — справка; эффект зависит от изучения, класса и снаряжения.'));
     (record.effects || []).forEach(function (effect) { values.appendChild(node('li', effectText(effect.stat, effect.value, effect.unit))); });
@@ -392,7 +398,7 @@
         var entry = node('li'); entry.appendChild(catalogLiveName(node('strong'),'catalogProfileNameColon','Вариант {index}: {name}',{index:position+1},profile.names));
         entry.appendChild(node('p', learningSummary(profile.learningRequirements), 'help-text'));
         entry.appendChild(catalogLive(node('p',undefined,'help-text'),'catalogProfileTiming','MP: {mp} · применение: {cast} с · перезарядка: {cooldown} с · длительность: {duration} с',{mp:profile.timing[0],cast:profile.timing[1],cooldown:profile.timing[2],duration:profile.timing[3]}));
-        var description = profile.description.ru || profile.description.en;
+        var description = catalogRecordLocale(profile.description);
         if (description) entry.appendChild(catalogRecordText(node('p',undefined,'record-description'),profile.description));
         entries.appendChild(entry);
       });
