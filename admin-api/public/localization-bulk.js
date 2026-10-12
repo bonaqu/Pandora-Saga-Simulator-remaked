@@ -58,7 +58,8 @@
 
   function mount(host,{api,getContext,hasDraft,onPublished}){
     let active=true,busy=false,epoch=0,proposal=null,selections=new Map();
-    const editing=new Set();
+    // Compatible with the archived engine, which shadows window.Set.
+    const editing=new Map();
     const root=node('details',undefined,'localization-bulk');
     // Dynamic display-only copy: D1 wins over the approved fallback.
     // Never translate input.value, proposed edits, IDs or server receipts.
@@ -260,7 +261,7 @@
         }
         function beginEdit(){
           if(busy)return;
-          editing.add(item.id);
+          editing.set(item.id,true);
           input.value=item.after;
           editForm.hidden=false;after.hidden=true;
           pencil.disabled=true;revert.disabled=true;updateCounts();
