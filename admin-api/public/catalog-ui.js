@@ -61,7 +61,7 @@
   };
   // Display-only metadata, never draft or form values. Weak references avoid
   // leaking discarded list rows across catalog refreshes and locale changes.
-  var catalogLiveValues = new WeakMap(),catalogRecordValues=new WeakMap();
+  var catalogLiveValues = new WeakMap(),catalogRecordValues=new WeakMap(),catalogLiveAttributes=new WeakMap();
   function catalogTranslate(key, fallback, values) {
     var template=window.PandoraAdminI18n?.t?.('adminShell.'+key,fallback)||fallback;
     var slots=function(value){return (String(value).match(/\{[A-Za-z0-9_]+\}/g)||[]).sort().join('|');};
@@ -104,6 +104,12 @@
     catalogLiveValues.delete(node);
     delete node.dataset.catalogLiveI18n;
     node.textContent=text;
+    return node;
+  }
+  function catalogLiveAttribute(node,attribute,key,fallback,values) {
+    node.dataset.catalogLiveAttribute=key;
+    catalogLiveAttributes.set(node,{attribute,key,fallback,values:values||{}});
+    node.setAttribute(attribute,catalogTranslate(key,fallback,values));
     return node;
   }
   function catalogAttribute(node,attribute,key,fallback) {
@@ -187,7 +193,13 @@
   "Дополнительное описание / особые эффекты — текст": "catalogFieldItemNotes",
   "Где получить": "catalogFieldAcquisition",
   "Приставка к названию экипированной вещи": "catalogFieldSoulPrefix",
-  "Как менять исходные числовые эффекты": "catalogFieldEquipmentEffectMode"
+  "Как менять исходные числовые эффекты": "catalogFieldEquipmentEffectMode",
+  "Базовое LP": "catalogProgressionHp",
+  "Базовое MP": "catalogProgressionMp",
+  "Делитель роста LP от уровня": "catalogProgressionHpLevel",
+  "Делитель роста MP от уровня": "catalogProgressionMpLevel",
+  "Делитель роста LP от STA": "catalogProgressionHpSta",
+  "Делитель роста MP от SPR": "catalogProgressionMpSpr"
 };
   function formCaption(text) {
     var caption = node('span', text);
@@ -254,6 +266,11 @@
       if(entry)node.textContent=catalogTranslate(entry.key,entry.fallback,
         entry.compute?entry.compute():entry.names?{...entry.values,name:catalogRecordLocale(entry.names)}:entry.values);
     });
+    host.querySelectorAll('[data-catalog-live-attribute]').forEach(function(node){
+      var entry=catalogLiveAttributes.get(node);
+      if(entry)node.setAttribute(entry.attribute,catalogTranslate(entry.key,entry.fallback,entry.values));
+    });
+    if(current&&editor?.querySelector('[data-catalog-item-live-preview]'))refreshItemPreview();
     host.querySelectorAll('[data-catalog-record-locale]').forEach(function(node){
       var names=catalogRecordValues.get(node);
       if(names)node.textContent=catalogRecordLocale(names);
@@ -266,9 +283,9 @@
     if (response.status === 401) expired();
     if (!response.ok || result.ok !== true) {
       var explanations = {
-        'Conditional profile learning domains overlap ambiguously': 'Условия вариантов совпадают или пересекаются неоднозначно. Уточните класс, уровень или очки ветки: один вариант должен быть явно более конкретным, либо предназначаться другим классам.',
-        'Skill requires 1–8 conditional profiles': 'Допускается до 8 вариантов. Если они не нужны, удалите их: будут использоваться основные поля навыка.',
-        'Conditional profile data is too large': 'Слишком большой объём описаний вариантов. Сократите тексты или количество вариантов.'
+        'Conditional profile learning domains overlap ambiguously': catalogTranslate('catalogErrorOverlappingProfiles','Условия вариантов совпадают или пересекаются неоднозначно. Уточните класс, уровень или очки ветки: один вариант должен быть явно более конкретным, либо предназначаться другим классам.'),
+        'Skill requires 1–8 conditional profiles': catalogTranslate('catalogErrorProfileCount','Допускается до 8 вариантов. Если они не нужны, удалите их: будут использоваться основные поля навыка.'),
+        'Conditional profile data is too large': catalogTranslate('catalogErrorProfileSize','Слишком большой объём описаний вариантов. Сократите тексты или количество вариантов.')
       };
       throw new Error(explanations[result.message] || result.message || 'Server request failed');
     }
@@ -328,10 +345,62 @@
     70: 'Получаемый шанс крита (минус = защита)', 71: 'Критический урон', 72: 'Получаемый критический урон', 73: 'Скорость атаки', 74: 'Скорость движения', 76: 'Стоимость MP', 77: 'Скорость применения', 79: 'Перезарядка',
     146: 'Сопротивление аномалиям тела', 147: 'Сопротивление аномалиям разума', 149: 'Сопротивление оглушению', 150: 'Сопротивление заморозке', 151: 'Сопротивление падению'
   };
-  function effectLabel(id) { var definition = meta.effects.find(function (entry) { return entry.id === Number(id); }); return effectNames[id] || definition?.label || 'Условный эффект Legacy #' + id; }
+  // Admin-shell keys deliberately contain letters only: this preserves the
+  // strict existing D1 locale schema, while the actual stat IDs remain numeric.
+  var effectTranslationKeys = {
+    0: 'catalogEffectZero',
+    1: 'catalogEffectOne',
+    2: 'catalogEffectTwo',
+    3: 'catalogEffectThree',
+    4: 'catalogEffectFour',
+    5: 'catalogEffectFive',
+    6: 'catalogEffectSix',
+    7: 'catalogEffectSeven',
+    8: 'catalogEffectEight',
+    10: 'catalogEffectTen',
+    18: 'catalogEffectEighteen',
+    21: 'catalogEffectTwentyOne',
+    42: 'catalogEffectFortyTwo',
+    49: 'catalogEffectFortyNine',
+    52: 'catalogEffectFiftyTwo',
+    60: 'catalogEffectSixty',
+    62: 'catalogEffectSixtyTwo',
+    65: 'catalogEffectSixtyFive',
+    69: 'catalogEffectSixtyNine',
+    70: 'catalogEffectSeventy',
+    71: 'catalogEffectSeventyOne',
+    72: 'catalogEffectSeventyTwo',
+    73: 'catalogEffectSeventyThree',
+    74: 'catalogEffectSeventyFour',
+    76: 'catalogEffectSeventySix',
+    77: 'catalogEffectSeventySeven',
+    79: 'catalogEffectSeventyNine',
+    81: 'catalogEffectEightyOne',
+    146: 'catalogEffectOneHundredFortySix',
+    147: 'catalogEffectOneHundredFortySeven',
+    149: 'catalogEffectOneHundredFortyNine',
+    150: 'catalogEffectOneHundredFifty',
+    151: 'catalogEffectOneHundredFiftyOne'
+  };
+  // Only known engine IDs have manually approved localized names.
+  function effectLabel(id) {
+    var definition=meta.effects.find(function(entry){return entry.id===Number(id);});
+    if(Object.hasOwn(effectNames,id))
+      return catalogTranslate(effectTranslationKeys[id],effectNames[id]);
+    return definition?.label||catalogTranslate('catalogUnmappedEffect','Исходный эффект Legacy #{id}',{id});
+  }
+  function effectOption(definition) {
+    return Object.hasOwn(effectNames,definition.id)
+      ? catalogStatic(node('option'),effectTranslationKeys[definition.id],effectNames[definition.id])
+      : node('option',definition.label||String(definition.id));
+  }
   function effectText(id, value, unit) {
     var definition = meta.effects.find(function (entry) { return entry.id === Number(id); });
-    var number = Number(value), suffix = unit === 'percent' ? Number(id) === 52 ? '% получаемого урона' : '% от базы' : definition && (definition.label.includes('percentage points') || Number(id) >= 138) ? ' п.п.' : '';
+    var number = Number(value), suffix = unit === 'percent'
+      ? Number(id)===52?catalogTranslate('catalogEffectReceivedPercent','% получаемого урона')
+        :catalogTranslate('catalogEffectBasePercent','% от базы')
+      :definition&&(definition.label.includes('percentage points')||Number(id)>=138)
+        ?catalogTranslate('catalogEffectPercentagePoints','п.п.') : '';
     return effectLabel(id) + ': ' + (Number.isFinite(number) ? (number > 0 ? '+' : '') + number : value) + (suffix ? ' ' + suffix : '');
   }
   function recordView(record, target, title) {
@@ -344,7 +413,9 @@
     if (record.kind === 'equipment') values.appendChild(catalogLive(node('li'),'catalogPreviewLevelSockets','Уровень: {level} · Слоты душ: {sockets}',{level:record.level,sockets:record.sockets}));
     if(record.kind==='equipment'&&record.upgradeBonuses?.length)
       record.upgradeBonuses.forEach(function(rule){
-        values.appendChild(catalogLive(node('li'),'catalogPreviewEnhancement','Заточка: {effect} с +{from} за каждые {every} уровня до +{to}',{effect:effectText(rule.stat,rule.value,rule.unit),from:rule.from,every:rule.every,to:rule.to}));
+        values.appendChild(catalogLiveComputed(node('li'),'catalogPreviewEnhancement','Заточка: {effect} с +{from} за каждые {every} уровня до +{to}',function(){
+           return {effect:effectText(rule.stat,rule.value,rule.unit),from:rule.from,every:rule.every,to:rule.to};
+         }));
       });
     if (record.kind === 'soul' && !record.compatibility.includes(1)) values.appendChild(catalogStatic(node('li'),'catalogPreviewNoSoulSlot','Нет допустимого слота для вставки. Эта душа не предлагается для экипировки, пока не заданы ограничения.'));
     if (record.calculationCode !== undefined) {
@@ -354,7 +425,9 @@
           values.appendChild(catalogLive(node('li'),'catalogPreviewInvalidMarker','Исходный маркер: {token}. Числовой эффект не подтверждён.',{token}));
           return;
         }
-        values.appendChild(pair[0]==='18' && /^W\d+$/.test(value) ? catalogLive(node('li'),'catalogPreviewBaseAttack','Базовая атака оружия: {value}',{value:value.slice(1)}):node('li',effectText(pair[0],value.endsWith('%')?value.slice(0,-1):value,value.endsWith('%')?'percent':'flat')));
+        values.appendChild(pair[0]==='18' && /^W\d+$/.test(value) ? catalogLive(node('li'),'catalogPreviewBaseAttack','Базовая атака оружия: {value}',{value:value.slice(1)}):catalogLiveComputed(node('li'),'catalogEffectValue','{effect}',function(){
+           return {effect:effectText(pair[0],value.endsWith('%')?value.slice(0,-1):value,value.endsWith('%')?'percent':'flat')};
+         }));
       });
       if (!record.calculationCode) values.appendChild(catalogStatic(node('li'),'catalogPreviewNoNumericModifiers','Числовых бонусов в расчётной строке нет.'));
     }
@@ -373,7 +446,15 @@
         if (!learning.branches.length) values.appendChild(catalogStatic(node('li'),'catalogPreviewNoBranchRequirements','Требований к очкам веток нет.'));
       } else values.appendChild(catalogLive(node('li'),'catalogPreviewNativePrerequisites','Исходные условия изучения: {text}',{text:current.nativeSkill?.prerequisites.en || record.prerequisiteCode}));
     }
-    if (record.kind === 'class') ['Базовое LP', 'Базовое MP', 'Делитель роста LP от уровня', 'Делитель роста MP от уровня', 'Делитель роста LP от STA', 'Делитель роста MP от SPR'].forEach(function (label, index) { values.appendChild(node('li', label + ': ' + record.progression[index])); });
+    if (record.kind === 'class') [
+      ['catalogProgressionHp','Базовое LP'],['catalogProgressionMp','Базовое MP'],
+      ['catalogProgressionHpLevel','Делитель роста LP от уровня'],['catalogProgressionMpLevel','Делитель роста MP от уровня'],
+      ['catalogProgressionHpSta','Делитель роста LP от STA'],['catalogProgressionMpSpr','Делитель роста MP от SPR']
+    ].forEach(function(entry,index){
+      values.appendChild(catalogLiveComputed(node('li'),'catalogProgressionLine','{name}: {value}',function(){
+        return {name:catalogTranslate(entry[0],entry[1]),value:record.progression[index]};
+      }));
+    });
     if (record.kind === 'racial') {
       values.appendChild(record.effectMode==='replace'?catalogStatic(node('li'),'catalogPreviewRacialReplaced','Исходная механика отключена. Действуют только числа ниже.'):catalogLive(node('li'),'catalogPreviewRacialNative','Исходная механика: {mechanic}',{mechanic:current.nativeMechanics}));
       var required = record.bonusRequirements;
@@ -386,7 +467,11 @@
       if (catalogRecordLocale(record.calculationNotes)) target.appendChild(catalogLiveComputed(node('p',undefined,'help-text'),'catalogPreviewCalculationLimit','Ограничение расчёта: {note}',function(){return {note:catalogRecordLocale(record.calculationNotes)};}));
     }
     if (record.kind === 'passive' && (record.templateId || !current.nativeSkill?.intrinsicEffect)) values.appendChild(catalogStatic(node('li'),record.templateId?'catalogPreviewNewSkill':'catalogPreviewPassiveOriginal',record.templateId?'Новый навык: встроенный эффект шаблона не копируется.':'Исходная механика сохраняется. Описание — справка; эффект зависит от изучения, класса и снаряжения.'));
-    (record.effects || []).forEach(function (effect) { values.appendChild(node('li', effectText(effect.stat, effect.value, effect.unit))); });
+    (record.effects || []).forEach(function(effect){
+      values.appendChild(catalogLiveComputed(node('li'),'catalogEffectValue','{effect}',function(){
+        return {effect:effectText(effect.stat,effect.value,effect.unit)};
+      }));
+    });
     if ((record.kind === 'racial' || record.kind === 'passive') && !record.effects.length) values.appendChild(catalogStatic(node('li'),record.effectMode==='replace'||record.intrinsicEffectMode==='replace'?'catalogPreviewNoNumericReplace':'catalogPreviewNoNumericExtra',record.effectMode==='replace'||record.intrinsicEffectMode==='replace'?'Рассчитываемых числовых бонусов нет. Справочные эффекты см. в описании и ограничениях.':'Дополнительных числовых бонусов нет. Это не означает отсутствие исходного эффекта.'));
     target.appendChild(values);
     if (record.profiles) {
@@ -443,7 +528,7 @@
     if(!display)return;
     var value=field=>editor.querySelector('[data-field="'+field+'"][data-language="'+locale+'"]')?.value||'';
     var original=field=>editor.querySelector('[data-field="'+field+'"][data-language="en"]')?.value||'';
-    var name=value('names')||original('names')||'Без названия';
+    var name=value('names')||original('names')||catalogTranslate('catalogLivePreviewMissingName','Без названия');
     var text=value('description')||original('description');
     var notes=value('notes')||original('notes');
     var n=Math.max(0,Math.min(3,Number(editor.querySelector('[data-field="sockets"]')?.value)||0));
@@ -451,13 +536,14 @@
     if(current.edit.kind==='equipment'){
       var facts=node('div',undefined,'catalog-item-preview-facts');
       var type=editor.querySelector('[data-field="category"]');
-      var kind=type?.selectedOptions[0]?.textContent||'Снаряжение';
+      var kind=type?.selectedOptions[0]?.textContent||catalogTranslate('catalogKindEquipment','Снаряжение');
       var level=editor.querySelector('[data-field="level"]')?.value||'0';
-      [kind,'Уровень: '+level,'Слоты душ: '+n].forEach(function(t){facts.append(node('span',t));});
+      facts.append(node('span',kind),catalogLive(node('span'),'catalogLivePreviewLevel','Уровень: {level}',{level}),
+        catalogLive(node('span'),'catalogLivePreviewSockets','Слоты душ: {count}',{count:n}));
       display.append(facts);
       if(n){
         var circles=node('div',undefined,'catalog-item-preview-sockets');
-        circles.setAttribute('aria-label','Свободные слоты душ: '+n);
+        catalogLiveAttribute(circles,'aria-label','catalogLivePreviewFreeSockets','Свободные слоты душ: {count}',{count:n});
         for(var i=0;i<n;i++)circles.append(node('span',undefined,'catalog-item-preview-socket'));
         display.append(circles);
       }
@@ -477,7 +563,7 @@
     top.append(node('strong','Как карточка будет выглядеть на сайте'));
     var languagesSelect=node('select');
     languagesSelect.dataset.catalogPreviewLocale='';
-    languagesSelect.setAttribute('aria-label','Язык предпросмотра предмета');
+    catalogAttribute(languagesSelect,'aria-label','catalogLivePreviewLanguageAria','Язык предпросмотра предмета');
     [['ru','RU'],['en','EN'],['jp','JP'],['tw','TW']].forEach(function(pair){
       var option=node('option',pair[1]);option.value=pair[0];languagesSelect.append(option);
     });
@@ -515,14 +601,25 @@
   }
   function effectRow(effect, parent) {
     var row = node('div', undefined, 'effect-row');
-    var stat = node('select'); stat.setAttribute('aria-label', 'Характеристика');
-    meta.effects.forEach(function (definition) { var option = node('option', effectLabel(definition.id)); option.value = definition.id; stat.appendChild(option); });
-    stat.value = effect.stat; var value = node('input'); value.type = 'number'; value.step = '.01'; value.min = '-10000'; value.max = '10000'; value.value = effect.value; value.required = true; value.setAttribute('aria-label', 'Значение');
-    var unit = node('select'); unit.setAttribute('aria-label', 'Единица');
+    var stat = node('select'); catalogAttribute(stat,'aria-label','catalogEffectStatAria','Характеристика');
+    meta.effects.forEach(function (definition) { var option = effectOption(definition); option.value = definition.id; stat.appendChild(option); });
+    stat.value = effect.stat; var value = node('input'); value.type = 'number'; value.step = '.01'; value.min = '-10000'; value.max = '10000'; value.value = effect.value; value.required = true; catalogAttribute(value,'aria-label','catalogEffectValueAria','Значение');
+    var unit = node('select'); catalogAttribute(unit,'aria-label','catalogEffectUnitAria','Единица');
     function units() {
       var previous = unit.value || effect.unit; unit.replaceChildren();
       var definition = meta.effects.find(function (definition) { return definition.id === Number(stat.value); });
-      definition.units.forEach(function (name) { var option = node('option', name === 'percent' ? definition.id === 52 ? '% получаемого урона' : '% от базы' : definition.label.includes('percentage points') || definition.id >= 138 ? 'Процентные пункты (2 = +2%)' : 'Число (5 = +5)'); option.value = name; unit.appendChild(option); });
+      definition.units.forEach(function(name){
+        var key=name==='percent'
+          ? definition.id===52?'catalogUnitReceivedPercent':'catalogUnitBasePercent'
+          : definition.label.includes('percentage points')||definition.id>=138
+            ?'catalogUnitPercentagePoints':'catalogUnitFlat';
+        var fallback=key==='catalogUnitReceivedPercent'?'% получаемого урона'
+          :key==='catalogUnitBasePercent'?'% от базы'
+          :key==='catalogUnitPercentagePoints'?'Процентные пункты (2 = +2%)':'Число (5 = +5)';
+        var option=catalogStatic(node('option'),key,fallback);
+        option.value=name;
+        unit.appendChild(option);
+      });
       if (definition.units.indexOf(previous) !== -1) unit.value = previous;
     }
     units(); stat.addEventListener('change', function () { units(); changing(); }); value.addEventListener('input', changing); unit.addEventListener('change', changing);
