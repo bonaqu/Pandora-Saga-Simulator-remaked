@@ -22,6 +22,18 @@ test('all three dated registries deterministically compare with themselves but d
   assert.match(report.limitation,/independent verification/);
 });
 
+test('current 15% potion base is 50004, distinct from fixed restoration and cast healing',()=>{
+  const item=fixture.items['50004'];
+  assert.equal(item.id,50004);
+  assert.equal(item.kind,'POTION');
+  assert.deepEqual(item.effects.map(effect=>[effect.func,effect.a]),[['EP_HEAL_LIFE_RATE',15]]);
+  assert.equal(fixture.souls['103018'].effects[0].func,'EP_MASTERY_POTION');
+  assert.equal(fixture.souls['103018'].effects[0].a,8);
+  const reported=compareHealingSources(clone(),fixture);
+  assert.equal(reported.items.baselineRecords,128);
+  assert.equal(reported.souls.baselineRecords,15);
+});
+
 test('potion 145 HP and Potion Soul +8 POT drift are independently detected by exact IDs',()=>{
   const current=clone();
   current.items['50061'].effects[0].a=175;
