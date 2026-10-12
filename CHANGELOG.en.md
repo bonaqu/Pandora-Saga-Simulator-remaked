@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.19 — 2026-10-12
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Safely recover the previously reviewed but unmerged PR #204 on top of deployed Modern 4.18, without reverting the parallel 4.17 JP/TW D1 audit. Add **60 D1-first EN/RU/JP/TW UI labels** for 33 numeric effect IDs, units, class LP/MP coefficient fields, accessible controls and dynamic review previews.
+- Switching locale changes display-only labels and never selected stat IDs, numeric inputs, flat/percentage units, unpublished drafts or catalog revision. Unknown effects retain their original code; published D1 translations win.
+- Add four-locale fallback tests and browser regressions. No numerical formulas, frozen Legacy 2.00, server auth, stored builds or published D1 entries change.
+
 ## Modern 4.18 — 2026-10-12
 
 ### For users
