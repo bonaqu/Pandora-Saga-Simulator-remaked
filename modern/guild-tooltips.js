@@ -122,7 +122,15 @@
         : event.key === 'ArrowUp' ? Math.max(0, current - 1)
         : event.key === 'Home' ? 0
         : event.key === 'End' ? options.length - 1 : -1;
-      if (next !== -1) { event.preventDefault(); options[next].focus(); }
+      if (next !== -1) {
+        event.preventDefault();
+        options[next].focus();
+        // A synthetic/browser keyboard transition can leave the previous
+        // tooltip visible when focus doesn't emit a fresh event. Re-project
+        // the chosen level explicitly from the current D1-first translator.
+        if (next > 0) showHint(index, next, options[next]);
+        else hideHint();
+      }
       else if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(true); }
     });
     popup.addEventListener('pointerleave', hideHint);
