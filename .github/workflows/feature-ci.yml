@@ -219,6 +219,8 @@ jobs:
         run: node --test tests/tools/pandora-os-class-coefficients.test.mjs
       - name: Verify exact source HP/MP reference vectors
         run: node --test tests/tools/pandora-os-reference-hp-mp.test.mjs
+      - name: Validate independent live/offline HP/MP drift comparator against dated fixture
+        run: node --test tests/tools/pandora-os-live-vitals-drift.test.mjs
       - name: Verify 164 current-server weapon reach reference records
         run: node --test tests/tools/pandora-os-weapon-ranges.test.mjs
 
