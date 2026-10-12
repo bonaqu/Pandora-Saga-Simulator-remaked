@@ -233,7 +233,7 @@
             for(const entry of coverage){
               if(entry.missing>maxPerGroup)
                 throw Error('Export safety limit reached; no partial file created');
-              const ids=[],seen=new Set(),pages=Math.ceil(entry.missing/pageSize);
+              const ids=[],seen=Object.create(null),pages=Math.ceil(entry.missing/pageSize);
               for(let pageIndex=0;pageIndex<pages;pageIndex++){
                 if(token!==auditRequest||!exportButton.isConnected)return;
                 const params=new URLSearchParams({scope:entry.scope,locale:entry.locale,
@@ -251,9 +251,9 @@
                   if(row.scope!==entry.scope||row.locale!==entry.locale||
                      typeof row.id!=='string'||!row.id||row.id.length>256||
                      typeof row.kind!=='string'||!row.kind||
-                     row.origin!=='fallback'||seen.has(row.id))
+                     row.origin!=='fallback'||Object.hasOwn(seen,row.id))
                     throw Error('Invalid or duplicate missing identity; no file created');
-                  seen.add(row.id);
+                  seen[row.id]=true;
                   // No source/effective/baseline text or drafts in the file.
                   ids.push({id:row.id,kind:row.kind,managedBy:row.managedBy==='catalog'?'catalog':'translation'});
                 }
