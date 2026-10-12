@@ -579,6 +579,7 @@
       refreshBudgetWarning();
       refreshMountedDefenseNote();
       refreshWeaponRangeProvenance();
+      refreshPotionEffectsPreview();
     } finally {
       if (observer) observer.observe(byId('body'), { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['class', 'title', 'disabled'] });
     }
@@ -606,6 +607,59 @@
     // change freely in D1 without changing this original Japanese engine key.
     if (!row || row[0] !== record[1]) return null;
     return record[0];
+  }
+  // Modern-only preview. The preserved native potion renderer is gated by
+  // Flag[6] ("use potion effects"), although that toggle is unrelated to the
+  // read-only Effects > Potions panel. Match its existing fixed/percentage
+  // formulas without changing Flag[6], the archived engine or build state.
+  var potionFixedRecovery=[20,60,120,180,450,145,10,25,200,150];
+  var potionPercentRecovery=[5,15,30,18];
+  function refreshPotionEffectsPreview() {
+    var panel=byId('POTView'),status=window.Status;
+    if (!panel || !status || !window.Name?.POT) return;
+    var potionBonus=Number(status.POT),maxLife=Number(status.LP);
+    if (!Number.isFinite(potionBonus) || !Number.isFinite(maxLife) ||
+        potionBonus<0 || maxLife<0) return;
+    var totals=potionFixedRecovery.map(function(amount){
+      return Math.floor(amount*potionBonus/100);
+    }).concat(potionPercentRecovery.map(function(percent){
+      return Math.floor(maxLife*Math.ceil(percent*potionBonus)/10000);
+    }));
+    totals.forEach(function(value,index) {
+      var output=byId('ViewPOT_'+index+'_1');
+      if (output && output.textContent!==String(value))output.textContent=String(value);
+    });
+    ['EfTab_0','EfTab_1'].forEach(function(id,index){
+      var tab=byId(id);
+      if(tab)tab.setAttribute('aria-selected',String(Number(window.Flag?.[8])===index));
+    });
+  }
+  function installPotionTabAccessibility(){
+    ['EfTab_0','EfTab_1'].forEach(function(id,index){
+      var tab=byId(id);
+      if(!tab || tab.hasAttribute('data-remaked-potion-tab'))return;
+      tab.dataset.remakedPotionTab='';
+      tab.setAttribute('role','tab');
+      tab.setAttribute('tabindex','0');
+      tab.setAttribute('aria-controls',index===0?'SkillView':'POTView');
+      // Keep the archived hover action, but add mouse-click/touch/keyboard.
+      var activate=function(){
+        if (typeof tab.onmouseover==='function')tab.onmouseover();
+        refreshPotionEffectsPreview();
+        schedule();
+      };
+      tab.addEventListener('click',activate);
+      tab.addEventListener('keydown',function(event){
+        if(event.key==='Enter'||event.key===' '){
+          event.preventDefault();activate();
+        }
+        if(event.key==='ArrowLeft'||event.key==='ArrowRight'){
+          event.preventDefault();
+          var other=byId(index===0?'EfTab_1':'EfTab_0');
+          if(other){other.focus();other.click();}
+        }
+      });
+    });
   }
   function refreshWeaponRangeProvenance() {
     ['RangeMelee','RangeRange'].forEach(function(code){
@@ -694,6 +748,7 @@
   function init() {
     if (!byId('body')) return;
     installCalculatorCorrections();
+    installPotionTabAccessibility();
     observer = new MutationObserver(schedule); refresh();
     window.addEventListener('resize', schedule);
     window.addEventListener('pandora-remaked:localechange', schedule);
