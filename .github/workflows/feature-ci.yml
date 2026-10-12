@@ -232,32 +232,6 @@ jobs:
       - name: Verify bilingual current-source potion identities offline
         run: node --test tests/tools/pandora-os-bilingual-current.test.mjs
 
-      # One-off read-only published D1 check; remove before merging.
-      - name: One-off inspect published character skill catalog for server-only actions
-        if: github.event_name == 'pull_request' && github.head_ref == 'fix/character-skill-audit-scope-20261012'
-        continue-on-error: true
-        run: |
-          node --input-type=module <<'NODE'
-          const url='https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog';
-          const r=await fetch(url,{headers:{accept:'application/json'},signal:AbortSignal.timeout(25000)});
-          if(!r.ok)throw Error('Public catalog '+r.status);
-          const payload=await r.json();
-          const records=payload.records||payload.snapshot?.records||payload.data?.records;
-          if(!Array.isArray(records))throw Error('Unexpected catalog envelope: '+Object.keys(payload).join(','));
-          const ids=new Set([620002071,620002072,700000021,700000023,700000024]);
-          const technicalNames=new Set(['Баллиста','Зона на Лидии','Запрет на скилы','Безопасная зона']);
-          const suspect=records.filter(row=>{
-            const refs=[row.id,row.engineId,row.sourceId,row.serverId,row.skillId,row.iconId];
-            const names=[row.names?.ru,row.names?.en,row.name?.ru,row.name?.en,row.name];
-            return refs.some(id=>ids.has(Number(id)))||names.some(name=>technicalNames.has(name));
-          }).map(row=>({id:row.id,kind:row.kind,engineId:row.engineId,ru:row.names?.ru,
-            en:row.names?.en,sourceId:row.sourceId,serverId:row.serverId}));
-          const native=records.filter(row=>row.id==='skill_entry.2.6')
-            .map(row=>({id:row.id,kind:row.kind,names:row.names,description:row.description}));
-          console.log('PUBLISHED_PLAYER_SKILL_CHECK='+JSON.stringify({revision:payload.revision,count:records.length,
-            technicalRecords:suspect,quadrupleStab:native}));
-          NODE
-
       - name: Syntax-check core JavaScript
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
         shell: bash
