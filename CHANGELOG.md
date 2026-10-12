@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 4.14 — дополнительные D1-переводы рабочих процессов админки, 2026-10-12
+
+<!-- admin-notes:ru -->
+- В D1-first реестр добавлены 14 строк RU/EN/JP/TW для предупреждений массовой замены, причин пропуска строк, конфликтов и неопределённой квитанции транзакции; обновляются без потери текущего предпросмотра и переведённого текста.
+- В восстановлении исходного перевода подсказывается, когда сначала нужно обработать облачный черновик, а в четырёхъязычном редакторе локализуются доступные имена полей с сохранением введённых пользователем значений.
+- Отдельные проверки убеждаются в корректных плейсхолдерах, отсутствии HTML, D1-приоритете и отсутствии дополнительных API-запросов/публикаций при смене языка во время ошибки просмотра.
+- Уточнено локальное fallback-покрытие: UI 726 ключей; RU 659, JP/TW 725. Это не данные о реальных опубликованных D1-переводах. Сессии, CSRF, серверный контракт, механика Modern, сохранения и Legacy 2.00 не изменены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add 14 D1-first RU/EN/JP/TW strings for bulk preview conflicts, skipped reasons, unconfirmed transaction receipts and safe recovery messages. Locale switches refresh feedback without losing proposals.
+- Localize baseline-versus-cloud-draft reset hints and the accessible names of four-language translation inputs without changing unsaved text or optimistic publication guards.
+- Add placeholder/HTML safety tests and a Playwright locale-switch regression proving that a failed preview is translated without repeating an API request or publishing data.
+- Record offline UI fallback totals: 726 EN source keys, 659 RU, 725 JP/TW. They are not production D1 coverage figures. Auth, CSRF, server contracts, gameplay formulas, saved builds and Legacy 2.00 are unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 4.13 — понятные подсказки о дальности атак, 2026-10-12
 
 <!-- release-notes:user:ru -->
