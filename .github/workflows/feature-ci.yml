@@ -232,6 +232,29 @@ jobs:
       - name: Verify bilingual current-source potion identities offline
         run: node --test tests/tools/pandora-os-bilingual-current.test.mjs
 
+      # One-off GET-only answer lookup; this PR will be closed without merging.
+      - name: Read six native Russian skill texts missing from EN client
+        if: github.event_name == 'pull_request' && github.head_ref == 'audit/six-missing-en-skills-20261012'
+        continue-on-error: true
+        run: |
+          node --input-type=module <<'NODE'
+          const ids=['121703511','620002071','620002072','700000021','700000023','700000024'];
+          const base='https://pandorasaga-os.com/gamedata/';
+          const files=['skills.json','strings.en.json','strings.ru.json'];
+          const results={};
+          for(const name of files){
+            const response=await fetch(base+name,{signal:AbortSignal.timeout(18000)});
+            if(!response.ok)throw Error(name+' HTTP '+response.status);
+            results[name]=await response.json();
+          }
+          for(const id of ids){
+            const native=results['skills.json'][id]??null;
+            const english=results['strings.en.json'].skills?.[id]??null;
+            const russian=results['strings.ru.json'].skills?.[id]??null;
+            console.log('MISSING_EN_SKILL='+JSON.stringify({id,native,english,russian}));
+          }
+          NODE
+
       - name: Syntax-check core JavaScript
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
         shell: bash
