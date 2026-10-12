@@ -234,32 +234,6 @@ jobs:
 
       - name: Verify all-gameplay-fields reference coverage offline
         run: node --test tests/tools/pandora-os-gameplay-reference.test.mjs
-      # Temporary read-only probe: remove this step before merge.
-      - name: One-off live broad reference audit and published calculator rules
-        if: github.event_name == 'pull_request' && github.head_ref == 'audit/live-gameplay-parity-20261012'
-        continue-on-error: true
-        run: |
-          node scripts/audit_pandora_os_gameplay_reference.mjs
-          node scripts/audit_current_racial_source.mjs
-          node scripts/audit_current_skill_source.mjs
-          node --input-type=module <<'NODE'
-          import crypto from 'node:crypto';
-          const url='https://pandorasaga-os.com/assets/BuildCalculator-BiybySwQ.js';
-          const r=await fetch(url,{signal:AbortSignal.timeout(22000)});
-          if(!r.ok)throw Error('Calculator JS '+r.status);
-          const body=await r.text();
-          const terms=['abiScaleP','abiConst','maxLifeConst','maxManaConst','maxLifeScaleP','maxManaScaleP',
-            'Math.floor','Math.round','critical','skillBonus','calcStats','effects','attackInterval',
-            'masteryPotion','physicalDefense','magicResistance'];
-          const hit={};
-          for(const term of terms){
-            const indexes=[];let start=0;
-            while(indexes.length<2){const i=body.indexOf(term,start);if(i<0)break;indexes.push(i);start=i+term.length;}
-            hit[term]=indexes.map(i=>body.slice(Math.max(0,i-110),Math.min(body.length,i+term.length+185)));
-          }
-          console.log('CURRENT_CALCULATOR_SOURCE='+JSON.stringify({sha256:crypto.createHash('sha256').update(body).digest('hex'),length:body.length,hit}));
-          NODE
-
       - name: Syntax-check core JavaScript
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
         shell: bash
