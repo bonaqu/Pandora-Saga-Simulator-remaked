@@ -105,15 +105,20 @@ export async function readSource({source,fetchReference=fetch}={}){
 }
 
 async function main(argv){
-  const flags=new Set(['--json','--strict','--source']);
-  if(argv.some(a=>a.startsWith('--')&&!flags.has(a)))throw Error('Unknown audit option');
-  const at=argv.indexOf('--source');
-  if(at!==-1&&(at!==argv.length-2||!argv[at+1]||argv[at+1].startsWith('--')))
-    throw Error('--source requires a local JSON filename as the last argument');
-  const args=argv.filter((arg,index)=>index!==at&&index!==at+1);
-  if(args.some(arg=>!flags.has(arg)))throw Error('Unexpected audit argument');
+  const flags=new Set(['--json','--strict']);
+  let source=null;
+  const args=[];
+  for(let i=0;i<argv.length;i++){
+    const arg=argv[i];
+    if(arg==='--source'){
+      if(source!==null||!argv[i+1]||argv[i+1].startsWith('--'))
+        throw Error('--source requires exactly one local JSON file');
+      source=argv[++i];
+    }else if(flags.has(arg)&&!args.includes(arg))args.push(arg);
+    else throw Error('Unknown or repeated audit argument: '+arg);
+  }
   const baseline=JSON.parse(await fs.readFile(path.join(root,'tests/fixtures/pandora-os-classes-20261011.json'),'utf8'));
-  const {classes,origin}=await readSource({source:at!==-1?argv[at+1]:null});
+  const {classes,origin}=await readSource({source});
   const comparison=compareLiveVitals(classes,baseline);
   const result={checkedAt:new Date().toISOString(),source:origin,...comparison};
   if(args.includes('--json'))console.log(JSON.stringify(result,null,2));
