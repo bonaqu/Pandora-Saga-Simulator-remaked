@@ -345,16 +345,53 @@
     70: 'Получаемый шанс крита (минус = защита)', 71: 'Критический урон', 72: 'Получаемый критический урон', 73: 'Скорость атаки', 74: 'Скорость движения', 76: 'Стоимость MP', 77: 'Скорость применения', 79: 'Перезарядка',
     146: 'Сопротивление аномалиям тела', 147: 'Сопротивление аномалиям разума', 149: 'Сопротивление оглушению', 150: 'Сопротивление заморозке', 151: 'Сопротивление падению'
   };
+  // Admin-shell keys deliberately contain letters only: this preserves the
+  // strict existing D1 locale schema, while the actual stat IDs remain numeric.
+  var effectTranslationKeys = {
+    0: 'catalogEffectZero',
+    1: 'catalogEffectOne',
+    2: 'catalogEffectTwo',
+    3: 'catalogEffectThree',
+    4: 'catalogEffectFour',
+    5: 'catalogEffectFive',
+    6: 'catalogEffectSix',
+    7: 'catalogEffectSeven',
+    8: 'catalogEffectEight',
+    10: 'catalogEffectTen',
+    18: 'catalogEffectEighteen',
+    21: 'catalogEffectTwentyOne',
+    42: 'catalogEffectFortyTwo',
+    49: 'catalogEffectFortyNine',
+    52: 'catalogEffectFiftyTwo',
+    60: 'catalogEffectSixty',
+    62: 'catalogEffectSixtyTwo',
+    65: 'catalogEffectSixtyFive',
+    69: 'catalogEffectSixtyNine',
+    70: 'catalogEffectSeventy',
+    71: 'catalogEffectSeventyOne',
+    72: 'catalogEffectSeventyTwo',
+    73: 'catalogEffectSeventyThree',
+    74: 'catalogEffectSeventyFour',
+    76: 'catalogEffectSeventySix',
+    77: 'catalogEffectSeventySeven',
+    79: 'catalogEffectSeventyNine',
+    81: 'catalogEffectEightyOne',
+    146: 'catalogEffectOneHundredFortySix',
+    147: 'catalogEffectOneHundredFortySeven',
+    149: 'catalogEffectOneHundredFortyNine',
+    150: 'catalogEffectOneHundredFifty',
+    151: 'catalogEffectOneHundredFiftyOne'
+  };
   // Only known engine IDs have manually approved localized names.
   function effectLabel(id) {
     var definition=meta.effects.find(function(entry){return entry.id===Number(id);});
     if(Object.hasOwn(effectNames,id))
-      return catalogTranslate('catalogEffect'+id,effectNames[id]);
+      return catalogTranslate(effectTranslationKeys[id],effectNames[id]);
     return definition?.label||catalogTranslate('catalogUnmappedEffect','Исходный эффект Legacy #{id}',{id});
   }
   function effectOption(definition) {
     return Object.hasOwn(effectNames,definition.id)
-      ? catalogStatic(node('option'),'catalogEffect'+definition.id,effectNames[definition.id])
+      ? catalogStatic(node('option'),effectTranslationKeys[definition.id],effectNames[definition.id])
       : node('option',definition.label||String(definition.id));
   }
   function effectText(id, value, unit) {
