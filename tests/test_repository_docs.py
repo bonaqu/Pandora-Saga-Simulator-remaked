@@ -51,15 +51,28 @@ class RepositoryDocsTests(unittest.TestCase):
     def test_latest_release_notes_do_not_expose_internal_data_sources(self):
         changelog = self.read("CHANGELOG.md")
         latest = changelog.split("\n## Modern ", 2)[1]
-        blocked = (
-            "Pandora Saga OS",
-            "itemForth",
-            "unison",
-            "gamedata/",
-            ".json",
-        )
-        for token in blocked:
-            self.assertNotIn(token, latest, token)
+        blocked = ("Pandora Saga OS", "itemForth", "unison", "gamedata/", ".json")
+        # Development notes ARE supposed to name code, files and APIs.
+        # Restrict the audience-leak check to the user-only release markers.
+        for lang in ("ru", "en"):
+            start = "<!-- release-notes:user:" + lang + " -->"
+            end = "<!-- /release-notes:user:" + lang + " -->"
+            if start not in latest:
+                # Technical-only releases legitimately contain only admin notes.
+                self.assertIn("<!-- admin-notes:" + lang + " -->", latest)
+                localized = self.read("CHANGELOG." + lang + ".md").split(
+                    "\n## Modern ", 2
+                )[1]
+                expected = (
+                    "Выполнены внутренние технические улучшения."
+                    if lang == "ru" else "Internal technical improvements."
+                )
+                self.assertIn(expected, localized)
+                continue
+            self.assertIn(end, latest)
+            player = latest.split(start, 1)[1].split(end, 1)[0]
+            for token in blocked:
+                self.assertNotIn(token, player, token)
 
     def test_changelog_has_first_modern_release(self):
         changelog = self.read("CHANGELOG.md")
