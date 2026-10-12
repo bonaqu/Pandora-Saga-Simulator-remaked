@@ -87,3 +87,89 @@ test('unified translations show published catalog text and safely jump to same c
   expect(sqlite.prepare('SELECT COUNT(*) AS n FROM localization_overrides').get().n).toBe(0);
   expect(errors).toEqual([]);
 });
+
+
+test('live catalog counters and filters switch RU/EN/JP/TW without losing draft selection or search',async({page})=>{
+  const {DB}=testDatabase(),env={DB};
+  const edit=draftFromSource(null,'equipment');
+  edit.names={en:'Sample Draft Bow',ru:'Тестовый лук',jp:'テスト弓',tw:'測試弓'};
+  edit.description={en:'Unpublished',ru:'Черновик',jp:'下書き',tw:'草稿'};
+  edit.baseAttack=10;
+  const draftResponse=await adminCatalog(new Request(origin+'/api/admin/draft',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({edit,expectedDraftVersion:0,expectedCatalogRevision:0})
+  }),env,1000);
+  expect([200,201]).toContain(draftResponse.status);
+  const posts=[];
+  const english=JSON.parse(fs.readFileSync(new URL('../../localization/ui.en.json',import.meta.url),'utf8'));
+  const approved=JSON.parse(fs.readFileSync(new URL('../../localization/approved-translations.v1.json',import.meta.url),'utf8'));
+  const keys=Object.keys(english).filter(key=>key.startsWith('adminShell.'));
+  const locales=Object.fromEntries(['en','ru','jp','tw'].map(locale=>[locale,
+    Object.fromEntries(keys.map(key=>[key,approved.ui[locale]?.[key]||english[key]]))
+  ]));
+  // Simulated published D1 text wins over the bundled approved fallback.
+  locales.ru['adminShell.catalogDraftsCount']='Черновики D1: {count}';
+  await page.route(origin+'/**',async route=>{
+    const request=route.request(),url=new URL(request.url()),path=url.pathname;
+    if(path==='/api/session')return route.fulfill({json:{
+      ok:true,username:'admin',csrfToken:'synthetic-test-only',expiresAt:9999999999}});
+    if(path==='/api/auth/logout')return route.fulfill({json:{ok:true}});
+    if(path==='/api/admin-shell-localization')return route.fulfill({json:{ok:true,schemaVersion:1,locales}});
+    if(path.startsWith('/api/admin/')){
+      if(request.method()==='POST')posts.push(path);
+      try{
+        const response=path==='/api/admin/localization'
+          ? await adminLocalization(new Request(request.url(),{method:request.method(),headers:request.headers(),body:request.postData()||undefined}),env)
+          : path.startsWith('/api/admin/localization/')
+            ? await adminLocalizationWorkflow(new Request(request.url(),{method:request.method(),headers:request.headers(),body:request.postData()||undefined}),env)
+            : await adminCatalog(new Request(request.url(),{method:request.method(),headers:request.headers(),body:request.postData()||undefined}),env,1000);
+        return route.fulfill({status:response.status,contentType:'application/json',body:await response.text()});
+      }catch(error){return route.fulfill({status:error.status||500,json:{ok:false,message:error.message}});}
+    }
+    const asset=path==='/admin'?'admin.html':path.slice(1);
+    if(!['admin.html','admin.css','admin.js','admin-i18n.js','catalog-ui.js',
+      'localization-console.js','localization-drafts.js','localization-bulk.js',
+      'localization-four-language.js'].includes(asset))return route.fulfill({status:404});
+    return route.fulfill({contentType:asset.endsWith('.css')?'text/css':
+      asset.endsWith('.js')?'text/javascript':'text/html',
+      body:fs.readFileSync(new URL('../../admin-api/public/'+asset,import.meta.url),'utf8')});
+  });
+  await page.goto(origin+'/admin');
+  const language=page.locator('#admin-language');
+  await expect(language).toBeEnabled();
+  await language.selectOption('ru');
+  await page.evaluate(()=>window.PandoraCatalogConsole.start(()=> 'synthetic-test-only',()=>{}));
+  const catalog=page.locator('#catalog-console');
+  const drafts=catalog.locator('.catalog-draft-board');
+  await expect(drafts.locator('[data-catalog-live-i18n="catalogDraftsCount"]'))
+    .toHaveText('Черновики D1: 1');
+  await drafts.locator('summary').click();
+  const search=drafts.locator('input[type="search"]');
+  await search.fill('Sample');
+  const draftKind=drafts.locator('select');
+  await draftKind.selectOption('equipment');
+  await expect(drafts.locator('.catalog-draft-entry')).toHaveCount(1);
+  await drafts.locator('.catalog-draft-entry input[type="checkbox"]').check();
+  await expect(drafts.locator('[data-catalog-live-i18n="catalogDraftSelectionCount"]'))
+    .toContainText('Выбрано: 1 из 1');
+  await language.selectOption('jp');
+  await expect(drafts.locator('[data-catalog-live-i18n="catalogDraftsCount"]'))
+    .toHaveText('保存済みのカタログ下書き: 1');
+  await expect(drafts.locator('[data-catalog-live-i18n="catalogDraftSelectionCount"]'))
+    .toContainText('選択: 1 / 1');
+  await expect(search).toHaveValue('Sample');
+  await expect(draftKind).toHaveValue('equipment');
+  await expect(drafts.locator('.catalog-draft-entry input[type="checkbox"]')).toBeChecked();
+  await expect(catalog.locator('.catalog-controls input[type="search"]')).toHaveAttribute('placeholder','名前または ID で検索');
+  await language.selectOption('tw');
+  await expect(drafts.locator('[data-catalog-live-i18n="catalogDraftsCount"]'))
+    .toHaveText('已儲存的目錄草稿：1');
+  await expect(catalog.locator('.catalog-controls select option[value="equipment"]'))
+    .toHaveText('裝備／武器');
+  await language.selectOption('en');
+  await expect(drafts.locator('[data-catalog-live-i18n="catalogDraftSelectionCount"]'))
+    .toContainText('Selected: 1 of 1');
+  await expect(search).toHaveValue('Sample');
+  await expect(drafts.locator('.catalog-draft-entry input[type="checkbox"]')).toBeChecked();
+  expect(posts).toEqual([]); // no publication or draft writes from changing UI language
+});

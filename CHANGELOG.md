@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 4.09 — доступность каталога и комбинированные тесты, 2026-10-12
+
+<!-- admin-notes:ru -->
+- В D1-управляемый центр переводов добавлены 35 новых ключей RU/EN/JP/TW для динамических статусов каталога, счётчиков и фильтров черновиков, подписей поиска, названий категорий и доступных имён кнопок массового редактора.
+- При смене языка динамические подписи обновляются на существующих узлах, сохраняя введённый поиск, выбранные черновики, редактируемые значения и версионные ограничения публикации. Тексты D1 имеют приоритет над одобренными fallback; значения каталога и серверные ошибки не переводятся автоматически.
+- Расширен комплексный браузерный контроль 28 классов × 6 рас: 43 поля результатов на каждом переходе, экипировка Linen Robe, совместные Providence/Lapis Medio и отмена эффектов, повторяемость и исходный билд. Отдельные тесты охватывают смену языков каталога и доступные имена элементов массовой локализации.
+- Дополнительные тесты проверяют наборы плейсхолдеров всех 35 ключей и отсутствие HTML. Механика и исходные коэффициенты не менялись; точность всей формулы относительно актуального игрового клиента требует независимых эталонов. Legacy 2.00 и опубликованные записи D1 не затронуты.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add 35 D1-managed RU/EN/JP/TW localization keys covering live catalog status, draft counters and filters, search labels, catalog types, bulk-editor accessibility names and saved-draft markers.
+- Locale switching refreshes display-only nodes without losing search values, selected drafts, editable data or publication-version guards. D1 overrides remain authoritative; actual catalog text and raw server errors are never automatically translated.
+- Extend the browser regression matrix across 28 classes and 6 races, 43 calculated slots, Linen Robe and combined Providence/Lapis Medio effects, stable repeated calculations and exact build restoration. Add catalog language-switch and bulk accessible-label regression tests.
+- Validate all 35 keys for complete locale coverage, matching interpolation tokens and safe text. Game mechanics remain unchanged; independent current-client gameplay parity is not asserted. Legacy 2.00 and published D1 records are unaffected.
+<!-- /admin-notes:en -->
+
 ## Modern 4.08 — список исторических пробелов JP/TW, 2026-10-12
 
 <!-- admin-notes:ru -->

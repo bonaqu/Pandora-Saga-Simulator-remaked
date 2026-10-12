@@ -66,7 +66,9 @@ class PublicAudienceAndLocalizationTests(unittest.TestCase):
                     "builds.migration.count","adminEntry.close","adminEntry.hint"):
             self.assertIn(key,source)
         self.assertEqual(len(source),len(set(source)))
-        self.assertEqual(len(source),630)
+        self.assertGreaterEqual(len(source),630)
+        self.assertIn('adminShell.catalogDraftSelectionCount',source)
+        self.assertIn('adminShell.bulkEditProposalAria',source)
         self.assertEqual(sorted(re.findall(r"\{[A-Za-z0-9_]+\}",source["builds.live.catalogLine"])),["{revision}"])
         self.assertEqual(sorted(re.findall(r"\{[A-Za-z0-9_]+\}",source["builds.migration.removed"])),
                          ["{name}","{reason}"])

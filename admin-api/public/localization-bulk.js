@@ -62,7 +62,7 @@
     const root=node('details',undefined,'localization-bulk');
     // Dynamic display-only copy: D1 wins over the approved fallback.
     // Never translate input.value, proposed edits, IDs or server receipts.
-    const dynamicTranslations=new WeakMap();
+    const dynamicTranslations=new WeakMap(),dynamicAria=new WeakMap();
     const translate=(key,fallback,values={})=>{
       let phrase=window.PandoraAdminI18n?.t?.('adminShell.'+key,fallback)||fallback;
       const slots=value=>(value.match(/\{[A-Za-z0-9_]+\}/g)||[]).sort().join('|');
@@ -76,6 +76,14 @@
       element.textContent=translate(key,fallback,values);
       return element;
     };
+    // Edit controls have row-specific IDs in their accessible names.
+    // Refresh only ARIA, never the value/selection of their textarea.
+    const liveAria=(element,key,fallback,values={})=>{
+      dynamicAria.set(element,{key,fallback,values});
+      element.dataset.bulkLiveAria=key;
+      element.setAttribute('aria-label',translate(key,fallback,values));
+      return element;
+    };
     const raw=(element,text)=>{
       dynamicTranslations.delete(element);
       delete element.dataset.bulkLiveKey;
@@ -86,6 +94,10 @@
       root.querySelectorAll('[data-bulk-live-key]').forEach(element=>{
         const entry=dynamicTranslations.get(element);
         if(entry)element.textContent=translate(entry.key,entry.fallback,entry.values);
+      });
+      root.querySelectorAll('[data-bulk-live-aria]').forEach(element=>{
+        const entry=dynamicAria.get(element);
+        if(entry)element.setAttribute('aria-label',translate(entry.key,entry.fallback,entry.values));
       });
     };
     window.addEventListener('pandora-admin:localechange',onLocaleChange);
@@ -200,15 +212,16 @@
         checkbox.dataset.blocked=String(item.blocked);
         checkboxes.set(item.id,checkbox);selections.set(item.id,checkbox.checked);
         checkbox.addEventListener('change',()=>{selections.set(item.id,checkbox.checked);updateCounts();});
-        label.append(checkbox,document.createTextNode(' '+item.id+' · '+item.kind+(item.blocked?' · есть несохранённый черновик':'')));
+        label.append(checkbox,document.createTextNode(' '+item.id+' · '+item.kind));
+        if(item.blocked)label.append(live(node('span'),'bulkSavedDraftSuffix',' · есть несохранённый черновик'));
 
         const afterTitle=node('div',undefined,'localization-bulk-after-title');
         const pencil=node('button','✎','localization-bulk-icon');
         pencil.type='button';localizedAttribute(pencil,'title','bulkEditTitle','Редактировать предложенный перевод');
-        pencil.setAttribute('aria-label','Редактировать «Станет» для '+item.id);
+        liveAria(pencil,'bulkEditProposalAria','Редактировать «Станет» для {id}',{id:item.id});
         const revert=node('button','↶','localization-bulk-icon');
         revert.type='button';localizedAttribute(revert,'title','bulkRevertTitle','Вернуть автоматическую замену');
-        revert.setAttribute('aria-label','Вернуть автоматический вариант для '+item.id);
+        liveAria(revert,'bulkRevertProposalAria','Вернуть автоматический вариант для {id}',{id:item.id});
         revert.hidden=true;
         const modified=node('small','', 'localization-bulk-modified');
         afterTitle.append(localized('small','bulkAfter','Станет'),modified,pencil,revert);
@@ -218,7 +231,7 @@
         editForm.hidden=true;
         const input=node('textarea');input.rows=Math.min(7,Math.max(2,item.after.split('\n').length));
         input.maxLength=4000;
-        input.setAttribute('aria-label','Итоговый перевод '+item.id);
+        liveAria(input,'bulkFinalTranslationAria','Итоговый перевод {id}',{id:item.id});
         const editFoot=node('div',undefined,'localization-bulk-edit-actions');
         const apply=localized('button','bulkApplyPreview','Применить в предпросмотре');apply.type='button';
         const discard=localized('button','bulkCancelEdit','Отмена');discard.type='button';discard.className='secondary';

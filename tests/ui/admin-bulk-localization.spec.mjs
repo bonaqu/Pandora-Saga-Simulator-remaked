@@ -86,6 +86,30 @@ test('reviewed whole-word replacement scans all pages and preserves English, sub
   const suggested='Воин fights Warriors, SwordWarrior, Warrior_2; {Warrior} and Воин.';
   await expect(first.locator('.localization-bulk-after')).toHaveText(suggested);
   await expect(bulk.locator('.localization-bulk-selection')).toContainText('Выбрано: 2 / 2');
+  // Simulate a newer D1 language publication while the proposed edit rows
+  // remain mounted. Only their accessibility text may change.
+  await page.evaluate(()=>{
+    window.PandoraAdminI18n={t:(key,fallback)=>({
+      'adminShell.bulkEditProposalAria':'Edit proposed “After” for {id}',
+      'adminShell.bulkRevertProposalAria':'Restore automatic proposal for {id}',
+      'adminShell.bulkFinalTranslationAria':'Final translation for {id}'
+    }[key]||fallback)};
+    window.dispatchEvent(new Event('pandora-admin:localechange'));
+  });
+  await expect(first.locator('.localization-bulk-icon').first())
+    .toHaveAttribute('aria-label','Edit proposed “After” for '+texts[40].id);
+  await expect(first.locator('.localization-bulk-icon').nth(1))
+    .toHaveAttribute('aria-label','Restore automatic proposal for '+texts[40].id);
+  await expect(first.locator('.localization-bulk-edit textarea'))
+    .toHaveAttribute('aria-label','Final translation for '+texts[40].id);
+  await expect(first.locator('.localization-bulk-after')).toHaveText(suggested);
+  await page.evaluate(()=>{
+    delete window.PandoraAdminI18n;
+    window.dispatchEvent(new Event('pandora-admin:localechange'));
+  });
+  await expect(first.locator('.localization-bulk-icon').first())
+    .toHaveAttribute('aria-label','Редактировать «Станет» для '+texts[40].id);
+
 
   // Every manually reviewed proposal stays in preview until the operator
   // explicitly confirms publication. Neither English nor another locale changes.
