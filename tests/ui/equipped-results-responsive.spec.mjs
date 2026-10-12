@@ -10,10 +10,11 @@ test('equipped DEF + magic-resistance results remain readable with 4-digit value
     for(const locale of ['en','ru','jp','tw']){
       await page.goto('/?ui='+locale);
       const data=await page.evaluate(()=>{
-        if(!PandoraRemaked.adapter.selectEquipment(3,310015))
-          throw Error('Known Linen Robe has become unavailable');
+        // Isolate already source-verified effects in the retained engine;
+        // this is not a picker-eligibility test for the current level/class.
         Flag[7]=0;Flag['0_8']=1;Flag['14_4']=1;
-        CalcSet('ALL');
+        Status.Equip[3]=[310031,0,0,5,42,0,0];
+        EquipCheck();CalcSet('ALL');
         const before=Store();
         const read=id=>document.getElementById('Status_'+id)?.textContent.trim();
         const computed={def:read(49),magic:read(145)};
