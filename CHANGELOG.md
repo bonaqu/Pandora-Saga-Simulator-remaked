@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 4.12 — регрессионный аудит сочетания снаряжения и усилений, 2026-10-12
+
+<!-- admin-notes:ru -->
+- Добавлена составная браузерная регрессия 28 классов × 6 рас для заточки астирской брони +0/+5/+10, универсальной души 42 и Providence. Она отдельно проверяет известные +5 к сопротивлению магии, +1 к защите и +25 к сопротивлению магии, а также все 43 итоговых поля.
+- На каждом этапе повторный пересчёт не должен накапливать бонусы; после снятия эффектов исходный результат и сериализованный билд восстанавливаются без изменений.
+- Дополнен датированный аудит ограничений: тесты составного поведения Modern не заменяют независимые эталоны игровых механик. Ни Legacy 2.00, ни коэффициенты, ни D1, ни ревизии сохранённых билдов не изменены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add a 28-class × 6-race combined browser regression covering Astir armor refinement +0/+5/+10, universal Soul 42 and Providence. Verify their known +5 magic resistance, +1 defense and +25 magic resistance deltas, plus all 43 calculated result slots.
+- Check repeated recalculation for no stacking and fully restored result rows and serialized build after unequipping and turning off buffs.
+- Extend the dated audit with the independent-game-parity limitation. Legacy 2.00, gameplay coefficients, D1 and saved-build revision semantics are unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 4.11 — четырёхъязычный предпросмотр каталога, 2026-10-12
 
 <!-- admin-notes:ru -->

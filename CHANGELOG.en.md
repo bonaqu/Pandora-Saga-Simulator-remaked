@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.12 — 2026-10-12
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Add a 28-class × 6-race combined browser regression covering Astir armor refinement +0/+5/+10, universal Soul 42 and Providence. Verify their known +5 magic resistance, +1 defense and +25 magic resistance deltas, plus all 43 calculated result slots.
+- Check repeated recalculation for no stacking and fully restored result rows and serialized build after unequipping and turning off buffs.
+- Extend the dated audit with the independent-game-parity limitation. Legacy 2.00, gameplay coefficients, D1 and saved-build revision semantics are unchanged.
+
 ## Modern 4.11 — 2026-10-12
 
 ### For users
