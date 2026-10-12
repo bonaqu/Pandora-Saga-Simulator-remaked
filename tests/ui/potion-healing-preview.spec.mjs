@@ -1,13 +1,14 @@
 import {test,expect} from '@playwright/test';
 
-// These are the preserved calculator's 14 known base recovery factors.
-// The fifth fixed potion is intentionally 145 in the legacy calculation,
-// although an older tooltip says 175: that external data conflict is audited.
+// Native potion source factors. Percent entries MUST remain percentages until
+// the user explicitly opts into "Use potion effects" (#SwitchUse_3 / Flag[6]).
 const FIXED=[20,60,120,180,450,145,10,25,200,150];
 const PERCENT=[5,15,30,18];
-function expected(state){
+const BASE=[...FIXED.map(String),...PERCENT.map(value=>value+'%')];
+function calculated(state){
   return FIXED.map(value=>Math.floor(value*state.potion/100)).concat(
-    PERCENT.map(value=>Math.floor(state.lp*Math.ceil(value*state.potion)/10000)));
+    PERCENT.map(value=>Math.floor(state.lp*Math.ceil(value*state.potion)/10000)))
+    .map(String);
 }
 async function read(page){
   return page.evaluate(()=>({
@@ -18,47 +19,53 @@ async function read(page){
   }));
 }
 
-test('all 14 potion values render immediately even while Use potion effects is off',async({page})=>{
+test('potions show original flat/percent values when OFF; only explicit toggle enables computed healing',async({page})=>{
   await page.goto('/?ui=ru');
   const initial=await read(page);
   expect(initial.flag).toBeFalsy();
   await page.locator('#EfTab_1').click();
   await expect(page.locator('[data-remaked-effect="1"]')).toHaveAttribute('aria-pressed','true');
   await expect(page.locator('#POTView')).toBeVisible();
-  await expect.poll(async()=>(await read(page)).values).toEqual(expected(initial).map(String));
-  let after=await read(page);
-  expect(after.flag).toBe(initial.flag);
-  expect(after.build).toBe(initial.build);
-  expect(after.values).toHaveLength(14);
-  expect(after.values).not.toContain('---');
+  await expect.poll(async()=>(await read(page)).values).toEqual(BASE);
+  expect((await read(page)).build).toBe(initial.build);
+  expect((await read(page)).flag).toBeFalsy();
+  // Rest POT: 15% is the base effect; it is NOT 15% of the character's HP.
+  await expect(page.locator('#ViewPOT_11_1')).toHaveText('15%');
+  await expect(page.locator('#ViewPOT_5_1')).toHaveText('145');
 
-  // The native toggle is independent: enabling it cannot double-apply bonuses.
   await page.locator('#SwitchUse_3').click();
+  await expect.poll(async()=>Boolean((await read(page)).flag)).toBe(true);
   await expect.poll(async()=>(await read(page)).values)
-    .toEqual(expected(await read(page)).map(String));
-  await page.locator('#SwitchUse_3').click();
-  await expect.poll(async()=>(await read(page)).values)
-    .toEqual(expected(await read(page)).map(String));
+    .toEqual(calculated(await read(page)));
+  await expect(page.locator('#ViewPOT_11_1')).not.toHaveText('15%');
 
-  // Original panel can be opened and closed via keyboard as well as hover.
+  await page.locator('#SwitchUse_3').click();
+  await expect.poll(async()=>Boolean((await read(page)).flag)).toBe(false);
+  await expect.poll(async()=>(await read(page)).values).toEqual(BASE);
+  expect((await read(page)).build).toBe(initial.build);
+  // No stale computed values may survive once the setting is disabled.
+  await expect(page.locator('#ViewPOT_11_1')).toHaveText('15%');
+
+  // View switcher is navigation, never a hidden calculation opt-in.
   await page.locator('[data-remaked-effect="0"]').focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('#SkillView')).toBeVisible();
   await page.locator('[data-remaked-effect="1"]').focus();
   await page.keyboard.press('Space');
   await expect(page.locator('#POTView')).toBeVisible();
-  await expect(page.locator('[data-remaked-effect="1"]')).toHaveAttribute('aria-pressed','true');
+  await expect.poll(async()=>(await read(page)).values).toEqual(BASE);
+  expect((await read(page)).flag).toBeFalsy();
 });
 
-test('Potion Soul +8% composes across two chest and two leg sockets with no duplicate recalc',async({page})=>{
+test('1–4 Potion Souls and 101 melee points do not change the OFF preview; ON uses native bonus exactly once',async({page})=>{
   await page.goto('/?ui=ru');
   await page.locator('#EfTab_1').click();
   const data=await page.evaluate(()=>{
     const original=Status.Equip.map(item=>item.slice());
-    const job=[...Status.Job],raw=Store();
+    const job=[...Status.Job],flag=Flag[6],raw=Store();
     const read=()=>({
-      base:Status.POT,lp:Status.LP,
-      potionOptions:[...(EquipOpt[8]||[])],
+      bonus:Status.POT,lp:Status.LP,flag:Flag[6],
+      options:[...(EquipOpt[8]||[])],
       values:[...document.querySelectorAll('#POTView [id^="ViewPOT_"][id$="_1"]')]
         .map(el=>el.textContent.trim())
     });
@@ -77,46 +84,73 @@ test('Potion Soul +8% composes across two chest and two leg sockets with no dupl
           Status.Equip[3]=[310031,0,0,0,count>=1?60:0,count>=2?60:0,0];
           Status.Equip[5]=[330031,0,0,0,count>=3?60:0,count>=4?60:0,0];
           EquipCheck();CalcSet('ALL');
+          Flag[6]=0;
+          PandoraRemaked.calculatorControls.refresh();
+          const off=read();
+          Flag[6]=1;
+          CalcSet('ViewPOT');
           PandoraRemaked.calculatorControls.refresh();
           const first=read(),ready=Store();
           EquipCheck();CalcSet('ALL');
           PandoraRemaked.calculatorControls.refresh();
-          const second=read();
-          results.push({selected,count,first,second,noDuplicate:JSON.stringify(first.potionOptions)===JSON.stringify(second.potionOptions),
-            buildStable:ready===Store(), delta:previous===undefined?0:first.base-previous});
-          previous=first.base;
+          const repeated=read(),buildStable=ready===Store();
+          Flag[6]=0;
+          CalcSet('ViewPOT');
+          PandoraRemaked.calculatorControls.refresh();
+          const restoredOff=read();
+          results.push({
+            selected,count,off,first,repeated,restoredOff,
+            buildStable,
+            bonusDelta:previous===undefined?0:first.bonus-previous
+          });
+          previous=first.bonus;
         }
-        // The next job starts from the same clean soul configuration.
         Status.Equip[3]=[0,0,0,0,0,0,0];
         Status.Equip[5]=[0,0,0,0,0,0,0];
         EquipCheck();
       }
     }finally{
       for(let i=0;i<original.length;i++)Status.Equip[i]=original[i];
-      Status.Job=job;
-      EquipCheck();CalcSet('ALL');
+      Status.Job=job;Flag[6]=flag;
+      EquipCheck();CalcSet('ALL');PandoraRemaked.calculatorControls.refresh();
     }
     return {results,initial:raw,finished:Store()};
   });
   expect(data.results).toHaveLength(10);
   for(const frame of data.results){
     const label='job '+frame.selected+', '+frame.count+' Soul(s)';
-    expect(frame.first.values,label).toHaveLength(14);
-    expect(frame.first.values,label).toEqual(expected({potion:frame.first.base,lp:frame.first.lp}).map(String));
-    expect(frame.second,label).toEqual(frame.first);
-    expect(frame.noDuplicate,label).toBe(true);
+    expect(frame.off.flag,label).toBe(0);
+    expect(frame.off.values,label).toEqual(BASE);
+    expect(frame.first.flag,label).toBe(1);
+    expect(frame.first.values,label).toEqual(calculated({potion:frame.first.bonus,lp:frame.first.lp}));
+    expect(frame.repeated,label).toEqual(frame.first);
     expect(frame.buildStable,label).toBe(true);
-    if(frame.count>0)expect(frame.delta,label).toBe(8);
+    expect(frame.restoredOff.values,label).toEqual(BASE);
+    expect(frame.restoredOff.bonus,label).toBe(frame.first.bonus);
+    if(frame.count>0)expect(frame.bonusDelta,label).toBe(8);
   }
 });
 
-test('four-language potion preview changes labels but never 14 numeric results or character build',async({page})=>{
+test('RU/EN/JP/TW language switches preserve base values OFF and calculated values ON without modifying builds',async({page})=>{
   await page.goto('/?ui=ru');
   await page.locator('#EfTab_1').click();
   const saved=await read(page);
   for(const locale of ['en','jp','tw','ru']){
     await page.evaluate(lang=>PandoraRemaked.i18n.setLocale(lang),locale);
-    await expect.poll(async()=>(await read(page)).values).toEqual(expected(saved).map(String));
+    await expect.poll(async()=>(await read(page)).values).toEqual(BASE);
+    expect((await read(page)).flag).toBeFalsy();
     expect((await read(page)).build).toBe(saved.build);
   }
+  await page.locator('#SwitchUse_3').click();
+  const enabled=await read(page);
+  expect(enabled.flag).toBeTruthy();
+  for(const locale of ['jp','tw','en','ru']){
+    await page.evaluate(lang=>PandoraRemaked.i18n.setLocale(lang),locale);
+    await expect.poll(async()=>(await read(page)).values)
+      .toEqual(calculated(await read(page)));
+    expect((await read(page)).build).toBe(enabled.build);
+  }
+  await page.locator('#SwitchUse_3').click();
+  await expect.poll(async()=>(await read(page)).values).toEqual(BASE);
+  expect((await read(page)).build).toBe(saved.build);
 });

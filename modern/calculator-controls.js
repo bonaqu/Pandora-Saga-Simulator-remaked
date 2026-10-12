@@ -608,26 +608,38 @@
     if (!row || row[0] !== record[1]) return null;
     return record[0];
   }
-  // Modern-only preview. The preserved native potion renderer is gated by
-  // Flag[6] ("use potion effects"), although that toggle is unrelated to the
-  // read-only Effects > Potions panel. Match its existing fixed/percentage
-  // formulas without changing Flag[6], the archived engine or build state.
+  // Modern-only display for 14 healing items. Preserve the original
+  // Flag[6] opt-in: the Effects > Potions tab does NOT enable calculations.
+  // When OFF, display unmodified potion recovery (fixed HP or % of maximum
+  // HP). When ON, reuse the native floor/ceil ordering and Status.POT bonus.
+  // Never change Flag[6], archived Legacy 2.00, game data or saved builds.
   var potionFixedRecovery=[20,60,120,180,450,145,10,25,200,150];
   var potionPercentRecovery=[5,15,30,18];
   function refreshPotionEffectsPreview() {
     var panel=byId('POTView'),status=window.Status;
     if (!panel || !status || !window.Name?.POT) return;
+    var enabled=Boolean(window.Flag?.[6]);
     var potionBonus=Number(status.POT),maxLife=Number(status.LP);
-    if (!Number.isFinite(potionBonus) || !Number.isFinite(maxLife) ||
-        potionBonus<0 || maxLife<0) return;
-    var totals=potionFixedRecovery.map(function(amount){
-      return Math.floor(amount*potionBonus/100);
-    }).concat(potionPercentRecovery.map(function(percent){
-      return Math.floor(maxLife*Math.ceil(percent*potionBonus)/10000);
-    }));
+    var valid=Number.isFinite(potionBonus) && Number.isFinite(maxLife) &&
+      potionBonus>=0 && maxLife>=0;
+    var totals;
+    if (!enabled) {
+      totals=potionFixedRecovery.map(String).concat(
+        potionPercentRecovery.map(function(percent){return percent+'%';}));
+    } else if (valid) {
+      totals=potionFixedRecovery.map(function(amount){
+        return String(Math.floor(amount*potionBonus/100));
+      }).concat(potionPercentRecovery.map(function(percent){
+        return String(Math.floor(maxLife*Math.ceil(percent*potionBonus)/10000));
+      }));
+    } else {
+      // Unknown active inputs are not zero recovery. Do not display stale
+      // values from a previous enabled state or manufacture a heal amount.
+      totals=potionFixedRecovery.concat(potionPercentRecovery).map(function(){return '---';});
+    }
     totals.forEach(function(value,index) {
       var output=byId('ViewPOT_'+index+'_1');
-      if (output && output.textContent!==String(value))output.textContent=String(value);
+      if (output && output.textContent!==value)output.textContent=value;
     });
   }
   function refreshWeaponRangeProvenance() {

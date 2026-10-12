@@ -2,6 +2,20 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.22 — 2026-10-12
+
+### For users
+
+- Fixed the **Potion Effects** tab: when **Use potion effects** is off, show only original potion recovery — base HP amounts for fixed potions and original percentages for percentage potions.
+- For example, **Rest POT** shows **15%** while disabled, without applying **Potion Healing** bonuses. Enable the switch to see calculated HP recovery including the character's applicable potion bonus.
+- Turning the switch off immediately restores the base values. Changing tabs never opts in to the calculation, and character builds and formulas are unchanged.
+
+### Development and technical changes
+
+- Correct the unintended Flag[6]-independent Modern potion preview introduced in 4.21. Display calculated HP only when the native switch is ON; otherwise show 10 flat source HP amounts and four original 5/15/30/18-percent labels.
+- Preserve the native `floor(fixed*POT/100)` and `floor(LP*ceil(percent*POT)/10000)` order when enabled; avoid stale values when toggled off or when calculated inputs are invalid. Update Playwright coverage for 14 items, both toggle directions, 1–4 potion Souls and RU/EN/JP/TW.
+- Frozen Legacy 2.00, `js/calc.js`, `js/create.js`, D1 publications and saved-build revision semantics remain unchanged.
+
 ## Modern 4.21 — 2026-10-12
 
 ### For users
