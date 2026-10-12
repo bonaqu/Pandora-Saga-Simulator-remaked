@@ -61,7 +61,7 @@
   };
   // Display-only metadata, never draft or form values. Weak references avoid
   // leaking discarded list rows across catalog refreshes and locale changes.
-  var catalogLiveValues = new WeakMap();
+  var catalogLiveValues = new WeakMap(),catalogRecordValues=new WeakMap();
   function catalogTranslate(key, fallback, values) {
     var template=window.PandoraAdminI18n?.t?.('adminShell.'+key,fallback)||fallback;
     var slots=function(value){return (String(value).match(/\{[A-Za-z0-9_]+\}/g)||[]).sort().join('|');};
@@ -69,6 +69,24 @@
     return String(template).replace(/\{([A-Za-z0-9_]+)\}/g,function(original,name){
       return values&&Object.hasOwn(values,name)?String(values[name]):original;
     });
+  }
+  function catalogRecordLocale(names) {
+    if(!names || typeof names!=='object')return '';
+    var locale=window.PandoraAdminI18n?.getLocale?.()||'ru';
+    // Read current, versioned catalog API fields; never write between locales.
+    return names[locale]||names.en||names.ru||names.jp||names.tw||'';
+  }
+  function catalogRecordText(node,names) {
+    node.dataset.catalogRecordLocale='true';
+    catalogRecordValues.set(node,names);
+    node.textContent=catalogRecordLocale(names);
+    return node;
+  }
+  function catalogLiveName(node,key,fallback,values,names){
+    node.dataset.catalogLiveI18n=key;
+    catalogLiveValues.set(node,{key:key,fallback:fallback,values:values||{},names:names});
+    node.textContent=catalogTranslate(key,fallback,{...values,name:catalogRecordLocale(names)});
+    return node;
   }
   function catalogLive(node,key,fallback,values) {
     node.dataset.catalogLiveI18n=key;
@@ -227,7 +245,12 @@
     if(!host)return;
     host.querySelectorAll('[data-catalog-live-i18n]').forEach(function(node){
       var entry=catalogLiveValues.get(node);
-      if(entry)node.textContent=catalogTranslate(entry.key,entry.fallback,entry.values);
+      if(entry)node.textContent=catalogTranslate(entry.key,entry.fallback,
+        entry.names?{...entry.values,name:catalogRecordLocale(entry.names)}:entry.values);
+    });
+    host.querySelectorAll('[data-catalog-record-locale]').forEach(function(node){
+      var names=catalogRecordValues.get(node);
+      if(names)node.textContent=catalogRecordLocale(names);
     });
   });
   async function api(path, input) {
@@ -308,9 +331,9 @@
   function recordView(record, target, title) {
     target.replaceChildren(title.startsWith('Сейчас на сайте · версия ') ? catalogLive(node('h4'),'catalogPublishedVersion','Сейчас на сайте · версия {revision}',{revision:current.catalogRevision}):node('h4',title));
     if (!record) { target.appendChild(node('p', 'Запись ещё не опубликована и на сайте не используется.', 'help-text')); return; }
-    target.appendChild(node('p', record.names.ru || record.names.en, 'record-name'));
+    target.appendChild(catalogRecordText(node('p',undefined,'record-name'),record.names));
     var description = record.description.ru || record.description.en;
-    if (description) target.appendChild(node('p', description, 'record-description'));
+    if (description) target.appendChild(catalogRecordText(node('p',undefined,'record-description'),record.description));
     var values = node('ul', undefined, 'record-values');
     if (record.kind === 'equipment') values.appendChild(node('li', 'Уровень: ' + record.level + ' · Слоты душ: ' + record.sockets));
     if(record.kind==='equipment'&&record.upgradeBonuses?.length)
@@ -367,11 +390,11 @@
       variants.appendChild(catalogStatic(node('p',undefined,'help-text'),'catalogProfileSelectionHelp','Самый конкретный изученный вариант заменяет название, описание и время. Пока его условия не выполнены, действуют основные значения выше. Это не расчёт боевого урона.'));
       var entries = node('ul', undefined, 'record-values');
       record.profiles.forEach(function (profile, position) {
-        var entry = node('li'); entry.appendChild(catalogLive(node('strong'),'catalogProfileNameColon','Вариант {index}: {name}',{index:position+1,name:profile.names.ru||profile.names.en}));
+        var entry = node('li'); entry.appendChild(catalogLiveName(node('strong'),'catalogProfileNameColon','Вариант {index}: {name}',{index:position+1},profile.names));
         entry.appendChild(node('p', learningSummary(profile.learningRequirements), 'help-text'));
         entry.appendChild(catalogLive(node('p',undefined,'help-text'),'catalogProfileTiming','MP: {mp} · применение: {cast} с · перезарядка: {cooldown} с · длительность: {duration} с',{mp:profile.timing[0],cast:profile.timing[1],cooldown:profile.timing[2],duration:profile.timing[3]}));
         var description = profile.description.ru || profile.description.en;
-        if (description) entry.appendChild(node('p', description, 'record-description'));
+        if (description) entry.appendChild(catalogRecordText(node('p',undefined,'record-description'),profile.description));
         entries.appendChild(entry);
       });
       variants.appendChild(entries); target.appendChild(variants);
