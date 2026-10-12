@@ -79,6 +79,43 @@ test('unified translations show published catalog text and safely jump to same c
   await expect(page.locator('#localization-console .localization-status')).toContainText('Открыта карточка');
   await expect(page.locator('.catalog-editor [data-field="names"][data-language="ru"]')).toHaveValue('Тестовый лук');
   await expect(page.locator('.catalog-editor')).toContainText('Union Test Bow');
+  // The D1 record is published once. Switching the administration language
+  // must update *only* the read-only preview, not the editable catalog fields.
+  const source=JSON.parse(fs.readFileSync(new URL('../../localization/ui.en.json',import.meta.url),'utf8'));
+  const approved=JSON.parse(fs.readFileSync(new URL('../../localization/approved-translations.v1.json',import.meta.url),'utf8'));
+  await page.evaluate(({source,approved})=>{
+    window.__previewLocale='ru';
+    window.PandoraAdminI18n={
+      getLocale:()=>window.__previewLocale,
+      t:(key,fallback)=>approved.ui[window.__previewLocale]?.[key]||source[key]||fallback
+    };
+    window.dispatchEvent(new Event('pandora-admin:localechange'));
+  },{source,approved});
+  const readonly=page.locator('[data-current-record]');
+  const itemName=readonly.locator('.record-name');
+  const itemDescription=readonly.locator('.record-description').first();
+  await expect(itemName).toHaveText('Тестовый лук');
+  await expect(itemDescription).toHaveText('Текст каталога');
+  for(const [locale,name,description,levelPrefix] of [
+    ['en','Union Test Bow','Catalog text','Level:'],
+    ['jp','弓','説明','レベル:'],
+    ['tw','弓','說明','等級：'],
+    ['ru','Тестовый лук','Текст каталога','Уровень:']
+  ]){
+    await page.evaluate(locale=>{
+      window.__previewLocale=locale;
+      window.dispatchEvent(new Event('pandora-admin:localechange'));
+    },locale);
+    await expect(itemName).toHaveText(name);
+    await expect(itemDescription).toHaveText(description);
+    await expect(readonly.locator('[data-catalog-live-i18n="catalogPreviewLevelSockets"]'))
+      .toContainText(levelPrefix);
+    await expect(page.locator('.catalog-editor [data-field="names"][data-language="ru"]'))
+      .toHaveValue('Тестовый лук');
+    await expect(page.locator('.catalog-editor [data-field="names"][data-language="en"]'))
+      .toHaveValue('Union Test Bow');
+  }
+
   // Do not discard unsaved catalog changes when jumping from localization.
   await page.locator('.catalog-editor [data-field="names"][data-language="ru"]').fill('Незавершённая правка');
   page.once('dialog',dialog=>dialog.dismiss());
