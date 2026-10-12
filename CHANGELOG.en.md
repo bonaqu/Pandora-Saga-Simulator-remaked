@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.17 — 2026-10-12
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Add 60 D1-first EN/RU/JP/TW UI keys for **33 stable numeric effect IDs**, percentage and flat units, six class LP/MP coefficient labels, Soul socket/level previews, accessible edit controls and known conditional-profile validation failures.
+- Change only presentational labels across locales. Effect IDs, selected options, entered numeric values, draft selections and form state are preserved. Live previews recompute nested effect/upgrade copy instead of retaining Russian text after a locale switch.
+- Leave unknown engine codes visibly unresolved rather than inventing semantics. Add four-language key/placeholder/HTML checks and Playwright regression for language switching with unpublished numeric edits.
+- D1-published owner translations override these fallbacks. Frozen Legacy 2.00, source formulas, saved builds, server contracts, auth/CSRF and D1 publications are unchanged. Independent current-game formula/range verification is not asserted.
+
 ## Modern 4.16 — 2026-10-12
 
 ### For users
