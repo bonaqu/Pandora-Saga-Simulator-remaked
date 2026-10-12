@@ -105,12 +105,16 @@
 
   function syncLearningColors() {
     if (!window.Flag[3] || !window.Learn) return;
-    var learned = new Set(window.Learn[0].map(String));
+    // Legacy overrides window.Set with an incompatible game constructor.
+    // Use a null-prototype lookup so learned icons work even if that historic
+    // global is loaded before the Modern skill controls.
+    var learned = Object.create(null);
+    window.Learn[0].forEach(function(id){learned[String(id)] = true;});
     document.querySelectorAll('#LearnView [id^="LearnSkillIcon_"]').forEach(function (icon) {
       var match = icon.id.match(/^LearnSkillIcon_(\d+)_(\d+)$/);
       if (!match) return;
       var key = match[1] + '_' + match[2];
-      var path = learned.has(key) ? '' : 'gray/';
+      var path = Object.hasOwn(learned,key) ? '' : 'gray/';
       // The retained Color pass is vulnerable to stale/partially projected
       // Learn state. Re-project the icon image from the final learned set so
       // the visible list always matches the current prerequisites.
