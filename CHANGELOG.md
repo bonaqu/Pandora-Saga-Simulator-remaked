@@ -3,26 +3,26 @@
 ## Modern 4.14 — русские подсказки и локализация админки, 2026-10-12
 
 <!-- release-notes:user:ru -->
-- Переведены на русский подсказки **26 характеристик** и улучшена справка об умениях. Существующие названия «Изучено (ОЧ)» и «Потенциал.» сохранены без изменений.
+- Переведены на русский подсказки **26 характеристик** персонажа. Существующие названия умений «Изучено (ОЧ)» и «Потенциал.» сохранены без изменений.
 - Улучшены сообщения **менеджера билдов**: автоматические обновления игровых данных, изменение числа ячеек для душ и причины несовместимости теперь понятнее на русском.
 - Русский текст для технических обновлений в «Что нового» снова однозначный: «Выполнены внутренние технические улучшения.»
 <!-- /release-notes:user:ru -->
 
 <!-- release-notes:user:en -->
-- Complete Russian help texts for **26 character attributes** and improve skill help while preserving previously approved Russian skill labels.
+- Complete Russian help texts for **26 character attributes**, preserving the previously approved skill labels.
 - Improve Russian build manager messages for automatically updated game data, Soul socket changes and incompatible saved entries.
 - Keep the neutral Russian What's New notice for technical-only updates.
 <!-- /release-notes:user:en -->
 
 <!-- admin-notes:ru -->
-- Заполнены 48 дополнительных русских fallback-строк пользовательского UI; ранее утверждённые формулировки «Изучено (ОЧ)» и «Потенциал.» сохранены, справка skills.help синхронизирована с исходным согласованным текстом. Существующие D1-переводы не заменяются; игровые формулы не меняются.
+- Заполнены 48 дополнительных русских fallback-строк пользовательского UI; ранее утверждённые формулировки «Изучено (ОЧ)» и «Потенциал.» сохранены, отдельный утверждённый источник skills.help оставлен неизменным. Существующие D1-переводы не заменяются; игровые формулы не меняются.
 - В D1-first реестр добавлены ещё 14 ключей RU/EN/JP/TW для предупреждений массовой замены, причин пропуска строк и неопределённой квитанции; динамические сообщения обновляются при смене языка без нового запроса или публикации.
 - В четырёхъязычном редакторе теперь локализуются доступные имена полей; подсказка восстановления учитывает неопубликованный облачный черновик. Черновики, CSRF, optimistic concurrency и операция публикации по квитанции защищены как прежде.
 - Добавлены автоматические проверки полей и безопасных плейсхолдеров, браузерные сценарии для ошибок и пропущенных записей, а также инвентаризация UI fallback: 726 EN, 707 RU, 725 JP/TW. Настоящую покрытость опубликованной D1 эти числа не измеряют. Legacy 2.00 и формулы не изменены.
 <!-- /admin-notes:ru -->
 
 <!-- admin-notes:en -->
-- Approve 48 more Russian player-facing UI fallbacks while retaining established curated skill wording and restoring the approved skill help. D1 publications remain authoritative and game formulas remain unchanged.
+- Approve 48 more Russian player-facing UI fallbacks while retaining established curated skill wording without collapsing the distinct frozen approved skill-help snapshot. D1 publications remain authoritative and game formulas remain unchanged.
 - Add 14 D1-first RU/EN/JP/TW labels for bulk workflow conflicts, skipped catalog items and unconfirmed D1 receipts, with locale-switch refresh and no extra network request or write.
 - Make four-language translation input accessibility and single-language cloud-draft reset hints switch live, retaining draft values, CSRF, optimistic concurrency and receipt-safe publication.
 - Add locale-completeness tests, two Playwright failure/skip scenarios and source-only fallback inventory: 726 EN, 707 RU, 725 JP/TW. This is NOT published D1 coverage. Frozen Legacy 2.00 and numerical mechanics are untouched.
