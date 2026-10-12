@@ -9,7 +9,7 @@ CODE=(ROOT/'admin-api/public/localization-console.js').read_text(encoding='utf-8
 EN=json.loads((ROOT/'localization/ui.en.json').read_text(encoding='utf-8'))
 APPROVED=json.loads((ROOT/'localization/approved-translations.v1.json').read_text(encoding='utf-8'))
 SLOTS=re.compile(r'\{[A-Za-z0-9_]+\}')
-KEYS=('locAuditExportMissing','locAuditExportProgress','locAuditExportReady','locAuditExportFailure')
+KEYS=('locAuditExportMissing','locAuditExportProgress','locAuditExportVerify','locAuditExportReady','locAuditExportFailure')
 
 class D1EffectiveMissingExportTests(unittest.TestCase):
     def test_export_copy_is_safe_in_all_four_admin_languages(self):
@@ -58,6 +58,12 @@ class D1EffectiveMissingExportTests(unittest.TestCase):
         self.assertIn("data.total!==entry.missing",block)
         self.assertIn("if(token!==auditRequest||!exportButton.isConnected)return",block)
         self.assertIn("includesTranslationText:false",block)
+        self.assertIn('verificationPasses:2,identitiesCompared:true',block)
+        self.assertIn("data.coverage.total!==reference.total",block)
+        self.assertIn("JSON.stringify(verified)!==JSON.stringify(entry.ids)",block)
+        self.assertIn("row.origin!=='fallback'||Object.hasOwn(seenAgain,row.id)",block)
+        self.assertIn("if(token!==auditRequest||!exportButton.isConnected)return",block)
+
         self.assertIn("atomic:false,readOnly:true",block)
         self.assertNotIn("localStorage",block)
         self.assertNotIn("sessionStorage",block)

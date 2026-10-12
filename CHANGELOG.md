@@ -1,5 +1,29 @@
 # Changelog
 
+## Modern 4.16 — безопасные иконки умений и повторная проверка D1, 2026-10-12
+
+<!-- release-notes:user:ru -->
+- Исправлена потенциальная ошибка отображения изученных и серых иконок навыков после изменения мастерства: Modern больше не зависит от несовместимой функции `Set` старого движка.
+- Расширены проверки результатов расчёта с экипировкой и усилениями на мобильных, промежуточных и широких экранах для всех четырёх языков, включая значения от 1000.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Prevent a legacy global `Set` override from interfering with learned and unavailable skill icons after allocating skill points.
+- Extend recalculated equipment-and-buff result layout tests to phone, tablet and wide-screen widths in all four locales, including four-digit values.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- В авторизованном экспорте фактически отсутствующих D1-переводов добавлен второй независимый проход всех восьми языковых групп. При прежних общих счётчиках теперь обнаруживаются замены ID, смена вида/владения записью и новые пропуски в ранее пустых группах; неполный JSON не скачивается.
+- В выгрузке появились `verificationPasses: 2` и `identitiesCompared: true`, но чтение нескольких HTTP-ответов по-прежнему **неатомарно**. Все запросы — GET; опубликованные тексты, D1, черновики, CSRF и данные входа не меняются.
+- Добавлены регрессии трёх типов гонки и проверка 43 полей расчёта в 28 комбинациях ширины и языка с реальной экипировкой/баффами. Статический аудит блокирует повторное использование глобального `Set` в Modern и браузерной админке. Legacy 2.00 и игровые коэффициенты не изменены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Strengthen authorized effective-D1 missing-ID export with a second read of all eight locale/scope groups, including initially empty groups. Detect same-count identity swaps, changed category/ownership and newly missing IDs; never download an incomplete report.
+- Reports add `verificationPasses: 2` and `identitiesCompared: true`, explicitly retaining `atomic: false`. All requests remain GET-only, without changing published translations, D1, drafts, CSRF or credentials.
+- Add race-condition tests and a 28-combination responsive calculation layout matrix (43 results, equipment, buffs, four-digit numbers). Guard all browser-facing scripts against the shadowed global `Set`. Frozen Legacy 2.00 and numeric game coefficients are unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 4.15 — выгрузка отсутствующих переводов из D1, 2026-10-12
 
 <!-- admin-notes:ru -->
