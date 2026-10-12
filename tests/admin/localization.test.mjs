@@ -54,7 +54,7 @@ test('all four languages have a stable index of approved skills and source text'
     assert.equal(exact.effective,locale==='ru'?'Пылающая стрела':exact.baseline);
   }
   const ui=await (await adminLocalization(get('/api/admin/localization?scope=ui&locale=jp'),env)).json();
-  assert.equal(ui.counts.ui,630);
+  assert.equal(ui.counts.ui,Object.keys(JSON.parse(readFileSync(new URL('../../localization/ui.en.json',import.meta.url),'utf8'))).length);
   assert.equal(ui.pageSize,40);
   assert.ok(ui.counts.game>2500);
 });
@@ -424,7 +424,7 @@ test('admin shell returns all current four-locale D1-editable keys without expos
   assert.equal(before.ok,true);
   assert.equal(before.schemaVersion,1);
   for(const locale of ['ru','en','jp','tw']) {
-    assert.equal(Object.keys(before.locales[locale]).length,352);
+    assert.equal(Object.keys(before.locales[locale]).length,Object.keys(JSON.parse(readFileSync(new URL('../../localization/ui.en.json',import.meta.url),'utf8'))).filter(key=>key.startsWith('adminShell.')).length);
     assert.ok(Object.keys(before.locales[locale]).every(key=>key.startsWith('adminShell.')));
     assert.ok(Object.values(before.locales[locale]).every(text=>typeof text==='string'&&text.trim()));
   }
