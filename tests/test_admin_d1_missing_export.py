@@ -28,6 +28,19 @@ class D1EffectiveMissingExportTests(unittest.TestCase):
                     self.assertEqual(sorted(SLOTS.findall(copy)),sorted(SLOTS.findall(reference)))
                     self.assertNotRegex(copy,'[<>]')
 
+    def test_archive_global_set_override_does_not_break_admin_workflows(self):
+        for name in ('localization-console.js','localization-bulk.js','localization-drafts.js'):
+            code=(ROOT/'admin-api/public'/name).read_text(encoding='utf-8')
+            with self.subTest(script=name):
+                self.assertNotIn('new Set(',code)
+        queue=(ROOT/'admin-api/public/localization-drafts.js').read_text(encoding='utf-8')
+        self.assertIn('selected=new Map()',queue)
+        self.assertIn('for(const id of selected.keys())',queue)
+        self.assertIn('selected.set(id,true)',queue)
+        bulk=(ROOT/'admin-api/public/localization-bulk.js').read_text(encoding='utf-8')
+        self.assertIn('const editing=new Map()',bulk)
+        self.assertIn('editing.set(item.id,true)',bulk)
+
     def test_export_adds_no_d1_write_and_does_not_change_unsaved_drafts(self):
         self.assertIn("exportButton.addEventListener('click',async()=>{",CODE)
         block=CODE.split("exportButton.addEventListener('click',async()=>{",1)[1].split("        results.prepend(exportButton);",1)[0]
