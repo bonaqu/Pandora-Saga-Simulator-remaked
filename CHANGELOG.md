@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 4.18 — проверка актуальности классовых коэффициентов HP/MP, 2026-10-12
+
+<!-- admin-notes:ru -->
+- Добавлен полностью читающий анализатор `scripts/audit_pandora_os_live_vitals.mjs`, который сопоставляет шесть HP/MP-коэффициентов всех 28 классов с датированным снимком 11.10.2026 и воспроизводит **672** класса/уровня/STA/SPR-вектора, выявляя отличия и величину расхождений.
+- Источником служит свежий запрос к публичному `classes.json` или явно указанный локальный JSON; при недоступности живого источника подмена старым снимком запрещена. Нормализованные коэффициенты снабжаются SHA-256; формат JSON и строгий ненулевой код при изменениях поддерживают дальнейшую проверку.
+- Добавлены офлайн-регрессии правильных/изменённых векторов, повреждённых данных, границ диагностических примеров и источников, а также обязательный CI-шаг. Прогон не меняет механики и не доказывает полного игрового паритета с экипировкой/усилениями. Legacy 2.00, D1 и сохранённые билды не затронуты.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add `scripts/audit_pandora_os_live_vitals.mjs`, a read-only comparison of all six HP/MP coefficients for 28 class identities against the dated 2026-10-11 fixture, replaying **672** independent class/level/STA/SPR vectors and reporting exact changes.
+- Read the current public `classes.json` or an explicitly supplied local copy, never silently falling back to stale data on HTTP failure. Emit normalized SHA-256 hashes and bounded JSON examples, with strict non-zero exit on drift.
+- Add deterministic offline tests for drift, invalid data and source integrity plus a required CI step. It does not modify game mechanics or prove equipped character/game-client parity; frozen Legacy 2.00, D1 and saved builds remain unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 4.17 — сводка общих пробелов JP/TW из D1, 2026-10-12
 
 <!-- admin-notes:ru -->
