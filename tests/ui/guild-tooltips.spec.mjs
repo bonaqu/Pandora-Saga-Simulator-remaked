@@ -61,6 +61,12 @@ test('passive descriptions are clean, D1 overrides retain priority, keyboard wor
   await page.keyboard.press('Enter');
   await page.locator('[data-remaked-guild-option="2"]').focus();
   await page.keyboard.press('ArrowDown');
+  await expect(page.locator('[data-remaked-guild-option="3"]')).toBeFocused();
+  await expect(page.locator('[data-remaked-guild-tooltip]')).toHaveText('Проверенный текст, опубликованный в D1.');
+  await page.keyboard.press('ArrowUp');
+  await expect(page.locator('[data-remaked-guild-option="2"]')).toBeFocused();
+  await expect(page.locator('[data-remaked-guild-tooltip]')).toContainText('магическую атаку на 4%');
+  await page.keyboard.press('ArrowDown');
   await expect(page.locator('[data-remaked-guild-tooltip]')).toHaveText('Проверенный текст, опубликованный в D1.');
   await page.keyboard.press('Enter');
   await expect(page.locator('#SelBuffClan_10')).toHaveValue('3');
