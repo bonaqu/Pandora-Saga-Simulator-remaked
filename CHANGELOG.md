@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 4.19 — восстановление четырёхъязычного редактора числовых эффектов, 2026-10-12
+
+<!-- admin-notes:ru -->
+- После успешного выпуска Modern 4.18 безопасно перенесены проверки и код неслитого черновика PR #204 без отката параллельной Modern 4.17: **60 новых D1-first строк EN/RU/JP/TW**, включая 33 идентификатора числовых эффектов, единицы измерения, коэффициенты LP/MP классов, доступные подписи полей и значения текстового предпросмотра.
+- При переключении языка меняются только надписи. Выбранные ID, значения эффекта, единица flat/percent, текст неопубликованного черновика и ревизия каталога не изменяются. Неизвестные эффекты остаются необъяснёнными, а D1 переводы имеют приоритет.
+- Дополнены автоматические и браузерные тесты неизменности исходных данных и четырёх локалей. Формулы Modern, Legacy 2.00, серверная авторизация, сохранённые билды и опубликованные D1-записи не затронуты.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Safely recover the previously reviewed but unmerged PR #204 on top of deployed Modern 4.18, without reverting the parallel 4.17 JP/TW D1 audit. Add **60 D1-first EN/RU/JP/TW UI labels** for 33 numeric effect IDs, units, class LP/MP coefficient fields, accessible controls and dynamic review previews.
+- Switching locale changes display-only labels and never selected stat IDs, numeric inputs, flat/percentage units, unpublished drafts or catalog revision. Unknown effects retain their original code; published D1 translations win.
+- Add four-locale fallback tests and browser regressions. No numerical formulas, frozen Legacy 2.00, server auth, stored builds or published D1 entries change.
+<!-- /admin-notes:en -->
+
 ## Modern 4.18 — надёжные подсказки гильдии и проверка HP/MP, 2026-10-12
 
 <!-- release-notes:user:ru -->
