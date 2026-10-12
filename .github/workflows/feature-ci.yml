@@ -226,6 +226,9 @@ jobs:
       - name: Validate independent live/offline 164-weapon base-range drift comparator
         run: node --test tests/tools/pandora-os-live-weapon-ranges-drift.test.mjs
 
+      - name: Verify healing input source drift comparator against dated registries
+        run: node --test tests/tools/pandora-os-live-healing-inputs.test.mjs
+
       - name: Syntax-check core JavaScript
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
         shell: bash
