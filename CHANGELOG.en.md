@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.17 — 2026-10-12
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Extend authorized effective-D1 JP/TW missing-translation export with shared and language-only identities per game and UI scope, using the already double-verified IDs. Abort if the same identity has inconsistent kind or catalog ownership.
+- Add optional `jpTwComparison` (both / jpOnly / twOnly, counts and byKind grouping) to backward-compatible JSON schema version 1; no additional API reads. Display a D1-first RU/EN/JP/TW comparison summary after successful export.
+- Keep the report strictly metadata-only and non-atomic, without draft or text exposure, automatic writes or unauthorized access. Add positive and corruption-fail-closed browser tests.
+- Inventory five admin localization scripts for unregistered literal keys and validate all 454+ `adminShell.*` labels across four languages, placeholder parity and safe content. No Legacy 2.00, numerical formulas or authentication changes.
+
 ## Modern 4.16 — 2026-10-12
 
 ### For users

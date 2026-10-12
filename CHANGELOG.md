@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 4.17 — сводка общих пробелов JP/TW из D1, 2026-10-12
+
+<!-- admin-notes:ru -->
+- Авторизованный отчёт по реально отсутствующим опубликованным JP/TW-переводам расширен сводкой общих и уникальных ID отдельно для игровых данных и интерфейса. Сопоставление идёт по уже дважды проверенным ID, включая типы записей и владельца каталога; конфликт метаданных блокирует скачивание.
+- В JSON `schemaVersion: 1` добавлен необязательный `jpTwComparison` с `both`, `jpOnly`, `twOnly`, счётчиками и группировкой `byKind`. Исходные `coverage` и `missing` остаются совместимыми; никаких новых запросов для пересечения не требуется.
+- После выгрузки в админке выводится отдельная доступная сводка RU/EN/JP/TW, переводы D1 имеют приоритет. Автоматическая публикация не выполняется. Отчёт не содержит текстов переводов, секретов и черновиков и остаётся неатомарным по отношению к изменениям D1.
+- Введён систематический тест зарегистрированных буквальных ключей всех пяти скриптов админки и полного набора 454+ четырёхъязычных `adminShell.*` строк. В браузерных тестах проверены общее/уникальное пересечение, недоверенное различие метаданных и переключение языка без дополнительных GET/POST. Legacy 2.00, формулы и авторизация не изменены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Extend authorized effective-D1 JP/TW missing-translation export with shared and language-only identities per game and UI scope, using the already double-verified IDs. Abort if the same identity has inconsistent kind or catalog ownership.
+- Add optional `jpTwComparison` (both / jpOnly / twOnly, counts and byKind grouping) to backward-compatible JSON schema version 1; no additional API reads. Display a D1-first RU/EN/JP/TW comparison summary after successful export.
+- Keep the report strictly metadata-only and non-atomic, without draft or text exposure, automatic writes or unauthorized access. Add positive and corruption-fail-closed browser tests.
+- Inventory five admin localization scripts for unregistered literal keys and validate all 454+ `adminShell.*` labels across four languages, placeholder parity and safe content. No Legacy 2.00, numerical formulas or authentication changes.
+<!-- /admin-notes:en -->
+
 ## Modern 4.16 — безопасные иконки умений и повторная проверка D1, 2026-10-12
 
 <!-- release-notes:user:ru -->

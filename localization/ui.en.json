@@ -729,5 +729,8 @@
   "adminShell.locAuditExportProgress": "Collecting untranslated IDs: {done} of {total}",
   "adminShell.locAuditExportReady": "Report ready: {count} IDs. Translation texts and drafts were not exported.",
   "adminShell.locAuditExportFailure": "Export stopped: {error}. No incomplete file was created.",
-  "adminShell.locAuditExportVerify": "Checking that {count} missing IDs remain unchanged with a second read…"
+  "adminShell.locAuditExportVerify": "Checking that {count} missing IDs remain unchanged with a second read…",
+  "adminShell.locAuditCompareTitle": "JP/TW · shared and language-only missing IDs",
+  "adminShell.locAuditCompareCounts": " · both languages: {both} · JP only: {jpOnly} · TW only: {twOnly}",
+  "adminShell.locAuditCompareCaution": "Only verified exported IDs are compared; this is not an atomic snapshot. No changes were published."
 }
