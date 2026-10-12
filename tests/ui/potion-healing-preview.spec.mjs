@@ -23,7 +23,7 @@ test('all 14 potion values render immediately even while Use potion effects is o
   const initial=await read(page);
   expect(initial.flag).toBeFalsy();
   await page.locator('#EfTab_1').click();
-  await expect(page.locator('#EfTab_1')).toHaveAttribute('aria-selected','true');
+  await expect(page.locator('[data-remaked-effect="1"]')).toHaveAttribute('aria-pressed','true');
   await expect(page.locator('#POTView')).toBeVisible();
   await expect.poll(async()=>(await read(page)).values).toEqual(expected(initial).map(String));
   let after=await read(page);
@@ -41,13 +41,13 @@ test('all 14 potion values render immediately even while Use potion effects is o
     .toEqual(expected(await read(page)).map(String));
 
   // Original panel can be opened and closed via keyboard as well as hover.
-  await page.locator('#EfTab_0').focus();
+  await page.locator('[data-remaked-effect="0"]').focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('#SkillView')).toBeVisible();
-  await page.locator('#EfTab_0').focus();
-  await page.keyboard.press('ArrowRight');
+  await page.locator('[data-remaked-effect="1"]').focus();
+  await page.keyboard.press('Space');
   await expect(page.locator('#POTView')).toBeVisible();
-  await expect(page.locator('#EfTab_1')).toHaveAttribute('aria-selected','true');
+  await expect(page.locator('[data-remaked-effect="1"]')).toHaveAttribute('aria-pressed','true');
 });
 
 test('Potion Soul +8% composes across two chest and two leg sockets with no duplicate recalc',async({page})=>{
@@ -77,8 +77,10 @@ test('Potion Soul +8% composes across two chest and two leg sockets with no dupl
           Status.Equip[3]=[310031,0,0,0,count>=1?60:0,count>=2?60:0,0];
           Status.Equip[5]=[330031,0,0,0,count>=3?60:0,count>=4?60:0,0];
           EquipCheck();CalcSet('ALL');
+          PandoraRemaked.calculatorControls.refresh();
           const first=read(),ready=Store();
           EquipCheck();CalcSet('ALL');
+          PandoraRemaked.calculatorControls.refresh();
           const second=read();
           results.push({selected,count,first,second,noDuplicate:JSON.stringify(first.potionOptions)===JSON.stringify(second.potionOptions),
             buildStable:ready===Store(), delta:previous===undefined?0:first.base-previous});
