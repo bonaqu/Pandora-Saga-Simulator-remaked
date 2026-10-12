@@ -1,5 +1,21 @@
 # Changelog
 
+## Modern 4.11 — четырёхъязычный предпросмотр каталога, 2026-10-12
+
+<!-- admin-notes:ru -->
+- Исправлен язык данных в предпросмотре опубликованных и проверяемых карточек: имя и описание предмета, навыка, души и вариантов берутся из выбранного языка интерфейса RU/EN/JP/TW, с явным fallback, а не всегда из RU. Смена языка меняет только отображение и не записывает текст в поля каталога или D1.
+- В одобренный D1-редактируемый реестр добавлена 31 строка EN/RU/JP/TW для предпросмотра: уровень, слоты душ, заточка, MP и тайминги, ограничения изучения, условия оружия/щита/верховой езды, базовая атака, исходные маркеры и предупреждения о справочных эффектах.
+- Привязанные к локали диагностические подписи обновляются без пересоздания редактируемых полей и черновиков. Композиционные подписи, содержащие текст перевода другого поля, вычисляются заново после смены языка.
+- Добавлены проверки полноты RU/EN/JP/TW, совпадения параметров строк, отсутствия HTML и браузерная регрессия чтения опубликованной карточки в четырёх языках без изменения черновиков. Legacy 2.00, формулы, авторизация и опубликованная база D1 не менялись.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Fix the language of published and reviewed catalog previews: equipment, skill, Soul and skill-profile names/descriptions now follow the selected admin RU/EN/JP/TW language with explicit fallback, rather than defaulting to RU. Switching language changes presentation only; it cannot copy data across catalog fields or publish to D1.
+- Add 31 D1-editable EN/RU/JP/TW labels for level, Soul sockets, upgrades, MP and timing, learning requirements, weapon/shield/riding conditions, base weapon attack, unsupported source markers and informational-effect notices.
+- Refresh derived locale labels without remounting editable fields or drafts. Composite labels recalculate nested locale-specific text on every language switch.
+- Add four-language text-safety/placeholder tests and browser coverage of a published record switching all locales without data writes. Frozen Legacy 2.00, formulas, auth and published D1 data remain unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 4.10 — перевод редактора вариантов навыков, 2026-10-12
 
 <!-- admin-notes:ru -->
