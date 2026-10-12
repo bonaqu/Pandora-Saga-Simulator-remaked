@@ -37,7 +37,8 @@ class NumericEditorLocalizationTests(unittest.TestCase):
         for suffix in names:
             key='adminShell.'+suffix
             with self.subTest(key=key):
-                self.assertRegex(key,r'^adminShell\.[A-Za-z]+
+                self.assertRegex(key,r'^adminShell\.[A-Za-z]+\Z')
+                self.assertIn(key,EN)
                 self.assertTrue(EN[key].strip())
                 self.assertNotRegex(EN[key],r'[<>]')
                 template=sorted(TOKENS.findall(EN[key]))
