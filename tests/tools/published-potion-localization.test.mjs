@@ -39,7 +39,7 @@ test('public effective text reflects differences, but cannot reveal resets or dr
   assert.deepEqual(result.summary,{
     total:28,visible:27,matchesApproved:26,differsApproved:1,absent:1
   });
-  assert.equal(result.isCompletePublicPublication,false);
+  assert.equal(result.isCompletePublicCoverage,false);
   const byKey=Object.fromEntries(result.rows.map(row=>[row.key,row]));
   assert.equal(byKey['calculator.potion.11'].status,'differs-approved');
   assert.equal(byKey['calculator.potion.12'].status,'matches-approved');
