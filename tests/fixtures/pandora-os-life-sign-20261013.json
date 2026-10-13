@@ -1,0 +1,85 @@
+{
+  "captureDate": "2026-10-13",
+  "source": "https://pandorasaga-os.com/gamedata/skills.json",
+  "method": "GET via GitHub Actions (run 38333533999)",
+  "skills": {
+    "320005001": {
+      "id": 320005001,
+      "name": "Знак жизни",
+      "desc": "Увеличивает максимальное количество ОЗ всем игрокам в группе.",
+      "funcs": [
+        {
+          "ep": "EP_MAXLIFE_CONST",
+          "dir": "TARGET",
+          "fv1": [
+            0,
+            0,
+            0,
+            250
+          ],
+          "fv2": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ep": "EP_MAXLIFE_SCALE",
+          "dir": "TARGET",
+          "fv1": [
+            0,
+            0,
+            0,
+            15
+          ],
+          "fv2": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    "320005051": {
+      "id": 320005051,
+      "name": "Знак жизни",
+      "desc": "Увеличивает максимальное количество ОЗ всем игрокам в группе.",
+      "funcs": [
+        {
+          "ep": "EP_MAXLIFE_CONST",
+          "dir": "TARGET",
+          "fv1": [
+            0,
+            0,
+            0,
+            250
+          ],
+          "fv2": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ep": "EP_MAXLIFE_SCALE",
+          "dir": "TARGET",
+          "fv1": [
+            0,
+            0,
+            0,
+            15
+          ],
+          "fv2": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -228,6 +228,8 @@ jobs:
 
       - name: Verify healing input source drift comparator against dated registries
         run: node --test tests/tools/pandora-os-live-healing-inputs.test.mjs
+      - name: Verify current-client Cleric and Paladin observational HP vectors
+        run: node --test tests/tools/pandora-os-cleric-parity.test.mjs
 
       - name: Verify bilingual current-source potion identities offline
         run: node --test tests/tools/pandora-os-bilingual-current.test.mjs
