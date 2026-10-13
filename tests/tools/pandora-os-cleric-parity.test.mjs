@@ -86,6 +86,8 @@ test('direct game-client ELF Warrior lvl1 agrees on HP/MP, defense, attack, accu
   assert.equal(result.values.publicHalfEvenMp,45);
   assert.equal(result.itemsHaveNoHPMPModifiers,true);
   assert.deepEqual(result.previousWebCalculator,{hp:139,mp:45});
+  assert.deepEqual(result.nextTest,{itemId:19004,itemName:'Кольцо с кристаллом',
+    requiredLevel:1,vitAfter:6,hpAfter:155,mpAfter:44,magicResistanceIncrease:2});
   const broken=structuredClone(items);
   broken['12001'].AC=7;
   assert.equal(elfWarriorGameClientObservation(classes,broken).exact,false);
