@@ -106,3 +106,21 @@ test('each percentage uses the source class base, not HP/MP including flat gear'
   expect(out.reverse.total).toBe(1505);
   expect(out.withClan.total).toBe(1531);
 });
+
+test('published D1 class progression remains additive over all-class server coefficients',async({page})=>{
+  await page.goto('/?ui=ru');
+  const result=await page.evaluate(()=>{
+    const index=Number(Status.Job[2]),original=Status.Mod[index].slice();
+    Calc('LP');const before=Status.LP;
+    try{
+      Status.Mod[index][0]+=100;
+      Calc('LP');
+      const hp=Status.LP;
+      return {before,hp};
+    }finally{
+      Status.Mod[index]=original;
+      Calc('LP');
+    }
+  });
+  expect(result.hp-result.before).toBe(100);
+});
