@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.25 — 2026-10-13
+
+### For users
+
+- **HP and MP now use current in-game progression coefficients for all 28 classes** rather than historical values from the preserved calculator.
+- Equipment percentage bonuses and the Sign of Life buff now scale the class base separately from flat HP/MP bonuses.
+
+### Development and technical changes
+
+- Generate the 28-class Modern-only current-source coefficients from the dated Pandora Saga OS class registry; leave the preserved Legacy 2.00 calculator and data unchanged.
+- Add Cleric real-client vitals regression and correct the flat +50 MP Necklace #20001; current race starting baselines and two unexplained gear SPR points are explicitly out of scope.
+
 ## Modern 4.24 — 2026-10-13
 
 ### For users

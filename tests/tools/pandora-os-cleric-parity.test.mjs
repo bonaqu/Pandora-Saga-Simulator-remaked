@@ -29,17 +29,17 @@ test('Cleric 45 reported naked 3145, geared 3402 and Life Mark 4127 all match so
   assert.equal(result.values.nakedMpPublicReferenceHalfEven,1280);
   assert.equal(result.exactNakedMp,true);
   assert.equal(result.values.gearedClassMp,1320);
-  assert.equal(result.values.knownFlatMp,30);
+  assert.equal(result.values.knownFlatMp,80);
   assert.equal(result.values.sourceHighSoulPercent,8);
   assert.equal(result.values.percentOnClassBase,105);
-  assert.equal(result.values.percentAfterKnownFlats,108);
-  assert.equal(result.values.explainedMpWithBasePercent,1455);
-  assert.equal(result.values.explainedMpWithPostFlatPercent,1458);
-  assert.equal(result.values.remainingMpIfBasePercent,50);
-  assert.equal(result.values.remainingMpIfPostFlatPercent,47);
-  assert.equal(result.values.sourcedGearSpi,3);
-  assert.equal(result.values.additionalGearSpiNotYetSourced,1);
-  assert.equal(result.mpProvenanceComplete,false);
+  assert.equal(result.values.percentAfterKnownFlats,112);
+  assert.equal(result.values.explainedMpWithBasePercent,1505);
+  assert.equal(result.values.explainedMpWithPostFlatPercent,1512);
+  assert.equal(result.values.remainingMpIfBasePercent,0);
+  assert.equal(result.values.remainingMpIfPostFlatPercent,-7);
+  assert.equal(result.values.sourcedGearSpi,2);
+  assert.equal(result.values.additionalGearSpiNotYetSourced,2);
+  assert.equal(result.mpProvenanceComplete,true);
   assert.equal(result.gameClientRoundingProvenAcrossAllClasses,false);
 });
 
@@ -114,7 +114,7 @@ test('High Soul 104002 glove-only +8% MP and +1 SPR are source-identified',()=>{
   assert.ok(souls['104002'].effects.some(x=>x.func==='EP_SPIRITUAL_CONST'&&x.dir==='SELF'&&x.a===1));
   assert.equal(items['13102'].effects.find(x=>x.func==='EP_MAXMANA_CONST').a,10);
   assert.equal(items['21011'].effects.find(x=>x.func==='EP_MAXMANA_CONST').a,20);
-  assert.equal(items['20011'].effects.find(x=>x.func==='EP_SPIRITUAL_CONST').a,1);
+  assert.equal(items['20001'].effects.find(x=>x.func==='EP_MAXMANA_CONST').a,50);
   const broken=structuredClone(souls);
   broken['104002'].effects.find(x=>x.func==='EP_MAXMANA_SCALE').a=9;
   assert.throws(()=>clericObservation(classes,items,forth,broken),/High Soul current effect has changed/);
@@ -128,5 +128,5 @@ test('source MP rounding matters: 53 SPR must floor from 1279.9 to 1279, not hal
   const record=clericObservation(classes,items,forth,souls);
   assert.equal(record.observed.nakedMp,1279);
   assert.equal(record.values.nakedMpPublicReferenceHalfEven,1280);
-  assert.equal(record.mpProvenanceComplete,false);
+  assert.equal(record.mpProvenanceComplete,true);
 });

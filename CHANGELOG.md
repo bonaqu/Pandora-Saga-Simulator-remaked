@@ -1,5 +1,28 @@
 # Changelog
 
+## Modern 4.25 — актуальные ОЗ и ОМ по данным Pandora Saga OS, 2026-10-13
+
+<!-- release-notes:user:ru -->
+- **Расчёт ОЗ и ОМ обновлён для всех 28 классов:** теперь используются актуальные игровые коэффициенты вместо устаревших значений старого симулятора.
+- Исправлен порядок расчёта бонусов ОЗ и ОМ от экипировки и усиления «Знак жизни»: процент считается от классовых характеристик отдельно от фиксированных прибавок.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **HP and MP now use current in-game progression coefficients for all 28 classes** rather than historical values from the preserved calculator.
+- Equipment percentage bonuses and the Sign of Life buff now scale the class base separately from flat HP/MP bonuses.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Коэффициенты 28 классов генерируются в отдельный Modern JS из датированного серверного снимка. Новый перехват расчётов LP/MP работает только в Modern, не меняя Legacy 2.00 и файлы исходного архивного калькулятора.
+- Проверены эталоны Клирика 45: 3145/1279 без вещей, 3402/1505 в экипировке и 4127 ОЗ с «Знаком жизни». Актуализирована диагностика «Ожерелья» ID 20001 (+50 ОМ), Высокой души 104002 (+8% ОМ). Остальные характеристики, неразъяснённые +2 СД и расовые стартовые значения остаются предметом дальнейшей сверки.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Generate the 28-class Modern-only current-source coefficients from the dated Pandora Saga OS class registry; leave the preserved Legacy 2.00 calculator and data unchanged.
+- Add Cleric real-client vitals regression and correct the flat +50 MP Necklace #20001; current race starting baselines and two unexplained gear SPR points are explicitly out of scope.
+<!-- /admin-notes:en -->
+
+
 ## Modern 4.24 — русские названия эффектов зелий, 2026-10-13
 
 <!-- release-notes:user:ru -->

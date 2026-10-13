@@ -150,8 +150,21 @@ test('representative serialized builds produce the same calculated projection in
       expect(legacy.metadata.raceSkill).toBe('Harmony with Nature');
       expect(modern.metadata.raceSkill).toBe("Nature's Harmony");
     }
-    expect(legacy.summary, `${fixture.name} calculated summary`).toEqual(
-      modern.summary.map((field) => ({ key: field.key, display: field.display }))
+    // HP/MP intentionally switch to current-server coefficient math in Modern;
+    // retained Legacy 2.00 remains the independent museum reference. Other
+    // calculated fields must match exactly, including equipment-dependent stats.
+    const modernShared=modern.summary.filter(field=>field.key!=='lp'&&field.key!=='mp');
+    const legacyShared=legacy.summary.filter(field=>field.key!=='lp'&&field.key!=='mp');
+    expect(legacyShared, `${fixture.name} unchanged calculated fields`).toEqual(
+      modernShared.map(({key,display})=>({key,display}))
     );
+    for(const kind of ['lp','mp']){
+      const modernRow=modern.summary.find(field=>field.key===kind);
+      const legacyRow=legacy.summary.find(field=>field.key===kind);
+      expect(modernRow,fixture.name+' current '+kind).toBeDefined();
+      expect(legacyRow,fixture.name+' museum '+kind).toBeDefined();
+      expect(Number(modernRow.display.replace(/,/g,'')),fixture.name+' numeric '+kind)
+        .toBeGreaterThan(0);
+    }
   }
 });

@@ -354,6 +354,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             (modern / "identity-aliases.js").write_text("// aliases", encoding="utf-8")
             (modern / "catalog.js").write_text("// versioned public catalog", encoding="utf-8")
             shutil.copy2(pathlib.Path(__file__).resolve().parents[1] / "modern/enhancement-effects.js", modern / "enhancement-effects.js")
+            shutil.copy2(pathlib.Path(__file__).resolve().parents[1] / "modern/current-vitals.js", modern / "current-vitals.js")
             (modern / "admin-entry.js").write_text("// hidden entry", encoding="utf-8")
             (modern / "admin-entry.css").write_text("/* terminal */", encoding="utf-8")
             (modern / "build-store.js").write_text("// build store", encoding="utf-8")
@@ -370,6 +371,12 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             repository_localization = pathlib.Path(__file__).resolve().parents[1] / "localization"
             for name in ("ui.en.json", "game-terms.ru.json", "approved-translations.v1.json", "guild-skills.v1.json"):
                 shutil.copy2(repository_localization / name, localization / name)
+            class_reference = root / "tests" / "fixtures"
+            class_reference.mkdir(parents=True)
+            shutil.copy2(
+                pathlib.Path(__file__).resolve().parents[1] / "tests/fixtures/pandora-os-classes-20261011.json",
+                class_reference / "pandora-os-classes-20261011.json",
+            )
             generated = root / "data" / "generated"
             generated.mkdir(parents=True)
             repository = pathlib.Path(__file__).resolve().parents[1]
