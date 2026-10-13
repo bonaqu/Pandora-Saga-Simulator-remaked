@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.24 — 2026-10-13
+
+### For users
+
+- **All 14 Potion Effects names now display in Russian** when using the RU interface, with updated base-healing descriptions.
+- Four legacy-only entries are clearly marked as unverified for the current game. Existing custom translations remain authoritative.
+
+### Development and technical changes
+
+- Seed 28 RU game-translation records through an additive D1 migration and approved fallback, preserving existing publications, reset tombstones and drafts. Cover editor-first precedence and user-facing labels in regression tests.
+- Character formulas, frozen Legacy and saved builds are unchanged.
+
 ## Modern 4.23 — 2026-10-12
 
 ### For users
