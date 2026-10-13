@@ -234,40 +234,6 @@ jobs:
 
       - name: Verify all-gameplay-fields reference coverage offline
         run: node --test tests/tools/pandora-os-gameplay-reference.test.mjs
-      # ONE-OFF PUBLIC GET-ONLY PROBE, REMOVE BEFORE MERGE.
-      - name: One-off inspect current starting statistics and D1 potion publications
-        if: github.event_name == 'pull_request' && github.head_ref == 'fix/potion-ru-parity-live-vitals-20261013'
-        continue-on-error: true
-        run: |
-          node --input-type=module <<'NODE'
-          const root='https://pandorasaga-os.com/gamedata/';
-          const files=['classes.json','races.json','racialPassives.json'];
-          const registry={};
-          for(const file of files){
-            const r=await fetch(root+file,{signal:AbortSignal.timeout(18000)});
-            registry[file]=r.ok?await r.json():{httpError:r.status};
-          }
-          const api=await fetch('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/localization',
-            {signal:AbortSignal.timeout(18000)});
-          let potion={httpStatus:api.status};
-          if(api.ok){
-            const data=await api.json();
-            const ru=data?.overrides?.game?.ru||{};
-            potion.ru=Object.fromEntries(Object.entries(ru).filter(([key])=>/^calculator\\.potion\\.(?:[0-9]|1[0-3])(?:\\.hint)?$/.test(key)));
-            potion.totalRuKeys=Object.keys(ru).length;
-          }
-          const classes=registry['classes.json'];
-          const races=registry['races.json'];
-          const passive=registry['racialPassives.json'];
-          console.log('CURRENT_INITIAL_STATS='+JSON.stringify({
-            warrior:classes?.WARRIOR,
-            scout:classes?.SCOUT,
-            elf:races?.ELF||races,
-            racialElf:passive?.ELF,
-            D1:potion
-          }));
-          NODE
-
       - name: Syntax-check core JavaScript
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
         shell: bash
