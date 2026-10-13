@@ -1,6 +1,6 @@
 # Changelog
 
-## Modern 4.25 — актуальные ОЗ и ОМ по данным Pandora Saga OS, 2026-10-13
+## Modern 4.25 — улучшен расчёт ОЗ и ОМ, 2026-10-13
 
 <!-- release-notes:user:ru -->
 - **Расчёт ОЗ и ОМ обновлён для всех 28 классов:** теперь используются актуальные игровые коэффициенты вместо устаревших значений старого симулятора.
@@ -14,12 +14,12 @@
 
 <!-- admin-notes:ru -->
 - Коэффициенты 28 классов генерируются в отдельный Modern JS из датированного серверного снимка. Новый перехват расчётов LP/MP работает только в Modern, не меняя Legacy 2.00 и файлы исходного архивного калькулятора.
-- Проверены эталоны Клирика 45: 3145/1279 без вещей, 3402/1505 в экипировке и 4127 ОЗ с «Знаком жизни». Актуализирована диагностика «Ожерелья» ID 20001 (+50 ОМ), Высокой души 104002 (+8% ОМ). Остальные характеристики, неразъяснённые +2 СД и расовые стартовые значения остаются предметом дальнейшей сверки.
+- Проверены эталоны Клирика 45: 3145/1279 без вещей, 3402/1505 в экипировке и 4127 ОЗ с «Знаком жизни». Актуализирована диагностика «Ожерелья» ID 20001 (+50 ОМ), Высокой души 104002 (+8% ОМ). Оставшиеся +2 СД от Жезла лунного света (ID 2621, уровень 21) подтверждены по серверному каталогу: суммарная прибавка СД экипировки +4 из +1 штанов, +1 Высокой души и +2 жезла. Расовые стартовые значения и другие игровые характеристики остаются предметом отдельной сверки.
 <!-- /admin-notes:ru -->
 
 <!-- admin-notes:en -->
 - Generate the 28-class Modern-only current-source coefficients from the dated Pandora Saga OS class registry; leave the preserved Legacy 2.00 calculator and data unchanged.
-- Add Cleric real-client vitals regression and correct the flat +50 MP Necklace #20001; current race starting baselines and two unexplained gear SPR points are explicitly out of scope.
+- Add Cleric real-client vitals regression and correct the flat +50 MP Necklace #20001; Moonlight Wand (level 21, ID 2621) provides the final +2 gear SPR, completing all four equipped SPR points alongside pants +1 and High Soul +1. Race starting baselines remain to be verified separately.
 <!-- /admin-notes:en -->
 
 
