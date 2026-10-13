@@ -12,7 +12,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 ### Development and technical changes
 
 - Generate the 28-class Modern-only current-source coefficients from the dated Pandora Saga OS class registry; leave the preserved Legacy 2.00 calculator and data unchanged.
-- Add Cleric real-client vitals regression and correct the flat +50 MP Necklace #20001; current race starting baselines and two unexplained gear SPR points are explicitly out of scope.
+- Add Cleric real-client vitals regression and correct the flat +50 MP Necklace #20001; Moonlight Wand (level 21, ID 2621) provides the final +2 gear SPR, completing all four equipped SPR points alongside pants +1 and High Soul +1. Race starting baselines remain to be verified separately.
 
 ## Modern 4.24 — 2026-10-13
 
