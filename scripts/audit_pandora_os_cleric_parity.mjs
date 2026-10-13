@@ -70,7 +70,7 @@ export function clericObservation(classes,items,forth){
       nakedVit:49,gearedVit:49+vitBonus,nakedSpi:41,gearedSpi:57,
       shieldId:17034,bootsId:15004,bootsPlus:4,
       bootsBaseHp:bootsBase,bootsFourthHp:bootsFourth,
-      buffSkillCandidateId:320005001,buffFlat,buffPercent},
+      buffSkillSourceIds:[320005001,320005051],buffFlat,buffPercent},
     values:{nakedHp:naked.hp,nakedMp:naked.mp,gearedClassHp:gearedClass.hp,
       gearedClassMp:gearedClass.mp,bootsHp,equippedHp,buffContribution,buffedHp,
       observedEquippedMp:1505,mpDeltaNotYetIdentified:unexplainedEquippedMp},
@@ -138,6 +138,21 @@ export function inspectLifeSkills(skills) {
   });
 }
 
+
+/** Validate that both actual source variants define exactly the observed buff. */
+export function lifeSignProfilesMatch(skills) {
+  const profiles=inspectLifeSkills(skills);
+  return profiles.length===2 && profiles.every(row=>{
+    if (!row.available || row.name!=='Знак жизни' || row.funcs.length!==2) return false;
+    const byName=Object.fromEntries(row.funcs.map(entry=>[entry.ep,entry]));
+    return Object.keys(byName).length===2 &&
+      byName.EP_MAXLIFE_CONST?.dir==='TARGET' &&
+      byName.EP_MAXLIFE_CONST.fv1?.[3]===250 &&
+      byName.EP_MAXLIFE_SCALE?.dir==='TARGET' &&
+      byName.EP_MAXLIFE_SCALE.fv1?.[3]===15;
+  });
+}
+
 async function main(args) {
   if(args.some(arg=>!['--json','--live','--strict'].includes(arg)))
     throw new Error('Usage: [--json] [--live] [--strict]');
@@ -151,11 +166,13 @@ async function main(args) {
   const cleric=clericObservation(classes,items,fixtures.forth);
   const paladin=paladinObservation(classes);
   const counterexample=elfWarriorCounterexample(classes);
+  const lifeSkillsMatch=live?lifeSignProfilesMatch(skills):null;
   const result={
+    lifeSkillsMatch,
     source:live?'LIVE HTTPS GET-only classes/items/skills':'Dated classes 2026-10-11, items/forth 2026-10-07',
     currentSkillEvidence:live?inspectLifeSkills(skills):'Not fetched in offline mode',
     cleric,paladin,counterexample,
-    assertable:cleric.exactHp&&paladin.exactBuffDelta&&counterexample.hpMismatch,
+    assertable:cleric.exactHp&&paladin.exactBuffDelta&&counterexample.hpMismatch&&(!live||lifeSkillsMatch),
     warning:'Observed phase composition is not yet a validated engine implementation, no mechanics/data/build writes are performed.'
   };
   if(args.includes('--json'))console.log(JSON.stringify(result,null,2));
