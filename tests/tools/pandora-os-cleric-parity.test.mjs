@@ -37,8 +37,10 @@ test('Cleric 45 reported naked 3145, geared 3402 and Life Mark 4127 all match so
   assert.equal(result.values.explainedMpWithPostFlatPercent,1512);
   assert.equal(result.values.remainingMpIfBasePercent,0);
   assert.equal(result.values.remainingMpIfPostFlatPercent,-7);
-  assert.equal(result.values.sourcedGearSpi,2);
-  assert.equal(result.values.additionalGearSpiNotYetSourced,2);
+  assert.equal(result.values.sourcedGearSpi,4);
+  assert.equal(result.values.additionalGearSpiNotYetSourced,0);
+  assert.equal(result.inputs.knownSpiWeaponId,2621);
+  assert.equal(result.inputs.knownSpiWeaponLevel,21);
   assert.equal(result.mpProvenanceComplete,true);
   assert.equal(result.gameClientRoundingProvenAcrossAllClasses,false);
 });
@@ -115,6 +117,15 @@ test('High Soul 104002 glove-only +8% MP and +1 SPR are source-identified',()=>{
   assert.equal(items['13102'].effects.find(x=>x.func==='EP_MAXMANA_CONST').a,10);
   assert.equal(items['21011'].effects.find(x=>x.func==='EP_MAXMANA_CONST').a,20);
   assert.equal(items['20001'].effects.find(x=>x.func==='EP_MAXMANA_CONST').a,50);
+  assert.equal(items['2621'].name,'Жезл лунного света');
+  assert.equal(items['2621'].level,21);
+  assert.equal(items['2621'].effects.find(x=>x.func==='EP_SPIRITUAL_CONST').a,2);
+  assert.equal(items['2621'].effects.find(x=>x.func==='EP_INTELIGENCE_CONST').a,3);
+  const brokenWand=structuredClone(items);
+  brokenWand['2621'].effects.find(x=>x.func==='EP_SPIRITUAL_CONST').a=1;
+  const wandMismatch=clericObservation(classes,brokenWand,forth,souls);
+  assert.equal(wandMismatch.values.additionalGearSpiNotYetSourced,1);
+  assert.equal(wandMismatch.mpProvenanceComplete,false);
   const broken=structuredClone(souls);
   broken['104002'].effects.find(x=>x.func==='EP_MAXMANA_SCALE').a=9;
   assert.throws(()=>clericObservation(classes,items,forth,broken),/High Soul current effect has changed/);
