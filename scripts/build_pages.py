@@ -51,6 +51,7 @@ REQUIRED_MODERN = (
     "modern/catalog-text.js",
     "modern/identity-aliases.js",
     "modern/enhancement-effects.js",
+    "modern/current-vitals.js",
     "modern/build-store.js",
     "modern/search.js",
     "modern/equipment-picker.js",
@@ -126,6 +127,8 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/identity-aliases.js"></script>
 <script src="./modern/catalog.js"></script>
 <script src="./modern/enhancement-effects.js"></script>
+<script src="./modern/current-vitals-data.js"></script>
+<script src="./modern/current-vitals.js"></script>
 <script src="./modern/admin-entry.js"></script>
 <script src="./modern/search.js"></script>
 <script src="./modern/app-shell.js"></script>
@@ -368,6 +371,38 @@ def _copy_runtime(root: pathlib.Path, destination: pathlib.Path) -> None:
         shutil.copytree(root / dirname, destination / dirname)
     shutil.copy2(root / "readme.txt", destination / "readme.txt")
     _patch_runtime_browser_compatibility(destination)
+
+
+def _materialize_current_class_vitals(root: pathlib.Path, output: pathlib.Path) -> None:
+    """Freeze all 28 current-server HP/MP rows into Modern; never edit Legacy."""
+    source = root / "tests/fixtures/pandora-os-classes-20261011.json"
+    classes = json.loads(source.read_text(encoding="utf-8"))
+    order = (
+        "WARRIOR", "GLADIATOR", "JUGGERNAUT", "DRAGOON", "KNIGHT",
+        "GENERAL", "PALADIN", "SCOUT", "ARCHER", "SNIPER", "PREDATOR",
+        "AGENT", "ASSASSIN", "DISTURBANCE", "ACOLYTE", "PRIEST", "CLERIC",
+        "ENCHANTER", "ASCETIC", "MONK", "EXORCIST", "MAGE", "WIZARD",
+        "WARLOCK", "CONJURER", "DARKROAR", "JESTER", "CALAMITY",
+    )
+    if set(classes) != set(order) or len(classes) != 28:
+        raise ValueError("current Pandora Saga OS class registry must cover exactly 28 classes")
+    for name in order:
+        cls = classes[name]
+        for stat, fields in (("hp", ("base", "lv", "vit")), ("mp", ("base", "lv", "spi"))):
+            if set(cls[stat]) != set(fields):
+                raise ValueError(f"invalid current-source coefficient fields: {name}.{stat}")
+            for field in fields:
+                value = cls[stat][field]
+                if not isinstance(value, (float, int)) or not (0 <= value <= 10000):
+                    raise ValueError(f"invalid current-source coefficient: {name}.{stat}.{field}")
+                if abs(value * 100 - round(value * 100)) > 1e-6:
+                    raise ValueError(f"unsupported coefficient precision: {name}.{stat}.{field}")
+    (output / "modern/current-vitals-data.js").write_text(
+        "window.PandoraRemakedCurrentClasses = Object.freeze("
+        + json.dumps(classes, ensure_ascii=False, separators=(",", ":"))
+        + ");\\n",
+        encoding="utf-8",
+    )
 
 
 def _materialize_modern_assets(root: pathlib.Path, output: pathlib.Path) -> None:
@@ -658,6 +693,7 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     _materialize_modern_guild_resistance(root, output)
     _materialize_modern_astir_rules(root, output)
     _materialize_modern_assets(root, output)
+    _materialize_current_class_vitals(root, output)
     _materialize_modern_astir_registry(output)
     _materialize_release_metadata(root, output)
     _materialize_locales(
