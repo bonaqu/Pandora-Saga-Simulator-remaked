@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {test} from 'node:test';
 import {
-  clericObservation,paladinObservation,elfWarriorCounterexample,
+  clericObservation,paladinObservation,elfWarriorGameClientObservation,
   inspectLifeSkills,lifeSignProfilesMatch
 } from '../../scripts/audit_pandora_os_cleric_parity.mjs';
 
@@ -74,11 +74,21 @@ test('Paladin 45 +1461 LP is reproduced with class VIT101 and 250+15% phase, wit
   assert.equal(result.clientBaseRoundingProven,false);
 });
 
-test('ELF Warrior lvl1 differs on HP with legacy racial baseline: no unsafe global migration',()=>{
-  const result=elfWarriorCounterexample(classes);
-  assert.deepEqual(result.sourceProjection,{hp:149,mp:45});
-  assert.deepEqual(result.observedPublicCalculator,{hp:139,mp:45});
-  assert.equal(result.hpMismatch,true);
+test('direct game-client ELF Warrior lvl1 agrees on HP/MP, defense, attack, accuracy, evasion and charm',()=>{
+  const result=elfWarriorGameClientObservation(classes,items);
+  assert.equal(result.exact,true);
+  assert.deepEqual(result.input,{race:'ELF',className:'WARRIOR',level:1,
+    vit:5,str:6,dex:5,agi:5,spi:6,int:7, racialPassive:'Стойкость разума',
+    armorIds:[12001,13001,15061],weaponId:21});
+  assert.deepEqual(result.observed,{hp:149,mp:44,attackMin:9,attackMax:12,
+    defense:12,accuracy:6,evasion:6,charmResist:20});
+  assert.equal(result.values.publicHalfEvenHp,149);
+  assert.equal(result.values.publicHalfEvenMp,45);
+  assert.equal(result.itemsHaveNoHPMPModifiers,true);
+  assert.deepEqual(result.previousWebCalculator,{hp:139,mp:45});
+  const broken=structuredClone(items);
+  broken['12001'].AC=7;
+  assert.equal(elfWarriorGameClientObservation(classes,broken).exact,false);
 });
 
 test('in-game buff identity must be verified against live skill funcs, never inferred by nickname',()=>{
