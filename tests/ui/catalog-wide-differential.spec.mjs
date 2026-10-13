@@ -3,6 +3,8 @@ import equipment from '../../data/generated/equipment.v1.json' with { type: 'jso
 import souls from '../../data/generated/souls.v1.json' with { type: 'json' };
 import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
 import reachFixture from '../fixtures/pandora-os-weapon-ranges-20261011.json' with { type: 'json' };
+import classes from '../fixtures/pandora-os-classes-20261011.json' with { type: 'json' };
+import { CLASS_ORDER } from '../../scripts/audit_pandora_os_class_coefficients.mjs';
 
 // Identical native control callbacks in two genuinely separate runtimes. No
 // test formula, inferred percentage or copied calculator implementation.
@@ -32,7 +34,16 @@ function auditCatalog({ equipment, souls, skills, allSkills, gearToAudit, auditC
     finally { Flag[2] = 0; }
     results.push({ id, race: Status.Job[0], job: Status.Job[2], equipment: JSON.stringify(Status.Equip),
       values: Array.from(document.querySelectorAll('[id^="Status_"]')).map(node => [node.id, node.textContent.trim().replace(/\s+/g, ' ')]),
-      attributes: ['STA', 'STR', 'AGI', 'DEX', 'SPR', 'INT'].map(key => Status[key].slice()) });
+      attributes: ['STA', 'STR', 'AGI', 'DEX', 'SPR', 'INT'].map(key => Status[key].slice()),
+      // Captured in BOTH independent runtimes: the current-game vital checker
+      // uses the actual retained options, not inferred gear-description text.
+      vitalInputs: {
+        level:Status.Lev[0],
+        hpOptions:(EquipOpt[6]||[]).slice(),mpOptions:(EquipOpt[7]||[]).slice(),
+        hpClan:document.getElementById('SelBuffClan_1').selectedIndex,
+        mpClan:document.getElementById('SelBuffClan_2').selectedIndex,
+        lifeSign:Boolean(Flag['14_1'])
+      } });
   }
   function wear(item) {
     var race = item.compatibility_flags.slice(2, 8).indexOf(1), job = item.compatibility_flags.slice(8).indexOf(1);
@@ -130,6 +141,34 @@ function auditCatalog({ equipment, souls, skills, allSkills, gearToAudit, auditC
   return { results, unavailable, failures, errors };
 }
 
+// Independent arithmetic in this exhaustive equipment/soul/skill audit.
+// Unlike the preserved museum, Modern uses CURRENT class coefficients and
+// floor(base×%) for each percent effect, before any flat equipment bonus.
+// Verify both outputs from captured source options; only then exclude their
+// intentional differences from the otherwise strict museum comparison.
+function currentServerVital(row,kind){
+  const source=classes[CLASS_ORDER[row.job]]?.[kind];
+  expect(source,row.id+' current class reference').toBeDefined();
+  const level=row.vitalInputs.level;
+  const stat=row.attributes[kind==='hp'?0:4];
+  const ability=stat.reduce((sum,value)=>sum+Number(value),0);
+  const toCents=value=>Math.round(value*100);
+  const base=Math.floor((toCents(source.base)+level*toCents(source.lv)+ability*toCents(kind==='hp'?source.vit:source.spi))/100);
+  let value=base;
+  const options=row.vitalInputs[kind==='hp'?'hpOptions':'mpOptions'];
+  for(const token of options){
+    const string=String(token);
+    if(string.endsWith('%'))value+=Math.floor(base*Number(string.slice(0,-1))/100);
+    else value+=Number(string);
+  }
+  const tier=row.vitalInputs[kind==='hp'?'hpClan':'mpClan'];
+  const percent=[0,2,4,6,9,12][tier];
+  expect(percent,row.id+' guild effect tier').toBeDefined();
+  value+=Math.floor(base*percent/100);
+  if(kind==='hp'&&row.vitalInputs.lifeSign)value+=250+Math.floor(base*.15);
+  return value;
+}
+
 const blocks = [];
 for (let start = 0; start < equipment.records.length; start += 100) blocks.push({ name: 'equipment ' + start, gearToAudit: equipment.records.slice(start, start + 100), souls: [], skills: [] });
 for (let start = 0; start < souls.records.length; start += 30) blocks.push({ name: 'Souls ' + start, gearToAudit: [], souls: souls.records.slice(start, start + 30), skills: [] });
@@ -172,7 +211,19 @@ for (const block of blocks) test('catalog differential: ' + block.name, async ({
     const weaponId=Number(equipped?.[0]?.[0]||0);
     const item=byRangeSlot.get(Math.floor(weaponId/10000)+'.'+(weaponId%10000));
     const expectedIndex=item?(['BOW','CROSSBOW'].includes(item.kind)?41:40):null;
+    // Source protocol inputs must still agree exactly. Never mask a change
+    // to equipment/attributes under the "new HP/MP" exception.
+    expect(observed.vitalInputs,observed.id+' HP/MP input parity').toEqual(source.vitalInputs);
     const normalized={...observed,values:observed.values.map(pair=>pair.slice())};
+    for(const [key,kind] of [['Status_6','hp'],['Status_7','mp']]){
+      const row=normalized.values.find(pair=>pair[0]===key);
+      const museum=source.values.find(pair=>pair[0]===key);
+      expect(row,observed.id+' vital DOM').toBeDefined();
+      expect(museum,observed.id+' preserved vital DOM').toBeDefined();
+      const actual=Number(row[1].replace(/,/g,''));
+      expect(actual,observed.id+' independently recomputed '+kind).toBe(currentServerVital(observed,kind));
+      row[1]=museum[1]; // only normalize source-verified class-vital differences
+    }
     for(const statIndex of [40,41]) {
       const key='Status_'+statIndex;
       const row=normalized.values.find(pair=>pair[0]===key);
