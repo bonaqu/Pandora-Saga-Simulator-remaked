@@ -124,3 +124,16 @@ test('published D1 class progression remains additive over all-class server coef
   });
   expect(result.hp-result.before).toBe(100);
 });
+
+test('direct game-client ELF Warrior lvl1 matches actual Modern current vitals 149 HP / 44 MP',async({page})=>{
+  await page.goto('/?ui=ru');
+  const output=await page.evaluate(()=>{
+    const api=window.PandoraRemaked.currentVitals;
+    const build={className:'WARRIOR',level:1,vit:5,spi:6,effects:[],clanLevel:0};
+    return {
+      hp:api.evaluate('hp',build).total,
+      mp:api.evaluate('mp',build).total
+    };
+  });
+  expect(output).toEqual({hp:149,mp:44});
+});
