@@ -128,5 +128,5 @@ test('source MP rounding matters: 53 SPR must floor from 1279.9 to 1279, not hal
   const record=clericObservation(classes,items,forth,souls);
   assert.equal(record.observed.nakedMp,1279);
   assert.equal(record.values.nakedMpPublicReferenceHalfEven,1280);
-  assert.equal(record.mpProvenanceComplete,false);
+  assert.equal(record.mpProvenanceComplete,true);
 });
