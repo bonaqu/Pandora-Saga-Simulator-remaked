@@ -137,3 +137,19 @@ test('direct game-client ELF Warrior lvl1 matches actual Modern current vitals 1
   });
   expect(output).toEqual({hp:149,mp:44});
 });
+
+test('real-client Warrior ring +1 VIT raises HP149->155 and level-1 +1 SPI raises MP44->46',async({page})=>{
+  await page.goto('/?ui=ru');
+  const result=await page.evaluate(()=>{
+    const api=window.PandoraRemaked.currentVitals;
+    const base={className:'WARRIOR',level:1,vit:5,spi:6,effects:[],clanLevel:0};
+    const naked={hp:api.evaluate('hp',base).total,mp:api.evaluate('mp',base).total};
+    const ring={hp:api.evaluate('hp',{...base,vit:6}).total,
+      mp:api.evaluate('mp',{...base,vit:6}).total};
+    const glasses={hp:api.evaluate('hp',{...base,vit:6,spi:7}).total,
+      mp:api.evaluate('mp',{...base,vit:6,spi:7}).total};
+    return {naked,ring,glasses};
+  });
+  expect(result).toEqual({naked:{hp:149,mp:44},ring:{hp:155,mp:44},
+    glasses:{hp:155,mp:46}});
+});
