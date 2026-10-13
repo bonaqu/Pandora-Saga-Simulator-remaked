@@ -24,24 +24,25 @@ test('all 14 labels and 14 hints have explicit expected identities', () => {
   }
   const result=inspectPotionLocalization(payload({...approved.game.ru}),approved);
   assert.deepEqual(result.summary,{
-    total:28,published:28,seededOrEquivalent:28,custom:0,resets:0,absent:0
+    total:28,visible:28,matchesApproved:28,differsApproved:0,absent:0
   });
-  assert.equal(result.isCompletePublicPublication,true);
+  assert.equal(result.isCompletePublicCoverage,true);
 });
 
-test('owner-edited D1 values, reset tombstone and unpublished draft are not misreported as seeded', () => {
+test('public effective text reflects differences, but cannot reveal resets or drafts', () => {
   const values={...approved.game.ru};
   values['calculator.potion.11']='Published owner choice';
-  values['calculator.potion.12']='';
+  // A reset tombstone is already projected to its baseline by publicLocalization().
+  values['calculator.potion.12']=approved.game.ru['calculator.potion.12'];
   delete values['calculator.potion.13'];
   const result=inspectPotionLocalization(payload(values),approved);
   assert.deepEqual(result.summary,{
-    total:28,published:26,seededOrEquivalent:25,custom:1,resets:1,absent:1
+    total:28,visible:27,matchesApproved:26,differsApproved:1,absent:1
   });
   assert.equal(result.isCompletePublicPublication,false);
   const byKey=Object.fromEntries(result.rows.map(row=>[row.key,row]));
-  assert.equal(byKey['calculator.potion.11'].status,'custom');
-  assert.equal(byKey['calculator.potion.12'].status,'reset');
+  assert.equal(byKey['calculator.potion.11'].status,'differs-approved');
+  assert.equal(byKey['calculator.potion.12'].status,'matches-approved');
   assert.equal(byKey['calculator.potion.13'].status,'absent');
   assert.ok(result.rows.every(row=>row.fallbackAvailable));
   assert.ok(!JSON.stringify(result).includes('Published owner choice'),
@@ -54,6 +55,7 @@ test('fail closed on malformed API response and absent approved defaults', () =>
   assert.throws(()=>inspectPotionLocalization(payload({}),null),/fallback/);
   const invalid={...approved.game.ru,'calculator.potion.11':null};
   assert.throws(()=>inspectPotionLocalization(payload(invalid),approved),/Invalid public/);
+  assert.throws(()=>inspectPotionLocalization(payload({...approved.game.ru,'calculator.potion.11':''}),approved),/Unexpected empty/);
   const missing={game:{ru:{...approved.game.ru}}};
   delete missing.game.ru['calculator.potion.6'];
   assert.throws(()=>inspectPotionLocalization(payload({}),missing),/Missing approved/);
