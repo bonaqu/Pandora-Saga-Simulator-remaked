@@ -36,7 +36,7 @@ function sourceId(record,id) {
 }
 function requiredEffect(effects,func) {
   if(!Array.isArray(effects))throw new Error('Source effect list is unavailable');
-  const matches=effects.filter(effect=>effect.func===func && effect.dir==='TARGET');
+  const matches=effects.filter(effect=>effect.func===func && (effect.dir==null || effect.dir==='TARGET'));
   if(matches.length!==1||!Number.isFinite(matches[0].a))
     throw new Error('Expected single source '+func+' target effect');
   return matches[0].a;
