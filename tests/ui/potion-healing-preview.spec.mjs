@@ -189,3 +189,36 @@ test('Modern distinguishes source-confirmed potions from archived-only rows and 
   await expect(page.locator('#ViewPOT_11_1')).toHaveAttribute('data-remaked-current-item','50004');
   await expect(page.locator('#ViewPOT_12_1')).toHaveAttribute('data-remaked-potion-evidence','historical');
 });
+
+
+test('all fourteen potion names and hints are visible in RU, while published D1 wins on the main label',async({page})=>{
+  await page.goto('/?ui=ru');
+  await page.locator('#EfTab_1').click();
+  const expected=[
+    'Мясо','Лёгкое исцеляющее зелье','Слабое исцеляющее зелье',
+    'Простое исцеляющее зелье','Особое исцеляющее зелье',
+    'Таинственное зелье','Подснежник','Цветок Пэнлай',
+    'Тыквенное печенье','Астирская конфета','Вкусное шампанское',
+    'Сильное исцеляющее зелье','Зелье жизни','Руна Тейваз'
+  ];
+  for(let index=0;index<expected.length;index++){
+    const label=page.locator('#ViewPOT_'+index+'_0');
+    await expect(label).toContainText(expected[index]);
+    await expect(label.locator('.help')).toHaveAttribute('title',/.+/);
+  }
+  await expect(page.locator('#ViewPOT_4_0 .help')).toHaveAttribute('title',/не подтверждён/);
+  const before=await page.evaluate(()=>Store());
+  await page.evaluate(()=>{
+    const locale={ru:{},en:{},jp:{},tw:{}};
+    const overrides={ui:structuredClone(locale),game:structuredClone(locale)};
+    overrides.game.ru['calculator.potion.11']='Мой опубликованный вариант';
+    overrides.game.ru['calculator.potion.11.hint']='Моё описание в D1';
+    PandoraRemaked.i18n.applyUnifiedLocalization({ok:true,schemaVersion:1,overrides});
+  });
+  await expect(page.locator('#ViewPOT_11_0')).toContainText('Мой опубликованный вариант');
+  await expect(page.locator('#ViewPOT_11_0 .help')).toHaveAttribute('title','Моё описание в D1');
+  expect(await page.evaluate(()=>Store())).toBe(before);
+  await page.evaluate(()=>PandoraRemaked.i18n.setLocale('en'));
+  await expect(page.locator('#ViewPOT_11_0')).toContainText('Rest POT');
+  expect(await page.evaluate(()=>Store())).toBe(before);
+});
