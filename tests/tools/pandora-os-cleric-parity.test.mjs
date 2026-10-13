@@ -3,13 +3,14 @@ import {readFileSync} from 'node:fs';
 import {test} from 'node:test';
 import {
   clericObservation,paladinObservation,elfWarriorCounterexample,
-  inspectLifeSkills
+  inspectLifeSkills,lifeSignProfilesMatch
 } from '../../scripts/audit_pandora_os_cleric_parity.mjs';
 
 const file = path=>JSON.parse(readFileSync(new URL('../../'+path,import.meta.url),'utf8'));
 const classes=file('tests/fixtures/pandora-os-classes-20261011.json');
 const items=file('admin-api/data/pandora-os-live-items-20261007.json');
 const forth=file('admin-api/data/pandora-os-live-item-forth-20261007.json');
+const lifeSign=file('tests/fixtures/pandora-os-life-sign-20261013.json');
 
 test('Cleric 45 reported naked 3145, geared 3402 and Life Mark 4127 all match source values',()=>{
   const result=clericObservation(classes,items,forth);
@@ -75,4 +76,20 @@ test('in-game buff identity must be verified against live skill funcs, never inf
   assert.equal(mock[0].available,true);
   assert.equal(mock[0].funcs[0].ep,'EP_MAXLIFE_CONST');
   assert.equal(mock[1].available,false);
+});
+
+test('live 13 October source: both Sign of Life variants really provide +250 flat and +15% HP',()=>{
+  assert.equal(lifeSign.captureDate,'2026-10-13');
+  assert.equal(lifeSignProfilesMatch(lifeSign.skills),true);
+  const records=inspectLifeSkills(lifeSign.skills);
+  assert.deepEqual(records.map(row=>row.id),['320005001','320005051']);
+  assert.deepEqual(records.map(row=>row.name),['Знак жизни','Знак жизни']);
+  for(const record of records){
+    assert.deepEqual(record.funcs.map(row=>[row.ep,row.fv1[3]]),
+      [['EP_MAXLIFE_CONST',250],['EP_MAXLIFE_SCALE',15]]);
+  }
+  const damaged=structuredClone(lifeSign.skills);
+  damaged['320005051'].funcs[1].fv1[3]=14;
+  assert.equal(lifeSignProfilesMatch(damaged),false);
+  assert.equal(lifeSignProfilesMatch({}),false);
 });
