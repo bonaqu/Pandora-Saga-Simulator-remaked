@@ -170,6 +170,12 @@ export function elfWarriorGameClientObservation(classes,items){
   const armorIds=['12001','13001','15061'];
   const pieces=armorIds.map(id=>sourceId(items?.[id],id));
   const sword=sourceId(items?.['21'],21);
+  const crystalRing=sourceId(items?.['19004'],19004);
+  const ringVit=requiredEffect(crystalRing.effects,'EP_VITARITY_CONST');
+  const ringMagicResist=requiredEffect(crystalRing.effects,'EP_MAGIC_RESISTANCE_CONST');
+  if(crystalRing.level!==1||!crystalRing.classes?.WARRIOR||ringVit!==1||ringMagicResist!==2||
+    crystalRing.effects.some(e=>/EP_MAX(LIFE|MANA)_/.test(e.func)))
+    throw Error('Level-1 Crystal Ring is no longer a clean +1 VIT control');
   const armorDefense=pieces.reduce((sum,item)=>sum+finiteNonnegative(item.AC,item.name+' defense'),0);
   const hasModifier=pieces.concat(sword).some(item=>(item.effects||[]).some(effect=>
     ['EP_VITARITY_CONST','EP_SPIRITUAL_CONST','EP_MAXLIFE_CONST',
@@ -187,6 +193,9 @@ export function elfWarriorGameClientObservation(classes,items){
     observed,values,itemsHaveNoHPMPModifiers:!hasModifier,
     exact:Object.keys(observed).every(key=>observed[key]===values[key])&&!hasModifier,
     previousWebCalculator:{hp:139,mp:45},
+    nextTest:{itemId:19004,itemName:crystalRing.name,requiredLevel:1,
+      vitAfter:vit+ringVit,hpAfter:Math.floor(cls.hp.base+cls.hp.lv*level+cls.hp.vit*(vit+ringVit)),
+      mpAfter:Math.floor(mpRaw),magicResistanceIncrease:ringMagicResist},
     note:'Public web calculator 139/45 is not a game-client observation; do not change actual class/race inputs to fit it.'};
 }
 
