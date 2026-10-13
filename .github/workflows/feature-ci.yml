@@ -234,6 +234,38 @@ jobs:
 
       - name: Verify all-gameplay-fields reference coverage offline
         run: node --test tests/tools/pandora-os-gameplay-reference.test.mjs
+      # One-off read-only production check. Close this PR without merging.
+      - name: One-off verify all published Russian potion labels and current calculator baselines
+        if: github.event_name == 'pull_request' && github.head_ref == 'audit/verify-potion-ru-prod-20261013'
+        continue-on-error: true
+        run: |
+          node --input-type=module <<'NODE'
+          const endpoint='https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/localization';
+          const r=await fetch(endpoint,{headers:{accept:'application/json'},signal:AbortSignal.timeout(20000)});
+          if(!r.ok)throw Error('Production D1 HTTP '+r.status);
+          const data=await r.json(),ru=data?.overrides?.game?.ru||{};
+          const ids=Array.from({length:14},(_,i)=>'calculator.potion.'+i);
+          console.log('LIVE_POTION_RU='+JSON.stringify({
+            status:r.status,ruNames:ids.map(id=>({id,name:ru[id]||null,hint:ru[id+'.hint']||null})),
+            matchingNames:ids.filter(id=>typeof ru[id]==='string'&&ru[id].trim()).length,
+            matchingHints:ids.filter(id=>typeof ru[id+'.hint']==='string'&&ru[id+'.hint'].trim()).length
+          }));
+          const jsResponse=await fetch('https://pandorasaga-os.com/assets/BuildCalculator-BiybySwQ.js',
+            {signal:AbortSignal.timeout(20000)});
+          if(!jsResponse.ok)throw Error('Calculator source '+jsResponse.status);
+          const js=await jsResponse.text(),needles=['ELF','WARRIOR','900020003','vit:','spi:','baseStats','raceStats','maxLifeConst'];
+          const excerpts={};
+          for(const token of needles){
+            excerpts[token]=[];let i=0;
+            while(excerpts[token].length<3){
+              const pos=js.indexOf(token,i);if(pos<0)break;
+              excerpts[token].push(js.slice(Math.max(0,pos-230),Math.min(js.length,pos+420)));
+              i=pos+token.length;
+            }
+          }
+          console.log('LIVE_CALCULATOR_RACE_CONTEXT='+JSON.stringify(excerpts));
+          NODE
+
       - name: Syntax-check core JavaScript
         if: needs.classify.outputs.docs_only != 'true' && needs.classify.outputs.translation_only != 'true' && needs.classify.outputs.catalog_data != 'true' && needs.classify.outputs.admin_only != 'true' && needs.classify.outputs.css_only != 'true'
         shell: bash
