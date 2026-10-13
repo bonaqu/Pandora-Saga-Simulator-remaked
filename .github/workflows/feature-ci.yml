@@ -230,9 +230,6 @@ jobs:
         run: node --test tests/tools/pandora-os-live-healing-inputs.test.mjs
       - name: Verify current-client Cleric and Paladin observational HP vectors
         run: node --test tests/tools/pandora-os-cleric-parity.test.mjs
-      - name: Capture current Pandora Saga OS Cleric and Life buff evidence (GET only)
-        if: github.event_name == 'pull_request' && github.head_ref == 'feature/current-cleric-vitals-evidence-20261013'
-        run: node scripts/audit_pandora_os_cleric_parity.mjs --live --strict --json
 
       - name: Verify bilingual current-source potion identities offline
         run: node --test tests/tools/pandora-os-bilingual-current.test.mjs
