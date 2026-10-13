@@ -86,8 +86,15 @@ test('direct game-client ELF Warrior lvl1 agrees on HP/MP, defense, attack, accu
   assert.equal(result.values.publicHalfEvenMp,45);
   assert.equal(result.itemsHaveNoHPMPModifiers,true);
   assert.deepEqual(result.previousWebCalculator,{hp:139,mp:45});
-  assert.deepEqual(result.nextTest,{itemId:19004,itemName:'Кольцо с кристаллом',
-    requiredLevel:1,vitAfter:6,hpAfter:155,mpAfter:44,magicResistanceIncrease:2});
+  assert.equal(result.ringParityExact,true);
+  assert.deepEqual(result.observedRingOn,{vit:6,hp:155,mp:44,magicResistance:2,
+    defense:12,accuracy:6,evasion:6,charmResistance:20,attackMin:9,attackMax:12});
+  assert.deepEqual(result.predictedRingOn,result.observedRingOn);
+  assert.deepEqual(result.nextTest,{itemId:11122,itemName:'Очки разума',
+    requiredLevel:1,spiAfter:7,hpAfter:149,mpAfter:46,
+    note:'Wear clean +1 SPI glasses without changing ring or other gear'});
+  assert.equal(items['11122'].effects.find(x=>x.func==='EP_SPIRITUAL_CONST').a,1);
+  assert.equal(items['19004'].effects.find(x=>x.func==='EP_MAGIC_RESISTANCE_CONST').a,2);
   const broken=structuredClone(items);
   broken['12001'].AC=7;
   assert.equal(elfWarriorGameClientObservation(classes,broken).exact,false);

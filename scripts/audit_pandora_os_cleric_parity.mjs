@@ -173,6 +173,11 @@ export function elfWarriorGameClientObservation(classes,items){
   const crystalRing=sourceId(items?.['19004'],19004);
   const ringVit=requiredEffect(crystalRing.effects,'EP_VITARITY_CONST');
   const ringMagicResist=requiredEffect(crystalRing.effects,'EP_MAGIC_RESISTANCE_CONST');
+  const mindGlasses=sourceId(items?.['11122'],11122);
+  const glassesSpi=requiredEffect(mindGlasses.effects,'EP_SPIRITUAL_CONST');
+  if(mindGlasses.level!==1||!mindGlasses.classes?.WARRIOR||glassesSpi!==1||
+    mindGlasses.effects.some(e=>/EP_MAX(LIFE|MANA)_/.test(e.func)))
+    throw Error('Level-1 Mind Glasses are no longer a clean +1 SPI control');
   if(crystalRing.level!==1||!crystalRing.classes?.WARRIOR||ringVit!==1||ringMagicResist!==2||
     crystalRing.effects.some(e=>/EP_MAX(LIFE|MANA)_/.test(e.func)))
     throw Error('Level-1 Crystal Ring is no longer a clean +1 VIT control');
@@ -192,10 +197,28 @@ export function elfWarriorGameClientObservation(classes,items){
       racialPassive:'Стойкость разума',armorIds:armorIds.map(Number),weaponId:21},
     observed,values,itemsHaveNoHPMPModifiers:!hasModifier,
     exact:Object.keys(observed).every(key=>observed[key]===values[key])&&!hasModifier,
+    ringParityExact:Object.entries({vit:vit+ringVit,
+      hp:Math.floor(cls.hp.base+cls.hp.lv*level+cls.hp.vit*(vit+ringVit)),
+      mp:Math.floor(mpRaw),magicResistance:ringMagicResist,defense:armorDefense,
+      accuracy:level+dex,evasion:level+agi,charmResistance:20,attackMin:sword.W,
+      attackMax:sword.W+Math.floor(str/2)}).every(([name,actual])=>({vit:6,hp:155,
+      mp:44,magicResistance:2,defense:12,accuracy:6,evasion:6,
+      charmResistance:20,attackMin:9,attackMax:12})[name]===actual),
     previousWebCalculator:{hp:139,mp:45},
-    nextTest:{itemId:19004,itemName:crystalRing.name,requiredLevel:1,
-      vitAfter:vit+ringVit,hpAfter:Math.floor(cls.hp.base+cls.hp.lv*level+cls.hp.vit*(vit+ringVit)),
-      mpAfter:Math.floor(mpRaw),magicResistanceIncrease:ringMagicResist},
+    // Screenshot pair 2026-10-13 21:26 MSK: ring off/on, no other changed
+    // equipment or buffs; HP 149->155, MP 44->44, magic resistance 0->2.
+    observedRingOn:{vit:6,hp:155,mp:44,magicResistance:2,defense:12,
+      accuracy:6,evasion:6,charmResistance:20,attackMin:9,attackMax:12},
+    predictedRingOn:{vit:vit+ringVit,
+      hp:Math.floor(cls.hp.base+cls.hp.lv*level+cls.hp.vit*(vit+ringVit)),
+      mp:Math.floor(mpRaw),magicResistance:ringMagicResist,defense:armorDefense,
+      accuracy:level+dex,evasion:level+agi,charmResistance:20,
+      attackMin:sword.W,attackMax:sword.W+Math.floor(str/2)},
+    nextTest:{itemId:11122,itemName:mindGlasses.name,requiredLevel:1,
+      spiAfter:spi+glassesSpi,
+      hpAfter:Math.floor(hpRaw),mpAfter:Math.floor(cls.mp.base+cls.mp.lv*level+
+        cls.mp.spi*(spi+glassesSpi)),
+      note:'Wear clean +1 SPI glasses without changing ring or other gear'},
     note:'Public web calculator 139/45 is not a game-client observation; do not change actual class/race inputs to fit it.'};
 }
 
@@ -254,7 +277,7 @@ async function main(args) {
     source:live?'LIVE HTTPS GET-only classes/items/souls/skills (dated forth registry)':'Dated classes 2026-10-11, items/forth/souls 2026-10-07',
     currentSkillEvidence:live?inspectLifeSkills(skills):'Not fetched in offline mode',
     cleric,paladin,elfWarrior,
-    assertable:cleric.exactHp&&cleric.exactNakedMp&&paladin.exactBuffDelta&&elfWarrior.exact&&(!live||lifeSkillsMatch),
+    assertable:cleric.exactHp&&cleric.exactNakedMp&&paladin.exactBuffDelta&&elfWarrior.exact&&elfWarrior.ringParityExact&&(!live||lifeSkillsMatch),
     warning:'Naked MP floor matches actual game, not public half-even reference. The 1505 equipped MP and all +4 gear SPR are now source-matched, including Necklace 20001 and Moonlight Wand 2621; racial baselines beyond Cleric remain unproven.'
   };
   if(args.includes('--json'))console.log(JSON.stringify(result,null,2));
