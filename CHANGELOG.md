@@ -1,5 +1,27 @@
 # Changelog
 
+## Modern 4.24 — русские названия эффектов зелий, 2026-10-13
+
+<!-- release-notes:user:ru -->
+- **Все 14 названий во вкладке «Эффекты зелий» теперь переведены на русский.** Подсказки поясняют исходное восстановление ОЗ/ОМ.
+- Для четырёх позиций из старого калькулятора отдельно указано, что их соответствие текущим игровым предметам ещё не подтверждено. Твои переводы, сохранённые в редакторе сайта, сохраняют приоритет.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **All 14 Potion Effects names now display in Russian** when using the RU interface, with updated base-healing descriptions.
+- Four legacy-only entries are clearly marked as unverified for the current game. Existing custom translations remain authoritative.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- 28 русских строк (14 названий и 14 подсказок) добавлены в единую систему локализации и опубликованы через безопасную добавочную миграцию D1. Пользовательские публикации, сбросы и незавершённые черновики не перезаписываются; подтверждены тестами SQLite и браузера.
+- Числовые формулы, свойства персонажей, замороженный Legacy и сохранённые билды не изменялись.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Seed 28 RU game-translation records through an additive D1 migration and approved fallback, preserving existing publications, reset tombstones and drafts. Cover editor-first precedence and user-facing labels in regression tests.
+- Character formulas, frozen Legacy and saved builds are unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 4.23 — уточнение эффектов зелий, 2026-10-12
 
 <!-- release-notes:user:ru -->
