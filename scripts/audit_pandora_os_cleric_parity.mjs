@@ -22,7 +22,8 @@ const SOURCE='https://pandorasaga-os.com/gamedata/';
 const FIXTURES={
   classes:'tests/fixtures/pandora-os-classes-20261011.json',
   items:'admin-api/data/pandora-os-live-items-20261007.json',
-  forth:'admin-api/data/pandora-os-live-item-forth-20261007.json'
+  forth:'admin-api/data/pandora-os-live-item-forth-20261007.json',
+  souls:'admin-api/data/pandora-os-live-souls-20261007.json'
 };
 
 function finiteNonnegative(value,label) {
@@ -47,7 +48,7 @@ function requiredEffect(effects,func) {
  * then class HP, source flat HP gear, then +250 + floor(15% of class HP).
  * No other modifier is implicitly assumed or silently imported.
  */
-export function clericObservation(classes,items,forth){
+export function clericObservation(classes,items,forth,souls){
   const cls=classes?.CLERIC;
   if (!cls)throw new Error('CLERIC source coefficients missing');
   const shield=sourceId(items?.['17034'],17034);
@@ -55,7 +56,10 @@ export function clericObservation(classes,items,forth){
   const vitBonus=requiredEffect(shield.effects,'EP_VITARITY_CONST');
   const bootsBase=requiredEffect(boots.effects,'EP_MAXLIFE_CONST');
   const bootsFourth=requiredEffect(forth?.['15004']?.['4'],'EP_MAXLIFE_CONST');
-  const naked=currentClassBaseHpMp(cls,{level:45,vit:49,spi:41});
+  // User confirmed effective no-gear SPR 53 = 41 assigned +12 learned
+  // Prayer/Blessing branch points. 41 is NOT the naked current-client SPR.
+  const nakedRawMp=cls.mp.base+45*cls.mp.lv+53*cls.mp.spi;
+  const naked=currentClassBaseHpMp(cls,{level:45,vit:49,spi:53});
   const gearedClass=currentClassBaseHpMp(cls,{
     level:45,vit:49+vitBonus,spi:41+16
   });
@@ -64,19 +68,57 @@ export function clericObservation(classes,items,forth){
   const buffFlat=250,buffPercent=15;
   const buffContribution=buffFlat+Math.floor(gearedClass.hp*buffPercent/100);
   const buffedHp=equippedHp+buffContribution;
-  const unexplainedEquippedMp=1505-gearedClass.mp;
+  // Current item/soul registry, with exact IDs and separate modifier types.
+  const pants=sourceId(items?.['13102'],13102);
+  const belt=sourceId(items?.['21011'],21011);
+  const necklace=sourceId(items?.['20011'],20011);
+  const gloves=sourceId(items?.['14617'],14617);
+  const robe=sourceId(items?.['12116'],12116);
+  const crown=sourceId(items?.['11081'],11081);
+  const highSoul=sourceId(souls?.['104002'],104002);
+  if (!Array.isArray(highSoul.effects) || !highSoul.slots?.includes('gloves'))
+    throw Error('Expected valid High Soul for gloves');
+  const highMp=highSoul.effects.filter(e=>e.func==='EP_MAXMANA_SCALE'&&e.dir==='SELF');
+  const highSpi=highSoul.effects.filter(e=>e.func==='EP_SPIRITUAL_CONST'&&e.dir==='SELF');
+  if (highMp.length!==1||highMp[0].a!==8||highSpi.length!==1||highSpi[0].a!==1)
+    throw Error('High Soul current effect has changed');
+  const knownFlatMp=requiredEffect(pants.effects,'EP_MAXMANA_CONST')+
+    requiredEffect(belt.effects,'EP_MAXMANA_CONST');
+  const knownSpiGear=requiredEffect(pants.effects,'EP_SPIRITUAL_CONST')+
+    requiredEffect(necklace.effects,'EP_SPIRITUAL_CONST')+highSpi[0].a;
+  // Both percent-base and percent-after-flats are candidates: the client
+  // application stage has NOT been proven by this one equipped screenshot.
+  const sourcePercent=highMp[0].a;
+  const percentOnClassBase=Math.floor(gearedClass.mp*sourcePercent/100);
+  const percentAfterKnownFlats=Math.floor((gearedClass.mp+knownFlatMp)*sourcePercent/100);
+  const explainedMpWithBasePercent=gearedClass.mp+knownFlatMp+percentOnClassBase;
+  const explainedMpWithPostFlatPercent=gearedClass.mp+knownFlatMp+percentAfterKnownFlats;
+  const listedNonManaItems=[gloves,robe,crown];
+  for (const item of listedNonManaItems)
+    if ((item.effects||[]).some(e=>e.func==='EP_MAXMANA_CONST'||e.func==='EP_MAXMANA_SCALE'))
+      throw Error('Previously non-mana current-source item now grants MP: '+item.id);
   return {
     inputs:{race:'ELF',class:'CLERIC',level:45,passive:'Nature Harmony',
-      nakedVit:49,gearedVit:49+vitBonus,nakedSpi:41,gearedSpi:57,
+      nakedVit:49,gearedVit:49+vitBonus,underlyingSpi:41,prayerBranchSpi:12,nakedSpi:53,gearedSpi:57,
       shieldId:17034,bootsId:15004,bootsPlus:4,
       bootsBaseHp:bootsBase,bootsFourthHp:bootsFourth,
+      knownManaItems:[13102,21011,104002],nonManaItems:[14617,12116,11081],
       buffSkillSourceIds:[320005001,320005051],buffFlat,buffPercent},
-    values:{nakedHp:naked.hp,nakedMp:naked.mp,gearedClassHp:gearedClass.hp,
-      gearedClassMp:gearedClass.mp,bootsHp,equippedHp,buffContribution,buffedHp,
-      observedEquippedMp:1505,mpDeltaNotYetIdentified:unexplainedEquippedMp},
-    observed:{nakedHp:3145,equippedHp:3402,buffedHp:4127,equippedMp:1505},
+    values:{nakedHp:naked.hp,nakedMp:Math.floor(nakedRawMp),
+      nakedMpRaw:nakedRawMp,nakedMpPublicReferenceHalfEven:naked.mp,
+      gearedClassHp:gearedClass.hp,gearedClassMp:gearedClass.mp,
+      bootsHp,equippedHp,buffContribution,buffedHp,
+      knownFlatMp,sourceHighSoulPercent:sourcePercent,percentOnClassBase,
+      percentAfterKnownFlats,
+      explainedMpWithBasePercent,explainedMpWithPostFlatPercent,
+      remainingMpIfBasePercent:1505-explainedMpWithBasePercent,
+      remainingMpIfPostFlatPercent:1505-explainedMpWithPostFlatPercent,
+      sourcedGearSpi:knownSpiGear,additionalGearSpiNotYetSourced:57-53-knownSpiGear,
+      observedEquippedMp:1505},
+    observed:{nakedHp:3145,nakedMp:1279,equippedHp:3402,buffedHp:4127,equippedMp:1505},
+    exactNakedMp:Math.floor(nakedRawMp)===1279&&naked.mp!==1279,
     exactHp: naked.hp===3145&&equippedHp===3402&&buffedHp===4127,
-    mpProvenanceComplete:unexplainedEquippedMp===0,
+    mpProvenanceComplete:1505===explainedMpWithBasePercent&&knownSpiGear===4,
     calculationStage:'diagnostic only; 15% applied to class base before boots HP',
     gameClientRoundingProvenAcrossAllClasses:false
   };
@@ -163,17 +205,18 @@ async function main(args) {
   const classes=live?await fetchJson('classes'):fixtures.classes;
   const items=live?await fetchJson('items'):fixtures.items;
   const skills=live?await fetchJson('skills'):null;
-  const cleric=clericObservation(classes,items,fixtures.forth);
+  const souls=live?await fetchJson('souls'):fixtures.souls;
+  const cleric=clericObservation(classes,items,fixtures.forth,souls);
   const paladin=paladinObservation(classes);
   const counterexample=elfWarriorCounterexample(classes);
   const lifeSkillsMatch=live?lifeSignProfilesMatch(skills):null;
   const result={
     lifeSkillsMatch,
-    source:live?'LIVE HTTPS GET-only classes/items/skills':'Dated classes 2026-10-11, items/forth 2026-10-07',
+    source:live?'LIVE HTTPS GET-only classes/items/souls/skills (dated forth registry)':'Dated classes 2026-10-11, items/forth/souls 2026-10-07',
     currentSkillEvidence:live?inspectLifeSkills(skills):'Not fetched in offline mode',
     cleric,paladin,counterexample,
-    assertable:cleric.exactHp&&paladin.exactBuffDelta&&counterexample.hpMismatch&&(!live||lifeSkillsMatch),
-    warning:'Observed phase composition is not yet a validated engine implementation, no mechanics/data/build writes are performed.'
+    assertable:cleric.exactHp&&cleric.exactNakedMp&&paladin.exactBuffDelta&&counterexample.hpMismatch&&(!live||lifeSkillsMatch),
+    warning:'Naked MP floor matches actual game, not public half-even reference; High Soul +8% explains some MP, but unknown source slots/buffs remain. No mechanics/data/build writes.'
   };
   if(args.includes('--json'))console.log(JSON.stringify(result,null,2));
   else console.log(JSON.stringify({
