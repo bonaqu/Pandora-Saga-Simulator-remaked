@@ -3,12 +3,12 @@
 ## Modern 4.25 — актуальные ОЗ и ОМ по данным Pandora Saga OS, 2026-10-13
 
 <!-- release-notes:user:ru -->
-- **Расчёт ОЗ и ОМ обновлён для всех 28 классов:** теперь используется актуальная классовая прогрессия Pandora Saga OS вместо устаревших коэффициентов старого симулятора.
+- **Расчёт ОЗ и ОМ обновлён для всех 28 классов:** теперь используются актуальные игровые коэффициенты вместо устаревших значений старого симулятора.
 - Исправлен порядок расчёта бонусов ОЗ и ОМ от экипировки и усиления «Знак жизни»: процент считается от классовых характеристик отдельно от фиксированных прибавок.
 <!-- /release-notes:user:ru -->
 
 <!-- release-notes:user:en -->
-- **HP and MP now use current Pandora Saga OS progression coefficients for all 28 classes** rather than historical values from the preserved calculator.
+- **HP and MP now use current in-game progression coefficients for all 28 classes** rather than historical values from the preserved calculator.
 - Equipment percentage bonuses and the Sign of Life buff now scale the class base separately from flat HP/MP bonuses.
 <!-- /release-notes:user:en -->
 
