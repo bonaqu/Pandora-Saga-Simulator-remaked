@@ -52,9 +52,9 @@ test('Cleric item identities and +4 boot fourth increments come from original ga
   assert.equal(forth['15004']['6'].find(row=>row.func==='EP_MAXLIFE_CONST').a,195);
   const broken=JSON.parse(JSON.stringify(items));
   broken['17034'].effects[0].a=2;
-  assert.equal(clericObservation(classes,broken,forth).exactHp,false);
+  assert.equal(clericObservation(classes,broken,forth,souls).exactHp,false);
   delete broken['15004'];
-  assert.throws(()=>clericObservation(classes,broken,forth),/Missing or invalid source item/);
+  assert.throws(()=>clericObservation(classes,broken,forth,souls),/Missing or invalid source item/);
 });
 
 test('Paladin 45 +1461 LP is reproduced with class VIT101 and 250+15% phase, without inventing naked VIT',()=>{
