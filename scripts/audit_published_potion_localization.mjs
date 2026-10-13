@@ -3,11 +3,12 @@
  * GET-only post-deploy audit of the 14 Potion Effects labels + 14 hints.
  *
  * A successful D1 migration is not proof that every row was published:
- * an owner's draft can intentionally prevent seeding, an owner's reset can
- * preserve a tombstone, and an already-published custom text must win.
+ * an owner's draft can intentionally prevent seeding, an owner's reset may
+ * project to its baseline, and an already-published custom text must win.
  *
- * Do not modify D1 or pretend that a missing public override is a published
- * translation. The approved local RU fallback is checked independently.
+ * The public API merges legacy values and projects reset tombstones to
+ * approved baselines: it cannot reveal precise storage provenance.
+ * Do not modify D1 or count a missing public key as a publication.
  */
 import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
@@ -29,8 +30,8 @@ export function inspectPotionLocalization(payload, approved) {
   if (!fallback || Array.isArray(fallback) || typeof fallback !== 'object')
     throw new Error('Approved RU fallback is missing');
 
-  const summary = {total: POTION_KEYS.length, published: 0,
-    seededOrEquivalent: 0, custom: 0, resets: 0, absent: 0};
+  const summary = {total: POTION_KEYS.length, visible: 0,
+    matchesApproved: 0, differsApproved: 0, absent: 0};
   const rows = POTION_KEYS.map((key) => {
     if (typeof fallback[key] !== 'string' || !fallback[key].trim())
       throw new Error('Missing approved RU potion fallback: ' + key);
@@ -40,27 +41,26 @@ export function inspectPotionLocalization(payload, approved) {
       throw new Error('Invalid public D1 potion value: ' + key);
     let status;
     if (!present) { status = 'absent'; summary.absent++; }
-    else if (text === '') { status = 'reset'; summary.resets++; }
+    else if (!text) throw new Error('Unexpected empty effective public potion value: ' + key);
     else if (text === fallback[key]) {
-      status = 'seeded-or-equivalent'; summary.seededOrEquivalent++;
-      summary.published++;
-    } else { status = 'custom'; summary.custom++; summary.published++; }
+      status = 'matches-approved'; summary.matchesApproved++; summary.visible++;
+    } else { status = 'differs-approved'; summary.differsApproved++; summary.visible++; }
     // Deliberately omit all owner-edited contents from CI logs.
     return {key, status, fallbackAvailable: true};
   });
   return {
     source: 'public D1 localization GET',
     checked: '14 Potion Effects labels and 14 hint keys',
-    ownerEditsPreserved: true,
-    isCompletePublicPublication: summary.published === summary.total,
-    disclaimer: 'absent may be an intentional unpublished draft; reset is an intentional tombstone; approved fallback does not imply D1 publication',
+    readOnly: true,
+    isCompletePublicCoverage: summary.visible === summary.total,
+    disclaimer: 'This public API exposes effective text, not publication provenance: reset tombstones can look identical to seeded baselines, legacy values can be folded in, and absent keys may be protected drafts. Approved fallback is not proof of D1 publication.',
     summary, rows
   };
 }
 
 async function main(args) {
-  if (args.some(arg => !['--json', '--require-all-published'].includes(arg)))
-    throw new Error('Usage: node scripts/audit_published_potion_localization.mjs [--json] [--require-all-published]');
+  if (args.some(arg => !['--json', '--require-all-visible'].includes(arg)))
+    throw new Error('Usage: node scripts/audit_published_potion_localization.mjs [--json] [--require-all-visible]');
   const approved = JSON.parse(await readFile(
     new URL('../localization/approved-translations.v1.json', import.meta.url), 'utf8'));
   const response = await fetch(PUBLIC_LOCALIZATION_URL, {
@@ -71,12 +71,12 @@ async function main(args) {
   const audit = inspectPotionLocalization(await response.json(), approved);
   if (args.includes('--json')) console.log(JSON.stringify(audit, null, 2));
   else {
-    console.log('Potion RU D1 publication:', JSON.stringify(audit.summary));
-    for (const row of audit.rows.filter(row => row.status !== 'seeded-or-equivalent'))
+    console.log('Potion RU public effective coverage:', JSON.stringify(audit.summary));
+    for (const row of audit.rows.filter(row => row.status !== 'matches-approved'))
       console.log(row.key + ': ' + row.status);
   }
-  if (args.includes('--require-all-published') && !audit.isCompletePublicPublication) {
-    console.error('Not all 28 RU keys are currently published in D1; see protected draft/reset statuses.');
+  if (args.includes('--require-all-visible') && !audit.isCompletePublicCoverage) {
+    console.error('Not all 28 RU keys are visible in the public response; inspect D1 drafts/overrides separately.');
     process.exitCode = 1;
   }
 }
