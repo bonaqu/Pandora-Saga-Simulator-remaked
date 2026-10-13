@@ -129,5 +129,5 @@ jobs:
           }
           console.log('D1 approved Honor localization: 13 names and 13 hints verified');
           NODE
-      - name: Report published Potion Effects D1 localization without overwriting owner edits
+      - name: Report effective public Potion Effects translations without editing D1
         run: node scripts/audit_published_potion_localization.mjs --json
