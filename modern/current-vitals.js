@@ -97,7 +97,7 @@
     var text=document.getElementById(life ? 'Status_6' : 'Status_7');
     if (!text) throw new Error('Missing HP/MP output');
     window.Status[life ? 'LP' : 'MP']=result.total;
-    text.textContent=typeof window.addFigure==='function'
+    text.innerHTML=typeof window.addFigure==='function'
       ? window.addFigure(result.total) : String(result.total);
     return result;
   }
