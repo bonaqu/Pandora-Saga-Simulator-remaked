@@ -26,6 +26,7 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
       - run: npm run test:admin
+      - run: node --test tests/tools/published-potion-localization.test.mjs
       - run: node --check scripts/create_first_admin.mjs
       - run: npm run admin:check
 
@@ -128,3 +129,5 @@ jobs:
           }
           console.log('D1 approved Honor localization: 13 names and 13 hints verified');
           NODE
+      - name: Report effective public Potion Effects translations without editing D1
+        run: node scripts/audit_published_potion_localization.mjs --json
