@@ -14,6 +14,25 @@
   if (!current || order.length !== 28 || order.some(function (name) {
     return !current[name] || !current[name].hp || !current[name].mp;
   })) throw new Error('Modern current-server HP/MP coefficients are unavailable');
+  // Preserve the difference between the original class protocol and an
+  // explicitly published D1 class progression. Source values replace stale
+  // starting coefficients; owner-edited changes still take effect.
+  var historicalMods=window.Status.Mod.map(function (row) {return row.slice();});
+  if (historicalMods.length!==28) throw new Error('Unexpected legacy class indexing');
+  function publishedClassAdjustment(index,kind,level,ability) {
+    var original=historicalMods[index],published=window.Status.Mod[index];
+    if (!original || !published) throw new Error('Missing source class mapping');
+    var fields=kind==='hp' ? [0,2,4] : [1,3,5];
+    var base=fields[0],growth=fields[1],attribute=fields[2];
+    if (published[growth]<=0 || published[attribute]<=0 ||
+        original[growth]<=0 || original[attribute]<=0)
+      throw new Error('Invalid current class progression override');
+    return Math.round(
+      (published[base]-original[base])*100 +
+      level*(100/published[growth]-100/original[growth])*100 +
+      ability*(100/published[attribute]-100/original[attribute])*100
+    );
+  }
 
   // Current game client: each class base is truncated downward. Integer-cents
   // arithmetic keeps 1279.9 stable across browsers and avoids float drift.
@@ -22,12 +41,12 @@
       throw new Error('Unsupported current-server coefficient');
     return Math.round(value * 100);
   }
-  function baseFor(cls, kind, level, ability) {
+  function baseFor(cls, kind, level, ability, adjustmentCents) {
     var coeff = cls[kind];
     if (!Number.isInteger(level) || level < 1 || !Number.isFinite(ability) || ability < 0)
       throw new Error('Invalid character HP/MP input');
     var cents = hundredths(coeff.base) + level * hundredths(coeff.lv) +
-      ability * hundredths(kind === 'hp' ? coeff.vit : coeff.spi);
+      ability * hundredths(kind === 'hp' ? coeff.vit : coeff.spi) + (adjustmentCents || 0);
     return Math.floor(cents / 100);
   }
   function attributes() {
@@ -68,7 +87,7 @@
   function calculate(kind,params) {
     if (!params || !current[params.className]) throw new Error('Unknown class in Modern HP/MP');
     var base = baseFor(current[params.className],kind,params.level,
-      kind === 'hp' ? params.vit : params.spi);
+      kind === 'hp' ? params.vit : params.spi,params.adjustmentCents);
     return {
       base: base,
       bonus: modifierBonus(kind,base,params.effects,{
@@ -92,7 +111,9 @@
       className:cls,level:Number(window.Status.Lev[0]),vit:attr.vit,spi:attr.spi,
       effects:window.EquipOpt && window.EquipOpt[life ? 6 : 7],
       clanLevel:select ? select.selectedIndex : 0,
-      lifeSign:life && Boolean(window.Flag['14_1'])
+      lifeSign:life && Boolean(window.Flag['14_1']),
+      adjustmentCents:publishedClassAdjustment(Number(window.Status.Job[2]),kind,
+        Number(window.Status.Lev[0]),life ? attr.vit : attr.spi)
     });
     var text=document.getElementById(life ? 'Status_6' : 'Status_7');
     if (!text) throw new Error('Missing HP/MP output');
