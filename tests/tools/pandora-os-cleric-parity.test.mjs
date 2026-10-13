@@ -10,10 +10,11 @@ const file = path=>JSON.parse(readFileSync(new URL('../../'+path,import.meta.url
 const classes=file('tests/fixtures/pandora-os-classes-20261011.json');
 const items=file('admin-api/data/pandora-os-live-items-20261007.json');
 const forth=file('admin-api/data/pandora-os-live-item-forth-20261007.json');
+const souls=file('admin-api/data/pandora-os-live-souls-20261007.json');
 const lifeSign=file('tests/fixtures/pandora-os-life-sign-20261013.json');
 
 test('Cleric 45 reported naked 3145, geared 3402 and Life Mark 4127 all match source values',()=>{
-  const result=clericObservation(classes,items,forth);
+  const result=clericObservation(classes,items,forth,souls);
   assert.equal(result.exactHp,true);
   assert.equal(result.values.nakedHp,3145);
   assert.equal(result.values.gearedClassHp,3172);
@@ -23,9 +24,21 @@ test('Cleric 45 reported naked 3145, geared 3402 and Life Mark 4127 all match so
   assert.equal(result.values.buffedHp,4127);
   assert.equal(result.inputs.vitBonus,undefined);
   assert.equal(result.inputs.gearedVit,50);
-  assert.equal(result.values.nakedMp,1159);
+  assert.equal(result.inputs.nakedSpi,53);
+  assert.equal(result.values.nakedMp,1279);
+  assert.equal(result.values.nakedMpPublicReferenceHalfEven,1280);
+  assert.equal(result.exactNakedMp,true);
   assert.equal(result.values.gearedClassMp,1320);
-  assert.equal(result.values.mpDeltaNotYetIdentified,185);
+  assert.equal(result.values.knownFlatMp,30);
+  assert.equal(result.values.sourceHighSoulPercent,8);
+  assert.equal(result.values.percentOnClassBase,105);
+  assert.equal(result.values.percentAfterKnownFlats,108);
+  assert.equal(result.values.explainedMpWithBasePercent,1455);
+  assert.equal(result.values.explainedMpWithPostFlatPercent,1458);
+  assert.equal(result.values.remainingMpIfBasePercent,50);
+  assert.equal(result.values.remainingMpIfPostFlatPercent,47);
+  assert.equal(result.values.sourcedGearSpi,3);
+  assert.equal(result.values.additionalGearSpiNotYetSourced,1);
   assert.equal(result.mpProvenanceComplete,false);
   assert.equal(result.gameClientRoundingProvenAcrossAllClasses,false);
 });
@@ -92,4 +105,28 @@ test('live 13 October source: both Sign of Life variants really provide +250 fla
   damaged['320005051'].funcs[1].fv1[3]=14;
   assert.equal(lifeSignProfilesMatch(damaged),false);
   assert.equal(lifeSignProfilesMatch({}),false);
+});
+
+test('High Soul 104002 glove-only +8% MP and +1 SPR are source-identified',()=>{
+  assert.equal(souls['104002'].name,'Высокая душа');
+  assert.deepEqual(souls['104002'].slots,['gloves']);
+  assert.ok(souls['104002'].effects.some(x=>x.func==='EP_MAXMANA_SCALE'&&x.dir==='SELF'&&x.a===8));
+  assert.ok(souls['104002'].effects.some(x=>x.func==='EP_SPIRITUAL_CONST'&&x.dir==='SELF'&&x.a===1));
+  assert.equal(items['13102'].effects.find(x=>x.func==='EP_MAXMANA_CONST').a,10);
+  assert.equal(items['21011'].effects.find(x=>x.func==='EP_MAXMANA_CONST').a,20);
+  assert.equal(items['20011'].effects.find(x=>x.func==='EP_SPIRITUAL_CONST').a,1);
+  const broken=structuredClone(souls);
+  broken['104002'].effects.find(x=>x.func==='EP_MAXMANA_SCALE').a=9;
+  assert.throws(()=>clericObservation(classes,items,forth,broken),/High Soul current effect has changed/);
+});
+
+test('source MP rounding matters: 53 SPR must floor from 1279.9 to 1279, not halfEven 1280',()=>{
+  const cls=classes.CLERIC;
+  const value=cls.mp.base+cls.mp.lv*45+cls.mp.spi*53;
+  assert.ok(value>1279.8&&value<1280);
+  assert.equal(Math.floor(value),1279);
+  const record=clericObservation(classes,items,forth,souls);
+  assert.equal(record.observed.nakedMp,1279);
+  assert.equal(record.values.nakedMpPublicReferenceHalfEven,1280);
+  assert.equal(record.mpProvenanceComplete,false);
 });
