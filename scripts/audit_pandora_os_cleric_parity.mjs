@@ -72,6 +72,7 @@ export function clericObservation(classes,items,forth,souls){
   const pants=sourceId(items?.['13102'],13102);
   const belt=sourceId(items?.['21011'],21011);
   const necklace=sourceId(items?.['20001'],20001);
+  const moonlightWand=sourceId(items?.['2621'],2621);
   const gloves=sourceId(items?.['14617'],14617);
   const robe=sourceId(items?.['12116'],12116);
   const crown=sourceId(items?.['11081'],11081);
@@ -85,7 +86,8 @@ export function clericObservation(classes,items,forth,souls){
   const knownFlatMp=requiredEffect(pants.effects,'EP_MAXMANA_CONST')+
     requiredEffect(belt.effects,'EP_MAXMANA_CONST')+
     requiredEffect(necklace.effects,'EP_MAXMANA_CONST');
-  const knownSpiGear=requiredEffect(pants.effects,'EP_SPIRITUAL_CONST')+highSpi[0].a;
+  const knownSpiGear=requiredEffect(pants.effects,'EP_SPIRITUAL_CONST')+
+    highSpi[0].a+requiredEffect(moonlightWand.effects,'EP_SPIRITUAL_CONST');
   // Both percent-base and percent-after-flats are candidates: the client
   // application stage has NOT been proven by this one equipped screenshot.
   const sourcePercent=highMp[0].a;
@@ -102,7 +104,8 @@ export function clericObservation(classes,items,forth,souls){
       nakedVit:49,gearedVit:49+vitBonus,underlyingSpi:41,prayerBranchSpi:12,nakedSpi:53,gearedSpi:57,
       shieldId:17034,bootsId:15004,bootsPlus:4,
       bootsBaseHp:bootsBase,bootsFourthHp:bootsFourth,
-      knownManaItems:[13102,21011,20001,104002],nonManaItems:[14617,12116,11081],
+      knownManaItems:[13102,21011,20001,104002],knownSpiWeaponId:2621,
+      knownSpiWeaponLevel:moonlightWand.level,nonManaItems:[14617,12116,11081],
       buffSkillSourceIds:[320005001,320005051],buffFlat,buffPercent},
     values:{nakedHp:naked.hp,nakedMp:Math.floor(nakedRawMp),
       nakedMpRaw:nakedRawMp,nakedMpPublicReferenceHalfEven:naked.mp,
@@ -118,7 +121,7 @@ export function clericObservation(classes,items,forth,souls){
     observed:{nakedHp:3145,nakedMp:1279,equippedHp:3402,buffedHp:4127,equippedMp:1505},
     exactNakedMp:Math.floor(nakedRawMp)===1279&&naked.mp!==1279,
     exactHp: naked.hp===3145&&equippedHp===3402&&buffedHp===4127,
-    mpProvenanceComplete:1505===explainedMpWithBasePercent,
+    mpProvenanceComplete:1505===explainedMpWithBasePercent&&knownSpiGear===4,
     calculationStage:'diagnostic only; 15% applied to class base before boots HP',
     gameClientRoundingProvenAcrossAllClasses:false
   };
@@ -216,7 +219,7 @@ async function main(args) {
     currentSkillEvidence:live?inspectLifeSkills(skills):'Not fetched in offline mode',
     cleric,paladin,counterexample,
     assertable:cleric.exactHp&&cleric.exactNakedMp&&paladin.exactBuffDelta&&counterexample.hpMismatch&&(!live||lifeSkillsMatch),
-    warning:'Naked MP floor matches actual game, not public half-even reference. The 1505 equipped MP total is fully decomposed with necklace ID 20001, but the source of two effective SPI points still needs proof.'
+    warning:'Naked MP floor matches actual game, not public half-even reference. The 1505 equipped MP and all +4 gear SPR are now source-matched, including Necklace 20001 and Moonlight Wand 2621; racial baselines beyond Cleric remain unproven.'
   };
   if(args.includes('--json'))console.log(JSON.stringify(result,null,2));
   else console.log(JSON.stringify({

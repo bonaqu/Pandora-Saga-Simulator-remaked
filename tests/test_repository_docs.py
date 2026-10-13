@@ -1,5 +1,8 @@
+import json
 import pathlib
 import unittest
+
+from scripts.build_pages import _read_latest_release
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
@@ -52,6 +55,12 @@ class RepositoryDocsTests(unittest.TestCase):
         changelog = self.read("CHANGELOG.md")
         latest = changelog.split("\n## Modern ", 2)[1]
         blocked = ("Pandora Saga OS", "itemForth", "unison", "gamedata/", ".json")
+        # CI validates the COMPLETE generated public release payload,
+        # including the heading-derived title, not only player bullet markers.
+        # A previous release passed local checks but failed production deploy.
+        published = json.dumps(_read_latest_release(ROOT), ensure_ascii=False)
+        for token in blocked:
+            self.assertNotIn(token, published, "public release payload: " + token)
         # Development notes ARE supposed to name code, files and APIs.
         # Restrict the audience-leak check to the user-only release markers.
         for lang in ("ru", "en"):
