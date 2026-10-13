@@ -155,12 +155,39 @@ export function paladinObservation(classes) {
   };
 }
 
-export function elfWarriorCounterexample(classes) {
-  const warrior=currentClassBaseHpMp(classes?.WARRIOR,{level:1,vit:5,spi:6});
-  return {input:'ELF/Warrior level 1 with historical starting VIT5/SPI6',
-    sourceProjection:warrior,observedPublicCalculator:{hp:139,mp:45},
-    hpMismatch:warrior.hp!==139,
-    note:'The race/class baseline or another modifier is not yet proven; do not apply this as a universal HP correction.'};
+/**
+ * Direct in-game character snapshot, 2026-10-13. Previously this case was
+ * mislabeled as a mismatch because a public *web* calculator showed 139/45.
+ * The actual game reports 149/44 at VIT5 and SPI6.
+ */
+export function elfWarriorGameClientObservation(classes,items){
+  const cls=classes?.WARRIOR;
+  if(!cls)throw new Error('WARRIOR class coefficients unavailable');
+  const vit=5,spi=6,level=1,str=6,dex=5,agi=5,int=7;
+  const hpRaw=cls.hp.base+cls.hp.lv*level+cls.hp.vit*vit;
+  const mpRaw=cls.mp.base+cls.mp.lv*level+cls.mp.spi*spi;
+  const warrior=currentClassBaseHpMp(cls,{level,vit,spi});
+  const armorIds=['12001','13001','15061'];
+  const pieces=armorIds.map(id=>sourceId(items?.[id],id));
+  const sword=sourceId(items?.['21'],21);
+  const armorDefense=pieces.reduce((sum,item)=>sum+finiteNonnegative(item.AC,item.name+' defense'),0);
+  const hasModifier=pieces.concat(sword).some(item=>(item.effects||[]).some(effect=>
+    ['EP_VITARITY_CONST','EP_SPIRITUAL_CONST','EP_MAXLIFE_CONST',
+     'EP_MAXMANA_CONST','EP_MAXLIFE_SCALE','EP_MAXMANA_SCALE'].includes(effect.func)));
+  const observed={hp:149,mp:44,attackMin:9,attackMax:12,
+    defense:12,accuracy:6,evasion:6,charmResist:20};
+  const values={hp:Math.floor(hpRaw),mp:Math.floor(mpRaw),
+    publicHalfEvenHp:warrior.hp,publicHalfEvenMp:warrior.mp,
+    attackMin:sword.W,attackMax:sword.W+Math.floor(str/2),
+    defense:armorDefense,accuracy:level+dex,evasion:level+agi,
+    charmResist:20};
+  return {source:'in-game Pandora Saga OS 2026-10-13',
+    input:{race:'ELF',className:'WARRIOR',level,vit,str,dex,agi,spi,int,
+      racialPassive:'Стойкость разума',armorIds:armorIds.map(Number),weaponId:21},
+    observed,values,itemsHaveNoHPMPModifiers:!hasModifier,
+    exact:Object.keys(observed).every(key=>observed[key]===values[key])&&!hasModifier,
+    previousWebCalculator:{hp:139,mp:45},
+    note:'Public web calculator 139/45 is not a game-client observation; do not change actual class/race inputs to fit it.'};
 }
 
 async function fetchJson(name) {
@@ -211,20 +238,20 @@ async function main(args) {
   const souls=live?await fetchJson('souls'):fixtures.souls;
   const cleric=clericObservation(classes,items,fixtures.forth,souls);
   const paladin=paladinObservation(classes);
-  const counterexample=elfWarriorCounterexample(classes);
+  const elfWarrior=elfWarriorGameClientObservation(classes,items);
   const lifeSkillsMatch=live?lifeSignProfilesMatch(skills):null;
   const result={
     lifeSkillsMatch,
     source:live?'LIVE HTTPS GET-only classes/items/souls/skills (dated forth registry)':'Dated classes 2026-10-11, items/forth/souls 2026-10-07',
     currentSkillEvidence:live?inspectLifeSkills(skills):'Not fetched in offline mode',
-    cleric,paladin,counterexample,
-    assertable:cleric.exactHp&&cleric.exactNakedMp&&paladin.exactBuffDelta&&counterexample.hpMismatch&&(!live||lifeSkillsMatch),
+    cleric,paladin,elfWarrior,
+    assertable:cleric.exactHp&&cleric.exactNakedMp&&paladin.exactBuffDelta&&elfWarrior.exact&&(!live||lifeSkillsMatch),
     warning:'Naked MP floor matches actual game, not public half-even reference. The 1505 equipped MP and all +4 gear SPR are now source-matched, including Necklace 20001 and Moonlight Wand 2621; racial baselines beyond Cleric remain unproven.'
   };
   if(args.includes('--json'))console.log(JSON.stringify(result,null,2));
   else console.log(JSON.stringify({
     source:result.source,cleric:cleric.values,paladin:paladin.values,
-    buffDeltaExact:paladin.exactBuffDelta,elfWarrior:counterexample.sourceProjection,
+    buffDeltaExact:paladin.exactBuffDelta,elfWarrior:elfWarrior.values,
     skillEvidence:result.currentSkillEvidence
   },null,2));
   if(args.includes('--strict')&&!result.assertable)
