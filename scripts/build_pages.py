@@ -400,7 +400,7 @@ def _materialize_current_class_vitals(root: pathlib.Path, output: pathlib.Path) 
     (output / "modern/current-vitals-data.js").write_text(
         "window.PandoraRemakedCurrentClasses = Object.freeze("
         + json.dumps(classes, ensure_ascii=False, separators=(",", ":"))
-        + ");\\n",
+        + ");\n",
         encoding="utf-8",
     )
 
