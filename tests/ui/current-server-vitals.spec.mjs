@@ -87,8 +87,8 @@ test('Modern live Calc entry and result DOM use new source-class HP/MP and recal
   expect(frames.buffed.hp).toBe(4127);
   expect(frames.buffed.mp).toBe(1505);
   for(const frame of Object.values(frames)){
-    expect(frame.hpText).toContain(String(frame.hp));
-    expect(frame.mpText).toContain(String(frame.mp));
+    expect(Number(frame.hpText.replace(/,/g,''))).toBe(frame.hp);
+    expect(Number(frame.mpText.replace(/,/g,''))).toBe(frame.mp);
   }
 });
 
