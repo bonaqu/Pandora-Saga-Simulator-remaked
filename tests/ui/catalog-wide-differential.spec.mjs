@@ -224,6 +224,22 @@ for (const block of blocks) test('catalog differential: ' + block.name, async ({
       expect(actual,observed.id+' independently recomputed '+kind).toBe(currentServerVital(observed,kind));
       row[1]=museum[1]; // only normalize source-verified class-vital differences
     }
+    // LP/MP natural recovery is defined by the retained engine as
+    // floor(LP/35)+floor(VIT/3), floor(MP/25)+floor(SPR/3).
+    // Recomputing class vitals changes ONLY their first term: check the
+    // exact mathematical propagation instead of masking a recovery bug.
+    for (const [id,vitalId,divisor] of [['Status_12','Status_6',35],['Status_13','Status_7',25]]) {
+      const row=normalized.values.find(pair=>pair[0]===id);
+      const museum=source.values.find(pair=>pair[0]===id);
+      const now=observed.values.find(pair=>pair[0]===vitalId);
+      const before=source.values.find(pair=>pair[0]===vitalId);
+      expect(row,observed.id+' recovery display').toBeDefined();
+      expect(museum,observed.id+' legacy recovery display').toBeDefined();
+      const number=pair=>Number(pair[1].replace(/,/g,''));
+      const expectedChange=Math.floor(number(now)/divisor)-Math.floor(number(before)/divisor);
+      expect(number(row)-number(museum),observed.id+' recovery propagation '+id).toBe(expectedChange);
+      row[1]=museum[1];
+    }
     for(const statIndex of [40,41]) {
       const key='Status_'+statIndex;
       const row=normalized.values.find(pair=>pair[0]===key);
