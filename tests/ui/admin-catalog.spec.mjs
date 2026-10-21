@@ -1146,6 +1146,7 @@ test('failed draft listing exposes retry without claiming catalog loaded or losi
   await expect(page.locator('.catalog-entry')).not.toHaveCount(0);
   await page.getByRole('button',{name:'Повторить загрузку черновиков'}).click();
   await expect(page.locator('.catalog-draft-board > summary')).toContainText('Сохранённые черновики каталога: 0');
+  await expect(page.locator('#catalog-state')).toContainText('Каталог загружен');
   await expect(page.locator('.catalog-draft-board')).not.toHaveAttribute('aria-busy','true');
   expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(0);
   expect(errors).toEqual([]);
@@ -1164,6 +1165,7 @@ test('failed catalog list exposes retry while draft queue is still available',as
   await expect(page.getByRole('button',{name:'Повторить загрузку',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Повторить загрузку',exact:true}).click();
   await expect(page.locator('.catalog-entry')).not.toHaveCount(0);
+  await expect(page.locator('#catalog-state')).toContainText('Каталог загружен');
   await expect(page.getByRole('button',{name:'Повторить загрузку',exact:true})).toHaveCount(0);
   expect(errors).toEqual([]);
 });
