@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.27 — 2026-10-21
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Fix stuck catalog/draft loading messages caused by late shell translations overwriting resolved states. Recheck late localization and RU/EN/JP/TW transitions.
+- Add explicit per-section errors and in-place retry after partial API failures. Invalidate stale field-by-field draft comparisons immediately on editing.
+- Fetch custom draft identities in batches and keep the rest of the queue readable if a historical draft payload is invalid. No content publications, legacy changes or gameplay formula changes; backed by regression tests.
+
 ## Modern 4.26 — 2026-10-21
 
 ### For users

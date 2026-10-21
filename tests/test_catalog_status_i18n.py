@@ -14,9 +14,9 @@ class CatalogFeedbackTest(unittest.TestCase):
         match=re.search(r'var catalogStatusKeys = (\{.*?\});',CATALOG,re.DOTALL)
         self.assertIsNotNone(match)
         original=json.loads(match.group(1))
-        self.assertEqual(len(original),12)
+        self.assertEqual(len(original),13)
         suffixes=set(original.values())|set(re.findall(r"reportTranslated\('(catalogStatus[A-Za-z]+)'",CATALOG))
-        self.assertEqual(len(suffixes),18)
+        self.assertEqual(len(suffixes),19)
         for suffix in suffixes:
             with self.subTest(suffix=suffix):
                 key='adminShell.'+suffix

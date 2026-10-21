@@ -7,6 +7,7 @@
   var readProfiles;
   var draftPanel, draftSummary, draftBoard, draftSearchInput, draftKindInput, selectedDrafts=new Map(), knownDrafts=[];
   var draftRequest=0, batchPending=false;
+  var listLoadFailed=false, draftLoadFailed=false;
   var languages = [['en', 'English'], ['ru', 'Русский'], ['jp', '日本語'], ['tw', '繁體中文']];
   // Explicit, approved editor chrome only. Never translate catalog names,
   // descriptions, typed values, D1 payloads or arbitrary source strings.
@@ -83,24 +84,30 @@
     return node;
   }
   function catalogLiveName(node,key,fallback,values,names){
+    node.removeAttribute('data-admin-i18n');
     node.dataset.catalogLiveI18n=key;
     catalogLiveValues.set(node,{key:key,fallback:fallback,values:values||{},names:names});
     node.textContent=catalogTranslate(key,fallback,{...values,name:catalogRecordLocale(names)});
     return node;
   }
   function catalogLiveComputed(node,key,fallback,compute){
+    node.removeAttribute('data-admin-i18n');
     node.dataset.catalogLiveI18n=key;
     catalogLiveValues.set(node,{key:key,fallback:fallback,compute:compute});
     node.textContent=catalogTranslate(key,fallback,compute());
     return node;
   }
   function catalogLive(node,key,fallback,values) {
+    // Dynamic state has one owner. Otherwise a later shell localization
+    // refresh can put the initial "loading" translation back over real data.
+    node.removeAttribute('data-admin-i18n');
     node.dataset.catalogLiveI18n=key;
     catalogLiveValues.set(node,{key:key,fallback:fallback,values:values||{}});
     node.textContent=catalogTranslate(key,fallback,values);
     return node;
   }
   function catalogRaw(node,text) {
+    node.removeAttribute('data-admin-i18n');
     catalogLiveValues.delete(node);
     delete node.dataset.catalogLiveI18n;
     node.textContent=text;
@@ -157,6 +164,9 @@
     "Обновить список":"catalogRefreshList",
     "Открыть":"catalogOpen",
     "Повторить проверку":"catalogRetryCheck",
+    "Повторить загрузку":"catalogRetryCatalogList",
+    "Повторить загрузку черновиков":"catalogRetryDrafts",
+    "Повторить загрузку каталога":"catalogRetryCatalogLoading",
     "Подтвердить очистку Modern":"catalogConfirmModernCleanup",
     "Новая запись":"catalogNewRecord",
     "Очистка примечаний Astir":"catalogAstirCleanup",
@@ -234,7 +244,8 @@
   "Для этого каталога пока поддерживаются только существующие слоты.": "catalogStatusSlotsOnly",
   "Исходный навык не изменён. Укажите название нового навыка, сохраните черновик, затем опубликуйте его отдельно.": "catalogStatusOriginalUnchanged",
   "Сначала выбери существующий навык как шаблон.": "catalogStatusSelectSkill",
-  "Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.": "catalogStatusLoaded"
+  "Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.": "catalogStatusLoaded",
+  "Загрузка частично не удалась. Используйте «Повторить загрузку» в соответствующем разделе.": "catalogStatusPartialFailure"
 };
   var activeCatalogStatus = null;
   function statusTranslation(entry) {
@@ -247,6 +258,7 @@
   }
   function reportTranslated(key,fallback,values,error) {
     activeCatalogStatus={key:key,fallback:fallback,values:values||{}};
+    status.removeAttribute('data-admin-i18n');
     status.textContent=statusTranslation(activeCatalogStatus);
     status.classList.toggle('denied',Boolean(error));
   }
@@ -254,6 +266,7 @@
     var key=catalogStatusKeys[text];
     if(key){reportTranslated(key,text,{},error);return;}
     activeCatalogStatus=null;
+    status.removeAttribute('data-admin-i18n');
     status.textContent=text;
     status.classList.toggle('denied',Boolean(error));
   }
@@ -296,6 +309,8 @@
       editor.dataset.unsaved = 'true';
       var preview = editor.querySelector('[data-preview-record]');
       if (preview) preview.replaceChildren(node('h4', 'После публикации'), node('p', 'Изменения ещё не проверены. Нажмите «Проверить изменения».', 'help-text'));
+      var diff=editor.querySelector('[data-catalog-real-diff]');
+      if (diff) renderRealDiff(null,diff);
     }
   }
   // Confirmation copy is D1-editable; the existing action guards remain
@@ -1103,9 +1118,13 @@
     listHost.replaceChildren(); listHost.setAttribute('aria-busy', 'true'); catalogLive(listStatus,'catalogListLoading','Поиск…');
     try {
       var result = await api('catalog?kind=' + kind.value + '&q=' + encodeURIComponent(search.value) + '&page=' + page);
-      if (sequence !== pending || thisGeneration !== generation) return;
+      if (sequence !== pending || thisGeneration !== generation) return false;
       catalogRevision = result.catalogRevision; listHost.replaceChildren(); listHost.removeAttribute('aria-busy');
       catalogLive(listStatus,'catalogListSummary','Версия {revision} · {count} записей · страница {page}',{revision:catalogRevision,count:result.count,page:page+1});
+      if(listLoadFailed){
+        listLoadFailed=false;
+        if(!draftLoadFailed)report('Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.');
+      }
       result.items.forEach(function (item) {
         var select = button(item.names.ru || item.names.en, function () { openItem(item.id); }, 'catalog-entry');
         select.dataset.recordId = item.id;
@@ -1118,16 +1137,28 @@
       if (!result.items.length) listHost.appendChild(node('p', 'Ничего не найдено.'));
       var pagination = node('div', undefined, 'pagination'); var back = button('← Назад', function () { page--; loadList(); }, 'secondary'); back.disabled = page === 0;
       var next = button('Далее →', function () { page++; loadList(); }, 'secondary'); next.disabled = (page + 1) * result.pageSize >= result.count; pagination.append(back, next); listHost.appendChild(pagination);
-    } catch (error) { if (thisGeneration === generation && sequence === pending) { listHost.removeAttribute('aria-busy'); catalogLive(listStatus,'catalogListUnavailable','Список не загружен'); report(error.message, true); } }
+      return true;
+    } catch (error) {
+      if (thisGeneration === generation && sequence === pending) {
+        listLoadFailed=true;
+        listHost.removeAttribute('aria-busy');
+        catalogLive(listStatus,'catalogListUnavailable','Список не загружен');
+        listHost.replaceChildren(node('p',error.message,'catalog-draft-warning'),
+          button('Повторить загрузку',loadList,'secondary'));
+        report(error.message, true);
+      }
+      return false;
+    }
   }
 
   async function refreshDrafts() {
     var token=++draftRequest, thisGeneration=generation;
-    if(!draftSummary)return;
+    if(!draftSummary)return false;
+    draftPanel?.setAttribute('aria-busy','true');
     catalogLive(draftSummary,'catalogDraftsLoadingStatus','Сохранённые черновики · загрузка…');
     try{
       var response=await api('drafts');
-      if(token!==draftRequest||thisGeneration!==generation)return;
+      if(token!==draftRequest||thisGeneration!==generation)return false;
       knownDrafts=response.items;
       // Keep selections only while both identity and saved version match.
       var present=new Map(knownDrafts.map(function(item){return [item.id,item.version];}));
@@ -1136,11 +1167,25 @@
           selectedDrafts.delete(id);
       catalogLive(draftSummary,'catalogDraftsCount','Сохранённые черновики каталога: {count}',{count:knownDrafts.length});
       renderDraftBoard();
+      if(draftLoadFailed){
+        draftLoadFailed=false;
+        if(!listLoadFailed)report('Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.');
+      }
+      return true;
     }catch(error){
-      if(token!==draftRequest||thisGeneration!==generation)return;
+      if(token!==draftRequest||thisGeneration!==generation)return false;
+      draftLoadFailed=true;
+      // Otherwise the retry control is hidden inside a closed <details>.
+      // Open the affected section so an error is immediately actionable.
+      if(draftPanel)draftPanel.open=true;
       catalogLive(draftSummary,'catalogDraftsUnavailable','Не удалось загрузить черновики');
-      draftBoard.replaceChildren(node('p',error.message,'help-text'));
+      draftBoard.replaceChildren(node('p',error.message,'catalog-draft-warning'),
+        button('Повторить загрузку черновиков',refreshDrafts,'secondary'));
       report(error.message,true);
+      return false;
+    }finally{
+      if(token===draftRequest&&thisGeneration===generation)
+        draftPanel?.removeAttribute('aria-busy');
     }
   }
   function renderDraftBoard(){
@@ -1433,6 +1478,10 @@
   }
   async function start(csrf, onExpired) {
     getCsrf = csrf; expired = onExpired; var thisGeneration = ++generation;
+    listLoadFailed=false;draftLoadFailed=false;
+    // A second login must not briefly show the previous session's "loaded"
+    // result while the new authenticated catalog request is still pending.
+    reportTranslated('catalogLoading','Loading the catalog…');
     try { meta = await api('meta'); if (thisGeneration !== generation) return;
       host.replaceChildren(); var controls = node('div', undefined, 'catalog-controls');
       kind = node('select'); catalogAttribute(kind,'aria-label','catalogKindAria','Каталог'); [['equipment', 'Экипировка / оружие','catalogKindEquipment'], ['soul', 'Souls / души','catalogKindSoul'], ['class', 'Классы персонажей','catalogKindClass'], ['racial', 'Расовые пассивки','catalogKindRacial'], ['active', 'Активные навыки','catalogKindActive'], ['passive', 'Пассивные навыки','catalogKindPassive']].forEach(function (entry) { var option = catalogStatic(node('option'),entry[2],entry[1]); option.value = entry[0]; kind.appendChild(option); });
@@ -1482,8 +1531,22 @@
           if (current && !host.inert) saveDraft();
         }
       }); editor.appendChild(node('p', 'Выберите существующую запись слева или нажмите «Новая запись».'));
-      grid.append(sidebar, editor); host.appendChild(grid); page = 0; await Promise.all([loadList(),refreshDrafts()]); report('Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.');
-    } catch (error) { report(error.message, true); }
+      grid.append(sidebar, editor); host.appendChild(grid); page = 0;
+      const loaded=await Promise.all([loadList(),refreshDrafts()]);
+      if(thisGeneration!==generation)return;
+      if(loaded.every(value=>value===true))report('Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.');
+      else if(loaded.some(value=>value===false))
+        report('Загрузка частично не удалась. Используйте «Повторить загрузку» в соответствующем разделе.',true);
+    } catch (error) {
+      if(thisGeneration!==generation)return;
+      report(error.message, true);
+      if(!host.querySelector('.catalog-controls')){
+        var failed=catalogLive(node('p',undefined,'catalog-draft-warning'),
+          'catalogStatusStartFailed','Не удалось начать работу с каталогом: {error}',{error:error.message});
+        host.replaceChildren(failed,
+          button('Повторить загрузку каталога',function(){start(getCsrf,expired);},'secondary'));
+      }
+    }
   }
   async function openFromLocalization(id, targetKind){
     // Navigation is authorized by the already active admin session and uses
@@ -1506,5 +1569,5 @@
     return true;
   }
   window.addEventListener('beforeunload', function (event) { if (dirty) { event.preventDefault(); event.returnValue = ''; } });
-  window.PandoraCatalogConsole = { start, openFromLocalization, clear: function () { generation++; pending++; editorRequest++; draftRequest++; clearTimeout(searchTimer); dirty = false; current = null; meta = null; selectedDrafts.clear();knownDrafts=[];draftPanel=draftSummary=draftBoard=null; host.inert = false; host.removeAttribute('aria-busy'); host.replaceChildren(); } };
+  window.PandoraCatalogConsole = { start, openFromLocalization, clear: function () { generation++; pending++; editorRequest++; draftRequest++; clearTimeout(searchTimer); dirty = false; current = null; meta = null; listLoadFailed=false;draftLoadFailed=false;selectedDrafts.clear();knownDrafts=[];draftPanel=draftSummary=draftBoard=null; host.inert = false; host.removeAttribute('aria-busy'); host.replaceChildren(); } };
 })();

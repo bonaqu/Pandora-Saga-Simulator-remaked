@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 4.27 — стабильные состояния загрузки админки, 2026-10-21
+
+<!-- admin-notes:ru -->
+- Убраны зависшие индикаторы «Загрузка каталога» и «Загрузка черновиков»: статусы загрузки больше не перезаписываются асинхронным применением переводов. Проведена повторная проверка переключения RU/EN/JP/TW и позднего обновления локализации.
+- При частичных сбоях API показывается ошибка в конкретном разделе и доступна повторная загрузка без перезагрузки всей админки. Устранён повторный показ устаревшей проверки изменений после редактирования полей.
+- Список черновиков теперь получает пользовательские идентификаторы пакетно, а повреждённый исторический черновик не скрывает остальные. Публикации, данные пользователей, Legacy и игровые формулы не изменялись. Добавлены регрессионные проверки.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Fix stuck catalog/draft loading messages caused by late shell translations overwriting resolved states. Recheck late localization and RU/EN/JP/TW transitions.
+- Add explicit per-section errors and in-place retry after partial API failures. Invalidate stale field-by-field draft comparisons immediately on editing.
+- Fetch custom draft identities in batches and keep the rest of the queue readable if a historical draft payload is invalid. No content publications, legacy changes or gameplay formula changes; backed by regression tests.
+<!-- /admin-notes:en -->
+
 ## Modern 4.26 — точное сравнение и очистка черновиков каталога, 2026-10-21
 
 <!-- admin-notes:ru -->

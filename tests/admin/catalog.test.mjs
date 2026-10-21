@@ -692,3 +692,60 @@ test('mixed no-op/real batch is rejected as a whole without losing legitimate ed
   assert.equal(published.catalogRevision,1);
   assert.equal((await publicData(env)).records[0].names.ru,'Подтверждённая правка');
 });
+
+
+test('draft queue loads valid records when one historical payload is invalid and permits only safe cleanup',async()=>{
+  const {env,sqlite}=fixture();
+  const broken=await detail(env,'skill_entry.11.6');
+  sqlite.prepare('INSERT INTO catalog_drafts (id,payload_json,version,is_dirty,updated_at) VALUES (?,?,?,?,?)')
+    .run(broken.edit.id,'null',1,1,1000);
+  const good=await detail(env,'equipment.0.1');
+  good.edit.names.ru='Корректный черновик';
+  await save(env,good);
+  const pending=await call(env,'drafts');
+  assert.equal(pending.ok,true);
+  assert.equal(pending.count,2);
+  const invalid=pending.items.find(row=>row.id===broken.edit.id);
+  assert.deepEqual(invalid.diff,{status:'error',count:null});
+  assert.equal(invalid.kind,'active');
+  assert.equal(invalid.canDiscard,true);
+  const valid=pending.items.find(row=>row.id===good.edit.id);
+  assert.equal(valid.diff.status,'changed');
+  assert.equal(valid.diff.count,1);
+  assert.equal(valid.name,'Корректный черновик');
+  assert.equal((await call(env,'discard-draft',{id:broken.edit.id,expectedDraftVersion:1,expectedCatalogRevision:0})).discarded,true);
+  assert.equal((await call(env,'drafts')).count,1);
+});
+
+test('draft list resolves baseline identities without per-row D1 requests and custom IDs in bounded bulk reads',async()=>{
+  const {env}=fixture();
+  const originals=['skill_entry.11.6','equipment.0.1','skill_entry.14.9'];
+  for(const id of originals){
+    const source=await detail(env,id);
+    source.edit.names.en+=' updated';
+    await save(env,source);
+  }
+  const oldPrepare=env.DB.prepare.bind(env.DB);
+  const counts={individual:0,bulk:0};
+  env.DB.prepare=sql=>{
+    if (/FROM catalog_(?:skill_)?allocations/.test(sql))
+      counts[/WHERE id = \?/.test(sql)?'individual':'bulk']++;
+    return oldPrepare(sql);
+  };
+  const baseline=await call(env,'drafts');
+  assert.equal(baseline.count,3);
+  assert.equal(counts.individual,0);
+  assert.equal(counts.bulk,0);
+  const edit=draftFromSource(null,'equipment');
+  edit.names.en='Synthetic custom sword';
+  edit.baseAttack=5;
+  const custom=await save(env,{edit,draftVersion:0,catalogRevision:0});
+  // Saving a new custom record legitimately validates the allocation by ID.
+  // Measure only the cost of listing all drafts, not the preceding write.
+  counts.individual=0;counts.bulk=0;
+  const listed=await call(env,'drafts');
+  assert.equal(listed.count,4);
+  assert.equal(listed.items.find(item=>item.id===custom.edit.id).diff.status,'new');
+  assert.equal(counts.individual,0);
+  assert.equal(counts.bulk,2,'all custom identities should be retrieved in only two queries');
+});
