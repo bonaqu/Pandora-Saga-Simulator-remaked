@@ -1,5 +1,17 @@
 # Release history — English
 
+## Modern 4.26 — 2026-10-21
+
+### For users
+
+- Internal administrative editor improvements. Game calculations are unchanged.
+
+### Development and technical changes
+
+- Catalog draft review now shows exact before/after changes across all four locales and gameplay fields, and the queue reports meaningful change counts.
+- Existing records without changes cannot be published. Stale no-op drafts can be explicitly discarded without changing public revisions or historical snapshots, with concurrency protection.
+- API and browser regressions cover preview, atomic batches, old drafts, and safe discard.
+
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
 ## Modern 4.25 — 2026-10-13
