@@ -1076,3 +1076,94 @@ test('old no-op draft is labeled, unselectable, and discard leaves public data u
   expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(0);
   expect(errors).toEqual([]);
 });
+
+
+test('loaded catalog and draft count never revert to loading after a late four-language shell refresh',async({page})=>{
+  const {errors}=await openConsole(page);
+  const status=page.locator('#catalog-state');
+  const summary=page.locator('.catalog-draft-board > summary');
+  await expect(status).toContainText('Каталог загружен');
+  await expect(summary).toContainText('Сохранённые черновики каталога: 0');
+  const english=JSON.parse(fs.readFileSync(new URL('../../localization/ui.en.json',import.meta.url),'utf8'));
+  const approved=JSON.parse(fs.readFileSync(new URL('../../localization/approved-translations.v1.json',import.meta.url),'utf8'));
+  await page.evaluate(({english,approved})=>{
+    // Reproduce the real shell/localization-console ordering: protected catalog
+    // has finished, then localization applies again to the whole document.
+    window.__catalogTestLocale='ru';
+    window.PandoraAdminI18n={
+      getLocale:()=>window.__catalogTestLocale,
+      t:(key,fallback)=>approved.ui[window.__catalogTestLocale]?.[key]||english[key]||fallback,
+      apply(){
+        document.querySelectorAll('[data-admin-i18n]').forEach(node=>{
+          node.textContent=this.t(node.getAttribute('data-admin-i18n'),node.textContent);
+        });
+      }
+    };
+    window.__catalogReapply=locale=>{
+      window.__catalogTestLocale=locale;
+      window.PandoraAdminI18n.apply();
+      window.dispatchEvent(new Event('pandora-admin:localechange'));
+    };
+  },{english,approved});
+  for(const locale of ['ru','en','jp','tw','ru']){
+    await page.evaluate(locale=>window.__catalogReapply(locale),locale);
+    const expectedStatus=approved.ui[locale]['adminShell.catalogStatusLoaded']||english['adminShell.catalogStatusLoaded'];
+    const expectedCount=(approved.ui[locale]['adminShell.catalogDraftsCount']||english['adminShell.catalogDraftsCount']).replace('{count}','0');
+    await expect(status).toHaveText(expectedStatus);
+    await expect(summary).toHaveText(expectedCount);
+    await expect(status).not.toContainText('Загрузка каталога');
+    await expect(summary).not.toContainText('загрузка');
+  }
+  await expect(status).not.toHaveAttribute('data-admin-i18n',/catalogLoading/);
+  await expect(summary).not.toHaveAttribute('data-admin-i18n',/catalogDraftsLoading/);
+  expect(errors).toEqual([]);
+});
+
+test('changing a reviewed field invalidates outdated before-and-after preview',async({page})=>{
+  const {errors}=await openConsole(page);
+  await page.locator('.catalog-entry[data-record-id="equipment.0.1"]').click();
+  const diff=page.locator('[data-catalog-real-diff]');
+  await page.getByRole('button',{name:'Проверить изменения'}).click();
+  await expect(diff).toContainText('Нет изменений относительно сайта');
+  await page.locator('.catalog-editor [data-field="names"][data-language="ru"]').fill('Проверка устаревшего сравнения');
+  await expect(diff).toContainText('Изменения ещё не проверены');
+  await expect(diff).not.toContainText('Нет изменений относительно сайта');
+  await page.getByRole('button',{name:'Проверить изменения'}).click();
+  await expect(diff).toContainText('Проверка устаревшего сравнения');
+  expect(errors).toEqual([]);
+});
+
+test('failed draft listing exposes retry without claiming catalog loaded or losing published records',async({page})=>{
+  const {sqlite,errors}=await openConsole(page);
+  let fails=1;
+  await page.route(admin+'/api/admin/drafts',async route=>{
+    if(fails-- > 0)return route.fulfill({status:503,json:{ok:false,message:'Temporary draft service failure'}});
+    return route.fallback();
+  });
+  await page.reload();
+  await expect(page.locator('#catalog-state')).toContainText('Загрузка частично не удалась');
+  await expect(page.locator('.catalog-draft-board > summary')).toContainText('Не удалось загрузить черновики');
+  await expect(page.locator('.catalog-entry')).not.toHaveCount(0);
+  await page.getByRole('button',{name:'Повторить загрузку черновиков'}).click();
+  await expect(page.locator('.catalog-draft-board > summary')).toContainText('Сохранённые черновики каталога: 0');
+  await expect(page.locator('.catalog-draft-board')).not.toHaveAttribute('aria-busy','true');
+  expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(0);
+  expect(errors).toEqual([]);
+});
+
+test('failed catalog list exposes retry while draft queue is still available',async({page})=>{
+  const {errors}=await openConsole(page);
+  let fails=1;
+  await page.route(admin+'/api/admin/catalog?*',async route=>{
+    if(fails-- > 0)return route.fulfill({status:503,json:{ok:false,message:'Temporary catalog search failure'}});
+    return route.fallback();
+  });
+  await page.reload();
+  await expect(page.locator('#catalog-state')).toContainText('Загрузка частично не удалась');
+  await expect(page.locator('.catalog-draft-board > summary')).toContainText('Сохранённые черновики каталога: 0');
+  await expect(page.getByRole('button',{name:'Повторить загрузку',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Повторить загрузку',exact:true}).click();
+  await expect(page.locator('.catalog-entry')).not.toHaveCount(0);
+  await expect(page.getByRole('button',{name:'Повторить загрузку',exact:true})).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
