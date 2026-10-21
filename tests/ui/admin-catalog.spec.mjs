@@ -1143,6 +1143,7 @@ test('failed draft listing exposes retry without claiming catalog loaded or losi
   await page.reload();
   await expect(page.locator('#catalog-state')).toContainText('Загрузка частично не удалась');
   await expect(page.locator('.catalog-draft-board > summary')).toContainText('Не удалось загрузить черновики');
+  await expect(page.locator('.catalog-draft-board')).toHaveAttribute('open','');
   await expect(page.locator('.catalog-entry')).not.toHaveCount(0);
   await page.getByRole('button',{name:'Повторить загрузку черновиков'}).click();
   await expect(page.locator('.catalog-draft-board > summary')).toContainText('Сохранённые черновики каталога: 0');
