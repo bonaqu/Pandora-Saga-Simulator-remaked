@@ -1,5 +1,19 @@
 # Changelog
 
+## Modern 4.26 — точное сравнение и очистка черновиков каталога, 2026-10-21
+
+<!-- admin-notes:ru -->
+- Кнопка «Проверить изменения» теперь показывает точные изменения всех редактируемых полей относительно опубликованной версии, включая EN/RU/JP/TW, числовые характеристики и условия изучения. Очередь черновиков указывает реальное количество различий.
+- Неизменённые черновики нельзя повторно сохранять или публиковать, в том числе пакетно. Старые пустые черновики остаются видимыми до явного удаления; публикация других записей не блокируется при их исключении из выбора.
+- Для существующих записей и ранее опубликованных пользовательских записей добавлено безопасное удаление только черновика с проверкой ревизии и версии записи. Данные сайта, история, Legacy и расчёты не затрагиваются. Добавлены серверные и браузерные тесты.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Admin catalog review now displays exact editable-field differences, including four locales, skills and calculation settings; the draft queue exposes real change counts.
+- Reject saving or publishing existing entries with no effective changes, including atomic batch guards. Legacy no-op drafts remain visible for explicit cleanup.
+- Add version-checked private draft discard for source or already-published entries, preserving public revisions, historical data, Legacy and formulas. Cover with API and browser regression tests.
+<!-- /admin-notes:en -->
+
 ## Modern 4.25 — улучшен расчёт ОЗ и ОМ, 2026-10-13
 
 <!-- release-notes:user:ru -->
