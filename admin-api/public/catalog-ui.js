@@ -1175,6 +1175,9 @@
     }catch(error){
       if(token!==draftRequest||thisGeneration!==generation)return false;
       draftLoadFailed=true;
+      // Otherwise the retry control is hidden inside a closed <details>.
+      // Open the affected section so an error is immediately actionable.
+      if(draftPanel)draftPanel.open=true;
       catalogLive(draftSummary,'catalogDraftsUnavailable','Не удалось загрузить черновики');
       draftBoard.replaceChildren(node('p',error.message,'catalog-draft-warning'),
         button('Повторить загрузку черновиков',refreshDrafts,'secondary'));
