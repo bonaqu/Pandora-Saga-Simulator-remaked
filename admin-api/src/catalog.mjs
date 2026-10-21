@@ -288,34 +288,49 @@ async function discardDraft(request, env) {
 
 const MAX_BATCH_DRAFTS=50;
 async function listDrafts(env) {
-  const [snapshot,rows] = await Promise.all([
+  const [snapshot, rows] = await Promise.all([
     head(env),
-    env.DB.prepare(
-      "SELECT id, version, updated_at, payload_json, json_extract(payload_json, '$.kind') AS kind, " +
-      "json_extract(payload_json, '$.names.en') AS name_en, json_extract(payload_json, '$.names.ru') AS name_ru " +
-      "FROM catalog_drafts WHERE is_dirty = 1 ORDER BY updated_at DESC, id LIMIT 501"
-    ).all()
+    // A malformed historical draft must not break the entire queue.
+    // Parse per row rather than calling SQL json_extract on untrusted JSON.
+    env.DB.prepare('SELECT id, version, updated_at, payload_json FROM catalog_drafts WHERE is_dirty = 1 ORDER BY updated_at DESC, id LIMIT 501').all()
   ]);
-  if(rows.results.length>500)fail('More than 500 drafts; narrow the list before publishing',413);
-  const items = [];
-  for (const row of rows.results) {
-    let diff={status:'error',count:null};
-    let canDiscard=false;
-    try {
-      const identity=await identityFor(env,row.id);
-      canDiscard=Boolean(sourceFor(identity))||snapshot.entries.some(entry=>entry.identity.id===row.id);
-      const edit=validateDraft(JSON.parse(row.payload_json),identity);
-      const result=draftComparison(snapshot,identity,edit);
-      diff={status:result.status,count:result.count};
-    } catch {
-      // Keep a broken or older-format draft visible; never silently publish it.
-    }
-    items.push({id:row.id,kind:row.kind,name:row.name_ru||row.name_en||row.id,
-      englishName:row.name_en||'',version:row.version,updatedAt:row.updated_at,
-      diff,canDiscard});
+  if (rows.results.length > 500) fail('More than 500 drafts; narrow the list before publishing', 413);
+  const publishedIds = new Set(snapshot.entries.map(entry => entry.identity.id));
+  const customIds = rows.results.filter(row => !baselineById.has(row.id));
+  const customIdentities = new Map();
+  if (customIds.length) {
+    // Avoid two serialized D1 queries per draft (1000+ requests for large queues).
+    const [items, skills] = await Promise.all([
+      env.DB.prepare('SELECT id, kind, category, item_index FROM catalog_allocations').all(),
+      env.DB.prepare('SELECT id, kind, category, item_index, template_id FROM catalog_skill_allocations').all()
+    ]);
+    for (const item of items.results) customIdentities.set(item.id, normalizeIdentity(item));
+    for (const skill of skills.results) customIdentities.set(skill.id, normalizeSkillIdentity(skill));
   }
-  return jsonResponse({ok:true,catalogRevision:snapshot.version,count:items.length,
-    maxBatch:MAX_BATCH_DRAFTS,items});
+  const results = rows.results.map(row => {
+    let diff = { status: 'error', count: null };
+    let name = row.id, englishName = '', kind = '';
+    let canDiscard = publishedIds.has(row.id) || baselineById.has(row.id);
+    try {
+      const edit = JSON.parse(row.payload_json);
+      name = edit?.names?.ru || edit?.names?.en || row.id;
+      englishName = edit?.names?.en || '';
+      kind = edit?.kind || '';
+      const source = baselineById.get(row.id);
+      const identity = source ? sourceIdentity(source) : customIdentities.get(row.id);
+      if (!identity) throw Error('Draft identity no longer exists');
+      const validated = validateDraft(edit, identity);
+      const comparison = draftComparison(snapshot, identity, validated);
+      diff = { status: comparison.status, count: comparison.count };
+    } catch {
+      // An invalid draft remains visible and cannot be selected for publication.
+      // An administrator can still discard it if the original record exists.
+    }
+    return { id: row.id, kind, name, englishName, version: row.version,
+      updatedAt: row.updated_at, diff, canDiscard };
+  });
+  return jsonResponse({ ok: true, catalogRevision: snapshot.version,
+    count: results.length, maxBatch: MAX_BATCH_DRAFTS, items: results });
 }
 
 const OPERATION_ID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
