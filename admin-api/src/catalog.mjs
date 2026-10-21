@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { compareCatalogEdits } from './catalog-diff.mjs';
 import { astirIds, planAstirCleanup, applyAstirFields, restorablesForCleanup } from './astir-cleanup.mjs';
 import { CatalogError, draftFromSource, validateDraft, compileRecord, showApprovedTranslations, EFFECTS, EQUIPMENT_CATEGORIES, NATIVE_PASSIVES } from './catalog-model.mjs';
 import { baselineById, baselineRecords, categories, skillCategories, compatibilityLabels, sourceFingerprint, characterSourceFingerprint, sourceIdentity, firstNewIndex } from './catalog-baseline.mjs';
@@ -46,6 +47,18 @@ async function head(env) {
   return { version: row.version, impactVersion: row.impact_version, entries: JSON.parse(row.snapshot_json) };
 }
 async function draftRow(env, id) { return env.DB.prepare('SELECT payload_json, version, is_dirty, updated_at FROM catalog_drafts WHERE id = ?').bind(id).first(); }
+function draftComparison(snapshot, identity, edit) {
+  const published = snapshot.entries.find(entry => entry.identity.id === identity.id);
+  const source = sourceFor(identity);
+  const baseline = published?.edit || (source && !identity.templateId ? draftFromSource(source, identity.kind) : null);
+  return compareCatalogEdits(baseline ? validateDraft(baseline, identity) : null, edit, source, identity.kind);
+}
+function requireRealChanges(snapshot, identity, edit) {
+  const comparison = draftComparison(snapshot, identity, edit);
+  if (comparison.status === 'unchanged')
+    fail('Нет фактических изменений относительно опубликованной записи. Публикация не требуется; ненужный черновик можно удалить.', 422);
+  return comparison;
+}
 function compileEntry(entry) {
   return compileRecord(validateDraft(entry.edit, entry.identity), entry.identity, sourceFor(entry.identity));
 }
@@ -137,7 +150,12 @@ async function detail(env, id) {
   const displayEdit = showApprovedTranslations(edit, source, identity.kind);
   displayEdit.id = id; displayEdit.category = identity.category;
   const currentRecord = published ? compileEntry(published) : source && !identity.templateId ? compileRecord(draftFromSource(source, identity.kind), identity, source) : null;
-  return { ok: true, identity, edit: displayEdit, currentRecord, nativeMechanics: identity.kind === 'racial' ? racialReference[id] || 'Эта расовая механика не моделируется в исходном калькуляторе. Описание из игры не создаёт числовой эффект автоматически.' : null,
+  let draftDiff = null;
+  if (draft?.is_dirty) {
+    try { draftDiff = draftComparison(snapshot, identity, validateDraft(JSON.parse(draft.payload_json), identity)); }
+    catch { draftDiff = { status: 'error', count: null, changes: [] }; }
+  }
+  return { draftDiff, ok: true, identity, edit: displayEdit, currentRecord, nativeMechanics: identity.kind === 'racial' ? racialReference[id] || 'Эта расовая механика не моделируется в исходном калькуляторе. Описание из игры не создаёт числовой эффект автоматически.' : null,
     draftVersion: draft?.version || 0, hasDraft: Boolean(draft?.is_dirty), catalogRevision: snapshot.version, published: Boolean(published), sourceCode: source?.calculation_code || '', engineKey: source?.name.jp || 'Modern:' + id,
     nativeSkill: source?.prerequisite_code ? { templateName: source.name, prerequisites: source.prerequisites, equipmentRequirements: source.equipment_requirements, prerequisiteCode: source.prerequisite_code,
       intrinsicEffect: !identity.templateId && NATIVE_PASSIVES[identity.id] ? structuredClone(NATIVE_PASSIVES[identity.id]) : null } : null };
@@ -146,11 +164,14 @@ async function detail(env, id) {
 async function preview(request, env) {
   const input = await body(request); schema(input, ['edit', 'expectedCatalogRevision']);
   const expected = version(input.expectedCatalogRevision, 'Catalog revision');
-  if ((await head(env)).version !== expected) fail('Catalog changed in another tab; reload before previewing', 409);
+  const snapshot = await head(env);
+  if (snapshot.version !== expected) fail('Catalog changed in another tab; reload before previewing', 409);
   if (!input.edit?.id) fail('Сначала сохраните новую запись как черновик; сайт при этом не меняется');
   const identity = await identityFor(env, input.edit.id);
-  const record = compileRecord(validateDraft(input.edit, identity), identity, sourceFor(identity));
-  return jsonResponse({ ok: true, record, catalogRevision: expected });
+  const edit = validateDraft(input.edit, identity);
+  const record = compileRecord(edit, identity, sourceFor(identity));
+  const diff = draftComparison(snapshot, identity, edit);
+  return jsonResponse({ ok: true, record, diff, catalogRevision: expected });
 }
 
 async function saveDraft(request, env, now) {
@@ -198,6 +219,7 @@ async function saveDraft(request, env, now) {
   identity = await identityFor(env, input.edit?.id || '');
   const edit = validateDraft(input.edit, identity);
   compileRecord(edit, identity, sourceFor(identity));
+  requireRealChanges(await head(env), identity, edit);
   const result = expected === 0
     ? await env.DB.prepare('INSERT INTO catalog_drafts (id, payload_json, version, updated_at) SELECT ?, ?, 1, ? WHERE EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND version = ?) ON CONFLICT DO NOTHING').bind(identity.id, JSON.stringify(edit), now, expectedCatalog).run()
     : await env.DB.prepare('UPDATE catalog_drafts SET payload_json = ?, version = version + 1, is_dirty = 1, updated_at = ? WHERE id = ? AND version = ? AND EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND version = ?)').bind(JSON.stringify(edit), now, identity.id, expected, expectedCatalog).run();
@@ -240,28 +262,60 @@ async function publish(request, env, now) {
   const [snapshot, draft] = await Promise.all([head(env), draftRow(env, identity.id)]);
   if (!draft?.is_dirty || draft.version !== expectedDraft || snapshot.version !== expectedCatalog) fail('Catalog or draft changed; reload before publishing', 409);
   const edit = validateDraft(JSON.parse(draft.payload_json), identity);
+  requireRealChanges(snapshot, identity, edit);
   const entries = snapshot.entries.filter(entry => entry.identity.id !== identity.id);
   entries.push({ identity, edit });
   return commitSnapshot(env, expectedCatalog, entries, now, 'Publish ' + identity.id, { id: identity.id, version: expectedDraft });
 }
 
 
+async function discardDraft(request, env) {
+  const input=await body(request);
+  schema(input,['id','expectedDraftVersion','expectedCatalogRevision']);
+  const expectedDraft=version(input.expectedDraftVersion,'Draft version');
+  const expectedCatalog=version(input.expectedCatalogRevision,'Catalog revision');
+  const identity=await identityFor(env,input.id);
+  const snapshot=await head(env);
+  if(snapshot.version!==expectedCatalog)fail('Catalog changed since draft selection; reload before discarding',409);
+  if(!sourceFor(identity)&&!snapshot.entries.some(entry=>entry.identity.id===identity.id))
+    fail('Unpublished custom records cannot be discarded with this action',400);
+  const result=await env.DB.prepare(
+    'UPDATE catalog_drafts SET is_dirty = 0, version = version + 1 WHERE id = ? AND version = ? AND is_dirty = 1 AND EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND version = ?)'
+  ).bind(identity.id,expectedDraft,expectedCatalog).run();
+  if(result.meta.changes!==1)fail('Draft changed in another tab; reload before discarding',409);
+  return jsonResponse({ok:true,id:identity.id,catalogRevision:expectedCatalog,discarded:true});
+}
+
 const MAX_BATCH_DRAFTS=50;
 async function listDrafts(env) {
-  const [snapshot,rows]=await Promise.all([
-    headMeta(env),
+  const [snapshot,rows] = await Promise.all([
+    head(env),
     env.DB.prepare(
-      "SELECT id, version, updated_at, json_extract(payload_json, '$.kind') AS kind, " +
+      "SELECT id, version, updated_at, payload_json, json_extract(payload_json, '$.kind') AS kind, " +
       "json_extract(payload_json, '$.names.en') AS name_en, json_extract(payload_json, '$.names.ru') AS name_ru " +
       "FROM catalog_drafts WHERE is_dirty = 1 ORDER BY updated_at DESC, id LIMIT 501"
     ).all()
   ]);
   if(rows.results.length>500)fail('More than 500 drafts; narrow the list before publishing',413);
-  return jsonResponse({ok:true,catalogRevision:snapshot.version,count:rows.results.length,
-    maxBatch:MAX_BATCH_DRAFTS,items:rows.results.map(row=>({
-      id:row.id,kind:row.kind,name:row.name_ru||row.name_en||row.id,
-      englishName:row.name_en||'',version:row.version,updatedAt:row.updated_at
-    }))});
+  const items = [];
+  for (const row of rows.results) {
+    let diff={status:'error',count:null};
+    let canDiscard=false;
+    try {
+      const identity=await identityFor(env,row.id);
+      canDiscard=Boolean(sourceFor(identity))||snapshot.entries.some(entry=>entry.identity.id===row.id);
+      const edit=validateDraft(JSON.parse(row.payload_json),identity);
+      const result=draftComparison(snapshot,identity,edit);
+      diff={status:result.status,count:result.count};
+    } catch {
+      // Keep a broken or older-format draft visible; never silently publish it.
+    }
+    items.push({id:row.id,kind:row.kind,name:row.name_ru||row.name_en||row.id,
+      englishName:row.name_en||'',version:row.version,updatedAt:row.updated_at,
+      diff,canDiscard});
+  }
+  return jsonResponse({ok:true,catalogRevision:snapshot.version,count:items.length,
+    maxBatch:MAX_BATCH_DRAFTS,items});
 }
 
 const OPERATION_ID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -309,6 +363,7 @@ async function publishBatch(request,env,now) {
       fail('Draft changed or was published elsewhere: '+id,409);
     const edit=validateDraft(JSON.parse(draft.payload_json),identity);
     compileRecord(edit,identity,sourceFor(identity));
+    requireRealChanges(snapshot,identity,edit);
     chosen.push({identity,edit,version:expectedVersion,id});
   }
   const ids=new Set(chosen.map(row=>row.id));
@@ -457,6 +512,7 @@ export async function adminCatalog(request, env, now = Math.floor(Date.now() / 1
     return jsonResponse({ ok: true, revisions: rows.results, catalogRevision: current.version, impactRevision: current.impactVersion });
   }
   if (path === '/api/admin/draft' && request.method === 'POST') return saveDraft(request, env, now);
+  if (path === '/api/admin/discard-draft' && request.method === 'POST') return discardDraft(request, env);
   if (path === '/api/admin/preview' && request.method === 'POST') return preview(request, env);
   if (path === '/api/admin/publish' && request.method === 'POST') return publish(request, env, now);
   if (path === '/api/admin/publish-batch-status' && request.method === 'GET') {

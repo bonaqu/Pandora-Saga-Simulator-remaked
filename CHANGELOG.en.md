@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.26 — 2026-10-21
+
+### For users
+
+- Internal technical improvements.
+
+### Development and technical changes
+
+- Admin catalog review now displays exact editable-field differences, including four locales, skills and calculation settings; the draft queue exposes real change counts.
+- Reject saving or publishing existing entries with no effective changes, including atomic batch guards. Legacy no-op drafts remain visible for explicit cleanup.
+- Add version-checked private draft discard for source or already-published entries, preserving public revisions, historical data, Legacy and formulas. Cover with API and browser regression tests.
+
 ## Modern 4.25 — 2026-10-13
 
 ### For users

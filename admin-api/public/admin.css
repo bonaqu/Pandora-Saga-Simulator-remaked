@@ -65,6 +65,25 @@ body:has(#admin-workspace:not([hidden])) { padding-top: 3vh; }
 .catalog-item-preview-note { color: #bfc9ad; margin: 9px 0 0; font-size: 12px; line-height: 1.55; }
 .record-review { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 10px; }
 .record-panel { border: 1px solid var(--border); padding: 12px; min-width: 0; overflow-wrap: anywhere; font: 13px/1.5 system-ui, sans-serif; }
+.catalog-real-diff { border: 1px solid #536a48; padding: 12px; margin: 10px 0 18px; border-radius: 6px; background: #19291b; }
+.catalog-real-diff h4 { margin: 0 0 10px; color: #e8edcd; }
+.catalog-diff-status { color: #d9dca7; margin: 0; }
+.catalog-real-diff-list { display: grid; gap: 8px; }
+.catalog-real-diff-entry { border: 1px solid #4f6945; padding: 8px; border-radius: 4px; min-width: 0; }
+.catalog-real-diff-path { display: block; margin-bottom: 7px; overflow-wrap: anywhere; }
+.catalog-real-diff-values { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.catalog-real-diff-values > div { min-width: 0; padding: 8px; border-radius: 3px; }
+.catalog-real-diff-before { background: #382a27; border-inline-start: 3px solid #e6a696; }
+.catalog-real-diff-after { background: #213a29; border-inline-start: 3px solid #95d5a3; }
+.catalog-real-diff-values small { display: block; margin-bottom: 4px; color: #e9e6d8; }
+.catalog-real-diff-values pre { margin: 0; font: 12px/1.5 ui-monospace,monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.catalog-draft-diff-status { color: #bddfaf !important; }
+.catalog-discard-draft { border-color: #8b695b; color: #ffcfbc; }
+@media (max-width: 600px) {
+  .catalog-real-diff-values { grid-template-columns: 1fr; }
+  .catalog-draft-entry { flex-wrap: wrap; }
+  .catalog-draft-entry-label { flex-basis: 100%; }
+}
 .record-name { font: 600 14px/1.4 system-ui, sans-serif; margin: 6px 0; }
 .record-description { font: 13px/1.5 system-ui, sans-serif; margin: 8px 0; white-space: pre-wrap; }
 .record-values { padding-left: 18px; margin: 10px 0 0; }

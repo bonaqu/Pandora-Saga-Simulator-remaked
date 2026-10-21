@@ -235,6 +235,7 @@ test('draft edits are private until explicitly published and publishing is an im
 test('stale saves and publishes cannot overwrite changes from another admin tab, including after publish', async () => {
   const { env } = fixture();
   const original = await detail(env);
+  original.edit.names.en += ' - concurrency test';
   const one = await save(env, original);
   await assert.rejects(() => save(env, original), error => error.status === 409);
   const two = await save(env, one);
@@ -605,4 +606,89 @@ test('catalog batch receipts are committed with revision and safely recover a lo
   assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_revisions').get().n,1);
   assert.equal((await call(env,'drafts')).count,0);
   await assert.rejects(()=>call(env,'publish-batch-status?operationId=bad'),/Invalid catalog operation ID/);
+});
+
+test('catalog preview detects zero actual edits, and no-op saving never adds a new draft',async()=>{
+  const {env,sqlite}=fixture();
+  const item=await detail(env,'skill_entry.11.6');
+  const preview=await call(env,'preview',{edit:item.edit,expectedCatalogRevision:0});
+  assert.equal(preview.diff.status,'unchanged');
+  assert.equal(preview.diff.count,0);
+  await assert.rejects(()=>save(env,item),error=>error.status===422 && /Нет фактических изменений/.test(error.message));
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n,0);
+  assert.equal((await publicData(env)).revision,0);
+});
+
+test('exact skill comparison includes all locale strings and numeric timing, and queue uses the same result',async()=>{
+  const {env}=fixture();
+  const item=await detail(env,'skill_entry.14.9');
+  item.edit.names.tw='名稱更改';
+  item.edit.description.jp='説明を変更';
+  item.edit.description.ru='Новое описание проверки';
+  item.edit.mpCost+=1;
+  const preview=await call(env,'preview',{edit:item.edit,expectedCatalogRevision:0});
+  assert.equal(preview.diff.status,'changed');
+  assert.deepEqual(preview.diff.changes.map(row=>row.path).sort(),
+    ['names.tw','description.jp','description.ru','mpCost'].sort());
+  const ru=preview.diff.changes.find(row=>row.path==='description.ru');
+  assert.equal(ru.after,'Новое описание проверки');
+  const saved=await save(env,item);
+  assert.equal(saved.draftDiff.count,4);
+  const queue=await call(env,'drafts');
+  assert.equal(queue.items[0].diff.count,4);
+  assert.equal(queue.items[0].diff.status,'changed');
+  assert.equal(queue.items[0].canDiscard,true);
+  const published=await publish(env,saved);
+  assert.equal(published.catalogRevision,1);
+  assert.equal((await call(env,'drafts')).count,0);
+  const identical=await detail(env,item.edit.id);
+  assert.equal((await call(env,'preview',{edit:identical.edit,expectedCatalogRevision:1})).diff.status,'unchanged');
+  await assert.rejects(()=>save(env,identical),error=>error.status===422);
+});
+
+test('legacy unchanged draft is visible and discardable, but cannot publish or advance catalog revision',async()=>{
+  const {env,sqlite}=fixture();
+  const item=await detail(env,'skill_entry.11.6');
+  sqlite.prepare('INSERT INTO catalog_drafts (id,payload_json,version,is_dirty,updated_at) VALUES (?,?,?,?,?)')
+    .run(item.edit.id,JSON.stringify(item.edit),1,1,1000);
+  const queue=await call(env,'drafts');
+  assert.equal(queue.count,1);
+  assert.equal(queue.items[0].diff.status,'unchanged');
+  assert.equal(queue.items[0].diff.count,0);
+  assert.equal(queue.items[0].canDiscard,true);
+  const pending=await detail(env,item.edit.id);
+  assert.equal(pending.draftDiff.status,'unchanged');
+  await assert.rejects(()=>publish(env,pending),error=>error.status===422);
+  await assert.rejects(()=>call(env,'publish-batch',{items:[{id:item.edit.id,expectedDraftVersion:1}],expectedCatalogRevision:0}),
+    error=>error.status===422);
+  await assert.rejects(()=>call(env,'discard-draft',{id:item.edit.id,expectedDraftVersion:2,expectedCatalogRevision:0}),
+    error=>error.status===409);
+  const discarded=await call(env,'discard-draft',{id:item.edit.id,expectedDraftVersion:1,expectedCatalogRevision:0});
+  assert.equal(discarded.discarded,true);
+  assert.equal((await call(env,'drafts')).count,0);
+  assert.equal((await detail(env,item.edit.id)).hasDraft,false);
+  assert.equal(sqlite.prepare('SELECT version FROM catalog_drafts WHERE id=?').get(item.edit.id).version,2);
+  await assert.rejects(()=>call(env,'discard-draft',{id:item.edit.id,expectedDraftVersion:1,expectedCatalogRevision:0}),
+    error=>error.status===409);
+  assert.equal((await publicData(env)).revision,0);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_revisions').get().n,0);
+});
+
+test('mixed no-op/real batch is rejected as a whole without losing legitimate edits',async()=>{
+  const {env,sqlite}=fixture();
+  const noOp=await detail(env,'equipment.0.1');
+  sqlite.prepare('INSERT INTO catalog_drafts (id,payload_json,version,is_dirty,updated_at) VALUES (?,?,?,?,?)')
+    .run(noOp.edit.id,JSON.stringify(noOp.edit),1,1,1000);
+  const changed=await detail(env,'equipment.0.2');
+  changed.edit.names.ru='Подтверждённая правка';
+  const saved=await save(env,changed);
+  const selected=[{id:noOp.edit.id,expectedDraftVersion:1},{id:saved.edit.id,expectedDraftVersion:saved.draftVersion}];
+  await assert.rejects(()=>call(env,'publish-batch',{items:selected,expectedCatalogRevision:0}),
+    error=>error.status===422);
+  assert.equal((await publicData(env)).revision,0);
+  assert.equal((await call(env,'drafts')).count,2);
+  await call(env,'discard-draft',{id:noOp.edit.id,expectedDraftVersion:1,expectedCatalogRevision:0});
+  const published=await call(env,'publish-batch',{items:selected.slice(1),expectedCatalogRevision:0});
+  assert.equal(published.catalogRevision,1);
+  assert.equal((await publicData(env)).records[0].names.ru,'Подтверждённая правка');
 });
