@@ -319,6 +319,7 @@ async function listDrafts(env) {
       const source = baselineById.get(row.id);
       const identity = source ? sourceIdentity(source) : customIdentities.get(row.id);
       if (!identity) throw Error('Draft identity no longer exists');
+      kind = identity.kind; // Prefer the trusted allocated/source type for navigation.
       const validated = validateDraft(edit, identity);
       const comparison = draftComparison(snapshot, identity, validated);
       diff = { status: comparison.status, count: comparison.count };
