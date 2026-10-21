@@ -163,6 +163,9 @@
     "Обновить список":"catalogRefreshList",
     "Открыть":"catalogOpen",
     "Повторить проверку":"catalogRetryCheck",
+    "Повторить загрузку":"catalogRetryCatalogList",
+    "Повторить загрузку черновиков":"catalogRetryDrafts",
+    "Повторить загрузку каталога":"catalogRetryCatalogLoading",
     "Подтвердить очистку Modern":"catalogConfirmModernCleanup",
     "Новая запись":"catalogNewRecord",
     "Очистка примечаний Astir":"catalogAstirCleanup",
@@ -240,7 +243,8 @@
   "Для этого каталога пока поддерживаются только существующие слоты.": "catalogStatusSlotsOnly",
   "Исходный навык не изменён. Укажите название нового навыка, сохраните черновик, затем опубликуйте его отдельно.": "catalogStatusOriginalUnchanged",
   "Сначала выбери существующий навык как шаблон.": "catalogStatusSelectSkill",
-  "Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.": "catalogStatusLoaded"
+  "Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.": "catalogStatusLoaded",
+  "Загрузка частично не удалась. Используйте «Повторить загрузку» в соответствующем разделе.": "catalogStatusPartialFailure"
 };
   var activeCatalogStatus = null;
   function statusTranslation(entry) {
@@ -1519,7 +1523,9 @@
       if(thisGeneration!==generation)return;
       report(error.message, true);
       if(!host.querySelector('.catalog-controls')){
-        host.replaceChildren(node('p','Не удалось начать работу с каталогом: '+error.message,'catalog-draft-warning'),
+        var failed=catalogLive(node('p',undefined,'catalog-draft-warning'),
+          'catalogStatusStartFailed','Не удалось начать работу с каталогом: {error}',{error:error.message});
+        host.replaceChildren(failed,
           button('Повторить загрузку каталога',function(){start(getCsrf,expired);},'secondary'));
       }
     }
