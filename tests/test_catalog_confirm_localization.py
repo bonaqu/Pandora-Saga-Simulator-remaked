@@ -12,7 +12,7 @@ SLOTS=re.compile(r'\{[A-Za-z0-9_]+\}')
 class CatalogConfirmationTests(unittest.TestCase):
     def test_all_seven_guarded_confirmations_use_four_language_d1_keys(self):
         keys=set(re.findall(r"confirmCatalog\('(catalogConfirm[A-Za-z]+)'",CODE))
-        self.assertEqual(len(keys),7)
+        self.assertEqual(len(keys),8)
         self.assertEqual(CODE.count('window.confirm('),1)
         for suffix in keys:
             key='adminShell.'+suffix
