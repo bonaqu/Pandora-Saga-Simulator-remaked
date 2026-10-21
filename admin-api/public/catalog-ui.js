@@ -7,6 +7,7 @@
   var readProfiles;
   var draftPanel, draftSummary, draftBoard, draftSearchInput, draftKindInput, selectedDrafts=new Map(), knownDrafts=[];
   var draftRequest=0, batchPending=false;
+  var listLoadFailed=false, draftLoadFailed=false;
   var languages = [['en', 'English'], ['ru', 'Русский'], ['jp', '日本語'], ['tw', '繁體中文']];
   // Explicit, approved editor chrome only. Never translate catalog names,
   // descriptions, typed values, D1 payloads or arbitrary source strings.
@@ -1120,6 +1121,10 @@
       if (sequence !== pending || thisGeneration !== generation) return false;
       catalogRevision = result.catalogRevision; listHost.replaceChildren(); listHost.removeAttribute('aria-busy');
       catalogLive(listStatus,'catalogListSummary','Версия {revision} · {count} записей · страница {page}',{revision:catalogRevision,count:result.count,page:page+1});
+      if(listLoadFailed){
+        listLoadFailed=false;
+        if(!draftLoadFailed)report('Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.');
+      }
       result.items.forEach(function (item) {
         var select = button(item.names.ru || item.names.en, function () { openItem(item.id); }, 'catalog-entry');
         select.dataset.recordId = item.id;
@@ -1135,6 +1140,7 @@
       return true;
     } catch (error) {
       if (thisGeneration === generation && sequence === pending) {
+        listLoadFailed=true;
         listHost.removeAttribute('aria-busy');
         catalogLive(listStatus,'catalogListUnavailable','Список не загружен');
         listHost.replaceChildren(node('p',error.message,'catalog-draft-warning'),
@@ -1161,9 +1167,14 @@
           selectedDrafts.delete(id);
       catalogLive(draftSummary,'catalogDraftsCount','Сохранённые черновики каталога: {count}',{count:knownDrafts.length});
       renderDraftBoard();
+      if(draftLoadFailed){
+        draftLoadFailed=false;
+        if(!listLoadFailed)report('Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.');
+      }
       return true;
     }catch(error){
       if(token!==draftRequest||thisGeneration!==generation)return false;
+      draftLoadFailed=true;
       catalogLive(draftSummary,'catalogDraftsUnavailable','Не удалось загрузить черновики');
       draftBoard.replaceChildren(node('p',error.message,'catalog-draft-warning'),
         button('Повторить загрузку черновиков',refreshDrafts,'secondary'));
@@ -1464,6 +1475,7 @@
   }
   async function start(csrf, onExpired) {
     getCsrf = csrf; expired = onExpired; var thisGeneration = ++generation;
+    listLoadFailed=false;draftLoadFailed=false;
     try { meta = await api('meta'); if (thisGeneration !== generation) return;
       host.replaceChildren(); var controls = node('div', undefined, 'catalog-controls');
       kind = node('select'); catalogAttribute(kind,'aria-label','catalogKindAria','Каталог'); [['equipment', 'Экипировка / оружие','catalogKindEquipment'], ['soul', 'Souls / души','catalogKindSoul'], ['class', 'Классы персонажей','catalogKindClass'], ['racial', 'Расовые пассивки','catalogKindRacial'], ['active', 'Активные навыки','catalogKindActive'], ['passive', 'Пассивные навыки','catalogKindPassive']].forEach(function (entry) { var option = catalogStatic(node('option'),entry[2],entry[1]); option.value = entry[0]; kind.appendChild(option); });
@@ -1551,5 +1563,5 @@
     return true;
   }
   window.addEventListener('beforeunload', function (event) { if (dirty) { event.preventDefault(); event.returnValue = ''; } });
-  window.PandoraCatalogConsole = { start, openFromLocalization, clear: function () { generation++; pending++; editorRequest++; draftRequest++; clearTimeout(searchTimer); dirty = false; current = null; meta = null; selectedDrafts.clear();knownDrafts=[];draftPanel=draftSummary=draftBoard=null; host.inert = false; host.removeAttribute('aria-busy'); host.replaceChildren(); } };
+  window.PandoraCatalogConsole = { start, openFromLocalization, clear: function () { generation++; pending++; editorRequest++; draftRequest++; clearTimeout(searchTimer); dirty = false; current = null; meta = null; listLoadFailed=false;draftLoadFailed=false;selectedDrafts.clear();knownDrafts=[];draftPanel=draftSummary=draftBoard=null; host.inert = false; host.removeAttribute('aria-busy'); host.replaceChildren(); } };
 })();
