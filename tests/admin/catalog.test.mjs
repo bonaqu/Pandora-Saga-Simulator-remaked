@@ -707,6 +707,7 @@ test('draft queue loads valid records when one historical payload is invalid and
   assert.equal(pending.count,2);
   const invalid=pending.items.find(row=>row.id===broken.edit.id);
   assert.deepEqual(invalid.diff,{status:'error',count:null});
+  assert.equal(invalid.kind,'active');
   assert.equal(invalid.canDiscard,true);
   const valid=pending.items.find(row=>row.id===good.edit.id);
   assert.equal(valid.diff.status,'changed');
