@@ -1212,8 +1212,9 @@
       if(item.canDiscard){
         var discard=button(draftUi('discard'),async function(){
           if(batchPending||host.inert||!canLeave())return;
-          var question=draftUi('approveDiscard').replace('{name}',item.name||item.id);
-          if(!window.confirm(question))return;
+          if(!confirmCatalog('catalogConfirmDiscardDraft',
+            'Удалить только сохранённый черновик «{name}»? Опубликованные данные и история не изменятся.',
+            {name:item.name||item.id}))return;
           batchPending=true;host.inert=true;host.setAttribute('aria-busy','true');
           try{
             await api('discard-draft',{id:item.id,expectedDraftVersion:item.version,
