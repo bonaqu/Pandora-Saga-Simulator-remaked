@@ -1028,3 +1028,50 @@ test('D1 profile captions switch locales without resurrecting empty text or wipi
   expect(sqlite.prepare('SELECT COUNT(*) AS count FROM catalog_drafts').get().count).toBe(0);
   expect(errors).toEqual([]);
 });
+
+
+test('catalog preview shows actual changed field values and draft can be discarded without publishing',async({page})=>{
+  const {sqlite,errors}=await openConsole(page);
+  const id='skill_entry.11.6';
+  await page.getByRole('searchbox',{name:'Поиск в каталоге'}).fill(id);
+  await page.locator('.catalog-entry[data-record-id="'+id+'"]').click();
+  await page.getByRole('button',{name:'Проверить изменения'}).click();
+  await expect(page.locator('[data-catalog-real-diff]')).toContainText('Нет изменений относительно сайта');
+  await page.locator('.catalog-editor [data-field="names"][data-language="ru"]').fill('Ускользание — тест');
+  await page.getByRole('button',{name:'Проверить изменения'}).click();
+  await expect(page.locator('[data-catalog-real-diff]')).toContainText('Название / ru');
+  await expect(page.locator('[data-catalog-real-diff] .catalog-real-diff-after')).toContainText('Ускользание — тест');
+  await page.getByRole('button',{name:'Сохранить черновик',exact:true}).click();
+  const board=page.locator('.catalog-draft-board');
+  await expect(board.locator('summary')).toContainText('1');
+  await board.locator('summary').click();
+  await expect(board.locator('.catalog-draft-entry')).toContainText('Фактические изменения: 1');
+  page.once('dialog',dialog=>dialog.accept());
+  await board.getByRole('button',{name:'Удалить черновик'}).click();
+  await expect(board.locator('summary')).toContainText('Сохранённые черновики каталога: 0');
+  expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(0);
+  expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts WHERE is_dirty=1').get().n).toBe(0);
+  expect(errors).toEqual([]);
+});
+
+test('old no-op draft is labeled, unselectable, and discard leaves public data untouched',async({page})=>{
+  const {sqlite,errors}=await openConsole(page);
+  const source=baselineById.get('skill_entry.11.6');
+  const old=draftFromSource(source,'active');
+  sqlite.prepare('INSERT INTO catalog_drafts (id,payload_json,version,is_dirty,updated_at) VALUES (?,?,?,?,?)')
+    .run(old.id,JSON.stringify(old),1,1,1000);
+  await page.reload();
+  await expect(page.locator('#catalog-state')).toContainText('Каталог загружен');
+  const board=page.locator('.catalog-draft-board');
+  await expect(board.locator('summary')).toContainText('Сохранённые черновики каталога: 1');
+  await board.locator('summary').click();
+  const row=board.locator('.catalog-draft-entry');
+  await expect(row).toContainText('Нет изменений относительно сайта');
+  await expect(row.locator('input[type="checkbox"]')).toBeDisabled();
+  await expect(board.getByRole('button',{name:'Опубликовать все черновики'})).toBeDisabled();
+  page.once('dialog',dialog=>dialog.accept());
+  await row.getByRole('button',{name:'Удалить черновик'}).click();
+  await expect(board.locator('summary')).toContainText('Сохранённые черновики каталога: 0');
+  expect(sqlite.prepare('SELECT version FROM catalog_head').get().version).toBe(0);
+  expect(errors).toEqual([]);
+});
