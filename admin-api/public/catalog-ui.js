@@ -1479,6 +1479,9 @@
   async function start(csrf, onExpired) {
     getCsrf = csrf; expired = onExpired; var thisGeneration = ++generation;
     listLoadFailed=false;draftLoadFailed=false;
+    // A second login must not briefly show the previous session's "loaded"
+    // result while the new authenticated catalog request is still pending.
+    reportTranslated('catalogLoading','Loading the catalog…');
     try { meta = await api('meta'); if (thisGeneration !== generation) return;
       host.replaceChildren(); var controls = node('div', undefined, 'catalog-controls');
       kind = node('select'); catalogAttribute(kind,'aria-label','catalogKindAria','Каталог'); [['equipment', 'Экипировка / оружие','catalogKindEquipment'], ['soul', 'Souls / души','catalogKindSoul'], ['class', 'Классы персонажей','catalogKindClass'], ['racial', 'Расовые пассивки','catalogKindRacial'], ['active', 'Активные навыки','catalogKindActive'], ['passive', 'Пассивные навыки','catalogKindPassive']].forEach(function (entry) { var option = catalogStatic(node('option'),entry[2],entry[1]); option.value = entry[0]; kind.appendChild(option); });
