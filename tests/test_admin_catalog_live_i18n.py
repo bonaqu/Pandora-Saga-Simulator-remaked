@@ -62,7 +62,7 @@ class CatalogLiveI18nTests(unittest.TestCase):
         self.assertIn("catalogLive(draftSummary,'catalogDraftsCount'", CODE)
         self.assertIn("catalogLive(listStatus,'catalogListSummary'", CODE)
         self.assertIn('selectedDrafts.set(item.id,item.version)', CODE)
-        self.assertIn('if(present.get(id)!==version)selectedDrafts.delete(id)', CODE)
+        self.assertIn('if(present.get(id)!==version || !knownDrafts.some(item=>item.id===id&&draftCanPublish(item)))', CODE)
 
 
 if __name__ == '__main__':
