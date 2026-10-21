@@ -1033,6 +1033,7 @@ test('D1 profile captions switch locales without resurrecting empty text or wipi
 test('catalog preview shows actual changed field values and draft can be discarded without publishing',async({page})=>{
   const {sqlite,errors}=await openConsole(page);
   const id='skill_entry.11.6';
+  await page.getByRole('combobox',{name:'Каталог',exact:true}).selectOption('active');
   await page.getByRole('searchbox',{name:'Поиск в каталоге'}).fill(id);
   await page.locator('.catalog-entry[data-record-id="'+id+'"]').click();
   await page.getByRole('button',{name:'Проверить изменения'}).click();
