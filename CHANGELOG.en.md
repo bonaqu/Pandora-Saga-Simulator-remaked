@@ -1,18 +1,18 @@
 # Release history — English
 
+Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
+
 ## Modern 4.26 — 2026-10-21
 
 ### For users
 
-- Internal administrative editor improvements. Game calculations are unchanged.
+- Internal technical improvements.
 
 ### Development and technical changes
 
-- Catalog draft review now shows exact before/after changes across all four locales and gameplay fields, and the queue reports meaningful change counts.
-- Existing records without changes cannot be published. Stale no-op drafts can be explicitly discarded without changing public revisions or historical snapshots, with concurrency protection.
-- API and browser regressions cover preview, atomic batches, old drafts, and safe discard.
-
-Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
+- Admin catalog review now displays exact editable-field differences, including four locales, skills and calculation settings; the draft queue exposes real change counts.
+- Reject saving or publishing existing entries with no effective changes, including atomic batch guards. Legacy no-op drafts remain visible for explicit cleanup.
+- Add version-checked private draft discard for source or already-published entries, preserving public revisions, historical data, Legacy and formulas. Cover with API and browser regression tests.
 
 ## Modern 4.25 — 2026-10-13
 
