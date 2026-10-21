@@ -1144,6 +1144,7 @@
   async function refreshDrafts() {
     var token=++draftRequest, thisGeneration=generation;
     if(!draftSummary)return false;
+    draftPanel?.setAttribute('aria-busy','true');
     catalogLive(draftSummary,'catalogDraftsLoadingStatus','Сохранённые черновики · загрузка…');
     try{
       var response=await api('drafts');
@@ -1164,6 +1165,9 @@
         button('Повторить загрузку черновиков',refreshDrafts,'secondary'));
       report(error.message,true);
       return false;
+    }finally{
+      if(token===draftRequest&&thisGeneration===generation)
+        draftPanel?.removeAttribute('aria-busy');
     }
   }
   function renderDraftBoard(){
@@ -1508,8 +1512,9 @@
       grid.append(sidebar, editor); host.appendChild(grid); page = 0;
       const loaded=await Promise.all([loadList(),refreshDrafts()]);
       if(thisGeneration!==generation)return;
-      if(loaded.every(Boolean))report('Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.');
-      else report('Загрузка частично не удалась. Используйте «Повторить загрузку» в соответствующем разделе.',true);
+      if(loaded.every(value=>value===true))report('Каталог загружен. Черновики приватны; массовая публикация доступна над каталогом.');
+      else if(loaded.some(value=>value===false))
+        report('Загрузка частично не удалась. Используйте «Повторить загрузку» в соответствующем разделе.',true);
     } catch (error) {
       if(thisGeneration!==generation)return;
       report(error.message, true);
