@@ -739,6 +739,9 @@ test('draft list resolves baseline identities without per-row D1 requests and cu
   edit.names.en='Synthetic custom sword';
   edit.baseAttack=5;
   const custom=await save(env,{edit,draftVersion:0,catalogRevision:0});
+  // Saving a new custom record legitimately validates the allocation by ID.
+  // Measure only the cost of listing all drafts, not the preceding write.
+  counts.individual=0;counts.bulk=0;
   const listed=await call(env,'drafts');
   assert.equal(listed.count,4);
   assert.equal(listed.items.find(item=>item.id===custom.edit.id).diff.status,'new');
