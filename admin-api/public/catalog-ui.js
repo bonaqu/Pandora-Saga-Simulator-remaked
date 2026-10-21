@@ -496,6 +496,67 @@
     required.branches.forEach(function (gate) { parts.push((meta.skillCategories.find(function (row) { return row.id === gate.branchId; })?.name.en || gate.branchId) + ' ≥ ' + gate.minimumPoints); });
     return parts.join(' · ');
   }
+  function draftCanPublish(item) { return item.diff?.status === 'changed' || item.diff?.status === 'new'; }
+  function draftUi(key) {
+    var language=window.PandoraAdminI18n?.getLocale?.()||'ru';
+    var labels={
+      changes:{ru:'Фактические изменения',en:'Actual changes',jp:'実際の変更',tw:'實際變更'},
+      unchanged:{ru:'Нет изменений относительно сайта',en:'No changes from published data',jp:'公開版からの変更はありません',tw:'與已發布版本沒有差異'},
+      newRecord:{ru:'Новая запись',en:'New record',jp:'新しいレコード',tw:'新增記錄'},
+      error:{ru:'Невозможно сравнить; проверьте запись',en:'Unable to compare; inspect the record',jp:'比較できません。レコードを確認してください',tw:'無法比較，請檢查記錄'},
+      before:{ru:'Сейчас',en:'Before',jp:'変更前',tw:'變更前'},
+      after:{ru:'После',en:'After',jp:'変更後',tw:'變更後'},
+      discard:{ru:'Удалить черновик',en:'Discard draft',jp:'下書きを破棄',tw:'捨棄草稿'},
+      missing:{ru:'(не задано)',en:'(not set)',jp:'(未設定)',tw:'(未設定)'},
+      approveDiscard:{ru:'Удалить только сохранённый черновик «{name}»? Опубликованные данные и история не изменятся.',en:'Discard only the saved draft “{name}”? Published data and history will remain unchanged.',jp:'「{name}」の下書きだけを破棄しますか？公開データと履歴は変更されません。',tw:'僅捨棄「{name}」的草稿？已發布資料與歷史不會變更。'}
+    };
+    return labels[key]?.[language]||labels[key]?.ru||key;
+  }
+  function diffFieldName(path) {
+    var names={names:'Название',description:'Описание',notes:'Примечания',acquisition:'Получение',
+      modifiers:'Модификаторы',calculationNotes:'Ограничения расчёта',mpCost:'Стоимость MP',
+      castSeconds:'Время применения (с)',cooldownSeconds:'Перезарядка (с)',durationSeconds:'Длительность (с)',
+      effectMode:'Режим эффектов',intrinsicEffectMode:'Встроенный эффект',effects:'Эффекты',
+      bonusRequirements:'Условия бонусов',learningRequirements:'Условия изучения',
+      profiles:'Варианты навыка',upgradeBonuses:'Бонусы заточки',progression:'Коэффициенты класса',
+      races:'Расы',classes:'Классы',slots:'Слоты',disabled:'Недоступен',level:'Уровень',
+      sockets:'Количество слотов',baseAttack:'Базовая атака',weaponCategories:'Категории оружия',
+      classIds:'Классы',classScope:'Область профессий',minimumLevel:'Мин. уровень',
+      branches:'Ветки',minimumPoints:'Очки ветки',shieldRequired:'Нужен щит',ridingRequired:'Нужна верховая езда',
+      stat:'Характеристика',value:'Значение',unit:'Единица',every:'Шаг',from:'От',to:'До'};
+    if(path==='$new')return draftUi('newRecord');
+    return path.split(/(\[[0-9]+\]|\.)/).filter(part=>part!=='.'&&part).map(part=>names[part]||part).join(' / ');
+  }
+  function diffValue(value) {
+    if(value===null||value===undefined)return draftUi('missing');
+    if(typeof value==='string')return value===''?draftUi('missing'):value;
+    if(typeof value==='boolean')return value?'Да':'Нет';
+    if(typeof value==='object')return JSON.stringify(value,null,2);
+    return String(value);
+  }
+  function renderRealDiff(diff,target) {
+    target.replaceChildren();
+    if(!diff){target.appendChild(node('p','Изменения ещё не проверены.','help-text'));return;}
+    var heading=node('h4',draftUi('changes')+': '+(diff.count??'—'));
+    target.appendChild(heading);
+    if(diff.status==='unchanged'||diff.status==='error'){
+      target.appendChild(node('p',draftUi(diff.status),'catalog-diff-status'));
+      return;
+    }
+    var entries=node('div',undefined,'catalog-real-diff-list');
+    (diff.changes||[]).forEach(function(change){
+      var entry=node('div',undefined,'catalog-real-diff-entry');
+      entry.appendChild(node('strong',diffFieldName(change.path),'catalog-real-diff-path'));
+      var values=node('div',undefined,'catalog-real-diff-values');
+      var oldValue=node('div',undefined,'catalog-real-diff-before'),
+        newValue=node('div',undefined,'catalog-real-diff-after');
+      oldValue.append(node('small',draftUi('before')),node('pre',diffValue(change.before)));
+      newValue.append(node('small',draftUi('after')),node('pre',diffValue(change.after)));
+      values.append(oldValue,newValue);entry.appendChild(values);entries.appendChild(entry);
+    });
+    target.appendChild(entries);
+  }
+
   async function checkChanges() {
     if (!editor.reportValidity()) return;
     var thisGeneration = generation, selection = current, preview = editor.querySelector('[data-preview-record]');
@@ -505,7 +566,8 @@
       if (thisGeneration !== generation || current !== selection) return;
       recordView(result.record, preview, 'После публикации');
       preview.appendChild(node('p', 'Проверено сервером. Это ещё не сохранено и не опубликовано. Здесь показаны данные записи, а не результат полного билда.', 'help-text'));
-      report('Изменения проверены. Чтобы применить: сохраните черновик → опубликуйте.');
+      renderRealDiff(result.diff,editor.querySelector('[data-catalog-real-diff]'));
+      report(result.diff.status==='unchanged' ? draftUi('unchanged') : 'Изменения проверены. Чтобы применить: сохраните черновик → опубликуйте.');
     } catch (error) { if (thisGeneration === generation && current === selection) report(error.message + ' Ваши поля не удалены.', true); }
     finally { if (thisGeneration === generation) { host.inert = false; host.removeAttribute('aria-busy'); } }
   }
@@ -517,7 +579,12 @@
     live.dataset.currentRecord = ''; preview.dataset.previewRecord = ''; preview.setAttribute('aria-live', 'polite');
     recordView(current.currentRecord, live, 'Сейчас на сайте · версия ' + current.catalogRevision);
     preview.append(node('h4', 'После публикации'), node('p', 'Изменения ещё не проверены. Нажмите «Проверить изменения».', 'help-text'));
-    panels.append(live, preview); editor.append(panels, button('Проверить изменения', checkChanges, 'secondary'));
+    panels.append(live, preview);
+    var changes=node('section',undefined,'catalog-real-diff');
+    changes.dataset.catalogRealDiff='';
+    changes.setAttribute('aria-live','polite');
+    renderRealDiff(current.draftDiff||null,changes);
+    editor.append(panels,button('Проверить изменения', checkChanges, 'secondary'),changes);
     editor.appendChild(node('h4', 'Редактируемые поля'));
   }
   function refreshItemPreview(){
@@ -1065,7 +1132,8 @@
       // Keep selections only while both identity and saved version match.
       var present=new Map(knownDrafts.map(function(item){return [item.id,item.version];}));
       for(var [id,version] of selectedDrafts)
-        if(present.get(id)!==version)selectedDrafts.delete(id);
+        if(present.get(id)!==version || !knownDrafts.some(item=>item.id===id&&draftCanPublish(item)))
+          selectedDrafts.delete(id);
       catalogLive(draftSummary,'catalogDraftsCount','Сохранённые черновики каталога: {count}',{count:knownDrafts.length});
       renderDraftBoard();
     }catch(error){
@@ -1095,7 +1163,7 @@
     var actions=node('div',undefined,'catalog-draft-actions');
     var selectionStatus=node('output');selectionStatus.setAttribute('aria-live','polite');
     var all=button('Выбрать все',function(){
-      visibleDrafts.forEach(function(item){selectedDrafts.set(item.id,item.version);});renderDraftBoard();
+      visibleDrafts.filter(draftCanPublish).forEach(function(item){selectedDrafts.set(item.id,item.version);});renderDraftBoard();
     },'secondary');
     var none=button('Снять выделение',function(){selectedDrafts.clear();renderDraftBoard();},'secondary');
     var send=button('Опубликовать выбранные',function(){publishDraftBatch(false);});
@@ -1105,7 +1173,7 @@
     var count=selectionCount();
     catalogLive(selectionStatus,'catalogDraftSelectionCount','Выбрано: {selected} из {total} · показано: {shown}',{selected:count,total:knownDrafts.length,shown:visibleDrafts.length});
     send.disabled=!count||count>50||batchPending;
-    sendAll.disabled=knownDrafts.length>50||batchPending;
+    sendAll.disabled=knownDrafts.length>50||batchPending||knownDrafts.some(item=>!draftCanPublish(item));
     all.disabled=none.disabled=refresh.disabled=batchPending;
     if(knownDrafts.length>50)
       draftBoard.appendChild(node('p','За одну публикацию допускается не более 50 записей. Отметь до 50 нужных черновиков.','catalog-draft-warning'));
@@ -1115,7 +1183,7 @@
     visibleDrafts.forEach(function(item){
       var row=node('div',undefined,'catalog-draft-entry');
       var label=node('label',undefined,'catalog-draft-entry-label');
-      var box=node('input');box.type='checkbox';box.checked=selectedDrafts.get(item.id)===item.version;box.disabled=batchPending;
+      var box=node('input');box.type='checkbox';box.checked=selectedDrafts.get(item.id)===item.version;box.disabled=batchPending||!draftCanPublish(item);
       box.addEventListener('change',function(){
         if(box.checked)selectedDrafts.set(item.id,item.version);
         else selectedDrafts.delete(item.id);
@@ -1126,6 +1194,11 @@
       var description=node('span',undefined,'catalog-draft-entry-info');
       description.append(node('strong',item.name||item.englishName||item.id),
         catalogLive(node('small'),'catalogDraftRevision','{id} · {kind} · черновик v{version}',{id:item.id,kind:item.kind,version:item.version}));
+      description.appendChild(node('small',item.diff?.status==='unchanged'?draftUi('unchanged'):
+        item.diff?.status==='new'?draftUi('newRecord'):
+        item.diff?.status==='error'?draftUi('error'):
+        draftUi('changes')+': '+item.diff?.count,
+        item.diff?.status==='unchanged'?'catalog-draft-warning':'catalog-draft-diff-status'));
       label.append(box,description);
       var open=button('Открыть',async function(){
         if(batchPending||!canLeave())return;
@@ -1135,7 +1208,29 @@
         await loadList();
         await openItem(item.id);
       },'secondary');
-      row.append(label,open);entries.append(row);
+      row.append(label,open);
+      if(item.canDiscard){
+        var discard=button(draftUi('discard'),async function(){
+          if(batchPending||host.inert||!canLeave())return;
+          var question=draftUi('approveDiscard').replace('{name}',item.name||item.id);
+          if(!window.confirm(question))return;
+          batchPending=true;host.inert=true;host.setAttribute('aria-busy','true');
+          try{
+            await api('discard-draft',{id:item.id,expectedDraftVersion:item.version,
+              expectedCatalogRevision:catalogRevision});
+            selectedDrafts.delete(item.id);
+            if(current?.edit.id===item.id){
+              current=await api('item?id='+encodeURIComponent(item.id));dirty=false;renderEditor();
+            }
+            await Promise.all([refreshDrafts(),loadList()]);
+            report('Черновик удалён. Опубликованная запись не изменена.');
+          }catch(error){report(error.message,true);await refreshDrafts();}
+          finally{batchPending=false;host.inert=false;host.removeAttribute('aria-busy');renderDraftBoard();}
+        },'secondary');
+        discard.classList.add('catalog-discard-draft');
+        row.appendChild(discard);
+      }
+      entries.append(row);
     });
     if(!visibleDrafts.length)entries.appendChild(node('p','Нет черновиков по заданному фильтру.','help-text'));
     draftBoard.appendChild(entries);
@@ -1145,6 +1240,7 @@
     if(dirty){report('В текущей записи есть несохранённые изменения. Сохрани или отмени их перед массовой публикацией.',true);return;}
     var targets=knownDrafts.filter(function(item){return all || selectedDrafts.get(item.id)===item.version;});
     if(!targets.length||targets.length>50){report('Выбери от 1 до 50 черновиков.',true);return;}
+    if(targets.some(item=>!draftCanPublish(item))){report('В выбранных черновиках есть записи без изменений или с ошибкой сравнения. Разбери их перед публикацией.',true);return;}
     if(!confirmCatalog('catalogConfirmPublishBatch','Опубликовать {count} сохранённых черновиков как ОДНУ версию каталога? Изменения названий, эффектов и характеристик появятся в Modern. Legacy и старые версии останутся неизменными.',{count:targets.length}))return;
     batchPending=true;host.inert=true;host.setAttribute('aria-busy','true');
     var thisGeneration=generation,keepId=current?.edit.id,operationId=crypto.randomUUID(),uncertain=false;
