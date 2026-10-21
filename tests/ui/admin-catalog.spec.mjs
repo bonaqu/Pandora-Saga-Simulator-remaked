@@ -1170,3 +1170,24 @@ test('failed catalog list exposes retry while draft queue is still available',as
   await expect(page.getByRole('button',{name:'Повторить загрузку',exact:true})).toHaveCount(0);
   expect(errors).toEqual([]);
 });
+
+
+test('restarting an authenticated catalog shows fresh loading state, never stale success',async({page})=>{
+  const {errors}=await openConsole(page);
+  const status=page.locator('#catalog-state');
+  await expect(status).toContainText('Каталог загружен');
+  let release;
+  const gate=new Promise(resolve=>{release=resolve;});
+  await page.route(admin+'/api/admin/meta',async route=>{
+    await gate;
+    return route.fallback();
+  });
+  await page.evaluate(()=>{
+    window.PandoraCatalogConsole.start(()=> 'synthetic-test-csrf-only',()=>{});
+  });
+  await expect(status).toHaveText('Loading the catalog…');
+  release();
+  await expect(status).toContainText('Каталог загружен');
+  await expect(page.locator('.catalog-draft-board > summary')).toContainText('Сохранённые черновики каталога: 0');
+  expect(errors).toEqual([]);
+});
