@@ -11,8 +11,8 @@ const rows = [
   ['Pharmaceutics', 'Знахарство', 'Your medical knowledge allows you to use potions with maximum efficiency. Increases healing potion effectiveness by 15%.', 'Позволяет максимально эффективно использовать зелья за счет познаний в медицине. Увеличивает эффективность лечебных зелий +15%', [flat(8, 15)]],
   ["Nature's Harmony", 'Гармония', 'Vast magical knowledge reduces your MP costs. MP Cost -15%.', 'Позволяет тратить на 15% ОМ меньше за счет обширных познаний в магии.', [flat(76, -15)]],
   ['Eagle Eye', 'Зоркость', 'Increases attack range by 500', 'Увеличивает дальность стрельбы на 500.', [], weapons([8, 9]), {
-    en: 'The +500 range is reference information: the retained calculator has no calculated ranged-weapon range. No base range or carrying bonus is invented.',
-    ru: 'Дальность +500 указана справочно: исходный калькулятор не рассчитывает дальность дальнобойного оружия. Базовую дальность и бонус переносимого веса не придумываем.'
+    en: 'The +500 range is included when the equipped ranged weapon has a known base range. Other range effects may be unverified.',
+    ru: 'Дальность +500 учитывается, если известна базовая дальность экипированного дальнобойного оружия. Остальные эффекты дальности могут быть не проверены.'
   }],
   ['Steadfastness', 'Стойкость разума', 'Increases resistance to Charm skills by 20', 'Увеличивает сопротивляемость эффектам ветки умений чар на +20.', [flat(142, 20)]],
   ['Stronghearted', 'Упрямое сердце', 'Grants a 20% chance to survive a fatal hit with 1 HP. Also increases Knockdown, Stun, and Freeze Resistance by 10.', 'Дает 20% шанс пережить последний удар сохранив одну единицу здоровья, а также дарует устойчивость к падению, оглушению и заморозке на 10.', [flat(149, 10), flat(150, 10), flat(151, 10)], null, {
@@ -42,6 +42,7 @@ export function currentRacialDrafts() {
     edit.effectMode = 'replace'; edit.effects = effects.map(effect => ({ ...effect }));
     if (requirements) edit.bonusRequirements = { ...requirements, weaponCategories: [...requirements.weaponCategories] };
     if (notes) edit.calculationNotes = { ...notes, jp: '', tw: '' };
+    if (category === 1 && index === 1) edit.rangeBonus = { amount: 500, appliesTo: 'ranged' };
     return edit;
   });
 }

@@ -127,7 +127,7 @@ test('real race/passive controls remove old bonuses and pinned save/load restore
   expect(await read()).toEqual(myrine);
   expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(payload);
   await page.locator('#SelRace').selectOption('1'); await page.locator('#SelRSkill').selectOption('1');
-  await expect(page.locator('#RemakedRacialInfo')).toContainText('Дальность +500 указана справочно');
+  await expect(page.locator('#RemakedRacialInfo')).toContainText('Дальность +500 учитывается');
   await page.evaluate(() => PandoraRemaked.i18n.setLocale('en'));
   await expect(page.locator('#RemakedRacialInfo')).toContainText('Increases attack range by 500');
   await expect(page.locator('#RemakedRacialInfo')).toContainText('Calculation limit:');

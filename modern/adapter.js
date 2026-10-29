@@ -448,6 +448,34 @@
     descriptions = descriptions.map(function(line) {
       return namespace.catalogText?.lines ? namespace.catalogText.lines(line) : line;
     });
+    var locale = namespace.i18n?.getLocale?.() || 'en';
+    var gemNames = locale === 'ru'
+      ? {fire:'Огонь',ice:'Лёд',lightning:'Молния',poison:'Яд',light:'Свет',dark:'Тьма',rainbow:'Радужный'}
+      : {fire:'Fire',ice:'Ice',lightning:'Lightning',poison:'Poison',light:'Light',dark:'Dark',rainbow:'Rainbow'};
+    var ruStats = {0:'ВЫН',1:'СИЛ',2:'ПРВ',3:'ЛВК',4:'СД',5:'ИНТ',6:'ОЗ',7:'ОМ',8:'Эффективность зелий',10:'Восстановление ОМ',11:'Эффективность лечения',18:'Атака',21:'Урон оружием',42:'Магическая атака',49:'Защита',52:'Физический урон',60:'Магический урон',62:'Точность',65:'Уклонение',69:'Шанс крита',70:'Сопротивление криту',71:'Критический урон',72:'Получаемый критический урон',73:'Скорость атаки',74:'Скорость передвижения',76:'Расход ОМ',77:'Скорость применения',79:'Перезарядка',138:'Сопротивление огню',139:'Сопротивление льду',140:'Сопротивление молнии',141:'Сопротивление яду',142:'Сопротивление чарам',143:'Сопротивление свету',144:'Сопротивление тьме',145:'Сопротивление магии',146:'Сопротивление состояниям тела',147:'Сопротивление состояниям разума',148:'Сопротивление ожогу',149:'Сопротивление оглушению',150:'Сопротивление заморозке',151:'Сопротивление падению'};
+    ruStats[43] = 'Магическая атака огнём';
+    ruStats[33] = 'Урон ауры';
+    ruStats[157] = 'Сопротивление безумию'; ruStats[161] = 'Сопротивление болезни';
+    var upgradeDetails = (catalogRecord?.upgradeBonuses || []).filter(function(rule) { return Boolean(rule.gemElement); }).map(function(rule) {
+      var label = locale === 'ru' && ruStats[rule.stat] || text(window.Name.Option[rule.stat]?.[4]) || ('#' + rule.stat);
+      var amount = (rule.value > 0 ? '+' : '') + rule.value + (rule.unit === 'percent' || rule.stat === 43 ? '%' : '');
+      var gem = gemNames[rule.gemElement] || rule.gemElement;
+      return locale === 'ru'
+        ? 'Самоцвет «' + gem + '»: ' + label + ' ' + amount + ' с +' + rule.from + ', каждые ' + rule.every + ' уровня до +' + rule.to + '.'
+        : gem + ' gem: ' + label + ' ' + amount + ' from +' + rule.from + ', every ' + rule.every + ' levels through +' + rule.to + '.';
+    });
+    var procDetails = (catalogRecord?.procEffects || []).map(function(rule) {
+      var gem=rule.gemElement ? gemNames[rule.gemElement] || rule.gemElement : null;
+      var when=rule.from===undefined ? '' : locale==='ru'
+        ? ' с +'+rule.from+', каждые '+rule.every+' уровня до +'+rule.to
+        : ' from +'+rule.from+', every '+rule.every+' levels through +'+rule.to;
+      var required=gem ? locale==='ru' ? ', самоцвет «'+gem+'»' : ', '+gem+' gem' : '';
+      var currentChance=equipped && namespace.enhancementEffects?.procRuleValue ? namespace.enhancementEffects.procRuleValue(rule,current) : null;
+      var active=currentChance===null ? '' : locale==='ru' ? ' Сейчас: '+currentChance+'%.' : ' Currently: '+currentChance+'%.';
+      if(rule.kind==='special_magic_damage') return (rule.names[locale]||rule.names.en)+': '+rule.chance+'%'+when+required+'.'+active;
+      return locale==='ru' ? 'Шанс ожога: '+rule.chance+'%'+when+required+'.'+active+' Справка; бой не моделируется.'
+        : 'Burn chance: '+rule.chance+'%'+when+required+'.'+active+' Informational; combat is not simulated.';
+    });
     var displayName = namespace.i18n?.game?.(termId, '') || overrideName || normalizeUntranslatedItemName(text(record[0]));
     return { name: displayName, level: kind === 'equipment' ? canonical[4] : null,
       sockets: kind === 'equipment' ? canonical[5] : null,
@@ -456,7 +484,7 @@
       equipped: equipped,
       equippedName: equipped ? text(window.EquipOption.apply(null, current)).replace(text(record[0]), function () { return displayName; }) : '',
       gem: equipped && Number(current[3]) > 0 ? text(window.Name.Gem[0][current[1]][language]) + ' · ' + text(window.Name.Gem[1][current[2]][language]) : '',
-      descriptions: descriptions,
+      descriptions: descriptions, upgradeDetails: upgradeDetails, procDetails: procDetails,
       calculationWarning: kind === 'equipment' ? adapter.equipmentCalculationWarning(id) : '' };
   };
 })();

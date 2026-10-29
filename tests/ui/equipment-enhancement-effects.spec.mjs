@@ -1,7 +1,11 @@
 import { test, expect } from '@playwright/test';
+import path from 'node:path';
 import { compileRecord, draftFromSource, validateDraft } from '../../admin-api/src/catalog-model.mjs';
 import equipment from '../../data/generated/equipment.v1.json' with { type: 'json' };
 import character from '../../data/generated/character.v1.json' with { type: 'json' };
+import { baselineById, sourceIdentity } from '../../admin-api/src/catalog-baseline.mjs';
+import { previewCandidate } from '../../scripts/audit_pandora_os_fire_update_preview.mjs';
+import { previewReviewedPumpkinSoul } from '../../scripts/lib/reviewed-soul-preview.mjs';
 
 const DIVINE_SET_RECORDS = [
   {
@@ -448,6 +452,145 @@ function publication(records) {
   };
 }
 
+test('observed Spark Wand stats remain correct at every fire refinement level', async ({page}) => {
+  const candidate={kind:'equipment',serverId:2652,category:12,names:{en:'Spark Wand',ru:'Огненный жезл искр'},
+    forth:Object.fromEntries([7,8,9,10].map(level=>[level,[{func:'EP_FIRE_RESISTANCE_CONST',a:(level-6)*4,b:0}]])),source:{
+    itemKind:'WAND',level:40,sockets:2,W:36,
+    descriptionEn:'When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>SPI +1<br>Fire magic resistance +4',
+    descriptionRu:'Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>СД +1<br>Сопротивляемость магии огня +4',
+    effects:[{func:'EP_INTELIGENCE_CONST',a:4},{func:'EP_SPIRITUAL_CONST',a:3},{func:'EP_IMMUNE_BURN',a:5},{func:'EP_VITARITY_CONST',a:2},
+      {func:'EP_SKILL_BENCH',a:-5}],
+    classes:{CLERIC:1}}};
+  const record=previewCandidate(candidate,baselineById.get('equipment.12.12')).syntheticCandidate;
+  // Isolate the weapon from the independently modelled Inspiration passive.
+  const passiveSource=baselineById.get('skill_entry.12.1'),passiveId=sourceIdentity(passiveSource);
+  const passiveEdit=draftFromSource(passiveSource,'passive');passiveEdit.intrinsicEffectMode='replace';
+  const passive=compileRecord(validateDraft(passiveEdit,passiveId),passiveId,passiveSource);
+  await page.goto('/');
+  const results=await page.evaluate(({record,snapshot,isolated})=>{
+    PandoraRemaked.catalog.applySnapshot(snapshot);
+    document.getElementById('SelRace').selectedIndex=1;document.getElementById('SelRace').onchange();
+    document.getElementById('SelJob').selectedIndex=16;document.getElementById('SelJob').onchange();
+    StatusMove('Lev',45-Status.Lev[0]);CalcSet('Lev');Reset('Equip');Reset('Status');
+    StatusMove('Status','INT',90);StatusMove('Status','DEX',26);StatusMove('Status','SPR',22);CalcSet('ALL');
+    const nativeSpr=Status.SPR[0]+Status.SPR[1]+Status.SPR[2];
+    PandoraRemaked.catalog.applySnapshot(isolated);CalcSet('ALL');
+    const snapshotStats=()=>Object.fromEntries(['STA','STR','AGI','DEX','SPR','INT'].map(name=>[name,Status[name][0]+Status[name][1]+Status[name][2]]));
+    const unequipped=snapshotStats(), rows=[];
+    for(const [gemType,element,plus] of [[0,0,0],[0,0,6],[0,0,7],[1,0,7],[0,0,8],[0,0,9],[0,0,10],[0,1,10]]){
+      Status.Equip[0]=[record.engineId,gemType,element,plus,0,0,0];EquipCheck();
+      const stats=snapshotStats(),delta=Object.fromEntries(Object.keys(stats).map(name=>[name,stats[name]-unequipped[name]]));
+      rows.push({gemType,element,plus,delta,fireResistance:(EquipOpt[138]||[]).reduce((sum,n)=>sum+Number(n),0),
+        cooldown:(EquipOpt[79]||[]).reduce((sum,n)=>sum+Number(n),0)});
+    }
+    return {nativeSpr,unequipped,rows};
+  },{record,snapshot:publication([record]),isolated:{...publication([record,passive]),revision:86,impactRevision:86}});
+  expect(results.nativeSpr).toBe(32);
+  expect(results.unequipped).toEqual({STA:3,STR:5,AGI:5,DEX:30,SPR:30,INT:99});
+  expect(results.rows.map(row=>row.delta.STA)).toEqual([2,2,2,2,2,2,2,2]);
+  expect(results.rows.map(row=>row.delta.INT)).toEqual([4,4,4,4,4,4,4,4]);
+  expect(results.rows.map(row=>row.delta.SPR)).toEqual([3,3,4,4,5,6,7,3]);
+  expect(results.rows.map(row=>row.fireResistance)).toEqual([0,0,4,4,8,12,16,0]);
+  expect(results.rows.map(row=>row.cooldown)).toEqual([-5,-5,-5,-5,-5,-5,-5,-5]);
+  expect(results.rows.every(row=>row.delta.STR===0&&row.delta.AGI===0&&row.delta.DEX===0)).toBe(true);
+});
+
+test('Volcano Staff preview uses INT, fire refinement and its own Phoenix chance',async({page})=>{
+  const candidate={kind:'equipment',serverId:2852,category:13,names:{en:'Volcano Staff',ru:'Огненный посох вулкана'},
+    forth:Object.fromEntries([7,8,9,10].map(level=>[level,[{func:'EP_INTELIGENCE_CONST',a:level-6,b:0}]])),source:{
+    itemKind:'STAFF',level:40,sockets:2,W:48,
+    descriptionRu:'Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>ИНТ +1<br>+3% шанс призвать Пламя феникса<br>Пламя феникса: 25 урона + 25% от ИНТ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от ИНТ и сокращает откат на 1 секунду.',
+    descriptionEn:'When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>INT +1<br>+3% chance to summon Phoenix Flame<br>Phoenix Flame: 25 damage + 25% of INT, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of INT and reduces the cooldown by 1 second.',
+    effects:[{func:'EP_INTELIGENCE_CONST',a:6},{func:'EP_DEXTERITY_CONST',a:4},{func:'EP_SPIRITUAL_CONST',a:4},
+      {func:'EP_ELEMENT_DAMAGE_SCALE',a:20},{func:'EP_IMMUNE_BURN',a:5}],classes:{MAGE:1}}};
+  const record=previewCandidate(candidate,baselineById.get('equipment.13.9')).syntheticCandidate;
+  await page.goto('/');
+  const result=await page.evaluate(({record,snapshot})=>{
+    PandoraRemaked.catalog.applySnapshot(snapshot);
+    const rows=[];
+    for(const [element,plus] of [[0,0],[0,6],[0,7],[0,8],[0,9],[0,10],[1,10]]){
+      Status.Equip[0]=[record.engineId,0,element,plus,0,0,0];EquipCheck();
+      const sum=id=>(EquipOpt[id]||[]).reduce((total,n)=>total+Number(n),0);
+      const special=PandoraRemaked.enhancementEffects.currentWeaponProcs().find(row=>row.kind==='special_magic_damage');
+      rows.push({plus,element,int:sum(5),dex:sum(3),spr:sum(4),magic:sum(42),burnRes:sum(148),
+        values:PandoraRemaked.enhancementEffects.specialProcValues(special.rule,special.state)});
+    }return rows;
+  },{record,snapshot:publication([record])});
+  expect(result.map(row=>row.int)).toEqual([6,6,7,8,9,10,6]);
+  expect(result.every(row=>row.dex===4&&row.spr===4&&row.magic===20&&row.burnRes===5)).toBe(true);
+  expect(result.map(row=>row.values?.chance||0)).toEqual([0,0,3,6,9,12,0]);
+  expect(result.slice(2,6).map(row=>row.values.cooldown)).toEqual([5,4,3,2]);
+  expect(result.slice(2,6).map(row=>[row.values.damage,row.values.statPercent])).toEqual([[25,25],[50,50],[75,75],[100,100]]);
+});
+
+test('special weapon effects have an independent attack page and update with equipment, stats and locale', async ({page}) => {
+  const identity={id:'modern.equipment.phoenix-test',kind:'equipment',category:0,index:852};
+  const edit=draftFromSource(null,'equipment');edit.id=identity.id;edit.category=0;edit.baseAttack=62;edit.names.en='Flameblade';
+  edit.procEffects=[{kind:'burn',chance:2,from:7,every:1,to:10,gemElement:'fire'},
+    {kind:'special_magic_damage',names:{en:'Phoenix Flame',ru:'Пламя феникса',jp:'',tw:''},
+      chance:5,chanceStep:5,from:7,every:1,to:10,gemElement:'fire',damageStat:'STR',
+      baseDamage:25,damageStep:25,statPercent:25,statPercentStep:25,cooldownSeconds:5,cooldownReduction:1}];
+  const record=compileRecord(validateDraft(edit,identity),identity,null);
+  await page.goto('/');
+  await page.evaluate(({record,snapshot})=>{
+    PandoraRemaked.catalog.applySnapshot(snapshot);PandoraRemaked.i18n.setLocale('ru');
+    Status.Equip[0]=[record.engineId,0,0,7,0,0,0];EquipCheck();
+  },{record,snapshot:publication([record])});
+  await page.locator('[data-remaked-tab="2"]').click();
+  const attackLabels=await page.evaluate(()=>Array.from(document.querySelectorAll('#ATKView [id^="TextATK_"]')).map(element=>element.textContent));
+  expect(attackLabels).toHaveLength(54);
+  expect(attackLabels.filter(label=>!/[А-Яа-яЁё]/.test(label) || /[A-Za-z]/.test(label))).toEqual([]);
+  const stats=page.locator('[data-attack-page="stats"]'),special=page.locator('[data-attack-page="special"]'),panel=page.locator('[data-remaked-special-effects]');
+  await expect(stats).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('[data-remaked-weapon-procs]')).toContainText('ожога');
+  await special.click();await expect(special).toHaveAttribute('aria-pressed','true');
+  await expect(panel).toContainText('Пламя феникса');await expect(panel).toContainText('Шанс: 5%');
+  await expect(panel).toContainText('Перезарядка: 5 с');await expect(panel).toContainText('Основа: 25 + 25% от СИЛ');
+  await expect(page.locator('#ATKView')).toBeHidden();
+  if(process.env.PANDORA_UI_EVIDENCE_DIR) await page.screenshot({path:path.join(process.env.PANDORA_UI_EVIDENCE_DIR,'attack-special-desktop.png')});
+  await page.setViewportSize({width:390,height:844});
+  await expect(panel).toBeVisible();
+  const box=await panel.boundingBox();expect(box.x).toBeGreaterThanOrEqual(0);expect(box.x+box.width).toBeLessThanOrEqual(390);
+  expect(await panel.evaluate(element=>element.scrollWidth<=element.clientWidth)).toBe(true);
+  if(process.env.PANDORA_UI_EVIDENCE_DIR) await page.screenshot({path:path.join(process.env.PANDORA_UI_EVIDENCE_DIR,'attack-special-mobile.png')});
+  await page.setViewportSize({width:1280,height:720});
+  await page.evaluate(()=>{Status.Equip[0][3]=10;EquipCheck();});
+  await expect(panel).toContainText('Шанс: 20%');await expect(panel).toContainText('Основа: 100 + 100% от СИЛ');
+  await expect(panel).toContainText('Перезарядка: 2 с');
+  const before=await page.evaluate(()=>Status.STR.slice(0,3).reduce((a,b)=>a+Number(b),0));
+  await page.evaluate(()=>{Status.STR[1]+=1;Calc('STR');});
+  await expect(panel).toContainText('СИЛ ('+(before+1)+')');
+  await page.evaluate(()=>{Status.Equip[0][2]=1;EquipCheck();});
+  await expect(panel).toContainText('Неактивен');
+  await page.evaluate(()=>PandoraRemaked.i18n.setLocale('jp'));
+  await expect(panel).toContainText('Phoenix Flame');
+  await page.evaluate(()=>{Status.Equip[0]=[0,0,0,0,0,0,0];EquipCheck();});
+  await expect(panel).toContainText('no special effects');
+  await stats.click();await expect(page.locator('#ATKView')).toBeVisible();
+});
+
+test('replacing historical fire-weapon refinement does not leak native bonuses and can restore old behavior',async({page})=>{
+  const source=baselineById.get('equipment.0.13'), identity=sourceIdentity(source);
+  const edit=draftFromSource(source,'equipment');edit.nativeUpgradePolicy='replace-legacy-fire-weapon';
+  const record=compileRecord(validateDraft(edit,identity),identity,source);
+  await page.goto('/');
+  const results=await page.evaluate(({record,snapshot})=>{
+    const scan=()=>[4,5,6,7,10].map(plus=>{
+      Status.Equip[0]=[record.engineId,0,0,plus,0,0,0];EquipCheck();
+      const row=[(EquipOpt[152]||[]).reduce((sum,n)=>sum+Number(n),0),(EquipOpt[89]||[]).reduce((sum,n)=>sum+Number(n),0)];
+      EquipCheck();return [row,[(EquipOpt[152]||[]).reduce((sum,n)=>sum+Number(n),0),(EquipOpt[89]||[]).reduce((sum,n)=>sum+Number(n),0)]];
+    });
+    PandoraRemaked.catalog.useRevision(0);const old=scan();
+    PandoraRemaked.catalog.applySnapshot(snapshot);const replaced=scan();
+    PandoraRemaked.catalog.useRevision(0);const restored=scan();
+    return {old,replaced,restored};
+  },{record,snapshot:publication([record])});
+  expect(results.old.map(row=>row[0])).toEqual([[0,0],[8,1],[10,3],[15,6],[32,35]]);
+  expect(results.replaced.map(row=>row[0])).toEqual([[0,0],[0,0],[0,0],[0,0],[0,0]]);
+  expect(results.restored).toEqual(results.old);
+  expect(results.replaced.every(row=>JSON.stringify(row[0])===JSON.stringify(row[1]))).toBe(true);
+});
+
 function customEquipment(category, index, name, effects = [], extra = {}) {
   const id = { id: 'modern.equipment.test-' + category + '-' + index, kind: 'equipment', category, index };
   const edit = draftFromSource(null, 'equipment');
@@ -462,6 +605,49 @@ function customEquipment(category, index, name, effects = [], extra = {}) {
   });
   return compileRecord(validateDraft(edit, id), id, null);
 }
+
+test('disease and madness resistance from equipment affect the correct defense results',async({page})=>{
+  const record=customEquipment(33,850,'Resistance test',[
+    {stat:157,unit:'flat',value:5},{stat:161,unit:'flat',value:5}]);
+  await page.goto('/');await page.locator('[data-remaked-tab="3"]').click();
+  const result=await page.evaluate(({record,snapshot})=>{
+    PandoraRemaked.catalog.applySnapshot(snapshot);
+    const read=()=>[157,161].map(id=>Number(document.getElementById('Status_'+id).textContent));
+    const before=read();Status.Equip[5]=[record.engineId,0,0,0,0,0,0];EquipCheck();
+    const equipped=read();Status.Equip[5]=[0,0,0,0,0,0,0];EquipCheck();
+    return {before,equipped,after:read()};
+  },{record,snapshot:publication([record])});
+  expect(result.equipped.map((value,index)=>value-result.before[index])).toEqual([5,5]);
+  expect(result.after).toEqual(result.before);
+});
+
+test('reviewed Pumpkin Soul keeps its saved ID, localized names and stat effects',async({page})=>{
+  const source={id:103023,name:'Тыквенная душа',slots:['body'],desc:'Сопротивляемость магии тьмы +5, СД +1.',
+    effects:[{func:'EP_DARK_RESISTANCE_CONST',a:5},{func:'EP_SPIRITUAL_CONST',a:1}]};
+  const plan=previewReviewedPumpkinSoul({source,english:{n:'Soul of the Pumpkin',d:'SPI +1 Dark Resistance +5%'},
+    catalog:{ok:true,revision:85,records:[]},sourceHashes:{snapshot:'a'.repeat(64)},
+    privateState:{revision:85,dirtyCatalogDraft:false,localizationDrafts:[],localizationOverrides:[],legacyOverrides:[]}});
+  const original=baselineById.get('soul.28'),identity=sourceIdentity(original);
+  const record=compileRecord(validateDraft(plan.edit,identity),identity,original);
+  const armor=equipment.records.find(row=>row.legacy_category_id===31&&row.legacy_item_index>0&&row.soul_socket_count>0);
+  await page.goto('/');
+  await page.evaluate(snapshot=>PandoraRemaked.catalog.applySnapshot(snapshot),publication([record]));
+  const info={};for(const lang of ['ru','en','jp','tw']){
+    await page.locator('[data-remaked-ui-locale="'+lang+'"]').click();
+    info[lang]=await page.evaluate(()=>PandoraRemaked.adapter.readItemDetails('soul',28).name);
+  }
+  const result=await page.evaluate(({armorId})=>{
+    Status.Equip[3]=[armorId,0,0,0,0,0,0];EquipCheck();
+    const totals=()=>[4,144].map(id=>(EquipOpt[id]||[]).reduce((sum,n)=>sum+Number(n),0));
+    const before=totals();Status.Equip[3][4]=28;EquipCheck();const withSoul=totals();
+    const saved=PandoraRemaked.adapter.serialize();Status.Equip[3][4]=0;EquipCheck();const after=totals();
+    PandoraRemaked.adapter.load(saved);
+    return {before,withSoul,after,restoredSoul:Status.Equip[3][4],restored:totals()};
+  },{armorId:armor.legacy_id});
+  expect(info).toEqual({ru:'Тыквенная душа',en:'Soul of the Pumpkin',jp:'カボチャの魂',tw:'(南瓜的魂魄)'});
+  expect(result.withSoul.map((value,index)=>value-result.before[index])).toEqual([1,5]);
+  expect(result.after).toEqual(result.before);expect(Number(result.restoredSoul)).toBe(28);expect(result.restored).toEqual(result.withSoul);
+});
 
 async function equipAndMeasure(page, engineId, plus) {
   return page.evaluate(({ engineId, plus }) => {
@@ -662,6 +848,28 @@ test('safe omitted base stats are visible in the retained calculator', async ({ 
   expect(result.auraTokens).toContain('2');
 });
 
+test('Priest earring replaces its built-in aura bonus without stacking and restores old revisions',async({page})=>{
+  const id={id:'modern.equipment.ac383fab-00a9-45ff-a09a-b2192c47ef5d',kind:'equipment',category:40,index:61};
+  const edit=draftFromSource(null,'equipment');edit.id=id.id;edit.category=40;edit.names.en="Priest's Earring";
+  edit.effects=[{stat:49,unit:'flat',value:1}];
+  const old=compileRecord(validateDraft(edit,id),id,null);
+  edit.nativeBasePolicy='replace-priest-earring-aura';edit.effects.push({stat:33,unit:'flat',value:3});
+  const changed=compileRecord(validateDraft(edit,id),id,null);
+  edit.effects.pop();const disabled=compileRecord(validateDraft(edit,id),id,null);
+  await page.goto('/');
+  const result=await page.evaluate(({old,changed,disabled,pub})=>{
+    const apply=(record,rev)=>{PandoraRemaked.catalog.applySnapshot({...pub,revision:rev,impactRevision:rev,records:[record]});EquipCheck();Flag[2]=3;Calc('DAMAura');return {tokens:[...(EquipOpt[33]||[])],light:document.getElementById('Status_38').textContent};};
+    PandoraRemaked.catalog.applySnapshot({...pub,records:[old]});
+    Status.Equip[8]=[old.engineId,0,0,0,0,0,0];Flag['15_8']=1;document.getElementById('InBuff_0').value='0';
+    const before=apply(old,85),after=apply(changed,86),none=apply(disabled,87),restored=apply(old,85);
+    return {before,after,none,restored};
+  },{old,changed,disabled,pub:publication([old])});
+  expect(result.before.tokens).toEqual(['2']);expect(result.after.tokens).toEqual(['3']);
+  expect(result.none.tokens).toEqual([]);expect(result.restored).toEqual(result.before);
+  expect(Number(result.after.light)-Number(result.before.light),JSON.stringify(result)).toBe(1);
+  expect(Number(result.before.light)-Number(result.none.light)).toBe(2);
+});
+
 
 test('existing/new gear adds enhancement bonuses on top of baseline without double-counting',async({page})=>{
   const rule={stat:11,unit:'flat',value:1,from:2,every:2,to:10};
@@ -716,4 +924,83 @@ test('existing/new gear adds enhancement bonuses on top of baseline without doub
       expect(after.second,kind+' duplicated after repeated EquipCheck at +'+level).toEqual(after.first);
     }
   }
+});
+
+test('gem-specific refinement uses the equipped element, survives repeated checks and saved builds',async({page})=>{
+  const id={id:'modern.equipment.2f65c193-bda8-4c62-9a9a-5d5d4d4a74fb',kind:'equipment',category:0,index:851};
+  const edit=draftFromSource(null,'equipment');edit.id=id.id;edit.category=0;edit.baseAttack=10;edit.names.en='Conditional sword';
+  edit.upgradeBonuses=[{stat:11,unit:'flat',value:1,from:7,every:1,to:10},
+    {stat:11,unit:'flat',value:3,from:7,every:1,to:10,gemElement:'fire'},
+    {stat:43,unit:'flat',value:1,from:7,every:1,to:10,gemElement:'fire'}];
+  edit.procEffects=[{kind:'burn',chance:5},{kind:'burn',chance:2,from:7,every:1,to:10,gemElement:'fire'}];
+  const record=compileRecord(validateDraft(edit,id),id,null);
+  await page.goto('/');
+  await page.locator('[data-remaked-tab="2"]').click();
+  const results=await page.evaluate(({record,snapshot})=>{
+    const oldPin=PandoraRemaked.adapter.serialize();
+    PandoraRemaked.catalog.applySnapshot(snapshot);
+    const rows=[];
+    for(const [element,plus] of [[0,6],[0,7],[0,8],[1,8],[6,8],[0,10]]){
+      Status.Equip[0]=[record.engineId,0,element,plus,0,0,0];
+      EquipCheck();const first=(EquipOpt[11]||[]).map(String);
+      EquipCheck();const second=(EquipOpt[11]||[]).map(String);
+      rows.push({element,plus,first,second,fireMagic:Number(document.getElementById('Status_43').textContent),
+        procs:PandoraRemaked.enhancementEffects.currentWeaponProcs().map(entry=>entry.chance)});
+    }
+    Status.Equip[0]=[record.engineId,0,0,8,0,0,0];EquipCheck();
+    const saved=PandoraRemaked.adapter.serialize();
+    Status.Equip[0][2]=1;EquipCheck();
+    PandoraRemaked.adapter.load(oldPin);
+    const oldRestored=PandoraRemaked.adapter.serialize()===oldPin;
+    const oldProcs=PandoraRemaked.enhancementEffects.currentWeaponProcs().length;
+    PandoraRemaked.adapter.load(saved);
+    return {rows,oldRestored,oldProcs,savedRestored:PandoraRemaked.adapter.serialize()===saved,restored:Status.Equip[0][2],tokens:(EquipOpt[11]||[]).map(String)};
+  },{record,snapshot:publication([record])});
+  const sum=values=>values.reduce((total,value)=>total+Number(value),0);
+  expect(results.rows.map(row=>sum(row.first))).toEqual([0,4,8,2,2,16]);
+  expect(results.rows.map(row=>row.fireMagic)).toEqual([0,1,2,0,0,4]);
+  expect(results.rows.map(row=>row.procs)).toEqual([[5,0],[5,2],[5,4],[5,0],[5,0],[5,8]]);
+  expect(results.rows.every(row=>JSON.stringify(row.first)===JSON.stringify(row.second))).toBe(true);
+  expect(results.oldRestored).toBe(true);expect(results.oldProcs).toBe(0);expect(results.savedRestored).toBe(true);
+  expect(results.restored).toBe(0);expect(sum(results.tokens)).toBe(8);
+  await page.locator('[data-remaked-tab="2"]').click();
+  await page.evaluate(id=>{PandoraRemaked.adapter.selectEquipment(0,id);PandoraRemaked.equipmentPicker.refresh();},record.engineId);
+  await page.locator('#SelEquip_0_3').selectOption('8');
+  await page.locator('#SelEquip_0_2').selectOption('1');
+  await page.locator('[data-remaked-tab="2"]').click();
+  await expect(page.locator('[data-remaked-weapon-procs]')).toContainText('refinement: 0%');
+  await expect(page.locator('[data-remaked-weapon-procs]')).toContainText('combat and target resistance are not simulated');
+  await page.locator('[data-remaked-tab="2"]').click();
+  expect(await page.evaluate(()=>({gem:Status.Equip[0][2],total:(EquipOpt[11]||[]).reduce((sum,x)=>sum+Number(x),0)}))).toEqual({gem:1,total:2});
+  await page.locator('#SelEquip_0_2').selectOption('0');
+  await page.locator('[data-remaked-tab="2"]').click();
+  await expect(page.locator('[data-remaked-weapon-procs]')).toContainText('refinement: 4%');
+  await page.locator('[data-remaked-tab="2"]').click();
+  expect(await page.evaluate(()=>({gem:Status.Equip[0][2],total:(EquipOpt[11]||[]).reduce((sum,x)=>sum+Number(x),0)}))).toEqual({gem:0,total:8});
+  const trigger=page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]');
+  await expect(trigger).toHaveAttribute('title',/Fire gem:.*from \+7/);
+  await expect(trigger).toHaveAttribute('aria-description',/Fire gem/);
+  await page.evaluate(()=>PandoraRemaked.search.openEquipmentSearch(0));
+  let row=page.locator(`[data-remaked-search-row][data-value="${record.engineId}"]`);
+  await row.locator('summary').click();
+  await expect(row.locator('.remaked-item-upgrade').nth(1)).toContainText('Fire gem: Fire MA +1%');
+  await expect(row.locator('.remaked-item-proc').nth(1)).toContainText('Burn chance: 2%');
+  await page.locator('.remaked-search-close').click();
+  await page.evaluate(()=>{PandoraRemaked.i18n.setLocale('ru');PandoraRemaked.equipmentPicker.refresh();});
+  await expect(trigger).toHaveAttribute('title',/Самоцвет «Огонь»:.*с \+7/);
+  await page.evaluate(()=>PandoraRemaked.search.openEquipmentSearch(0));
+  row=page.locator(`[data-remaked-search-row][data-value="${record.engineId}"]`);
+  await row.locator('summary').click();
+  await expect(row.locator('.remaked-item-upgrade').nth(1)).toContainText('Самоцвет «Огонь»: Магическая атака огнём +1%');
+  await expect(row.locator('.remaked-item-proc').nth(1)).toContainText('Шанс ожога: 2%');
+  await page.locator('.remaked-search-close').click();
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(()=>PandoraRemaked.search.openEquipmentSearch(0));
+  row=page.locator(`[data-remaked-search-row][data-value="${record.engineId}"]`);
+  await row.locator('summary').click();
+  await expect(row.locator('.remaked-item-upgrade').nth(1)).toContainText('Самоцвет «Огонь»: Магическая атака огнём +1%');
+  await page.locator('.remaked-search-close').click();
+  await page.evaluate(()=>PandoraRemaked.adapter.selectEquipment(0,0));
+  await page.locator('[data-remaked-tab="2"]').click();
+  await expect(page.locator('[data-remaked-weapon-procs]')).toHaveCount(0);
 });

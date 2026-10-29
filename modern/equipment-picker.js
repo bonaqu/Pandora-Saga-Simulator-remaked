@@ -104,9 +104,25 @@
         button.setAttribute('aria-disabled', 'true');
         button.title = namespace.i18n?.t?.('equipment.slotOccupiedByDress', {item:locked.name}) ||
           'This slot is occupied by a dress.';
+        if (Object.prototype.hasOwnProperty.call(button.dataset, 'remakedUpgradeDescription')) {
+          button.removeAttribute('aria-description'); delete button.dataset.remakedUpgradeDescription;
+        }
       } else {
         button.removeAttribute('aria-disabled');
-        button.removeAttribute('title');
+        var item = Number(match[2]) === 0 ? namespace.catalog?.item('equipment', select.value) : null;
+        var detail = (item?.upgradeBonuses?.some(function(rule) { return Boolean(rule.gemElement); }) || item?.procEffects?.length)
+          ? namespace.adapter.readItemDetails('equipment', select.value, Number(match[1])) : null;
+        var details = detail ? (detail.upgradeDetails || []).concat(detail.procDetails || []) : [];
+        if (details.length) {
+          button.title = details.join('\n');
+          button.setAttribute('aria-description', button.title);
+          button.dataset.remakedUpgradeDescription = '';
+        } else {
+          button.removeAttribute('title');
+          if (Object.prototype.hasOwnProperty.call(button.dataset, 'remakedUpgradeDescription')) {
+            button.removeAttribute('aria-description'); delete button.dataset.remakedUpgradeDescription;
+          }
+        }
       }
       if (Number(match[2]) === 0) {
         // One canonical piece covers torso and legs. The engine already

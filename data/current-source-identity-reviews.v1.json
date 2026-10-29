@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "reviews": [
+    {
+      "kind": "soul",
+      "serverId": 103023,
+      "projectId": "soul.28",
+      "sourceRu": "Тыквенная душа",
+      "sourceEn": "Soul of the Pumpkin",
+      "legacyEn": "(Pumpkin Soul)",
+      "evidence": "Owner confirmed the Soul identities on 2026-10-28; source effects and torso compatibility match the retained record."
+    }
+  ]
+}

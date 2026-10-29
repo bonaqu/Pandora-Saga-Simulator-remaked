@@ -48,6 +48,8 @@ for (const [position, [ru, en, effects]] of expected.entries()) {
     const record = compileRecord(validateDraft(edit, identity), identity, source);
     assert.equal(record.effectMode, 'replace');
     assert.deepEqual(record.effects.map(effect => [effect.stat, effect.value, effect.unit]), effects);
+    if(position===4) assert.deepEqual(record.rangeBonus,{amount:500,appliesTo:'ranged'});
+    else assert.equal(record.rangeBonus,undefined);
     if ([4, 6].includes(position)) assert.ok(record.calculationNotes.ru && record.calculationNotes.en);
     else assert.equal(record.calculationNotes, undefined);
   });

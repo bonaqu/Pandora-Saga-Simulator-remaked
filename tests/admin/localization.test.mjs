@@ -162,6 +162,9 @@ test('previously visible Russian curated translations are present in unified adm
   for(const [scope,id,expected] of [
     ['game','calculator.clan.5','Физическая устойчивость'],
     ['game','calculator.text.7','Сброс характеристик'],
+    ['game','calculator.attack.2','Магия огня'],
+    ['game','calculator.attack.2.hint','Урон умений огня.'],
+    ['ui','adminShell.catalogEffectOneHundredFiftySeven','Сопротивление безумию'],
     ['ui','skills.adeptness','Изучено (ОЧ)']
   ]){
     const rows=(await (await adminLocalization(
@@ -180,7 +183,7 @@ test('curated approved-display defaults stay identical to visible Modern fallbac
     assert.ok(runtime.includes("'"+id+"': '"+value+"'")||runtime.includes("'"+id+"': \""+value+"\""),
       'Runtime fallback drift for '+id);
   }
-  assert.equal(Object.keys(curated.ru.ui).length+Object.keys(curated.ru.game).length,30);
+  assert.equal(Object.keys(curated.ru.ui).length+Object.keys(curated.ru.game).length,158);
 });
 
 test('preview-guarded bulk writes preserve English and reject stale effective UI/catalog texts',async()=>{

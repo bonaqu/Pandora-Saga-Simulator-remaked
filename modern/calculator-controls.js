@@ -600,6 +600,9 @@
     var numericId = Number(window.Status?.Equip?.[0]?.[0]);
     if (!Number.isInteger(numericId) || numericId <= 0) return null;
     var category = Math.floor(numericId / 10000), index = numericId % 10000;
+    if (category > 13 || Boolean(category === 8 || category === 9) !== (code === 'RangeRange')) return null;
+    var catalogRecord = namespace.catalog?.item('equipment', numericId);
+    if (catalogRecord && catalogRecord.baseRange !== undefined) return catalogRecord.baseRange;
     var record = currentWeaponRanges[category + '.' + index];
     if (!record || Boolean(record[2]) !== (code === 'RangeRange')) return null;
     var row = window.EquipData?.[0]?.[category]?.[index];
@@ -607,6 +610,19 @@
     // change freely in D1 without changing this original Japanese engine key.
     if (!row || row[0] !== record[1]) return null;
     return record[0];
+  }
+  function currentWeaponRange(code) {
+    var base=currentWeaponBaseRange(code);if(base===null)return null;
+    var ranged=code==='RangeRange',bonus=0;
+    function add(rule) {
+      if(rule && (rule.appliesTo==='any' || rule.appliesTo===(ranged?'ranged':'melee'))) bonus+=rule.amount;
+    }
+    add(namespace.catalog?.racialRangeBonus());
+    window.Status.Equip.forEach(function(state){
+      var id=Number(state[0]);if(id%10000)add(namespace.catalog?.item('equipment',id)?.rangeBonus);
+      for(var socket=4;socket<=6;socket++)if(Number(state[socket]))add(namespace.catalog?.item('soul',Number(state[socket]))?.rangeBonus);
+    });
+    return base+bonus>=0 ? {base:base,bonus:bonus,total:base+bonus} : null;
   }
   // Modern-only display for 14 healing items. Preserve the original
   // Flag[6] opt-in: the Effects > Potions tab does NOT enable calculations.
@@ -674,24 +690,24 @@
     ['RangeMelee','RangeRange'].forEach(function(code){
       var number=byId(code==='RangeMelee'?'Status_40':'Status_41');
       if(!number)return;
-      var verified=currentWeaponBaseRange(code)!==null;
-      var key=verified?'calculator.weaponBaseRangeVerified':'calculator.weaponBaseRangeUnverified';
+      var range=currentWeaponRange(code),verified=range!==null;
+      var key=verified?(range.bonus?'calculator.weaponRangeWithBonuses':'calculator.weaponBaseRangeVerified'):'calculator.weaponBaseRangeUnverified';
       var fallback=verified
-        ? 'Only the equipped weapon’s base range is shown (raw game units). Riding, skill and equipment modifiers are not yet verified.'
+        ? (range.bonus?'Base weapon range and configured bonuses are included (raw game units). Other effects may be unverified.':'Only the equipped weapon’s base range is shown (raw game units). Riding, skill and equipment modifiers are not yet verified.')
         : 'Effective attack range is not verified for this weapon. An unavailable value is not zero.';
       var notice=namespace.i18n?.t?.(key)||fallback;
       if(number.title!==notice)number.title=notice;
       if(number.getAttribute('aria-description')!==notice)
         number.setAttribute('aria-description',notice);
-      number.dataset.remakedRangeEvidence=verified?'base':'unverified';
+      number.dataset.remakedRangeEvidence=verified?(range.bonus?'base-and-bonuses':'base'):'unverified';
     });
   }
   function projectWeaponBaseRange(code) {
     var output = byId(code === 'RangeMelee' ? 'Status_40' : 'Status_41');
     if (!output) return;
-    var base = currentWeaponBaseRange(code);
-    if (base === null) return; // preserve the original --- on unknown items
-    output.textContent = String(base);
+    var range = currentWeaponRange(code);
+    if (range === null) return; // preserve the original --- on unknown items
+    output.textContent = String(range.total);
   }
 
   function installCalculatorCorrections() {

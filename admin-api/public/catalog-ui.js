@@ -63,6 +63,11 @@
   // Display-only metadata, never draft or form values. Weak references avoid
   // leaking discarded list rows across catalog refreshes and locale changes.
   var catalogLiveValues = new WeakMap(),catalogRecordValues=new WeakMap(),catalogLiveAttributes=new WeakMap();
+  var upgradeGemLabels = {
+    '':{ru:'Любой самоцвет',en:'Any gem'},fire:{ru:'Огонь',en:'Fire'},ice:{ru:'Лёд',en:'Ice'},
+    lightning:{ru:'Молния',en:'Lightning'},poison:{ru:'Яд',en:'Poison'},light:{ru:'Свет',en:'Light'},
+    dark:{ru:'Тьма',en:'Dark'},rainbow:{ru:'Радужный',en:'Rainbow'}
+  };
   function catalogTranslate(key, fallback, values) {
     var template=window.PandoraAdminI18n?.t?.('adminShell.'+key,fallback)||fallback;
     var slots=function(value){return (String(value).match(/\{[A-Za-z0-9_]+\}/g)||[]).sort().join('|');};
@@ -198,6 +203,7 @@
   "Нужный уровень (0 = не указан)": "catalogFieldItemLevel",
   "Слоты для Souls": "catalogFieldItemSockets",
   "Базовая атака оружия (пусто = исходная)": "catalogFieldWeaponAttack",
+  "Базовая дальность оружия (пусто = исходная)": "catalogFieldWeaponRange",
   "Название · English обязателен; остальные языки могут быть пустыми": "catalogFieldItemName",
   "Описание / обычные бонусы — текст, не формула": "catalogFieldItemDescription",
   "Дополнительное описание / особые эффекты — текст": "catalogFieldItemNotes",
@@ -358,7 +364,8 @@
     21: 'Урон оружием · процентные пункты', 81: 'Показатель раскрытия статов верхом · только отображение',
     52: 'Получаемый физический урон', 60: 'Получаемый магический урон', 62: 'Точность', 65: 'Уклонение', 69: 'Шанс критического удара',
     70: 'Получаемый шанс крита (минус = защита)', 71: 'Критический урон', 72: 'Получаемый критический урон', 73: 'Скорость атаки', 74: 'Скорость движения', 76: 'Стоимость MP', 77: 'Скорость применения', 79: 'Перезарядка',
-    146: 'Сопротивление аномалиям тела', 147: 'Сопротивление аномалиям разума', 149: 'Сопротивление оглушению', 150: 'Сопротивление заморозке', 151: 'Сопротивление падению'
+    146: 'Сопротивление аномалиям тела', 147: 'Сопротивление аномалиям разума', 149: 'Сопротивление оглушению', 150: 'Сопротивление заморозке', 151: 'Сопротивление падению',
+    157: 'Сопротивление безумию', 161: 'Сопротивление болезни'
   };
   // Admin-shell keys deliberately contain letters only: this preserves the
   // strict existing D1 locale schema, while the actual stat IDs remain numeric.
@@ -375,6 +382,7 @@
     10: 'catalogEffectTen',
     18: 'catalogEffectEighteen',
     21: 'catalogEffectTwentyOne',
+    33: 'catalogEffectThirtyThree',
     42: 'catalogEffectFortyTwo',
     49: 'catalogEffectFortyNine',
     52: 'catalogEffectFiftyTwo',
@@ -395,16 +403,20 @@
     147: 'catalogEffectOneHundredFortySeven',
     149: 'catalogEffectOneHundredFortyNine',
     150: 'catalogEffectOneHundredFifty',
-    151: 'catalogEffectOneHundredFiftyOne'
+    151: 'catalogEffectOneHundredFiftyOne',
+    157: 'catalogEffectOneHundredFiftySeven',
+    161: 'catalogEffectOneHundredSixtyOne'
   };
   // Only known engine IDs have manually approved localized names.
   function effectLabel(id) {
+    if (Number(id)===43) return catalogRecordLocale({ru:'Магическая атака огнём',en:'Fire magic attack'});
     var definition=meta.effects.find(function(entry){return entry.id===Number(id);});
     if(Object.hasOwn(effectNames,id))
       return catalogTranslate(effectTranslationKeys[id],effectNames[id]);
     return definition?.label||catalogTranslate('catalogUnmappedEffect','Исходный эффект Legacy #{id}',{id});
   }
   function effectOption(definition) {
+    if (definition.id===43) return catalogRecordText(node('option'),{ru:'Магическая атака огнём',en:'Fire magic attack'});
     return Object.hasOwn(effectNames,definition.id)
       ? catalogStatic(node('option'),effectTranslationKeys[definition.id],effectNames[definition.id])
       : node('option',definition.label||String(definition.id));
@@ -426,12 +438,42 @@
     if (description) target.appendChild(catalogRecordText(node('p',undefined,'record-description'),record.description));
     var values = node('ul', undefined, 'record-values');
     if (record.kind === 'equipment') values.appendChild(catalogLive(node('li'),'catalogPreviewLevelSockets','Уровень: {level} · Слоты душ: {sockets}',{level:record.level,sockets:record.sockets}));
+    if (record.kind === 'equipment' && record.baseRange !== undefined)
+      values.appendChild(catalogLive(node('li'),'catalogPreviewBaseRange','Базовая дальность: {value}',{value:record.baseRange}));
+    if (record.rangeBonus) {
+      var scopeLabels={any:{ru:'любая атака',en:'any attack'},melee:{ru:'ближний бой',en:'melee'},ranged:{ru:'дальний бой',en:'ranged'}};
+      var scope=scopeLabels[record.rangeBonus.appliesTo], amount=record.rangeBonus.amount;
+      values.appendChild(catalogRecordText(node('li'),{ru:'Бонус дальности: '+(amount>0?'+':'')+amount+' · '+scope.ru,en:'Range bonus: '+(amount>0?'+':'')+amount+' · '+scope.en}));
+    }
+    if (record.id === 'modern.equipment.ac383fab-00a9-45ff-a09a-b2192c47ef5d')
+      values.appendChild(catalogRecordText(node('li'),record.nativeBasePolicy
+        ? {ru:'Встроенный бонус ауры заменён указанными характеристиками.',en:'The built-in aura bonus is replaced by the listed effects.'}
+        : {ru:'Встроенный бонус активной ауры: +2.',en:'Built-in active aura bonus: +2.'}));
+    if (record.nativeUpgradePolicy === 'replace-legacy-zephyrus-upgrade')
+      values.appendChild(catalogRecordText(node('li'),{ru:'Старый бонус урона ауры от заточки отключён; действуют правила ниже.',en:'The old refinement aura-damage bonus is disabled; the rules below apply.'}));
+    if (['replace-legacy-gold-plate-upgrade','replace-legacy-lunar-gloves-upgrade','replace-legacy-mana-bracelets-upgrade'].includes(record.nativeUpgradePolicy))
+      values.appendChild(catalogRecordText(node('li'),{ru:'Старые бонусы заточки отключены; действуют правила ниже. Комплектные эффекты сохраняются.',en:'Old refinement bonuses are disabled; the rules below apply. Set effects are preserved.'}));
     if(record.kind==='equipment'&&record.upgradeBonuses?.length)
       record.upgradeBonuses.forEach(function(rule){
         values.appendChild(catalogLiveComputed(node('li'),'catalogPreviewEnhancement','Заточка: {effect} с +{from} за каждые {every} уровня до +{to}',function(){
            return {effect:effectText(rule.stat,rule.value,rule.unit),from:rule.from,every:rule.every,to:rule.to};
          }));
+        if(rule.gemElement) {
+          var gemLabel=upgradeGemLabels[rule.gemElement];
+          values.appendChild(catalogRecordText(node('li'),{ru:'Самоцвет: '+gemLabel.ru,en:'Gem: '+gemLabel.en}));
+        }
       });
+    if(record.kind==='equipment'&&record.procEffects?.length) record.procEffects.forEach(function(rule){
+      if(rule.kind==='special_magic_damage') {
+        values.appendChild(catalogRecordText(node('li'),{
+          ru:(rule.names.ru||rule.names.en)+': '+rule.chance+'% с +'+rule.from+', '+rule.baseDamage+' + '+rule.statPercent+'% '+(rule.damageStat==='STR'?'СИЛ':'ИНТ')+'.',
+          en:rule.names.en+': '+rule.chance+'% from +'+rule.from+', '+rule.baseDamage+' + '+rule.statPercent+'% '+rule.damageStat+'.'}));
+        return;
+      }
+      values.appendChild(catalogRecordText(node('li'),{
+        ru:'Ожог при попадании: '+rule.chance+'%'+(rule.from!==undefined?' за порог заточки':' базовый шанс')+'. Справка, не симуляция боя.',
+        en:'Burn on hit: '+rule.chance+'%'+(rule.from!==undefined?' per refinement threshold':' base chance')+'. Informational; no combat simulation.'}));
+    });
     if (record.kind === 'soul' && !record.compatibility.includes(1)) values.appendChild(catalogStatic(node('li'),'catalogPreviewNoSoulSlot','Нет допустимого слота для вставки. Эта душа не предлагается для экипировки, пока не заданы ограничения.'));
     if (record.calculationCode !== undefined) {
       record.calculationCode.split('_').filter(Boolean).forEach(function (token) {
@@ -487,7 +529,7 @@
         return {effect:effectText(effect.stat,effect.value,effect.unit)};
       }));
     });
-    if ((record.kind === 'racial' || record.kind === 'passive') && !record.effects.length) values.appendChild(catalogStatic(node('li'),record.effectMode==='replace'||record.intrinsicEffectMode==='replace'?'catalogPreviewNoNumericReplace':'catalogPreviewNoNumericExtra',record.effectMode==='replace'||record.intrinsicEffectMode==='replace'?'Рассчитываемых числовых бонусов нет. Справочные эффекты см. в описании и ограничениях.':'Дополнительных числовых бонусов нет. Это не означает отсутствие исходного эффекта.'));
+    if ((record.kind === 'racial' || record.kind === 'passive') && !record.effects.length && !record.rangeBonus) values.appendChild(catalogStatic(node('li'),record.effectMode==='replace'||record.intrinsicEffectMode==='replace'?'catalogPreviewNoNumericReplace':'catalogPreviewNoNumericExtra',record.effectMode==='replace'||record.intrinsicEffectMode==='replace'?'Рассчитываемых числовых бонусов нет. Справочные эффекты см. в описании и ограничениях.':'Дополнительных числовых бонусов нет. Это не означает отсутствие исходного эффекта.'));
     target.appendChild(values);
     if (record.profiles) {
       var variants = node('details'); variants.dataset.recordProfiles = '';
@@ -535,7 +577,7 @@
       bonusRequirements:'Условия бонусов',learningRequirements:'Условия изучения',
       profiles:'Варианты навыка',upgradeBonuses:'Бонусы заточки',progression:'Коэффициенты класса',
       races:'Расы',classes:'Классы',slots:'Слоты',disabled:'Недоступен',level:'Уровень',
-      sockets:'Количество слотов',baseAttack:'Базовая атака',weaponCategories:'Категории оружия',
+      sockets:'Количество слотов',baseAttack:'Базовая атака',baseRange:'Базовая дальность',weaponCategories:'Категории оружия',
       classIds:'Классы',classScope:'Область профессий',minimumLevel:'Мин. уровень',
       branches:'Ветки',minimumPoints:'Очки ветки',shieldRequired:'Нужен щит',ridingRequired:'Нужна верховая езда',
       stat:'Характеристика',value:'Значение',unit:'Единица',every:'Шаг',from:'От',to:'До'};
@@ -727,10 +769,83 @@
       input.dataset.upgrade=entry[0];input.step='1';input.required=true;
       input.addEventListener('input',changing);
     });
+    var gem=selectField('Самоцвет для бонуса', [['','Любой самоцвет'],['fire','Огонь'],['ice','Лёд'],['lightning','Молния'],['poison','Яд'],['light','Свет'],['dark','Тьма'],['rainbow','Радужный']], rule.gemElement || '', 'upgradeGemElement', times);
+    gem.dataset.upgradeGem = '';
+    gem.parentElement.replaceChild(catalogRecordText(node('span'),{ru:'Самоцвет для бонуса',en:'Gem required for bonus'}),gem.parentElement.firstChild);
+    Array.from(gem.options).forEach(function(option) { catalogRecordText(option,upgradeGemLabels[option.value]); });
     row.append(times,button('Удалить правило',function(){row.remove();changing();},'secondary'));
     parent.append(row);
   }
+  function specialProcRow(rule,parent) {
+    var row=node('div',undefined,'upgrade-rule-row'); row.dataset.procRule='';row.dataset.procKind='special_magic_damage';
+    row.append(catalogRecordText(node('strong'),{ru:'Особый магический эффект оружия',en:'Special weapon magic effect'}));
+    var names=node('div',undefined,'basic-fields');
+    [['en','English'],['ru','Русский'],['jp','日本語'],['tw','繁體中文']].forEach(function(entry){
+      var input=inputField(entry[1],'text',rule.names?.[entry[0]]||'','procName'+entry[0],names);
+      input.dataset.procName=entry[0];input.maxLength=160;if(entry[0]==='en')input.required=true;
+    });
+    row.append(names);
+    var fields=node('div',undefined,'basic-fields');
+    var stat=selectField('Характеристика урона',[['STR','СИЛ / STR'],['INT','ИНТ / INT']],rule.damageStat||'STR','procDamageStat',fields);
+    stat.dataset.procDamageStat='';stat.parentElement.replaceChild(catalogRecordText(node('span'),{ru:'Характеристика урона',en:'Damage attribute'}),stat.parentElement.firstChild);
+    var gem=selectField('Самоцвет для эффекта',[['','Любой самоцвет'],['fire','Огонь'],['ice','Лёд'],['lightning','Молния'],['poison','Яд'],['light','Свет'],['dark','Тьма'],['rainbow','Радужный']],rule.gemElement||'','specialProcGem',fields);
+    gem.dataset.procGem='';gem.parentElement.replaceChild(catalogRecordText(node('span'),{ru:'Самоцвет для эффекта',en:'Gem required for effect'}),gem.parentElement.firstChild);
+    Array.from(gem.options).forEach(function(option){catalogRecordText(option,upgradeGemLabels[option.value]);});
+    var definitions=[
+      ['from','Первый порог +','First threshold +',7,1,10,1],['every','Каждые N уровней','Every N levels',1,1,10,1],['to','До уровня +','Through +',10,1,10,1],
+      ['chance','Начальный шанс, %','Initial chance, %',5,0.01,100,.01],['chanceStep','Шанс за шаг, п.п.','Chance per step, pp',5,0,100,.01],
+      ['baseDamage','Базовый урон','Base damage',25,0,10000,.01],['damageStep','Урон за шаг','Damage per step',25,0,10000,.01],
+      ['statPercent','Характеристика, %','Attribute, %',25,0,10000,.01],['statPercentStep','Характеристика за шаг, п.п.','Attribute per step, pp',25,0,10000,.01],
+      ['cooldownSeconds','Перезарядка, сек.','Cooldown, sec.',5,0,10000,.01],['cooldownReduction','Сокращение за шаг, сек.','Cooldown reduction per step, sec.',1,0,10000,.01]
+    ];
+    definitions.forEach(function(entry){
+      var input=inputField(entry[1],'number',rule[entry[0]]??entry[3],'special'+entry[0],fields,entry[4],entry[5]);
+      input.dataset.specialValue=entry[0];input.step=String(entry[6]);input.required=true;
+      input.parentElement.replaceChild(catalogRecordText(node('span'),{ru:entry[1],en:entry[2]}),input.parentElement.firstChild);
+    });
+    row.append(fields,catalogRecordText(node('p',undefined,'help-text'),{ru:'Шаги начинаются после первого порога. Укажите подтверждённые числа; итоговый боевой урон не моделируется.',en:'Steps start after the first threshold. Enter confirmed values; final combat damage is not simulated.'}),
+      catalogRecordText(button('Удалить правило',function(){row.remove();changing();},'secondary'),{ru:'Удалить правило',en:'Remove rule'}));
+    parent.append(row);
+  }
+  function procRuleRow(rule,parent) {
+    if(rule.kind==='special_magic_damage'){specialProcRow(rule,parent);return;}
+    var row=node('div',undefined,'upgrade-rule-row');row.dataset.procRule='';
+    var fields=node('div',undefined,'basic-fields');
+    var mode=selectField('Когда действует', [['base','Базовый шанс'],['upgrade','Порог заточки']], rule.from===undefined?'base':'upgrade','procMode',fields);
+    mode.dataset.procMode='';
+    mode.parentElement.replaceChild(catalogRecordText(node('span'),{ru:'Когда действует',en:'When it applies'}),mode.parentElement.firstChild);
+    catalogRecordText(mode.options[0],{ru:'Базовый шанс',en:'Base chance'});
+    catalogRecordText(mode.options[1],{ru:'Порог заточки',en:'Refinement threshold'});
+    var chance=inputField('Шанс ожога за правило, %','number',rule.chance??2,'procChance',fields,0.01,100);
+    chance.dataset.procChance='';chance.step='.01';chance.required=true;
+    chance.parentElement.replaceChild(catalogRecordText(node('span'),{ru:'Шанс ожога за правило, %',en:'Burn chance per rule, %'}),chance.parentElement.firstChild);
+    var gem=selectField('Самоцвет для эффекта', [['','Любой самоцвет'],['fire','Огонь'],['ice','Лёд'],['lightning','Молния'],['poison','Яд'],['light','Свет'],['dark','Тьма'],['rainbow','Радужный']],rule.gemElement||'','procGem',fields);
+    gem.dataset.procGem='';
+    gem.parentElement.replaceChild(catalogRecordText(node('span'),{ru:'Самоцвет для эффекта',en:'Gem required for effect'}),gem.parentElement.firstChild);
+    Array.from(gem.options).forEach(function(option){catalogRecordText(option,upgradeGemLabels[option.value]);});
+    var ranges=node('div',undefined,'basic-fields');
+    [['from','Первый порог +',7],['every','Каждые N уровней',1],['to','Учитывать до +',10]].forEach(function(entry){
+      var input=inputField(entry[1],'number',rule[entry[0]]??entry[2],'proc'+entry[0],ranges,1,10);
+      input.dataset.procRange=entry[0];input.step='1';input.required=true;
+      var english={from:'First threshold +',every:'Every N levels',to:'Through +'};
+      input.parentElement.replaceChild(catalogRecordText(node('span'),{ru:entry[1],en:english[entry[0]]}),input.parentElement.firstChild);
+    });
+    function visibility(){ranges.hidden=mode.value!=='upgrade';ranges.querySelectorAll('input').forEach(function(input){input.disabled=ranges.hidden;});}
+    mode.addEventListener('change',visibility);visibility();
+    row.append(fields,ranges,catalogRecordText(button('Удалить правило',function(){row.remove();changing();},'secondary'),{ru:'Удалить правило',en:'Remove rule'}));parent.append(row);
+  }
   function formValue(field) { return editor.querySelector('[data-field="' + field + '"]').value; }
+  function rangeBonusEditor(edit) {
+    var section=node('fieldset',undefined,'numeric-effects');
+    section.appendChild(catalogRecordText(node('legend'),{ru:'Бонус дальности атаки',en:'Attack range bonus'}));
+    section.appendChild(catalogRecordText(node('p',undefined,'help-text'),{ru:'Укажите бонус в игровых единицах. Он учитывается в существующих результатах дальности, когда базовая дальность оружия известна. Пустое поле означает отсутствие бонуса.',en:'Enter the bonus in game units. It is included in the existing range results when the weapon base range is known. Leave empty for no bonus.'}));
+    var amount=inputField('Бонус дальности','number',edit.rangeBonus?.amount ?? '', 'rangeBonusAmount',section,-10000,10000);
+    amount.step='1'; amount.parentElement.replaceChild(catalogRecordText(node('span'),{ru:'Бонус дальности',en:'Range bonus'}),amount.parentElement.firstChild);
+    var scope=selectField('Тип атаки',[['any','Любая'],['melee','Ближний бой'],['ranged','Дальний бой']],edit.rangeBonus?.appliesTo || 'any','rangeBonusScope',section);
+    scope.parentElement.replaceChild(catalogRecordText(node('span'),{ru:'Тип атаки',en:'Attack type'}),scope.parentElement.firstChild);
+    [{ru:'Любая',en:'Any'},{ru:'Ближний бой',en:'Melee'},{ru:'Дальний бой',en:'Ranged'}].forEach(function(label,index){catalogRecordText(scope.options[index],label);});
+    editor.appendChild(section);
+  }
   function learningBranchRow(gate, parent) {
     var row = node('div', undefined, 'basic-fields'); row.dataset.learningBranchRow = '';
     var branch = selectField('Ветка умений', meta.skillCategories.map(function (entry) { return [entry.id, entry.name.en]; }), gate.branchId, 'learningBranch', row);
@@ -860,8 +975,18 @@
     ['names', 'description', 'notes', 'acquisition', 'modifiers'].forEach(function (field) {
       editor.querySelectorAll('[data-field="' + field + '"][data-language]').forEach(function (input) { edit[field][input.dataset.language] = input.value; });
     });
+    var rangeField=editor.querySelector('[data-field="rangeBonusAmount"]');
+    if (rangeField) {
+      if (rangeField.value !== '') edit.rangeBonus={amount:Number(rangeField.value),appliesTo:formValue('rangeBonusScope')};
+      else delete edit.rangeBonus;
+    }
     if (edit.kind === 'class') {
       edit.progression = edit.progression.map(function (_, index) { return Number(formValue('progression' + index)); });
+      var capsToggle = editor.querySelector('[data-potential-caps-toggle]');
+      if (capsToggle) {
+        if (capsToggle.checked) edit.potentialCaps = Array.from(editor.querySelectorAll('[data-potential-cap]')).map(function (input) { return Number(input.value); });
+        else delete edit.potentialCaps;
+      }
       return edit;
     }
     if (edit.kind === 'racial') {
@@ -897,18 +1022,43 @@
     if (edit.kind === 'equipment') { edit.category = Number(formValue('category')); edit.level = Number(formValue('level')); edit.sockets = Number(formValue('sockets')); }
     edit.disabled = editor.querySelector('[data-field="disabled"]').checked;
     edit.baseAttack = editor.querySelector('[data-field="baseAttack"]') && formValue('baseAttack') !== '' ? Number(formValue('baseAttack')) : null;
+    if (editor.querySelector('[data-field="baseRange"]') && formValue('baseRange') !== '') edit.baseRange = Number(formValue('baseRange'));
+    else delete edit.baseRange;
     edit.effectMode = formValue('effectMode');
     edit.effects = [];
     editor.querySelectorAll('.numeric-effects > .effect-rows > .effect-row').forEach(function (row) { var inputs = row.querySelectorAll('select, input'); edit.effects.push({ stat: Number(inputs[0].value), value: Number(inputs[1].value), unit: inputs[2].value }); });
     if(edit.kind==='equipment'){
       edit.upgradeBonuses=[];
-      editor.querySelectorAll('.upgrade-rule-row').forEach(function(row){
+      editor.querySelectorAll('.upgrade-editor .upgrade-rule-row').forEach(function(row){
         var inputs=row.querySelectorAll('.effect-row select, .effect-row input'),
           range={};
         row.querySelectorAll('[data-upgrade]').forEach(function(input){range[input.dataset.upgrade]=Number(input.value);});
-        edit.upgradeBonuses.push({stat:Number(inputs[0].value),value:Number(inputs[1].value),unit:inputs[2].value,
-          from:range.from,every:range.every,to:range.to});
+        var rule={stat:Number(inputs[0].value),value:Number(inputs[1].value),unit:inputs[2].value,
+          from:range.from,every:range.every,to:range.to};
+        var gem=row.querySelector('[data-upgrade-gem]').value;
+        if(gem)rule.gemElement=gem;
+        edit.upgradeBonuses.push(rule);
       });
+      edit.procEffects=[];
+      editor.querySelectorAll('[data-proc-rule]').forEach(function(row){
+        if(row.dataset.procKind==='special_magic_damage') {
+          var special={kind:'special_magic_damage',names:{},damageStat:row.querySelector('[data-proc-damage-stat]').value};
+          row.querySelectorAll('[data-proc-name]').forEach(function(input){special.names[input.dataset.procName]=input.value;});
+          row.querySelectorAll('[data-special-value]').forEach(function(input){special[input.dataset.specialValue]=Number(input.value);});
+          var specialGem=row.querySelector('[data-proc-gem]').value;if(specialGem)special.gemElement=specialGem;
+          edit.procEffects.push(special);return;
+        }
+        var rule={kind:'burn',chance:Number(row.querySelector('[data-proc-chance]').value)};
+        var gem=row.querySelector('[data-proc-gem]').value;if(gem)rule.gemElement=gem;
+        if(row.querySelector('[data-proc-mode]').value==='upgrade')row.querySelectorAll('[data-proc-range]').forEach(function(input){rule[input.dataset.procRange]=Number(input.value);});
+        edit.procEffects.push(rule);
+      });
+      var nativeUpgrade=editor.querySelector('[data-native-upgrade-replacement]');
+      if (nativeUpgrade && nativeUpgrade.checked) edit.nativeUpgradePolicy=nativeUpgrade.value;
+      else delete edit.nativeUpgradePolicy;
+      var nativeBase=editor.querySelector('[data-native-base-replacement]');
+      if (nativeBase && nativeBase.checked) edit.nativeBasePolicy='replace-priest-earring-aura';
+      else delete edit.nativeBasePolicy;
     }
     ['races', 'classes', 'slots'].forEach(function (field) { editor.querySelectorAll('[data-flag="' + field + '"]').forEach(function (input) { edit[field][Number(input.dataset.index)] = input.checked ? 1 : 0; }); });
     return edit;
@@ -1044,6 +1194,7 @@
       checkboxField('Числовые бонусы требуют щит', required.shieldRequired, 'shieldRequired', editor);
       checkboxField('Числовые бонусы требуют верховую езду', required.ridingRequired, 'ridingRequired', editor);
       multilingual('Ограничения расчёта · если эффект пока только справочный', 'calculationNotes', edit.calculationNotes || { en: '', ru: '', jp: '', tw: '' }, editor, true);
+      rangeBonusEditor(edit);
       var racialActions = node('div', undefined, 'editor-actions'); racialActions.append(button('Сохранить черновик', saveDraft), button('Опубликовать', publish)); editor.appendChild(racialActions);
       finishEditor(); return;
     }
@@ -1057,7 +1208,27 @@
         var input = inputField(label, 'number', edit.progression[index], 'progression' + index, parameters, index < 2 ? 0 : 0.0001, 100000);
         input.required = true; input.step = index < 2 ? '1' : 'any';
       }); progression.appendChild(parameters); editor.appendChild(progression);
-      editor.appendChild(node('p', 'ID и родство класса сохраняются для совместимости с билдом. Лимиты веток и встроенные пассивки здесь пока не редактируются. Новый класс нельзя создать копированием названия — для него потребуется поддержка движка.', 'help-text'));
+      if (current.nativeClass) {
+        var branchIndices = [1,2,3,4,5,7,8,9,10,11,13,14,15,16,18,19,20,21,23,24];
+        var limits = node('details', undefined, 'numeric-effects'); limits.dataset.potentialCapsEditor = '';
+        limits.appendChild(catalogStatic(node('summary'),'catalogBranchLimits','Пределы веток умений'));
+        limits.appendChild(catalogStatic(node('p',undefined,'help-text'),'catalogBranchLimitsHelp','Сначала показаны действующие значения. Изменение предела действует после публикации; очки сверх нового предела возвращаются при обновлении билда.'));
+        var toggleWrap=node('label',undefined,'flag-label'), toggle=node('input');
+        toggle.type='checkbox'; toggle.dataset.potentialCapsToggle=''; toggle.checked=Array.isArray(edit.potentialCaps);
+        toggleWrap.append(toggle,catalogStatic(node('span'),'catalogBranchLimitsCustom','Изменить пределы для этого класса')); limits.appendChild(toggleWrap);
+        var capFields=node('div',undefined,'basic-fields'), values=edit.potentialCaps||current.nativeClass.potentialCaps;
+        branchIndices.forEach(function(branch,index){
+          var category=meta.skillCategories.find(function(row){return row.index===branch;});
+          var wrap=node('label',undefined,'editor-field');
+          wrap.appendChild(catalogRecordText(node('span'),category?.name||{en:String(branch)}));
+          var input=node('input');input.type='number';input.step='1';input.required=true;
+          input.min=current.nativeClass.minimumBranches[index];input.max=120;input.value=values[index];input.disabled=!toggle.checked;
+          input.dataset.potentialCap=String(index);input.addEventListener('input',changing);wrap.appendChild(input);capFields.appendChild(wrap);
+        });
+        toggle.addEventListener('change',function(){capFields.querySelectorAll('[data-potential-cap]').forEach(function(input){input.disabled=!toggle.checked;});changing();});
+        limits.appendChild(capFields);editor.appendChild(limits);
+      }
+      editor.appendChild(catalogStatic(node('p',undefined,'help-text'),'catalogClassIdentityHelp','ID и родство класса сохраняются для совместимости с билдом. Встроенные пассивки редактируются отдельно. Новый класс требует поддержки движка.'));
       var classActions = node('div', undefined, 'editor-actions'); classActions.append(button('Сохранить черновик', saveDraft), button('Опубликовать', publish)); editor.appendChild(classActions);
       finishEditor(); return;
     }
@@ -1071,6 +1242,11 @@
       if (edit.category <= 13) inputField('Базовая атака оружия (пусто = исходная)', 'number', edit.baseAttack ?? '', 'baseAttack', basic, 0, 10000).addEventListener('input', function () {
         var mode = editor.querySelector('[data-field="effectMode"]'); if (mode.value === 'preserve') mode.value = 'patch';
       });
+      if (edit.category <= 13) {
+        var rangeInput=inputField('Базовая дальность оружия (пусто = исходная)', 'number', edit.baseRange ?? '', 'baseRange', basic, 1, 10000);
+        rangeInput.step='1';
+        basic.appendChild(catalogStatic(node('p',undefined,'help-text'),'catalogFieldWeaponRangeHelp','Укажите базовую дальность в игровых единицах. Если поле пустое, используется подтверждённое исходное значение; для остальных вещей дальность неизвестна. Бонусы от навыков и верховой езды здесь не учитываются.'));
+      }
     }
     var unavailable = node('label', undefined, 'flag-label'); var disabled = node('input'); disabled.type = 'checkbox'; disabled.checked = edit.disabled; disabled.dataset.field = 'disabled'; disabled.addEventListener('change', changing); unavailable.append(disabled, document.createTextNode('Не предлагать для новых билдов (старые сохранения не удалять)')); editor.appendChild(unavailable);
     multilingual('Название · English обязателен; остальные языки могут быть пустыми', 'names', edit.names, editor, false);
@@ -1081,20 +1257,52 @@
     var effects = node('fieldset', undefined, 'numeric-effects'); effects.appendChild(node('legend', 'Расчётные характеристики'));
     selectField('Как менять исходные числовые эффекты', [['preserve', 'Сохранить всё исходное (только текст)'], ['patch', 'Изменить перечисленные характеристики'], ['replace', 'Заменить исходную числовую строку']], edit.effectMode, 'effectMode', effects);
     effects.appendChild(node('p', 'Описание выше само по себе не влияет на расчёт. Числа ниже передаются Legacy engine. В режиме «Изменить» остальные исходные бонусы сохраняются. У специальных предметов остаются исходные условные эффекты движка.', 'help-text'));
+    if (edit.id === 'modern.equipment.ac383fab-00a9-45ff-a09a-b2192c47ef5d') {
+      effects.appendChild(catalogRecordText(node('p',undefined,'help-text'),{ru:'Встроенный бонус: урон активной ауры +2. Чтобы изменить или убрать его, включите замену и укажите новое значение ниже. Пустой список убирает этот бонус.',en:'Built-in bonus: active aura damage +2. To change or remove it, enable replacement and specify the new value below. An empty list removes the bonus.'}));
+      var baseLabel=node('label',undefined,'flag-label'), baseToggle=node('input');
+      baseToggle.type='checkbox';baseToggle.dataset.nativeBaseReplacement='';baseToggle.checked=edit.nativeBasePolicy==='replace-priest-earring-aura';baseToggle.addEventListener('change',changing);
+      baseLabel.append(baseToggle,catalogRecordText(node('span'),{ru:'Заменить встроенный бонус ауры +2',en:'Replace the built-in +2 aura bonus'}));effects.appendChild(baseLabel);
+    }
     var rows = node('div', undefined, 'effect-rows'); effects.appendChild(rows);
     edit.effects.forEach(function (effect) { effectRow(effect, rows); });
     effects.appendChild(button('Добавить характеристику', function () { effectRow({ stat: 1, value: 0, unit: 'flat' }, rows); var mode = editor.querySelector('[data-field="effectMode"]'); if (mode.value === 'preserve') mode.value = 'patch'; changing(); }, 'secondary'));
     editor.appendChild(effects);
+    rangeBonusEditor(edit);
     if(edit.kind==='equipment'){
       var upgrades=node('fieldset',undefined,'numeric-effects upgrade-editor');
       upgrades.append(node('legend','Бонусы от заточки (+1…+10)'));
       upgrades.append(node('p','Только расчётные характеристики. Пример: +1 п.п. эффективности лечения при +2, +4, +6, +8 и +10: первый порог 2, шаг 2, до 10, значение 1. Это ДОПОЛНЕНИЕ к исходным эффектам вещи и не симулирует случайные срабатывания при атаке.','help-text'));
+      var oldFireWeapons=['equipment.0.13','equipment.1.9','equipment.2.7','equipment.3.8','equipment.4.7','equipment.5.9','equipment.6.12','equipment.7.9','equipment.8.12','equipment.9.5','equipment.10.11','equipment.11.7'];
+      var oldFireWands=['equipment.12.12','equipment.13.9'];
+      var oldZephyrus=['equipment.5.27','equipment.5.28'];
+      var oldArmorPolicies={'equipment.31.64':'replace-legacy-gold-plate-upgrade','equipment.32.82':'replace-legacy-lunar-gloves-upgrade','equipment.32.61':'replace-legacy-mana-bracelets-upgrade'};
+      if (oldFireWeapons.includes(edit.id) || oldFireWands.includes(edit.id) || oldZephyrus.includes(edit.id) || oldArmorPolicies[edit.id]) {
+        var label=node('label',undefined,'flag-label'), replaceNative=node('input');
+        replaceNative.type='checkbox';replaceNative.value=oldArmorPolicies[edit.id]|| (oldZephyrus.includes(edit.id)?'replace-legacy-zephyrus-upgrade':oldFireWands.includes(edit.id)?'replace-legacy-fire-wand':'replace-legacy-fire-weapon');replaceNative.checked=edit.nativeUpgradePolicy===replaceNative.value;
+        replaceNative.dataset.nativeUpgradeReplacement='';replaceNative.addEventListener('change',changing);
+        label.append(replaceNative,catalogRecordText(node('span'),oldArmorPolicies[edit.id]
+          ? {ru:'Заменить старые бонусы заточки этой вещи правилами ниже',en:'Replace this item’s old refinement bonuses with the rules below'}
+          : {ru:'Заменить старые бонусы заточки этого оружия правилами ниже',en:'Replace this weapon’s old refinement bonuses with the rules below'}));
+        upgrades.append(label);
+        if(oldZephyrus.includes(edit.id)) upgrades.appendChild(catalogRecordText(node('p',undefined,'help-text'),{ru:'Старая версия добавляет бонус урона ауры +20% с +5 и ещё +30% с +7. Замена отключает эти значения и использует указанные ниже правила.',en:'The old version adds +20% aura damage from +5 and another +30% from +7. Replacement disables those values and uses the rules below.'}));
+        if(oldArmorPolicies[edit.id]) upgrades.appendChild(catalogRecordText(node('p',undefined,'help-text'),{ru:'Замена отключает старые бонусы заточки этой вещи и использует правила ниже. Эффекты комплекта остаются.',en:'Replacement disables this item’s old refinement bonuses and uses the rules below. Set effects remain.'}));
+      }
       var upgradeRows=node('div',undefined,'upgrade-rule-list');
       (edit.upgradeBonuses||[]).forEach(function(rule){upgradeRuleRow(rule,upgradeRows);});
       upgrades.append(upgradeRows,button('Добавить бонус заточки',function(){
         upgradeRuleRow({stat:11,value:1,unit:'flat',from:2,every:2,to:10},upgradeRows);changing();
       },'secondary'));
       editor.append(upgrades);
+      if(edit.category<=13){
+        var procs=node('fieldset',undefined,'numeric-effects');procs.dataset.procEditor='';
+        procs.append(catalogRecordText(node('legend'),{ru:'Эффекты оружия при атаке',en:'Weapon effects on attack'}));
+        procs.append(catalogRecordText(node('p',undefined,'help-text'),{ru:'Общий ожог и уникальные эффекты оружия показываются отдельно. Указывайте подтверждённые значения; бой, сопротивление цели и объединение вероятностей не рассчитываются.',en:'Common burn and unique weapon effects are shown separately. Enter confirmed values; combat, target resistance and combined probabilities are not calculated.'}));
+        var procRows=node('div',undefined,'upgrade-rule-list');
+        (edit.procEffects||[]).forEach(function(rule){procRuleRow(rule,procRows);});
+        procs.append(procRows,catalogRecordText(button('Добавить шанс ожога',function(){procRuleRow({kind:'burn',chance:2},procRows);changing();},'secondary'),{ru:'Добавить шанс ожога',en:'Add burn chance'}));
+        procs.append(catalogRecordText(button('Добавить особый эффект',function(){specialProcRow({kind:'special_magic_damage',names:{en:'New weapon effect'}},procRows);changing();},'secondary'),{ru:'Добавить особый эффект',en:'Add special effect'}));
+        editor.append(procs);
+      }
     }
     if (edit.kind === 'equipment') { compatibility('Разрешённые расы', 'races', edit.races, meta.compatibilityLabels.race, editor); compatibility('Разрешённые классы', 'classes', edit.classes, meta.compatibilityLabels.job, editor); }
     else compatibility('Куда вставляется Soul', 'slots', edit.slots, ['Weapon', 'Shield', 'Head', 'Torso', 'Arms', 'Legs', 'Boots', 'Cloak'].map(function (label, index) { return { label, index }; }), editor);

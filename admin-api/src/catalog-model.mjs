@@ -1,5 +1,6 @@
 import nativePassives from '../../data/native-passive-hooks.v1.json' with { type: 'json' };
 import approved from '../../localization/approved-translations.v1.json' with { type: 'json' };
+import character from '../../data/generated/character.v1.json' with { type: 'json' };
 export const NATIVE_PASSIVES = nativePassives.definitions;
 // This is a validated data codec, not a game calculator. IDs and unit suffixes
 // come from preserved Name.Option / Calc. Actual formulas stay in js/calc.js.
@@ -11,7 +12,7 @@ export const EFFECTS = [
   [0, 'STA', FLAT], [1, 'STR', FLAT], [2, 'AGI', FLAT], [3, 'DEX', FLAT], [4, 'SPR', FLAT], [5, 'INT', FLAT],
   [6, 'LP', BOTH], [7, 'MP', BOTH], [8, 'Potion effectiveness (percentage points)', FLAT], [10, 'MP recovery speed bonus (percentage points)', FLAT],
   [11, 'Healing spell effectiveness (percentage points)', FLAT], [16, 'HP regeneration per interval', FLAT],
-  [18, 'Physical attack', BOTH], [20, 'Back attack bonus (percentage points)', FLAT], [42, 'Magic attack (percentage points)', FLAT], [49, 'Defense', BOTH],
+  [18, 'Physical attack', BOTH], [20, 'Back attack bonus (percentage points)', FLAT], [33, 'Aura damage', BOTH], [42, 'Magic attack (percentage points)', FLAT], [43, 'Fire magic attack (percentage points)', FLAT], [49, 'Defense', BOTH],
   [50, 'Front damage resistance', FLAT], [51, 'Back damage resistance', FLAT], [52, 'Physical damage resistance', BOTH],
   [60, 'Magic damage resistance', BOTH], [62, 'Accuracy', BOTH], [65, 'Dodge', BOTH],
   [69, 'Critical chance (percentage points)', FLAT], [70, 'Incoming critical chance (percentage points)', FLAT], [91, 'Stun chance (percentage points)', FLAT],
@@ -25,12 +26,13 @@ export const EFFECTS = [
   [133, 'Block break resistance', FLAT], [134, 'Cast cancel resistance', FLAT], [135, 'Physical damage reflection', FLAT],
   [149, 'Stun resistance', FLAT], [150, 'Freeze resistance', FLAT], [151, 'Knockdown resistance', FLAT],
   [153, 'Knockback resistance', FLAT], [154, 'Bleeding resistance', FLAT], [155, 'Immobile resistance', FLAT],
-  [156, 'Sleep resistance', FLAT], [157, 'Confusion resistance', FLAT], [158, 'Silence resistance', FLAT],
+  [156, 'Sleep resistance', FLAT], [157, 'Madness resistance', FLAT], [158, 'Silence resistance', FLAT],
   [159, 'Curse resistance', FLAT], [160, 'Weakening resistance', FLAT], [161, 'Disease resistance', FLAT],
   [162, 'Negative effect duration (percentage points)', FLAT]
 ].map(([id, label, units]) => ({ id, label, units }));
 const effectById = new Map(EFFECTS.map(effect => [effect.id, effect]));
-const fields = ['id', 'kind', 'category', 'names', 'description', 'notes', 'acquisition', 'modifiers', 'level', 'sockets', 'races', 'classes', 'slots', 'baseAttack', 'effectMode', 'effects', 'upgradeBonuses', 'disabled'];
+const LEGACY_FIRE_UPGRADE_IDS = ['equipment.0.13','equipment.1.9','equipment.2.7','equipment.3.8','equipment.4.7','equipment.5.9','equipment.6.12','equipment.7.9','equipment.8.12','equipment.9.5','equipment.10.11','equipment.11.7'];
+const fields = ['id', 'kind', 'category', 'names', 'description', 'notes', 'acquisition', 'modifiers', 'level', 'sockets', 'races', 'classes', 'slots', 'baseAttack', 'baseRange', 'rangeBonus', 'effectMode', 'effects', 'upgradeBonuses', 'nativeUpgradePolicy', 'nativeBasePolicy', 'procEffects', 'disabled'];
 
 export class CatalogError extends Error {
   constructor(message, status = 400) { super(message); this.status = status; }
@@ -53,6 +55,13 @@ function textMap(input, limit, label) {
 function integer(value, min, max, label) {
   check(Number.isInteger(value) && value >= min && value <= max, label + ' is outside its allowed range');
   return value;
+}
+function rangeBonus(value) {
+  keys(value, ['amount','appliesTo'], 'Range bonus');
+  check(['any','melee','ranged'].includes(value.appliesTo), 'Invalid range bonus applicability');
+  const amount=integer(value.amount,-10000,10000,'Range bonus');
+  check(amount !== 0, 'Range bonus cannot be zero');
+  return {amount,appliesTo:value.appliesTo};
 }
 function flags(value, count, label) {
   check(Array.isArray(value) && value.length === count && value.every(flag => flag === 0 || flag === 1), label + ' requires ' + count + ' binary flags');
@@ -195,7 +204,9 @@ function validateUpgradeBonuses(input) {
   check(Array.isArray(input) && input.length <= 12, 'Too many enhancement bonuses');
   const seen=new Set();
   return input.map(rule=>{
-    keys(rule,['stat','value','unit','every','from','to'],'Upgrade bonus');
+    keys(rule,['stat','value','unit','every','from','to','gemElement'],'Upgrade bonus');
+    if (rule.gemElement !== undefined)
+      check(['fire','ice','lightning','poison','light','dark','rainbow'].includes(rule.gemElement), 'Unsupported upgrade gem element');
     const definition=effectById.get(rule.stat);
     check(definition && definition.units.includes(rule.unit), 'Unsupported upgrade stat or unit');
     const every=integer(rule.every,1,10,'Upgrade step');
@@ -203,9 +214,53 @@ function validateUpgradeBonuses(input) {
     const to=integer(rule.to,from,10,'Last upgrade');
     check(typeof rule.value==='number'&&Number.isFinite(rule.value)&&Math.abs(rule.value)<=10000&&
       Number(rule.value.toFixed(2))===rule.value&&rule.value!==0,'Upgrade bonus must be nonzero and bounded');
-    const unique=rule.stat+':'+rule.unit+':'+every+':'+from+':'+to;
+    const unique=rule.stat+':'+rule.unit+':'+every+':'+from+':'+to+':'+(rule.gemElement || 'any');
     check(!seen.has(unique),'Duplicate refinement bonus rule');seen.add(unique);
-    return {stat:rule.stat,unit:rule.unit,value:rule.value,every,from,to};
+    return {stat:rule.stat,unit:rule.unit,value:rule.value,every,from,to,
+      ...(rule.gemElement !== undefined ? {gemElement:rule.gemElement} : {})};
+  });
+}
+
+// Separate individual on-hit contributions: this is not a combat simulator and
+// does not assign an unproven weak/strong Legacy ailment category.
+function validateProcEffects(input) {
+  check(Array.isArray(input) && input.length <= 12, 'Too many weapon proc rules');
+  const seen = new Set();
+  return input.map(rule => {
+    keys(rule, ['kind','chance','from','every','to','gemElement','names','chanceStep','damageStat','baseDamage','damageStep','statPercent','statPercentStep','cooldownSeconds','cooldownReduction'], 'Weapon proc rule');
+    check(['burn','special_magic_damage'].includes(rule.kind), 'Unsupported weapon proc kind');
+    check(typeof rule.chance === 'number' && Number.isFinite(rule.chance) && rule.chance > 0 && rule.chance <= 100 && Number(rule.chance.toFixed(2)) === rule.chance, 'Invalid weapon proc chance');
+    if (rule.gemElement !== undefined) check(['fire','ice','lightning','poison','light','dark','rainbow'].includes(rule.gemElement), 'Unsupported weapon proc gem');
+    const result = {kind:rule.kind,chance:rule.chance};
+    const hasRange = ['from','every','to'].some(key => rule[key] !== undefined);
+    if (hasRange) {
+      result.from = integer(rule.from,1,10,'Proc first upgrade');
+      result.every = integer(rule.every,1,10,'Proc upgrade step');
+      result.to = integer(rule.to,result.from,10,'Proc last upgrade');
+      if (rule.kind === 'burn') check(rule.chance * (1 + Math.floor((result.to-result.from)/result.every)) <= 100, 'Weapon proc exceeds 100 percent');
+    }
+    if (rule.gemElement !== undefined) result.gemElement = rule.gemElement;
+    if (rule.kind === 'special_magic_damage') {
+      check(hasRange, 'Special weapon effect requires refinement thresholds');
+      result.names = textMap(rule.names,160,'Special weapon effect names');
+      check(result.names.en.length > 0, 'English special effect name is required');
+      check(['STR','INT'].includes(rule.damageStat), 'Unsupported special effect attribute');
+      result.damageStat=rule.damageStat;
+      for (const field of ['chanceStep','baseDamage','damageStep','statPercent','statPercentStep','cooldownSeconds','cooldownReduction']) {
+        const value=rule[field];
+        check(typeof value==='number' && Number.isFinite(value) && value>=0 && value<=10000 && Number(value.toFixed(2))===value, 'Invalid special effect value');
+        result[field]=value;
+      }
+      const steps=Math.floor((result.to-result.from)/result.every);
+      check(result.chance+steps*result.chanceStep<=100 && result.baseDamage+steps*result.damageStep<=10000 &&
+        result.statPercent+steps*result.statPercentStep<=10000 && result.cooldownSeconds-steps*result.cooldownReduction>=0,
+        'Special weapon effect exceeds allowed bounds');
+    } else {
+      check(!['names','chanceStep','damageStat','baseDamage','damageStep','statPercent','statPercentStep','cooldownSeconds','cooldownReduction'].some(field => rule[field] !== undefined), 'Burn rule contains special effect fields');
+    }
+    const key = JSON.stringify([result.kind,result.names?.en?.toLowerCase()??null,result.from??null,result.every??null,result.to??null,result.gemElement??null]);
+    check(!seen.has(key), 'Duplicate weapon proc rule'); seen.add(key);
+    return result;
   });
 }
 
@@ -273,7 +328,7 @@ export function validateDraft(input, identity) {
     return result;
   }
   if (identity.kind === 'racial') {
-    keys(input, ['id', 'kind', 'category', 'names', 'description', 'effectMode', 'effects', 'bonusRequirements', 'calculationNotes'], 'Racial passive');
+    keys(input, ['id', 'kind', 'category', 'names', 'description', 'effectMode', 'effects', 'bonusRequirements', 'calculationNotes', 'rangeBonus'], 'Racial passive');
     check(input.id === identity.id && input.kind === 'racial' && input.category === identity.category && Number.isInteger(identity.category) && identity.category >= 0 && identity.category < 6 && Number.isInteger(identity.index) && identity.index >= 0 && identity.index < 3 && input.id === 'racial_skill.' + identity.category + '.' + identity.index, 'Racial passive identity cannot be changed');
     const names = textMap(input.names, 160, 'Names'); check(names.en.length > 0, 'English name is required');
     check(['preserve', 'add', 'replace'].includes(input.effectMode), 'Unknown racial effect mode');
@@ -287,10 +342,11 @@ export function validateDraft(input, identity) {
       result.bonusRequirements = { ...required, weaponCategories: [...categories] };
     }
     if (input.calculationNotes !== undefined) result.calculationNotes = textMap(input.calculationNotes, 1600, 'Calculation notes');
+    if (input.rangeBonus !== undefined) result.rangeBonus = rangeBonus(input.rangeBonus);
     return result;
   }
   if (identity.kind === 'class') {
-    keys(input, ['id', 'kind', 'category', 'names', 'description', 'progression'], 'Class');
+    keys(input, ['id', 'kind', 'category', 'names', 'description', 'progression', 'potentialCaps'], 'Class');
     check(input.id === identity.id && input.kind === 'class' && input.category === null && identity.category === null && Number.isInteger(identity.index) && identity.index >= 0 && identity.index < 28 && input.id === 'job.' + identity.index, 'Class identity cannot be changed');
     const names = textMap(input.names, 160, 'Names'); check(names.en.length > 0, 'English name is required');
     check(Array.isArray(input.progression) && input.progression.length === 6, 'Class needs six engine progression parameters');
@@ -298,7 +354,15 @@ export function validateDraft(input, identity) {
       check(typeof value === 'number' && Number.isFinite(value) && value >= (index < 2 ? 0 : 0.0001) && value <= 100000 && (index >= 2 || Number.isInteger(value)), 'Invalid class progression parameter');
       return value;
     });
-    return { id: input.id, kind: 'class', category: null, names, description: textMap(input.description, 4000, 'Description'), progression };
+    const result = { id: input.id, kind: 'class', category: null, names, description: textMap(input.description, 4000, 'Description'), progression };
+    if (input.potentialCaps !== undefined) {
+      const source = character.records.find(record => record.kind === 'class' && record.index === identity.index);
+      check(source && Array.isArray(input.potentialCaps) && input.potentialCaps.length === 20 &&
+        input.potentialCaps.every((value, index) => Number.isInteger(value) && value >= source.minimumBranches[index] && value <= 120),
+      'Invalid class branch limits: each must be between the initial branch value and 120');
+      result.potentialCaps = [...input.potentialCaps];
+    }
+    return result;
   }
   keys(input, fields, 'Item');
   check(input.id === identity.id && input.kind === identity.kind, 'Item identity cannot be changed');
@@ -318,11 +382,38 @@ export function validateDraft(input, identity) {
   check(['preserve', 'patch', 'replace'].includes(input.effectMode), 'Unknown effect mode'); result.effectMode = input.effectMode;
   check(input.baseAttack === null || (input.kind === 'equipment' && input.category <= 13), 'Weapon attack only applies to weapons');
   result.baseAttack = input.baseAttack === null ? null : integer(input.baseAttack, 0, 10000, 'Weapon attack');
+  if (input.baseRange !== undefined) {
+    check(input.kind === 'equipment' && input.category <= 13, 'Base range only applies to weapons');
+    result.baseRange = integer(input.baseRange, 1, 10000, 'Weapon base range');
+  }
+  if (input.rangeBonus !== undefined) result.rangeBonus = rangeBonus(input.rangeBonus);
   result.effects = effects(input.effects);
+  if (input.nativeUpgradePolicy !== undefined) {
+    check(input.kind === 'equipment' && (
+      input.nativeUpgradePolicy === 'replace-legacy-fire-wand' && ['equipment.12.12','equipment.13.9'].includes(identity.id) ||
+      input.nativeUpgradePolicy === 'replace-legacy-fire-weapon' && LEGACY_FIRE_UPGRADE_IDS.includes(identity.id) ||
+      input.nativeUpgradePolicy === 'replace-legacy-zephyrus-upgrade' && ['equipment.5.27','equipment.5.28'].includes(identity.id) ||
+      input.nativeUpgradePolicy === 'replace-legacy-gold-plate-upgrade' && identity.id==='equipment.31.64' ||
+      input.nativeUpgradePolicy === 'replace-legacy-lunar-gloves-upgrade' && identity.id==='equipment.32.82' ||
+      input.nativeUpgradePolicy === 'replace-legacy-mana-bracelets-upgrade' && identity.id==='equipment.32.61'), 'Unsupported native upgrade replacement');
+    result.nativeUpgradePolicy = input.nativeUpgradePolicy;
+  }
+  if (input.nativeBasePolicy !== undefined) {
+    check(input.nativeBasePolicy === 'replace-priest-earring-aura' && identity.id === 'modern.equipment.ac383fab-00a9-45ff-a09a-b2192c47ef5d' && identity.category === 40 && identity.index === 61,
+      'Unsupported native base replacement');
+    result.nativeBasePolicy = input.nativeBasePolicy;
+  }
+  if (identity.id === 'modern.equipment.ac383fab-00a9-45ff-a09a-b2192c47ef5d' && result.effects.some(effect => effect.stat === 33))
+    check(result.nativeBasePolicy === 'replace-priest-earring-aura', 'Replace the built-in earring aura bonus before setting a new one');
   if(input.upgradeBonuses!==undefined){
     const rules=validateUpgradeBonuses(input.upgradeBonuses);
     check(input.kind==='equipment'||rules.length===0,'Soul refinement bonuses are unsupported');
     if(rules.length)result.upgradeBonuses=rules;
+  }
+  if(input.procEffects!==undefined){
+    const rules=validateProcEffects(input.procEffects);
+    check(input.kind==='equipment' && input.category<=13 || rules.length===0,'Weapon proc rules require a weapon');
+    if(rules.length)result.procEffects=rules;
   }
   check(result.effectMode !== 'preserve' || (result.effects.length === 0 && result.baseAttack === null), 'Preserve mode must not discard submitted effects');
   return result;
@@ -348,11 +439,13 @@ export function compileRecord(edit, identity, source) {
     check(source?.kind === 'racial', 'New racial selection slots require a separate engine capability');
     return { id: identity.id, kind: 'racial', category: identity.category, index: identity.index, names: edit.names, description: edit.description, effectMode: edit.effectMode, effects: edit.effects.map(effect => ({ ...effect })),
       ...(edit.bonusRequirements ? { bonusRequirements: { ...edit.bonusRequirements, weaponCategories: [...edit.bonusRequirements.weaponCategories] } } : {}),
-      ...(edit.calculationNotes ? { calculationNotes: { ...edit.calculationNotes } } : {}) };
+      ...(edit.calculationNotes ? { calculationNotes: { ...edit.calculationNotes } } : {}),
+      ...(edit.rangeBonus ? { rangeBonus: { ...edit.rangeBonus } } : {}) };
   }
   if (identity.kind === 'class') {
     check(source?.kind === 'class', 'New class mechanics require a separate engine capability');
-    return { id: identity.id, kind: 'class', category: null, index: identity.index, names: edit.names, description: edit.description, progression: [...edit.progression] };
+    return { id: identity.id, kind: 'class', category: null, index: identity.index, names: edit.names, description: edit.description, progression: [...edit.progression],
+      ...(edit.potentialCaps ? { potentialCaps: [...edit.potentialCaps] } : {}) };
   }
   check(source || edit.effectMode === 'replace', 'New items need explicit effects');
   const weapon = edit.kind === 'equipment' && edit.category <= 13;
@@ -375,8 +468,13 @@ export function compileRecord(edit, identity, source) {
     engineKey: source?.name.jp || 'Modern:' + identity.id,
     names: edit.names, description: edit.description, notes: edit.notes, acquisition: edit.acquisition, modifiers: edit.modifiers,
     level: edit.level, sockets: edit.sockets, disabled: edit.disabled, calculationCode: tokens.join('_'),
+    ...(edit.baseRange !== undefined ? { baseRange: edit.baseRange } : {}),
+    ...(edit.rangeBonus ? { rangeBonus: { ...edit.rangeBonus } } : {}),
     compatibility: edit.kind === 'equipment' ? [...(source?.compatibility_flags.slice(0, 2) || [1, 1]), ...edit.races, ...edit.classes] : edit.slots,
     ...(edit.upgradeBonuses?.length ? {upgradeBonuses: edit.upgradeBonuses.map(rule=>({...rule}))} : {}),
+    ...(edit.nativeUpgradePolicy ? {nativeUpgradePolicy: edit.nativeUpgradePolicy} : {}),
+    ...(edit.nativeBasePolicy ? {nativeBasePolicy: edit.nativeBasePolicy} : {}),
+    ...(edit.procEffects?.length ? {procEffects: edit.procEffects.map(rule=>({...rule}))} : {}),
     parameter6: source?.legacy_parameter_6 ?? '', soulParameters: source?.legacy_parameters_5_6 || ['', ''], trailing: source?.legacy_trailing_value ?? ''
   };
 }

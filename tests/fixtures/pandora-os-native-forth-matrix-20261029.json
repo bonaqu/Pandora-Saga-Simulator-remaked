@@ -1,0 +1,5994 @@
+{
+  "catalog": {
+    "ok": true,
+    "schemaVersion": 1,
+    "sourceFingerprint": "0f3b15c83d59b8c9c1a47920022895b8db57a526322d9dabea4900fb203518d1",
+    "characterSourceFingerprint": "b41f034b9d6e86a14a39f1f040d99d45315002b4709c753effab0a62cf7e8227",
+    "revision": 92,
+    "impactRevision": 92,
+    "records": [
+      {
+        "id": "equipment.4.20",
+        "kind": "equipment",
+        "category": 4,
+        "index": 20,
+        "engineId": 40020,
+        "engineKey": "ナイトランス",
+        "names": {
+          "en": "Knight Lance",
+          "ru": "Копье ночи",
+          "jp": "ナイトランス",
+          "tw": "(蘭斯騎士)"
+        },
+        "description": {
+          "en": "A sacred spear that holds a mysterious power.When enhanced to +7 or higher with a Light gem: Attack +10%, Defense +5%.",
+          "ru": "Священное копье, обладающее тайной силой.При улучшении с помощью самоцвета света до +7 и выше: атака +10%, защита +5%.",
+          "jp": "",
+          "tw": ""
+        },
+        "notes": {
+          "en": "Runjemu discipline at least when the light +7¸ +10% Attack +5% defense",
+          "ru": "",
+          "jp": "光のルーンジェムで+7以上鍛錬した時、攻撃力+10%、防御力+5%",
+          "tw": "Runjemu紀律至少當光線 +7¸+10％攻擊防​​禦 +5％"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "未開区域ミュルディア_Lv62 監獄破りのランクス_1|古の片手槍：中成功\nベルカナ*2、貫きの爪*50_生産_?|2009, 2010レルム対抗ゴーレム育成合戦_イベント_1",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 51,
+        "sockets": 0,
+        "disabled": false,
+        "calculationCode": "18=W67",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.5.27",
+        "kind": "equipment",
+        "category": 5,
+        "index": 27,
+        "engineId": 50027,
+        "engineKey": "ゼピュロスＲ",
+        "names": {
+          "en": "Zephyrus A",
+          "ru": "Разящее копье Зефира",
+          "jp": "ゼピュロスＲ",
+          "tw": "(善風 R)"
+        },
+        "description": {
+          "en": "A spear found among the Mirin settlements.STR +1Per every 2 enhancement levels:MP +15At +7 and above: STR +1",
+          "ru": "Копье найденное среди поселений Мирин. СИЛ +1За каждые 2 единицы улучшения:ОМ +15При улучшении на +7 и выше: СИЛ +1",
+          "jp": "命中+25、攻撃速度+5%",
+          "tw": "命中+25¸ 攻擊速度+5%"
+        },
+        "notes": {
+          "en": "When the discipline more than +5¸ +20% Damage Aura",
+          "ru": "",
+          "jp": "鍛錬値+5以上の時、オーラダメージ+20%",
+          "tw": "當紀律超過 +5¸+20％傷害光環"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "西風神の大槍：中成功\nフルグライト*30、死を運ぶ牙*20、600G_生産_1",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "18=W101_1=1",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.5.28",
+        "kind": "equipment",
+        "category": 5,
+        "index": 28,
+        "engineId": 50028,
+        "engineKey": "ゼピュロスＳＲ",
+        "names": {
+          "en": "Zephyrus S",
+          "ru": "Сильное копье Зефира",
+          "jp": "ゼピュロスＳＲ",
+          "tw": "(善風 SR)"
+        },
+        "description": {
+          "en": "A spear found among the Mirin settlements.STR +1Per every 2 enhancement levels:MP +15At +7 and above: STR +2",
+          "ru": "Копье найденное среди поселений Мирин. СИЛ +1За каждые 2 единицы улучшения:ОМ +15При улучшении на +7 и выше: СИЛ +2",
+          "jp": "命中+25、攻撃速度+5%",
+          "tw": "命中+25¸ 攻擊速度+5%"
+        },
+        "notes": {
+          "en": "When the discipline more than +5¸ +20% damage aura. Over time the discipline +7¸ +30% more damage aura",
+          "ru": "",
+          "jp": "鍛錬値+5以上の時、オーラダメージ+20%。鍛錬値+7以上の時、更にオーラダメージ+30%",
+          "tw": "當紀律超過 +5¸+20％傷害的光環。隨著時間的推移紀律 +7¸+30％傷害光環"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "西風神の大槍：大成功\nフルグライト*30、死を運ぶ牙*20、600G_生産_1",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "18=W95_1=1",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.11.14",
+        "kind": "equipment",
+        "category": 11,
+        "index": 14,
+        "engineId": 110014,
+        "engineKey": "モール",
+        "names": {
+          "en": "Maul D",
+          "ru": "Прочный клиновидный молот",
+          "jp": "モール",
+          "tw": "(購物中心)"
+        },
+        "description": {
+          "en": "A hammer with a long handle.STR +1Per every 2 enhancement levels:Accuracy +2At +7 and above: STR +1",
+          "ru": "Молот с длинной рукоятью.СИЛ +1За каждые 2 единицы улучшения:Точность +2При улучшении на +7 и выше: СИЛ +1",
+          "jp": "筋力+1、命中+5",
+          "tw": "力量+1¸ 命中+5"
+        },
+        "notes": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "ニールシュタット平原\n黄輝石*80、忌み嫌う憎悪の珠*1、死へ誘う悲哀の珠*1、暴れ狂う憤怒の珠*1_NPC:アルガン_2",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 2,
+        "disabled": false,
+        "calculationCode": "18=W78_1=1",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.30.66",
+        "kind": "equipment",
+        "category": 30,
+        "index": 66,
+        "engineId": 300066,
+        "engineKey": "アルカナサークレット",
+        "names": {
+          "en": "Arcana Circlet",
+          "ru": "Браслет таинств",
+          "jp": "アルカナサークレット",
+          "tw": "(阿卡納頭飾)"
+        },
+        "description": {
+          "en": "A bracelet made of worthless material.STA -1Skill Casting Speed +3%Per every 3 enhancement levels:HP +100, MP +100",
+          "ru": "Браслет из никудышного материала.ВЫН -1Скорость применения умений +3%За каждые 3 единицы улучшения:ОЗ +100, ОМ +100",
+          "jp": "体力-1、詠唱速度+3%",
+          "tw": "體力-1¸ 詠唱速度+3%"
+        },
+        "notes": {
+          "en": "The value of each discipline +3¸ LP +100¸ MP +100",
+          "ru": "",
+          "jp": "鍛錬値+3毎に、LP+100、MP+100",
+          "tw": "每個學科的值+3¸LP +100¸MP +100"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "0=-1_49=5_77=3",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.31.31",
+        "kind": "equipment",
+        "category": 31,
+        "index": 31,
+        "engineId": 310031,
+        "engineKey": "アスティアンコート",
+        "names": {
+          "en": "Astian Coat",
+          "ru": "Астирская куртка",
+          "jp": "アスティアンコート",
+          "tw": "(艾斯提亞外衣)"
+        },
+        "description": {
+          "en": "A beautiful coat. The men of Astir love to wear these.SPI +1, HP +40, MP +10Per every enhancement level:HP +15At +5 and above: Magic Resistance +5",
+          "ru": "Красивая куртка. Такие любят носить мужчины Астира.СД +1, ОЗ +40, ОМ +10За каждую единицу улучшения:ОЗ +15При улучшении на +5 и выше: Сопротивляемость магии +5",
+          "jp": "LP+12、MP+12",
+          "tw": "LP+12¸ MP+12"
+        },
+        "notes": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 20,
+        "sockets": 2,
+        "disabled": false,
+        "calculationCode": "4=1_6=40_7=10_49=19",
+        "compatibility": [
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.31.32",
+        "kind": "equipment",
+        "category": 31,
+        "index": 32,
+        "engineId": 310032,
+        "engineKey": "アスティアンドレス",
+        "names": {
+          "en": "Astian Dress",
+          "ru": "Астирское платье",
+          "jp": "アスティアンドレス",
+          "tw": "(艾斯提亞連衣裙)"
+        },
+        "description": {
+          "en": "Body part: torso and legs.A beautiful dress. The women of Astir love to wear these.STA +1, SPI +1, HP +60, MP +20Per every enhancement level:HP +15Per every 3 enhancement levels:Physical Damage Taken -1%At +5 and above: Magic Resistance +5",
+          "ru": "Часть тела: корпус и ноги.Красивое платье. Такие любят носить женщины Астира.ВЫН +1, СД +1, ОЗ +60, ОМ +20За каждую единицу улучшения:ОЗ +15За каждые 3 единицы улучшения:Получаемый физический урон -1%При улучшении на +5 и выше: Сопротивляемость магии +5",
+          "jp": "LP+20、MP+20",
+          "tw": "LP+20¸ MP+20"
+        },
+        "notes": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 20,
+        "sockets": 3,
+        "disabled": false,
+        "calculationCode": "0=1_4=1_6=60_7=20_49=33",
+        "compatibility": [
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.32.61",
+        "kind": "equipment",
+        "category": 32,
+        "index": 61,
+        "engineId": 320061,
+        "engineKey": "マナブレスレット",
+        "names": {
+          "en": "Mana Bracelets",
+          "ru": "Магический браслет",
+          "jp": "マナブレスレット",
+          "tw": "(法力手鍊)"
+        },
+        "description": {
+          "en": "These elegant bracelets are popular among adepts of magic. MP Cost Reduction +4%Magic Resistance +3At +7 and above: AGI +1",
+          "ru": "Эти изящные браслеты популярны против адептов магии. Снижение расхода ОМ +4%Сопротивляемость магии +3При улучшении на +7 и выше: ПРВ +1",
+          "jp": "消費MP-4%、魔術耐性+3%",
+          "tw": "消耗MP-4%¸ 秘法抗性+3%"
+        },
+        "notes": {
+          "en": "The value of each discipline +3¸ MP +30",
+          "ru": "",
+          "jp": "鍛錬値+3毎に、MP+30",
+          "tw": "每個學科的值+3¸MP +30"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "聖フェルシュタイン王国、ラトゥーガ帝国、北方氏族連合ヴァリク_NPC:交換屋(勲章*1000)_1",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "49=3_76=-4_145=3",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.32.81",
+        "kind": "equipment",
+        "category": 32,
+        "index": 81,
+        "engineId": 320081,
+        "engineKey": "ファイングローブ",
+        "names": {
+          "en": "Fine Gloves",
+          "ru": "Перчатки благословления",
+          "jp": "ファイングローブ",
+          "tw": "(精細韋)"
+        },
+        "description": {
+          "en": "Consecrated gloves.Magic Resistance +1At +7 and above:INT +1Magic Resistance +4",
+          "ru": "Освященные перчатки.Сопротивляемость магии +1При улучшении на +7 и выше:ИНТ +1Сопротивляемость магии +4",
+          "jp": "魔術耐性+1%",
+          "tw": "秘法抗性+1%"
+        },
+        "notes": {
+          "en": "Over time the discipline +7¸ +1 Intellect¸ +4% Magic Resistance",
+          "ru": "",
+          "jp": "鍛錬値+7以上の時、知性+1、魔術耐性+4%",
+          "tw": "隨著時間的推移紀律 +7¸智力+1¸+4％抗魔"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "49=6_145=1",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.32.82",
+        "kind": "equipment",
+        "category": 32,
+        "index": 82,
+        "engineId": 320082,
+        "engineKey": "ルーナグローブ",
+        "names": {
+          "en": "Lunar Gloves",
+          "ru": "Лунные перчатки",
+          "jp": "ルーナグローブ",
+          "tw": "(盧娜韋)"
+        },
+        "description": {
+          "en": "Gloves charged with the energy of moonlight.Magic Attack +1%At +7 and above:INT +1Magic Attack +2%",
+          "ru": "Перчатки, заряженные энергией лунного света.Магическая атака +1%При улучшении на +7 и выше:ИНТ +1Магическая атака +2%",
+          "jp": "魔法攻撃力+1%",
+          "tw": "魔法攻擊+1%"
+        },
+        "notes": {
+          "en": "Over time the discipline +7¸ +1 Intellect¸ +4% Magic Attack",
+          "ru": "",
+          "jp": "鍛錬値+7以上の時、知性+1、魔法攻撃力+4%",
+          "tw": "隨著時間的推移紀律 +7¸+1智力¸魔法攻擊 +4％"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "42=1_49=5",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.34.65",
+        "kind": "equipment",
+        "category": 34,
+        "index": 65,
+        "engineId": 340065,
+        "engineKey": "コンバットブーツ",
+        "names": {
+          "en": "Combat Boots",
+          "ru": "Боевые башмаки",
+          "jp": "コンバットブーツ",
+          "tw": "(戰鬥靴)"
+        },
+        "description": {
+          "en": "Massive boots made especially for warriors. This sturdy, reliable footwear comes in very handy in the thick of battle.STA +1Knockdown Resistance +10%Block Break Resistance +1%Per every 3 enhancement levels:Block Break Resistance +2%Block-Piercing Attack Resistance +2% per 3 levels of enhancement",
+          "ru": "Массивные сапоги, изготовленные специально для воинов. Эта крепкая и надежная обувь очень пригодится в гуще схватки.ВЫН +1Сопротивляемость падению +10%Сопротивляемость пробитию блока +1%За каждые 3 единицы улучшения:Сопротивляемость пробитию блока +2%",
+          "jp": "体力+1、ブロッキング解除耐性+1%、転倒耐性+10%",
+          "tw": "體力+1¸ 德阻斷免疫+1%¸ 擊倒抗性+10%"
+        },
+        "notes": {
+          "en": "The value of each discipline +3 +2% de-blocking immunity",
+          "ru": "",
+          "jp": "鍛錬値+3毎に、ブロッキング解除耐性+2%",
+          "tw": "每個學科的值+3 +2％去阻止免疫"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "聖フェルシュタイン王国、ラトゥーガ帝国、北方氏族連合ヴァリク_NPC:交換屋(勲章*1000)_1",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "0=1_49=6_133=1_151=10",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.34.66",
+        "kind": "equipment",
+        "category": 34,
+        "index": 66,
+        "engineId": 340066,
+        "engineKey": "シュナイダーブーツ",
+        "names": {
+          "en": "Schneider Boots",
+          "ru": "Башмаки портного",
+          "jp": "シュナイダーブーツ",
+          "tw": "(施耐德靴)"
+        },
+        "description": {
+          "en": "Shoes worn by those who dwell in darkness.HP +100Dark Resistance +5At +7 and above: INT +1",
+          "ru": "Башмаки, которые носят живущие во тьме.ОЗ +100Сопротивляемость тьме +5При улучшении на +7 и выше: ИНТ +1",
+          "jp": "LP+100、闇耐性+5%",
+          "tw": "LP+100¸ 黑暗抗性+5%"
+        },
+        "notes": {
+          "en": "Over time the discipline +7 +1 Intellect",
+          "ru": "",
+          "jp": "鍛錬値+7以上の時、知性+1",
+          "tw": "隨著時間的推移紀律 +7 +1智力"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "聖フェルシュタイン王国、ラトゥーガ帝国、北方氏族連合ヴァリク_NPC:交換屋(勲章*1000)_1|古の保護靴：中成功\nウンジョー*1、丈夫な骨*40、10,000G_生産_0",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "6=100_49=5_144=5",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.34.85",
+        "kind": "equipment",
+        "category": 34,
+        "index": 85,
+        "engineId": 340085,
+        "engineKey": "カルドブーツ",
+        "names": {
+          "en": "Cald Boots",
+          "ru": "Прочные сапоги",
+          "jp": "カルドブーツ",
+          "tw": "(Caldo靴)"
+        },
+        "description": {
+          "en": "Boots that protect against fire.Burn Resistance +2%At +7 and above:STA +2Burn Resistance +6%",
+          "ru": "Сапоги, защищающие от огня.Сопротивляемость ожогам +2%При улучшении на +7 и выше:ВЫН +2Сопротивляемость ожогам +6%",
+          "jp": "火傷耐性+2%",
+          "tw": "燒傷抗性+2%"
+        },
+        "notes": {
+          "en": "Over time the discipline +7¸ +2 stamina¸ resistance to burn 6%",
+          "ru": "",
+          "jp": "鍛錬値+7以上の時、体力+2、火傷耐性+6%",
+          "tw": "隨著時間的推移紀律 +7¸+2耐力¸耐燒 6％"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 47,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "49=7_148=2",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.34.86",
+        "kind": "equipment",
+        "category": 34,
+        "index": 86,
+        "engineId": 340086,
+        "engineKey": "ファインブーツ",
+        "names": {
+          "en": "Fine Boots",
+          "ru": "Сапоги благословения",
+          "jp": "ファインブーツ",
+          "tw": "(精細靴)"
+        },
+        "description": {
+          "en": "Consecrated boots.Accuracy +2At +7 and above: Movement Speed +5%",
+          "ru": "Освященные сапоги.Точность +2При улучшении на +7 и выше: Скорость передвижения +5%",
+          "jp": "命中+2",
+          "tw": "命中+2"
+        },
+        "notes": {
+          "en": "Over time the discipline +7 +5% movement speed",
+          "ru": "",
+          "jp": "鍛錬値+7以上の時、移動速度+5%",
+          "tw": "隨著時間的推移紀律 +7 +5％移動速度"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 48,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "49=7_62=2",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.34.87",
+        "kind": "equipment",
+        "category": 34,
+        "index": 87,
+        "engineId": 340087,
+        "engineKey": "ルーナブーツ",
+        "names": {
+          "en": "Lunar Boots",
+          "ru": "Лунные сапоги",
+          "jp": "ルーナブーツ",
+          "tw": "(月神靴)"
+        },
+        "description": {
+          "en": "Boots charged with the energy of moonlight.Evasion +2At +7 and above: Movement Speed +5%",
+          "ru": "Сапоги, заряженные энергией лунного света.Уклонение +2При улучшении на +7 и выше: Скорость передвижения +5%",
+          "jp": "回避+2",
+          "tw": "迴避+2"
+        },
+        "notes": {
+          "en": "Over time the discipline +7 +5% movement speed",
+          "ru": "",
+          "jp": "鍛錬値+7以上の時、移動速度+5%",
+          "tw": "隨著時間的推移紀律 +7 +5％移動速度"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 48,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "49=7_65=2",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.12.13",
+        "kind": "equipment",
+        "category": 12,
+        "index": 13,
+        "engineId": 120013,
+        "engineKey": "氷杖フロストワンド",
+        "names": {
+          "en": "Frost Wand",
+          "ru": "Морозный жезл",
+          "jp": "氷杖フロストワンド",
+          "tw": "(霜冰魔杖魔杖)"
+        },
+        "description": {
+          "en": "A wand tempered by frost. A chilling power pulses within it.Accuracy +3, DEX +3, Spi +1, INT +3.When enhanced beyond +6 with an Ice Gem, there is a 3% chance to freeze the enemy on hit.",
+          "ru": "Жезл, закаленный морозом. В нем бьется леденящая сила.Точность +3, ЛВК +3, СД +1, ИНТ +3.При усовершенствовании с помощью самоцвета льда больше, чем на +6, есть 3% шанс при ударе заморозить противника.",
+          "jp": "器用+3、知性+3",
+          "tw": "技巧+3¸ 智慧+3"
+        },
+        "notes": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "_課金ショップ(2480PP)_2",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 2,
+        "disabled": false,
+        "calculationCode": "18=W36_3=3_4=1_5=3_42=10",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.12.15",
+        "kind": "equipment",
+        "category": 12,
+        "index": 15,
+        "engineId": 120015,
+        "engineKey": "邪杖ペリッシュワンド",
+        "names": {
+          "en": "Perish Wand",
+          "ru": "Посох исчезновения",
+          "jp": "邪杖ペリッシュワンド",
+          "tw": "(邪惡權杖堅持滅亡)"
+        },
+        "description": {
+          "en": "A cursed staff. One who mourns a loss becomes an empty shell without a soul.Spi +4, INT +1When enhanced to +5 or higher with a Poison Gem or a Magic Poison Gem, it increases the duration and success rate of malevolent enchantments. When enhanced beyond +6, the staff also raises resistance to spellcasting interruption.",
+          "ru": "Проклятый посох. Тот, кто оплакивает потерю, становится оболочкой без души.СД +4, ИНТ +1При усовершенствовании с помощью самоцвета яда или магического самоцвета яда на +5 и выше увеличивает продолжительность и вероятность успеха злых чар. При усовершенствовании больше, чем на +6, посох также повышает сопротивление прерыванию чтения заклинаний.",
+          "jp": "霊感+4、知性+1",
+          "tw": "靈感+4¸ 智慧+1"
+        },
+        "notes": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "_課金ショップ(2480PP)_2",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 2,
+        "disabled": false,
+        "calculationCode": "18=W34_4=4_5=1",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.12.17",
+        "kind": "equipment",
+        "category": 12,
+        "index": 17,
+        "engineId": 120017,
+        "engineKey": "魔杖クルーエルワンド",
+        "names": {
+          "en": "Cruel Wand",
+          "ru": "Темный жезл жестокости",
+          "jp": "魔杖クルーエルワンド",
+          "tw": "(殘忍魔杖魔杖)"
+        },
+        "description": {
+          "en": "A wand that feeds on life force. A dark weapon serving one who has welcomed the abyss into their heart.AGI +2, Spi +2, INT +3. When enhanced with a Dark Gem, it reduces Dark magic damage taken according to the enhancement level. On a physical attack, it weakens the enemy.When enhanced beyond +6, it absorbs HP according to the damage dealt and the enhancement level.",
+          "ru": "Жезл, питающийся жизненной силой. Темное оружие, служащее тому, кто принял бездну в свое сердце.ПРВ +2, СД +2, ИНТ +3. При усовершенствовании с помощью самоцвета тьмы уменьшает получаемый урон от магии тьмы в соответствии с уровнем усовершенствования. При физической атаке ослабляет противника.При усовершенствовании больше, чем на +6, будет поглощать ОЗ в соответствии с наносимым уроном и уровнем усовершенствования.",
+          "jp": "敏捷+2、霊感+2、知性+3",
+          "tw": "敏捷+2¸ 靈感+2¸ 智慧+3"
+        },
+        "notes": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "_課金ショップ(2480PP)_2",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 2,
+        "disabled": false,
+        "calculationCode": "18=W31_2=2_4=2_5=3",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.13.19",
+        "kind": "equipment",
+        "category": 13,
+        "index": 19,
+        "engineId": 130019,
+        "engineKey": "宝杖セレスティアルロッド",
+        "names": {
+          "en": "Celestial Rod",
+          "ru": "Небесный скипетр",
+          "jp": "宝杖セレスティアルロッド",
+          "tw": "(富寶甘蔗桿)"
+        },
+        "description": {
+          "en": "A scepter forged by the faeries during their travels through other worlds. It is said that the gleam of the morning dew lets it change its form by drawing on the spirit and energy of its wielder.DEX +3, Spi +3, INT +6When enhanced with Rainbow Gems, it raises magic attack. When enhanced beyond +6, it can completely nullify incoming physical damage.",
+          "ru": "Скипетр, созданный феями во время путешествия по другим мирам. По слухам, сияние утренней росы позволяет ему принимать разную форму, используя дух и энергию своего хозяина.ЛВК +3, СД +3, ИНТ +6При усовершенствовании с помощью самоцветов радуги повышает магическую атаку. При усовершенствовании больше, чем на +6, может полностью нейтрализовать получаемый физ. урон.",
+          "jp": "器用+3、霊感+3、知性+6",
+          "tw": "技巧+3¸ 靈感+3¸ 智慧+6"
+        },
+        "notes": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "_課金ショップ(2480PP)_2",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 45,
+        "sockets": 2,
+        "disabled": false,
+        "calculationCode": "18=W49_3=3_4=3_5=6_42=15",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.30.70",
+        "kind": "equipment",
+        "category": 30,
+        "index": 70,
+        "engineId": 300070,
+        "engineKey": "ディバインハット",
+        "names": {
+          "en": "Divine Hat",
+          "ru": "Божественный шлем",
+          "jp": "ディバインハット",
+          "tw": "(神帽)"
+        },
+        "description": {
+          "en": "A headpiece upon which a blessing has been placed. It boasts excellent defense and can block enemy magic attacks.DEX +1Charm Resistance +6Per every 3 enhancement levels:Skill Casting Speed +3%Accuracy +5",
+          "ru": "Головной убор, на который наложено благословение. Обладает отличной защитой и может блокировать магические атаки врагов.ЛВК +1Сопротивляемость чарам +6За каждые 3 единицы улучшения:Скорость применения умений +3%Точность +5",
+          "jp": "器用+1、魅了耐性+6%",
+          "tw": "技巧+1¸ 魅惑抗性+6%"
+        },
+        "notes": {
+          "en": "The value of each discipline +3¸ Accuracy +5¸ +3% casting speed",
+          "ru": "",
+          "jp": "鍛錬値+3毎に、命中+5、詠唱速度+3%",
+          "tw": "每個學科的值+3¸準確 +5¸+3％施法速度"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 0,
+        "disabled": false,
+        "calculationCode": "3=1_49=8_142=6",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.30.72",
+        "kind": "equipment",
+        "category": 30,
+        "index": 72,
+        "engineId": 300072,
+        "engineKey": "ゴールドヘルム",
+        "names": {
+          "en": "Gold Helmet",
+          "ru": "Золотой шлем",
+          "jp": "ゴールドヘルム",
+          "tw": "(金頭盔)"
+        },
+        "description": {
+          "en": "An ancient helmet that has yet to lose its luster. Since olden days it has been worn by heroes and champions.INT +1, Spi +1When enhanced to +5, reduces MP cost by 5%. With further enhancement, adds 5% MP per level of enhancement.",
+          "ru": "Древний шлем, который до сих пор не потерял своего блеска. Его издавна носили герои и победители.ИНТ +1, СД +1При усовершенствовании до +5 снижает расход ОМ на 5%. В случае дальнейшего улучшения добавляет 5% ОМ за каждую единицу усовершенствования.",
+          "jp": "霊感+1、知性+1",
+          "tw": "靈感+1¸ 智慧+1"
+        },
+        "notes": {
+          "en": "+5 When more than value of discipline¸ MP-5% consumption. Since each +1¸ MP Consumption - 5%",
+          "ru": "",
+          "jp": "鍛錬値+5以上の時、消費MP-5%。以降+1毎に、消費MP-5%",
+          "tw": "5當超過價值的紀律¸MP - 5％的消費。由於每個 +1¸MP消耗 - 5％"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 0,
+        "disabled": false,
+        "calculationCode": "4=1_5=1_49=12",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.31.64",
+        "kind": "equipment",
+        "category": 31,
+        "index": 64,
+        "engineId": 310064,
+        "engineKey": "ゴールドプレート",
+        "names": {
+          "en": "Gold Plate",
+          "ru": "Золотой нагрудник",
+          "jp": "ゴールドプレート",
+          "tw": "(金盤)"
+        },
+        "description": {
+          "en": "Ancient armor that has not lost a shred of its former luster. This armor has long been worn by great heroes and champions.Sta +1,  STR +1When enhanced to +5 or higher, reduces physical damage taken by 2%. It also further reduces physical damage taken by an additional 2% for each level of enhancement beyond that.If the armor is enhanced to +7 or higher and equipped together with the Gold Helm, Gold Tasset, Gold Gauntlets, and Gold Gloves, the following effect is activatedKnockdown Resistance +100%",
+          "ru": "Древние доспехи, ничуть не потерявшие былого блеска. Эту броню издавна носили великие герои и победители.ВЫН +1,  СИЛ +1При усовершенствовании до +5 и выше снижает получаемый физический урон на 2%. Также дополнительно снижает получаемый физический урон на 2% за каждую единицу усовершенствования после этого.Если доспехи усовершенствованы до +7 или выше, и экипированы вместе с Золотым шлемом, Золотым набедренником, Золотыми рукавицами и Золотыми перчатками, активируется эффектСопротивляемость падению +100%",
+          "jp": "体力+1、筋力+1",
+          "tw": "體力+1¸ 力量+1"
+        },
+        "notes": {
+          "en": "+5 When more than value of discipline¸ non-physical damage -2%. +1 For each subsequent non-physical damage -2%. Gold Helmet +7 over the plate discipline¸ Kuisu¸ Gauntlet¸ and with a set Greaves¸ absolutely not fall",
+          "ru": "",
+          "jp": "鍛錬値+5以上の時、被物理ダメージ-2%。以降+1毎に、被物理ダメージ-2%。プレートの鍛錬値が+7以上でゴールドヘルム、クィス、ガントレット、グリーブスをセットで装備すると、絶対に転倒しない",
+          "tw": "5當超過價值的紀律¸非物理傷害 -2％。 1對於每個後續的非物理傷害 -2％。黃金頭盔 +7以上的板塊紀律¸奎蘇¸笞刑¸並與一套格里夫斯¸絕對不倒"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 0,
+        "disabled": false,
+        "calculationCode": "0=1_1=1_49=24",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.32.64",
+        "kind": "equipment",
+        "category": 32,
+        "index": 64,
+        "engineId": 320064,
+        "engineKey": "ソーサリーグローブ",
+        "names": {
+          "en": "Sorcery Gloves",
+          "ru": "Чудесные перчатки",
+          "jp": "ソーサリーグローブ",
+          "tw": "(巫環球)"
+        },
+        "description": {
+          "en": "Gloves crafted from cloth steeped in magical power.INT +1Magic Attack +1%Ice Resistance +3Per every 4 enhancement levels:Magic Attack +1%",
+          "ru": "Перчатки, изготовленные из ткани, пропитанной магической силой.ИНТ +1Магическая атака +1%Сопротивляемость льду +3За каждые 4 единицы улучшения:Магическая атака +1%",
+          "jp": "知性+1、魔法攻撃力+1%、冷気耐性+3%",
+          "tw": "智慧+1¸ 魔法攻擊+1%¸ 冰抗性+3%"
+        },
+        "notes": {
+          "en": "The value of each discipline +4¸ Magic Attack +1%",
+          "ru": "",
+          "jp": "鍛錬値+4毎に、魔法攻撃力+1%",
+          "tw": "每個學科的值+4¸魔法攻擊 +1％"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "5=1_42=1_49=5_139=3",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.34.52",
+        "kind": "equipment",
+        "category": 34,
+        "index": 52,
+        "engineId": 340052,
+        "engineKey": "ブレイズブーツ",
+        "names": {
+          "en": "Blaze Boots",
+          "ru": "Сапоги дракона",
+          "jp": "ブレイズブーツ",
+          "tw": "(括號靴)"
+        },
+        "description": {
+          "en": "Footwear made of dragon scales. The wearer never loses their courage and can fight on the front lines.HP +200Attack +1%Burn Resistance +8%Per every 3 enhancement levels:Attack +2%",
+          "ru": "Обувь из драконьей чешуи. Носящий ее никогда не теряет отваги и может сражаться в первых рядах.ОЗ +200Атака +1%Сопротивляемость ожогам +8%За каждые 3 единицы улучшения:Атака +2%",
+          "jp": "LP+200、攻撃力+1%、火傷耐性+8%",
+          "tw": "LP+200¸ 攻擊力+1%¸ 燒傷抗性+8%"
+        },
+        "notes": {
+          "en": "The value of each discipline +3¸ Attack +2%",
+          "ru": "",
+          "jp": "鍛錬値+3毎に、攻撃力+2%",
+          "tw": "每個學科的值+3¸攻擊 +2％"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 31,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "6=200_18=1%_49=5_148=8",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.34.71",
+        "kind": "equipment",
+        "category": 34,
+        "index": 71,
+        "engineId": 340071,
+        "engineKey": "ゴールドグリーブス",
+        "names": {
+          "en": "Gold Greaves",
+          "ru": "Золотые башмаки",
+          "jp": "ゴールドグリーブス",
+          "tw": "(金格雷亞韋斯)"
+        },
+        "description": {
+          "en": "Ancient greaves that have lost none of their former grandeur. This piece of armor has long been worn by heroes and champions.DEX +1, Sta +1When enhanced to +5, grants Critical Hit Chance +2%. Each subsequent enhancement level also grants Critical Hit Chance +2%.",
+          "ru": "Древние поножи, ничуть не потерявшие былого величия. Этот элемент защиты издавна носили герои и победители.ЛВК +1, ВЫН +1При усовершенствовании до +5 добавляет +2% к вероятности критического удара. За каждую следующую единицу усовершенствования также дает +2% к вероятности критического удара.",
+          "jp": "体力+1、器用+1",
+          "tw": "體力+1¸ 技巧+1"
+        },
+        "notes": {
+          "en": "When the discipline more than +5¸ +2% critical incidence. Since each +1¸ Critical +2% incidence",
+          "ru": "",
+          "jp": "鍛錬値+5以上の時、クリティカル発生率+2%。以降+1毎に、クリティカル発生率+2%",
+          "tw": "當紀律超過 +5¸+2％的發病率的關鍵。由於每個 +1¸+2％的發病率關鍵"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 0,
+        "disabled": false,
+        "calculationCode": "0=1_3=1_49=8",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.34.72",
+        "kind": "equipment",
+        "category": 34,
+        "index": 72,
+        "engineId": 340072,
+        "engineKey": "ディバインブーツ",
+        "names": {
+          "en": "Divine Boots",
+          "ru": "Божественные сапоги",
+          "jp": "ディバインブーツ",
+          "tw": "(神靴)"
+        },
+        "description": {
+          "en": "Exceptionally durable boots that protect the owner from damage superbly.Spi +1Healing Item Effect +1%Spi +1, Healing Spell Effect +2%, and MP Recovery Rate +3% per 3 levels of enhancement",
+          "ru": "Прочнейшие башмаки, которые отлично защищают владельца от уронаСД +1Эффект от лечащих предметов +1%СД +1, эффект от лечащих заклинаний +2% и скорость восстановления ОМ +3% за каждые 3 единицы усовершенствования",
+          "jp": "霊感+1、LP回復スキルの効果量+1%",
+          "tw": "靈感+1¸ HP恢復技能的效果+1%"
+        },
+        "notes": {
+          "en": "The value of each discipline +3 +1 Inspiration¸ recovery skill effect size 2% LP¸ +3% MP recovery rate",
+          "ru": "",
+          "jp": "鍛錬値+3毎に、霊感+1、LP回復スキルの効果量+2%、MP回復速度+3%",
+          "tw": "每個學科的值+3 +1啟示¸恢復技能效果大小為 2％LP¸MP恢復速度+3％"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 0,
+        "disabled": false,
+        "calculationCode": "4=1_11=1_49=7",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.31.35",
+        "kind": "equipment",
+        "category": 31,
+        "index": 35,
+        "engineId": 310035,
+        "engineKey": "雪色アスティアンコート",
+        "names": {
+          "en": "Astian Snow Coat",
+          "ru": "Белая астирская куртка",
+          "jp": "雪色アスティアンコート",
+          "tw": "(雪色艾斯提亞外衣)"
+        },
+        "description": {
+          "en": "A beautiful coat the color of first snow.INT +1Healing Spell Effectiveness +3%Per every 2 enhancement levels:Skill Casting Speed +1%",
+          "ru": "Красивая куртка цвета первого снега.ИНТ +1Эффективность лечащих заклинаний +3%За каждые 2 единицы улучшения:Скорость применения умений +1%",
+          "jp": "LP+10、MP+10、詠唱妨害耐性+3%",
+          "tw": "LP+10¸ MP+10¸ 吟詠取消抗性+3%"
+        },
+        "notes": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 20,
+        "sockets": 2,
+        "disabled": false,
+        "calculationCode": "5=1_11=3_49=17",
+        "compatibility": [
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.31.36",
+        "kind": "equipment",
+        "category": 31,
+        "index": 36,
+        "engineId": 310036,
+        "engineKey": "雪色アスティアンドレス",
+        "names": {
+          "en": "Astian Snow Dress",
+          "ru": "Белое астирское платье",
+          "jp": "雪色アスティアンドレス",
+          "tw": "(雪色艾斯提亞連衣裙)"
+        },
+        "description": {
+          "en": "Body part: torso and legs. A beautiful dress the color of first snow.INT +2, MP +30Stun Resistance +3%Healing Spell Effectiveness +3%Per every 2 enhancement levels:Skill Casting Speed +1%Skill Cooldown -1%",
+          "ru": "Часть тела: корпус и ноги. Красивое платье цвета первого снега.ИНТ +2, ОМ +30Сопротивляемость оглушению +3%Эффективность лечащих заклинаний +3%За каждые 2 единицы улучшения:Скорость применения умений +1%Время перезарядки умений -1%",
+          "jp": "LP+10、MP+30、詠唱妨害耐性+3%、気絶耐性+3%",
+          "tw": "LP+10¸ MP+30¸ 吟詠取消抗性+3%¸ 暈眩抗性+3%"
+        },
+        "notes": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 20,
+        "sockets": 3,
+        "disabled": false,
+        "calculationCode": "5=2_7=30_11=3_49=28_149=3",
+        "compatibility": [
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.33.31",
+        "kind": "equipment",
+        "category": 33,
+        "index": 31,
+        "engineId": 330031,
+        "engineKey": "アスティアンパンツ",
+        "names": {
+          "en": "Astian Leggings",
+          "ru": "Астирские штаны",
+          "jp": "アスティアンパンツ",
+          "tw": "(艾斯提亞褲子)"
+        },
+        "description": {
+          "en": "Comfortable trousers favored by the men of Astir.STA +1, HP +20, MP +10Per every 3 enhancement levels:Physical Damage Taken -1%",
+          "ru": "Удобные штаны. Такие любят носить мужчины Астира.ВЫН +1, ОЗ +20, ОМ +10За каждые 3 единицы улучшения:Получаемый физический урон -1%",
+          "jp": "LP+8、MP+8",
+          "tw": "LP+8¸ MP+8"
+        },
+        "notes": {
+          "en": "Value +1 each discipline¸ MP +1",
+          "ru": "",
+          "jp": "鍛錬値+1毎に、MP+1",
+          "tw": "每個學科的價值 1¸MP +1"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 20,
+        "sockets": 2,
+        "disabled": false,
+        "calculationCode": "0=1_6=20_7=10_49=14",
+        "compatibility": [
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.33.35",
+        "kind": "equipment",
+        "category": 33,
+        "index": 35,
+        "engineId": 330035,
+        "engineKey": "雪色アスティアンパンツ",
+        "names": {
+          "en": "Astian Snow Leggings",
+          "ru": "Белые астирские штаны",
+          "jp": "雪色アスティアンパンツ",
+          "tw": "(夜色艾斯提亞褲子)"
+        },
+        "description": {
+          "en": "Trousers the color of first snow, favored by the men of Astir.INT +1, MP +30Stun Resistance +3%Per every 2 enhancement levels:Skill Cooldown -1%",
+          "ru": "Штаны цвета первого снега. Такие любят носить мужчины Астира.ИНТ +1, ОМ +30Сопротивляемость оглушению +3%За каждые 2 единицы улучшения:Время перезарядки умений -1%",
+          "jp": "MP+20、気絶耐性+3%",
+          "tw": "MP+20¸ 暈眩抗性+3%"
+        },
+        "notes": {
+          "en": "Each discipline values ​​+1¸ MP +2",
+          "ru": "",
+          "jp": "鍛錬値+1毎に、MP+2",
+          "tw": "每個學科的值+1¸MP +2"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 20,
+        "sockets": 2,
+        "disabled": false,
+        "calculationCode": "5=1_7=30_49=11_149=3",
+        "compatibility": [
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "equipment.11.14",
+      "serverId": 1232,
+      "engineId": 110014,
+      "category": 11,
+      "source": {
+        "id": 1232,
+        "name": "Прочный клиновидный молот",
+        "kind": "2H_BLUNT_WEAPON",
+        "slot": "weapon",
+        "twoHanded": true,
+        "level": 40,
+        "W": 78,
+        "PEN": 85,
+        "range": 190,
+        "atkspeed": 60,
+        "AC": null,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 2,
+        "classes": {
+          "ASCETIC": 1,
+          "MONK": 1,
+          "EXORCIST": 1
+        },
+        "icon": "I_001231_00",
+        "effects": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Молот с длинной рукоятью.<br><br>СИЛ +1<br>За каждые 2 единицы улучшения:<br>Точность +2<br>При улучшении на +7 и выше: СИЛ +1"
+      },
+      "english": {
+        "n": "Maul D",
+        "d": "A hammer with a long handle.<br><br>STR +1<br>Per every 2 enhancement levels:<br>Accuracy +2<br>At +7 and above: STR +1"
+      },
+      "levels": {
+        "2": [
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 2,
+            "b": 0
+          }
+        ],
+        "3": [
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 2,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 4,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 4,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 6,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 6,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 8,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 8,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 10,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.5.27",
+      "serverId": 1484,
+      "engineId": 50027,
+      "category": 5,
+      "source": {
+        "id": 1484,
+        "name": "Разящее копье Зефира",
+        "kind": "POLE_ARM",
+        "slot": "weapon",
+        "twoHanded": true,
+        "level": 40,
+        "W": 101,
+        "PEN": 80,
+        "range": 250,
+        "atkspeed": 50,
+        "AC": null,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 1,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1
+        },
+        "icon": "I_001482_00",
+        "effects": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Копье найденное среди поселений Мирин. <br><br>СИЛ +1<br>За каждые 2 единицы улучшения:<br>ОМ +15<br>При улучшении на +7 и выше: СИЛ +1"
+      },
+      "english": {
+        "n": "Zephyrus A",
+        "d": "A spear found among the Mirin settlements.<br><br>STR +1<br>Per every 2 enhancement levels:<br>MP +15<br>At +7 and above: STR +1"
+      },
+      "levels": {
+        "2": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "3": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 30,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 30,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 45,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 45,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 60,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 60,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 75,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.5.28",
+      "serverId": 1485,
+      "engineId": 50028,
+      "category": 5,
+      "source": {
+        "id": 1485,
+        "name": "Сильное копье Зефира",
+        "kind": "POLE_ARM",
+        "slot": "weapon",
+        "twoHanded": true,
+        "level": 40,
+        "W": 95,
+        "PEN": 80,
+        "range": 250,
+        "atkspeed": 50,
+        "AC": null,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 1,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1
+        },
+        "icon": "I_001482_00",
+        "effects": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Копье найденное среди поселений Мирин. <br><br>СИЛ +1<br>За каждые 2 единицы улучшения:<br>ОМ +15<br>При улучшении на +7 и выше: СИЛ +2"
+      },
+      "english": {
+        "n": "Zephyrus S",
+        "d": "A spear found among the Mirin settlements.<br><br>STR +1<br>Per every 2 enhancement levels:<br>MP +15<br>At +7 and above: STR +2"
+      },
+      "levels": {
+        "2": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "3": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 30,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 30,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 45,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 45,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 60,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 60,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 75,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.4.20",
+      "serverId": 1641,
+      "engineId": 40020,
+      "category": 4,
+      "source": {
+        "id": 1641,
+        "name": "Копье ночи",
+        "kind": "LANCE",
+        "slot": "weapon",
+        "twoHanded": false,
+        "level": 51,
+        "W": 67,
+        "PEN": 140,
+        "range": 300,
+        "atkspeed": 45,
+        "AC": null,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 0,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1
+        },
+        "icon": "I_001641_00",
+        "effects": [],
+        "desc": "Священное копье, обладающее тайной силой.<br><br>При улучшении с помощью самоцвета света до +7 и выше: атака +10%, защита +5%."
+      },
+      "english": {
+        "n": "Knight Lance",
+        "d": "A sacred spear that holds a mysterious power.<br><br>When enhanced to +7 or higher with a Light gem: Attack +10%, Defense +5%."
+      },
+      "levels": {
+        "7": [
+          {
+            "func": "EP_DAMAGERATE_SCALE",
+            "a": 10,
+            "b": 0
+          },
+          {
+            "func": "EP_ARMORCLASS_SCALE",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_DAMAGERATE_SCALE",
+            "a": 10,
+            "b": 0
+          },
+          {
+            "func": "EP_ARMORCLASS_SCALE",
+            "a": 5,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.12.13",
+      "serverId": 2651,
+      "engineId": 120013,
+      "category": 12,
+      "source": {
+        "id": 2651,
+        "name": "Морозный жезл",
+        "kind": "WAND",
+        "slot": "weapon",
+        "twoHanded": false,
+        "level": 40,
+        "W": 36,
+        "PEN": 50,
+        "range": 120,
+        "atkspeed": 60,
+        "AC": null,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 2,
+        "classes": {
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_002651_00",
+        "effects": [
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 3,
+            "b": null
+          },
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 10,
+            "b": null
+          },
+          {
+            "func": "EP_DEXTERITY_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 3,
+            "b": null
+          },
+          {
+            "func": "EP_SPIRITUAL_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Жезл, закаленный морозом. В нем бьется леденящая сила.<br><br>Точность +3, ЛВК +3, СД +1, ИНТ +3.<br>При усовершенствовании с помощью самоцвета льда больше, чем на +6, есть 3% шанс при ударе заморозить противника.<br>",
+        "unobtainable": true
+      },
+      "english": {
+        "n": "Frost Wand",
+        "d": "A wand tempered by frost. A chilling power pulses within it.<br><br>Accuracy +3, DEX +3, Spi +1, INT +3.<br>When enhanced beyond +6 with an Ice Gem, there is a 3% chance to freeze the enemy on hit.<br>"
+      },
+      "levels": {
+        "6": [
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_SCALE",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_SCALE",
+            "a": 5,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.12.17",
+      "serverId": 2653,
+      "engineId": 120017,
+      "category": 12,
+      "source": {
+        "id": 2653,
+        "name": "Темный жезл жестокости",
+        "kind": "WAND",
+        "slot": "weapon",
+        "twoHanded": false,
+        "level": 40,
+        "W": 31,
+        "PEN": 50,
+        "range": 120,
+        "atkspeed": 60,
+        "AC": null,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 2,
+        "classes": {
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_002653_00",
+        "effects": [
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 3,
+            "b": null
+          },
+          {
+            "func": "EP_SPIRITUAL_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 2,
+            "b": null
+          },
+          {
+            "func": "EP_AGILITY_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 2,
+            "b": null
+          }
+        ],
+        "desc": "Жезл, питающийся жизненной силой. Темное оружие, служащее тому, кто принял бездну в свое сердце.<br>ПРВ +2, СД +2, ИНТ +3. <br>При усовершенствовании с помощью самоцвета тьмы уменьшает получаемый урон от магии тьмы в соответствии с уровнем усовершенствования. При физической атаке ослабляет противника.<br>При усовершенствовании больше, чем на +6, будет поглощать ОЗ в соответствии с наносимым уроном и уровнем усовершенствования.<br>",
+        "unobtainable": true
+      },
+      "english": {
+        "n": "Cruel Wand",
+        "d": "A wand that feeds on life force. A dark weapon serving one who has welcomed the abyss into their heart.<br>AGI +2, Spi +2, INT +3. <br>When enhanced with a Dark Gem, it reduces Dark magic damage taken according to the enhancement level. On a physical attack, it weakens the enemy.<br>When enhanced beyond +6, it absorbs HP according to the damage dealt and the enhancement level.<br>"
+      },
+      "levels": {
+        "1": [
+          {
+            "func": "EP_DARK_RESISTANCE_CONST",
+            "a": 0,
+            "b": 0
+          }
+        ],
+        "2": [
+          {
+            "func": "EP_DARK_RESISTANCE_CONST",
+            "a": 0,
+            "b": 0
+          }
+        ],
+        "3": [
+          {
+            "func": "EP_DARK_RESISTANCE_CONST",
+            "a": 0,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_DARK_RESISTANCE_CONST",
+            "a": 0,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_DARK_RESISTANCE_CONST",
+            "a": 1,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_DARK_RESISTANCE_CONST",
+            "a": 3,
+            "b": 0
+          },
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "a": 2,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_DARK_RESISTANCE_CONST",
+            "a": 6,
+            "b": 0
+          },
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "a": 2,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_DARK_RESISTANCE_CONST",
+            "a": 10,
+            "b": 0
+          },
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "a": 2,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_DARK_RESISTANCE_CONST",
+            "a": 20,
+            "b": 0
+          },
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "a": 2,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_DARK_RESISTANCE_CONST",
+            "a": 35,
+            "b": 0
+          },
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "a": 2,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.12.15",
+      "serverId": 2655,
+      "engineId": 120015,
+      "category": 12,
+      "source": {
+        "id": 2655,
+        "name": "Посох исчезновения",
+        "kind": "WAND",
+        "slot": "weapon",
+        "twoHanded": false,
+        "level": 40,
+        "W": 34,
+        "PEN": 50,
+        "range": 120,
+        "atkspeed": 60,
+        "AC": null,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 2,
+        "classes": {
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_002655_00",
+        "effects": [
+          {
+            "func": "EP_SPIRITUAL_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 4,
+            "b": null
+          },
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Проклятый посох. Тот, кто оплакивает потерю, становится оболочкой без души.<br><br>СД +4, ИНТ +1<br><br>При усовершенствовании с помощью самоцвета яда или магического самоцвета яда на +5 и выше увеличивает продолжительность и вероятность успеха злых чар. При усовершенствовании больше, чем на +6, посох также повышает сопротивление прерыванию чтения заклинаний.",
+        "unobtainable": true
+      },
+      "english": {
+        "n": "Perish Wand",
+        "d": "A cursed staff. One who mourns a loss becomes an empty shell without a soul.<br><br>Spi +4, INT +1<br><br>When enhanced to +5 or higher with a Poison Gem or a Magic Poison Gem, it increases the duration and success rate of malevolent enchantments. When enhanced beyond +6, the staff also raises resistance to spellcasting interruption. "
+      },
+      "levels": {
+        "5": [
+          {
+            "func": "EP_BUFF_TOHIT_SCALE",
+            "a": 3,
+            "b": 0
+          },
+          {
+            "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+            "a": 3,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_BUFF_TOHIT_SCALE",
+            "a": 9,
+            "b": 0
+          },
+          {
+            "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+            "a": 9,
+            "b": 0
+          },
+          {
+            "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+            "a": 10,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_BUFF_TOHIT_SCALE",
+            "a": 14,
+            "b": 0
+          },
+          {
+            "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+            "a": 14,
+            "b": 0
+          },
+          {
+            "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_BUFF_TOHIT_SCALE",
+            "a": 20,
+            "b": 0
+          },
+          {
+            "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+            "a": 20,
+            "b": 0
+          },
+          {
+            "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+            "a": 25,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_BUFF_TOHIT_SCALE",
+            "a": 29,
+            "b": 0
+          },
+          {
+            "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+            "a": 29,
+            "b": 0
+          },
+          {
+            "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+            "a": 40,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_BUFF_TOHIT_SCALE",
+            "a": 41,
+            "b": 0
+          },
+          {
+            "func": "EP_BADEFFECT_TIME_CAST_SCALE",
+            "a": 41,
+            "b": 0
+          },
+          {
+            "func": "EP_CASTINGCANCEL_RESISTANCE_CONST",
+            "a": 55,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.13.19",
+      "serverId": 2857,
+      "engineId": 130019,
+      "category": 13,
+      "source": {
+        "id": 2857,
+        "name": "Небесный скипетр",
+        "kind": "STAFF",
+        "slot": "weapon",
+        "twoHanded": true,
+        "level": 45,
+        "W": 49,
+        "PEN": 55,
+        "range": 150,
+        "atkspeed": 55,
+        "AC": null,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 2,
+        "classes": {
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_002857_00",
+        "effects": [
+          {
+            "func": "EP_DEXTERITY_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 3,
+            "b": null
+          },
+          {
+            "func": "EP_SPIRITUAL_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 3,
+            "b": null
+          },
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 6,
+            "b": null
+          },
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 15,
+            "b": null
+          }
+        ],
+        "desc": "Скипетр, созданный феями во время путешествия по другим мирам. По слухам, сияние утренней росы позволяет ему принимать разную форму, используя дух и энергию своего хозяина.<br><br>ЛВК +3, СД +3, ИНТ +6<br><br>При усовершенствовании с помощью самоцветов радуги повышает магическую атаку. При усовершенствовании больше, чем на +6, может полностью нейтрализовать получаемый физ. урон.",
+        "unobtainable": true
+      },
+      "english": {
+        "n": "Celestial Rod",
+        "d": "A scepter forged by the faeries during their travels through other worlds. It is said that the gleam of the morning dew lets it change its form by drawing on the spirit and energy of its wielder.<br><br>DEX +3, Spi +3, INT +6<br><br>When enhanced with Rainbow Gems, it raises magic attack. When enhanced beyond +6, it can completely nullify incoming physical damage. "
+      },
+      "levels": {
+        "1": [
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "a": 1,
+            "b": 0
+          }
+        ],
+        "2": [
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "a": 2,
+            "b": 0
+          }
+        ],
+        "3": [
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "a": 3,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "a": 8,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_SPECIAL_WARDING_TYPE2",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "a": 11,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_SPECIAL_WARDING_TYPE2",
+            "a": 5,
+            "b": 0
+          },
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_SPECIAL_WARDING_TYPE2",
+            "a": 8,
+            "b": 0
+          },
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "a": 21,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_SPECIAL_WARDING_TYPE2",
+            "a": 13,
+            "b": 0
+          },
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "a": 27,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_SPECIAL_WARDING_TYPE2",
+            "a": 19,
+            "b": 0
+          },
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "a": 33,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.30.72",
+      "serverId": 11073,
+      "engineId": 300072,
+      "category": 30,
+      "source": {
+        "id": 11073,
+        "name": "Золотой шлем",
+        "kind": "HELMET",
+        "slot": "head",
+        "twoHanded": false,
+        "level": 40,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 12,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 0,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1
+        },
+        "icon": "I_011073_00",
+        "effects": [
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          },
+          {
+            "func": "EP_SPIRITUAL_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Древний шлем, который до сих пор не потерял своего блеска. Его издавна носили герои и победители.<br><br>ИНТ +1, СД +1<br><br>При усовершенствовании до +5 снижает расход ОМ на 5%. В случае дальнейшего улучшения добавляет 5% ОМ за каждую единицу усовершенствования.",
+        "unobtainable": true
+      },
+      "english": {
+        "n": "Gold Helmet",
+        "d": "An ancient helmet that has yet to lose its luster. Since olden days it has been worn by heroes and champions.<br><br>INT +1, Spi +1<br><br>When enhanced to +5, reduces MP cost by 5%. With further enhancement, adds 5% MP per level of enhancement."
+      },
+      "levels": {
+        "5": [
+          {
+            "func": "EP_RACE_MANA_COSTCUT",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_RACE_MANA_COSTCUT",
+            "a": 10,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_RACE_MANA_COSTCUT",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_RACE_MANA_COSTCUT",
+            "a": 20,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_RACE_MANA_COSTCUT",
+            "a": 25,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_RACE_MANA_COSTCUT",
+            "a": 30,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.30.66",
+      "serverId": 11222,
+      "engineId": 300066,
+      "category": 30,
+      "source": {
+        "id": 11222,
+        "name": "Браслет таинств",
+        "kind": "HELMET",
+        "slot": "head",
+        "twoHanded": false,
+        "level": 40,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 5,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 1,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "SCOUT": 1,
+          "ARCHER": 1,
+          "AGENT": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_011221_00",
+        "effects": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": -3,
+            "b": null
+          },
+          {
+            "func": "EP_VITARITY_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": -1,
+            "b": null
+          }
+        ],
+        "desc": "Браслет из никудышного материала.<br><br>ВЫН -1<br>Скорость применения умений +3%<br>За каждые 3 единицы улучшения:<br>ОЗ +100, ОМ +100"
+      },
+      "english": {
+        "n": "Arcana Circlet",
+        "d": "A bracelet made of worthless material.<br><br>STA -1<br>Skill Casting Speed +3%<br>Per every 3 enhancement levels:<br>HP +100, MP +100"
+      },
+      "levels": {
+        "3": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 100,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 100,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 200,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 200,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 300,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 300,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.30.70",
+      "serverId": 11282,
+      "engineId": 300070,
+      "category": 30,
+      "source": {
+        "id": 11282,
+        "name": "Божественный шлем",
+        "kind": "HELMET",
+        "slot": "head",
+        "twoHanded": false,
+        "level": 40,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 8,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 0,
+        "classes": {
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1
+        },
+        "icon": "I_011282_00",
+        "effects": [
+          {
+            "func": "EP_DEXTERITY_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          },
+          {
+            "func": "EP_CHARM_RESISTANCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 6,
+            "b": null
+          }
+        ],
+        "desc": "Головной убор, на который наложено благословение. Обладает отличной защитой и может блокировать магические атаки врагов.<br><br>ЛВК +1<br>Сопротивляемость чарам +6<br>За каждые 3 единицы улучшения:<br>Скорость применения умений +3%<br>Точность +5",
+        "unobtainable": true
+      },
+      "english": {
+        "n": "Divine Hat",
+        "d": "A headpiece upon which a blessing has been placed. It boasts excellent defense and can block enemy magic attacks.<br><br>DEX +1<br>Charm Resistance +6<br>Per every 3 enhancement levels:<br>Skill Casting Speed +3%<br>Accuracy +5"
+      },
+      "levels": {
+        "3": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -3,
+            "b": 0
+          },
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -6,
+            "b": 0
+          },
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 10,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -9,
+            "b": 0
+          },
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 15,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.31.64",
+      "serverId": 12103,
+      "engineId": 310064,
+      "category": 31,
+      "source": {
+        "id": 12103,
+        "name": "Золотой нагрудник",
+        "kind": "TORSO",
+        "slot": "body",
+        "twoHanded": false,
+        "level": 40,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 24,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 0,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1
+        },
+        "icon": "I_012103_00",
+        "effects": [
+          {
+            "func": "EP_VITARITY_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          },
+          {
+            "func": "EP_STRENGTH_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Древние доспехи, ничуть не потерявшие былого блеска. Эту броню издавна носили великие герои и победители.<br><br>ВЫН +1,  СИЛ +1<br><br>При усовершенствовании до +5 и выше снижает получаемый физический урон на 2%. Также дополнительно снижает получаемый физический урон на 2% за каждую единицу усовершенствования после этого.<br><br>Если доспехи усовершенствованы до +7 или выше, и экипированы вместе с Золотым шлемом, Золотым набедренником, Золотыми рукавицами и Золотыми перчатками, активируется эффект<br>Сопротивляемость падению +100%",
+        "unobtainable": true
+      },
+      "english": {
+        "n": "Gold Plate",
+        "d": "Ancient armor that has not lost a shred of its former luster. This armor has long been worn by great heroes and champions.<br><br>Sta +1,  STR +1<br><br>When enhanced to +5 or higher, reduces physical damage taken by 2%. It also further reduces physical damage taken by an additional 2% for each level of enhancement beyond that.<br><br>If the armor is enhanced to +7 or higher and equipped together with the Gold Helm, Gold Tasset, Gold Gauntlets, and Gold Gloves, the following effect is activated<br>Knockdown Resistance +100%"
+      },
+      "levels": {
+        "5": [
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -4,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -6,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -8,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -10,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -12,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.31.31",
+      "serverId": 12601,
+      "engineId": 310031,
+      "category": 31,
+      "source": {
+        "id": 12601,
+        "name": "Астирская куртка",
+        "kind": "TORSO",
+        "slot": "body",
+        "twoHanded": false,
+        "level": 20,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 19,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 2,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "SCOUT": 1,
+          "ARCHER": 1,
+          "AGENT": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_012601_00",
+        "effects": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 40,
+            "b": null
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 10,
+            "b": null
+          },
+          {
+            "func": "EP_SPIRITUAL_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Красивая куртка. Такие любят носить мужчины Астира.<br><br>СД +1, ОЗ +40, ОМ +10<br>За каждую единицу улучшения:<br>ОЗ +15<br>При улучшении на +5 и выше: Сопротивляемость магии +5"
+      },
+      "english": {
+        "n": "Astian Coat",
+        "d": "A beautiful coat. The men of Astir love to wear these.<br><br>SPI +1, HP +40, MP +10<br>Per every enhancement level:<br>HP +15<br>At +5 and above: Magic Resistance +5"
+      },
+      "levels": {
+        "1": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "2": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 30,
+            "b": 0
+          }
+        ],
+        "3": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 45,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 60,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 75,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 90,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 105,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 120,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 135,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 150,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.31.35",
+      "serverId": 12607,
+      "engineId": 310035,
+      "category": 31,
+      "source": {
+        "id": 12607,
+        "name": "Белая астирская куртка",
+        "kind": "TORSO",
+        "slot": "body",
+        "twoHanded": false,
+        "level": 20,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 17,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 2,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "SCOUT": 1,
+          "ARCHER": 1,
+          "AGENT": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_012607_00",
+        "effects": [
+          {
+            "func": "EP_CAST_HEAL_LIFE_SCALE",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 3,
+            "b": null
+          },
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Красивая куртка цвета первого снега.<br><br>ИНТ +1<br>Эффективность лечащих заклинаний +3%<br>За каждые 2 единицы улучшения:<br>Скорость применения умений +1%"
+      },
+      "english": {
+        "n": "Astian Snow Coat",
+        "d": "A beautiful coat the color of first snow.<br><br>INT +1<br>Healing Spell Effectiveness +3%<br>Per every 2 enhancement levels:<br>Skill Casting Speed +1%"
+      },
+      "levels": {
+        "2": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -3,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -4,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -5,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.31.32",
+      "serverId": 12611,
+      "engineId": 310032,
+      "category": 31,
+      "source": {
+        "id": 12611,
+        "name": "Астирское платье",
+        "kind": "TORSO",
+        "slot": "body",
+        "twoHanded": false,
+        "level": 20,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 33,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 3,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "SCOUT": 1,
+          "ARCHER": 1,
+          "AGENT": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_012611_00",
+        "effects": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 60,
+            "b": null
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 20,
+            "b": null
+          },
+          {
+            "func": "EP_SPIRITUAL_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          },
+          {
+            "func": "EP_VITARITY_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Часть тела: корпус и ноги.<br>Красивое платье. Такие любят носить женщины Астира.<br><br>ВЫН +1, СД +1, ОЗ +60, ОМ +20<br>За каждую единицу улучшения:<br>ОЗ +15<br>За каждые 3 единицы улучшения:<br>Получаемый физический урон -1%<br>При улучшении на +5 и выше: Сопротивляемость магии +5"
+      },
+      "english": {
+        "n": "Astian Dress",
+        "d": "Body part: torso and legs.<br>A beautiful dress. The women of Astir love to wear these.<br><br>STA +1, SPI +1, HP +60, MP +20<br>Per every enhancement level:<br>HP +15<br>Per every 3 enhancement levels:<br>Physical Damage Taken -1%<br>At +5 and above: Magic Resistance +5"
+      },
+      "levels": {
+        "1": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "2": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 30,
+            "b": 0
+          }
+        ],
+        "3": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 45,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 60,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 75,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 90,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 105,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 120,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 135,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -3,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "a": 150,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 5,
+            "b": 0
+          },
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -3,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.31.36",
+      "serverId": 12617,
+      "engineId": 310036,
+      "category": 31,
+      "source": {
+        "id": 12617,
+        "name": "Белое астирское платье",
+        "kind": "TORSO",
+        "slot": "body",
+        "twoHanded": false,
+        "level": 20,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 28,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 3,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "SCOUT": 1,
+          "ARCHER": 1,
+          "AGENT": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_012617_00",
+        "effects": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 30,
+            "b": null
+          },
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 2,
+            "b": null
+          },
+          {
+            "func": "EP_IMMUNE_STUN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 3,
+            "b": null
+          },
+          {
+            "func": "EP_CAST_HEAL_LIFE_SCALE",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 3,
+            "b": null
+          }
+        ],
+        "desc": "Часть тела: корпус и ноги. Красивое платье цвета первого снега.<br><br>ИНТ +2, ОМ +30<br>Сопротивляемость оглушению +3%<br>Эффективность лечащих заклинаний +3%<br>За каждые 2 единицы улучшения:<br>Скорость применения умений +1%<br>Время перезарядки умений -1%"
+      },
+      "english": {
+        "n": "Astian Snow Dress",
+        "d": "Body part: torso and legs. A beautiful dress the color of first snow.<br><br>INT +2, MP +30<br>Stun Resistance +3%<br>Healing Spell Effectiveness +3%<br>Per every 2 enhancement levels:<br>Skill Casting Speed +1%<br>Skill Cooldown -1%"
+      },
+      "levels": {
+        "2": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -1,
+            "b": 0
+          },
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -2,
+            "b": 0
+          },
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -3,
+            "b": 0
+          },
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -3,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -4,
+            "b": 0
+          },
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -4,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_SKILL_DELAY",
+            "a": -5,
+            "b": 0
+          },
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -5,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.33.31",
+      "serverId": 13601,
+      "engineId": 330031,
+      "category": 33,
+      "source": {
+        "id": 13601,
+        "name": "Астирские штаны",
+        "kind": "CUISSES",
+        "slot": "legs",
+        "twoHanded": false,
+        "level": 20,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 14,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 2,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "SCOUT": 1,
+          "ARCHER": 1,
+          "AGENT": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_013601_00",
+        "effects": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 20,
+            "b": null
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 10,
+            "b": null
+          },
+          {
+            "func": "EP_VITARITY_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Удобные штаны. Такие любят носить мужчины Астира.<br><br>ВЫН +1, ОЗ +20, ОМ +10<br>За каждые 3 единицы улучшения:<br>Получаемый физический урон -1%"
+      },
+      "english": {
+        "n": "Astian Leggings",
+        "d": "Comfortable trousers favored by the men of Astir.<br><br>STA +1, HP +20, MP +10<br>Per every 3 enhancement levels:<br>Physical Damage Taken -1%"
+      },
+      "levels": {
+        "3": [
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_ONDAMAGE_FIN_DAMAGE_SCALE",
+            "a": -3,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.33.35",
+      "serverId": 13607,
+      "engineId": 330035,
+      "category": 33,
+      "source": {
+        "id": 13607,
+        "name": "Белые астирские штаны",
+        "kind": "CUISSES",
+        "slot": "legs",
+        "twoHanded": false,
+        "level": 20,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 11,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 2,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "SCOUT": 1,
+          "ARCHER": 1,
+          "AGENT": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_013607_00",
+        "effects": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 30,
+            "b": null
+          },
+          {
+            "func": "EP_IMMUNE_STUN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 3,
+            "b": null
+          },
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Штаны цвета первого снега. Такие любят носить мужчины Астира.<br><br>ИНТ +1, ОМ +30<br>Сопротивляемость оглушению +3%<br>За каждые 2 единицы улучшения:<br>Время перезарядки умений -1%"
+      },
+      "english": {
+        "n": "Astian Snow Leggings",
+        "d": "Trousers the color of first snow, favored by the men of Astir.<br><br>INT +1, MP +30<br>Stun Resistance +3%<br>Per every 2 enhancement levels:<br>Skill Cooldown -1%"
+      },
+      "levels": {
+        "2": [
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -1,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -2,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -3,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -4,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_SKILL_BENCH",
+            "a": -5,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.32.81",
+      "serverId": 14006,
+      "engineId": 320081,
+      "category": 32,
+      "source": {
+        "id": 14006,
+        "name": "Перчатки благословления",
+        "kind": "GLOVES",
+        "slot": "gloves",
+        "twoHanded": false,
+        "level": 40,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 6,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 1,
+        "classes": {
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1
+        },
+        "icon": "I_014006_00",
+        "effects": [
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Освященные перчатки.<br><br>Сопротивляемость магии +1<br>При улучшении на +7 и выше:<br>ИНТ +1<br>Сопротивляемость магии +4"
+      },
+      "english": {
+        "n": "Fine Gloves",
+        "d": "Consecrated gloves.<br><br>Magic Resistance +1<br>At +7 and above:<br>INT +1<br>Magic Resistance +4"
+      },
+      "levels": {
+        "7": [
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "a": 4,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.32.82",
+      "serverId": 14007,
+      "engineId": 320082,
+      "category": 32,
+      "source": {
+        "id": 14007,
+        "name": "Лунные перчатки",
+        "kind": "GLOVES",
+        "slot": "gloves",
+        "twoHanded": false,
+        "level": 40,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 5,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 1,
+        "classes": {
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_014007_00",
+        "effects": [
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Перчатки, заряженные энергией лунного света.<br><br>Магическая атака +1%<br>При улучшении на +7 и выше:<br>ИНТ +1<br>Магическая атака +2%"
+      },
+      "english": {
+        "n": "Lunar Gloves",
+        "d": "Gloves charged with the energy of moonlight.<br><br>Magic Attack +1%<br>At +7 and above:<br>INT +1<br>Magic Attack +2%"
+      },
+      "levels": {
+        "7": [
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "a": 2,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.32.64",
+      "serverId": 14017,
+      "engineId": 320064,
+      "category": 32,
+      "source": {
+        "id": 14017,
+        "name": "Чудесные перчатки",
+        "kind": "GLOVES",
+        "slot": "gloves",
+        "twoHanded": false,
+        "level": 40,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 5,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 1,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "SCOUT": 1,
+          "ARCHER": 1,
+          "AGENT": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_014013_00",
+        "effects": [
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          },
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          },
+          {
+            "func": "EP_COLD_RESISTANCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 3,
+            "b": null
+          }
+        ],
+        "desc": "Перчатки, изготовленные из ткани, пропитанной магической силой.<br><br>ИНТ +1<br>Магическая атака +1%<br>Сопротивляемость льду +3<br>За каждые 4 единицы улучшения:<br>Магическая атака +1%",
+        "unobtainable": true
+      },
+      "english": {
+        "n": "Sorcery Gloves",
+        "d": "Gloves crafted from cloth steeped in magical power.<br><br>INT +1<br>Magic Attack +1%<br>Ice Resistance +3<br>Per every 4 enhancement levels:<br>Magic Attack +1%"
+      },
+      "levels": {
+        "4": [
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "a": 1,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "a": 2,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.32.61",
+      "serverId": 14074,
+      "engineId": 320061,
+      "category": 32,
+      "source": {
+        "id": 14074,
+        "name": "Магический браслет",
+        "kind": "GLOVES",
+        "slot": "gloves",
+        "twoHanded": false,
+        "level": 40,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 3,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 1,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "SCOUT": 1,
+          "ARCHER": 1,
+          "AGENT": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_014073_00",
+        "effects": [
+          {
+            "func": "EP_RACE_MANA_COSTCUT",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 4,
+            "b": null
+          },
+          {
+            "func": "EP_MAGIC_RESISTANCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 3,
+            "b": null
+          }
+        ],
+        "desc": "Эти изящные браслеты популярны против адептов магии. <br><br>Снижение расхода ОМ +4%<br>Сопротивляемость магии +3<br>При улучшении на +7 и выше: ПРВ +1"
+      },
+      "english": {
+        "n": "Mana Bracelets",
+        "d": "These elegant bracelets are popular among adepts of magic. <br><br>MP Cost Reduction +4%<br>Magic Resistance +3<br>At +7 and above: AGI +1"
+      },
+      "levels": {
+        "7": [
+          {
+            "func": "EP_AGILITY_CONST",
+            "a": 1,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.34.66",
+      "serverId": 15008,
+      "engineId": 340066,
+      "category": 34,
+      "source": {
+        "id": 15008,
+        "name": "Башмаки портного",
+        "kind": "BOOTS",
+        "slot": "feet",
+        "twoHanded": false,
+        "level": 40,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 5,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 1,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "SCOUT": 1,
+          "ARCHER": 1,
+          "AGENT": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_015005_00",
+        "effects": [
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 100,
+            "b": null
+          },
+          {
+            "func": "EP_DARK_RESISTANCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 5,
+            "b": null
+          }
+        ],
+        "desc": "Башмаки, которые носят живущие во тьме.<br><br>ОЗ +100<br>Сопротивляемость тьме +5<br>При улучшении на +7 и выше: ИНТ +1"
+      },
+      "english": {
+        "n": "Schneider Boots",
+        "d": "Shoes worn by those who dwell in darkness.<br><br>HP +100<br>Dark Resistance +5<br>At +7 and above: INT +1"
+      },
+      "levels": {
+        "7": [
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "a": 1,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.34.86",
+      "serverId": 15013,
+      "engineId": 340086,
+      "category": 34,
+      "source": {
+        "id": 15013,
+        "name": "Сапоги благословения",
+        "kind": "BOOTS",
+        "slot": "feet",
+        "twoHanded": false,
+        "level": 48,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 7,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 1,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1
+        },
+        "icon": "I_015013_00",
+        "effects": [
+          {
+            "func": "EP_TOHIT_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 2,
+            "b": null
+          }
+        ],
+        "desc": "Освященные сапоги.<br><br>Точность +2<br>При улучшении на +7 и выше: Скорость передвижения +5%"
+      },
+      "english": {
+        "n": "Fine Boots",
+        "d": "Consecrated boots.<br><br>Accuracy +2<br>At +7 and above: Movement Speed +5%"
+      },
+      "levels": {
+        "7": [
+          {
+            "func": "EP_MOVESPEED_SCALE",
+            "a": 5,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.34.87",
+      "serverId": 15014,
+      "engineId": 340087,
+      "category": 34,
+      "source": {
+        "id": 15014,
+        "name": "Лунные сапоги",
+        "kind": "BOOTS",
+        "slot": "feet",
+        "twoHanded": false,
+        "level": 48,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 7,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 1,
+        "classes": {
+          "SCOUT": 1,
+          "ARCHER": 1,
+          "AGENT": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_015014_00",
+        "effects": [
+          {
+            "func": "EP_AVOIDANCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 2,
+            "b": null
+          }
+        ],
+        "desc": "Сапоги, заряженные энергией лунного света.<br><br>Уклонение +2<br>При улучшении на +7 и выше: Скорость передвижения +5%"
+      },
+      "english": {
+        "n": "Lunar Boots",
+        "d": "Boots charged with the energy of moonlight.<br><br>Evasion +2<br>At +7 and above: Movement Speed +5%"
+      },
+      "levels": {
+        "7": [
+          {
+            "func": "EP_MOVESPEED_SCALE",
+            "a": 5,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.34.85",
+      "serverId": 15032,
+      "engineId": 340085,
+      "category": 34,
+      "source": {
+        "id": 15032,
+        "name": "Прочные сапоги",
+        "kind": "BOOTS",
+        "slot": "feet",
+        "twoHanded": false,
+        "level": 47,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 7,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 1,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "AGENT": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "ASCETIC": 1,
+          "MONK": 1,
+          "EXORCIST": 1
+        },
+        "icon": "I_015032_00",
+        "effects": [
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 2,
+            "b": null
+          }
+        ],
+        "desc": "Сапоги, защищающие от огня.<br><br>Сопротивляемость ожогам +2%<br>При улучшении на +7 и выше:<br>ВЫН +2<br>Сопротивляемость ожогам +6%"
+      },
+      "english": {
+        "n": "Cald Boots",
+        "d": "Boots that protect against fire.<br><br>Burn Resistance +2%<br>At +7 and above:<br>STA +2<br>Burn Resistance +6%"
+      },
+      "levels": {
+        "7": [
+          {
+            "func": "EP_IMMUNE_BURN",
+            "a": 6,
+            "b": 0
+          },
+          {
+            "func": "EP_VITARITY_CONST",
+            "a": 2,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.34.71",
+      "serverId": 15053,
+      "engineId": 340071,
+      "category": 34,
+      "source": {
+        "id": 15053,
+        "name": "Золотые башмаки",
+        "kind": "BOOTS",
+        "slot": "feet",
+        "twoHanded": false,
+        "level": 40,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 8,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 0,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1
+        },
+        "icon": "I_015053_00",
+        "effects": [
+          {
+            "func": "EP_DEXTERITY_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          },
+          {
+            "func": "EP_VITARITY_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Древние поножи, ничуть не потерявшие былого величия. Этот элемент защиты издавна носили герои и победители.<br><br>ЛВК +1, ВЫН +1<br><br>При усовершенствовании до +5 добавляет +2% к вероятности критического удара. За каждую следующую единицу усовершенствования также дает +2% к вероятности критического удара.",
+        "unobtainable": true
+      },
+      "english": {
+        "n": "Gold Greaves",
+        "d": "Ancient greaves that have lost none of their former grandeur. This piece of armor has long been worn by heroes and champions.<br><br>DEX +1, Sta +1<br><br>When enhanced to +5, grants Critical Hit Chance +2%. Each subsequent enhancement level also grants Critical Hit Chance +2%."
+      },
+      "levels": {
+        "5": [
+          {
+            "func": "EP_CRITICALRATE_CONST",
+            "a": 2,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_CRITICALRATE_CONST",
+            "a": 4,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_CRITICALRATE_CONST",
+            "a": 6,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_CRITICALRATE_CONST",
+            "a": 8,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_CRITICALRATE_CONST",
+            "a": 10,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_CRITICALRATE_CONST",
+            "a": 12,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.34.65",
+      "serverId": 15077,
+      "engineId": 340065,
+      "category": 34,
+      "source": {
+        "id": 15077,
+        "name": "Боевые башмаки",
+        "kind": "BOOTS",
+        "slot": "feet",
+        "twoHanded": false,
+        "level": 40,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 6,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 1,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "SCOUT": 1,
+          "ARCHER": 1,
+          "AGENT": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_015076_00",
+        "effects": [
+          {
+            "func": "EP_VITARITY_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          },
+          {
+            "func": "EP_IMMUNE_TUMBLE",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 10,
+            "b": null
+          },
+          {
+            "func": "EP_BLOCK_BREAK_RESIST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Массивные сапоги, изготовленные специально для воинов. Эта крепкая и надежная обувь очень пригодится в гуще схватки.<br><br>ВЫН +1<br>Сопротивляемость падению +10%<br>Сопротивляемость пробитию блока +1%<br>За каждые 3 единицы улучшения:<br>Сопротивляемость пробитию блока +2%"
+      },
+      "english": {
+        "n": "Combat Boots",
+        "d": "Massive boots made especially for warriors. This sturdy, reliable footwear comes in very handy in the thick of battle.<br><br>STA +1<br>Knockdown Resistance +10%<br>Block Break Resistance +1%<br>Per every 3 enhancement levels:<br>Block Break Resistance +2%<br>Block-Piercing Attack Resistance +2% per 3 levels of enhancement"
+      },
+      "levels": {
+        "3": [
+          {
+            "func": "EP_BLOCK_BREAK_RESIST",
+            "a": 2,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_BLOCK_BREAK_RESIST",
+            "a": 4,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_BLOCK_BREAK_RESIST",
+            "a": 6,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.34.52",
+      "serverId": 15081,
+      "engineId": 340052,
+      "category": 34,
+      "source": {
+        "id": 15081,
+        "name": "Сапоги дракона",
+        "kind": "BOOTS",
+        "slot": "feet",
+        "twoHanded": false,
+        "level": 31,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 5,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 1,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "SCOUT": 1,
+          "ARCHER": 1,
+          "AGENT": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "icon": "I_015081_00",
+        "effects": [
+          {
+            "func": "EP_DAMAGERATE_SCALE",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          },
+          {
+            "func": "EP_MAXLIFE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 200,
+            "b": null
+          },
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 8,
+            "b": null
+          }
+        ],
+        "desc": "Обувь из драконьей чешуи. Носящий ее никогда не теряет отваги и может сражаться в первых рядах.<br><br>ОЗ +200<br>Атака +1%<br>Сопротивляемость ожогам +8%<br>За каждые 3 единицы улучшения:<br>Атака +2%",
+        "unobtainable": true
+      },
+      "english": {
+        "n": "Blaze Boots",
+        "d": "Footwear made of dragon scales. The wearer never loses their courage and can fight on the front lines.<br><br>HP +200<br>Attack +1%<br>Burn Resistance +8%<br>Per every 3 enhancement levels:<br>Attack +2%"
+      },
+      "levels": {
+        "3": [
+          {
+            "func": "EP_DAMAGERATE_SCALE",
+            "a": 2,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_DAMAGERATE_SCALE",
+            "a": 2,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_DAMAGERATE_SCALE",
+            "a": 2,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_DAMAGERATE_SCALE",
+            "a": 4,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_DAMAGERATE_SCALE",
+            "a": 4,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_DAMAGERATE_SCALE",
+            "a": 4,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_DAMAGERATE_SCALE",
+            "a": 6,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_DAMAGERATE_SCALE",
+            "a": 6,
+            "b": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "equipment.34.72",
+      "serverId": 15092,
+      "engineId": 340072,
+      "category": 34,
+      "source": {
+        "id": 15092,
+        "name": "Божественные сапоги",
+        "kind": "BOOTS",
+        "slot": "feet",
+        "twoHanded": false,
+        "level": 40,
+        "W": null,
+        "PEN": null,
+        "range": null,
+        "atkspeed": null,
+        "AC": 7,
+        "block": null,
+        "plus": 0,
+        "aura": "NONE",
+        "soulslot": 0,
+        "classes": {
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1
+        },
+        "icon": "I_015092_00",
+        "effects": [
+          {
+            "func": "EP_SPIRITUAL_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          },
+          {
+            "func": "EP_CAST_HEAL_LIFE_SCALE",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 1,
+            "b": null
+          }
+        ],
+        "desc": "Прочнейшие башмаки, которые отлично защищают владельца от урона<br><br>СД +1<br>Эффект от лечащих предметов +1%<br><br>СД +1, эффект от лечащих заклинаний +2% и скорость восстановления ОМ +3% за каждые 3 единицы усовершенствования",
+        "unobtainable": true
+      },
+      "english": {
+        "n": "Divine Boots",
+        "d": "Exceptionally durable boots that protect the owner from damage superbly.<br><br>Spi +1<br>Healing Item Effect +1%<br><br>Spi +1, Healing Spell Effect +2%, and MP Recovery Rate +3% per 3 levels of enhancement"
+      },
+      "levels": {
+        "3": [
+          {
+            "func": "EP_SPIRITUAL_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_CAST_HEAL_LIFE_SCALE",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "func": "EP_HEAL_TIME_SCALE",
+            "a": 3,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_SPIRITUAL_CONST",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "func": "EP_CAST_HEAL_LIFE_SCALE",
+            "a": 4,
+            "b": 0
+          },
+          {
+            "func": "EP_HEAL_TIME_SCALE",
+            "a": 6,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_SPIRITUAL_CONST",
+            "a": 3,
+            "b": 0
+          },
+          {
+            "func": "EP_CAST_HEAL_LIFE_SCALE",
+            "a": 6,
+            "b": 0
+          },
+          {
+            "func": "EP_HEAL_TIME_SCALE",
+            "a": 9,
+            "b": 0
+          }
+        ]
+      }
+    }
+  ]
+}

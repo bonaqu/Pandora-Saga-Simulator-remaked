@@ -51,7 +51,9 @@
   }
   function applyBaseSupplement(touched) {
     window.Status.Equip.forEach(function (state) {
-      var itemRules = BASE_SUPPLEMENT.equipment[String(Number(state[0]))];
+      var itemId = Number(state[0]), itemRules = BASE_SUPPLEMENT.equipment[String(itemId)];
+      var item = namespace.catalog?.item('equipment',itemId);
+      if (itemId === 400061 && item?.nativeBasePolicy === 'replace-priest-earring-aura') itemRules = [];
       (itemRules || []).forEach(function (effect) { pushValue(effect, touched); });
       for (var socket = 4; socket <= 6; socket++) {
         var soulRules = BASE_SUPPLEMENT.soul[String(Number(state[socket]))];
@@ -89,6 +91,8 @@
       if (!record || !Array.isArray(record.upgradeBonuses)) return;
       var plus=Math.max(0,Math.min(10,Number(state[3])||0));
       record.upgradeBonuses.forEach(function(rule){
+        var elements=['fire','ice','lightning','poison','light','dark','rainbow'];
+        if(rule.gemElement!==undefined && elements[Number(state[2])]!==rule.gemElement)return;
         if(plus<rule.from)return;
         var last=Math.min(plus,rule.to);
         var count=1+Math.floor((last-rule.from)/rule.every);
@@ -104,6 +108,84 @@
     if(plus<rule.from)return 0;
     var max=Math.min(plus,rule.to),count=1+Math.floor((max-rule.from)/rule.every);
     return count>0?Number((rule.value*count).toFixed(2)):0;
+  }
+  function procRuleValue(rule,state) {
+    var level=Math.max(0,Math.min(10,Math.trunc(Number(state[3])||0)));
+    var elements=['fire','ice','lightning','poison','light','dark','rainbow'];
+    if(rule.gemElement!==undefined && (level===0 || elements[Number(state[2])]!==rule.gemElement))return 0;
+    if(rule.from===undefined)return rule.chance;
+    if(level<rule.from)return 0;
+    var steps=Math.floor((Math.min(level,rule.to)-rule.from)/rule.every);
+    return Number((rule.kind==='special_magic_damage' ? rule.chance+steps*rule.chanceStep : rule.chance*(1+steps)).toFixed(2));
+  }
+  function specialProcValues(rule,state) {
+    var chance=procRuleValue(rule,state);if(!chance)return null;
+    var level=Math.max(0,Math.min(10,Math.trunc(Number(state[3])||0)));
+    var steps=Math.floor((Math.min(level,rule.to)-rule.from)/rule.every);
+    return {chance:chance,damage:Number((rule.baseDamage+steps*rule.damageStep).toFixed(2)),
+      statPercent:Number((rule.statPercent+steps*rule.statPercentStep).toFixed(2)),
+      cooldown:Number((rule.cooldownSeconds-steps*rule.cooldownReduction).toFixed(2))};
+  }
+  function currentWeaponProcs() {
+    if (!namespace.catalog?.item || !window.Status?.Equip) return [];
+    var result=[];
+    [0,1].forEach(function(slot) {
+      var state=window.Status.Equip[slot], record=state && namespace.catalog.item('equipment',Number(state[0]));
+      if (!record || !Array.isArray(record.procEffects)) return;
+      record.procEffects.forEach(function(rule) { result.push({slot:slot,id:record.id,kind:rule.kind,chance:procRuleValue(rule,state),rule:rule,state:state}); });
+    });
+    return result;
+  }
+  function renderWeaponProcs() {
+    var panel=document.getElementById('Tab_2_1'); if(!panel)return;
+    var card=panel.querySelector('.sub_win'), content=card?.querySelector('.remaked-native-panel-content');
+    if(!content)return;
+    var box=card.querySelector('[data-remaked-weapon-procs]'),rows=currentWeaponProcs().filter(function(row){return row.kind==='burn';});
+    if(!rows.length && box){box.remove();box=null;}
+    if(rows.length && !box){box=document.createElement('div');box.dataset.remakedWeaponProcs='';card.appendChild(box);}
+    var ru=namespace.i18n?.getLocale?.()==='ru';
+    var heading=ru?'Оружие · заявленный шанс ожога':'Weapon · listed burn chance';
+    var suffix=ru?'Справочные значения каждого эффекта; бой и сопротивление цели не моделируются.':'Individual listed effects; combat and target resistance are not simulated.';
+    if(box)box.replaceChildren();
+    if(rows.length){var title=document.createElement('strong');title.textContent=heading;box.appendChild(title);}
+    rows.forEach(function(row){var line=document.createElement('p');
+      line.textContent=(ru?(row.slot===0?'Правая рука':'Левая рука'):(row.slot===0?'Main hand':'Off hand'))+' · '+
+        (row.rule.from===undefined?(ru?'базовый':'base'):(ru?'от заточки':'refinement'))+': '+row.chance+'%';box.appendChild(line);});
+    if(rows.length){var note=document.createElement('small');note.textContent=suffix;box.appendChild(note);}
+    var nav=card.querySelector('[data-remaked-attack-pages]'),special=card.querySelector('[data-remaked-special-effects]');
+    if(!nav){
+      nav=document.createElement('div');nav.dataset.remakedAttackPages='';nav.setAttribute('role','group');
+      ['stats','special'].forEach(function(page){var button=document.createElement('button');button.type='button';button.dataset.attackPage=page;
+        button.addEventListener('click',function(){card.dataset.attackSelectedPage=page;renderWeaponProcs();});nav.appendChild(button);});
+      card.insertBefore(nav,content);
+      special=document.createElement('section');special.dataset.remakedSpecialEffects='';special.id='remaked-special-effects';card.appendChild(special);
+    }
+    var selected=card.dataset.attackSelectedPage||'stats';
+    nav.setAttribute('aria-label',ru?'Страницы атаки':'Attack pages');
+    nav.children[0].textContent=ru?'Характеристики':'Stats';nav.children[1].textContent=ru?'Особые эффекты оружия':'Special weapon effects';
+    nav.children[0].setAttribute('aria-controls','ATKView');nav.children[1].setAttribute('aria-controls','remaked-special-effects');
+    Array.from(nav.children).forEach(function(button){button.setAttribute('aria-pressed',String(button.dataset.attackPage===selected));});
+    content.hidden=selected!=='stats';if(box)box.hidden=selected!=='stats';special.hidden=selected!=='special';
+    special.replaceChildren();
+    var specials=currentWeaponProcs().filter(function(row){return row.kind==='special_magic_damage';});
+    if(!specials.length){var empty=document.createElement('p');empty.textContent=ru?'У надетого оружия нет особых эффектов.':'Equipped weapons have no special effects.';special.appendChild(empty);return;}
+    specials.forEach(function(row){
+      var rule=row.rule,values=specialProcValues(rule,row.state),section=document.createElement('article'),heading=document.createElement('strong');
+      var locale=namespace.i18n?.getLocale?.()||'en';
+      heading.textContent=(rule.names[locale]||rule.names.en)+' · '+(ru?(row.slot===0?'правая рука':'левая рука'):(row.slot===0?'main hand':'off hand'));
+      section.appendChild(heading);
+      var detail=document.createElement('p');
+      if(values){var stat=ru?(rule.damageStat==='STR'?'СИЛ':'ИНТ'):rule.damageStat;
+        var current=(window.Status[rule.damageStat]||[]).slice(0,3).reduce(function(a,b){return a+Number(b||0);},0);
+        var rawBase=Number((values.damage+values.statPercent*current/100).toFixed(4));
+        detail.textContent=ru?'Шанс: '+values.chance+'% · Перезарядка: '+values.cooldown+' с · Основа: '+values.damage+' + '+values.statPercent+'% от '+stat+' ('+current+').':
+          'Chance: '+values.chance+'% · Cooldown: '+values.cooldown+' s · Base: '+values.damage+' + '+values.statPercent+'% of '+stat+' ('+current+').';
+        detail.textContent+=ru?' Без округления: '+rawBase+'.':' Unrounded base: '+rawBase+'.';
+      } else detail.textContent=ru?'Неактивен: проверьте заточку и нужный самоцвет (с +'+rule.from+').':'Inactive: check refinement and required gem (from +'+rule.from+').';
+      section.appendChild(detail);special.appendChild(section);
+    });
+    var disclaimer=document.createElement('small');disclaimer.textContent=ru?'Магическая атака влияет на эффект в игре; итоговый урон и сопротивление цели здесь не рассчитываются.':'Magic attack affects the effect in game; final damage and target resistance are not calculated here.';
+    special.appendChild(disclaimer);
   }
   function applyUnison(touched) {
     var equipped = Object.create(null);
@@ -139,9 +221,55 @@
     }
     for (var index = 0; index < window.Name.Option.length; index++) window.Calc(window.Name.Option[index][2]);
   }
+  // Historical fire weapons have two hardcoded Legacy refinement hooks.
+  // A catalog revision can explicitly replace the relevant hook, while old
+  // revisions and every other item retain the historical behaviour.
+  function removeReplacedNativeUpgrade(touched) {
+    function remove(stat,value) {
+      var entries=window.EquipOpt[stat],index=entries?.indexOf(value);
+      if(index===undefined || index<0)throw new Error('Expected native upgrade token is missing');
+      entries.splice(index,1);touched[stat]=true;
+    }
+    // These rules are tied to exact historical IDs and only disabled by an
+    // explicit catalog revision. Set bonuses and other items remain intact.
+    [3,4].forEach(function(slot){
+      var armor=window.Status.Equip[slot],item=armor && namespace.catalog?.item('equipment',Number(armor[0]));
+      if(!item)return;
+      var level=Math.max(0,Math.min(10,Math.trunc(Number(armor[3])||0)));
+      if(item.nativeUpgradePolicy==='replace-legacy-gold-plate-upgrade' && level>=5){
+        remove(52,'-2%');remove(52,'-'+((level-4)*2)+'%');
+      }
+      if(item.nativeUpgradePolicy==='replace-legacy-lunar-gloves-upgrade' && level>=7){
+        remove(5,'1');remove(42,'4');
+      }
+      if(item.nativeUpgradePolicy==='replace-legacy-mana-bracelets-upgrade' && level>=3)
+        remove(7,String(Math.floor(level/3)*30));
+    });
+    var state=window.Status.Equip[0];
+    var record=state && namespace.catalog?.item('equipment',Number(state[0]));
+    if (!record) return;
+    var plus=Math.max(0,Math.min(10,Math.trunc(Number(state[3])||0)));
+    if (record.nativeUpgradePolicy==='replace-legacy-zephyrus-upgrade') {
+      var expectedAura=plus>=5?['20%']:[];
+      if(record.id==='equipment.5.28' && plus>=7)expectedAura.push('30%');
+      expectedAura.forEach(function(value){remove(33,value);});
+      return;
+    }
+    if (!['replace-legacy-fire-wand','replace-legacy-fire-weapon'].includes(record.nativeUpgradePolicy) || Number(state[2]) !== 0) return;
+    var expected=record.nativeUpgradePolicy==='replace-legacy-fire-wand'
+      ? [[5,plus>=6?2:0],[138,[0,0,0,0,0,4,6,11,15,25,40][plus]]]
+      : [[152,plus>=10?32:plus>=6?(plus-4)*5:plus===5?8:0],[89,[0,0,0,0,0,1,3,6,10,20,35][plus]]];
+    expected.forEach(function(pair) {
+      if (!pair[1]) return;
+      var entries=window.EquipOpt[pair[0]], index=entries?.indexOf(String(pair[1]));
+      if (index === undefined || index < 0) throw new Error('Expected native fire-weapon upgrade token is missing');
+      entries.splice(index,1); touched[pair[0]]=true;
+    });
+  }
   function apply() {
     var touched = Object.create(null);
     if (!namespace.catalog || Number(namespace.catalog.getRevision()) < MIN_CATALOG_REVISION) return touched;
+    removeReplacedNativeUpgrade(touched);
     applyBaseSupplement(touched);
     applyItemForth(touched);
     applyUnison(touched);
@@ -154,11 +282,24 @@
   window.EquipCheck = function () {
     var result = retainedEquipCheck.apply(this, arguments);
     apply();
+    renderWeaponProcs();
     return result;
   };
+  window.addEventListener('pandora-remaked:localechange',renderWeaponProcs);
+  function mountWeaponProcs() {
+    // Observe only the attributes used by supported weapon effects.
+    var observer=new MutationObserver(renderWeaponProcs);
+    ['StatusSTR_0','StatusINT_0'].forEach(function(id){var value=document.getElementById(id);if(value)observer.observe(value,{subtree:true,childList:true,characterData:true});});
+    setTimeout(renderWeaponProcs,0);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mountWeaponProcs,{once:true});
+  else mountWeaponProcs();
   namespace.enhancementEffects = {
     apply: apply,
     enhancementRuleValue: enhancementRuleValue,
+    procRuleValue: procRuleValue,
+    specialProcValues: specialProcValues,
+    currentWeaponProcs: currentWeaponProcs,
     minimumCatalogRevision: MIN_CATALOG_REVISION,
     itemForth: ITEM_FORTH,
     unison: UNISON,

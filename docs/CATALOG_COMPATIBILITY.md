@@ -1,5 +1,14 @@
 # Modern catalog and saved builds
 
+> Historical note: much of the build-loading description below predates the
+> current online-only Modern behavior and must not be used as a current
+> recovery procedure. In 4.27, `prepareCurrentPayload` loads the current
+> catalog and migrates the build; historical revisions may provide identity
+> metadata but are not a calculation fallback. `updateCurrentCatalog` also
+> migrates the active and saved builds, reporting incompatible selections.
+> See `docs/PANDORA_OS_SAFE_SYNC_PLAN.ru.md` and the current implementation
+> before planning any catalog migration.
+
 Status: the initial catalog consumer is published in Modern 3.00 through PR24.
 Further mechanics remain bounded by the capabilities documented below.
 

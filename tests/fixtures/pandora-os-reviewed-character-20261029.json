@@ -1,0 +1,232 @@
+{
+  "revision": 92,
+  "classes": {
+    "ASSASSIN": {
+      "id": "ASSASSIN",
+      "name": "Убийца",
+      "parent": "AGENT",
+      "hp": {
+        "base": 150,
+        "lv": 47.11,
+        "vit": 25.5
+      },
+      "mp": {
+        "base": 55,
+        "lv": 4.08,
+        "spi": 4.88
+      },
+      "statCaps": {
+        "vit": 99,
+        "str": 99,
+        "agi": 99,
+        "dex": 99,
+        "spi": 99,
+        "int": 99
+      },
+      "branchCaps": {
+        "slash": 65,
+        "thrust": 0,
+        "brush": 0,
+        "blow": 0,
+        "martial": 0,
+        "defense": 20,
+        "archery": 30,
+        "alchemy": 50,
+        "assassin": 90,
+        "trap": 50,
+        "summon": 0,
+        "warding": 65,
+        "benevolence": 0,
+        "blessing": 0,
+        "exorcism": 0,
+        "hymn": 0,
+        "forbidden": 0,
+        "element": 0,
+        "embody": 0,
+        "darkness": 20,
+        "charm": 0,
+        "enhance": 0,
+        "race": 0,
+        "riding": 10,
+        "dualwield": 0,
+        "nature": 0,
+        "cooperative": 0
+      },
+      "baseClass": "SCOUT"
+    }
+  },
+  "racialPassives": {
+    "ELF": {
+      "raceId": 2,
+      "key": "ELF",
+      "skills": [
+        900020001,
+        900020002,
+        900020003
+      ]
+    }
+  },
+  "skills": {
+    "900020002": {
+      "id": 900020002,
+      "name": "Зоркость",
+      "skillType": "PASSIVE",
+      "element": null,
+      "learnable": false,
+      "mana": 0,
+      "cast": 0,
+      "cooldown": 0,
+      "motion": 0,
+      "range": 0,
+      "rangeFromWeapon": false,
+      "aoe": [
+        0,
+        0
+      ],
+      "branch": "race",
+      "branchRaw": "SPECIAL_RACE",
+      "reqs": [],
+      "reqLevel": 0,
+      "charLevel": 0,
+      "isLevelBased": true,
+      "prereq": null,
+      "powerStat": "INT",
+      "classes": {},
+      "funcs": [
+        {
+          "ep": "EP_RACE_CARRY",
+          "dir": "TARGET",
+          "fv1": [
+            0,
+            0,
+            0,
+            500
+          ],
+          "fv2": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ep": "EP_RACE_RANGE",
+          "dir": "TARGET",
+          "fv1": [
+            0,
+            0,
+            0,
+            500
+          ],
+          "fv2": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "damage": null,
+      "weaponUse": [
+        "BOW",
+        "CROSSBOW"
+      ],
+      "desc": "Увеличивает дальность стрельбы на 500.",
+      "iconId": 900020002
+    }
+  },
+  "english": {
+    "900020002": {
+      "n": "Eagle Eye",
+      "d": "Increases attack range by 500"
+    }
+  },
+  "catalog": {
+    "ok": true,
+    "schemaVersion": 1,
+    "sourceFingerprint": "0f3b15c83d59b8c9c1a47920022895b8db57a526322d9dabea4900fb203518d1",
+    "characterSourceFingerprint": "b41f034b9d6e86a14a39f1f040d99d45315002b4709c753effab0a62cf7e8227",
+    "revision": 92,
+    "impactRevision": 92,
+    "records": [
+      {
+        "id": "racial_skill.1.1",
+        "kind": "racial",
+        "category": 1,
+        "index": 1,
+        "names": {
+          "en": "Eagle Eye",
+          "ru": "Зоркость",
+          "jp": "遠望",
+          "tw": "遠望"
+        },
+        "description": {
+          "en": "Increases attack range by 500",
+          "ru": "Увеличивает дальность стрельбы на 500.",
+          "jp": "",
+          "tw": ""
+        },
+        "effectMode": "replace",
+        "effects": [],
+        "bonusRequirements": {
+          "weaponCategories": [
+            8,
+            9
+          ],
+          "shieldRequired": false,
+          "ridingRequired": false
+        },
+        "calculationNotes": {
+          "en": "The +500 range is reference information: the retained calculator has no calculated ranged-weapon range. No base range or carrying bonus is invented.",
+          "ru": "Дальность +500 указана справочно: исходный калькулятор не рассчитывает дальность дальнобойного оружия. Базовую дальность и бонус переносимого веса не придумываем.",
+          "jp": "",
+          "tw": ""
+        }
+      },
+      {
+        "id": "job.12",
+        "kind": "class",
+        "category": null,
+        "index": 12,
+        "names": {
+          "en": "Assassin",
+          "ru": "Убийца",
+          "jp": "アサシン",
+          "tw": "刺客"
+        },
+        "description": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "progression": [
+          149,
+          53,
+          2.123,
+          24.44,
+          3.922,
+          20.58
+        ]
+      }
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://pandorasaga-os.com/gamedata/classes.json",
+      "sha256": "9f658767c76b650aaadcec3eb4bed1a32fca2f8a2c23c3ec56cb685c59a20b27"
+    },
+    {
+      "url": "https://pandorasaga-os.com/gamedata/skills.json",
+      "sha256": "7ecaad02aa0e300e349d13b65b483218921d6d830308d3e0fb4fab39e0765695"
+    },
+    {
+      "url": "https://pandorasaga-os.com/gamedata/racialPassives.json",
+      "sha256": "416b71f8eb4f05679be203cd9001860ccc8066b4145944cd8aa8b0b3be7fe74d"
+    },
+    {
+      "url": "https://pandorasaga-os.com/gamedata/strings.en.json",
+      "sha256": "953f2e949341a2ebaff3962901d14f2261e2c65a5435aaeea71845ed80c1379c"
+    }
+  ]
+}

@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.28 — 2026-10-29
+
+### For users
+
+- Melee and ranged attack range calculations include weapon, equipment, soul and racial bonuses when configured in the catalog. Unverified range remains marked as unknown.
+- Equipment details show configured enhancement conditions and special weapon effects; build migration reports changes to enhancement rules when the catalog is updated.
+
+### Development and technical changes
+
+- Add editable enhancement conditions, range and special effects, with catalog snapshot and saved-build compatibility checks. Prepare a guarded batch publication path for existing records, checking revisions, drafts and translations.
+- Audit public game data and a D1 backup; retain unconfirmed identities and editorial changes for separate review. No automatic bulk replacement of the catalog.
+
 ## Modern 4.27 — 2026-10-21
 
 ### For users

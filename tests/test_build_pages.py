@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from scripts.build_pages import build_pages, _materialize_modern_astir_rules, _materialize_modern_astir_registry, _materialize_modern_guild_resistance, _read_latest_release, _read_ui_version
+from scripts.build_pages import build_pages, _materialize_modern_astir_rules, _materialize_modern_astir_registry, _materialize_modern_guild_resistance, _materialize_release_metadata, _read_latest_release, _read_ui_version
 from scripts.localization_catalog import load_migrated_catalogs as load_editable_catalogs
 from scripts.localization_catalog import load_migrated_catalogs
 from scripts.sync_localized_changelogs import render as render_changelog
@@ -99,6 +99,67 @@ class BuildPagesTests(unittest.TestCase):
             self.assertNotIn("Приватные", str(notes))
             self.assertNotIn("Private internals", str(notes))
             self.assertNotIn("Исправлены описания предметов", str(notes))
+
+    def test_generated_release_payload_excludes_internal_title_and_notes(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            (root / "CHANGELOG.md").write_text("""# Changelog
+
+## Modern 4.28 — INTERNAL_SOURCE_SECRET, 2026-10-29
+
+<!-- admin-notes:ru -->
+- Внутренняя диагностика SECRET_DIAGNOSTIC.
+<!-- /admin-notes:ru -->
+<!-- admin-notes:en -->
+- Private diagnostic SECRET_DIAGNOSTIC.
+<!-- /admin-notes:en -->
+
+## Modern 4.27 — Equipment, 2026-10-21
+
+<!-- release-notes:user:ru -->
+- Прежнее игровое изменение.
+<!-- /release-notes:user:ru -->
+<!-- release-notes:user:en -->
+- Previous gameplay change.
+<!-- /release-notes:user:en -->
+""", encoding="utf-8")
+            (root / "modern").mkdir()
+            _materialize_release_metadata(root, root)
+            script = (root / "modern/release-notes.js").read_text(encoding="utf-8")
+            prefix = "window.PandoraRemakedRelease = Object.freeze("
+            self.assertTrue(script.startswith(prefix) and script.endswith(");\n"))
+            payload = json.loads(script[len(prefix):-3])
+            self.assertEqual(payload, {
+                "version": "4.28", "userVersion": "4.28", "lastContentVersion": "4.27",
+                "title": "Technical improvements", "date": "2026-10-29", "technicalOnly": True,
+                "highlights": {"ru": ["Выполнены внутренние технические улучшения."],
+                               "en": ["Internal technical improvements."]},
+            })
+            self.assertNotIn("SECRET", script)
+            self.assertNotIn("Previous gameplay", script)
+            self.assertEqual(json.loads((root / "modern/version.json").read_text(encoding="utf-8")),
+                             {"legacyEngine": "2.00", "ui": "4.28"})
+
+    def test_actual_release_payload_matches_current_changelog_and_ui_version(self):
+        source = pathlib.Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temporary:
+            output = pathlib.Path(temporary)
+            (output / "modern").mkdir()
+            _materialize_release_metadata(source, output)
+            script = (output / "modern/release-notes.js").read_text(encoding="utf-8")
+            prefix = "window.PandoraRemakedRelease = Object.freeze("
+            self.assertTrue(script.startswith(prefix) and script.endswith(");\n"))
+            payload = json.loads(script[len(prefix):-3])
+            self.assertEqual(payload, _read_latest_release(source))
+            version = json.loads((output / "modern/version.json").read_text(encoding="utf-8"))
+            self.assertEqual(payload["version"], version["ui"])
+            self.assertEqual(version["legacyEngine"], "2.00")
+            if payload.get("technicalOnly"):
+                self.assertEqual(payload["title"], "Technical improvements")
+                self.assertEqual(payload["highlights"], {
+                    "ru": ["Выполнены внутренние технические улучшения."],
+                    "en": ["Internal technical improvements."],
+                })
 
     def test_one_sided_player_release_is_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:

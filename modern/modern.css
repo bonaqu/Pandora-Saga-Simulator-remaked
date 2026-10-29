@@ -16,6 +16,21 @@
   --rm-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+.remaked-modern #body [data-remaked-weapon-procs] {
+  margin: 6px 4px; padding: 7px 9px; border: 1px solid #b8c99a;
+  border-radius: 4px; background: #f5f8eb; color: #33452a; line-height: 1.35;
+}
+.remaked-modern #body [data-remaked-weapon-procs] p { margin: 3px 0; }
+.remaked-modern #body [data-remaked-weapon-procs] small { display: block; }
+.remaked-modern #body [data-remaked-attack-pages] { display: flex; gap: 4px; padding: 5px 6px; border-bottom: 1px solid var(--rm-border); }
+.remaked-modern #body [data-remaked-attack-pages] button { flex: 1; min-height: 30px; padding: 4px; border: 1px solid var(--rm-border); border-radius: 4px; background: var(--rm-surface); color: var(--rm-text); font: 600 12px/1.3 var(--rm-font); cursor: pointer; }
+.remaked-modern #body [data-remaked-attack-pages] button[aria-pressed="true"] { background: var(--rm-accent-soft); border-color: var(--rm-accent); }
+.remaked-modern #body [data-remaked-special-effects] { box-sizing: border-box; width: 100%; min-width: 0; padding: 8px; font: 13px/1.5 var(--rm-font); color: var(--rm-text); white-space: normal; overflow-wrap: anywhere; }
+.remaked-modern #body [data-remaked-special-effects] article { padding: 8px; margin-bottom: 6px; border: 1px solid var(--rm-border); border-radius: 4px; background: var(--rm-surface-2); }
+.remaked-modern #body [data-remaked-special-effects] p { margin: 4px 0; }
+.remaked-modern #body [data-remaked-special-effects] small { display: block; color: var(--rm-muted); }
+.remaked-modern #body :is([data-remaked-special-effects], [data-remaked-weapon-procs], .remaked-native-panel-content)[hidden] { display: none !important; }
+
 html {
   background: var(--rm-bg);
 }
