@@ -541,9 +541,12 @@ test('special weapon effects have an independent attack page and update with equ
   expect(attackLabels).toHaveLength(54);
   expect(attackLabels.filter(label=>!/[А-Яа-яЁё]/.test(label) || /[A-Za-z]/.test(label))).toEqual([]);
   const stats=page.locator('[data-attack-page="stats"]'),special=page.locator('[data-attack-page="special"]'),panel=page.locator('[data-remaked-special-effects]');
+  const attackWindow=page.locator('[data-remaked-native-panel="2"] .sub_win');
+  const statsHeight=(await attackWindow.boundingBox()).height;
   await expect(stats).toHaveAttribute('aria-pressed','true');
   await expect(page.locator('[data-remaked-weapon-procs]')).toContainText('ожога');
   await special.click();await expect(special).toHaveAttribute('aria-pressed','true');
+  expect((await attackWindow.boundingBox()).height).toBe(statsHeight);
   await expect(panel).toContainText('Пламя феникса');await expect(panel).toContainText('Шанс: 5%');
   await expect(panel).toContainText('Перезарядка: 5 с');await expect(panel).toContainText('Основа: 25 + 25% от СИЛ');
   await expect(page.locator('#ATKView')).toBeHidden();
@@ -554,6 +557,7 @@ test('special weapon effects have an independent attack page and update with equ
   expect(await panel.evaluate(element=>element.scrollWidth<=element.clientWidth)).toBe(true);
   if(process.env.PANDORA_UI_EVIDENCE_DIR) await page.screenshot({path:path.join(process.env.PANDORA_UI_EVIDENCE_DIR,'attack-special-mobile.png')});
   await page.setViewportSize({width:1280,height:720});
+  const heightAt720=(await attackWindow.boundingBox()).height;
   await page.evaluate(()=>{Status.Equip[0][3]=10;EquipCheck();});
   await expect(panel).toContainText('Шанс: 20%');await expect(panel).toContainText('Основа: 100 + 100% от СИЛ');
   await expect(panel).toContainText('Перезарядка: 2 с');
@@ -566,7 +570,9 @@ test('special weapon effects have an independent attack page and update with equ
   await expect(panel).toContainText('Phoenix Flame');
   await page.evaluate(()=>{Status.Equip[0]=[0,0,0,0,0,0,0];EquipCheck();});
   await expect(panel).toContainText('no special effects');
+  expect((await attackWindow.boundingBox()).height).toBe(heightAt720);
   await stats.click();await expect(page.locator('#ATKView')).toBeVisible();
+  expect((await attackWindow.boundingBox()).height).toBe(heightAt720);
 });
 
 test('replacing historical fire-weapon refinement does not leak native bonuses and can restore old behavior',async({page})=>{
