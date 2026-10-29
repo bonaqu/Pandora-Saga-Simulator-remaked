@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { inspectCandidate } from '../../scripts/audit_pandora_os_candidate_support.mjs';
+import { inspectCandidate, mappedWeaponSourceIds } from '../../scripts/audit_pandora_os_candidate_support.mjs';
 import { convertedCurrentEffects } from '../../scripts/lib/current-effect-conversion.mjs';
 
 test('inventory preserves unsupported base and refinement effects and does not claim simulator parity', () => {
@@ -50,4 +50,20 @@ test('identity drift fails closed and a body soul preserves slot and representab
   assert.ok(result.equivalentSoulCandidates.some(row=>row.id==='soul.28'));
   assert.ok(result.warnings.some(text=>text.includes('same effects and slots')));
   assert.throws(() => inspectCandidate({ ...candidate, serverId: 103024 }, source, { n: 'Pumpkin Soul' }, null), /mismatch/);
+});
+
+test('weapon identity review finds same category, level and attack even when socket counts differ',()=>{
+  const candidate={kind:'equipment',serverId:860,category:3,names:{ru:'Фонарь',en:'Lamp'}};
+  const source={id:860,kind:'2H_AXE',slot:'weapon',name:'Фонарь',level:38,W:96,range:150,soulslot:1,effects:[],classes:{WARRIOR:1}};
+  const result=inspectCandidate(candidate,source,{n:'Lamp',d:'-'},null);
+  const same=result.equivalentWeaponCandidates.find(row=>row.id==='equipment.3.6');
+  assert.ok(same);assert.equal(same.level,38);assert.equal(same.sockets,3);
+  assert.equal(result.draftPreview.baseRange,150);
+  assert.ok(result.warnings.some(text=>text.includes('compare source IDs')));
+  assert.ok(!result.equivalentWeaponCandidates.some(row=>row.id==='equipment.3.8'));
+  assert.deepEqual(mappedWeaponSourceIds(same.id,[{kind:'equipment',projectId:same.id,serverId:831},
+    {kind:'soul',projectId:same.id,serverId:999}]),[831]);
+  const invalidRange=inspectCandidate(candidate,{...source,range:0},{n:'Lamp',d:'-'},null);
+  assert.equal(invalidRange.draftPreview.baseRange,undefined);
+  assert.ok(invalidRange.warnings.some(text=>text.includes('base range')));
 });

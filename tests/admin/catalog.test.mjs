@@ -108,6 +108,59 @@ test('public catalog head separates immutable publication revision from build im
 const save = (env, item) => call(env, 'draft', { edit: item.edit, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
 const publish = (env, item) => call(env, 'publish', { id: item.identity.id, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
 
+test('idempotent item creation recovers the same allocation and never overwrites a changed draft',async()=>{
+  const {env,sqlite}=fixture(),edit=draftFromSource(null,'equipment');
+  edit.id='';edit.category=3;edit.names.en='Lamp';edit.baseAttack=96;
+  const input={edit,expectedDraftVersion:0,expectedCatalogRevision:0,creationId:'fa75ed9c-550a-4567-ad2d-eec83a537c44'};
+  const first=await call(env,'draft',input),again=await call(env,'draft',input);
+  assert.equal(first.identity.id,'modern.equipment.'+input.creationId);
+  assert.equal(again.identity.id,first.identity.id);assert.equal(again.recovered,true);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_allocations').get().n,1);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n,1);
+  assert.equal(first.identity.index,again.identity.index);
+  await assert.rejects(()=>call(env,'draft',{...input,edit:{...edit,names:{...edit.names,en:'Changed'}}}),error=>error.status===409);
+  first.edit.names.ru='Ручной перевод';await save(env,first);
+  await assert.rejects(()=>call(env,'draft',input),error=>error.status===409);
+  assert.equal((await detail(env,first.identity.id)).edit.names.ru,'Ручной перевод');
+  await assert.rejects(()=>call(env,'draft',{...input,creationId:'not-a-uuid'}));
+});
+
+test('item allocation rechecks catalog head inside its transaction without orphan records',async()=>{
+  for(const creationId of [undefined,'fa75ed9c-550a-4567-ad2d-eec83a537c44']){
+    const {env,sqlite}=fixture(),edit=draftFromSource(null,'equipment');edit.id='';edit.category=3;edit.names.en='Lamp';edit.baseAttack=96;
+    const batch=env.DB.batch.bind(env.DB);
+    env.DB.batch=async statements=>{sqlite.prepare('UPDATE catalog_head SET version=1 WHERE id=1').run();return batch(statements);};
+    await assert.rejects(()=>call(env,'draft',{edit,expectedDraftVersion:0,expectedCatalogRevision:0,
+      ...(creationId?{creationId}:{})}),error=>error.status===409);
+    for(const table of ['catalog_allocations','catalog_drafts','catalog_sequences'])
+      assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM '+table).get().n,0);
+  }
+});
+
+test('concurrent retries for the same creation ID allocate once',async()=>{
+  const {env,sqlite}=fixture(),edit=draftFromSource(null,'equipment');edit.id='';edit.category=3;edit.names.en='Lamp';edit.baseAttack=96;
+  const input={edit,expectedDraftVersion:0,expectedCatalogRevision:0,creationId:'fa75ed9c-550a-4567-ad2d-eec83a537c44'};
+  const batch=env.DB.batch.bind(env.DB);let concurrent;
+  env.DB.batch=async statements=>{env.DB.batch=batch;concurrent=await call(env,'draft',input);return batch(statements);};
+  const result=await call(env,'draft',input);
+  assert.equal(result.recovered,true);assert.equal(result.identity.id,concurrent.identity.id);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_allocations').get().n,1);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n,1);
+  const sequence=sqlite.prepare('SELECT next_index FROM catalog_sequences WHERE kind=? AND category=?').get('equipment',3);
+  assert.equal(sequence.next_index,result.identity.index+1);
+});
+
+test('idempotent Soul creation retains its slot and stable identity',async()=>{
+  const {env,sqlite}=fixture(),edit=draftFromSource(null,'soul');edit.id='';edit.names.en='Test Soul';
+  edit.slots=[0,0,0,1,0,0,0,0];
+  const creationId='fa75ed9c-550a-4567-ad2d-eec83a537c44';
+  const input={edit,expectedDraftVersion:0,expectedCatalogRevision:0,creationId};
+  const first=await call(env,'draft',input),again=await call(env,'draft',input);
+  assert.equal(first.identity.id,'modern.soul.'+creationId);assert.equal(again.recovered,true);
+  assert.deepEqual(again.edit.slots,edit.slots);
+  assert.equal(sqlite.prepare('SELECT count(*) AS n FROM catalog_allocations').get().n,1);
+});
+
 test('special effect names change publication only; numeric rules change build impact', async () => {
   const {env}=fixture();let item=await detail(env);
   item.edit.procEffects=[{kind:'special_magic_damage',names:{en:'Phoenix Flame',ru:'Пламя феникса',jp:'',tw:''},

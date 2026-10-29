@@ -19,6 +19,10 @@ async function getJson(url) {
   const bytes = Buffer.from(await response.arrayBuffer());
   return { url, sha256: createHash('sha256').update(bytes).digest('hex'), data: JSON.parse(bytes.toString('utf8')) };
 }
+export function mappedWeaponSourceIds(projectId,matched) {
+  return (matched||[]).filter(row=>row.kind==='equipment'&&row.projectId===projectId)
+    .map(row=>row.serverId).sort((a,b)=>a-b);
+}
 export function inspectCandidate(candidate, source, english, forth) {
   const kind = candidate.kind, category = kind === 'equipment' && source ? serverCategory(source) : null;
   if (!source || Number(source.id) !== candidate.serverId || category !== candidate.category) throw new Error('Candidate/source identity or category mismatch: ' + candidate.serverId);
@@ -35,6 +39,8 @@ export function inspectCandidate(candidate, source, english, forth) {
   if (enhancementFunctions.length) warnings.push('Forth levels are full snapshots, not additive rules; new custom IDs are not in the existing static itemForth runtime map. Each effect needs explicit support and verification.');
   if (enhancementFunctions.some(func => !CURRENT_EFFECT_MAP[func])) warnings.push('At least one enhancement effect is not represented by the numeric effect converter; combat proc is not simulated.');
   if (kind === 'equipment') warnings.push('Race and gender restrictions require separate identity evidence; new-item factory defaults every race and both gender flags to allowed.');
+  if (kind === 'equipment' && category <= 13 && (!Number.isInteger(source.range) || source.range < 1 || source.range > 10000))
+    warnings.push('Weapon base range is missing or outside the supported catalog bounds; review before publication.');
   const classNames = Object.keys(source.classes || {}), unknownClasses = classNames.filter(name => !CLASS_ORDER.includes(name));
   if (unknownClasses.length) warnings.push('Source contains unsupported class identifiers.');
   let draftPreview, validationError = null;
@@ -42,9 +48,11 @@ export function inspectCandidate(candidate, source, english, forth) {
     const patch = serverPatch(kind, source, english);
     const edit = { ...draftFromSource(null, kind), ...patch, id, kind, category, effectMode: 'replace', effects:conversion.effects, disabled: false };
     if (kind === 'equipment') edit.classes = classNames.length ? CLASS_ORDER.map(name => source.classes[name] ? 1 : 0) : Array(28).fill(1);
+    if (kind === 'equipment' && category <= 13 && Number.isInteger(source.range) && source.range >= 1 && source.range <= 10000)
+      edit.baseRange = source.range;
     const draft = validateDraft(edit, identity), record = compileRecord(draft, identity, null);
     draftPreview = { names: draft.names, description: draft.description, level: draft.level, sockets: draft.sockets,
-      races: draft.races, classes: draft.classes, slots: draft.slots, effects: draft.effects, baseAttack: draft.baseAttack,
+      races: draft.races, classes: draft.classes, slots: draft.slots, effects: draft.effects, baseAttack: draft.baseAttack, baseRange: draft.baseRange,
       calculationCode: record.calculationCode, compatibility: record.compatibility };
   } catch (error) { validationError = error.message; }
   // Matching stats/slot are useful evidence, but distinct souls can share
@@ -55,6 +63,16 @@ export function inspectCandidate(candidate, source, english, forth) {
         JSON.stringify(row.compatibility_flags)===JSON.stringify(draftPreview.compatibility))
       .map(row=>({id:row.id,names:row.name,calculationCode:row.calculation_code,slots:row.compatibility_flags})) : [];
   if(equivalentSoulCandidates.length) warnings.push('Historical Soul with the same effects and slots exists; verify identity before allocating another ID.');
+  // Socket counts can be changed by later editorial revisions. Match the
+  // stable weapon category, level and native attack first; report the socket
+  // count separately rather than excluding a plausible historical candidate.
+  // A matching signature is evidence for review, not an identity decision.
+  const equivalentWeaponCandidates=kind==='equipment' && Number.isInteger(source.W) && Number.isInteger(source.level)
+    ? baselineRecords.filter(row=>row.id.startsWith('equipment.') && row.legacy_category_id===category &&
+        row.level_requirement===source.level && String(row.calculation_code||'').split('_').includes('18=W'+source.W))
+      .map(row=>({id:row.id,names:row.name,level:row.level_requirement,sockets:row.soul_socket_count,
+        calculationCode:row.calculation_code})) : [];
+  if(equivalentWeaponCandidates.length) warnings.push('Historical weapon with the same category, level and attack exists; compare source IDs and other evidence before allocating.');
   return { serverId: source.id, kind, projectIdCandidate: id, category, names: candidate.names,
     source: { slot: source.slot || null, itemKind: source.kind || null, twoHanded: source.twoHanded ?? null,
       level: source.level ?? null, sockets: source.soulslot ?? null, soulSlots: source.slots ?? null,
@@ -62,7 +80,7 @@ export function inspectCandidate(candidate, source, english, forth) {
       atkspeed: source.atkspeed ?? null, AC: source.AC ?? null, block: source.block ?? null,
       effects: source.effects || [], descriptionRu: source.desc || '', descriptionEn: english?.d || '' },
     conversionComplete: conversion.complete, unsupportedEffects, forth: levels, enhancementFunctions, unknownClasses,
-    draftPreview, validationError, equivalentSoulCandidates, warnings };
+    draftPreview, validationError, equivalentSoulCandidates, equivalentWeaponCandidates, warnings };
 }
 async function main() {
   if (process.argv.length !== 3 && !(process.argv.length === 5 && process.argv[3] === '--output')) throw new Error('Usage: node scripts/audit_pandora_os_candidate_support.mjs <identity-report.json> [--output NEW_FILE]');
@@ -74,9 +92,13 @@ async function main() {
     if (!old || old.sha256 !== resource.sha256) throw new Error('Source changed since identity audit: ' + resource.url);
   }
   const [items, souls, english, forth] = files.map(file => file.data);
-  const candidates = report.missing.map(entry => inspectCandidate(entry,
-    (entry.kind === 'equipment' ? items : souls)[entry.serverId],
-    english?.[entry.kind === 'equipment' ? 'items' : 'souls']?.[entry.serverId], forth[entry.serverId]));
+  const candidates = report.missing.map(entry => {
+    const result=inspectCandidate(entry,(entry.kind === 'equipment' ? items : souls)[entry.serverId],
+      english?.[entry.kind === 'equipment' ? 'items' : 'souls']?.[entry.serverId], forth[entry.serverId]);
+    for(const related of result.equivalentWeaponCandidates)
+      related.mappedSourceIds=mappedWeaponSourceIds(related.id,report.matched);
+    return result;
+  });
   const result = { checkedAt: new Date().toISOString(), catalogRevision: report.revision,
     sources: files.map(({url,sha256}) => ({url,sha256})), candidates,
     counts: { total: candidates.length, equipment: candidates.filter(row => row.kind === 'equipment').length,
