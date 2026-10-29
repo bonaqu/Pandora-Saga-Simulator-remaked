@@ -1,5 +1,29 @@
 # Changelog
 
+## Modern 4.28 — условия экипировки и дальность, 2026-10-29
+
+<!-- release-notes:user:ru -->
+- В расчёте дальности ближнего и дальнего боя учитываются заданные в каталоге бонусы оружия, экипировки, душ и расовых умений. Для непроверенной дальности сохраняется обозначение неизвестного значения.
+- Подсказки экипировки показывают заданные условия улучшения и особые эффекты оружия; при обновлении каталога изменения правил усиления отражаются в отчёте переноса билда.
+- Окно «Атака» сохраняет высоту при переключении страниц и остаётся в пределах экрана при уменьшении высоты окна браузера.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- Melee and ranged attack range calculations include weapon, equipment, soul and racial bonuses when configured in the catalog. Unverified range remains marked as unknown.
+- Equipment details show configured enhancement conditions and special weapon effects; build migration reports changes to enhancement rules when the catalog is updated.
+- The Attack panel keeps a consistent height when switching pages and stays within a shorter browser window.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Добавлены редактируемые условия заточки, дистанции и особых эффектов, проверка совместимости снимков каталога и сохранённых билдов. Подготовлен защищённый пакетный путь публикации существующих записей с проверкой ревизии, черновиков и переводов.
+- Проведён аудит публичных игровых данных и резервной копии D1; неподтверждённые соответствия и изменения редактора сохранены для отдельной проверки. Автоматической массовой перезаписи каталога нет.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add editable enhancement conditions, range and special effects, with catalog snapshot and saved-build compatibility checks. Prepare a guarded batch publication path for existing records, checking revisions, drafts and translations.
+- Audit public game data and a D1 backup; retain unconfirmed identities and editorial changes for separate review. No automatic bulk replacement of the catalog.
+<!-- /admin-notes:en -->
+
 ## Modern 4.27 — стабильные состояния загрузки админки, 2026-10-21
 
 <!-- admin-notes:ru -->

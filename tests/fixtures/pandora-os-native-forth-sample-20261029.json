@@ -1,0 +1,566 @@
+{
+  "catalog": {
+    "ok": true,
+    "schemaVersion": 1,
+    "sourceFingerprint": "0f3b15c83d59b8c9c1a47920022895b8db57a526322d9dabea4900fb203518d1",
+    "characterSourceFingerprint": "b41f034b9d6e86a14a39f1f040d99d45315002b4709c753effab0a62cf7e8227",
+    "revision": 92,
+    "impactRevision": 92,
+    "records": [
+      {
+        "id": "equipment.5.27",
+        "kind": "equipment",
+        "category": 5,
+        "index": 27,
+        "engineId": 50027,
+        "engineKey": "ゼピュロスＲ",
+        "names": {
+          "en": "Zephyrus A",
+          "ru": "Разящее копье Зефира",
+          "jp": "ゼピュロスＲ",
+          "tw": "(善風 R)"
+        },
+        "description": {
+          "en": "A spear found among the Mirin settlements.STR +1Per every 2 enhancement levels:MP +15At +7 and above: STR +1",
+          "ru": "Копье найденное среди поселений Мирин. СИЛ +1За каждые 2 единицы улучшения:ОМ +15При улучшении на +7 и выше: СИЛ +1",
+          "jp": "命中+25、攻撃速度+5%",
+          "tw": "命中+25¸ 攻擊速度+5%"
+        },
+        "notes": {
+          "en": "When the discipline more than +5¸ +20% Damage Aura",
+          "ru": "",
+          "jp": "鍛錬値+5以上の時、オーラダメージ+20%",
+          "tw": "當紀律超過 +5¸+20％傷害光環"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "西風神の大槍：中成功\nフルグライト*30、死を運ぶ牙*20、600G_生産_1",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "18=W101_1=1",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.5.28",
+        "kind": "equipment",
+        "category": 5,
+        "index": 28,
+        "engineId": 50028,
+        "engineKey": "ゼピュロスＳＲ",
+        "names": {
+          "en": "Zephyrus S",
+          "ru": "Сильное копье Зефира",
+          "jp": "ゼピュロスＳＲ",
+          "tw": "(善風 SR)"
+        },
+        "description": {
+          "en": "A spear found among the Mirin settlements.STR +1Per every 2 enhancement levels:MP +15At +7 and above: STR +2",
+          "ru": "Копье найденное среди поселений Мирин. СИЛ +1За каждые 2 единицы улучшения:ОМ +15При улучшении на +7 и выше: СИЛ +2",
+          "jp": "命中+25、攻撃速度+5%",
+          "tw": "命中+25¸ 攻擊速度+5%"
+        },
+        "notes": {
+          "en": "When the discipline more than +5¸ +20% damage aura. Over time the discipline +7¸ +30% more damage aura",
+          "ru": "",
+          "jp": "鍛錬値+5以上の時、オーラダメージ+20%。鍛錬値+7以上の時、更にオーラダメージ+30%",
+          "tw": "當紀律超過 +5¸+20％傷害的光環。隨著時間的推移紀律 +7¸+30％傷害光環"
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "西風神の大槍：大成功\nフルグライト*30、死を運ぶ牙*20、600G_生産_1",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 1,
+        "disabled": false,
+        "calculationCode": "18=W95_1=1",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      },
+      {
+        "id": "equipment.11.14",
+        "kind": "equipment",
+        "category": 11,
+        "index": 14,
+        "engineId": 110014,
+        "engineKey": "モール",
+        "names": {
+          "en": "Maul D",
+          "ru": "Прочный клиновидный молот",
+          "jp": "モール",
+          "tw": "(購物中心)"
+        },
+        "description": {
+          "en": "A hammer with a long handle.STR +1Per every 2 enhancement levels:Accuracy +2At +7 and above: STR +1",
+          "ru": "Молот с длинной рукоятью.СИЛ +1За каждые 2 единицы улучшения:Точность +2При улучшении на +7 и выше: СИЛ +1",
+          "jp": "筋力+1、命中+5",
+          "tw": "力量+1¸ 命中+5"
+        },
+        "notes": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "acquisition": {
+          "en": "",
+          "ru": "",
+          "jp": "ニールシュタット平原\n黄輝石*80、忌み嫌う憎悪の珠*1、死へ誘う悲哀の珠*1、暴れ狂う憤怒の珠*1_NPC:アルガン_2",
+          "tw": ""
+        },
+        "modifiers": {
+          "en": "",
+          "ru": "",
+          "jp": "",
+          "tw": ""
+        },
+        "level": 40,
+        "sockets": 2,
+        "disabled": false,
+        "calculationCode": "18=W78_1=1",
+        "compatibility": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "parameter6": 0,
+        "soulParameters": [
+          "",
+          ""
+        ],
+        "trailing": ""
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "equipment.11.14",
+      "serverId": 1232,
+      "levels": {
+        "2": [
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 2,
+            "b": 0
+          }
+        ],
+        "3": [
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 2,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 4,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 4,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 6,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 6,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 8,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 8,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_TOHIT_CONST",
+            "a": 10,
+            "b": 0
+          }
+        ]
+      },
+      "source": {
+        "id": 1232,
+        "name": "Прочный клиновидный молот",
+        "desc": "Молот с длинной рукоятью.<br><br>СИЛ +1<br>За каждые 2 единицы улучшения:<br>Точность +2<br>При улучшении на +7 и выше: СИЛ +1"
+      },
+      "english": {
+        "n": "Maul D",
+        "d": "A hammer with a long handle.<br><br>STR +1<br>Per every 2 enhancement levels:<br>Accuracy +2<br>At +7 and above: STR +1"
+      }
+    },
+    {
+      "id": "equipment.5.27",
+      "serverId": 1484,
+      "levels": {
+        "2": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "3": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 30,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 30,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 45,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 45,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 60,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 60,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 1,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 75,
+            "b": 0
+          }
+        ]
+      },
+      "source": {
+        "id": 1484,
+        "name": "Разящее копье Зефира",
+        "desc": "Копье найденное среди поселений Мирин. <br><br>СИЛ +1<br>За каждые 2 единицы улучшения:<br>ОМ +15<br>При улучшении на +7 и выше: СИЛ +1"
+      },
+      "english": {
+        "n": "Zephyrus A",
+        "d": "A spear found among the Mirin settlements.<br><br>STR +1<br>Per every 2 enhancement levels:<br>MP +15<br>At +7 and above: STR +1"
+      }
+    },
+    {
+      "id": "equipment.5.28",
+      "serverId": 1485,
+      "levels": {
+        "2": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "3": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 15,
+            "b": 0
+          }
+        ],
+        "4": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 30,
+            "b": 0
+          }
+        ],
+        "5": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 30,
+            "b": 0
+          }
+        ],
+        "6": [
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 45,
+            "b": 0
+          }
+        ],
+        "7": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 45,
+            "b": 0
+          }
+        ],
+        "8": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 60,
+            "b": 0
+          }
+        ],
+        "9": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 60,
+            "b": 0
+          }
+        ],
+        "10": [
+          {
+            "func": "EP_STRENGTH_CONST",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "func": "EP_MAXMANA_CONST",
+            "a": 75,
+            "b": 0
+          }
+        ]
+      },
+      "source": {
+        "id": 1485,
+        "name": "Сильное копье Зефира",
+        "desc": "Копье найденное среди поселений Мирин. <br><br>СИЛ +1<br>За каждые 2 единицы улучшения:<br>ОМ +15<br>При улучшении на +7 и выше: СИЛ +2"
+      },
+      "english": {
+        "n": "Zephyrus S",
+        "d": "A spear found among the Mirin settlements.<br><br>STR +1<br>Per every 2 enhancement levels:<br>MP +15<br>At +7 and above: STR +2"
+      }
+    }
+  ]
+}

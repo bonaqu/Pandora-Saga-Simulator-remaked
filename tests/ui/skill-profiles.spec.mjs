@@ -4,6 +4,43 @@ import { draftFromSource, validateDraft, compileRecord } from '../../admin-api/s
 import { snapshot } from './helpers/skill-variants.mjs';
 import { currentActiveProfileDrafts } from '../../admin-api/src/current-active-profiles.mjs';
 import { baselineById, sourceIdentity } from '../../admin-api/src/catalog-baseline.mjs';
+import publicProfileSnapshot from '../fixtures/pandora-os-reviewed-profile-public-20261029.json' with { type: 'json' };
+
+test('reviewed class variants correct the four observed published timing differences without changing the base level',async({page})=>{
+  const ids=['skill_entry.13.5','skill_entry.19.4','skill_entry.19.8','skill_entry.20.4'];
+  const proposed=currentActiveProfileDrafts().filter(edit=>ids.includes(edit.id)).map(edit=>{
+    const source=baselineById.get(edit.id),identity=sourceIdentity(source);
+    return compileRecord(validateDraft(edit,identity),identity,source);
+  });
+  const next={...publicProfileSnapshot,revision:93,impactRevision:93,records:proposed};
+  await page.goto('/');
+  const result=await page.evaluate(({before,after})=>{
+    const api=PandoraRemaked, initial={job:Status.Job.slice(),level:Status.Lev.slice(),skills:Status.Skill.map(row=>row.slice())}, samples=[
+      {id:'skill_entry.13.5',job:16,level:50,branch:13,points:8},
+      {id:'skill_entry.19.4',job:24,level:50,branch:19,points:8},
+      {id:'skill_entry.19.8',job:24,level:50,branch:19,points:50},
+      {id:'skill_entry.20.4',job:27,level:45,branch:20,points:21}
+    ];
+    function read(sample,level){
+      Status.Job[2]=sample.job;Status.Lev[0]=level;
+      for(let i=0;i<Name.Skill.length;i++)Status.Skill[i]=[i===sample.branch?sample.points:0,0,200,0];
+      CalcSet('ALL');api.catalog.gameLabel(sample.id);
+      const parts=sample.id.split('.');return Skill[0][Number(parts[1])][Number(parts[2])].slice(5,8);
+    }
+    function reset(){Status.Job=initial.job.slice();Status.Lev=initial.level.slice();Status.Skill=initial.skills.map(row=>row.slice());}
+    api.catalog.applySnapshot(before);Flag[3]=0;
+    const old=samples.map(sample=>read(sample,sample.level));
+    reset();api.catalog.applySnapshot(after);
+    const corrected=samples.map(sample=>read(sample,sample.level));
+    const below=samples.map(sample=>read(sample,sample.level-1));
+    reset();api.catalog.applySnapshot(before);
+    const restored=samples.map(sample=>read(sample,sample.level));
+    return {old,corrected,below,restored};
+  },{before:publicProfileSnapshot,after:next});
+  expect(result.old).toEqual([[28,1,4],[14,1,7],[79,5,120],[32,1,10]]);
+  expect(result.corrected).toEqual([[28,0,4],[14,1,4],[79,5,20],[50,1,10]]);
+  expect(result.below).toEqual(result.old);expect(result.restored).toEqual(result.old);
+});
 
 test('all 17 reviewed active records use their literal source text and class/rank timing at boundary states, with exact old-pin restoration', async ({ page }) => {
   const records = currentActiveProfileDrafts().map(edit => {

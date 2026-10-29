@@ -2,9 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
+import { createHash } from 'node:crypto';
 import { adminCatalog, publicCatalog, publicCatalogHead } from '../../admin-api/src/catalog.mjs';
-import { draftFromSource } from '../../admin-api/src/catalog-model.mjs';
+import { draftFromSource, validateDraft } from '../../admin-api/src/catalog-model.mjs';
 import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs';
+import { currentActiveProfileDrafts } from '../../admin-api/src/current-active-profiles.mjs';
+import { baselineById, sourceIdentity } from '../../admin-api/src/catalog-baseline.mjs';
+import { previewReviewedPumpkinSoul } from '../../scripts/lib/reviewed-soul-preview.mjs';
 
 const origin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
 function fixture() {
@@ -103,6 +107,69 @@ test('public catalog head separates immutable publication revision from build im
 
 const save = (env, item) => call(env, 'draft', { edit: item.edit, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
 const publish = (env, item) => call(env, 'publish', { id: item.identity.id, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
+
+test('special effect names change publication only; numeric rules change build impact', async () => {
+  const {env}=fixture();let item=await detail(env);
+  item.edit.procEffects=[{kind:'special_magic_damage',names:{en:'Phoenix Flame',ru:'Пламя феникса',jp:'',tw:''},
+    chance:5,chanceStep:5,from:7,every:1,to:10,gemElement:'fire',damageStat:'STR',
+    baseDamage:25,damageStep:25,statPercent:25,statPercentStep:25,cooldownSeconds:5,cooldownReduction:1}];
+  let result=await publish(env,await save(env,item));
+  assert.equal(result.impactRevision,1);
+  item=await detail(env);item.edit.procEffects[0].names.ru='Новое название';
+  result=await publish(env,await save(env,item));
+  assert.equal(result.catalogRevision,2);assert.equal(result.impactRevision,1);
+  assert.equal((await publicData(env,1)).records[0].procEffects[0].names.ru,'Пламя феникса');
+  item=await detail(env);item.edit.procEffects[0].damageStep=30;
+  result=await publish(env,await save(env,item));assert.equal(result.impactRevision,3);
+});
+
+test('reviewed Pumpkin Soul publishes RU/EN text on its existing ID without changing build impact',async()=>{
+  const {env}=fixture(),item=await detail(env,'soul.28');
+  const plan=previewReviewedPumpkinSoul({source:{id:103023,name:'Тыквенная душа',slots:['body'],
+    desc:'Сопротивляемость магии тьмы +5, СД +1.',effects:[{func:'EP_DARK_RESISTANCE_CONST',a:5},{func:'EP_SPIRITUAL_CONST',a:1}]},
+    english:{n:'Soul of the Pumpkin',d:'SPI +1 Dark Resistance +5%'},catalog:await publicData(env),
+    sourceHashes:{snapshot:'a'.repeat(64)},privateState:{revision:0,dirtyCatalogDraft:false,localizationDrafts:[],localizationOverrides:[],legacyOverrides:[]}});
+  assert.equal(plan.status,'change');item.edit=plan.edit;
+  const result=await publish(env,await save(env,item));assert.equal(result.catalogRevision,1);assert.equal(result.impactRevision,0);
+  const record=(await publicData(env)).records[0];assert.equal(record.id,'soul.28');assert.equal(record.engineId,28);
+  assert.equal(record.names.en,'Soul of the Pumpkin');assert.equal(record.names.ru,'Тыквенная душа');
+  assert.equal(record.names.jp,'カボチャの魂');assert.equal(record.names.tw,'(南瓜的魂魄)');
+  assert.equal(record.calculationCode,'4=1_144=5');assert.deepEqual(record.compatibility,[0,0,0,1,0,0,0,0]);
+  assert.deepEqual((await publicData(env,1)).records,[record]);
+});
+
+test('class branch limits are editable, revisioned and included in build impact', async () => {
+  const { env } = fixture(); let item = await detail(env, 'job.12');
+  assert.equal(item.nativeClass.potentialCaps[19], 0);
+  item.edit.potentialCaps = [...item.nativeClass.potentialCaps]; item.edit.potentialCaps[19] = 10;
+  const preview = await call(env, 'preview', { edit: item.edit, expectedCatalogRevision: 0 });
+  assert.equal(preview.record.potentialCaps[19], 10);
+  const result = await publish(env, await save(env, item));
+  assert.equal(result.impactRevision, 1);
+  assert.equal((await publicData(env)).records[0].potentialCaps[19], 10);
+  assert.deepEqual((await publicData(env, 0)).records, []);
+  item = await detail(env, 'job.12'); assert.equal(item.edit.potentialCaps[19], 10);
+  delete item.edit.potentialCaps;
+  const restored = await publish(env, await save(env, item));
+  assert.equal(restored.impactRevision, 2);
+  assert.equal((await publicData(env)).records[0].potentialCaps, undefined);
+  assert.equal((await publicData(env, 1)).records[0].potentialCaps[19], 10);
+});
+
+test('weapon base range is validated and revisioned independently of display text', async () => {
+  const { env } = fixture(); let item = await detail(env, 'equipment.0.10');
+  item.edit.baseRange = 160;
+  const preview = await call(env, 'preview', { edit: item.edit, expectedCatalogRevision: 0 });
+  assert.equal(preview.record.baseRange, 160);
+  let result = await publish(env, await save(env, item)); assert.equal(result.impactRevision, 1);
+  assert.equal((await publicData(env, 1)).records[0].baseRange, 160);
+  item = await detail(env, 'equipment.0.10'); item.edit.baseRange = 175;
+  result = await publish(env, await save(env, item)); assert.equal(result.impactRevision, 2);
+  assert.equal((await publicData(env, 1)).records[0].baseRange, 160);
+  assert.equal((await publicData(env, 2)).records[0].baseRange, 175);
+  item = await detail(env, 'soul.28'); item.edit.baseRange = 150;
+  await assert.rejects(() => call(env, 'preview', { edit: item.edit, expectedCatalogRevision: 2 }), /only applies to weapons/);
+});
 
 test('intrinsic replacement is draft-first, visible in preview/current metadata and reversible without changing previous pins', async () => {
   const { env } = fixture(), item = await detail(env, 'skill_entry.6.0');
@@ -480,6 +547,136 @@ test('saved drafts across equipment rows publish atomically as one catalog revis
     assert.equal((await detail(env,id)).hasDraft,false);
     assert.ok(effective.records.some(item=>item.id===id));
   }
+});
+
+test('guarded batch publication atomically rejects translations created immediately before commit',async()=>{
+  for(const collision of [
+    {table:'localization_drafts',term:'skill_entry.5.3'},
+    {table:'localization_overrides',term:'skill_detail.5.3.3'},
+    {table:'result_label_overrides',term:'skill_detail.5.3.1'}
+  ]) {
+    const {env,sqlite}=fixture();
+    sqlite.exec('CREATE TABLE localization_drafts(scope TEXT,term_id TEXT); CREATE TABLE localization_overrides(scope TEXT,term_id TEXT); CREATE TABLE result_label_overrides(id TEXT,ru TEXT)');
+    const item=await detail(env,'skill_entry.5.3');item.edit.mpCost+=1;
+    const saved=await save(env,item),batch=env.DB.batch;
+    env.DB.batch=async statements=>{
+      if(collision.table==='result_label_overrides')sqlite.prepare('INSERT INTO result_label_overrides VALUES(?,?)').run(collision.term,'Ручной текст');
+      else sqlite.prepare('INSERT INTO '+collision.table+' VALUES(?,?)').run('game',collision.term);
+      return batch.call(env.DB,statements);
+    };
+    const input={items:[{id:'skill_entry.5.3',expectedDraftVersion:saved.draftVersion}],expectedCatalogRevision:0,requireCleanTranslations:true};
+    await assert.rejects(()=>call(env,'publish-batch',input),error=>error.status===409 && /protected translation/.test(error.message));
+    assert.equal(sqlite.prepare('SELECT version FROM catalog_head').get().version,0);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_revisions').get().n,0);
+    assert.equal(sqlite.prepare('SELECT is_dirty FROM catalog_drafts WHERE id=?').get('skill_entry.5.3').is_dirty,1);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM '+collision.table).get().n,1);
+    env.DB.batch=batch;sqlite.exec('DELETE FROM '+collision.table);
+    sqlite.prepare('INSERT INTO localization_overrides VALUES(?,?)').run('ui','skill_entry.5.3');
+    sqlite.prepare('INSERT INTO result_label_overrides VALUES(?,?)').run('skill_entry.5.3','<excel-baseline>');
+    const published=await call(env,'publish-batch',input);
+    assert.equal(published.catalogRevision,1);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM localization_overrides').get().n,1);
+    sqlite.close();
+  }
+});
+
+test('guarded batch rejects a malformed protection option',async()=>{
+  const {env}=fixture();
+  await assert.rejects(()=>call(env,'publish-batch',{items:[],expectedCatalogRevision:0,requireCleanTranslations:'yes'}),/Invalid translation protection/);
+});
+
+test('batch receipts retain translation protection and cannot upgrade an unguarded old receipt',async()=>{
+  for(const guarded of [false,true]) {
+    const {env,sqlite}=fixture();
+    if(guarded)sqlite.exec('CREATE TABLE localization_drafts(scope TEXT,term_id TEXT); CREATE TABLE localization_overrides(scope TEXT,term_id TEXT); CREATE TABLE result_label_overrides(id TEXT,ru TEXT)');
+    const item=await detail(env,'skill_entry.5.3');item.edit.mpCost+=1;const saved=await save(env,item);
+    const input={items:[{id:item.edit.id,expectedDraftVersion:saved.draftVersion}],expectedCatalogRevision:0,
+      operationId:'a3772b1b-ec17-4aea-854c-7452bbc5e281',...(guarded?{requireCleanTranslations:true}:{})};
+    const first=await call(env,'publish-batch',input);
+    assert.equal(Boolean(first.translationsGuarded),guarded);
+    const receipt=await call(env,'publish-batch-status?operationId='+input.operationId);
+    assert.equal(Boolean(receipt.receipt.translationsGuarded),guarded);
+    if(guarded)assert.equal((await call(env,'publish-batch',input)).translationsGuarded,true);
+    else await assert.rejects(()=>call(env,'publish-batch',{...input,requireCleanTranslations:true}),error=>error.status===409);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_revisions').get().n,1);
+    sqlite.close();
+  }
+});
+
+function reviewedActiveFixture() {
+  const {env,sqlite}=fixture(),id='skill_entry.5.3',source=baselineById.get(id),identity=sourceIdentity(source);
+  sqlite.exec('CREATE TABLE localization_drafts(scope TEXT,term_id TEXT); CREATE TABLE localization_overrides(scope TEXT,term_id TEXT); CREATE TABLE result_label_overrides(id TEXT,ru TEXT)');
+  const old=validateDraft(draftFromSource(source,'active'),identity);
+  const currentHash=createHash('sha256').update(JSON.stringify(old)).digest('hex');
+  const edit=currentActiveProfileDrafts().find(row=>row.id===id);
+  sqlite.prepare('INSERT INTO catalog_drafts(id,payload_json,version,is_dirty,updated_at) VALUES(?,?,2,0,123)').run(id,JSON.stringify(old));
+  const input={items:[{id,edit,expectedCurrentHash:currentHash}],expectedCatalogRevision:0,
+    operationId:'a3772b1b-ec17-4aea-854c-7452bbc5e282'};
+  return {env,sqlite,input,id};
+}
+
+test('reviewed active batch preserves clean draft rows and recovers only an identical guarded request',async()=>{
+  const {env,sqlite,input,id}=reviewedActiveFixture(),before=sqlite.prepare('SELECT * FROM catalog_drafts WHERE id=?').get(id);
+  const result=await call(env,'publish-reviewed-catalog-batch',input);
+  assert.equal(result.catalogRevision,1);assert.equal(result.reviewedDirect,true);assert.equal(result.translationsGuarded,true);
+  assert.deepEqual(sqlite.prepare('SELECT * FROM catalog_drafts WHERE id=?').get(id),before);
+  assert.ok((await publicData(env)).records.find(row=>row.id===id).profiles.length);
+  const retry=await call(env,'publish-reviewed-catalog-batch',input);
+  assert.equal(retry.recovered,true);assert.equal(retry.reviewedHash,result.reviewedHash);
+  const different=structuredClone(input);different.items[0].edit.names.en='Another edit';
+  await assert.rejects(()=>call(env,'publish-reviewed-catalog-batch',different),error=>error.status===409);
+  await assert.rejects(()=>call(env,'publish-batch',{items:[],expectedCatalogRevision:0,operationId:input.operationId}),error=>error.status===409);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_revisions').get().n,1);sqlite.close();
+});
+
+test('reviewed active batch refuses stale edits and concurrent private drafts or translations',async()=>{
+  for(const collision of ['draft','translationDraft','translationOverride','legacy']) {
+    const {env,sqlite,input,id}=reviewedActiveFixture(),batch=env.DB.batch;
+    env.DB.batch=async statements=>{
+      if(collision==='draft')sqlite.prepare('UPDATE catalog_drafts SET is_dirty=1,version=3 WHERE id=?').run(id);
+      if(collision==='translationDraft')sqlite.prepare('INSERT INTO localization_drafts VALUES(?,?)').run('game',id);
+      if(collision==='translationOverride')sqlite.prepare('INSERT INTO localization_overrides VALUES(?,?)').run('game','skill_detail.5.3.3');
+      if(collision==='legacy')sqlite.prepare('INSERT INTO result_label_overrides VALUES(?,?)').run('skill_detail.5.3.1','Ручной текст');
+      return batch.call(env.DB,statements);
+    };
+    await assert.rejects(()=>call(env,'publish-reviewed-catalog-batch',input),error=>error.status===409);
+    assert.equal(sqlite.prepare('SELECT version FROM catalog_head').get().version,0);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_revisions').get().n,0);
+    if(collision==='draft')assert.equal(sqlite.prepare('SELECT is_dirty FROM catalog_drafts WHERE id=?').get(id).is_dirty,1);
+    sqlite.close();
+  }
+  const {env,sqlite,input}=reviewedActiveFixture();
+  const stale=structuredClone(input);stale.items[0].expectedCurrentHash='0'.repeat(64);
+  await assert.rejects(()=>call(env,'publish-reviewed-catalog-batch',stale),error=>error.status===409);
+  const duplicate=structuredClone(input);duplicate.items.push(duplicate.items[0]);
+  await assert.rejects(()=>call(env,'publish-reviewed-catalog-batch',duplicate),/Invalid reviewed item/);
+  await assert.rejects(()=>call(env,'publish-reviewed-catalog-batch',{...input,operationId:undefined}),/requires an operation ID/);
+  assert.equal(sqlite.prepare('SELECT version FROM catalog_head').get().version,0);sqlite.close();
+});
+
+test('a stale reviewed item rejects the complete batch before any snapshot changes',async()=>{
+  const {env,sqlite,input}=reviewedActiveFixture(),id='skill_entry.5.8';
+  const edit=currentActiveProfileDrafts().find(row=>row.id===id);
+  input.items.push({id,edit,expectedCurrentHash:'0'.repeat(64)});
+  await assert.rejects(()=>call(env,'publish-reviewed-catalog-batch',input),error=>error.status===409);
+  assert.equal(sqlite.prepare('SELECT version FROM catalog_head').get().version,0);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_revisions').get().n,0);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n,1);
+  sqlite.close();
+});
+
+test('reviewed catalog batch also validates existing equipment and publishes its editable enhancement rules',async()=>{
+  const {env,sqlite}=fixture(),id='equipment.5.27',source=baselineById.get(id),identity=sourceIdentity(source);
+  sqlite.exec('CREATE TABLE localization_drafts(scope TEXT,term_id TEXT); CREATE TABLE localization_overrides(scope TEXT,term_id TEXT); CREATE TABLE result_label_overrides(id TEXT,ru TEXT)');
+  const current=validateDraft(draftFromSource(source,'equipment'),identity),edit=structuredClone(current);
+  edit.nativeUpgradePolicy='replace-legacy-zephyrus-upgrade';
+  edit.upgradeBonuses=[{stat:7,value:15,unit:'flat',from:2,every:2,to:10},{stat:1,value:1,unit:'flat',from:7,every:1,to:7}];
+  const input={items:[{id,edit,expectedCurrentHash:createHash('sha256').update(JSON.stringify(current)).digest('hex')}],
+    expectedCatalogRevision:0,operationId:'a3772b1b-ec17-4aea-854c-7452bbc5e283'};
+  const result=await call(env,'publish-reviewed-catalog-batch',input),record=(await publicData(env)).records.find(row=>row.id===id);
+  assert.equal(result.impactRevision,1);assert.equal(record.nativeUpgradePolicy,edit.nativeUpgradePolicy);
+  assert.deepEqual(record.upgradeBonuses,edit.upgradeBonuses);assert.equal(record.engineId,50027);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n,0);sqlite.close();
 });
 
 test('batch draft publication rejects one stale version or invalid batch without publishing any selected item',async()=>{

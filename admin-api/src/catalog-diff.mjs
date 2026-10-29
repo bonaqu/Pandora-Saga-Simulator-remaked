@@ -3,7 +3,7 @@ import { showApprovedTranslations } from './catalog-model.mjs';
 // Compare editable, validated catalog values rather than only the shortened
 // player-facing record preview. In particular all RU/EN/JP/TW text fields and
 // conditional numeric settings must participate.
-const optionalEmptyLists = new Set(['profiles', 'upgradeBonuses']);
+const optionalEmptyLists = new Set(['profiles', 'upgradeBonuses', 'procEffects']);
 function comparable(value, key = '') {
   if (Array.isArray(value)) return value.map(entry => comparable(entry));
   if (value && typeof value === 'object') {

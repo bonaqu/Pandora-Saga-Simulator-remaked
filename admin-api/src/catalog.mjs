@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 import { compareCatalogEdits } from './catalog-diff.mjs';
 import { astirIds, planAstirCleanup, applyAstirFields, restorablesForCleanup } from './astir-cleanup.mjs';
 import { CatalogError, draftFromSource, validateDraft, compileRecord, showApprovedTranslations, EFFECTS, EQUIPMENT_CATEGORIES, NATIVE_PASSIVES } from './catalog-model.mjs';
@@ -72,6 +72,13 @@ function buildImpactRecord(record) {
       const copy = structuredClone(profile);
       delete copy.names;
       delete copy.description;
+      return copy;
+    });
+  }
+  if (Array.isArray(result.procEffects)) {
+    result.procEffects = result.procEffects.map(rule => {
+      const copy = structuredClone(rule);
+      delete copy.names;
       return copy;
     });
   }
@@ -157,6 +164,7 @@ async function detail(env, id) {
   }
   return { draftDiff, ok: true, identity, edit: displayEdit, currentRecord, nativeMechanics: identity.kind === 'racial' ? racialReference[id] || 'Эта расовая механика не моделируется в исходном калькуляторе. Описание из игры не создаёт числовой эффект автоматически.' : null,
     draftVersion: draft?.version || 0, hasDraft: Boolean(draft?.is_dirty), catalogRevision: snapshot.version, published: Boolean(published), sourceCode: source?.calculation_code || '', engineKey: source?.name.jp || 'Modern:' + id,
+    nativeClass: identity.kind === 'class' ? { potentialCaps: source.potentialCaps, minimumBranches: source.minimumBranches } : null,
     nativeSkill: source?.prerequisite_code ? { templateName: source.name, prerequisites: source.prerequisites, equipmentRequirements: source.equipment_requirements, prerequisiteCode: source.prerequisite_code,
       intrinsicEffect: !identity.templateId && NATIVE_PASSIVES[identity.id] ? structuredClone(NATIVE_PASSIVES[identity.id]) : null } : null };
 }
@@ -227,7 +235,7 @@ async function saveDraft(request, env, now) {
   return jsonResponse(await detail(env, identity.id));
 }
 
-async function commitSnapshot(env, previous, entries, now, note, draft = null, protectedIds = []) {
+async function commitSnapshot(env, previous, entries, now, note, draft = null, protectedIds = [], protectedGameTerms = []) {
   const json = JSON.stringify(entries);
   if (encoder.encode(json).length > MAX_SNAPSHOT_BYTES) fail('Catalog exceeds the safe snapshot size', 413);
   for (const entry of entries) compileEntry(entry);
@@ -241,8 +249,17 @@ async function commitSnapshot(env, previous, entries, now, note, draft = null, p
   const guard=selectedDrafts.map(()=>' AND EXISTS (SELECT 1 FROM catalog_drafts WHERE id = ? AND version = ? AND is_dirty = 1)').join('');
   // A maintenance publication must not race a newly saved private draft.
   const cleanGuard=protectedIds.map(()=>' AND NOT EXISTS (SELECT 1 FROM catalog_drafts WHERE id = ? AND is_dirty = 1)').join('');
-  const update = env.DB.prepare('UPDATE catalog_head SET version = ?, impact_version = ?, snapshot_json = ?, write_token = ?, updated_at = ? WHERE id = 1 AND version = ?' + guard + cleanGuard)
-    .bind(next, impactVersion, json, token, now, previous, ...selectedDrafts.flatMap(item=>[item.id,item.version]), ...protectedIds);
+  // Optional import guard: translations live outside catalog_head and can be
+  // edited concurrently without advancing its revision. Check all applicable
+  // D1 stores INSIDE the same transaction as the head update.
+  const translationGuard=protectedGameTerms.length
+    ? " AND NOT EXISTS (SELECT 1 FROM localization_drafts WHERE scope = 'game' AND term_id IN (SELECT value FROM json_each(?)))"+
+      " AND NOT EXISTS (SELECT 1 FROM localization_overrides WHERE scope = 'game' AND term_id IN (SELECT value FROM json_each(?)))"+
+      " AND NOT EXISTS (SELECT 1 FROM result_label_overrides WHERE id IN (SELECT value FROM json_each(?)) AND ru <> '<excel-baseline>')" : '';
+  const termJson=JSON.stringify(protectedGameTerms);
+  const update = env.DB.prepare('UPDATE catalog_head SET version = ?, impact_version = ?, snapshot_json = ?, write_token = ?, updated_at = ? WHERE id = 1 AND version = ?' + guard + cleanGuard + translationGuard)
+    .bind(next, impactVersion, json, token, now, previous, ...selectedDrafts.flatMap(item=>[item.id,item.version]), ...protectedIds,
+      ...(protectedGameTerms.length?[termJson,termJson,termJson]:[]));
   const statements = [update,
     env.DB.prepare('INSERT INTO catalog_revisions (version, impact_version, snapshot_json, created_at, note) SELECT ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND write_token = ?)').bind(next, impactVersion, json, now, note, token)
   ];
@@ -251,7 +268,8 @@ async function commitSnapshot(env, previous, entries, now, note, draft = null, p
   const result = await env.DB.batch(statements);
   if(result[0].meta.changes!==1 || result[1].meta.changes!==1 ||
      result.slice(2).some(row=>row.meta.changes!==1))
-    fail('Catalog or draft changed in another tab; reload before publishing',409);
+    fail(protectedGameTerms.length ? 'Catalog, draft or protected translation changed; reload before publishing' :
+      'Catalog or draft changed in another tab; reload before publishing',409);
   return jsonResponse({ ok: true, catalogRevision: next, impactRevision: impactVersion, message: 'Catalog published' });
 }
 async function publish(request, env, now) {
@@ -335,6 +353,16 @@ async function listDrafts(env) {
 }
 
 const OPERATION_ID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function protectedTermsFor(identities) {
+  return [...new Set(identities.flatMap(identity=>{
+    const terms=[identity.id,identity.id+'.description'];
+    if(identity.kind==='active'||identity.kind==='passive')
+      terms.push('skill_detail.'+identity.category+'.'+identity.index+'.1','skill_detail.'+identity.category+'.'+identity.index+'.3');
+    if(identity.kind==='equipment'||identity.kind==='soul')
+      for(const field of ['notes','acquisition','modifiers']) terms.push(identity.id+'.'+field);
+    return terms;
+  }))];
+}
 async function publishedBatchReceipt(env,operationId){
   if(!OPERATION_ID.test(operationId||''))fail('Invalid catalog operation ID');
   // The immutable catalog revision note is written in the same D1 batch as
@@ -346,16 +374,25 @@ async function publishedBatchReceipt(env,operationId){
   if(!row||!row.note.endsWith(suffix))return null;
   const count=/^Publish (\d+) selected catalog drafts /.exec(row.note);
   if(!count)return null;
+  const reviewedHash=/ \[review-hash:([a-f0-9]{64})\]/.exec(row.note)?.[1];
   return {ok:true,catalogRevision:row.version,impactRevision:row.impactRevision,
-    operationId,count:Number(count[1]),publishedIds:[],recovered:true};
+    operationId,count:Number(count[1]),publishedIds:[],recovered:true,
+    ...(row.note.includes(' [translations-clean]')?{translationsGuarded:true}:{}),
+    ...(row.note.includes(' [reviewed-direct]')?{reviewedDirect:true}:{}),...(reviewedHash?{reviewedHash}:{})};
 }
 
 async function publishBatch(request,env,now) {
   const input=await body(request);
-  schema(input,['items','expectedCatalogRevision','operationId']);
+  schema(input,['items','expectedCatalogRevision','operationId','requireCleanTranslations']);
+  if(input.requireCleanTranslations!==undefined && typeof input.requireCleanTranslations!=='boolean') fail('Invalid translation protection option');
   if(input.operationId!==undefined){
     const previous=await publishedBatchReceipt(env,input.operationId);
-    if(previous)return jsonResponse(previous);
+    if(previous){
+      if(previous.reviewedDirect)fail('Operation ID belongs to a different batch type',409);
+      if(input.requireCleanTranslations && !previous.translationsGuarded)
+        fail('The previous batch did not include translation protection',409);
+      return jsonResponse(previous);
+    }
   }
   const expectedCatalog=version(input.expectedCatalogRevision,'Catalog revision');
   if(!Array.isArray(input.items)||input.items.length<1||input.items.length>MAX_BATCH_DRAFTS)
@@ -385,12 +422,59 @@ async function publishBatch(request,env,now) {
   const ids=new Set(chosen.map(row=>row.id));
   const entries=snapshot.entries.filter(entry=>!ids.has(entry.identity.id));
   for(const {identity,edit} of chosen)entries.push({identity,edit});
+  const protectedTerms=input.requireCleanTranslations ? protectedTermsFor(chosen.map(row=>row.identity)) : [];
   const note='Publish '+chosen.length+' selected catalog drafts'+
-    (input.operationId?' [batch:'+input.operationId+']':'');
+    (protectedTerms.length?' [translations-clean]':'')+(input.operationId?' [batch:'+input.operationId+']':'');
   const result=await commitSnapshot(env,expectedCatalog,entries,now,note,
-    chosen.map(({id,version})=>({id,version})));
+    chosen.map(({id,version})=>({id,version})),[],protectedTerms);
   const payload=await result.json();
   return jsonResponse({...payload,count:chosen.length,publishedIds:chosen.map(row=>row.id),
+    ...(protectedTerms.length?{translationsGuarded:true}:{}),
+    ...(input.operationId?{operationId:input.operationId}:{})});
+}
+
+// A reviewed maintenance batch uses the existing snapshot transaction while
+// keeping ALL existing draft rows intact, including clean historical rows.
+// It only accepts existing native catalog identities and always protects their
+// private drafts and independently versioned game translations.
+async function publishReviewedCatalogBatch(request,env,now) {
+  const input=await body(request);
+  schema(input,['items','expectedCatalogRevision','operationId']);
+  if(input.operationId===undefined)fail('Reviewed batch requires an operation ID');
+  const requestHash=createHash('sha256').update(JSON.stringify({items:input.items,expectedCatalogRevision:input.expectedCatalogRevision})).digest('hex');
+  {
+    const previous=await publishedBatchReceipt(env,input.operationId);
+    if(previous){
+      if(!previous.reviewedDirect||!previous.translationsGuarded||previous.reviewedHash!==requestHash)
+        fail('Operation ID belongs to a different reviewed batch',409);
+      return jsonResponse(previous);
+    }
+  }
+  const expected=version(input.expectedCatalogRevision,'Catalog revision');
+  if(!Array.isArray(input.items)||!input.items.length||input.items.length>MAX_BATCH_DRAFTS)fail('Invalid reviewed batch size');
+  const snapshot=await head(env);
+  if(snapshot.version!==expected)fail('Catalog changed since review',409);
+  const chosen=[],ids=new Set();
+  for(const item of input.items){
+    if(!item||typeof item!=='object'||Array.isArray(item)||Object.keys(item).sort().join(',')!=='edit,expectedCurrentHash,id'||
+       typeof item.id!=='string'||ids.has(item.id)||typeof item.expectedCurrentHash!=='string'||!/^[a-f0-9]{64}$/.test(item.expectedCurrentHash))
+      fail('Invalid reviewed item');
+    ids.add(item.id);
+    const source=baselineById.get(item.id);
+    if(!source)fail('Reviewed batch requires an existing native catalog identity');
+    const identity=sourceIdentity(source),published=snapshot.entries.find(entry=>entry.identity.id===item.id);
+    const current=validateDraft(published?.edit||draftFromSource(source,identity.kind),identity);
+    const currentHash=createHash('sha256').update(JSON.stringify(current)).digest('hex');
+    if(currentHash!==item.expectedCurrentHash)fail('Reviewed skill changed since preview',409);
+    const edit=validateDraft(item.edit,identity);compileRecord(edit,identity,source);requireRealChanges(snapshot,identity,edit);
+    chosen.push({identity,edit});
+  }
+  const entries=snapshot.entries.filter(entry=>!ids.has(entry.identity.id));
+  for(const entry of chosen)entries.push(entry);
+  const note='Publish '+chosen.length+' selected catalog drafts [translations-clean] [reviewed-direct] [review-hash:'+requestHash+']'+
+    (input.operationId?' [batch:'+input.operationId+']':'');
+  const result=await commitSnapshot(env,expected,entries,now,note,null,[...ids],protectedTermsFor(chosen.map(row=>row.identity)));
+  return jsonResponse({...await result.json(),count:chosen.length,publishedIds:[...ids],translationsGuarded:true,reviewedDirect:true,reviewedHash:requestHash,
     ...(input.operationId?{operationId:input.operationId}:{})});
 }
 
@@ -537,6 +621,7 @@ export async function adminCatalog(request, env, now = Math.floor(Date.now() / 1
     return jsonResponse({ok:true,found:Boolean(receipt),receipt});
   }
   if (path === '/api/admin/publish-batch' && request.method === 'POST') return publishBatch(request, env, now);
+  if (path === '/api/admin/publish-reviewed-catalog-batch' && request.method === 'POST') return publishReviewedCatalogBatch(request,env,now);
   if (path === '/api/admin/astir-notes' && request.method === 'GET') return astirNotesOverview(env);
   if (path === '/api/admin/astir-notes/clean' && request.method === 'POST') return cleanAstirNotes(request, env, now);
   if (path === '/api/admin/astir-notes/restore' && request.method === 'POST') return restoreAstirNotes(request, env, now);

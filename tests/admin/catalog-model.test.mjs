@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { draftFromSource, validateDraft, compileRecord, showApprovedTranslations, EFFECTS } from '../../admin-api/src/catalog-model.mjs';
+import { baselineById, sourceIdentity } from '../../admin-api/src/catalog-baseline.mjs';
 
 const source = {
   id: 'equipment.0.1', legacy_id: 1, legacy_category_id: 0, legacy_item_index: 1,
@@ -12,6 +13,25 @@ const source = {
 };
 const identity = { id: source.id, kind: 'equipment', category: 0, index: 1 };
 const draft = () => draftFromSource(source, 'equipment');
+
+test('range bonuses use explicit applicability and survive compilation without accepting invalid input',()=>{
+  const edit=draft();edit.rangeBonus={amount:150,appliesTo:'ranged'};
+  assert.deepEqual(compileRecord(validateDraft(edit,identity),identity,source).rangeBonus,edit.rangeBonus);
+  for(const bonus of [{amount:0,appliesTo:'ranged'},{amount:1.5,appliesTo:'any'},{amount:10001,appliesTo:'any'},{amount:1,appliesTo:'bow'},{amount:1,appliesTo:'any',extra:true}])
+    assert.throws(()=>validateDraft({...edit,rangeBonus:bonus},identity));
+});
+
+test('Priest earring aura replacement requires an explicit identity-bound policy',()=>{
+  const id={id:'modern.equipment.ac383fab-00a9-45ff-a09a-b2192c47ef5d',kind:'equipment',category:40,index:61};
+  const edit=draftFromSource(null,'equipment');edit.id=id.id;edit.category=40;edit.names.en="Priest's Earring";
+  edit.effects=[{stat:49,unit:'flat',value:1},{stat:33,unit:'flat',value:3}];
+  assert.throws(()=>validateDraft(edit,id),/built-in earring aura/);
+  edit.nativeBasePolicy='replace-priest-earring-aura';
+  const record=compileRecord(validateDraft(edit,id),id,null);
+  assert.equal(record.nativeBasePolicy,'replace-priest-earring-aura');
+  assert.match(record.calculationCode,/(?:^|_)33=3(?:_|$)/);
+  assert.throws(()=>validateDraft({...edit,id:'modern.equipment.other'}, {...id,id:'modern.equipment.other'}),/Unsupported native base/);
+});
 
 test('name-only edits preserve canonical engine key, every effect and untouched source fields', () => {
   const original = JSON.stringify(source);
@@ -119,6 +139,61 @@ test('refinement bonus rules are additive, validated and do not alter base calcu
   assert.deepEqual(compiled.upgradeBonuses,[{stat:11,value:1,unit:'flat',every:2,from:2,to:10}]);
   assert.equal(compiled.names.en,'Sword');
   assert.equal(Object.hasOwn(compileRecord(validateDraft(draft(),identity),identity,source),'upgradeBonuses'),false);
+});
+
+test('refinement gem condition is explicit, bounded and old rules round-trip unchanged',()=>{
+  const item=draft(), base={stat:11,value:1,unit:'flat',every:1,from:7,to:10};
+  const rules=[base,{...base,gemElement:'fire'},{...base,gemElement:'ice'}];
+  item.upgradeBonuses=rules;
+  const normalized=validateDraft(item,identity),compiled=compileRecord(normalized,identity,source);
+  assert.deepEqual(compiled.upgradeBonuses,rules);
+  for(const invalid of ['FIRE','water','',null,0,{}])
+    assert.throws(()=>validateDraft({...item,upgradeBonuses:[{...base,gemElement:invalid}]},identity),/gem/i);
+  assert.throws(()=>validateDraft({...item,upgradeBonuses:[{...base,gemElement:'fire'},{...base,gemElement:'fire'}]},identity),/Duplicate/);
+  const fire={...base,stat:43,gemElement:'fire'};
+  assert.deepEqual(validateDraft({...item,upgradeBonuses:[fire]},identity).upgradeBonuses,[fire]);
+  assert.throws(()=>validateDraft({...item,upgradeBonuses:[{...fire,unit:'percent'}]},identity),/stat or unit/i);
+});
+
+test('informational weapon burn rules are bounded, typed and preserve historical records',()=>{
+  const item=draft(),base={kind:'burn',chance:5},upgrade={kind:'burn',chance:2,from:7,every:1,to:10,gemElement:'fire'};
+  const old=compileRecord(validateDraft(item,identity),identity,source);
+  assert.equal(Object.hasOwn(old,'procEffects'),false);
+  item.procEffects=[base,upgrade];
+  const record=compileRecord(validateDraft(item,identity),identity,source);
+  assert.deepEqual(record.procEffects,[base,upgrade]);assert.equal(record.calculationCode,old.calculationCode);
+  for(const invalid of [{...base,kind:'poison'}, {...base,chance:101}, {...base,chance:0},
+    {...upgrade,every:0},{...upgrade,to:6},{...upgrade,chance:30},{...base,from:7}, {...base,gemElement:'lava'}, {...base,script:'x'}])
+    assert.throws(()=>validateDraft({...item,procEffects:[invalid]},identity));
+  assert.throws(()=>validateDraft({...item,procEffects:[base,base]},identity),/Duplicate/);
+  const soul=draftFromSource(null,'soul');soul.id='modern.soul.test';soul.names.en='Soul';soul.procEffects=[base];
+  assert.throws(()=>validateDraft(soul,{id:soul.id,kind:'soul',category:null,index:185}),/weapon/i);
+});
+
+test('special weapon formulas and native wand replacement are explicit and validated',()=>{
+  const special={kind:'special_magic_damage',names:{en:'Phoenix Flame',ru:'Пламя феникса',jp:'',tw:''},
+    chance:5,chanceStep:5,from:7,every:1,to:10,gemElement:'fire',damageStat:'STR',
+    baseDamage:25,damageStep:25,statPercent:25,statPercentStep:25,cooldownSeconds:5,cooldownReduction:1};
+  const item=draft();item.procEffects=[special];
+  assert.deepEqual(compileRecord(validateDraft(item,identity),identity,source).procEffects,[special]);
+  for(const invalid of [{...special,names:{en:''}}, {...special,damageStat:'DEX'}, {...special,chanceStep:40},
+    {...special,cooldownReduction:2}, {...special,damageStep:-1}, {...special,from:undefined}, {...special,script:'alert()'}])
+    assert.throws(()=>validateDraft({...item,procEffects:[invalid]},identity));
+  assert.throws(()=>validateDraft({...item,procEffects:[special,special]},identity),/Duplicate/);
+  assert.throws(()=>validateDraft({...item,nativeUpgradePolicy:'replace-legacy-fire-wand'},identity),/native upgrade/i);
+});
+
+test('native armor replacement policies are bound to their original item identities',()=>{
+  const policies=[['equipment.31.64','replace-legacy-gold-plate-upgrade'],
+    ['equipment.32.82','replace-legacy-lunar-gloves-upgrade'],
+    ['equipment.32.61','replace-legacy-mana-bracelets-upgrade']];
+  for(const [id,policy] of policies){
+    const original=baselineById.get(id), itemIdentity=sourceIdentity(original);
+    const item=draftFromSource(original,'equipment');item.nativeUpgradePolicy=policy;
+    assert.equal(compileRecord(validateDraft(item,itemIdentity),itemIdentity,original).nativeUpgradePolicy,policy);
+    const wrong=policies.find(([otherId])=>otherId!==id)[1];
+    assert.throws(()=>validateDraft({...item,nativeUpgradePolicy:wrong},itemIdentity),/native upgrade/i);
+  }
 });
 
 test('new equipment supports four language fields and enhancement bonuses; invalid/proc effects fail closed',()=>{

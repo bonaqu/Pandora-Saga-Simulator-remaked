@@ -110,6 +110,21 @@ async function openConsole(page, drafts = []) {
   return { sqlite, errors };
 }
 
+test('admin edits a racial range bonus and previews the resulting value',async({page})=>{
+  const {sqlite,errors}=await openConsole(page,currentRacialDrafts());
+  await page.getByRole('combobox',{name:'Каталог',exact:true}).selectOption('racial');
+  await page.getByRole('searchbox',{name:'Поиск в каталоге'}).fill('racial_skill.1.1');
+  await page.locator('.catalog-entry').first().click();
+  await page.locator('[data-field="rangeBonusAmount"]').fill('600');
+  await page.locator('[data-field="rangeBonusScope"]').selectOption('ranged');
+  await page.getByRole('button',{name:'Проверить изменения',exact:true}).click();
+  await expect(page.locator('[data-preview-record]')).toContainText('Бонус дальности: +600 · дальний бой');
+  await page.getByRole('button',{name:'Сохранить черновик',exact:true}).click();
+  const row=sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id=?').get('racial_skill.1.1');
+  expect(JSON.parse(row.payload_json).rangeBonus).toEqual({amount:600,appliesTo:'ranged'});
+  expect(errors).toEqual([]);sqlite.close();
+});
+
 test('authenticated catalog admin previews archival Astir note cleanup and restores exactly those fields', async ({ page }) => {
   const { sqlite, errors } = await openConsole(page);
   // Modern-only Astir identities can be published without a Legacy baseline.
@@ -369,16 +384,16 @@ test('current racial editor preserves both attack units, weapon conditions and r
   await expect(live).toContainText('Физическая атака (ATK): +11');
   await select('racial_skill.1.1');
   await expect(live).toContainText('Зоркость');
-  await expect(live).toContainText('Дальность +500 указана справочно');
-  await expect(live).toContainText('Рассчитываемых числовых бонусов нет');
-  await expect(page.locator('[data-field="calculationNotes"][data-language="ru"]')).toHaveValue(/Дальность \+500/);
+  await expect(live).toContainText('Дальность +500 учитывается');
+  await expect(live).toContainText('Бонус дальности: +500 · дальний бой');
+  await expect(page.locator('[data-field="calculationNotes"][data-language="ru"]')).toHaveValue(/Дальность \+500 учитывается/);
   await page.screenshot({ path: testInfo.outputPath('racial-current-desktop.png'), fullPage: true });
   await select('racial_skill.4.0');
   await expect(live).toContainText('Каменная кожа');
   await expect(live).toContainText('-10 % получаемого урона');
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.locator('.numeric-effects').scrollIntoViewIfNeeded();
+  await page.getByRole('group',{name:'Эффект выбранной расовой пассивки'}).scrollIntoViewIfNeeded();
   await page.screenshot({ path: testInfo.outputPath('racial-editor-touch.png'), fullPage: false });
   expect(errors).toEqual([]);
 });
@@ -611,6 +626,28 @@ test('class editor saves and publishes typed native progression, without pretend
   expect(errors).toEqual([]);
 });
 
+test('class editor shows current branch limits and publishes an explicit change', async ({ page }) => {
+  const { sqlite, errors } = await openConsole(page);
+  await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('class');
+  await page.getByRole('searchbox', { name: 'Поиск в каталоге' }).fill('job.12');
+  await page.locator('.catalog-entry[data-record-id="job.12"]').click();
+  const limits = page.locator('[data-potential-caps-editor]');
+  await limits.locator('summary').click();
+  const riding = limits.locator('[data-potential-cap="19"]');
+  await expect(limits).toContainText('Верховая езда');
+  await expect(riding).toHaveValue('0'); await expect(riding).toBeDisabled();
+  await limits.locator('[data-potential-caps-toggle]').check();
+  await riding.fill('10');
+  await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  expect(JSON.parse(sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id=?').get('job.12').payload_json).potentialCaps[19]).toBe(10);
+  page.on('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: 'Опубликовать', exact: true }).click();
+  await expect(page.locator('#catalog-state')).toContainText('Опубликована версия каталога 1');
+  expect(JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head').get().snapshot_json)[0].edit.potentialCaps[19]).toBe(10);
+  expect(errors).toEqual([]);
+});
+
 test('racial editor publishes explicit typed replacement as a private draft first, without gear-only controls', async ({ page }, testInfo) => {
   const { sqlite, errors } = await openConsole(page);
   await page.getByRole('combobox', { name: 'Каталог', exact: true }).selectOption('racial');
@@ -769,19 +806,154 @@ test('admin exposes numeric engine IDs and saves a typed healing bonus every two
   await expect(edit.locator('[data-upgrade="from"]')).toHaveValue('2');
   await expect(edit.locator('[data-upgrade="every"]')).toHaveValue('2');
   await expect(edit.locator('[data-upgrade="to"]')).toHaveValue('10');
+  await expect(edit.locator('[data-upgrade-gem]')).toHaveValue('');
+  await upgrades.getByRole('button',{name:'Добавить бонус заточки'}).click();
+  const conditional=upgrades.locator('.upgrade-rule-row').nth(1);
+  await conditional.locator('[data-upgrade-gem]').selectOption('fire');
+  await conditional.locator('[data-upgrade="from"]').fill('7');
+  await conditional.locator('[data-upgrade="every"]').fill('1');
+  await page.evaluate(()=>{window.testAdminLocale='en';window.PandoraAdminI18n={getLocale:()=>window.testAdminLocale,t:(_key,fallback)=>fallback};window.dispatchEvent(new Event('pandora-admin:localechange'));});
+  await expect(conditional.locator('[data-upgrade-gem]').locator('option:checked')).toHaveText('Fire');
+  await expect(conditional.locator('[data-upgrade-gem]').locator('..')).toContainText('Gem required for bonus');
+  await page.evaluate(()=>{window.testAdminLocale='ru';window.dispatchEvent(new Event('pandora-admin:localechange'));});
+  await expect(conditional.locator('[data-upgrade-gem]')).toHaveValue('fire');
+  await expect(conditional.locator('[data-upgrade-gem]').locator('option:checked')).toHaveText('Огонь');
+  const proc=page.locator('[data-proc-editor]');
+  await proc.getByRole('button',{name:'Добавить шанс ожога'}).click();
+  await proc.locator('[data-proc-rule]').first().locator('[data-proc-chance]').fill('5');
+  await proc.getByRole('button',{name:'Добавить шанс ожога'}).click();
+  const burn=proc.locator('[data-proc-rule]').nth(1);
+  await burn.locator('[data-proc-mode]').selectOption('upgrade');
+  await burn.locator('[data-proc-gem]').selectOption('fire');
+  await proc.getByRole('button',{name:'Добавить особый эффект'}).click();
+  const special=proc.locator('[data-proc-kind="special_magic_damage"]');
+  await special.locator('[data-proc-name="en"]').fill('Phoenix Flame');
+  await special.locator('[data-proc-name="ru"]').fill('Пламя феникса');
+  await special.locator('[data-proc-damage-stat]').selectOption('INT');
+  await special.locator('[data-proc-gem]').selectOption('fire');
+  await special.locator('[data-special-value="chance"]').fill('3');
+  await special.locator('[data-special-value="chanceStep"]').fill('3');
   await page.getByRole('button',{name:'Сохранить черновик',exact:true}).click();
   await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
   let stored=JSON.parse(sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id=?').get('equipment.0.1').payload_json);
-  expect(stored.upgradeBonuses).toEqual([{stat:11,value:1,unit:'flat',from:2,every:2,to:10}]);
+  expect(stored.upgradeBonuses).toEqual([{stat:11,value:1,unit:'flat',from:2,every:2,to:10},
+    {stat:11,value:1,unit:'flat',from:7,every:1,to:10,gemElement:'fire'}]);
+  expect(stored.procEffects.slice(0,2)).toEqual([{kind:'burn',chance:5},{kind:'burn',chance:2,from:7,every:1,to:10,gemElement:'fire'}]);
+  expect(stored.procEffects[2]).toMatchObject({kind:'special_magic_damage',names:{en:'Phoenix Flame',ru:'Пламя феникса',jp:'',tw:''},
+    chance:3,chanceStep:3,damageStat:'INT',baseDamage:25,damageStep:25,statPercent:25,statPercentStep:25,cooldownSeconds:5,cooldownReduction:1});
+  await expect(page.locator('.catalog-editor [data-upgrade-gem]').nth(1)).toHaveValue('fire');
   page.on('dialog',dialog=>dialog.accept());
   await page.getByRole('button',{name:'Опубликовать',exact:true}).click();
   await expect(page.locator('#catalog-state')).toContainText('Опубликована версия каталога 1');
   expect(sqlite.prepare('SELECT impact_version FROM catalog_head WHERE id=1').get().impact_version).toBe(1);
   stored=JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head WHERE id=1').get().snapshot_json)[0];
-  expect(stored.edit.upgradeBonuses).toHaveLength(1);
+  expect(stored.edit.upgradeBonuses).toHaveLength(2);
+  expect(stored.edit.upgradeBonuses[1].gemElement).toBe('fire');
+  expect(stored.edit.procEffects).toHaveLength(3);
+  await expect(page.locator('.catalog-editor [data-upgrade-gem]').nth(1)).toHaveValue('fire');
   await search.fill('1');
   await expect(page.locator('.catalog-entry[data-record-id="equipment.0.1"]')).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test('admin can explicitly replace and restore the historical fire wand upgrade hook',async({page})=>{
+  const {sqlite,errors}=await openConsole(page);
+  await page.getByRole('searchbox',{name:'Поиск в каталоге'}).fill('equipment.12.12');
+  await page.locator('.catalog-entry[data-record-id="equipment.12.12"]').click();
+  const checkbox=page.locator('[data-native-upgrade-replacement]');
+  await expect(checkbox).toBeVisible();await checkbox.check();
+  await page.getByRole('button',{name:'Сохранить черновик',exact:true}).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  let stored=JSON.parse(sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id=?').get('equipment.12.12').payload_json);
+  expect(stored.nativeUpgradePolicy).toBe('replace-legacy-fire-wand');
+  page.on('dialog',dialog=>dialog.accept());
+  await page.getByRole('button',{name:'Опубликовать',exact:true}).click();
+  await expect(page.locator('#catalog-state')).toContainText('Опубликована версия каталога 1');
+  await checkbox.uncheck();await page.getByRole('button',{name:'Сохранить черновик',exact:true}).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  stored=JSON.parse(sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id=?').get('equipment.12.12').payload_json);
+  expect(stored.nativeUpgradePolicy).toBeUndefined();expect(errors).toEqual([]);
+});
+
+test('admin sees and edits the reviewed Zephyrus enhancement rules without restoring its old aura bonus',async({page})=>{
+  const edit=draftFromSource(baselineById.get('equipment.5.27'),'equipment');
+  edit.nativeUpgradePolicy='replace-legacy-zephyrus-upgrade';
+  edit.upgradeBonuses=[{stat:7,value:15,unit:'flat',from:2,every:2,to:10},{stat:1,value:1,unit:'flat',from:7,every:1,to:7}];
+  const {sqlite,errors}=await openConsole(page,[edit]);
+  await page.getByRole('searchbox',{name:'Поиск в каталоге'}).fill(edit.id);
+  await page.locator('.catalog-entry[data-record-id="equipment.5.27"]').click();
+  await expect(page.locator('[data-current-record]')).toContainText('Старый бонус урона ауры от заточки отключён');
+  const upgrades=page.locator('.upgrade-editor');
+  await expect(upgrades.locator('[data-native-upgrade-replacement]')).toBeChecked();
+  await expect(upgrades.locator('.upgrade-rule-row')).toHaveCount(2);
+  await upgrades.locator('.upgrade-rule-row').first().locator('.effect-row input').fill('16');
+  await page.getByRole('button',{name:'Сохранить черновик',exact:true}).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  const stored=JSON.parse(sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id=?').get(edit.id).payload_json);
+  expect(stored.nativeUpgradePolicy).toBe('replace-legacy-zephyrus-upgrade');
+  expect(stored.upgradeBonuses[0].value).toBe(16);expect(stored.upgradeBonuses[1].value).toBe(1);
+  expect(errors).toEqual([]);sqlite.close();
+});
+
+test('admin edits reviewed Gold Plate refinement while retaining the set-effect policy',async({page})=>{
+  const edit=draftFromSource(baselineById.get('equipment.31.64'),'equipment');
+  edit.nativeUpgradePolicy='replace-legacy-gold-plate-upgrade';
+  edit.upgradeBonuses=[{stat:52,value:-2,unit:'percent',from:5,every:1,to:10}];
+  const {sqlite,errors}=await openConsole(page,[edit]);
+  await page.getByRole('searchbox',{name:'Поиск в каталоге'}).fill(edit.id);
+  await page.locator('.catalog-entry[data-record-id="equipment.31.64"]').click();
+  await expect(page.locator('[data-current-record]')).toContainText('Комплектные эффекты сохраняются');
+  const upgrades=page.locator('.upgrade-editor');
+  await expect(upgrades.locator('[data-native-upgrade-replacement]')).toBeChecked();
+  await upgrades.locator('.upgrade-rule-row').first().locator('.effect-row input').fill('-3');
+  await page.getByRole('button',{name:'Сохранить черновик',exact:true}).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  const stored=JSON.parse(sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id=?').get(edit.id).payload_json);
+  expect(stored.nativeUpgradePolicy).toBe('replace-legacy-gold-plate-upgrade');
+  expect(stored.upgradeBonuses[0].value).toBe(-3);expect(errors).toEqual([]);sqlite.close();
+});
+
+test('admin can edit a weapon base range in game units',async({page})=>{
+  const {sqlite,errors}=await openConsole(page);
+  await page.getByRole('searchbox',{name:'Поиск в каталоге'}).fill('equipment.0.10');
+  await page.locator('.catalog-entry[data-record-id="equipment.0.10"]').click();
+  const range=page.locator('[data-field="baseRange"]');
+  await expect(range).toHaveValue('');
+  await range.fill('160');
+  await page.getByRole('button',{name:'Проверить изменения',exact:true}).click();
+  await expect(page.locator('[data-preview-record]')).toContainText('Базовая дальность: 160');
+  expect(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_drafts').get().n).toBe(0);
+  await page.getByRole('button',{name:'Сохранить черновик',exact:true}).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  expect(JSON.parse(sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id=?').get('equipment.0.10').payload_json).baseRange).toBe(160);
+  page.on('dialog',dialog=>dialog.accept());
+  await page.getByRole('button',{name:'Опубликовать',exact:true}).click();
+  await expect(page.locator('#catalog-state')).toContainText('Опубликована версия каталога 1');
+  expect(JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head').get().snapshot_json)[0].edit.baseRange).toBe(160);
+  expect(errors).toEqual([]);
+});
+
+test('admin sees and explicitly replaces the Priest earring built-in aura bonus',async({page})=>{
+  const {sqlite,errors}=await openConsole(page);
+  const id='modern.equipment.ac383fab-00a9-45ff-a09a-b2192c47ef5d';
+  const identity={id,kind:'equipment',category:40,index:61},edit=draftFromSource(null,'equipment');
+  Object.assign(edit,{id,category:40,names:{en:"Priest's Earring",ru:'Серьга жреца',jp:'',tw:''},effects:[{stat:49,unit:'flat',value:1}]});
+  sqlite.prepare('INSERT INTO catalog_allocations (id,kind,category,item_index,created_at) VALUES (?,?,?,?,?)').run(id,'equipment',40,61,1);
+  sqlite.prepare('UPDATE catalog_head SET version=1,impact_version=1,snapshot_json=? WHERE id=1').run(JSON.stringify([{identity,edit}]));
+  await page.getByRole('searchbox',{name:'Поиск в каталоге'}).fill(id);
+  await page.locator('.catalog-entry[data-record-id="'+id+'"]').click();
+  await expect(page.locator('.catalog-editor')).toContainText('Встроенный бонус: урон активной ауры +2');
+  await page.locator('[data-native-base-replacement]').check();
+  await page.getByRole('button',{name:'Добавить характеристику',exact:true}).click();
+  const row=page.locator('.numeric-effects > .effect-rows > .effect-row').last();
+  await row.locator('select').first().selectOption('33');await row.locator('input').fill('3');
+  await page.getByRole('button',{name:'Проверить изменения',exact:true}).click();
+  await expect(page.locator('[data-preview-record]')).toContainText('Встроенный бонус ауры заменён');
+  await page.getByRole('button',{name:'Сохранить черновик',exact:true}).click();
+  await expect(page.locator('#catalog-state')).toContainText('Черновик сохранён');
+  const stored=JSON.parse(sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id=?').get(id).payload_json);
+  expect(stored.nativeBasePolicy).toBe('replace-priest-earring-aura');
+  expect(stored.effects).toContainEqual({stat:33,unit:'flat',value:3});expect(errors).toEqual([]);
 });
 
 

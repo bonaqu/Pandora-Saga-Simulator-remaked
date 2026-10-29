@@ -3,12 +3,14 @@ import souls from '../../data/generated/souls.v1.json' with { type: 'json' };
 import terms from '../../localization/game-terms.ru.json' with { type: 'json' };
 import character from '../../data/generated/character.v1.json' with { type: 'json' };
 import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
+import approved from '../../localization/approved-translations.v1.json' with { type: 'json' };
 
 export const baselineRecords = [...equipment.records, ...souls.records, ...character.records.filter(record => ['class', 'racial'].includes(record.kind)),
   ...skills.records.map(source => ({ ...source, id: source.id.replace('skill.', 'skill_entry.'), kind: source.is_active ? 'active' : 'passive' }))];
 export const baselineById = new Map(baselineRecords.map(record => [record.id, record]));
 export const categories = equipment.categories;
-export const skillCategories = skills.categories.map(row => ({ id: row.id, index: row.legacy_id, name: row.name }));
+export const skillCategories = skills.categories.map(row => ({ id: row.id, index: row.legacy_id,
+  name: { ...row.name, ru: approved.game.ru['skill.' + row.legacy_id] || row.name.en } }));
 export const sourceFingerprint = equipment.metadata.generated_from[0].sha256;
 export const characterSourceFingerprint = character.sourceFingerprint;
 export const compatibilityLabels = Object.fromEntries(['race', 'job'].map(kind => [kind, terms.terms

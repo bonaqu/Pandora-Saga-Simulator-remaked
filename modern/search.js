@@ -423,6 +423,12 @@
     item.descriptions.forEach(function (text) {
       description.appendChild(element('p', 'remaked-item-prose', text));
     });
+    (item.upgradeDetails || []).forEach(function (text) {
+      description.appendChild(element('p', 'remaked-item-upgrade', text));
+    });
+    (item.procDetails || []).forEach(function (text) {
+      description.appendChild(element('p', 'remaked-item-proc', text));
+    });
     if (item.calculationWarning) description.appendChild(element('p', 'remaked-item-warning', item.calculationWarning));
     details.appendChild(description); row.appendChild(details);
     var pinned = false;

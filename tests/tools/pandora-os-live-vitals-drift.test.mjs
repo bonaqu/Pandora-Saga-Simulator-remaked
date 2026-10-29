@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {readFileSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
 import {
   FIELDS,canonicalCoefficients,compareLiveVitals,readSource
 } from '../../scripts/audit_pandora_os_live_vitals.mjs';
@@ -72,7 +73,7 @@ test('source schema rejects malformed, incomplete, extra, negative and nonfinite
 });
 
 test('explicit local source is marked offline; live network failure never masquerades as fixture',async()=>{
-  const offline=await readSource({source:new URL(fixturePath).pathname});
+  const offline=await readSource({source:fileURLToPath(fixturePath)});
   assert.equal(offline.origin.live,false);
   assert.deepEqual(compareLiveVitals(offline.classes,baseline).summary.baselineMatchesCurrent,true);
   const requests=[];

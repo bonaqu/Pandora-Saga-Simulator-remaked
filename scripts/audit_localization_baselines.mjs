@@ -12,6 +12,7 @@ const read=file=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
 const terms=read('localization/game-terms.ru.json').terms;
 const approved=read('localization/approved-translations.v1.json');
 const english=read('localization/ui.en.json');
+const fallback=read('localization/current-ui-fallbacks.v1.json');
 const locales=['ru','jp','tw'];
 const count=(items,predicate)=>items.reduce((n,v)=>n+(predicate(v)?1:0),0);
 const present=text=>typeof text==='string'&&text.trim().length>0;
@@ -45,7 +46,9 @@ const uiCoverage={};
 for(const locale of locales){
   const map=approved.ui?.[locale]||{};
   const missing=uiKeys.filter(key=>!present(map[key]));
-  uiCoverage[locale]={approved:uiKeys.length-missing.length,total:uiKeys.length,missingIds:missing};
+  const effectiveMissing=missing.filter(key=>!present(fallback.ui?.[locale]?.[key]));
+  uiCoverage[locale]={approved:uiKeys.length-missing.length,total:uiKeys.length,missingIds:missing,
+    fallback:missing.length-effectiveMissing.length,effectiveMissingIds:effectiveMissing};
 }
 const legacySource={
   en:count(terms,t=>present(t.source_en)),

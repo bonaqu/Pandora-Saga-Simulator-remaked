@@ -7,9 +7,10 @@ import unittest
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 CODE=(ROOT/'admin-api/public/catalog-ui.js').read_text(encoding='utf-8')
 EN=json.loads((ROOT/'localization/ui.en.json').read_text(encoding='utf-8'))
-APPROVED=json.loads((ROOT/'localization/approved-translations.v1.json').read_text(encoding='utf-8'))
+from tests.localization_support import ui_with_current_fallbacks
+APPROVED=ui_with_current_fallbacks()
 TOKENS=re.compile(r'\{[A-Za-z0-9_]+\}')
-CODES=(0,1,2,3,4,5,6,7,8,10,18,21,42,49,52,60,62,65,69,70,71,72,73,74,76,77,79,81,146,147,149,150,151)
+CODES=(0,1,2,3,4,5,6,7,8,10,18,21,33,42,49,52,60,62,65,69,70,71,72,73,74,76,77,79,81,146,147,149,150,151,157,161)
 SUPPORT=(
  'catalogEffectReceivedPercent','catalogEffectBasePercent','catalogEffectPercentagePoints',
  'catalogUnitReceivedPercent','catalogUnitBasePercent','catalogUnitPercentagePoints',
@@ -24,16 +25,16 @@ SUPPORT=(
 
 class NumericEditorLocalizationTests(unittest.TestCase):
     def test_all_60_new_strings_have_safe_four_language_coverage(self):
-        self.assertEqual(len(CODES),33)
+        self.assertEqual(len(CODES),36)
         self.assertEqual(len(SUPPORT),27)
         mapping=re.search(r'var effectTranslationKeys = \{(.*?)\};',CODE,re.DOTALL)
         self.assertIsNotNone(mapping)
         aliases=dict((int(number),key) for number,key in re.findall(
             r"(\d+):\s*'([A-Za-z]+)'",mapping.group(1)))
         self.assertEqual(set(aliases),set(CODES))
-        self.assertEqual(len(set(aliases.values())),33)
+        self.assertEqual(len(set(aliases.values())),36)
         names=list(aliases.values())+list(SUPPORT)
-        self.assertEqual(len(set(names)),60)
+        self.assertEqual(len(set(names)),63)
         for suffix in names:
             key='adminShell.'+suffix
             with self.subTest(key=key):

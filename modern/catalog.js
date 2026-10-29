@@ -9,8 +9,10 @@
   // Typed option IDs/units are a data protocol, not copied game formulas.
   var effectIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 16, 18, 20, 42, 49, 50, 51, 52, 60, 62, 65, 69, 70, 71, 72, 73, 74, 76, 77, 79, 133, 134, 135, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162];
   var percentEffectIds = [6, 7, 18, 49, 52, 60, 62, 65];
-  effectIds.push(21, 81);
-  var baselineEquipment, baselineSouls, baselineClassMods, baselineSkills, revision = 0, recordsByTerm = Object.create(null);
+  effectIds.push(21, 33, 43, 81);
+  percentEffectIds.push(33);
+  var baselineEquipment, baselineSouls, baselineClassMods, baselineClassCaps, baselineSkills, revision = 0, recordsByTerm = Object.create(null);
+  var skillBranches = [1,2,3,4,5,7,8,9,10,11,13,14,15,16,18,19,20,21,23,24];
   var passiveRecords = [], variantRecords = [], learningRecords = [], customLearningStates = Object.create(null);
   var profileRecords = [], selectedProfiles = Object.create(null);
   var learnedKey = '', learnedEntries = [], potentialEntries = [], learningProbeDepth = 0;
@@ -36,6 +38,7 @@
     check(window.EquipData && window.SoulData, 'Legacy catalog not initialized');
     baselineEquipment = cloneEquipment(window.EquipData); baselineSouls = cloneSouls(window.SoulData);
     baselineClassMods = window.Status.Mod.map(function (row) { return row.slice(); });
+    baselineClassCaps = window.Skill.P.map(function (row) { return row.slice(); });
     baselineSkills = cloneSkills(window.Skill.slice(0, 3));
   }
   function sourceRow(record) {
@@ -45,6 +48,12 @@
   function textMap(value, limit) {
     check(value && typeof value === 'object' && !Array.isArray(value), 'Invalid catalog text');
     Object.keys(value).forEach(function (language) { check(['en', 'ru', 'jp', 'tw'].indexOf(language) !== -1 && typeof value[language] === 'string' && value[language].length <= limit, 'Invalid catalog text'); });
+  }
+  function validateRangeBonus(value) {
+    check(value && typeof value === 'object' && !Array.isArray(value) &&
+      Object.keys(value).length === 2 && Object.keys(value).every(function(key){return ['amount','appliesTo'].indexOf(key)!==-1;}) &&
+      Number.isInteger(value.amount) && value.amount !== 0 && Math.abs(value.amount) <= 10000 &&
+      ['any','melee','ranged'].indexOf(value.appliesTo)!==-1, 'Invalid range bonus');
   }
   function typedEffects(effects) {
     check(Array.isArray(effects) && effects.length <= effectIds.length + percentEffectIds.length, 'Invalid effects'); var stats = Object.create(null);
@@ -62,8 +71,10 @@
     var seen=Object.create(null);
     record.upgradeBonuses.forEach(function(rule){
       check(rule&&!Array.isArray(rule)&&typeof rule==='object'&&
-        Object.keys(rule).sort().join(',')==='every,from,stat,to,unit,value',
+        Object.keys(rule).every(function(key){return ['every','from','stat','to','unit','value','gemElement'].indexOf(key)!==-1;}),
         'Invalid refinement bonus shape');
+      check(rule.gemElement===undefined||['fire','ice','lightning','poison','light','dark','rainbow'].indexOf(rule.gemElement)!==-1,
+        'Unsupported refinement gem element');
       check(effectIds.indexOf(rule.stat)!==-1&&(rule.unit==='flat'||
         rule.unit==='percent'&&percentEffectIds.indexOf(rule.stat)!==-1),
         'Unsupported refinement bonus stat');
@@ -73,8 +84,31 @@
         typeof rule.value==='number'&&Number.isFinite(rule.value)&&rule.value!==0&&
         Math.abs(rule.value)<=10000&&Number(rule.value.toFixed(2))===rule.value,
         'Invalid refinement threshold/value');
-      var k=[rule.stat,rule.unit,rule.every,rule.from,rule.to].join(':');
+      var k=[rule.stat,rule.unit,rule.every,rule.from,rule.to,rule.gemElement||'any'].join(':');
       check(!seen[k],'Duplicate refinement rule');seen[k]=true;
+    });
+  }
+  function validateProcEffects(record) {
+    if(record.procEffects===undefined)return;
+    check(record.kind==='equipment' && record.category<=13 && Array.isArray(record.procEffects) && record.procEffects.length<=12,'Invalid weapon proc collection');
+    var seen=Object.create(null);
+    record.procEffects.forEach(function(rule) {
+      check(rule && typeof rule==='object' && !Array.isArray(rule) && Object.keys(rule).every(function(key) {
+        return ['kind','chance','from','every','to','gemElement','names','chanceStep','damageStat','baseDamage','damageStep','statPercent','statPercentStep','cooldownSeconds','cooldownReduction'].indexOf(key)!==-1;
+      }) && ['burn','special_magic_damage'].indexOf(rule.kind)!==-1 && typeof rule.chance==='number' && Number.isFinite(rule.chance) && rule.chance>0 && rule.chance<=100 && Number(rule.chance.toFixed(2))===rule.chance,'Invalid weapon proc rule');
+      check(rule.gemElement===undefined || ['fire','ice','lightning','poison','light','dark','rainbow'].indexOf(rule.gemElement)!==-1,'Invalid weapon proc gem');
+      var range=rule.from!==undefined || rule.every!==undefined || rule.to!==undefined;
+      if(range) check(Number.isInteger(rule.from) && rule.from>=1 && rule.from<=10 && Number.isInteger(rule.every) && rule.every>=1 && rule.every<=10 && Number.isInteger(rule.to) && rule.to>=rule.from && rule.to<=10 && (rule.kind!=='burn' || rule.chance*(1+Math.floor((rule.to-rule.from)/rule.every))<=100),'Invalid weapon proc range');
+      var fields=['chanceStep','baseDamage','damageStep','statPercent','statPercentStep','cooldownSeconds','cooldownReduction'];
+      if(rule.kind==='special_magic_damage') {
+        check(range && rule.names && typeof rule.names.en==='string' && rule.names.en.trim() && ['STR','INT'].indexOf(rule.damageStat)!==-1,'Invalid special effect identity');
+        textMap(rule.names,160);
+        fields.forEach(function(field){var value=rule[field];check(typeof value==='number'&&Number.isFinite(value)&&value>=0&&value<=10000&&Number(value.toFixed(2))===value,'Invalid special effect value');});
+        var steps=Math.floor((rule.to-rule.from)/rule.every);
+        check(rule.chance+steps*rule.chanceStep<=100 && rule.baseDamage+steps*rule.damageStep<=10000 && rule.statPercent+steps*rule.statPercentStep<=10000 && rule.cooldownSeconds-steps*rule.cooldownReduction>=0,'Invalid special effect bounds');
+      } else check(fields.concat(['names','damageStat']).every(function(field){return rule[field]===undefined;}),'Invalid burn effect fields');
+      var key=JSON.stringify([rule.kind,rule.names?.en?.toLowerCase()??null,rule.from??null,rule.every??null,rule.to??null,rule.gemElement??null]);
+      check(!seen[key], 'Duplicate weapon proc rule');seen[key]=true;
     });
   }
   function validateLearning(required) {
@@ -179,7 +213,7 @@
       if (record.kind === 'racial') {
         check(snapshot.characterSourceFingerprint === CHARACTER_SOURCE_FINGERPRINT, 'Racial source/version mismatch');
         check(Number.isInteger(record.category) && record.category >= 0 && record.category < 6 && Number.isInteger(record.index) && record.index >= 0 && record.index < 3 && record.id === termFor(record), 'Invalid racial passive identity');
-        check(Object.keys(record).every(function (key) { return ['id', 'kind', 'category', 'index', 'names', 'description', 'effectMode', 'effects', 'bonusRequirements', 'calculationNotes'].indexOf(key) !== -1; }), 'Unsupported racial field');
+        check(Object.keys(record).every(function (key) { return ['id', 'kind', 'category', 'index', 'names', 'description', 'effectMode', 'effects', 'bonusRequirements', 'calculationNotes', 'rangeBonus'].indexOf(key) !== -1; }), 'Unsupported racial field');
         check(!seen[record.id], 'Duplicate racial identity'); seen[record.id] = true;
         textMap(record.names, 160); textMap(record.description, 4000); check(Boolean(record.names.en?.trim()), 'English racial name required');
         check(['preserve', 'add', 'replace'].indexOf(record.effectMode) !== -1 && Array.isArray(record.effects), 'Invalid racial effect mode');
@@ -191,17 +225,24 @@
           check(Array.isArray(required.weaponCategories) && required.weaponCategories.length <= 15 && required.weaponCategories.every(function (category, index) { return Number.isInteger(category) && category >= -1 && category <= 13 && required.weaponCategories.indexOf(category) === index; }), 'Invalid racial weapon requirements');
         }
         if (record.calculationNotes !== undefined) textMap(record.calculationNotes, 1600);
+        if (record.rangeBonus !== undefined) validateRangeBonus(record.rangeBonus);
         return;
       }
       if (record.kind === 'class') {
         check(snapshot.characterSourceFingerprint === CHARACTER_SOURCE_FINGERPRINT, 'Class source/version mismatch');
         check(Number.isInteger(record.index) && record.index >= 0 && record.index < baselineClassMods.length && record.category === null && record.id === termFor(record), 'Invalid class lineage');
-        check(Object.keys(record).every(function (key) { return ['id', 'kind', 'category', 'index', 'names', 'description', 'progression'].indexOf(key) !== -1; }), 'Unsupported class field');
+        check(Object.keys(record).every(function (key) { return ['id', 'kind', 'category', 'index', 'names', 'description', 'progression', 'potentialCaps'].indexOf(key) !== -1; }), 'Unsupported class field');
         check(!seen[record.id], 'Duplicate class identity'); seen[record.id] = true;
         textMap(record.names, 160); textMap(record.description, 4000); check(Boolean(record.names.en?.trim()), 'English class name required');
         check(Array.isArray(record.progression) && record.progression.length === 6 && record.progression.every(function (value, index) {
           return typeof value === 'number' && Number.isFinite(value) && value >= (index < 2 ? 0 : 0.0001) && value <= 100000 && (index >= 2 || Number.isInteger(value));
         }), 'Invalid class progression parameters');
+        if (record.potentialCaps !== undefined) {
+          var minimum = window.Skill.D[window.Name.Job[record.index][0]];
+          check(Array.isArray(record.potentialCaps) && record.potentialCaps.length === 20 && record.potentialCaps.every(function (value, index) {
+            return Number.isInteger(value) && value >= minimum[index + 1] && value <= window.MaxSk;
+          }), 'Invalid class branch limits');
+        }
         return;
       }
       check(record.kind === 'equipment' ? allowedCategories.indexOf(record.category) !== -1 : record.category === null, 'Unsupported item type');
@@ -214,6 +255,8 @@
       check(original ? record.id === term : record.id.indexOf('modern.' + record.kind + '.') === 0 && record.engineKey === 'Modern:' + record.id, 'Item identity does not match source');
       check(Number.isInteger(record.level) && record.level >= 0 && record.level <= 1000 && Number.isInteger(record.sockets) && record.sockets >= 0 && record.sockets <= 3, 'Invalid item requirements');
       check(typeof record.disabled === 'boolean', 'Invalid item availability');
+      if (record.rangeBonus !== undefined) validateRangeBonus(record.rangeBonus);
+      if (record.baseRange !== undefined) check(record.kind === 'equipment' && record.category <= 13 && Number.isInteger(record.baseRange) && record.baseRange >= 1 && record.baseRange <= 10000, 'Invalid weapon base range');
       ['names', 'modifiers'].forEach(function (field) { textMap(record[field], 160); });
       ['description', 'notes', 'acquisition'].forEach(function (field) { textMap(record[field], 4000); });
       check(Boolean(record.names.en?.trim()), 'English item name required');
@@ -226,6 +269,19 @@
         check(match ? Number(match[1]) < window.Name.Option.length && Number.isFinite(Number(match[2].replace(/^W/, '').replace(/%$/, ''))) && Math.abs(Number(match[2].replace(/^W/, '').replace(/%$/, ''))) <= 10000 : original && String(original[7]).split('_').indexOf(token) !== -1, 'Unsupported engine effect');
       });
       validateUpgradeBonuses(record);
+      if (record.nativeUpgradePolicy !== undefined)
+        check(record.kind === 'equipment' && (record.nativeUpgradePolicy === 'replace-legacy-fire-wand' &&
+          ['equipment.12.12','equipment.13.9'].indexOf(record.id) !== -1 || record.nativeUpgradePolicy === 'replace-legacy-fire-weapon' &&
+          ['equipment.0.13','equipment.1.9','equipment.2.7','equipment.3.8','equipment.4.7','equipment.5.9','equipment.6.12','equipment.7.9','equipment.8.12','equipment.9.5','equipment.10.11','equipment.11.7'].indexOf(record.id)!==-1 ||
+          record.nativeUpgradePolicy === 'replace-legacy-zephyrus-upgrade' && ['equipment.5.27','equipment.5.28'].indexOf(record.id)!==-1 ||
+          record.nativeUpgradePolicy === 'replace-legacy-gold-plate-upgrade' && record.id==='equipment.31.64' ||
+          record.nativeUpgradePolicy === 'replace-legacy-lunar-gloves-upgrade' && record.id==='equipment.32.82' ||
+          record.nativeUpgradePolicy === 'replace-legacy-mana-bracelets-upgrade' && record.id==='equipment.32.61'), 'Unsupported native upgrade replacement');
+      if (record.nativeBasePolicy !== undefined)
+        check(record.nativeBasePolicy === 'replace-priest-earring-aura' && record.id === 'modern.equipment.ac383fab-00a9-45ff-a09a-b2192c47ef5d' && record.category === 40 && record.index === 61, 'Unsupported native base replacement');
+      if (record.id === 'modern.equipment.ac383fab-00a9-45ff-a09a-b2192c47ef5d' && /(?:^|_)33=/.test(record.calculationCode))
+        check(record.nativeBasePolicy === 'replace-priest-earring-aura', 'Earring aura bonus would be counted twice');
+      validateProcEffects(record);
       if (record.kind === 'equipment' && record.category <= 13) check(/^18=W\d+(?:_|$)/.test(record.calculationCode), 'Missing weapon attack');
       [record.parameter6, record.trailing].forEach(function (value) { check(typeof value === 'string' && value.length <= 160 || typeof value === 'number' && Number.isFinite(value), 'Invalid auxiliary engine data'); });
       check(Array.isArray(record.soulParameters) && record.soulParameters.length === 2 && record.soulParameters.every(function (value) { return typeof value === 'string' && value.length <= 160 || typeof value === 'number' && Number.isFinite(value); }), 'Invalid Soul data');
@@ -322,6 +378,43 @@
     };
   }
 
+  // Skill caps are serialized in legacy builds. Rebase them against the target
+  // revision and return only points that no longer fit; do not change the
+  // player's other choices. The caller keeps its normal recovery journal.
+  function rebaseSkillCaps(fields, snapshot, changes) {
+    var job = fields[2], record = snapshot.records.find(function (row) { return row.kind === 'class' && row.index === job; });
+    var caps = record?.potentialCaps || baselineClassCaps[job].slice(1), start = 10;
+    for (var stat = 0; stat < 6; stat++) start += window.Status[window.Name.Option[stat][2]].length;
+    var offsets = [], cursor = start, changed = false, details = [];
+    for (var i = 0; i < window.Name.Skill.length; i++) { offsets.push(cursor); cursor += window.Status.Skill[i].length; }
+    skillBranches.forEach(function (branch, index) {
+      var pos = offsets[branch], initial = fields[pos], allocated = fields[pos + 1], prior = fields[pos + 2], extra = fields[pos + 3], target = caps[index];
+      if (prior === target) return;
+      check([initial, allocated, prior, extra, fields[6], fields[8]].every(Number.isInteger) &&
+        initial >= 0 && allocated >= 0 && prior >= initial && prior <= window.MaxSk && extra >= 0 && prior + extra <= window.MaxSk && target >= initial,
+      'Stored skill branch cannot be safely migrated');
+      var nextExtra = Math.min(extra, window.MaxSk - target);
+      var nextAllocated = Math.min(allocated, target + nextExtra - initial);
+      check(nextAllocated >= 0, 'Stored skill allocation cannot be safely migrated');
+      fields[6] += allocated - nextAllocated; fields[8] += extra - nextExtra;
+      fields[pos + 1] = nextAllocated; fields[pos + 2] = target; fields[pos + 3] = nextExtra;
+      var label = namespace.i18n?.game('skill.' + branch, window.Name.Skill[branch][window.Flag[0] + 1]) || String(branch);
+      details.push(label + ' ' + prior + '→' + target + ((allocated !== nextAllocated || extra !== nextExtra)
+        ? (namespace.i18n?.getLocale() === 'ru' ? ' (очки возвращены)' : ' (points returned)') : ''));
+      changed = true;
+    });
+    if (!changed) return false;
+    [[0,1,5],[6,7,11],[12,13,16],[17,18,21],[22,23,24]].forEach(function (group) {
+      for (var part = 0; part < 4; part++) {
+        var total = 0; for (var branch = group[1]; branch <= group[2]; branch++) total += fields[offsets[branch] + part];
+        fields[offsets[group[0]] + part] = total;
+      }
+    });
+    if (changes) changes.push({ type: 'changed', kind: 'class', id: job,
+      name: record?.names?.[namespace.i18n?.getLocale() || 'en'] || record?.names?.en || window.Name.Job[job][window.Flag[0] + 2], details: details });
+    return true;
+  }
+
   // Migrate numeric choices before Expand/ListCreate can silently discard them.
   // Historical snapshots are read only as descriptions for the change report.
   function migratePayload(payload, snapshot) {
@@ -339,6 +432,7 @@
     var next = Object.create(null), old = Object.create(null), changes = [];
     snapshot.records.forEach(function (record) { next[termFor(record)] = record; });
     (snapshots[parsed.revision]?.records || []).forEach(function (record) { old[termFor(record)] = record; });
+    rebaseSkillCaps(fields, snapshot, changes);
     function recordAt(kind, id, records) {
       return records[kind === 'equipment' ? 'equipment.' + Math.floor(id / 10000) + '.' + id % 10000 : 'soul.' + id];
     }
@@ -361,7 +455,17 @@
       var current = recordAt(kind, id, next);
       return { id: id, replaced: Boolean(current && current.id !== previous.id) };
     }
-    function changed(kind, id, previousId) {
+    function formatRangeBonus(bonus) {
+      if (!bonus) return '0';
+      var scope = namespace.i18n?.t('catalog.rangeScope.' + bonus.appliesTo) || bonus.appliesTo;
+      return (bonus.amount > 0 ? '+' : '') + bonus.amount + ' (' + scope + ')';
+    }
+    function rangeBonusDiff(before, after) {
+      var oldValue = formatRangeBonus(before), newValue = formatRangeBonus(after);
+      return namespace.i18n?.t('catalog.diffRangeBonus', {before:oldValue,after:newValue}) ||
+        'Range bonus ' + oldValue + '→' + newValue;
+    }
+    function changed(kind, id, previousId, upgradeState) {
       if (parsed.revision === snapshot.revision) return;
       var current = recordAt(kind, id, next), previous = recordAt(kind, previousId === undefined ? id : previousId, old), source = sourceAt(kind, id);
       var beforeSource = sourceAt(kind, previousId === undefined ? id : previousId);
@@ -387,6 +491,38 @@
         if (beforeSlots !== undefined && beforeSlots !== afterSlots) differences.push(
           namespace.i18n?.t('catalog.diffSoulSlots', {before: beforeSlots, after: afterSlots}) ||
           'Soul slots ' + beforeSlots + '→' + afterSlots);
+        if (previous?.baseRange !== current?.baseRange) {
+          var originalRange = namespace.i18n?.t('catalog.originalRange') || 'original';
+          var oldRange = previous?.baseRange ?? originalRange, nextRange = current?.baseRange ?? originalRange;
+          differences.push(namespace.i18n?.t('catalog.diffBaseRange', {before:oldRange,after:nextRange}) ||
+            'Base range ' + oldRange + '→' + nextRange);
+        }
+        var oldRules=previous?.upgradeBonuses || [],newRules=current?.upgradeBonuses || [];
+        if (JSON.stringify(oldRules)!==JSON.stringify(newRules)) {
+          function upgradeTotals(rules) {
+            var result=Object.create(null),elements=['fire','ice','lightning','poison','light','dark','rainbow'];
+            rules.forEach(function(rule){
+              if (!upgradeState || rule.gemElement && elements[upgradeState.element]!==rule.gemElement || upgradeState.level<rule.from) return;
+              var count=1+Math.floor((Math.min(upgradeState.level,rule.to)-rule.from)/rule.every),key=rule.stat+':'+rule.unit;
+              result[key]=Number(((result[key]||0)+count*rule.value).toFixed(2));
+            });return result;
+          }
+          var oldTotals=upgradeTotals(oldRules),newTotals=upgradeTotals(newRules),upgradeKeys=Object.keys(oldTotals).concat(Object.keys(newTotals));
+          var upgradeChanges=upgradeKeys.filter(function(key,index){return upgradeKeys.indexOf(key)===index && (oldTotals[key]||0)!==(newTotals[key]||0);});
+          upgradeChanges.forEach(function(key){
+            var parts=key.split(':'),stat=Number(parts[0]),label=window.Name.Option?.[stat]?.[2] || window.Name.Text.Status?.[stat]?.[1] || parts[0];
+            if(stat===2)label=namespace.i18n?.t('catalog.stat.prv') || 'PRV';
+            var suffix=parts[1]==='percent'?'%':'',beforeValue=String(oldTotals[key]||0)+suffix,afterValue=String(newTotals[key]||0)+suffix;
+            differences.push(namespace.i18n?.t('catalog.diffUpgradeValue',{stat:String(label).replace(/<[^>]*>/g,''),before:beforeValue,after:afterValue}) ||
+              'Refinement '+label+' '+beforeValue+'→'+afterValue);
+          });
+          if (!upgradeChanges.length) differences.push(namespace.i18n?.t('catalog.diffUpgradeRules') || 'Refinement rules updated');
+        }
+        if(previous?.nativeUpgradePolicy!==current?.nativeUpgradePolicy)
+          differences.push(namespace.i18n?.t('catalog.diffNativeUpgradePolicy') || 'Built-in refinement effects updated');
+      }
+      if (JSON.stringify(previous?.rangeBonus || null) !== JSON.stringify(current?.rangeBonus || null)) {
+        differences.push(rangeBonusDiff(previous?.rangeBonus,current?.rangeBonus));
       }
       if (differences.length) changes.push({ type: 'changed', kind: kind, id: id, name: name(kind, id), details: differences });
     }
@@ -413,6 +549,14 @@
       if (!current || !wasLearned(current)) changes.push({ type: 'removed', kind: 'skill', id: record.id,
         name: record.names[namespace.i18n?.getLocale() || 'en'] || record.names.en, reason: current ? 'incompatible' : 'missing' });
     });
+    if (parsed.revision !== snapshot.revision) {
+      var racialId='racial_skill.'+fields[0]+'.'+fields[1], previousRacial=old[racialId], currentRacial=next[racialId];
+      if (JSON.stringify(previousRacial?.rangeBonus || null) !== JSON.stringify(currentRacial?.rangeBonus || null)) {
+        var racialRecord=currentRacial || previousRacial, locale=namespace.i18n?.getLocale() || 'en';
+        changes.push({type:'changed',kind:'racial',id:racialId,name:racialRecord?.names?.[locale] || racialRecord?.names?.en || racialId,
+          details:[rangeBonusDiff(previousRacial?.rangeBonus,currentRacial?.rangeBonus)]});
+      }
+    }
     var offset = 10;
     for (var option = 0; option < 6; option++) offset += window.Status[window.Name.Option[option][2]].length;
     for (var skill = 0; skill < window.Name.Skill.length; skill++) offset += window.Status.Skill[skill].length;
@@ -434,7 +578,7 @@
         fields[offset] = category * 10000;
         for (var field = 1; field < window.Status.Equip[slot].length; field++) fields[offset + field] = 0;
       } else {
-        if (index) changed('equipment', id, previousEquipmentId);
+        if (index) changed('equipment', id, previousEquipmentId,{level:Number(fields[offset+3]),element:Number(fields[offset+2])});
         for (var socket = 4; socket <= 6; socket++) {
           var soul = fields[offset + socket]; if (!soul) continue;
           check(Number.isInteger(soul) && soul >= 0 && soul < 10000, 'Invalid Soul choice');
@@ -482,6 +626,7 @@
     validate(snapshot); snapshot = structuredClone(snapshot); options = options || {};
     var equipment = cloneEquipment(baselineEquipment), souls = cloneSouls(baselineSouls), terms = Object.create(null);
     var classMods = baselineClassMods.map(function (row) { return row.slice(); });
+    var classCaps = baselineClassCaps.map(function (row) { return row.slice(); });
     var skills = cloneSkills(baselineSkills), passives = [], additions = [];
     snapshot.records.forEach(function (record) {
       terms[termFor(record)] = record;
@@ -500,7 +645,8 @@
         return;
       }
       if (record.kind === 'racial') return;
-      if (record.kind === 'class') { classMods[record.index] = record.progression.slice(); return; }
+      if (record.kind === 'class') { classMods[record.index] = record.progression.slice();
+        if (record.potentialCaps) classCaps[record.index].splice(1, 20, ...record.potentialCaps); return; }
       for (var language = 0; language < 3; language++) {
         var code = languages[language], original = sourceRow(record), key = original?.[0] || record.engineKey;
         var name = language === 0 ? key : escaped(record.names[code] || record.names.en);
@@ -518,6 +664,12 @@
       for (var language = 0; language < 3; language++) equipment[language][35][3] = placeholder(equipment[language][35][3]);
     }
     if (options.rebuild !== false || options.preflightOnly) selectedStateExists(equipment, souls);
+    var currentFields, currentRebased = false, context;
+    if (options.rebuild !== false || options.preflightOnly) {
+      currentFields = String(window.Store()).split(',').map(Number);
+      currentRebased = rebaseSkillCaps(currentFields, snapshot);
+      if (currentRebased) context = captureContext();
+    }
     if (options.preflightOnly) return snapshot.revision;
     // A pinned revision switch must not leave explicitly controlled source
     // entries in the retained learned pool after their override is removed.
@@ -530,7 +682,7 @@
     }
     // Source files and captured baseline arrays remain immutable. Only the
     // explicitly documented Modern runtime data projection is replaced.
-    window.EquipData = equipment; window.SoulData = souls; window.Status.Mod = classMods; recordsByTerm = terms; revision = snapshot.revision;
+    window.EquipData = equipment; window.SoulData = souls; window.Status.Mod = classMods; window.Skill.P = classCaps; recordsByTerm = terms; revision = snapshot.revision;
     for (var language = 0; language < 3; language++) window.Skill[language] = skills[language];
     passiveRecords = passives; variantRecords = additions.sort(function (a, b) { return a.id.localeCompare(b.id); });
     profileRecords = snapshot.records.filter(function (record) { return Boolean(record.profiles); });
@@ -546,6 +698,7 @@
       if (namespace.gameTermDisplay) namespace.gameTermDisplay.refresh();
       if (namespace.equipmentPicker) namespace.equipmentPicker.refresh();
       refreshAvailability();
+      if (currentRebased) namespace.adapter.load(packWithContext(currentFields.join(','), revision, context));
     }
     return revision;
   }
@@ -789,6 +942,10 @@
       var term = 'racial_skill.' + window.Status.Job[0] + '.' + window.Status.Job[1];
       if (!recordsByTerm[term]) return null;
       return { name: textFor(term, 'names'), description: textFor(term, 'description'), calculationNotes: textFor(term, 'calculationNotes') };
+    },
+    racialRangeBonus: function () {
+      var record = recordsByTerm['racial_skill.' + window.Status.Job[0] + '.' + window.Status.Job[1]];
+      return record?.rangeBonus || null;
     },
     learningText: learningText,
     nativePassiveEnabled: function (id) { return recordsByTerm[id]?.intrinsicEffectMode !== 'replace'; },

@@ -6,7 +6,8 @@ import unittest
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 EN=json.loads((ROOT/'localization/ui.en.json').read_text(encoding='utf-8'))
-DATA=json.loads((ROOT/'localization/approved-translations.v1.json').read_text(encoding='utf-8'))
+from tests.localization_support import ui_with_current_fallbacks
+DATA=ui_with_current_fallbacks()
 RU=DATA['ui']['ru']
 SLOTS=re.compile(r'\{[A-Za-z0-9_]+\}')
 TOOLTIPS=(

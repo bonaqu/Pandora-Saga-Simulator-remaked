@@ -1,0 +1,68 @@
+{
+  "ok": true,
+  "schemaVersion": 1,
+  "sourceFingerprint": "0f3b15c83d59b8c9c1a47920022895b8db57a526322d9dabea4900fb203518d1",
+  "characterSourceFingerprint": "b41f034b9d6e86a14a39f1f040d99d45315002b4709c753effab0a62cf7e8227",
+  "revision": 92,
+  "impactRevision": 92,
+  "records": [
+    {
+      "id": "skill_entry.19.8",
+      "kind": "active",
+      "category": 19,
+      "index": 8,
+      "names": {
+        "en": "Blockade",
+        "ru": "Непреодолимая стена",
+        "jp": "ペインシェントウォール",
+        "tw": "土牆術"
+      },
+      "description": {
+        "en": "Creates an impermeable wall that no player can pass through.",
+        "ru": "Огромная стена, которую не может преодолеть ни один игрок.",
+        "jp": "巨大な壁を具現化する。全てのプレイヤーは通過することができない。",
+        "tw": "現出巨大的牆壁。所有玩家都不能通過"
+      },
+      "active": true,
+      "prerequisiteCode": "S=19=50",
+      "nativeEffectPolicy": "retained-plus-bonus",
+      "timing": [
+        79,
+        5,
+        120,
+        150
+      ],
+      "effects": [],
+      "bonusRequirements": null
+    },
+    {
+      "id": "skill_entry.20.4",
+      "kind": "active",
+      "category": 20,
+      "index": 4,
+      "names": {
+        "en": "Blood Drain",
+        "ru": "Кража жизни",
+        "jp": "ブラッドドレイン",
+        "tw": "吸血術"
+      },
+      "description": {
+        "en": "Draws out your opponent's LP and makes it your own.",
+        "ru": "Перекачивает ОЗ из цели в игрока.",
+        "jp": "相手の生命力を抜き出し、自分のものとしてしまう。",
+        "tw": "吸收對手的生命力,變為自己的"
+      },
+      "active": true,
+      "prerequisiteCode": "S=20=21",
+      "nativeEffectPolicy": "retained-plus-bonus",
+      "timing": [
+        32,
+        1,
+        10,
+        0
+      ],
+      "effects": [],
+      "bonusRequirements": null
+    }
+  ]
+}

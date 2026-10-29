@@ -138,7 +138,7 @@ test('authorization checks a server session, idle and absolute expiry; malformed
 test('every mutation requires the current session, exact same-origin and CSRF token', async () => {
   const { env } = fixture();
   const session = await signedIn(env);
-  for (const path of ['/api/admin/items', '/api/admin/preview']) {
+  for (const path of ['/api/admin/items', '/api/admin/preview', '/api/admin/publish-reviewed-catalog-batch']) {
     for (const headers of [{ Cookie: session.cookie }, { Cookie: session.cookie, Origin: pages, 'X-CSRF-Token': session.csrf }, { Cookie: session.cookie, 'X-CSRF-Token': 'incorrect' }]) {
       assert.equal((await authorize(request(path, {}, headers), env, 2000)).ok, false);
     }

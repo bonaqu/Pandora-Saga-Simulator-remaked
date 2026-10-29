@@ -34,6 +34,19 @@ test('all 28 classes round-trip exact Legacy progression without reducing origin
   }
 });
 
+test('class branch limits are optional, bounded by native minimums and round-trip without changing Legacy', () => {
+  const assassin = character.records.find(record => record.id === 'job.12');
+  const id = { id: assassin.id, kind: 'class', category: null, index: assassin.index };
+  const edit = draftFromSource(assassin, 'class');
+  assert.equal(Object.hasOwn(compileRecord(validateDraft(edit, id), id, assassin), 'potentialCaps'), false);
+  edit.potentialCaps = [...assassin.potentialCaps]; edit.potentialCaps[19] = 10;
+  const record = compileRecord(validateDraft(edit, id), id, assassin);
+  assert.equal(record.potentialCaps[19], 10); assert.equal(assassin.potentialCaps[19], 0);
+  for (const bad of [edit.potentialCaps.slice(1), edit.potentialCaps.map((v,i)=>i===0 ? 3 : v),
+    edit.potentialCaps.map((v,i)=>i===19 ? 121 : v), edit.potentialCaps.map((v,i)=>i===19 ? 1.5 : v)])
+    assert.throws(() => validateDraft({ ...edit, potentialCaps: bad }, id));
+});
+
 test('all racial passives keep native mechanics by default and accept only explicit typed replacement/addition', () => {
   const records = character.records.filter(record => record.kind === 'racial'); assert.equal(records.length, 18);
   for (const source of records) {
