@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.29 — 2026-10-29
+
+### For users
+
+- **The catalog now includes 14 current fire weapons:** find and equip them in builds while retaining compatibility with existing items.
+- Their stats and Fire Gem enhancement conditions are included. Spark Wand gains additional SPR from +7; its INT bonus stays unchanged.
+- For weapons with Phoenix Flame, Attack → Special weapon effects shows the listed chance, base damage and cooldown. Final damage to a target is not calculated.
+
+### Development and technical changes
+
+- Publish 14 retained IDs in catalog revision 94; verify prior revisions, drafts, admin editing, and live calculations. Record reviewed server identity links to prevent duplicates.
+- The source corrected Spark Wand refinement from INT to SPR, consistent with the owner's in-game observation.
+
 ## Modern 4.28 — 2026-10-29
 
 ### For users

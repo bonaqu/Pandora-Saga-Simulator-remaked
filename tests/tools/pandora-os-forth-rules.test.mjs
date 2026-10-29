@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { forthToUpgradeRules } from '../../scripts/lib/pandora_os_forth_rules.mjs';
+import spark from '../fixtures/pandora-os-spark-forth-20261029.json' with {type:'json'};
 
 test('full milestone snapshots become deltas, retain intermediate levels, and allow clearing effects', () => {
   const levels = { 2: [{func:'EP_MAXLIFE_CONST',a:20}], 4:[{func:'EP_MAXLIFE_CONST',a:40}], 7:[] };
@@ -37,4 +38,13 @@ test('disease and madness snapshots map to their own resistance stats',()=>{
   const result=forthToUpgradeRules({7:[{func:'EP_IMMUNE_DISEASE',a:5,b:0},{func:'EP_IMMUNE_RAVING',a:3,b:0}]});
   assert.equal(result.complete,true);
   assert.deepEqual(result.rules.map(rule=>[rule.stat,rule.value]),[[157,3],[161,5]]);
+});
+
+test('corrected server Spark Wand tiers increase SPR and fire resistance, not INT',()=>{
+  const result=forthToUpgradeRules(spark,{gemElement:'fire'});
+  assert.equal(result.complete,true);
+  assert.deepEqual(result.rules.filter(rule=>rule.stat===4).map(rule=>[rule.from,rule.value]),[[7,1],[8,1],[9,1],[10,1]]);
+  assert.deepEqual(result.rules.filter(rule=>rule.stat===138).map(rule=>[rule.from,rule.value]),[[7,4],[8,4],[9,4],[10,4]]);
+  assert.equal(result.rules.some(rule=>rule.stat===5),false);
+  assert.ok(result.rules.every(rule=>rule.gemElement==='fire'));
 });

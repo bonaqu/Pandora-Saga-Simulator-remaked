@@ -1,0 +1,50 @@
+{
+  "7": [
+    {
+      "func": "EP_SPIRITUAL_CONST",
+      "a": 1,
+      "b": 0
+    },
+    {
+      "func": "EP_FIRE_RESISTANCE_CONST",
+      "a": 4,
+      "b": 0
+    }
+  ],
+  "8": [
+    {
+      "func": "EP_SPIRITUAL_CONST",
+      "a": 2,
+      "b": 0
+    },
+    {
+      "func": "EP_FIRE_RESISTANCE_CONST",
+      "a": 8,
+      "b": 0
+    }
+  ],
+  "9": [
+    {
+      "func": "EP_SPIRITUAL_CONST",
+      "a": 3,
+      "b": 0
+    },
+    {
+      "func": "EP_FIRE_RESISTANCE_CONST",
+      "a": 12,
+      "b": 0
+    }
+  ],
+  "10": [
+    {
+      "func": "EP_SPIRITUAL_CONST",
+      "a": 4,
+      "b": 0
+    },
+    {
+      "func": "EP_FIRE_RESISTANCE_CONST",
+      "a": 16,
+      "b": 0
+    }
+  ]
+}

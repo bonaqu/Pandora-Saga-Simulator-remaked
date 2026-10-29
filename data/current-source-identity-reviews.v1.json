@@ -9,6 +9,132 @@
       "sourceEn": "Soul of the Pumpkin",
       "legacyEn": "(Pumpkin Soul)",
       "evidence": "Owner confirmed the Soul identities on 2026-10-28; source effects and torso compatibility match the retained record."
+    },
+    {
+      "kind": "equipment",
+      "serverId": 252,
+      "projectId": "equipment.0.13",
+      "sourceRu": "Огненный меч пламени",
+      "sourceEn": "Flameblade",
+      "legacyEn": "(Flame Blade)",
+      "evidence": "Fire-series correspondence reviewed against current source category, level, sockets and attack and the historical Japanese series announcement; retained ID and Japanese name are preserved."
+    },
+    {
+      "kind": "equipment",
+      "serverId": 452,
+      "projectId": "equipment.1.9",
+      "sourceRu": "Огненный меч пылающей души",
+      "sourceEn": "Soulfire Blade",
+      "legacyEn": "(Revatein)",
+      "evidence": "Fire-series correspondence reviewed against current source category, level, sockets and attack and the historical Japanese series announcement; retained ID and Japanese name are preserved."
+    },
+    {
+      "kind": "equipment",
+      "serverId": 652,
+      "projectId": "equipment.2.7",
+      "sourceRu": "Огненный топор ярости",
+      "sourceEn": "Flame Axe of Fury",
+      "legacyEn": "(Larva Axe)",
+      "evidence": "Fire-series correspondence reviewed against current source category, level, sockets and attack and the historical Japanese series announcement; retained ID and Japanese name are preserved."
+    },
+    {
+      "kind": "equipment",
+      "serverId": 852,
+      "projectId": "equipment.3.8",
+      "sourceRu": "Огненный топор бешенства",
+      "sourceEn": "Flame Axe of Frenzy",
+      "legacyEn": "(Kaiser Melt)",
+      "evidence": "Fire-series correspondence reviewed against current source category, level, sockets and attack and the historical Japanese series announcement; retained ID and Japanese name are preserved."
+    },
+    {
+      "kind": "equipment",
+      "serverId": 1052,
+      "projectId": "equipment.10.11",
+      "sourceRu": "Огненная палица лавы",
+      "sourceEn": "Lava Mace",
+      "legacyEn": "(Eruption Mace)",
+      "evidence": "Fire-series correspondence reviewed against current source category, level, sockets and attack and the historical Japanese series announcement; retained ID and Japanese name are preserved."
+    },
+    {
+      "kind": "equipment",
+      "serverId": 1252,
+      "projectId": "equipment.11.7",
+      "sourceRu": "Огненная палица магмы",
+      "sourceEn": "Magma Mace",
+      "legacyEn": "(Magneet Hammer)",
+      "evidence": "Fire-series correspondence reviewed against current source category, level, sockets and attack and the historical Japanese series announcement; retained ID and Japanese name are preserved."
+    },
+    {
+      "kind": "equipment",
+      "serverId": 1493,
+      "projectId": "equipment.5.9",
+      "sourceRu": "Огненное копье зари",
+      "sourceEn": "Dawnfire Spear",
+      "legacyEn": "(Flair Sting)",
+      "evidence": "Fire-series correspondence reviewed against current source category, level, sockets and attack and the historical Japanese series announcement; retained ID and Japanese name are preserved."
+    },
+    {
+      "kind": "equipment",
+      "serverId": 1652,
+      "projectId": "equipment.4.7",
+      "sourceRu": "Огненное копье заката",
+      "sourceEn": "Sunset Flame Spear",
+      "legacyEn": "(Vermilion Lance)",
+      "evidence": "Fire-series correspondence reviewed against current source category, level, sockets and attack and the historical Japanese series announcement; retained ID and Japanese name are preserved."
+    },
+    {
+      "kind": "equipment",
+      "serverId": 1862,
+      "projectId": "equipment.6.12",
+      "sourceRu": "Огненный кинжал зноя",
+      "sourceEn": "Scorching Dagger",
+      "legacyEn": "(sarmouse)",
+      "evidence": "Fire-series correspondence reviewed against current source category, level, sockets and attack and the historical Japanese series announcement; retained ID and Japanese name are preserved."
+    },
+    {
+      "kind": "equipment",
+      "serverId": 2042,
+      "projectId": "equipment.7.9",
+      "sourceRu": "Огненные когти жара",
+      "sourceEn": "Searing Claws",
+      "legacyEn": "(Blake Reeve)",
+      "evidence": "Fire-series correspondence reviewed against current source category, level, sockets and attack and the historical Japanese series announcement; retained ID and Japanese name are preserved."
+    },
+    {
+      "kind": "equipment",
+      "serverId": 2262,
+      "projectId": "equipment.8.12",
+      "sourceRu": "Огненный лук феникса",
+      "sourceEn": "Phoenix Bow",
+      "legacyEn": "(Raid Phoenix)",
+      "evidence": "Fire-series correspondence reviewed against current source category, level, sockets and attack and the historical Japanese series announcement; retained ID and Japanese name are preserved."
+    },
+    {
+      "kind": "equipment",
+      "serverId": 2442,
+      "projectId": "equipment.9.5",
+      "sourceRu": "Огненный арбалет джинна",
+      "sourceEn": "Djinn's Crossbow",
+      "legacyEn": "(Ifrit Cross)",
+      "evidence": "Fire-series correspondence reviewed against current source category, level, sockets and attack and the historical Japanese series announcement; retained ID and Japanese name are preserved."
+    },
+    {
+      "kind": "equipment",
+      "serverId": 2652,
+      "projectId": "equipment.12.12",
+      "sourceRu": "Огненный жезл искр",
+      "sourceEn": "Spark Wand",
+      "legacyEn": "(Burst Wand)",
+      "evidence": "Fire-series correspondence reviewed against current source category, level, sockets and attack and the historical Japanese series announcement; retained ID and Japanese name are preserved."
+    },
+    {
+      "kind": "equipment",
+      "serverId": 2852,
+      "projectId": "equipment.13.9",
+      "sourceRu": "Огненный посох вулкана",
+      "sourceEn": "Volcano Staff",
+      "legacyEn": "(Ignite Rod)",
+      "evidence": "Fire-series correspondence reviewed against current source category, level, sockets and attack and the historical Japanese series announcement; retained ID and Japanese name are preserved."
     }
   ]
 }
