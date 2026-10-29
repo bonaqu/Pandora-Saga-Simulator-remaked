@@ -1,5 +1,29 @@
 # Changelog
 
+## Modern 4.29 — огненное оружие, 2026-10-29
+
+<!-- release-notes:user:ru -->
+- **В каталог добавлены 14 актуальных огненных оружий:** их можно найти, надеть и использовать в билдах с сохранением совместимости прежних предметов.
+- Учтены характеристики и условия заточки огненным самоцветом. У огненного жезла искр дополнительная СД увеличивается с +7, а ИНТ остаётся неизменным.
+- Для оружия с «Пламенем феникса» вкладка «Атака → Особые эффекты оружия» показывает описанные шанс, основу урона и перезарядку. Итоговый урон по цели не рассчитывается.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **The catalog now includes 14 current fire weapons:** find and equip them in builds while retaining compatibility with existing items.
+- Their stats and Fire Gem enhancement conditions are included. Spark Wand gains additional SPR from +7; its INT bonus stays unchanged.
+- For weapons with Phoenix Flame, Attack → Special weapon effects shows the listed chance, base damage and cooldown. Final damage to a target is not calculated.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Опубликованы 14 существующих ID в редакции каталога 94; проверены сохранность старых редакций и черновиков, редактирование в админке и расчёты на работающем сайте. Сопоставления с игровыми ID добавлены в реестр для предотвращения дублей.
+- Сервер исправил таблицу улучшения жезла: СД вместо ИНТ. Значение проверено по обновлённому источнику и сообщению владельца об игре.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Publish 14 retained IDs in catalog revision 94; verify prior revisions, drafts, admin editing, and live calculations. Record reviewed server identity links to prevent duplicates.
+- The source corrected Spark Wand refinement from INT to SPR, consistent with the owner's in-game observation.
+<!-- /admin-notes:en -->
+
 ## Modern 4.28 — условия экипировки и дальность, 2026-10-29
 
 <!-- release-notes:user:ru -->

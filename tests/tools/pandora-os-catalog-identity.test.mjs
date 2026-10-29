@@ -2,6 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { auditIdentities } from '../../scripts/audit_pandora_os_catalog_identity.mjs';
 import { stableCustomId } from '../../scripts/materialize_pandora_os_identity_reconcile.mjs';
+import reviews from '../../data/current-source-identity-reviews.v1.json' with {type:'json'};
+import fire from '../fixtures/pandora-os-fire-series-20261029.json' with {type:'json'};
+import { baselineById } from '../../admin-api/src/catalog-baseline.mjs';
 
 test('distinguishes verified maps, published custom IDs, baseline, ambiguous identity and unverified name candidates', () => {
   const item = id => ({ id, slot: 'weapon', kind: '1H_SWORD', name: 'Вещь ' + id });
@@ -58,4 +61,18 @@ test('an owner-confirmed identity is explicit, preserves the old ID and fails on
   assert.equal(auditIdentities({...args,mapping:{equipment:[],souls:[{serverId:103023,projectId:'soul.28'}]}}).matched.length,1);
   assert.throws(()=>auditIdentities({...args,english:{souls:{103023:{n:'Changed'}}}}),/evidence changed/);
   assert.throws(()=>auditIdentities({...args,identityReviews:[review,review]}),/duplicate/);
+});
+
+test('all reviewed fire weapon links preserve one historical identity and both current names',()=>{
+  const linked=reviews.reviews.filter(row=>row.kind==='equipment');
+  assert.equal(linked.length,14);
+  assert.equal(new Set(linked.map(row=>row.serverId)).size,14);
+  assert.equal(new Set(linked.map(row=>row.projectId)).size,14);
+  for(const row of linked){
+    const source=fire.sources.find(item=>item.serverId===row.serverId);
+    const record=fire.records.find(item=>item.id===row.projectId),original=baselineById.get(row.projectId);
+    assert.equal(source.id,row.projectId);assert.equal(record.names.ru,row.sourceRu);
+    assert.equal(record.names.en,row.sourceEn);assert.equal(original.name.en,row.legacyEn);
+    assert.equal(record.engineKey,original.name.jp);assert.equal(record.names.jp,original.name.jp);
+  }
 });

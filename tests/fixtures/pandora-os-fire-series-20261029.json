@@ -1,0 +1,2262 @@
+{
+  "records": [
+    {
+      "id": "equipment.0.13",
+      "kind": "equipment",
+      "category": 0,
+      "index": 13,
+      "engineId": 13,
+      "engineKey": "炎剣フレイムブレイド",
+      "names": {
+        "en": "Flameblade",
+        "ru": "Огненный меч пламени",
+        "jp": "炎剣フレイムブレイド",
+        "tw": "(火焰劍火焰劍)"
+      },
+      "description": {
+        "en": "A sword forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+5% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second.",
+        "ru": "Меч, рождённый в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+5% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "jp": "",
+        "tw": ""
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "_課金ショップ(2480PP)_2",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 40,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "18=W62_148=5",
+      "baseRange": 100,
+      "compatibility": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1
+      ],
+      "nativeUpgradePolicy": "replace-legacy-fire-weapon",
+      "procEffects": [
+        {
+          "kind": "burn",
+          "chance": 2,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire"
+        },
+        {
+          "kind": "special_magic_damage",
+          "chance": 5,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire",
+          "names": {
+            "en": "Phoenix Flame",
+            "ru": "Пламя феникса",
+            "jp": "",
+            "tw": ""
+          },
+          "damageStat": "STR",
+          "chanceStep": 5,
+          "baseDamage": 25,
+          "damageStep": 25,
+          "statPercent": 25,
+          "statPercentStep": 25,
+          "cooldownSeconds": 5,
+          "cooldownReduction": 1
+        }
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.1.9",
+      "kind": "equipment",
+      "category": 1,
+      "index": 9,
+      "engineId": 10009,
+      "engineKey": "炎剣レーヴァテイン",
+      "names": {
+        "en": "Soulfire Blade",
+        "ru": "Огненный меч пылающей души",
+        "jp": "炎剣レーヴァテイン",
+        "tw": "(燃燒的劍 Revatein)"
+      },
+      "description": {
+        "en": "A sword forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+5% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second.",
+        "ru": "Меч, рождённый в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+5% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "jp": "",
+        "tw": ""
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "_課金ショップ(2480PP)_2",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 40,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "18=W101_148=5",
+      "baseRange": 220,
+      "compatibility": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "nativeUpgradePolicy": "replace-legacy-fire-weapon",
+      "procEffects": [
+        {
+          "kind": "burn",
+          "chance": 2,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire"
+        },
+        {
+          "kind": "special_magic_damage",
+          "chance": 5,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire",
+          "names": {
+            "en": "Phoenix Flame",
+            "ru": "Пламя феникса",
+            "jp": "",
+            "tw": ""
+          },
+          "damageStat": "STR",
+          "chanceStep": 5,
+          "baseDamage": 25,
+          "damageStep": 25,
+          "statPercent": 25,
+          "statPercentStep": 25,
+          "cooldownSeconds": 5,
+          "cooldownReduction": 1
+        }
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.2.7",
+      "kind": "equipment",
+      "category": 2,
+      "index": 7,
+      "engineId": 20007,
+      "engineKey": "炎斧ラーバアクス",
+      "names": {
+        "en": "Flame Axe of Fury",
+        "ru": "Огненный топор ярости",
+        "jp": "炎斧ラーバアクス",
+        "tw": "(斧消防斧幼蟲)"
+      },
+      "description": {
+        "en": "An axe forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+5% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second.",
+        "ru": "Топор, рождённый в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+5% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "jp": "",
+        "tw": ""
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "_課金ショップ(2480PP)_2",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 40,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "18=W70_148=5",
+      "baseRange": 100,
+      "compatibility": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "nativeUpgradePolicy": "replace-legacy-fire-weapon",
+      "procEffects": [
+        {
+          "kind": "burn",
+          "chance": 2,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire"
+        },
+        {
+          "kind": "special_magic_damage",
+          "chance": 5,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire",
+          "names": {
+            "en": "Phoenix Flame",
+            "ru": "Пламя феникса",
+            "jp": "",
+            "tw": ""
+          },
+          "damageStat": "STR",
+          "chanceStep": 5,
+          "baseDamage": 25,
+          "damageStep": 25,
+          "statPercent": 25,
+          "statPercentStep": 25,
+          "cooldownSeconds": 5,
+          "cooldownReduction": 1
+        }
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.3.8",
+      "kind": "equipment",
+      "category": 3,
+      "index": 8,
+      "engineId": 30008,
+      "engineKey": "炎斧メルトカイザー",
+      "names": {
+        "en": "Flame Axe of Frenzy",
+        "ru": "Огненный топор бешенства",
+        "jp": "炎斧メルトカイザー",
+        "tw": "(火焰凱撒融化斧頭)"
+      },
+      "description": {
+        "en": "An axe forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+5% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second.",
+        "ru": "Топор, рождённый в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+5% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "jp": "",
+        "tw": ""
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "_課金ショップ(2480PP)_2",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 40,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "18=W106_148=5",
+      "baseRange": 150,
+      "compatibility": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "nativeUpgradePolicy": "replace-legacy-fire-weapon",
+      "procEffects": [
+        {
+          "kind": "burn",
+          "chance": 2,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire"
+        },
+        {
+          "kind": "special_magic_damage",
+          "chance": 5,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire",
+          "names": {
+            "en": "Phoenix Flame",
+            "ru": "Пламя феникса",
+            "jp": "",
+            "tw": ""
+          },
+          "damageStat": "STR",
+          "chanceStep": 5,
+          "baseDamage": 25,
+          "damageStep": 25,
+          "statPercent": 25,
+          "statPercentStep": 25,
+          "cooldownSeconds": 5,
+          "cooldownReduction": 1
+        }
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.10.11",
+      "kind": "equipment",
+      "category": 10,
+      "index": 11,
+      "engineId": 100011,
+      "engineKey": "炎棍イラプションメイス",
+      "names": {
+        "en": "Lava Mace",
+        "ru": "Огненная палица лавы",
+        "jp": "炎棍イラプションメイス",
+        "tw": "(梅斯棍火噴發)"
+      },
+      "description": {
+        "en": "A mace forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+5% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second.",
+        "ru": "Булава, рожденная в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+5% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "jp": "",
+        "tw": ""
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "_課金ショップ(2480PP)_2",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 40,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "18=W59_148=5",
+      "baseRange": 120,
+      "compatibility": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "nativeUpgradePolicy": "replace-legacy-fire-weapon",
+      "procEffects": [
+        {
+          "kind": "burn",
+          "chance": 2,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire"
+        },
+        {
+          "kind": "special_magic_damage",
+          "chance": 5,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire",
+          "names": {
+            "en": "Phoenix Flame",
+            "ru": "Пламя феникса",
+            "jp": "",
+            "tw": ""
+          },
+          "damageStat": "STR",
+          "chanceStep": 5,
+          "baseDamage": 25,
+          "damageStep": 25,
+          "statPercent": 25,
+          "statPercentStep": 25,
+          "cooldownSeconds": 5,
+          "cooldownReduction": 1
+        }
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.11.7",
+      "kind": "equipment",
+      "category": 11,
+      "index": 7,
+      "engineId": 110007,
+      "engineKey": "炎棍マグニートハンマー",
+      "names": {
+        "en": "Magma Mace",
+        "ru": "Огненная палица магмы",
+        "jp": "炎棍マグニートハンマー",
+        "tw": "(消防錘棍Magunito)"
+      },
+      "description": {
+        "en": "A mace forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+5% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second.",
+        "ru": "Булава, рожденная в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+5% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "jp": "",
+        "tw": ""
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "_課金ショップ(2480PP)_2",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 40,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "18=W89_148=5",
+      "baseRange": 190,
+      "compatibility": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "nativeUpgradePolicy": "replace-legacy-fire-weapon",
+      "procEffects": [
+        {
+          "kind": "burn",
+          "chance": 2,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire"
+        },
+        {
+          "kind": "special_magic_damage",
+          "chance": 5,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire",
+          "names": {
+            "en": "Phoenix Flame",
+            "ru": "Пламя феникса",
+            "jp": "",
+            "tw": ""
+          },
+          "damageStat": "STR",
+          "chanceStep": 5,
+          "baseDamage": 25,
+          "damageStep": 25,
+          "statPercent": 25,
+          "statPercentStep": 25,
+          "cooldownSeconds": 5,
+          "cooldownReduction": 1
+        }
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.5.9",
+      "kind": "equipment",
+      "category": 5,
+      "index": 9,
+      "engineId": 50009,
+      "engineKey": "炎槍フレアスティング",
+      "names": {
+        "en": "Dawnfire Spear",
+        "ru": "Огненное копье зари",
+        "jp": "炎槍フレアスティング",
+        "tw": "(刺矛火焰彈)"
+      },
+      "description": {
+        "en": "A spear forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+3% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second.",
+        "ru": "Копье, рожденное в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+3% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "jp": "",
+        "tw": ""
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "_課金ショップ(2480PP)_2",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 40,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "18=W99_148=5",
+      "baseRange": 280,
+      "compatibility": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "nativeUpgradePolicy": "replace-legacy-fire-weapon",
+      "procEffects": [
+        {
+          "kind": "burn",
+          "chance": 2,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire"
+        },
+        {
+          "kind": "special_magic_damage",
+          "chance": 3,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire",
+          "names": {
+            "en": "Phoenix Flame",
+            "ru": "Пламя феникса",
+            "jp": "",
+            "tw": ""
+          },
+          "damageStat": "STR",
+          "chanceStep": 3,
+          "baseDamage": 25,
+          "damageStep": 25,
+          "statPercent": 25,
+          "statPercentStep": 25,
+          "cooldownSeconds": 5,
+          "cooldownReduction": 1
+        }
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.4.7",
+      "kind": "equipment",
+      "category": 4,
+      "index": 7,
+      "engineId": 40007,
+      "engineKey": "炎槍ヴァーミリオンランス",
+      "names": {
+        "en": "Sunset Flame Spear",
+        "ru": "Огненное копье заката",
+        "jp": "炎槍ヴァーミリオンランス",
+        "tw": "(火焰槍槍弗米利恩)"
+      },
+      "description": {
+        "en": "A spear forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +10%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>Fire magic resistance +3",
+        "ru": "Копье, рожденное в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +10%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>Сопротивляемость магии огня +3",
+        "jp": "",
+        "tw": ""
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "_課金ショップ(2480PP)_2",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 40,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "18=W71_148=10",
+      "baseRange": 300,
+      "compatibility": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "upgradeBonuses": [
+        {
+          "stat": 138,
+          "unit": "flat",
+          "value": 3,
+          "every": 1,
+          "from": 7,
+          "to": 10,
+          "gemElement": "fire"
+        }
+      ],
+      "nativeUpgradePolicy": "replace-legacy-fire-weapon",
+      "procEffects": [
+        {
+          "kind": "burn",
+          "chance": 2,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire"
+        }
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.6.12",
+      "kind": "equipment",
+      "category": 6,
+      "index": 12,
+      "engineId": 60012,
+      "engineKey": "炎剣サーマウス",
+      "names": {
+        "en": "Scorching Dagger",
+        "ru": "Огненный кинжал зноя",
+        "jp": "炎剣サーマウス",
+        "tw": "(主席先生鼠標火焰的劍)"
+      },
+      "description": {
+        "en": "A dagger forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>Fire magic attack +1%<br>+3% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of INT, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of INT and reduces the cooldown by 1 second.",
+        "ru": "Кинжал, рождённый в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>Магическая атака огнем +1%<br>+3% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от ИНТ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от ИНТ и сокращает откат на 1 секунду.",
+        "jp": "",
+        "tw": ""
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "_課金ショップ(2480PP)_2",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 40,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "18=W53_148=5",
+      "baseRange": 190,
+      "compatibility": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "upgradeBonuses": [
+        {
+          "stat": 43,
+          "unit": "flat",
+          "value": 1,
+          "every": 1,
+          "from": 7,
+          "to": 10,
+          "gemElement": "fire"
+        }
+      ],
+      "nativeUpgradePolicy": "replace-legacy-fire-weapon",
+      "procEffects": [
+        {
+          "kind": "special_magic_damage",
+          "chance": 3,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire",
+          "names": {
+            "en": "Phoenix Flame",
+            "ru": "Пламя феникса",
+            "jp": "",
+            "tw": ""
+          },
+          "damageStat": "INT",
+          "chanceStep": 3,
+          "baseDamage": 25,
+          "damageStep": 25,
+          "statPercent": 25,
+          "statPercentStep": 25,
+          "cooldownSeconds": 5,
+          "cooldownReduction": 1
+        }
+      ],
+      "parameter6": 1,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.7.9",
+      "kind": "equipment",
+      "category": 7,
+      "index": 9,
+      "engineId": 70009,
+      "engineKey": "炎爪ブレイクリーブ",
+      "names": {
+        "en": "Searing Claws",
+        "ru": "Огненные когти жара",
+        "jp": "炎爪ブレイクリーブ",
+        "tw": "(克利夫布雷火爪)"
+      },
+      "description": {
+        "en": "A pair of claws forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+3% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second.",
+        "ru": "Кастеты, рождённые в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+3% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "jp": "",
+        "tw": ""
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "_課金ショップ(2480PP)_2",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 40,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "18=W57_148=5",
+      "baseRange": 150,
+      "compatibility": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "nativeUpgradePolicy": "replace-legacy-fire-weapon",
+      "procEffects": [
+        {
+          "kind": "burn",
+          "chance": 2,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire"
+        },
+        {
+          "kind": "special_magic_damage",
+          "chance": 3,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire",
+          "names": {
+            "en": "Phoenix Flame",
+            "ru": "Пламя феникса",
+            "jp": "",
+            "tw": ""
+          },
+          "damageStat": "STR",
+          "chanceStep": 3,
+          "baseDamage": 25,
+          "damageStep": 25,
+          "statPercent": 25,
+          "statPercentStep": 25,
+          "cooldownSeconds": 5,
+          "cooldownReduction": 1
+        }
+      ],
+      "parameter6": 1,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.8.12",
+      "kind": "equipment",
+      "category": 8,
+      "index": 12,
+      "engineId": 80012,
+      "engineKey": "炎弓レイドフェニックス",
+      "names": {
+        "en": "Phoenix Bow",
+        "ru": "Огненный лук феникса",
+        "jp": "炎弓レイドフェニックス",
+        "tw": "(鳳凰消防拱里德)"
+      },
+      "description": {
+        "en": "A bow forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+3% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second.",
+        "ru": "Лук, рождённый в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+3% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "jp": "",
+        "tw": ""
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "_課金ショップ(2480PP)_2",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 40,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "18=W122_148=5",
+      "baseRange": 3500,
+      "compatibility": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "nativeUpgradePolicy": "replace-legacy-fire-weapon",
+      "procEffects": [
+        {
+          "kind": "burn",
+          "chance": 2,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire"
+        },
+        {
+          "kind": "special_magic_damage",
+          "chance": 3,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire",
+          "names": {
+            "en": "Phoenix Flame",
+            "ru": "Пламя феникса",
+            "jp": "",
+            "tw": ""
+          },
+          "damageStat": "STR",
+          "chanceStep": 3,
+          "baseDamage": 25,
+          "damageStep": 25,
+          "statPercent": 25,
+          "statPercentStep": 25,
+          "cooldownSeconds": 5,
+          "cooldownReduction": 1
+        }
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.9.5",
+      "kind": "equipment",
+      "category": 9,
+      "index": 5,
+      "engineId": 90005,
+      "engineKey": "炎弓イフリートクロス",
+      "names": {
+        "en": "Djinn's Crossbow",
+        "ru": "Огненный арбалет джинна",
+        "jp": "炎弓イフリートクロス",
+        "tw": "(十字弓火魔神)"
+      },
+      "description": {
+        "en": "A crossbow forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+3% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second.",
+        "ru": "Арбалет, рождённый в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+3% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "jp": "",
+        "tw": ""
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "_課金ショップ(2480PP)_2",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 40,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "18=W79_148=5",
+      "baseRange": 1250,
+      "compatibility": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "nativeUpgradePolicy": "replace-legacy-fire-weapon",
+      "procEffects": [
+        {
+          "kind": "burn",
+          "chance": 2,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire"
+        },
+        {
+          "kind": "special_magic_damage",
+          "chance": 3,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire",
+          "names": {
+            "en": "Phoenix Flame",
+            "ru": "Пламя феникса",
+            "jp": "",
+            "tw": ""
+          },
+          "damageStat": "STR",
+          "chanceStep": 3,
+          "baseDamage": 25,
+          "damageStep": 25,
+          "statPercent": 25,
+          "statPercentStep": 25,
+          "cooldownSeconds": 5,
+          "cooldownReduction": 1
+        }
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.12.12",
+      "kind": "equipment",
+      "category": 12,
+      "index": 12,
+      "engineId": 120012,
+      "engineKey": "炎杖バーストワンド",
+      "names": {
+        "en": "Spark Wand",
+        "ru": "Огненный жезл искр",
+        "jp": "炎杖バーストワンド",
+        "tw": "(突發火災魔杖魔杖)"
+      },
+      "description": {
+        "en": "A wand forged in a purifying blaze that burned a soul to ash. <br><br>STA +2, INT +4, SPI +3<br>Burn resistance +5%<br>Skill cooldown -5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>SPI +1<br>Fire magic resistance +4",
+        "ru": "Жезл, рождённый в очистительном пламени, где дотла сгорела душа. <br><br>ВЫН +2, ИНТ +4, СД+3<br>Сопротивляемость ожогам +5%<br>Время перезарядки умения -5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>СД +1<br>Сопротивляемость магии огня +4",
+        "jp": "体力+1、器用+3、知性+3",
+        "tw": "體力+1¸ 技巧+3¸ 智慧+3"
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "_課金ショップ(2480PP)_2",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 40,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "18=W36_0=2_4=3_5=4_79=-5_148=5",
+      "baseRange": 120,
+      "compatibility": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "upgradeBonuses": [
+        {
+          "stat": 4,
+          "unit": "flat",
+          "value": 1,
+          "every": 1,
+          "from": 7,
+          "to": 10,
+          "gemElement": "fire"
+        },
+        {
+          "stat": 138,
+          "unit": "flat",
+          "value": 4,
+          "every": 1,
+          "from": 7,
+          "to": 10,
+          "gemElement": "fire"
+        }
+      ],
+      "nativeUpgradePolicy": "replace-legacy-fire-wand",
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    },
+    {
+      "id": "equipment.13.9",
+      "kind": "equipment",
+      "category": 13,
+      "index": 9,
+      "engineId": 130009,
+      "engineKey": "炎杖イグニートロッド",
+      "names": {
+        "en": "Volcano Staff",
+        "ru": "Огненный посох вулкана",
+        "jp": "炎杖イグニートロッド",
+        "tw": "(Igunito甘蔗桿火焰)"
+      },
+      "description": {
+        "en": "A staff forged in a purifying blaze that burned a soul to ash. <br><br>INT +6, DEX +4, SPI +4<br>Burn resistance +5%<br>Magic attack +20%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>INT +1<br>+3% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of INT, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of INT and reduces the cooldown by 1 second.",
+        "ru": "Посох, рождённый в очистительном пламени, где дотла сгорела душа. <br><br>ИНТ +6, ЛВК +4, СД +4<br>Сопротивляемость ожогам +5%<br>Магическая атака +20%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>ИНТ +1<br>+3% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от ИНТ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от ИНТ и сокращает откат на 1 секунду.",
+        "jp": "体力+4、器用+5、知性+5",
+        "tw": "體力+4¸ 技巧+5¸ 智慧+5"
+      },
+      "notes": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "acquisition": {
+        "en": "",
+        "ru": "",
+        "jp": "_課金ショップ(2480PP)_2",
+        "tw": ""
+      },
+      "modifiers": {
+        "en": "",
+        "ru": "",
+        "jp": "",
+        "tw": ""
+      },
+      "level": 40,
+      "sockets": 2,
+      "disabled": false,
+      "calculationCode": "18=W48_3=4_4=4_5=6_42=20_148=5",
+      "baseRange": 150,
+      "compatibility": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "upgradeBonuses": [
+        {
+          "stat": 5,
+          "unit": "flat",
+          "value": 1,
+          "every": 1,
+          "from": 7,
+          "to": 10,
+          "gemElement": "fire"
+        }
+      ],
+      "nativeUpgradePolicy": "replace-legacy-fire-wand",
+      "procEffects": [
+        {
+          "kind": "special_magic_damage",
+          "chance": 3,
+          "from": 7,
+          "every": 1,
+          "to": 10,
+          "gemElement": "fire",
+          "names": {
+            "en": "Phoenix Flame",
+            "ru": "Пламя феникса",
+            "jp": "",
+            "tw": ""
+          },
+          "damageStat": "INT",
+          "chanceStep": 3,
+          "baseDamage": 25,
+          "damageStep": 25,
+          "statPercent": 25,
+          "statPercentStep": 25,
+          "cooldownSeconds": 5,
+          "cooldownReduction": 1
+        }
+      ],
+      "parameter6": 0,
+      "soulParameters": [
+        "",
+        ""
+      ],
+      "trailing": ""
+    }
+  ],
+  "sources": [
+    {
+      "serverId": 252,
+      "id": "equipment.0.13",
+      "source": {
+        "slot": "weapon",
+        "itemKind": "1H_SWORD",
+        "twoHanded": false,
+        "level": 40,
+        "sockets": 2,
+        "soulSlots": null,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "DARKROAR": 1,
+          "CALAMITY": 1
+        },
+        "W": 62,
+        "PEN": 70,
+        "range": 100,
+        "atkspeed": 60,
+        "AC": null,
+        "block": null,
+        "effects": [
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 5,
+            "b": null
+          }
+        ],
+        "descriptionRu": "Меч, рождённый в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+5% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "descriptionEn": "A sword forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+5% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second."
+      }
+    },
+    {
+      "serverId": 452,
+      "id": "equipment.1.9",
+      "source": {
+        "slot": "weapon",
+        "itemKind": "2H_SWORD",
+        "twoHanded": true,
+        "level": 40,
+        "sockets": 2,
+        "soulSlots": null,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1
+        },
+        "W": 101,
+        "PEN": 80,
+        "range": 220,
+        "atkspeed": 40,
+        "AC": null,
+        "block": null,
+        "effects": [
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 5,
+            "b": null
+          }
+        ],
+        "descriptionRu": "Меч, рождённый в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+5% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "descriptionEn": "A sword forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+5% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second."
+      }
+    },
+    {
+      "serverId": 652,
+      "id": "equipment.2.7",
+      "source": {
+        "slot": "weapon",
+        "itemKind": "1H_AXE",
+        "twoHanded": false,
+        "level": 40,
+        "sockets": 2,
+        "soulSlots": null,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1
+        },
+        "W": 70,
+        "PEN": 100,
+        "range": 100,
+        "atkspeed": 55,
+        "AC": null,
+        "block": null,
+        "effects": [
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 5,
+            "b": null
+          }
+        ],
+        "descriptionRu": "Топор, рождённый в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+5% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "descriptionEn": "An axe forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+5% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second."
+      }
+    },
+    {
+      "serverId": 852,
+      "id": "equipment.3.8",
+      "source": {
+        "slot": "weapon",
+        "itemKind": "2H_AXE",
+        "twoHanded": true,
+        "level": 40,
+        "sockets": 2,
+        "soulSlots": null,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1
+        },
+        "W": 106,
+        "PEN": 140,
+        "range": 150,
+        "atkspeed": 45,
+        "AC": null,
+        "block": null,
+        "effects": [
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 5,
+            "b": null
+          }
+        ],
+        "descriptionRu": "Топор, рождённый в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+5% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "descriptionEn": "An axe forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+5% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second."
+      }
+    },
+    {
+      "serverId": 1052,
+      "id": "equipment.10.11",
+      "source": {
+        "slot": "weapon",
+        "itemKind": "1H_BLUNT_WEAPON",
+        "twoHanded": false,
+        "level": 40,
+        "sockets": 2,
+        "soulSlots": null,
+        "classes": {
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1
+        },
+        "W": 59,
+        "PEN": 80,
+        "range": 120,
+        "atkspeed": 60,
+        "AC": null,
+        "block": null,
+        "effects": [
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 5,
+            "b": null
+          }
+        ],
+        "descriptionRu": "Булава, рожденная в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+5% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "descriptionEn": "A mace forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+5% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second."
+      }
+    },
+    {
+      "serverId": 1252,
+      "id": "equipment.11.7",
+      "source": {
+        "slot": "weapon",
+        "itemKind": "2H_BLUNT_WEAPON",
+        "twoHanded": true,
+        "level": 40,
+        "sockets": 2,
+        "soulSlots": null,
+        "classes": {
+          "ASCETIC": 1,
+          "MONK": 1,
+          "EXORCIST": 1
+        },
+        "W": 89,
+        "PEN": 85,
+        "range": 190,
+        "atkspeed": 60,
+        "AC": null,
+        "block": null,
+        "effects": [
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 5,
+            "b": null
+          }
+        ],
+        "descriptionRu": "Булава, рожденная в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+5% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "descriptionEn": "A mace forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+5% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second."
+      }
+    },
+    {
+      "serverId": 1493,
+      "id": "equipment.5.9",
+      "source": {
+        "slot": "weapon",
+        "itemKind": "POLE_ARM",
+        "twoHanded": true,
+        "level": 40,
+        "sockets": 2,
+        "soulSlots": null,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1
+        },
+        "W": 99,
+        "PEN": 120,
+        "range": 280,
+        "atkspeed": 45,
+        "AC": null,
+        "block": null,
+        "effects": [
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 5,
+            "b": null
+          }
+        ],
+        "descriptionRu": "Копье, рожденное в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+3% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "descriptionEn": "A spear forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+3% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second."
+      }
+    },
+    {
+      "serverId": 1652,
+      "id": "equipment.4.7",
+      "source": {
+        "slot": "weapon",
+        "itemKind": "LANCE",
+        "twoHanded": false,
+        "level": 40,
+        "sockets": 2,
+        "soulSlots": null,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1
+        },
+        "W": 71,
+        "PEN": 140,
+        "range": 300,
+        "atkspeed": 45,
+        "AC": null,
+        "block": null,
+        "effects": [
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 10,
+            "b": null
+          }
+        ],
+        "descriptionRu": "Копье, рожденное в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +10%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>Сопротивляемость магии огня +3",
+        "descriptionEn": "A spear forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +10%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>Fire magic resistance +3"
+      }
+    },
+    {
+      "serverId": 1862,
+      "id": "equipment.6.12",
+      "source": {
+        "slot": "weapon",
+        "itemKind": "1H_TRUMP_WEAPON",
+        "twoHanded": false,
+        "level": 40,
+        "sockets": 2,
+        "soulSlots": null,
+        "classes": {
+          "WARRIOR": 1,
+          "GLADIATOR": 1,
+          "KNIGHT": 1,
+          "JUGGERNAUT": 1,
+          "DRAGOON": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "AGENT": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1,
+          "CALAMITY": 1
+        },
+        "W": 53,
+        "PEN": 130,
+        "range": 190,
+        "atkspeed": 68,
+        "AC": null,
+        "block": null,
+        "effects": [
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 5,
+            "b": null
+          }
+        ],
+        "descriptionRu": "Кинжал, рождённый в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>Магическая атака огнем +1%<br>+3% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от ИНТ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от ИНТ и сокращает откат на 1 секунду.",
+        "descriptionEn": "A dagger forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>Fire magic attack +1%<br>+3% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of INT, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of INT and reduces the cooldown by 1 second."
+      }
+    },
+    {
+      "serverId": 2042,
+      "id": "equipment.7.9",
+      "source": {
+        "slot": "weapon",
+        "itemKind": "2H_TRUMP_WEAPON",
+        "twoHanded": true,
+        "level": 40,
+        "sockets": 2,
+        "soulSlots": null,
+        "classes": {
+          "WARRIOR": 1,
+          "AGENT": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1
+        },
+        "W": 57,
+        "PEN": 150,
+        "range": 150,
+        "atkspeed": 73,
+        "AC": null,
+        "block": null,
+        "effects": [
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 5,
+            "b": null
+          }
+        ],
+        "descriptionRu": "Кастеты, рождённые в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+3% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "descriptionEn": "A pair of claws forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+3% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second."
+      }
+    },
+    {
+      "serverId": 2262,
+      "id": "equipment.8.12",
+      "source": {
+        "slot": "weapon",
+        "itemKind": "BOW",
+        "twoHanded": true,
+        "level": 40,
+        "sockets": 2,
+        "soulSlots": null,
+        "classes": {
+          "ARCHER": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1
+        },
+        "W": 122,
+        "PEN": 80,
+        "range": 3500,
+        "atkspeed": 50,
+        "AC": null,
+        "block": null,
+        "effects": [
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 5,
+            "b": null
+          }
+        ],
+        "descriptionRu": "Лук, рождённый в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+3% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "descriptionEn": "A bow forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+3% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second."
+      }
+    },
+    {
+      "serverId": 2442,
+      "id": "equipment.9.5",
+      "source": {
+        "slot": "weapon",
+        "itemKind": "CROSSBOW",
+        "twoHanded": true,
+        "level": 40,
+        "sockets": 2,
+        "soulSlots": null,
+        "classes": {
+          "KNIGHT": 1,
+          "GENERAL": 1,
+          "PALADIN": 1,
+          "SCOUT": 1,
+          "ARCHER": 1,
+          "AGENT": 1,
+          "SNIPER": 1,
+          "PREDATOR": 1,
+          "ASSASSIN": 1,
+          "DISTURBANCE": 1
+        },
+        "W": 79,
+        "PEN": 90,
+        "range": 1250,
+        "atkspeed": 60,
+        "AC": null,
+        "block": null,
+        "effects": [
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 5,
+            "b": null
+          }
+        ],
+        "descriptionRu": "Арбалет, рождённый в очистительном пламени, где дотла сгорела душа. Жгучее сияние не угаснет, пока он не исполнит начертанное.<br><br>Сопротивляемость ожогам +5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>+2% шанс наложить Ожог<br>+3% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от СИЛ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от СИЛ и сокращает откат на 1 секунду.",
+        "descriptionEn": "A crossbow forged in a purifying blaze that burned a soul to ash. Its searing glow will not fade until it fulfills its purpose.<br><br>Burn resistance +5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>+2% chance to inflict Burn<br>+3% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of STR, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of STR and reduces the cooldown by 1 second."
+      }
+    },
+    {
+      "serverId": 2652,
+      "id": "equipment.12.12",
+      "source": {
+        "slot": "weapon",
+        "itemKind": "WAND",
+        "twoHanded": false,
+        "level": 40,
+        "sockets": 2,
+        "soulSlots": null,
+        "classes": {
+          "ACOLYTE": 1,
+          "PRIEST": 1,
+          "ASCETIC": 1,
+          "CLERIC": 1,
+          "ENCHANTER": 1,
+          "MONK": 1,
+          "EXORCIST": 1,
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "W": 36,
+        "PEN": 50,
+        "range": 120,
+        "atkspeed": 60,
+        "AC": null,
+        "block": null,
+        "effects": [
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 4,
+            "b": null
+          },
+          {
+            "func": "EP_SKILL_BENCH",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": -5,
+            "b": null
+          },
+          {
+            "func": "EP_SPIRITUAL_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 3,
+            "b": null
+          },
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 5,
+            "b": null
+          },
+          {
+            "func": "EP_VITARITY_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 2,
+            "b": null
+          }
+        ],
+        "descriptionRu": "Жезл, рождённый в очистительном пламени, где дотла сгорела душа. <br><br>ВЫН +2, ИНТ +4, СД+3<br>Сопротивляемость ожогам +5%<br>Время перезарядки умения -5%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>СД +1<br>Сопротивляемость магии огня +4",
+        "descriptionEn": "A wand forged in a purifying blaze that burned a soul to ash. <br><br>STA +2, INT +4, SPI +3<br>Burn resistance +5%<br>Skill cooldown -5%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>SPI +1<br>Fire magic resistance +4"
+      }
+    },
+    {
+      "serverId": 2852,
+      "id": "equipment.13.9",
+      "source": {
+        "slot": "weapon",
+        "itemKind": "STAFF",
+        "twoHanded": true,
+        "level": 40,
+        "sockets": 2,
+        "soulSlots": null,
+        "classes": {
+          "MAGE": 1,
+          "WIZARD": 1,
+          "DARKROAR": 1,
+          "WARLOCK": 1,
+          "CONJURER": 1,
+          "JESTER": 1,
+          "CALAMITY": 1
+        },
+        "W": 48,
+        "PEN": 55,
+        "range": 150,
+        "atkspeed": 55,
+        "AC": null,
+        "block": null,
+        "effects": [
+          {
+            "func": "EP_INTELIGENCE_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 6,
+            "b": null
+          },
+          {
+            "func": "EP_ELEMENT_DAMAGE_SCALE",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 20,
+            "b": null
+          },
+          {
+            "func": "EP_DEXTERITY_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 4,
+            "b": null
+          },
+          {
+            "func": "EP_SPIRITUAL_CONST",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 4,
+            "b": null
+          },
+          {
+            "func": "EP_IMMUNE_BURN",
+            "dir": "TARGET",
+            "exclusive": null,
+            "a": 5,
+            "b": null
+          }
+        ],
+        "descriptionRu": "Посох, рождённый в очистительном пламени, где дотла сгорела душа. <br><br>ИНТ +6, ЛВК +4, СД +4<br>Сопротивляемость ожогам +5%<br>Магическая атака +20%<br>Закалка самоцветом огня, начиная с +7 и за каждый уровень:<br>ИНТ +1<br>+3% шанс призвать Пламя феникса<br><br>Пламя феникса: 25 урона + 25% от ИНТ, не чаще 1 раза в 5 секунд.<br>Каждое следующее улучшение +25 и 25% от ИНТ и сокращает откат на 1 секунду.",
+        "descriptionEn": "A staff forged in a purifying blaze that burned a soul to ash. <br><br>INT +6, DEX +4, SPI +4<br>Burn resistance +5%<br>Magic attack +20%<br>When enhanced with a Fire Gem, starting at +7, per enhancement level:<br>INT +1<br>+3% chance to summon Phoenix Flame<br><br>Phoenix Flame: 25 damage + 25% of INT, at most 1 activation every 5 seconds.<br>Each further enhancement adds +25 damage and 25% of INT and reduces the cooldown by 1 second."
+      }
+    }
+  ]
+}
