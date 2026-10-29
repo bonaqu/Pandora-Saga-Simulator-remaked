@@ -5,11 +5,13 @@
 <!-- release-notes:user:ru -->
 - В расчёте дальности ближнего и дальнего боя учитываются заданные в каталоге бонусы оружия, экипировки, душ и расовых умений. Для непроверенной дальности сохраняется обозначение неизвестного значения.
 - Подсказки экипировки показывают заданные условия улучшения и особые эффекты оружия; при обновлении каталога изменения правил усиления отражаются в отчёте переноса билда.
+- Окно «Атака» остаётся в пределах экрана при уменьшении высоты окна браузера.
 <!-- /release-notes:user:ru -->
 
 <!-- release-notes:user:en -->
 - Melee and ranged attack range calculations include weapon, equipment, soul and racial bonuses when configured in the catalog. Unverified range remains marked as unknown.
 - Equipment details show configured enhancement conditions and special weapon effects; build migration reports changes to enhancement rules when the catalog is updated.
+- The Attack panel stays within the screen when the browser window becomes shorter.
 <!-- /release-notes:user:en -->
 
 <!-- admin-notes:ru -->

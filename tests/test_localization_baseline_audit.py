@@ -24,9 +24,10 @@ class LocalizationBaselineAuditTests(unittest.TestCase):
         self.assertEqual(data['legacySource']['tw'],2618)
         # All 14 Potion Effects labels and hints are now approved RU fallbacks.
         self.assertEqual(data['legacySource']['ruApproved'],672)
-        self.assertGreaterEqual(data['uiCoverage']['ru']['approved'],data['metadata']['uiKeyCount']-19)
+        self.assertLessEqual(len(data['uiCoverage']['ru']['effectiveMissingIds']),19)
         for lang in ('jp','tw'):
-            self.assertEqual(data['uiCoverage'][lang]['missingIds'],['test.englishOnly'])
+            self.assertEqual(data['uiCoverage'][lang]['effectiveMissingIds'],['test.englishOnly'])
+            self.assertGreater(data['uiCoverage'][lang]['fallback'],0)
         self.assertEqual(data['byCategory']['equipment']['total'],1120)
         self.assertEqual(data['byCategory']['skill_detail']['total'],633)
         # This lists *source* gaps only, never claims published D1 is missing.

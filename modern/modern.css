@@ -764,6 +764,12 @@ body.remaked-modern {
 .remaked-modern #body [data-remaked-floating-panel] .remaked-native-panel-content {
   max-height: min(560px, calc(100dvh - var(--rm-popup-top) - 64px));
 }
+.remaked-modern #body [data-remaked-floating-panel][data-remaked-native-panel="2"] .sub_win {
+  display: flex; flex-direction: column; max-height: calc(100dvh - var(--rm-popup-top) - 8px);
+}
+.remaked-modern #body [data-remaked-floating-panel][data-remaked-native-panel="2"] :is(.remaked-native-panel-content, [data-remaked-special-effects], [data-remaked-weapon-procs]) {
+  min-height: 0; overflow: auto;
+}
 .remaked-modern #body [data-remaked-job-content] { width: 100% !important; box-sizing: border-box; }
 .remaked-modern #body [data-remaked-job-layout] { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .remaked-modern #body [data-remaked-job-layout] :is(li, ul) {

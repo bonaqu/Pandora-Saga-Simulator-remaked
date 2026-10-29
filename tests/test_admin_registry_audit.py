@@ -11,7 +11,8 @@ import unittest
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ADMIN=ROOT/'admin-api/public'
 SOURCE=json.loads((ROOT/'localization/ui.en.json').read_text(encoding='utf-8'))
-APPROVED=json.loads((ROOT/'localization/approved-translations.v1.json').read_text(encoding='utf-8'))
+from tests.localization_support import ui_with_current_fallbacks
+APPROVED=ui_with_current_fallbacks()
 FILES=(
     'catalog-ui.js','localization-console.js','localization-bulk.js',
     'localization-drafts.js','localization-four-language.js',

@@ -37,6 +37,21 @@ def load_migrated_catalogs(root: pathlib.Path) -> TranslationCatalogs:
     # reviewed Modern UI corrections are a *build fallback* only: the public
     # Cloudflare D1 publication still has higher priority on every locale.
     ui_ru = dict(data["ui"]["ru"])
+    ui_jp = dict(data["ui"]["jp"])
+    ui_tw = dict(data["ui"]["tw"])
+    fallback_path = root / "localization/current-ui-fallbacks.v1.json"
+    if fallback_path.exists():
+        fallback = json.loads(fallback_path.read_text(encoding="utf-8"))
+        english_source = json.loads((root / "localization/ui.en.json").read_text(encoding="utf-8"))
+        if fallback.get("schemaVersion") != 1 or set(fallback.get("ui", {})) != {"ru", "jp", "tw"}:
+            raise ValueError("Invalid current UI fallback registry")
+        for locale, destination in (("ru", ui_ru), ("jp", ui_jp), ("tw", ui_tw)):
+            for key, value in fallback["ui"][locale].items():
+                if key not in english_source or key in destination or not isinstance(value, str) or not value.strip():
+                    raise ValueError(f"Invalid or historical UI fallback: {locale}.{key}")
+                if locale in ("jp", "tw") and value != english_source[key]:
+                    raise ValueError(f"New {locale} UI fallback must use English: {key}")
+                destination[key] = value
     # Minimal test fixtures may intentionally supply only the frozen snapshot.
     # The real site ships both additional resources and validates their shape.
     curated_path = root / "localization/curated-runtime-defaults.ru.v1.json"
@@ -49,8 +64,8 @@ def load_migrated_catalogs(root: pathlib.Path) -> TranslationCatalogs:
             ui_ru[key] = value
     return TranslationCatalogs(
         ui_russian=ui_ru,
-        ui_japanese=data["ui"]["jp"],
-        ui_traditional_chinese=data["ui"]["tw"],
+        ui_japanese=ui_jp,
+        ui_traditional_chinese=ui_tw,
         game_russian=data["game"]["ru"],
         ui_english=data["ui"]["en"],
         game_english=data["game"]["en"],

@@ -7,11 +7,24 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 LOCALE = ROOT / "localization"
 EN = json.loads((LOCALE / "ui.en.json").read_text(encoding="utf-8"))
-APPROVED = json.loads((LOCALE / "approved-translations.v1.json").read_text(encoding="utf-8"))
+from tests.localization_support import ui_with_current_fallbacks
+from scripts.localization_catalog import load_migrated_catalogs
+APPROVED = ui_with_current_fallbacks()
 SLOTS = re.compile(r"\{([A-Za-z0-9_]+)\}")
 
 
 class Modern392CoverageTests(unittest.TestCase):
+    def test_new_fallbacks_use_english_without_overwriting_historical_translations(self):
+        frozen = json.loads((LOCALE / 'approved-translations.v1.json').read_text(encoding='utf-8'))
+        fallback = json.loads((LOCALE / 'current-ui-fallbacks.v1.json').read_text(encoding='utf-8'))['ui']
+        built = load_migrated_catalogs(ROOT)
+        for locale, values in (('jp',built.ui_japanese),('tw',built.ui_traditional_chinese)):
+            for key, old in frozen['ui'][locale].items():
+                self.assertEqual(values[key],old)
+            for key, text in fallback[locale].items():
+                self.assertNotIn(key,frozen['ui'][locale])
+                self.assertEqual(text,EN[key])
+                self.assertEqual(values[key],text)
     def test_all_core_ui_japanese_and_traditional_chinese_except_english_sentinel(self):
         self.assertGreaterEqual(len(EN), 443)
         for lang in ("jp", "tw"):

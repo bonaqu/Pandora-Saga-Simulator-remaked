@@ -8,6 +8,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 - Melee and ranged attack range calculations include weapon, equipment, soul and racial bonuses when configured in the catalog. Unverified range remains marked as unknown.
 - Equipment details show configured enhancement conditions and special weapon effects; build migration reports changes to enhancement rules when the catalog is updated.
+- The Attack panel stays within the screen when the browser window becomes shorter.
 
 ### Development and technical changes
 

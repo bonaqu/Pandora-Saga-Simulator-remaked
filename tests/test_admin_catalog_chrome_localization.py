@@ -7,7 +7,8 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CATALOG = (ROOT / "admin-api/public/catalog-ui.js").read_text(encoding="utf-8")
 ENGLISH = json.loads((ROOT / "localization/ui.en.json").read_text(encoding="utf-8"))
-APPROVED = json.loads((ROOT / "localization/approved-translations.v1.json").read_text(encoding="utf-8"))
+from tests.localization_support import ui_with_current_fallbacks
+APPROVED = ui_with_current_fallbacks()
 SLOTS = re.compile(r"\{[A-Za-z0-9_]+\}")
 
 class CatalogChromeLocalizationTests(unittest.TestCase):
@@ -38,7 +39,7 @@ class CatalogChromeLocalizationTests(unittest.TestCase):
         match = re.search(r"var catalogFormLabels = (\{.*?\});", CATALOG, re.DOTALL)
         self.assertIsNotNone(match)
         captions = json.loads(match.group(1))
-        self.assertEqual(len(captions), 36)
+        self.assertEqual(len(captions), 37)
         for label in ('Базовое LP','Базовое MP','Делитель роста LP от уровня',
                       'Делитель роста MP от уровня','Делитель роста LP от STA',
                       'Делитель роста MP от SPR'):
