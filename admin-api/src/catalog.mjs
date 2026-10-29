@@ -183,9 +183,13 @@ async function preview(request, env) {
 }
 
 async function saveDraft(request, env, now) {
-  const input = await body(request); schema(input, ['edit', 'expectedDraftVersion', 'expectedCatalogRevision']);
+  const input = await body(request); schema(input, ['edit', 'expectedDraftVersion', 'expectedCatalogRevision', 'creationId']);
   const expected = version(input.expectedDraftVersion, 'Draft version');
   const expectedCatalog = version(input.expectedCatalogRevision, 'Catalog revision');
+  if (input.creationId !== undefined && (input.edit?.id !== '' ||
+    !['equipment','soul'].includes(input.edit?.kind) ||
+    typeof input.creationId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(input.creationId)))
+    fail('Invalid idempotent creation ID');
   if ((await head(env)).version !== expectedCatalog) fail('Catalog changed in another tab; reload before saving', 409);
   let identity;
   if (input.edit?.id === '') {
@@ -208,20 +212,36 @@ async function saveDraft(request, env, now) {
       return jsonResponse(await detail(env, id), 201);
     }
     if (!(kind === 'soul' ? category === null : kind === 'equipment' && EQUIPMENT_CATEGORIES.includes(category))) fail('Unsupported item type');
-    const id = 'modern.' + kind + '.' + randomUUID();
+    const id = 'modern.' + kind + '.' + (input.creationId || randomUUID());
     identity = { id, kind, category, index: firstNewIndex(kind, category) };
     const edit = validateDraft({ ...input.edit, id }, identity);
     compileRecord(edit, identity, null);
     const counterCategory = category ?? -1;
-    await env.DB.prepare('INSERT INTO catalog_sequences (kind, category, next_index) VALUES (?, ?, ?) ON CONFLICT DO NOTHING').bind(kind, counterCategory, identity.index).run();
+    async function recoverExisting() {
+      const allocated = await env.DB.prepare('SELECT id, kind, category, item_index FROM catalog_allocations WHERE id = ?').bind(id).first();
+      if (!allocated) return null;
+      if (!input.creationId || allocated.kind !== kind || allocated.category !== counterCategory)
+        fail('Creation ID belongs to another item', 409);
+      const existing = await draftRow(env,id);
+      if (!existing || JSON.stringify(validateDraft(JSON.parse(existing.payload_json),normalizeIdentity(allocated))) !== JSON.stringify(edit))
+        fail('Creation ID belongs to a changed item', 409);
+      return jsonResponse({...await detail(env,id),recovered:true});
+    }
+    if(input.creationId){const existing=await recoverExisting();if(existing)return existing;}
     // D1 batch is one transaction. Allocate + insert + save either all commit or
     // all roll back; concurrent creation cannot reuse an encoded item ID.
     const allocated = await env.DB.batch([
-      env.DB.prepare('UPDATE catalog_sequences SET next_index = next_index + 1 WHERE kind = ? AND category = ? AND next_index < ?').bind(kind, counterCategory, identity.index + 1024),
+      env.DB.prepare('INSERT INTO catalog_sequences (kind, category, next_index) SELECT ?, ?, ? WHERE EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND version = ?) AND NOT EXISTS (SELECT 1 FROM catalog_allocations WHERE id = ?) ON CONFLICT DO NOTHING').bind(kind,counterCategory,identity.index,expectedCatalog,id),
+      env.DB.prepare('UPDATE catalog_sequences SET next_index = next_index + 1 WHERE kind = ? AND category = ? AND next_index < ? AND EXISTS (SELECT 1 FROM catalog_head WHERE id = 1 AND version = ?) AND NOT EXISTS (SELECT 1 FROM catalog_allocations WHERE id = ?)').bind(kind, counterCategory, identity.index + 1024,expectedCatalog,id),
       env.DB.prepare('INSERT INTO catalog_allocations (id, kind, category, item_index, created_at) SELECT ?, ?, ?, next_index - 1, ? FROM catalog_sequences WHERE kind = ? AND category = ? AND changes() = 1').bind(id, kind, counterCategory, now, kind, counterCategory),
-      env.DB.prepare('INSERT INTO catalog_drafts (id, payload_json, version, updated_at) SELECT ?, ?, 1, ? WHERE EXISTS (SELECT 1 FROM catalog_allocations WHERE id = ?)').bind(id, JSON.stringify(edit), now, id)
+      env.DB.prepare('INSERT INTO catalog_drafts (id, payload_json, version, updated_at) SELECT ?, ?, 1, ? WHERE changes() = 1 AND EXISTS (SELECT 1 FROM catalog_allocations WHERE id = ?)').bind(id, JSON.stringify(edit), now, id)
     ]);
-    if (allocated[0].meta.changes !== 1) fail('This item type reached its safe capacity (1024 additions)', 413);
+    if (allocated[1].meta.changes !== 1) {
+      if(input.creationId){const existing=await recoverExisting();if(existing)return existing;}
+      if ((await head(env)).version !== expectedCatalog) fail('Catalog changed in another tab; reload before saving',409);
+      fail('This item type reached its safe capacity (1024 additions)', 413);
+    }
+    if(allocated[2].meta.changes!==1 || allocated[3].meta.changes!==1) fail('Item creation failed safely',409);
     return jsonResponse(await detail(env, id), 201);
   }
   identity = await identityFor(env, input.edit?.id || '');
