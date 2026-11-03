@@ -28,6 +28,7 @@
   var catalogPollTimer = null, catalogHeadBusy = false, latestCatalogRevision = 0, latestCatalogImpactRevision = 0;
   var restorationFailed = false;
   var loadRequest = 0;
+  var lastLoadFailure = null;
 
   function t(key, values, fallback) {
     var text = i18n && typeof i18n.t === 'function' ? i18n.t(key, values) : key;
@@ -616,21 +617,59 @@
   }
 
   async function loadNamedBuildLatest(storedBuild, stillWanted) {
-    var intent = beginLoadIntent();
+    var intent;
+    try { intent = beginLoadIntent(); }
+    catch (error) { return { ok: false, error: error, phase: 'prepare' }; }
     try {
       var migrated = namespace.catalog ? await namespace.catalog.prepareCurrentPayload(storedBuild.payload) : { payload: storedBuild.payload, changes: [] };
       if (!currentLoadIntent(intent, stillWanted)) return cancelledLoad(intent, stillWanted);
-      var journal = store.beginRecovery(storedBuild.payload); if (!journal.ok) return journal;
+
+      // The recovery journal must contain the PREVIOUS character, not the
+      // target build. An interrupted/failed load must never turn a broken
+      // target into the next startup's recovery candidate.
+      var journal = store.beginRecovery(intent.payload);
+      if (!journal.ok) return { ok: false, error: journal.error, phase: 'recovery' };
+
       var loaded = loadPayloadSafely(migrated.payload, { prepared: true });
-      if (!loaded.ok) return loaded;
-      var report = migrated.changes.length ? migrated.changes : storedBuild.migrationReport;
-      var rewritten = store.updateBuild(storedBuild.id, { payload: loaded.payload, migrationReport: report || [] });
-      if (!rewritten.ok) return { ok: true, loaded: loaded, rewriteFailed: true, changes: report };
+      if (!loaded.ok) {
+        if (loaded.restored) store.finishRecovery();
+        return { ...loaded, phase: 'apply' };
+      }
+
+      // Save the loaded character before ever rewriting the named source.
+      // If autosave is unavailable, the original named build stays intact,
+      // and the UI explicitly warns that reloading may restore an older state.
+      clearScheduledAutosave();
       var saved = persistLoadedPayload(loaded.payload);
-      if (saved.ok) store.finishRecovery();
+      var report = migrated.changes.length ? migrated.changes : storedBuild.migrationReport;
+      var rewriteFailed = false;
+      if (saved.ok) {
+        if (loaded.payload !== storedBuild.payload || migrated.changes.length) {
+          var rewritten = store.updateBuild(storedBuild.id, { payload: loaded.payload, migrationReport: report || [] });
+          rewriteFailed = !rewritten.ok;
+        }
+        store.finishRecovery();
+      }
       showMigration(report);
-      return { ok: true, loaded: loaded, upgraded: migrated.payload !== storedBuild.payload, changes: report, autosave: saved };
-    } catch (error) { return { ok: false, error: error }; }
+      return { ok: true, loaded: loaded, upgraded: migrated.payload !== storedBuild.payload,
+        changes: report, autosave: saved, rewriteFailed: rewriteFailed };
+    } catch (error) { return { ok: false, error: error, phase: 'prepare' }; }
+  }
+
+  function reportNamedLoadFailure(build, result) {
+    var error = result.error || {}, message = String(error.message || error || '');
+    var phase = result.phase || 'prepare';
+    var kind = phase === 'recovery' || /quota|storage|security|unavailable.*storage/i.test(message)
+      ? 'storage'
+      : /catalog|snapshot|revision|failed to fetch|network|offline|timeout/i.test(message) ? 'catalog'
+      : /invalid|corrupt|malformed|unsupported|build code|build fields/i.test(message) ? 'invalid'
+      : 'apply';
+    var name = String(build.name || '').slice(0, 60);
+    lastLoadFailure = { name: name, phase: phase, kind: kind,
+      code: String(error.code || ''), message: message.slice(0, 280) };
+    console.warn('Pandora Saga: saved build load failed', lastLoadFailure);
+    setManagerStatus(t('builds.loadError.' + kind, {name:name},
+      'Could not load “' + name + '”. Original saved build was preserved.'), 'error');
   }
 
   function renderBuilds() {
@@ -690,27 +729,33 @@
           renderBuilds();
           return;
         }
+        lastLoadFailure = null;
         var result = await loadNamedBuildLatest(storedBuild, function () {
-          return load.isConnected && managerOverlay.open && store.getBuild(build.id)?.payload === storedBuild.payload;
+          // A background catalog refresh can repaint the list (and detach
+          // this button) while an otherwise valid load is in progress.
+          // Cancel only when the dialog closes or the saved record changes.
+          return managerOverlay.open && store.getBuild(build.id)?.payload === storedBuild.payload;
         });
         if (!result.ok) {
           if (result.reason === 'cancelled') {
             if (!result.silent) setManagerStatus(t('builds.loadCancelled', null, 'Loading cancelled. Current character and saved builds kept.'), 'warning');
-          } else setManagerStatus(t('builds.loadUnavailable', null, 'Catalog revision unavailable; current character and saved builds kept.'), 'warning');
+          } else reportNamedLoadFailure(storedBuild, result);
           return;
         }
         var saved = result.autosave || persistLoadedPayload(result.loaded.payload, t('builds.savedLoaded', null, 'Saved loaded build'));
         var detached = detachLoadedShareLink();
         renderBuilds();
-        var currentBuild = store.getBuild(build.id);
+        var currentBuild = store.getBuild(build.id) || storedBuild;
         var loadedMessage = result.upgraded
             ? liveText('loadedUpdated', { name: currentBuild.name })
             : t('builds.loaded', { name: currentBuild.name }, 'Loaded “' + currentBuild.name + '”.');
         setManagerStatus(
           !detached ? t('builds.urlWarning', null, 'Old shared link could not be cleared. Export a new link before reloading.')
             : !saved.ok ? t('builds.loadedNoAutosave', null, 'Build loaded, but autosave is unavailable.')
+            : result.rewriteFailed ? t('builds.loadError.rewrite', {name:currentBuild.name},
+                'Build loaded and autosaved, but its named copy could not be updated.')
             : loadedMessage,
-          saved.ok && detached ? 'success' : 'warning'
+          saved.ok && detached && !result.rewriteFailed ? 'success' : 'warning'
         );
       });
       row.appendChild(load);
@@ -1044,6 +1089,7 @@
     flushAutosave: flushAutosave,
     openManager: openManager,
     closeManager: closeManager,
+    lastLoadFailure: function () { return lastLoadFailure ? { ...lastLoadFailure } : null; },
     init: init
   };
 
