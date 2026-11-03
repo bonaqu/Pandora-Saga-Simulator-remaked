@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.34 — 2026-11-03
+
+### For users
+
+- **Duplicate gear removed:** ten verified Dawn items now appear once in the equipment search rather than under both archived and published identities.
+- **Cloudflare D1 equipment inventory:** all source-backed equipment rows are stored individually and editable through the administrator catalog.
+
+### Development and technical changes
+
+- Use ten verified OS identities, not fuzzy item names or identical stat values, for exact canonical deduplication. Retain historical IDs for old builds.
+- Add additive Cloudflare D1 migration, idempotent baseline import and production completeness check, preserving existing publications and drafts.
+- An existing source/UUID formula discrepancy for the Myrine Dawn Veil is documented for independent investigation and is not silently altered.
+
 ## Modern 4.33 — 2026-11-03
 
 ### For users
