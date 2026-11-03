@@ -19,7 +19,9 @@
       "ru": "Туника для человека (м)",
       "en": "Tunic (Human) (m)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.5c4dedd9-24ca-488a-a247-a2387cc9cd90",
+      "publishedIndex": 107
     },
     {
       "set": "racial",
@@ -33,7 +35,9 @@
       "ru": "Жилет для человека (ж)",
       "en": "Vest (Human) (w)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.3aefc261-0023-4299-a1d1-206d6904326c",
+      "publishedIndex": 108
     },
     {
       "set": "racial",
@@ -47,7 +51,9 @@
       "ru": "Жилет для эльфа (м)",
       "en": "Vest (Elf) (m)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.7f16da63-c482-4353-a436-eb1be613c2cd",
+      "publishedIndex": 109
     },
     {
       "set": "racial",
@@ -63,7 +69,9 @@
       "level": 5,
       "sockets": 0,
       "newIndex": 181,
-      "descriptionRu": "Изготовленная на заказ одежда для эльфиек.ИНТ +1, ОЗ +22Снижение расхода ОМ +7%"
+      "descriptionRu": "Изготовленная на заказ одежда для эльфиек.ИНТ +1, ОЗ +22Снижение расхода ОМ +7%",
+      "publishedId": "modern.equipment.f0bb7e4c-ebc9-4f47-a20a-60bd627d4761",
+      "publishedIndex": 110
     },
     {
       "set": "racial",
@@ -77,7 +85,9 @@
       "ru": "Туника для цверга",
       "en": "Tunic (Dwarf)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.17612fe3-6c2a-4cd0-ad4d-98b9b6124060",
+      "publishedIndex": 111
     },
     {
       "set": "racial",
@@ -91,7 +101,9 @@
       "ru": "Корсет для мирины",
       "en": "Bustier (Myrine)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.3c8a0ad6-d3c9-41ef-a24b-ab03d52c0e81",
+      "publishedIndex": 113
     },
     {
       "set": "racial",
@@ -119,7 +131,9 @@
       "ru": "Куртка для кролля",
       "en": "Tunic (Lapin)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.26a8d531-a072-4859-afc3-351aea8d0b27",
+      "publishedIndex": 116
     },
     {
       "set": "racial",
@@ -133,7 +147,9 @@
       "ru": "Штаны для человека (м)",
       "en": "Trousers (Human) (m)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.a2bb6539-cae6-4ca3-af04-f5cc37a84655",
+      "publishedIndex": 100
     },
     {
       "set": "racial",
@@ -147,7 +163,9 @@
       "ru": "Шорты для человека (ж)",
       "en": "Pants (Human) (w)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.67a23ae1-4d65-4003-a877-925aa6b290a1",
+      "publishedIndex": 101
     },
     {
       "set": "racial",
@@ -161,7 +179,9 @@
       "ru": "Штаны для эльфа (м)",
       "en": "Trousers (Elf) (m)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.8e76e26b-fbf8-4d62-a791-4938ffeb08ec",
+      "publishedIndex": 102
     },
     {
       "set": "racial",
@@ -175,7 +195,9 @@
       "ru": "Эльфийская юбка (ж)",
       "en": "Skirt (Elf) (w)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.8bc5af37-31ec-42ee-a489-01bf11a5f3fa",
+      "publishedIndex": 103
     },
     {
       "set": "racial",
@@ -189,7 +211,9 @@
       "ru": "Шаровары для цверга",
       "en": "Leggings (Dwarf)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.418c1dc1-1301-41f8-a238-14d69f626c9d",
+      "publishedIndex": 104
     },
     {
       "set": "racial",
@@ -203,7 +227,9 @@
       "ru": "Чулки для мирины",
       "en": "Hosiery (Myrine)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.f00cc50a-d80a-4f5e-ae22-dc10b152dd8b",
+      "publishedIndex": 105
     },
     {
       "set": "racial",
@@ -217,7 +243,9 @@
       "ru": "Набедренная повязка для энкиду",
       "en": "Kilt (Enkidu)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.460605b9-9069-4b21-af16-1d56d0323dae",
+      "publishedIndex": 107
     },
     {
       "set": "racial",
@@ -231,7 +259,9 @@
       "ru": "Штаны для кролля",
       "en": "Leggings (Lapin)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.9e8ee1b7-7e38-4620-aca7-e0e530c1ed61",
+      "publishedIndex": 109
     },
     {
       "set": "racial",
@@ -245,7 +275,9 @@
       "ru": "Браслет для человека (м)",
       "en": "Armband (Human) (m)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.8216087b-7633-4cf1-a429-cfc25e5f492d",
+      "publishedIndex": 107
     },
     {
       "set": "racial",
@@ -261,7 +293,9 @@
       "level": 5,
       "sockets": 0,
       "newIndex": 182,
-      "descriptionRu": "Изготовленный на заказ женский браслет.Атака +4Точность +1"
+      "descriptionRu": "Изготовленный на заказ женский браслет.Атака +4Точность +1",
+      "publishedId": "modern.equipment.212bdcde-2fd3-493a-a439-e41513dd6185",
+      "publishedIndex": 108
     },
     {
       "set": "racial",
@@ -275,7 +309,9 @@
       "ru": "Перчатки для эльфа (м)",
       "en": "Gloves (Elf) (m)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.df1a3b1c-6779-4a44-a09e-2537c436b3c7",
+      "publishedIndex": 109
     },
     {
       "set": "racial",
@@ -291,7 +327,9 @@
       "level": 5,
       "sockets": 0,
       "newIndex": 183,
-      "descriptionRu": "Изготовленные на заказ перчатки для эльфиек.СИЛ +1Точность +2"
+      "descriptionRu": "Изготовленные на заказ перчатки для эльфиек.СИЛ +1Точность +2",
+      "publishedId": "modern.equipment.438d9d04-2174-4b5a-abd3-87ca20f644b6",
+      "publishedIndex": 111
     },
     {
       "set": "racial",
@@ -305,7 +343,9 @@
       "ru": "Рукавицы для цверга",
       "en": "Gloves (Dwarf)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.b7946c32-5b0f-4e35-a528-5ea2406c168b",
+      "publishedIndex": 112
     },
     {
       "set": "racial",
@@ -319,7 +359,9 @@
       "ru": "Перчатки для мирины",
       "en": "Gloves (Myrine)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.246a361c-f593-41ab-a515-8cff5fe99160",
+      "publishedIndex": 113
     },
     {
       "set": "racial",
@@ -333,7 +375,9 @@
       "ru": "Рукавицы для энкиду",
       "en": "Gloves (Enkidu)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.02c67dc2-c617-49a3-ae4a-35552dda8838",
+      "publishedIndex": 114
     },
     {
       "set": "racial",
@@ -347,7 +391,9 @@
       "ru": "Перчатки для кролля",
       "en": "Gloves (Lapin)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.e0d5e232-2fb0-4768-af17-812bb2f20a96",
+      "publishedIndex": 116
     },
     {
       "set": "racial",
@@ -361,7 +407,9 @@
       "ru": "Сапоги для человека (м)",
       "en": "Boots (Human) (m)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.cb586c08-2a3f-4497-ac73-fe7771577df8",
+      "publishedIndex": 108
     },
     {
       "set": "racial",
@@ -377,7 +425,9 @@
       "level": 5,
       "sockets": 0,
       "newIndex": 182,
-      "descriptionRu": "Изготовленные на заказ женские сапоги.ОЗ +10, ОМ +10Получаемый физический урон -1%"
+      "descriptionRu": "Изготовленные на заказ женские сапоги.ОЗ +10, ОМ +10Получаемый физический урон -1%",
+      "publishedId": "modern.equipment.d2d827f4-2f16-44da-a56b-90ecb9abe009",
+      "publishedIndex": 109
     },
     {
       "set": "racial",
@@ -391,7 +441,9 @@
       "ru": "Сапоги для эльфа (м)",
       "en": "Boots (Elf) (m)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.86c9b12f-d68b-4d38-a9ab-a02a1c25696f",
+      "publishedIndex": 110
     },
     {
       "set": "racial",
@@ -407,7 +459,9 @@
       "level": 5,
       "sockets": 0,
       "newIndex": 183,
-      "descriptionRu": "Изготовленные на заказ сапоги для эльфиек.ОЗ +12, ОМ +8Получаемый физический урон -1%"
+      "descriptionRu": "Изготовленные на заказ сапоги для эльфиек.ОЗ +12, ОМ +8Получаемый физический урон -1%",
+      "publishedId": "modern.equipment.dc9cb94a-7d20-4253-a3c3-e2b837a10c9a",
+      "publishedIndex": 112
     },
     {
       "set": "racial",
@@ -421,7 +475,9 @@
       "ru": "Башмаки для цверга",
       "en": "Boots (Dwarf)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.70190436-7e6f-4106-ac22-028cde6498d3",
+      "publishedIndex": 113
     },
     {
       "set": "racial",
@@ -435,7 +491,9 @@
       "ru": "Сапоги для мирины",
       "en": "Boots (Myrine)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.f812202b-dde3-48e5-a925-672ca1d67dac",
+      "publishedIndex": 114
     },
     {
       "set": "racial",
@@ -449,7 +507,9 @@
       "ru": "Башмаки для энкиду",
       "en": "Boots (Enkidu)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.b152ea48-5be3-45ac-a387-59c6293be04c",
+      "publishedIndex": 115
     },
     {
       "set": "racial",
@@ -463,7 +523,9 @@
       "ru": "Башмачки для кролля",
       "en": "Boots (Lapin)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.30b1a4cc-e465-45f4-a793-d23a70087e40",
+      "publishedIndex": 117
     },
     {
       "set": "dawn",
@@ -547,7 +609,9 @@
       "ru": "Рассветная вуаль для мирины",
       "en": "Dawn Veil (Myrine)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.549efeeb-e073-4356-a8dc-83bf60fce92e",
+      "publishedIndex": 115
     },
     {
       "set": "dawn",
@@ -647,7 +711,9 @@
       "ru": "Туника зари для цверга",
       "en": "Dawn Tunic (Dwarf)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.44bcf90e-3b59-4ed4-af36-1c9000b4b916",
+      "publishedIndex": 112
     },
     {
       "set": "dawn",
@@ -661,7 +727,9 @@
       "ru": "Корсет зари для мирины",
       "en": "Dawn Bustier (Myrine)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.2673a73e-fe80-4806-a32b-53991feb566c",
+      "publishedIndex": 114
     },
     {
       "set": "dawn",
@@ -675,7 +743,9 @@
       "ru": "Жилет зари для энкиду",
       "en": "Dawn Vest (Enkidu)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.75f00438-3adc-4ed8-aa18-e95aeff1dfc8",
+      "publishedIndex": 115
     },
     {
       "set": "dawn",
@@ -773,7 +843,9 @@
       "ru": "Рассветные чулки для мирины",
       "en": "Dawn Hosiery (Myrine)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.486dbc10-ca5b-4647-a41a-4734c44ed33b",
+      "publishedIndex": 106
     },
     {
       "set": "dawn",
@@ -787,7 +859,9 @@
       "ru": "Рассветная повязка для энкиду",
       "en": "Dawn Kilt (Enkidu)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "publishedId": "modern.equipment.c235d398-2281-41d1-a072-c9cca7668cb0",
+      "publishedIndex": 108
     },
     {
       "set": "dawn",
@@ -845,7 +919,9 @@
       "ru": "Рассветные перчатки для эльфа (м)",
       "en": "Dawn Gloves (Elf) (m)",
       "level": 20,
-      "sockets": 1
+      "sockets": 1,
+      "publishedId": "modern.equipment.fb711826-a631-4423-af72-803ac0e6a516",
+      "publishedIndex": 110
     },
     {
       "set": "dawn",
@@ -903,7 +979,9 @@
       "ru": "Рассветные рукавицы для энкиду",
       "en": "Dawn Gloves (Enkidu)",
       "level": 20,
-      "sockets": 1
+      "sockets": 1,
+      "publishedId": "modern.equipment.d6f750c7-b049-4f42-ae14-897d3c7ba041",
+      "publishedIndex": 115
     },
     {
       "set": "dawn",
@@ -961,7 +1039,9 @@
       "ru": "Рассветные сапоги для эльфа (м)",
       "en": "Dawn Boots (Elf) (m)",
       "level": 20,
-      "sockets": 1
+      "sockets": 1,
+      "publishedId": "modern.equipment.e465ca33-722f-4fb9-a735-774bee698a32",
+      "publishedIndex": 111
     },
     {
       "set": "dawn",
@@ -1019,7 +1099,9 @@
       "ru": "Рассветные башмаки для энкиду",
       "en": "Dawn Boots (Enkidu)",
       "level": 20,
-      "sockets": 1
+      "sockets": 1,
+      "publishedId": "modern.equipment.9bfb82fe-1d1c-4ecc-a454-be6a46f86056",
+      "publishedIndex": 116
     },
     {
       "set": "dawn",
