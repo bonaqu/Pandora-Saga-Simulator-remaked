@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.37 — 2026-11-03
+
+### For users
+
+- **Builds and comparison verified:** expanded coverage for save/load, reload, localization, reversing A/B, and accurate stat deltas.
+- **Live comparison updates:** renaming, duplicating and deleting a build updates an already-open comparison. Unavailable storage or damaged saved data now show clear warnings instead of misleading empty states.
+
+### Development and technical changes
+
+- Reject ambiguous duplicate IDs in a damaged local collection while retaining valid siblings and never silently rewriting the source. Notify open comparisons only after successful writes.
+- Synchronize compare selectors within the same tab and across tabs; distinguish browser storage errors from fewer than two saved builds. Preserve request-generation guards against stale async results.
+- Regression browser cases cover A/B delta reversals, unchanged calculator state, RU/EN changes, reload, damaged IDs, SecurityError, quota failure, invalid payload and overlapping evaluations.
+
 ## Modern 4.36 — 2026-11-03
 
 ### For users
