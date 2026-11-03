@@ -52,8 +52,10 @@ export const editableDawnRecords = dawnVariants.entries.map(entry => {
     legacy_category_id: entry.category, legacy_item_index: entry.index,
     legacy_parameter_6: template.legacy_parameter_6,
     name: displayNames,
-    option: localized(verifiedByGameId.get(entry.gameId)?.descriptionEn,
-      verifiedByGameId.get(entry.gameId)?.descriptionRu),
+    option: localized({
+      en: verifiedByGameId.get(entry.gameId)?.descriptionEn,
+      ru: verifiedByGameId.get(entry.gameId)?.descriptionRu
+    }),
     special_option: localized({en:'',ru:''}), acquisition: localized({en:'',ru:''}),
     level_requirement: entry.level, soul_socket_count: entry.sockets,
     compatibility_flags: compatibility };
