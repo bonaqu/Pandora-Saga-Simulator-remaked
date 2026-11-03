@@ -27,7 +27,6 @@
         'builds.loadError.storage': 'Не удалось открыть билд «{name}»: хранилище браузера недоступно или заполнено. Сохранения не изменены.',
         'builds.loadError.invalid': 'Билд «{name}» содержит неподдерживаемый или повреждённый код. Исходное сохранение не изменено.',
         'builds.loadError.apply': 'Не удалось применить билд «{name}» к персонажу. Прежнее состояние восстановлено, если это возможно.',
-        'builds.loadError.rewrite': 'Билд загружен, но обновить его сохранённую копию не удалось.',
         'calculator.weaponRangeWithBonuses': 'Учтены базовая дальность оружия и настроенные бонусы (игровые единицы). Остальные эффекты могут быть не проверены.',
         'adminShell.catalogEffectOneHundredFiftySeven': 'Сопротивление безумию',
         'adminShell.catalogEffectOneHundredSixtyOne': 'Сопротивление болезни',
@@ -270,8 +269,7 @@
       'builds.loadError.catalog': 'Could not load game data for “{name}”. Check your internet connection and try again.',
       'builds.loadError.storage': 'Could not load “{name}”: browser storage is full or unavailable. Your saved builds were kept.',
       'builds.loadError.invalid': '“{name}” contains an invalid or unsupported build code. The original save is unchanged.',
-      'builds.loadError.apply': 'Could not apply “{name}” to the character. The previous state was restored where possible.',
-      'builds.loadError.rewrite': 'Build loaded, but its saved copy could not be updated.'
+      'builds.loadError.apply': 'Could not apply “{name}” to the character. The previous state was restored where possible.'
     }) }),
     jp: Object.freeze({ ui: Object.freeze({
       'compare.errorCatalog': '{build} に必要なゲームデータを読み込めません。接続を確認して再試行してください。',
@@ -281,8 +279,7 @@
       'builds.loadError.catalog': '「{name}」のゲームデータを読み込めません。接続を確認し、再試行してください。',
       'builds.loadError.storage': '「{name}」を読み込めません。ブラウザの保存領域がいっぱいか、利用できません。既存の保存データは保持しました。',
       'builds.loadError.invalid': '「{name}」には無効または未対応のコードが含まれています。元の保存データは変更していません。',
-      'builds.loadError.apply': '「{name}」をキャラクターに適用できませんでした。可能な限り元の状態に戻しました。',
-      'builds.loadError.rewrite': 'ビルドを読み込みましたが、保存済みのコピーは更新できませんでした。'
+      'builds.loadError.apply': '「{name}」をキャラクターに適用できませんでした。可能な限り元の状態に戻しました。'
     }) }),
     tw: Object.freeze({ ui: Object.freeze({
       'compare.errorCatalog': '無法載入 {build} 所需的遊戲資料。請確認網路連線並重試。',
@@ -292,8 +289,7 @@
       'builds.loadError.catalog': '無法載入「{name}」的遊戲資料。請檢查網路連線並重試。',
       'builds.loadError.storage': '無法載入「{name}」：瀏覽器儲存空間不足或無法使用。原有存檔未更動。',
       'builds.loadError.invalid': '「{name}」包含無效或不支援的配裝代碼。原始存檔未更動。',
-      'builds.loadError.apply': '無法將「{name}」套用至角色。已盡可能還原原本的狀態。',
-      'builds.loadError.rewrite': '配裝已載入，但無法更新已儲存的副本。'
+      'builds.loadError.apply': '無法將「{name}」套用至角色。已盡可能還原原本的狀態。'
     }) })
   });
   var supported = Object.keys(catalogs).filter(function (locale) {
