@@ -7,8 +7,8 @@ const LABELS = {
     'Атака(?: в спину)?','Магическая атака','Защита','Точность',
     'Шанс критической атаки','Уклонение','Скорость(?: атаки| применения умений| движения в городе)?',
     'Время перезарядки умений','Снижение расхода ОМ',
-    'Сопротивляемость[\p{L}\s-]{0,48}','Получаемый[\p{L}\s-]{0,48}',
-    'Дальность[\p{L}\s-]{0,48}','Эффективность[\p{L}\s-]{0,48}',
+    String.raw`Сопротивляемость[\p{L}\s-]{0,48}`,String.raw`Получаемый[\p{L}\s-]{0,48}`,
+    String.raw`Дальность[\p{L}\s-]{0,48}`,String.raw`Эффективность[\p{L}\s-]{0,48}`,
     'Время негативных эффектов','Урон ауры','Получаемый опыт',
     'Шанс уклониться от физической атаки','Снижение получаемого физического урона',
     'Эффект от лечащих предметов'
@@ -18,7 +18,7 @@ const LABELS = {
     'Attack(?: Speed)?','Accuracy','Defense','Evasion','Magic Attack','Magic Resistance',
     'Physical Damage Taken','Magic Damage Taken','Critical Hit Chance',
     'Skill Cooldown','Skill Casting Speed','MP Cost Reduction',
-    '(?:\p{Lu}[\p{L}-]*\s+){0,5}Resistance',
+    String.raw`(?:\p{Lu}[\p{L}-]*\s+){0,5}Resistance`,
     '(?:Physical|Magic) Status Ailment Resistance',
     '(?:Physical|Magic) Attack Evasion Chance',
     '(?:Cast|Casting) Interruption Resistance',
@@ -28,11 +28,11 @@ const LABELS = {
   ]
 };
 const CONDITIONS = {
-  ru: 'За\s+кажд(?:ую|ые|ый)\b|При\s+(?:улучшении|усовершенствовании)\b|Если\s+доспехи\b',
-  en: 'Per\s+every\b|For\s+every\b|At\s*\+\s*\d|When\s+enhanced\b|If\s+the\s+armor\b'
+  ru: String.raw`За\s+кажд(?:ую|ые|ый)\b|При\s+(?:улучшении|усовершенствовании)\b|Если\s+доспехи\b`,
+  en: String.raw`Per\s+every\b|For\s+every\b|At\s*\+\s*\d|When\s+enhanced\b|If\s+the\s+armor\b`
 };
 const compiled = Object.fromEntries(['ru','en'].map(locale => {
-  const label = '(?:'+LABELS[locale].join('|')+')\s*[+\-−]\s*\d';
+  const label = '(?:'+LABELS[locale].join('|')+')'+String.raw`\s*[+\-−]\s*\d`;
   const conditional = '(?:'+CONDITIONS[locale]+')';
   return [locale, {
     statStart: new RegExp('^'+label,'iu'),
