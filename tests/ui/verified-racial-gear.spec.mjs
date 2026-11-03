@@ -73,3 +73,70 @@ test('female regular racial items use distinct names/IDs with identical legacy f
   expect(result.jpLegacy).toBe('マイリーンセパレーツ');
   expect(result.twLegacy).toBeTruthy();
 });
+
+test('all 72 racial and Dawn descriptions use verified Russian only in RU, English only in EN', async ({page})=>{
+  await page.goto('/');
+  const result=await page.evaluate(()=>{
+    const registry=window.PandoraRemakedVerifiedRacialGear.entries;
+    const locale=window.PandoraRemaked.i18n, initial=locale.getLocale();
+    locale.setLocale('ru');
+    const ru=registry.map(row=>({
+      id:row.gameId, expected:row.descriptionRu,
+      description:locale.game('equipment.'+row.category+'.'+row.index+'.description','')
+    }));
+    const sampleRu=window.PandoraRemaked.adapter.readItemDetails('equipment',320015,4)?.descriptions.join(' ')||'';
+    locale.setLocale('en');
+    const en=registry.map(row=>({
+      id:row.gameId, expected:row.descriptionEn,
+      description:locale.game('equipment.'+row.category+'.'+row.index+'.description','')
+    }));
+    const sampleEn=window.PandoraRemaked.adapter.readItemDetails('equipment',320015,4)?.descriptions.join(' ')||'';
+    locale.setLocale(initial);
+    return {ru,en,sampleRu,sampleEn};
+  });
+  expect(result.ru).toHaveLength(72);
+  expect(result.en).toHaveLength(72);
+  for(const row of result.ru){
+    expect(row.expected?.trim(),String(row.id)+' RU source').toBeTruthy();
+    expect(row.description,String(row.id)+' RU UI').toBe(row.expected);
+  }
+  for(const row of result.en){
+    expect(row.expected?.trim(),String(row.id)+' EN source').toBeTruthy();
+    expect(row.description,String(row.id)+' EN UI').toBe(row.expected);
+  }
+  expect(result.sampleRu).toContain('Изготовленные на заказ перчатки для эльфов');
+  expect(result.sampleRu).not.toContain('Custom-made gloves');
+  expect(result.sampleEn).toContain('Custom-made gloves for elves');
+  expect(result.sampleEn).not.toContain('Изготовленные на заказ');
+});
+
+test('41 published D1 racial and Dawn aliases fill only absent descriptions and preserve owner-edited text',async({page})=>{
+  await page.goto('/');
+  const result=await page.evaluate(()=>{
+    const registry=window.PandoraRemakedVerifiedRacialGear.entries.filter(row=>row.publishedId);
+    const dawn=window.PandoraRemakedDawnCollection;
+    const published=registry.map(row=>({
+      id:row.publishedId, kind:'equipment', category:row.category,
+      index:row.publishedIndex, names:{en:row.en,ru:row.ru,jp:'',tw:''},
+      description:{ru:'',en:''}, compatibility:Array(36).fill(1)
+    }));
+    const mine=published.find(row=>row.id===registry[0].publishedId);
+    mine.description.ru='Авторское русское описание';
+    const before=JSON.stringify(published);
+    const result=dawn.augment({revision:94,records:published},window.EquipData);
+    return {
+      originalsUnchanged:JSON.stringify(published)===before,
+      checked:registry.map(row=>{
+        const record=result.records.find(item=>item.id===row.publishedId);
+        return {id:row.gameId,expectedRu:row.descriptionRu,expectedEn:row.descriptionEn,
+          actualRu:record?.description?.ru,actualEn:record?.description?.en};
+      })
+    };
+  });
+  expect(result.originalsUnchanged).toBe(true);
+  expect(result.checked).toHaveLength(41);
+  for(const [index,row] of result.checked.entries()){
+    expect(row.actualRu,String(row.id)+' RU').toBe(index===0?'Авторское русское описание':row.expectedRu);
+    expect(row.actualEn,String(row.id)+' EN').toBe(row.expectedEn);
+  }
+});
