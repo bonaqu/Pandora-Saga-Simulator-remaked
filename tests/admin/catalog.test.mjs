@@ -148,7 +148,7 @@ test('all five regular female racial IDs preserve source stats through D1 draft/
     const item=await detail(env,id);
     assert.equal(item.identity.kind,'equipment');
     assert.equal(item.published,false);
-    assert.match(item.edit.names.ru,/\\(ж\\)$/);
+    assert.match(item.edit.names.ru,/\(ж\)$/);
     assert.equal(item.edit.names.jp,'');
     assert.equal(item.edit.names.tw,'');
     assert.equal(item.currentRecord.calculationCode,source.calculation_code);
