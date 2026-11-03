@@ -125,6 +125,7 @@
   "compare.chooseDifferent": "Choose two different saved builds.",
   "compare.missing": "A selected build is no longer available. Choose two builds again.",
   "compare.deltaHelp": "Δ shows Build B minus Build A. Direction is informational only.",
+  "compare.cachedCatalog": "Using cached game data; the latest server revision could not be checked.",
   "compare.evaluateFailed": "One of the saved builds could not be evaluated.",
   "compare.needTwoEmpty": "Save at least two named builds before comparing them.",
   "compare.needTwoStatus": "Compare Builds needs at least two saved builds.",
