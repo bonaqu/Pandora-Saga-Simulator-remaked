@@ -139,6 +139,34 @@ test('all five Dawn female identities can be published and edited through the no
   sqlite.close();
 });
 
+test('all five regular female racial IDs preserve source stats through D1 draft/publish and future edits', async () => {
+  const { env, sqlite } = fixture();
+  const original=[12531,14511,14531,15511,15531];
+  for(const serverId of original) {
+    const id='modern.equipment.racial-os-'+serverId,source=baselineById.get(id);
+    assert.ok(source,id);
+    const item=await detail(env,id);
+    assert.equal(item.identity.kind,'equipment');
+    assert.equal(item.published,false);
+    assert.match(item.edit.names.ru,/\\(ж\\)$/);
+    assert.equal(item.edit.names.jp,'');
+    assert.equal(item.edit.names.tw,'');
+    assert.equal(item.currentRecord.calculationCode,source.calculation_code);
+    item.edit.names.ru='Отредактированный вариант '+serverId+' (ж)';
+    const saved=await save(env,item);
+    assert.equal(saved.hasDraft,true);
+    const released=await publish(env,saved);
+    assert.equal(released.ok,true);
+    const published=await detail(env,id);
+    assert.equal(published.edit.names.ru,item.edit.names.ru);
+    assert.equal(published.currentRecord.calculationCode,source.calculation_code);
+    assert.deepEqual(published.currentRecord.compatibility,source.compatibility_flags);
+  }
+  assert.equal((await publicData(env)).records.length,5);
+  assert.equal((await publicData(env,0)).records.length,0);
+  sqlite.close();
+});
+
 test('idempotent item creation recovers the same allocation and never overwrites a changed draft',async()=>{
   const {env,sqlite}=fixture(),edit=draftFromSource(null,'equipment');
   edit.id='';edit.category=3;edit.names.en='Lamp';edit.baseAttack=96;
