@@ -87,13 +87,26 @@ jobs:
         run: |
           node --input-type=module <<'NODE'
           const url='https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog/equipment-inventory';
-          const response=await fetch(url,{cache:'no-store'});
-          const rows=await response.json();
-          if(!response.ok||rows.ok!==true||rows.schemaVersion!==1||
-              !Number.isInteger(rows.expected)||rows.expected<100||
-              rows.stored!==rows.expected||rows.aliases!==41||rows.complete!==true)
-            throw new Error('Cloudflare D1 equipment inventory incomplete: '+JSON.stringify(rows));
-          console.log('D1 source equipment registered: '+rows.stored+', canonical archived aliases: '+rows.aliases);
+          // Cloudflare routes may serve the previous Worker for a few seconds
+          // after a successful deploy. Verify the new endpoint with a bounded
+          // propagation wait; never accept incomplete or incorrect D1 content.
+          let ready=null,last='No response yet';
+          for(let attempt=1;attempt<=20;attempt++){
+            try{
+              const response=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(5000)});
+              const rows=await response.json();
+              if(response.ok&&rows.ok===true&&rows.schemaVersion===1&&
+                 Number.isInteger(rows.expected)&&rows.expected>=100&&
+                 rows.stored===rows.expected&&rows.aliases===41&&rows.complete===true){
+                ready=rows;
+                break;
+              }
+              last=JSON.stringify(rows);
+            }catch(error){last=String(error.message||error);}
+            if(attempt<20)await new Promise(resolve=>setTimeout(resolve,2000));
+          }
+          if(!ready)throw new Error('Cloudflare D1 equipment inventory incomplete after propagation: '+last);
+          console.log('D1 source equipment registered: '+ready.stored+', canonical archived aliases: '+ready.aliases);
           NODE
       - name: Verify deployed catalog revision and Astir localization
         run: |
