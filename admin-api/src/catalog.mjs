@@ -42,7 +42,7 @@ async function persistedSource(env, source) {
   return stored;
 }
 export async function publicEquipmentInventory(env) {
-  const expected=baselineRecords.filter(source=>source.kind==='equipment').length;
+  const expected=baselineRecords.filter(source=>source.id.startsWith('equipment.')||source.kind==='equipment').length;
   let status;
   try {
     status=await env.DB.prepare('SELECT COUNT(*) AS stored, COUNT(canonical_id) AS aliases FROM catalog_equipment_sources').first();
