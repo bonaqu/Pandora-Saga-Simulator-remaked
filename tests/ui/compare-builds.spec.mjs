@@ -490,3 +490,20 @@ test('Russian comparison error names the exact build and avoids vague generic er
   expect(await page.evaluate(()=>PandoraRemaked.compare.lastFailure())).toMatchObject({side:'A',phase:'prepare',kind:'invalid'});
   expect(await page.evaluate(()=>PandoraRemaked.adapter.serialize())).toBe(builds.active);
 });
+
+test('invalid old compressed text is rejected before calling the synchronous Legacy inflater',async({page})=>{
+  await openModern(page);
+  const result=await page.evaluate(()=>{
+    const ns=PandoraRemaked,original=ns.adapter.serialize(),previous=window.RawDeflate.inflate;
+    let called=false,error='';
+    window.RawDeflate.inflate=function(){called=true;throw new Error('Unsafe inflater was called');};
+    try{
+      try{ns.catalog.migratePayload('invalid-saved-code');}
+      catch(e){error=String(e.message||e);}
+    }finally{window.RawDeflate.inflate=previous;}
+    return {called,error,after:ns.adapter.serialize(),original};
+  });
+  expect(result.called).toBe(false);
+  expect(result.error).toMatch(/Invalid compressed build code/);
+  expect(result.after).toBe(result.original);
+});
