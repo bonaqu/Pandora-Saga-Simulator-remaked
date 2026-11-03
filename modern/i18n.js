@@ -369,7 +369,7 @@
     if (currentLocale === 'ru' && approved &&
         /^(?:skill_entry\.18\.(?:8|9|10)|skill_entry\.(?:20|21)\.7)$/.test(key))
       return approved;
-    var verified = /^equipment\\.(\\d+)\\.(\\d+)$/.exec(key);
+    var verified = /^equipment\.(\d+)\.(\d+)$/.exec(key);
     var verifiedRow = verified && window.PandoraRemakedVerifiedRacialGear?.entries?.find(function (row) {
       return row.category === Number(verified[1]) && row.index === Number(verified[2]);
     });
