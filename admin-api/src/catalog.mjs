@@ -24,7 +24,7 @@ if(retiredDawnSourceIds.size!==10) throw Error('Invalid canonical Dawn identity 
 // revisions and local tests. A mismatched or incomplete import must NEVER be
 // used to alter a calculator formula.
 async function persistedSource(env, source) {
-  if(!source || source.kind!=='equipment')return source;
+  if(!source || !(source.id.startsWith('equipment.') || source.kind==='equipment'))return source;
   let record;
   try{
     record=await env.DB.prepare('SELECT source_json FROM catalog_equipment_sources WHERE id=?')
