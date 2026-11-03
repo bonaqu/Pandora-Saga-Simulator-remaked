@@ -17,14 +17,20 @@ const fingerprint = text => createHash('sha256').update(text, 'utf8').digest('he
 const escapeSql = text => "'" + String(text).replaceAll("'", "''") + "'";
 
 export function equipmentSourceRows() {
-  const duplicates = verified.entries.filter(row => row.set === 'dawn' &&
-    row.recordId.startsWith('modern.equipment.') && row.newIndex === undefined);
-  if (duplicates.length !== 10 || new Set(duplicates.map(row => row.recordId)).size !== 10)
-    throw Error('The ten approved old/new Dawn identity pairs must be unique');
-  const oldToCanonical = new Map(duplicates.map(row => [
-    'equipment.' + row.category + '.' + row.templateIndex, row.recordId
-  ]));
-  if (oldToCanonical.size !== 10) throw Error('Duplicate archived Dawn aliases');
+  // Every reviewed OS game ID has exactly one published D1 identity. The
+  // archived Japanese source (or the older Modern-only female projection) is
+  // kept as a historical source row, not a second editable game item.
+  const published = verified.entries.filter(row => row.publishedId);
+  if (published.length !== 41 || new Set(published.map(row => row.publishedId)).size !== 41)
+    throw Error('Expected 41 verified published racial/Dawn canonical identities');
+  const oldToCanonical = new Map(published.map(row => {
+    const old = row.recordId.startsWith('modern.equipment.') &&
+      !row.recordId.includes('-os-')
+      ? 'equipment.' + row.category + '.' + row.templateIndex
+      : row.recordId;
+    return [old, row.publishedId];
+  }));
+  if (oldToCanonical.size !== 41) throw Error('Duplicate archived equipment aliases');
   const originals = baselineRecords.filter(row => row.id.startsWith('equipment.') || row.kind === 'equipment');
   if (originals.length < 100) throw Error('Incomplete source equipment registry');
   const ids = new Set(), slots = new Set();
