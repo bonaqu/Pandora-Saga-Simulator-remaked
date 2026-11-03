@@ -534,7 +534,7 @@ def _materialize_verified_racial_gear(root: pathlib.Path, output: pathlib.Path) 
     (output / "modern/verified-racial-gear.js").write_text(
         "window.PandoraRemakedVerifiedRacialGear = Object.freeze(" +
         json.dumps(registry, ensure_ascii=False, separators=(",", ":")) +
-        ");\\n", encoding="utf-8")
+        ");\n", encoding="utf-8")
     return translations
 
 
