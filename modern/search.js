@@ -322,10 +322,10 @@
   }
 
   function pickerEquipmentEntries(options) {
-    var currentCategory = '';
     var categories = [];
     var entries = [];
     var categoryLabels = Object.create(null);
+    var occupiedCategories = Object.create(null);
     (options || []).forEach(function (option) {
       var heading = equipmentCategory(option);
       if (heading) categoryLabels[Math.floor(Number(option.value) / 10000)] = heading;
@@ -333,16 +333,17 @@
     (options || []).forEach(function (option) {
       var heading = equipmentCategory(option);
       if (heading) {
-        currentCategory = heading;
         if (categories.indexOf(heading) === -1) categories.push(heading);
         entries.push({ option: option, category: heading, isCategory: true });
         return;
       }
-      entries.push({ option: option, category: categoryLabels[Math.floor(Number(option.value) / 10000)] || '', isCategory: false });
+      var category = categoryLabels[Math.floor(Number(option.value) / 10000)] || '';
+      entries.push({ option: option, category: category, isCategory: false });
+      occupiedCategories[category] = true;
     });
-    categories = categories.filter(function (category) {
-      return entries.some(function (entry) { return !entry.isCategory && entry.category === category; });
-    });
+    // Avoid scanning the full equipment array once per heading for every
+    // keystroke; the category occupancy is collected in the same pass.
+    categories = categories.filter(function (category) { return Boolean(occupiedCategories[category]); });
     var empty = entries.find(function (entry) { return entry.isCategory; });
     if (empty) empty.option = Object.assign({}, empty.option, { name: '—', level: null });
     entries = entries.filter(function (entry) { return !entry.isCategory; }).sort(function (a, b) {
@@ -380,8 +381,12 @@
     var row = element('div', 'remaked-search-row');
     row.dataset.remakedSearchRow = ''; row.dataset.value = String(value);
     row.appendChild(button);
-    var item = kind === 'equipment' && Number(value) % 10000 === 0 ? null : adapter.readItemDetails(kind, value, targetSlot);
-    if (!item) return row;
+    // A category/empty option has no preview. Actual item details are
+    // hydrated only when someone opens a disclosure, not for every result.
+    // This avoids hundreds of synchronous calculator projections during
+    // searching and typing in large equipment/Soul lists.
+    if ((kind === 'equipment' && Number(value) % 10000 === 0) ||
+        (kind === 'soul' && Number(value) === 0)) return row;
     var details = element('details', 'remaked-item-preview');
     var summary = element('summary');
     if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(summary, 'aria-label', 'search.details');
@@ -394,42 +399,52 @@
     description.dataset.remakedItemDescription = '';
     description.id = 'remaked-item-detail-' + (++previewSequence);
     summary.setAttribute('aria-controls', description.id);
-    var name = button.querySelector('.remaked-search-result-name').textContent;
-    description.appendChild(element('strong', 'remaked-item-title', item.equippedName ? item.equippedName.replace(item.name, name) : name));
-    var metadata = element('div', 'remaked-item-metadata');
-    if (item.category) metadata.appendChild(element('p', 'remaked-item-meta-line', item.category));
-    item.baseStats.forEach(function (stat) {
-      metadata.appendChild(element('p', 'remaked-item-meta-line', stat.label + ': ' + stat.value));
-    });
-    if (item.level != null) metadata.appendChild(element('p', 'remaked-item-meta-line', t('search.level', { level: item.level }, 'Lv ' + item.level)));
-    if (item.sockets != null) metadata.appendChild(element('p', 'remaked-item-meta-line', t('search.sockets', { count: item.sockets }, 'Soul sockets: ' + item.sockets)));
-    description.appendChild(metadata);
-    if (item.souls.length) {
-      var sockets = element('div', 'remaked-item-sockets');
-      item.souls.forEach(function (soul, index) {
-        var socket = element('span', 'remaked-item-socket');
-        socket.dataset.remakedSocket = ''; socket.dataset.filled = soul.id > 0 ? 'true' : 'false';
-        var label = soul.id > 0 ? gameName(soulTermId(soul.id), soul.name) : '—';
-        var soulLabel = gameName('soul.0', 'Soul');
-        socket.setAttribute('aria-label', soulLabel + ' ' + (index + 1) + ': ' + label);
-        socket.setAttribute('role', 'img'); socket.title = label;
-        sockets.appendChild(socket);
-        if (soul.id > 0) description.appendChild(element('p', 'remaked-item-soul-bonus', soulLabel + ' ' + (index + 1) + ': ' + label));
+    var hydrated = false;
+    function populateDescription() {
+      if (hydrated) return;
+      var item = adapter.readItemDetails(kind, value, targetSlot);
+      if (!item) return;
+      // One detail projection per actually visited card. Opening and closing
+      // the same tooltip does not recompute it, and the next list refresh
+      // creates a new card so updated game data is never retained as stale.
+      hydrated = true;
+      var name = button.querySelector('.remaked-search-result-name').textContent;
+      description.appendChild(element('strong', 'remaked-item-title', item.equippedName ? item.equippedName.replace(item.name, name) : name));
+      var metadata = element('div', 'remaked-item-metadata');
+      if (item.category) metadata.appendChild(element('p', 'remaked-item-meta-line', item.category));
+      item.baseStats.forEach(function (stat) {
+        metadata.appendChild(element('p', 'remaked-item-meta-line', stat.label + ': ' + stat.value));
       });
-      description.insertBefore(sockets, metadata.nextSibling);
+      if (item.level != null) metadata.appendChild(element('p', 'remaked-item-meta-line', t('search.level', { level: item.level }, 'Lv ' + item.level)));
+      if (item.sockets != null) metadata.appendChild(element('p', 'remaked-item-meta-line', t('search.sockets', { count: item.sockets }, 'Soul sockets: ' + item.sockets)));
+      description.appendChild(metadata);
+      if (item.souls.length) {
+        var sockets = element('div', 'remaked-item-sockets');
+        item.souls.forEach(function (soul, index) {
+          var socket = element('span', 'remaked-item-socket');
+          socket.dataset.remakedSocket = ''; socket.dataset.filled = soul.id > 0 ? 'true' : 'false';
+          var label = soul.id > 0 ? gameName(soulTermId(soul.id), soul.name) : '—';
+          var soulLabel = gameName('soul.0', 'Soul');
+          socket.setAttribute('aria-label', soulLabel + ' ' + (index + 1) + ': ' + label);
+          socket.setAttribute('role', 'img'); socket.title = label;
+          sockets.appendChild(socket);
+          if (soul.id > 0) description.appendChild(element('p', 'remaked-item-soul-bonus', soulLabel + ' ' + (index + 1) + ': ' + label));
+        });
+        description.insertBefore(sockets, metadata.nextSibling);
+      }
+      if (item.gem) description.appendChild(element('p', 'remaked-item-gem', item.gem));
+      if (item.classes.length) description.appendChild(element('p', 'remaked-item-classes', item.classes.join(' · ')));
+      item.descriptions.forEach(function (text) {
+        description.appendChild(element('p', 'remaked-item-prose', text));
+      });
+      (item.upgradeDetails || []).forEach(function (text) {
+        description.appendChild(element('p', 'remaked-item-upgrade', text));
+      });
+      (item.procDetails || []).forEach(function (text) {
+        description.appendChild(element('p', 'remaked-item-proc', text));
+      });
+      if (item.calculationWarning) description.appendChild(element('p', 'remaked-item-warning', item.calculationWarning));
     }
-    if (item.gem) description.appendChild(element('p', 'remaked-item-gem', item.gem));
-    if (item.classes.length) description.appendChild(element('p', 'remaked-item-classes', item.classes.join(' · ')));
-    item.descriptions.forEach(function (text) {
-      description.appendChild(element('p', 'remaked-item-prose', text));
-    });
-    (item.upgradeDetails || []).forEach(function (text) {
-      description.appendChild(element('p', 'remaked-item-upgrade', text));
-    });
-    (item.procDetails || []).forEach(function (text) {
-      description.appendChild(element('p', 'remaked-item-proc', text));
-    });
-    if (item.calculationWarning) description.appendChild(element('p', 'remaked-item-warning', item.calculationWarning));
     details.appendChild(description); row.appendChild(details);
     var pinned = false;
     var hoverTimer = null;
@@ -478,6 +493,7 @@
     });
     if (floating) description.setAttribute('popover', 'manual');
     details.addEventListener('toggle', function () {
+      if (details.open) populateDescription();
       if (!details.open) pinned = false;
       summary.setAttribute('aria-expanded', details.open ? 'true' : 'false');
       if (!floating || !description.isConnected) return;

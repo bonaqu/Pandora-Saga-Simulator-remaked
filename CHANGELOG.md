@@ -1,5 +1,29 @@
 # Changelog
 
+## Modern 4.40 — ускорение поиска снаряжения, 2026-11-04
+
+<!-- release-notes:user:ru -->
+- **Быстрее списки экипировки и душ:** поиск больше не рассчитывает скрытые подробные карточки сотен предметов сразу. Характеристики строятся при первом открытии подсказки, а не при каждом вводе буквы.
+- **Без изменений в выборе предметов:** сохранены полные списки, порядок по уровню, фильтрация по названию и типу, наведение мышью, управление клавиатурой и раскрытие карточек на телефоне.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **Faster Equipment and Soul lists:** search no longer computes every hidden item detail card while typing. Detailed stat previews are calculated only when the player opens one.
+- **Selection behavior preserved:** complete lists, level ordering, name/type filters, mouse hover, keyboard navigation and touch disclosures work as before.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Перенесено вычисление `adapter.readItemDetails()` из горячего цикла отрисовки всех результатов в отложенную и однократную инициализацию конкретной открытой карточки. При изменении фильтров карточки создаются заново и не используют устаревшие игровые данные.
+- Удалён неиспользуемый счётчик категории; проверка наличия предметов в заголовках выполнена в едином проходе вместо многократного поиска по массиву.
+- Добавлены браузерные регрессии: старт полного списка без массового расчёта карточек, открытие/закрытие одной подсказки, обновление поиска без лишних вычислений и чтение карточки Soul без изменения персонажа. Расчётные формулы, схемы сохранений и Legacy не меняются.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Defer `adapter.readItemDetails()` from eager per-result rendering to first disclosure of that result; retain a cached card only within its own list render, refreshing it on any filter/catalog redraw.
+- Remove unused category state and replace repeated per-category full-array scans with one-pass category occupancy tracking.
+- Add browser regressions for complete list rendering without mass preview projections, one-time hydration, search updates and Soul preview without active character mutation. Legacy formulas and saved builds are untouched.
+<!-- /admin-notes:en -->
+
 ## Modern 4.39 — исправления загрузки сохранённых билдов, 2026-11-04
 
 <!-- release-notes:user:ru -->

@@ -156,6 +156,11 @@ test('actual Equipment list previews after dwell, cancels on scroll and equips o
   await expect(panel).toBeVisible();
   await expect(panel.locator('[data-remaked-search-target]')).toHaveCount(0);
   const row = panel.locator(`[data-remaked-search-row][data-value="${f.value}"]`);
+  // Faster list rendering may leave the mouse above a newly inserted row
+  // immediately after the opener click. Move to a neutral header first so
+  // this test measures a fresh 450ms dwell rather than an earlier pointerenter.
+  await panel.locator('h2').hover();
+  await expect(row.locator('details')).not.toHaveAttribute('open', '');
   await row.locator('button').hover();
   await page.waitForTimeout(200);
   await expect(row.locator('details')).not.toHaveAttribute('open', '');
