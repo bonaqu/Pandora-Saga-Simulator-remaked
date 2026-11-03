@@ -449,7 +449,12 @@ def _materialize_modern_assets(root: pathlib.Path, output: pathlib.Path) -> None
     # Keep the browser presentation and D1/admin formatter byte-for-byte
     # equivalent. Generate a tiny non-module browser wrapper from the same
     # pure source used by the Worker; never maintain a second regex list.
-    formatter = (root / "admin-api/src/item-description-format.mjs").read_text(encoding="utf-8")
+    formatter_path = root / "admin-api/src/item-description-format.mjs"
+    # Synthetic fixture repos in build tests intentionally omit Worker sources.
+    # Use the installed builder's canonical pure module for those fixtures only.
+    if not formatter_path.is_file():
+        formatter_path = pathlib.Path(__file__).resolve().parents[1] / "admin-api/src/item-description-format.mjs"
+    formatter = formatter_path.read_text(encoding="utf-8")
     for symbol in ("formatItemDescription", "formatItemDescriptionMap"):
         declaration = "export function " + symbol + "("
         if formatter.count(declaration) != 1:
