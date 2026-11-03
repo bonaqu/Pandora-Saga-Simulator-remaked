@@ -385,7 +385,7 @@ test('RU/EN switching preserves selected builds and numeric comparison, includin
 
 test('two legacy level-50 characters from different races migrate and compare without changing active character',async({page})=>{
   await openModern(page);
-  const builds=await page.evaluate(()=>{
+  const builds=await page.evaluate(async()=>{
     const ns=window.PandoraRemaked,original=ns.adapter.serialize(),store=ns.buildStore;
     localStorage.removeItem(store.BUILDS_KEY);
     function raceAt50(index,name){
@@ -397,15 +397,23 @@ test('two legacy level-50 characters from different races migrate and compare wi
       window.StatusMove('Lev',49); window.CalcSet('Lev');
       const level=window.Status.Lev[0],race=window.Status.Job[0];
       const current=ns.adapter.serialize(),csv=ns.catalog.unpackPayload(current).payload;
-      const saved=store.saveBuild(name,'PS3:0:'+csv);
+      // Legacy source revision 0 is stored as raw CSV (no PS3:0 wrapper).
+      const saved=store.saveBuild(name,csv);
       if(!saved.ok)throw Error('Cannot save source-revision level-50 build');
       return {level,race,id:saved.build.id,payload:saved.build.payload};
     }
     const a=raceAt50(3,'Всад Энкиду 50');
     const b=raceAt50(1,'Всад Эльф 50');
-    ns.adapter.load(original); ns.builds.flushAutosave();
-    return {a,b,active:ns.adapter.serialize(),named:localStorage.getItem(store.BUILDS_KEY)};
+    ns.adapter.load(original);
+    // Publish a newer, compatible catalog revision in the fixture so both
+    // old level-50 builds MUST actually migrate before comparison.
+    const baseline=await ns.catalog.fetchSnapshot(0);
+    ns.catalog.applySnapshot({...baseline,revision:2,impactRevision:2,records:[]});
+    ns.builds.flushAutosave();
+    return {a,b,active:ns.adapter.serialize(),revision:ns.catalog.getRevision(),
+      named:localStorage.getItem(store.BUILDS_KEY)};
   });
+  expect(builds.revision).toBe(2);
   expect(builds.a.level).toBe(50);
   expect(builds.b.level).toBe(50);
   expect(builds.a.race).not.toBe(builds.b.race);
