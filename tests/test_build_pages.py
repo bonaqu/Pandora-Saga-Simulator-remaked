@@ -37,7 +37,7 @@ class BuildPagesTests(unittest.TestCase):
             self.assertEqual(names["equipment.30.23"]["ru"], "Рассветный шлем для цверга")
             self.assertEqual(names["equipment.31.27"]["ru"], "Жилет зари для энкиду")
             script = (root / "modern/verified-racial-gear.js").read_text(encoding="utf-8")
-            self.assertTrue(script.endswith(");\\n"))
+            self.assertTrue(script.endswith(");\n"))
             prefix = "window.PandoraRemakedVerifiedRacialGear = Object.freeze("
             self.assertTrue(script.startswith(prefix))
             payload = json.loads(script[len(prefix):-3])
@@ -487,6 +487,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             generated.mkdir(parents=True)
             repository = pathlib.Path(__file__).resolve().parents[1]
             shutil.copy2(repository / "data/native-passive-hooks.v1.json", root / "data/native-passive-hooks.v1.json")
+            shutil.copy2(repository / "data/verified-racial-gear.v1.json", root / "data/verified-racial-gear.v1.json")
             shutil.copy2(repository / "js/calc.js", root / "js/calc.js")
             shutil.copy2(repository / "js/equip.js", root / "js/equip.js")
             for name in ("equipment.v1.json", "souls.v1.json", "skills.v1.json"):
