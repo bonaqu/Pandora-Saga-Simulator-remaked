@@ -159,12 +159,12 @@ test('published new weapon and Soul change actual retained engine calculation, i
       rawWeapon: window.EquipData[0][0][data.records[0].index][7], rawSoul: window.SoulData[0][185][7] };
   }, snapshot([weapon, soul]));
   // Human + Warrior starts with STR 8 (race 5 + class 3), not race-only 5.
-  expect(result.initialStr).toBe(8); expect(result.before).toBe(74); expect(result.after).toBe(77); expect(result.str).toBe(7); expect(result.changed).toBe(true); expect(result.sockets).toBe(2);
+  expect(result.initialStr).toBe(8); expect(result.before).toBe(84); expect(result.after).toBe(87); expect(result.str).toBe(7); expect(result.changed).toBe(true); expect(result.sockets).toBe(2);
   expect(result.rawWeapon).toBe('18=W70'); expect(result.rawSoul).toBe('1=7');
   await page.locator('#SelEquip_0_3').selectOption('4', { force: true });
-  // This exact expected value follows the retained engine's +4 weapon upgrade;
-  // the production implementation contains no copy of its formula.
-  expect(await page.evaluate(() => Number(document.getElementById('Status_18').textContent))).toBe(90);
+  // The verified Human Fighting Spirit grants +10 to this sword; the remaining
+  // gain follows the original calculator's +4 weapon upgrade.
+  expect(await page.evaluate(() => Number(document.getElementById('Status_18').textContent))).toBe(100);
 });
 
 test('existing item changes numeric bonus but keeps original canonical Japanese engine identity', async ({ page }) => {
@@ -180,7 +180,7 @@ test('existing item changes numeric bonus but keeps original canonical Japanese 
     window.PandoraRemaked.adapter.selectEquipment(0, 1);
     return { key, afterKey: window.EquipData[0][0][1][0], str: window.Status.STR[2], attack: Number(document.getElementById('Status_18').textContent) };
   }, snapshot([changed]));
-  expect(result.key).toBe(result.afterKey); expect(result.str).toBe(4); expect(result.attack).toBe(11);
+  expect(result.key).toBe(result.afterKey); expect(result.str).toBe(4); expect(result.attack).toBe(21);
 });
 
 test('malformed publication never mutates current character, engine arrays or active revision', async ({ page }) => {
@@ -281,7 +281,7 @@ test('comparison uses current mechanics for both builds and restores active char
       after: api.adapter.serialize(), revision: api.catalog.getRevision() };
   }, { first: snapshot([weapon]), second: snapshot([{ ...weapon, calculationCode: '18=W95' }], 2) });
   expect(result.secondItem).toBe(weapon.engineId);
-  expect(result.sourceAttack).toBe(5); expect(result.earlierAttack).toBe(74); expect(result.laterAttack).toBe(99);
+  expect(result.sourceAttack).toBe(5); expect(result.earlierAttack).toBe(84); expect(result.laterAttack).toBe(109);
   expect(result.after).toBe(result.active); expect(result.revision).toBe(2);
   await page.locator('[data-remaked-compare-open]').click();
   await page.locator('[data-remaked-compare-a]').selectOption(result.a);
@@ -311,7 +311,7 @@ test('local catalog fixture shares and reloads online with no offline installati
   await recipient.goto('http://127.0.0.1:8000/#build=' + encodeURIComponent(payload));
   await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
   expect(await recipient.evaluate(() => window.PandoraRemaked.adapter.serialize())).toBe(payload);
-  expect(await recipient.evaluate(() => Number(document.getElementById('Status_18').textContent))).toBe(90);
+  expect(await recipient.evaluate(() => Number(document.getElementById('Status_18').textContent))).toBe(100);
   expect(requests).not.toContain(2);
   await recipient.reload();
   await expect(recipient.locator('[data-remaked-autosave-status]')).toContainText('Shared build loaded');
