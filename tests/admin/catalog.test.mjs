@@ -108,6 +108,37 @@ test('public catalog head separates immutable publication revision from build im
 const save = (env, item) => call(env, 'draft', { edit: item.edit, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
 const publish = (env, item) => call(env, 'publish', { id: item.identity.id, expectedDraftVersion: item.draftVersion, expectedCatalogRevision: item.catalogRevision });
 
+test('all five Dawn female identities can be published and edited through the normal D1 catalog workflow', async () => {
+  const { env, sqlite } = fixture();
+  const ids = [12532, 14512, 14532, 15512, 15532];
+  for (const gameId of ids) {
+    const id = 'modern.equipment.dawn-os-' + gameId;
+    const baseline = baselineById.get(id);
+    const item = await detail(env, id);
+    assert.equal(item.ok, true);
+    assert.equal(item.published, false);
+    assert.equal(item.identity.kind, 'equipment');
+    assert.match(item.edit.names.ru, /\(ж\)$/);
+    assert.equal(item.currentRecord.calculationCode, baseline.calculation_code);
+    item.edit.names.ru = 'Отредактировано администратором ' + gameId + ' (ж)';
+    const changed = await save(env, item);
+    assert.equal(changed.ok, true);
+    const published = await publish(env, changed);
+    assert.equal(published.ok, true);
+    const restored = await detail(env, id);
+    assert.equal(restored.published, true);
+    assert.equal(restored.edit.names.ru, item.edit.names.ru);
+    assert.equal(restored.currentRecord.calculationCode, baseline.calculation_code);
+    assert.deepEqual(restored.currentRecord.compatibility.slice(0, 8), baseline.compatibility_flags.slice(0, 8));
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_allocations WHERE id = ?').get(id).n, 0);
+  }
+  const current = await publicData(env);
+  assert.equal(current.records.filter(row => ids.some(id => row.id === 'modern.equipment.dawn-os-' + id)).length, 5);
+  const historical = await publicData(env, 0);
+  assert.equal(historical.records.length, 0);
+  sqlite.close();
+});
+
 test('idempotent item creation recovers the same allocation and never overwrites a changed draft',async()=>{
   const {env,sqlite}=fixture(),edit=draftFromSource(null,'equipment');
   edit.id='';edit.category=3;edit.names.en='Lamp';edit.baseAttack=96;
