@@ -380,8 +380,11 @@
     var row = element('div', 'remaked-search-row');
     row.dataset.remakedSearchRow = ''; row.dataset.value = String(value);
     row.appendChild(button);
-    var item = kind === 'equipment' && Number(value) % 10000 === 0 ? null : adapter.readItemDetails(kind, value, targetSlot);
-    if (!item) return row;
+    // A category/empty option has no preview. Actual item details are
+    // hydrated only when someone opens a disclosure, not for every result.
+    // This avoids hundreds of synchronous calculator projections during
+    // searching and typing in large equipment/Soul lists.
+    if (kind === 'equipment' && Number(value) % 10000 === 0) return row;
     var details = element('details', 'remaked-item-preview');
     var summary = element('summary');
     if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(summary, 'aria-label', 'search.details');
@@ -394,6 +397,15 @@
     description.dataset.remakedItemDescription = '';
     description.id = 'remaked-item-detail-' + (++previewSequence);
     summary.setAttribute('aria-controls', description.id);
+    var hydrated = false;
+    function populateDescription() {
+      if (hydrated) return;
+      var item = adapter.readItemDetails(kind, value, targetSlot);
+      if (!item) return;
+      // One detail projection per actually visited card. Opening and closing
+      // the same tooltip does not recompute it, and the next list refresh
+      // creates a new card so updated game data is never retained as stale.
+      hydrated = true;
     var name = button.querySelector('.remaked-search-result-name').textContent;
     description.appendChild(element('strong', 'remaked-item-title', item.equippedName ? item.equippedName.replace(item.name, name) : name));
     var metadata = element('div', 'remaked-item-metadata');
@@ -430,6 +442,7 @@
       description.appendChild(element('p', 'remaked-item-proc', text));
     });
     if (item.calculationWarning) description.appendChild(element('p', 'remaked-item-warning', item.calculationWarning));
+    }
     details.appendChild(description); row.appendChild(details);
     var pinned = false;
     var hoverTimer = null;
@@ -478,6 +491,7 @@
     });
     if (floating) description.setAttribute('popover', 'manual');
     details.addEventListener('toggle', function () {
+      if (details.open) populateDescription();
       if (!details.open) pinned = false;
       summary.setAttribute('aria-expanded', details.open ? 'true' : 'false');
       if (!floating || !description.isConnected) return;
