@@ -154,6 +154,43 @@ test('Dawn reserved IDs fail closed when the live catalog allocates the same equ
   expect(message).toMatch(/reserved Dawn equipment index/i);
 });
 
+test('all 41 verified original or provisional race-kit identities resolve to one D1 item', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(() => {
+    const gear = window.PandoraRemakedVerifiedRacialGear.entries.filter(row => row.publishedId);
+    const dawn = window.PandoraRemakedDawnCollection;
+    const records = gear.map(row => ({
+      id: row.publishedId, category: row.category, index: row.publishedIndex,
+      kind: 'equipment', names: {en:row.en,ru:row.ru,jp:'',tw:''},
+      compatibility: Array(36).fill(1)
+    }));
+    const raw = {revision:94,records};
+    const unmodified = JSON.stringify(raw);
+    const augmented = dawn.augment(raw,window.EquipData);
+    return {
+      number:gear.length,
+      sourceUntouched:JSON.stringify(raw)===unmodified,
+      cases:gear.map(row=>{
+        const aliasIndex=row.newIndex===undefined?row.templateIndex:row.newIndex;
+        const resolved=dawn.canonicalForLegacy(row.category,aliasIndex,augmented);
+        const withOwnerPublication={revision:95,records:augmented.records.concat([{
+          id: row.newIndex===undefined?'equipment.'+row.category+'.'+aliasIndex:row.recordId,
+          category:row.category,index:aliasIndex,kind:'equipment',disabled:false
+        }])};
+        const kept=dawn.canonicalForLegacy(row.category,aliasIndex,withOwnerPublication);
+        return {gameId:row.gameId,expected:row.publishedId,chosen:resolved?.id||null,
+          explicitPublicationWins:kept===null};
+      })
+    };
+  });
+  expect(result.number).toBe(41);
+  expect(result.sourceUntouched).toBe(true);
+  for(const row of result.cases){
+    expect(row.chosen,'Canonical item missing for official OS '+row.gameId).toBe(row.expected);
+    expect(row.explicitPublicationWins,'Manually published counterpart must remain available '+row.gameId).toBe(true);
+  }
+});
+
 test('D1-edited Dawn names and explicit races beat historical client placeholders', async ({ page }) => {
   await page.goto('/');
   const result = await page.evaluate(() => {
