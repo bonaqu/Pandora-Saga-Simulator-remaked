@@ -1,5 +1,29 @@
 # Changelog
 
+## Modern 4.37 — надёжность сохранённых билдов и сравнения, 2026-11-03
+
+<!-- release-notes:user:ru -->
+- **Проверка билдов и сравнения:** расширены автоматические проверки сохранения, повторной загрузки, смены языков, обратного порядка A/B и корректного расчёта разницы характеристик.
+- **Сравнение обновляется само:** переименование, копирование и удаление сохранённого билда сразу отражаются в открытом сравнении. При сбоях хранения или повреждённых сохранениях отображается понятное предупреждение вместо ошибочного сообщения «недостаточно билдов».
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **Builds and comparison verified:** expanded coverage for save/load, reload, localization, reversing A/B, and accurate stat deltas.
+- **Live comparison updates:** renaming, duplicating and deleting a build updates an already-open comparison. Unavailable storage or damaged saved data now show clear warnings instead of misleading empty states.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Хранилище не допускает неоднозначных дубликатов ID, сохраняет доступные корректные записи без незапрошенной перезаписи повреждённого JSON и уведомляет интерфейс только об успешных изменениях.
+- Сравнение слушает изменения в собственной вкладке и `storage` из других вкладок; при недоступности localStorage отличает ошибку чтения от отсутствия двух билдов. Защита от запоздалых асинхронных ответов и проверка неизменности активного персонажа покрыты браузерными тестами.
+- Новые регрессии проверяют смену мест A/B, реальные числовые дельты, переключение RU/EN, перезагрузку, повреждённые и повторяющиеся ID, отказ в доступе к хранилищу, переполнение квоты, недопустимый билд и параллельные запросы.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Reject ambiguous duplicate IDs in a damaged local collection while retaining valid siblings and never silently rewriting the source. Notify open comparisons only after successful writes.
+- Synchronize compare selectors within the same tab and across tabs; distinguish browser storage errors from fewer than two saved builds. Preserve request-generation guards against stale async results.
+- Regression browser cases cover A/B delta reversals, unchanged calculator state, RU/EN changes, reload, damaged IDs, SecurityError, quota failure, invalid payload and overlapping evaluations.
+<!-- /admin-notes:en -->
+
 ## Modern 4.36 — форматирование RU/EN описаний предметов, 2026-11-03
 
 <!-- release-notes:user:ru -->
