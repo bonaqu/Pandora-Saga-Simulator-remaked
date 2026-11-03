@@ -68,6 +68,7 @@ REQUIRED_LOCALIZATION = (
     "localization/ui.en.json",
     "localization/game-terms.ru.json",
     "localization/approved-translations.v1.json",
+    "data/verified-racial-gear.v1.json",
     "localization/guild-skills.v1.json",
 )
 REQUIRED_GENERATED = (
@@ -119,6 +120,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/release-notes.js"></script>
 <script src="./modern/locales.js"></script>
 <script src="./modern/game-terms.js"></script>
+<script src="./modern/verified-racial-gear.js"></script>
 <script src="./modern/i18n.js"></script>
 <script src="./modern/astian-rules.js"></script>
 <script src="./modern/adapter.js"></script>
@@ -513,6 +515,29 @@ def _materialize_locales(
     )
 
 
+def _materialize_verified_racial_gear(root: pathlib.Path, output: pathlib.Path) -> dict[str, dict[str, str]]:
+    # The active OS has native Russian names even where archived JP/TW stops.
+    # These verified labels are presentation fallbacks, never D1 publications.
+    registry = json.loads((root / "data/verified-racial-gear.v1.json").read_text(encoding="utf-8"))
+    rows = registry.get("entries", [])
+    if registry.get("schemaVersion") != 1 or len(rows) != 72 or sum(row.get("set") == "dawn" for row in rows) != 40:
+        raise ValueError("Expected 32 normal racial and 40 Dawn identities")
+    ids, slots, translations = set(), set(), {}
+    for row in rows:
+        record_id = row.get("recordId")
+        identity = f"equipment.{row.get('category')}.{row.get('index')}"
+        if record_id in ids or identity in slots or not row.get("ru") or not row.get("en"):
+            raise ValueError("Duplicate, empty or invalid racial-equipment record: " + str(record_id))
+        ids.add(record_id)
+        slots.add(identity)
+        translations[identity] = {"ru": row["ru"], "en": row["en"]}
+    (output / "modern/verified-racial-gear.js").write_text(
+        "window.PandoraRemakedVerifiedRacialGear = Object.freeze(" +
+        json.dumps(registry, ensure_ascii=False, separators=(",", ":")) +
+        ");\n", encoding="utf-8")
+    return translations
+
+
 def _materialize_game_terms(output: pathlib.Path, russian: dict[str, str], english: dict[str, str] | None = None) -> None:
     payload = json.dumps({"en": english or {}, "ru": russian}, ensure_ascii=False, sort_keys=True)
     (output / "modern/game-terms.js").write_text(
@@ -739,7 +764,15 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
         translations.ui_traditional_chinese,
         translations.ui_english,
     )
-    _materialize_game_terms(output, translations.game_russian, translations.game_english)
+    verified_names = _materialize_verified_racial_gear(root, output)
+    game_ru = dict(translations.game_russian)
+    game_en = dict(translations.game_english)
+    for term, names in verified_names.items():
+        if not game_ru.get(term):
+            game_ru[term] = names["ru"]
+        if not game_en.get(term):
+            game_en[term] = names["en"]
+    _materialize_game_terms(output, game_ru, game_en)
     _materialize_guild_descriptions(root, output)
     _materialize_generated_data(root, output)
     materialize_native_passives(root, output)

@@ -3,11 +3,14 @@ import sourceTerms from '../../localization/game-terms.ru.json' with { type: 'js
 import approved from '../../localization/approved-translations.v1.json' with { type: 'json' };
 import curated from '../../localization/curated-runtime-defaults.ru.v1.json' with { type: 'json' };
 import guildSkills from '../../localization/guild-skills.v1.json' with { type: 'json' };
+import verifiedGear from '../../data/verified-racial-gear.v1.json' with { type: 'json' };
 import { baselineRecords, baselineById } from './catalog-baseline.mjs';
 import { CatalogError } from './catalog-model.mjs';
 import { jsonResponse } from './auth.mjs';
 
 const LOCALES = ['ru','en','jp','tw'];
+const verifiedEquipmentNames = new Map(verifiedGear.entries.map(row =>
+  ['equipment.' + row.category + '.' + row.index, row]));
 const fail = (message,status=400) => {throw new CatalogError(message,status);};
 const registry = new Map();
 // Distinguish a real localized baseline from an English fallback. Never label
@@ -20,6 +23,13 @@ const originOf=(source,approvedValue={})=>Object.fromEntries(LOCALES.map(locale=
 // immutable historical approved JSON or shadowing any published D1 value.
 function migratedBaseline(scope,id) {
   const values=Object.fromEntries(LOCALES.map(locale=>[locale,approved[scope][locale]?.[id]]));
+  // The verified game file supplies names for the two complete racial sets.
+  // Never alter frozen JP/TW originals or override D1-published author edits.
+  if (scope === 'game' && verifiedEquipmentNames.has(id)) {
+    const source = verifiedEquipmentNames.get(id);
+    if (!values.ru) values.ru = source.ru;
+    if (!values.en) values.en = source.en;
+  }
   const approvedCorrection=curated.ru[scope]?.[id]||'';
   // This historical mixed RU/EN help was already corrected in Modern. Make
   // the approved baseline identical in Admin; D1 remains authoritative.

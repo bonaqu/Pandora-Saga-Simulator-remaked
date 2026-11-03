@@ -7,7 +7,7 @@ import { adminCatalog, publicCatalog, publicCatalogHead } from '../../admin-api/
 import { draftFromSource, validateDraft } from '../../admin-api/src/catalog-model.mjs';
 import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs';
 import { currentActiveProfileDrafts } from '../../admin-api/src/current-active-profiles.mjs';
-import { baselineById, sourceIdentity, editableDawnRecords } from '../../admin-api/src/catalog-baseline.mjs';
+import { baselineById, sourceIdentity, editableDawnRecords, editableRacialRecords } from '../../admin-api/src/catalog-baseline.mjs';
 import { previewReviewedPumpkinSoul } from '../../scripts/lib/reviewed-soul-preview.mjs';
 
 const origin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
@@ -136,6 +136,34 @@ test('all five Dawn female identities can be published and edited through the no
   assert.equal(current.records.filter(row => ids.some(id => row.id === 'modern.equipment.dawn-os-' + id)).length, 5);
   const historical = await publicData(env, 0);
   assert.equal(historical.records.length, 0);
+  sqlite.close();
+});
+
+test('all five regular female racial IDs preserve source stats through D1 draft/publish and future edits', async () => {
+  const { env, sqlite } = fixture();
+  const original=[12531,14511,14531,15511,15531];
+  for(const serverId of original) {
+    const id='modern.equipment.racial-os-'+serverId,source=baselineById.get(id);
+    assert.ok(source,id);
+    const item=await detail(env,id);
+    assert.equal(item.identity.kind,'equipment');
+    assert.equal(item.published,false);
+    assert.match(item.edit.names.ru,/\(ж\)$/);
+    assert.equal(item.edit.names.jp,'');
+    assert.equal(item.edit.names.tw,'');
+    assert.equal(item.currentRecord.calculationCode,source.calculation_code);
+    item.edit.names.ru='Отредактированный вариант '+serverId+' (ж)';
+    const saved=await save(env,item);
+    assert.equal(saved.hasDraft,true);
+    const released=await publish(env,saved);
+    assert.equal(released.ok,true);
+    const published=await detail(env,id);
+    assert.equal(published.edit.names.ru,item.edit.names.ru);
+    assert.equal(published.currentRecord.calculationCode,source.calculation_code);
+    assert.deepEqual(published.currentRecord.compatibility,source.compatibility_flags);
+  }
+  assert.equal((await publicData(env)).records.length,5);
+  assert.equal((await publicData(env,0)).records.length,0);
   sqlite.close();
 });
 
@@ -349,8 +377,8 @@ test('racial and passive current references explain retained mechanics, not fabr
 
 test('baseline is complete, searchable, read-only and never appears as a fabricated published override', async () => {
   const { env } = fixture();
-  const meta = await call(env, 'meta'); assert.equal(meta.sourceCount, 1561 + editableDawnRecords.length);
-  const equipment = await call(env, 'catalog?kind=equipment'); assert.equal(equipment.count, 1120 + editableDawnRecords.length); assert.equal(equipment.items.length, 40);
+  const meta = await call(env, 'meta'); assert.equal(meta.sourceCount, 1561 + editableDawnRecords.length + editableRacialRecords.length);
+  const equipment = await call(env, 'catalog?kind=equipment'); assert.equal(equipment.count, 1120 + editableDawnRecords.length + editableRacialRecords.length); assert.equal(equipment.items.length, 40);
   const souls = await call(env, 'catalog?kind=soul'); assert.equal(souls.count, 184);
   const classes = await call(env, 'catalog?kind=class'); assert.equal(classes.count, 28);
   const racial = await call(env, 'catalog?kind=racial'); assert.equal(racial.count, 18);

@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { draftFromSource, validateDraft, compileRecord, showApprovedTranslations, EFFECTS } from '../../admin-api/src/catalog-model.mjs';
-import { baselineById, sourceIdentity, editableDawnRecords } from '../../admin-api/src/catalog-baseline.mjs';
+import { baselineById, sourceIdentity, editableDawnRecords, editableRacialRecords } from '../../admin-api/src/catalog-baseline.mjs';
+import verifiedRacialGear from '../../data/verified-racial-gear.v1.json' with { type: 'json' };
 
 const source = {
   id: 'equipment.0.1', legacy_id: 1, legacy_category_id: 0, legacy_item_index: 1,
@@ -42,6 +43,41 @@ test('all five real Dawn female identities are editable without losing source me
     assert.equal(updated.names.ru, draft.names.ru);
     assert.equal(updated.calculationCode, record.calculationCode);
     assert.equal(JSON.stringify(source), before);
+  }
+});
+
+test('32 regular racial plus 40 Dawn names remain editable and keep original JP/TW only for Legacy items', () => {
+  const records = verifiedRacialGear.entries;
+  assert.equal(records.length,72);
+  assert.equal(records.filter(row=>row.set==='racial').length,32);
+  assert.equal(records.filter(row=>row.set==='dawn').length,40);
+  assert.equal(editableRacialRecords.length,5);
+  assert.equal(editableDawnRecords.length,5);
+  assert.equal(new Set(records.map(row=>row.recordId)).size,72);
+  assert.equal(new Set(records.map(row=>row.category+'.'+row.index)).size,72);
+  assert.equal(records.find(row=>row.gameId===12551).ru,'Корсет для мирины');
+  assert.equal(records.find(row=>row.gameId===12562).ru,'Жилет зари для энкиду');
+  assert.equal(records.find(row=>row.gameId===11542).ru,'Рассветный шлем для цверга');
+  for(const row of records) {
+    assert.ok(row.ru && row.en && Number.isInteger(row.gameId),row.recordId);
+    if(!row.recordId.startsWith('equipment.')) {
+      // The known ten already-published Dawn UUIDs are editable via D1
+      // allocations, and the remaining synthetic records are registered here.
+      if(!row.recordId.startsWith('modern.equipment.racial-os-')&&!row.recordId.startsWith('modern.equipment.dawn-os-'))
+        continue;
+    }
+    const baseline = baselineById.get(row.recordId);
+    assert.ok(baseline,'Missing admin editor source for '+row.recordId);
+    const identity=sourceIdentity(baseline);
+    assert.equal(identity.index,row.index);
+    const draft=draftFromSource(baseline,'equipment');
+    assert.equal(draft.names.ru,row.ru);
+    assert.equal(compileRecord(validateDraft(draft,identity),identity,baseline).calculationCode,baseline.calculation_code);
+    if(row.newIndex !== undefined){
+      assert.equal(draft.names.jp,'');
+      assert.equal(draft.names.tw,'');
+      assert.deepEqual(baseline.compatibility_flags.slice(0,2),[0,1]);
+    }
   }
 });
 

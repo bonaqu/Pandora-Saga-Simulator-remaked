@@ -582,7 +582,18 @@
     "icon": "I_015572_00"
   }
 ];
-  var newIds = entries.filter(function (entry) { return Number.isInteger(entry.newIndex); });
+  // The regular racial outfits share the same archived male/female indices
+  // in five places. Current OS confirms identical base stats and effects for
+  // each pair; add distinct Modern selections without touching the museum.
+  var regularVariants = (window.PandoraRemakedVerifiedRacialGear?.entries || [])
+    .filter(function (row) { return row.set === 'racial' && Number.isInteger(row.newIndex); })
+    .map(function (row) {
+      return { id: row.gameId, recordId: row.recordId, category: row.category,
+        templateIndex: row.templateIndex, newIndex: row.newIndex, race: row.race,
+        sex: row.sex, ru: row.ru, en: row.en, descriptionRu: row.descriptionRu,
+        level: row.level, sockets: row.sockets };
+    });
+  var newIds = entries.filter(function (entry) { return Number.isInteger(entry.newIndex); }).concat(regularVariants);
   var byPublishedId = Object.create(null);
   entries.forEach(function (entry) { if (entry.publishedId) byPublishedId[entry.publishedId] = entry; });
   function compatible(entry, base) {
@@ -597,13 +608,13 @@
   function addNew(entry, original) {
     var source = original?.[0]?.[entry.category]?.[entry.templateIndex];
     if (!source || typeof source[7] !== 'string') throw new Error('Missing Dawn calculator template ' + entry.id);
-    var id = 'modern.equipment.dawn-os-' + entry.id;
+    var id = entry.recordId || 'modern.equipment.dawn-os-' + entry.id;
     var code = source[7];
     return {
       id: id, kind: 'equipment', category: entry.category, index: entry.newIndex,
       engineId: entry.category * 10000 + entry.newIndex, engineKey: 'Modern:' + id,
       names: localized(entry.en, entry.ru),
-      description: localized(entry.descriptionEn, entry.descriptionRu),
+      description: localized(entry.descriptionEn || original?.[1]?.[entry.category]?.[entry.templateIndex]?.[1] || '', entry.descriptionRu),
       notes: localized('', ''), acquisition: localized('', ''), modifiers: localized('', ''),
       level: entry.level, sockets: entry.sockets, disabled: false,
       calculationCode: code, compatibility: compatible(entry, source.slice(8, 44)),
@@ -621,17 +632,33 @@
     var rows = snapshot.records.map(function (record) {
       var entry = byPublishedId[record.id];
       if (!entry || record.kind !== 'equipment') return record;
+      var changes = {};
+      // These published Dawn UUIDs have exact counterparts in the archived
+      // game. Keep the OLD Japanese/Taiwanese item names, never synthesize new
+      // translations from English. Explicit published translations still win.
+      if (record.names && source) {
+        var names = Object.assign({}, record.names), supplemented = false;
+        [['jp', 0], ['tw', 2]].forEach(function (pair) {
+          var old = source[pair[1]]?.[entry.category]?.[entry.templateIndex]?.[0];
+          if (!names[pair[0]] && typeof old === 'string' && old.trim()) {
+            names[pair[0]] = old; supplemented = true;
+          }
+        });
+        if (supplemented) changes.names = names;
+      }
       // Revision 94 had ten Dawn records with unbounded all-race flags.
       // Normalize only that known legacy placeholder: an administrator's
       // explicitly edited race selection is always the source of truth.
-      if (!Array.isArray(record.compatibility) ||
-          !record.compatibility.slice(2, 8).every(function (value) { return value === 1; })) return record;
-      var flags = compatible(entry, record.compatibility);
-      if (flags.every(function (value, i) { return value === record.compatibility[i]; })) return record;
-      return Object.assign({}, record, { compatibility: flags });
+      if (Array.isArray(record.compatibility) &&
+          record.compatibility.slice(2, 8).every(function (value) { return value === 1; })) {
+        var flags = compatible(entry, record.compatibility);
+        if (flags.some(function (value, i) { return value !== record.compatibility[i]; }))
+          changes.compatibility = flags;
+      }
+      return Object.keys(changes).length ? Object.assign({}, record, changes) : record;
     });
     newIds.forEach(function (entry) {
-      var id = 'modern.equipment.dawn-os-' + entry.id;
+      var id = entry.recordId || 'modern.equipment.dawn-os-' + entry.id;
       if (rows.some(function (row) { return row.id === id; })) return;
       if (rows.some(function (row) {
         return row.kind === 'equipment' && row.category === entry.category && row.index === entry.newIndex;

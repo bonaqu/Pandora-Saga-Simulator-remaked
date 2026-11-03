@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from scripts.build_pages import build_pages, _materialize_modern_astir_rules, _materialize_modern_astir_registry, _materialize_modern_guild_resistance, _materialize_modern_weapon_type_fixes, _materialize_release_metadata, _read_latest_release, _read_ui_version
+from scripts.build_pages import build_pages, _materialize_modern_astir_rules, _materialize_modern_astir_registry, _materialize_modern_guild_resistance, _materialize_modern_weapon_type_fixes, _materialize_release_metadata, _materialize_verified_racial_gear, _read_latest_release, _read_ui_version
 from scripts.localization_catalog import load_migrated_catalogs as load_editable_catalogs
 from scripts.localization_catalog import load_migrated_catalogs
 from scripts.sync_localized_changelogs import render as render_changelog
@@ -26,6 +26,26 @@ HERO_WEBP_FIXTURE = b"RIFF\x04\x00\x00\x00WEBP"
 
 
 class BuildPagesTests(unittest.TestCase):
+    def test_verified_racial_items_build_bilingual_labels_without_creating_jp_tw_game_strings(self):
+        source = pathlib.Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            (root / "modern").mkdir()
+            names = _materialize_verified_racial_gear(source, root)
+            self.assertEqual(len(names), 72)
+            self.assertEqual(names["equipment.31.10"]["ru"], "Корсет для мирины")
+            self.assertEqual(names["equipment.30.23"]["ru"], "Рассветный шлем для цверга")
+            self.assertEqual(names["equipment.31.27"]["ru"], "Жилет зари для энкиду")
+            script = (root / "modern/verified-racial-gear.js").read_text(encoding="utf-8")
+            self.assertTrue(script.endswith(");\n"))
+            prefix = "window.PandoraRemakedVerifiedRacialGear = Object.freeze("
+            self.assertTrue(script.startswith(prefix))
+            payload = json.loads(script[len(prefix):-3])
+            self.assertEqual(len(payload["entries"]), 72)
+            self.assertEqual(len({(row["category"],row["index"]) for row in payload["entries"]}), 72)
+            self.assertTrue(all("jp" not in row and "tw" not in row for row in payload["entries"]))
+            self.assertEqual(sum(row["set"] == "dawn" for row in payload["entries"]), 40)
+
     def test_localized_changelog_editions_track_canonical_source(self):
         root = pathlib.Path(__file__).resolve().parents[1]
         canonical = (root / "CHANGELOG.md").read_text(encoding="utf-8")
@@ -467,6 +487,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             generated.mkdir(parents=True)
             repository = pathlib.Path(__file__).resolve().parents[1]
             shutil.copy2(repository / "data/native-passive-hooks.v1.json", root / "data/native-passive-hooks.v1.json")
+            shutil.copy2(repository / "data/verified-racial-gear.v1.json", root / "data/verified-racial-gear.v1.json")
             shutil.copy2(repository / "js/calc.js", root / "js/calc.js")
             shutil.copy2(repository / "js/equip.js", root / "js/equip.js")
             for name in ("equipment.v1.json", "souls.v1.json", "skills.v1.json"):
@@ -645,7 +666,18 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             self.assertEqual(parsed_locales["tw"], editable.ui_traditional_chinese)
             game_terms = (output / "modern" / "game-terms.js").read_text(encoding="utf-8")
             parsed_game = json.loads(game_terms.split(" = ", 1)[1].removesuffix(";\n"))
-            self.assertEqual(parsed_game["ru"], game_russian)
+            expected_ru = dict(game_russian)
+            expected_en = dict(editable.game_english)
+            verified = json.loads((root / "data" / "verified-racial-gear.v1.json").read_text(encoding="utf-8"))
+            for row in verified["entries"]:
+                term = f"equipment.{row['category']}.{row['index']}"
+                if not expected_ru.get(term):
+                    expected_ru[term] = row["ru"]
+                if not expected_en.get(term):
+                    expected_en[term] = row["en"]
+            self.assertEqual(parsed_game["ru"], expected_ru)
+            self.assertEqual(parsed_game["en"], expected_en)
+            self.assertTrue((output / "modern/verified-racial-gear.js").exists())
             self.assertFalse((output / "localization" / "translations.xlsx").exists())
 
     def test_recovers_archived_codecs_only_in_published_runtime(self):

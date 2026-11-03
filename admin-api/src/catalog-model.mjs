@@ -1,5 +1,6 @@
 import nativePassives from '../../data/native-passive-hooks.v1.json' with { type: 'json' };
 import approved from '../../localization/approved-translations.v1.json' with { type: 'json' };
+import verifiedGear from '../../data/verified-racial-gear.v1.json' with { type: 'json' };
 import character from '../../data/generated/character.v1.json' with { type: 'json' };
 export const NATIVE_PASSIVES = nativePassives.definitions;
 // This is a validated data codec, not a game calculator. IDs and unit suffixes
@@ -139,6 +140,7 @@ function skillProfiles(input) {
   return profiles;
 }
 const texts = source => Object.fromEntries(LANGUAGES.map(language => [language, source?.[language] || '']));
+const verifiedEquipmentNames = new Map(verifiedGear.entries.map(row => [row.recordId, row]));
 function approvedTexts(source, id) {
   const result = texts(source);
   if (!id) return result;
@@ -148,6 +150,11 @@ function approvedTexts(source, id) {
     const value = approved.game[locale]?.[id];
     if (typeof value === 'string' && value) result[locale] = value;
   }
+  // Source-verified OS Russian labels fill empty historical workbooks; they
+  // never overwrite curated Russian text, published D1 or archival JP/TW.
+  const verified = verifiedEquipmentNames.get(id);
+  if (verified && !approved.game.en?.[id]) result.en = verified.en;
+  if (verified && !result.ru) result.ru = verified.ru;
   return result;
 }
 function sourceNameId(source,kind) {

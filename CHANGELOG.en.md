@@ -2,6 +2,16 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.33 — 2026-11-03
+
+### For users
+
+- **Racial outfits and Dawn gear:** verified Russian names for 32 ordinary racial outfit items and all 40 Dawn items are available. Separate male and female human/elf variants appear as distinct items, with a short gender suffix in the item name only.
+
+### Development and technical changes
+
+- Add an OS-verified 72-ID registry (32 ordinary racial pieces and 40 Dawn variants) to public RU/EN fallbacks and the source-backed admin editor. Five newly separated female ordinary outfits get stable editable IDs, verified matching source calculations and compatibility flags; D1 owner publications remain authoritative. Preserve archived JP/TW game names unchanged; use English fallback for new game items, without fabricated translations. Base weapon range from official technical data remains authoritative; effective range modifiers are separate. Legacy 2.00 and formulas are unchanged.
+
 ## Modern 4.32 — 2026-11-03
 
 ### For users

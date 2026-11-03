@@ -5,6 +5,7 @@ import character from '../../data/generated/character.v1.json' with { type: 'jso
 import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
 import approved from '../../localization/approved-translations.v1.json' with { type: 'json' };
 import dawnVariants from '../../data/dawn-editable-variants.v1.json' with { type: 'json' };
+import verifiedGear from '../../data/verified-racial-gear.v1.json' with { type: 'json' };
 
 // These female Dawn variants used the same archived index as the male item.
 // Register them as real source identities in the admin, so unpublished records
@@ -38,7 +39,30 @@ export const editableDawnRecords = dawnVariants.entries.map(entry => {
     level_requirement: entry.level, soul_socket_count: entry.sockets,
     compatibility_flags: compatibility };
 });
-export const baselineRecords = [...equipment.records, ...editableDawnRecords, ...souls.records, ...character.records.filter(record => ['class', 'racial'].includes(record.kind)),
+// The archived normal outfits also merged five current female server items into
+// their male slot. These separate female IDs use only source-verified equivalent
+// numeric effects; the old JP/TW names and original IDs never get rewritten.
+export const editableRacialRecords = verifiedGear.entries.filter(entry =>
+  entry.set === 'racial' && Number.isInteger(entry.newIndex)).map(entry => {
+  const template = sourceEquipment.get(entry.category + '.' + entry.templateIndex);
+  if (!template || !Array.isArray(template.compatibility_flags) || template.compatibility_flags.length !== 36 ||
+      entry.sex !== 'female' || entry.recordId !== 'modern.equipment.racial-os-' + entry.gameId ||
+      !Number.isInteger(entry.race) || entry.race < 0 || entry.race > 5 ||
+      equipment.records.some(record => record.legacy_category_id === entry.category && record.legacy_item_index === entry.index))
+    throw new Error('Invalid racial equipment identity: ' + entry.gameId);
+  const compatibility = [...template.compatibility_flags];
+  compatibility[0] = 0; compatibility[1] = 1;
+  for (let race = 0; race < 6; race++) compatibility[race + 2] = Number(race === entry.race);
+  return { ...template, id: entry.recordId, kind: 'equipment',
+    legacy_category_id: entry.category, legacy_item_index: entry.index,
+    name: { en: entry.en, ru: entry.ru, jp: '', tw: '' },
+    option: { en: template.option?.en || '', ru: entry.descriptionRu || '', jp: '', tw: '' },
+    special_option: { en: '', ru: '', jp: '', tw: '' },
+    acquisition: { en: '', ru: '', jp: '', tw: '' },
+    level_requirement: entry.level, soul_socket_count: entry.sockets,
+    compatibility_flags: compatibility };
+});
+export const baselineRecords = [...equipment.records, ...editableDawnRecords, ...editableRacialRecords, ...souls.records, ...character.records.filter(record => ['class', 'racial'].includes(record.kind)),
   ...skills.records.map(source => ({ ...source, id: source.id.replace('skill.', 'skill_entry.'), kind: source.is_active ? 'active' : 'passive' }))];
 export const baselineById = new Map(baselineRecords.map(record => [record.id, record]));
 export const categories = equipment.categories;
