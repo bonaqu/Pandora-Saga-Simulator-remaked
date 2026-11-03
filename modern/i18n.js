@@ -325,7 +325,13 @@
         item.newIndex === undefined && item.templateIndex === index);
     });
     if (dawnEntry?.sex === 'both') return value;
-    var sex = dawnEntry?.sex;
+    // Archived normal Elf/Human gloves and boots can have [1,1] flags
+    // despite their OS gender-specific identities. The verified ID registry
+    // resolves these separately without adding a character gender selector.
+    var verified = window.PandoraRemakedVerifiedRacialGear?.entries?.find(function (row) {
+      return row.category === category && row.index === index;
+    });
+    var sex = verified?.sex || dawnEntry?.sex;
     if (!sex) {
       var record = namespace.catalog?.item('equipment', category * 10000 + index);
       var flags = record?.compatibility || window.EquipData?.[0]?.[category]?.[index]?.slice(8, 10);
