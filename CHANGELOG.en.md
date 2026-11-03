@@ -2,6 +2,16 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.31 — 2026-11-03
+
+### For users
+
+- **Compact gender markers on equipment:** male- and female-specific items now show “(m)” or “(w)” in their names, including the Dawn collection and other restricted gear. No character gender selector is required.
+
+### Development and technical changes
+
+- Display-only gender markers read equipment compatibility flags and verified Dawn variant IDs. Normalize existing RU markers and long English “Male Elf” / “Female Human” names without modifying select values, item IDs, saved builds, D1 or Legacy.
+
 ## Modern 4.30 — 2026-11-03
 
 ### For users
