@@ -103,6 +103,38 @@ test('published Dawn variants reuse only historical JP/TW text, never newly fabr
   }
 });
 
+test('only one visible identity per Dawn item: ten archived slots alias their exact published D1 records',async({page})=>{
+  await page.goto('/');
+  const output=await page.evaluate(()=>{
+    const dawn=window.PandoraRemakedDawnCollection;
+    const targets=dawn.entries.filter(row=>row.publishedId);
+    const records=targets.map(row=>({
+      id:row.publishedId,kind:'equipment',category:row.category,
+      index:100+row.templateIndex,disabled:false,
+      compatibility:Array(36).fill(1),names:{en:row.en,ru:row.ru,jp:'',tw:''}
+    }));
+    const snapshot={revision:94,records};
+    const legacy=targets.map(row=>({
+      id:row.id,legacy:row.category*10000+row.templateIndex,
+      chosen:dawn.canonicalForLegacy(row.category,row.templateIndex,snapshot)?.id,
+      absent:dawn.canonicalForLegacy(row.category,row.templateIndex,{revision:90,records:[]}),
+      disabled:dawn.canonicalForLegacy(row.category,row.templateIndex,{revision:95,records:records.map(record=>
+        record.id===row.publishedId?{...record,disabled:true}:record)}),
+      edited:dawn.canonicalForLegacy(row.category,row.templateIndex,{revision:95,records:[
+        ...records,{id:'equipment.'+row.category+'.'+row.templateIndex,kind:'equipment'}]})
+    }));
+    return {legacy};
+  });
+  expect(output.legacy).toHaveLength(10);
+  expect(new Set(output.legacy.map(x=>x.legacy)).size).toBe(10);
+  for(const row of output.legacy){
+    expect(row.chosen,row.id).toMatch(/^modern\\.equipment\\./);
+    expect(row.absent).toBeNull();
+    expect(row.disabled).toBeNull();
+    expect(row.edited).toBeNull();
+  }
+});
+
 test('Dawn reserved IDs fail closed when the live catalog allocates the same equipment index', async ({ page }) => {
   await page.goto('/');
   const message = await page.evaluate(() => {
