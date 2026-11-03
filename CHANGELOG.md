@@ -1,5 +1,27 @@
 # Changelog
 
+## Modern 4.36 — форматирование RU/EN описаний предметов, 2026-11-03
+
+<!-- release-notes:user:ru -->
+- **Описание предмета как в игре:** сначала обычный текст, затем пустая строка и с новой строки каждый отдельный бонус. Слипшиеся «ОЗ +22Снижение расхода ОМ +7%» и аналогичные RU/EN сочетания больше не появляются в карточках экипировки.
+- **Единый формат для админки и Cloudflare:** русские и английские исходные описания всех предметов хранятся с переносами в D1; при ручном сохранении новых или старых предметов редактор использует те же правила. Числа, эффекты, имена и Legacy не изменяются.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **In-game description layout:** item flavor text is followed by a blank line, then one distinct effect per line. Concatenations such as “HP +22MP Cost Reduction +7%” are separated in RU and EN item previews.
+- **Admin and Cloudflare D1 consistency:** source-backed item descriptions have readable paragraphs in both locales; the editor applies the same formatting on save, without changing stats, names, or Legacy gameplay.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Единый безопасный RU/EN форматтер используется в Worker, в источниках D1 и генерируется без дублирования регулярных выражений для браузера. Идемпотентный импорт обновляет `catalog_equipment_sources`, не трогая редакции, черновики и расчётные поля.
+- Опубликованные карточки и ответы редактора форматируются без переписывания сохранённого `catalog_head` и исторических ревизий; новые правки записываются нормализованными. Проверки на 72 проверенных расовых предметах, всём сохранённом игровом корпусе и всех 1130 исходных записях D1 защищают значения эффектов и повторное форматирование.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Share one conservative RU/EN formatter across Worker model, D1 equipment-source imports, the admin editor and generated browser code. Source inventory re-import is idempotent; Legacy, calculations, and historical catalog revisions remain unchanged.
+- Normalize current published item responses and editor fields without rewriting archived `catalog_head`; subsequent saved drafts contain formatted text. Test 72 verified racial/Dawn pieces, the full retained OS description corpus, and all 1130 D1 source records for numeric/text preservation and idempotence.
+<!-- /admin-notes:en -->
+
 ## Modern 4.35 — двуязычные описания расового снаряжения, 2026-11-03
 
 <!-- release-notes:user:ru -->
