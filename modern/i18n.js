@@ -358,6 +358,27 @@
   function translateGameTerm(key, fallback) {
     var unified = unifiedOverrides.game[currentLocale]?.[key];
     if (unified) return equipmentGenderLabel(key, unified);
+    // The Modern player opens RU/EN game-data descriptions independently of
+    // the archival JP/EN/TW engine language. Historical D1 records often
+    // contain English-only details, while the current OS has both languages.
+    // A published non-empty owner description takes priority; only a missing
+    // locale uses the exact OS game-ID translation, never English for RU.
+    if (currentLocale === 'ru' || currentLocale === 'en') {
+      var equipmentDescription = /^equipment\.(\d+)\.(\d+)\.description$/.exec(key);
+      if (equipmentDescription) {
+        var category = Number(equipmentDescription[1]), index = Number(equipmentDescription[2]);
+        var verifiedItem = window.PandoraRemakedVerifiedRacialGear?.entries?.find(function (row) {
+          return row.category === category && (row.index === index || row.publishedIndex === index);
+        });
+        if (verifiedItem) {
+          var publishedItem = namespace.catalog?.item('equipment', category * 10000 + index);
+          var publishedDescription = publishedItem?.description?.[currentLocale];
+          if (typeof publishedDescription === 'string' && publishedDescription.trim())
+            return publishedDescription;
+          return currentLocale === 'ru' ? verifiedItem.descriptionRu : verifiedItem.descriptionEn;
+        }
+      }
+    }
     if (currentLocale === 'ru' && Object.prototype.hasOwnProperty.call(publishedResultLabels, key)) return equipmentGenderLabel(key, publishedResultLabels[key]);
     // The current published game catalog still contains five older, long
     // resistance names. They are not new user edits: the verified editor/D1

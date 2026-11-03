@@ -10,6 +10,7 @@ import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs
 import { currentActiveProfileDrafts } from '../../admin-api/src/current-active-profiles.mjs';
 import { baselineById, sourceIdentity, editableDawnRecords, editableRacialRecords } from '../../admin-api/src/catalog-baseline.mjs';
 import { previewReviewedPumpkinSoul } from '../../scripts/lib/reviewed-soul-preview.mjs';
+import verifiedGear from '../../data/verified-racial-gear.v1.json' with { type: 'json' };
 
 const origin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
 function fixture() {
@@ -57,6 +58,9 @@ test('all source equipment is persisted in D1 with 41 verified aliases and idemp
   assert.equal(after.expected,manifest.count);
   assert.equal(after.stored,manifest.count);
   assert.equal(after.aliases,41);
+  assert.equal(after.localizedExpected,72);
+  assert.equal(after.localizedStored,72);
+  assert.equal(after.localizedComplete,true);
   assert.equal(after.complete,true);
   const archived=sqlite.prepare('SELECT source_json, canonical_id FROM catalog_equipment_sources WHERE id=?')
     .get('equipment.32.15');
@@ -69,6 +73,8 @@ test('all source equipment is persisted in D1 with 41 verified aliases and idemp
   assert.equal(racialFemale.canonical_id,'modern.equipment.f0bb7e4c-ebc9-4f47-a20a-60bd627d4761');
   const parsed=JSON.parse(archived.source_json);
   assert.equal(parsed.id,'equipment.32.15');
+  assert.equal(parsed.option.ru,verifiedGear.entries.find(row=>row.gameId===14522).descriptionRu);
+  assert.equal(parsed.option.en,verifiedGear.entries.find(row=>row.gameId===14522).descriptionEn);
   assert.equal(parsed.name.jp,baselineById.get('equipment.32.15').name.jp);
   assert.deepEqual(parsed.compatibility_flags,baselineById.get('equipment.32.15').compatibility_flags);
   const admin=await detail(env,'equipment.31.10');
@@ -1152,4 +1158,58 @@ test('draft list resolves baseline identities without per-row D1 requests and cu
   assert.equal(listed.items.find(item=>item.id===custom.edit.id).diff.status,'new');
   assert.equal(counts.individual,0);
   assert.equal(counts.bulk,2,'all custom identities should be retrieved in only two queries');
+});
+
+test('all 72 source-verified racial and Dawn records expose both descriptions in admin and D1 baseline',()=>{
+  assert.equal(verifiedGear.entries.length,72);
+  const ids=new Set();
+  for(const row of verifiedGear.entries){
+    assert.ok(!ids.has(row.gameId),'Repeated OS game ID '+row.gameId);
+    ids.add(row.gameId);
+    const sourceId=Number.isInteger(row.newIndex)
+      ? row.recordId : 'equipment.'+row.category+'.'+row.templateIndex;
+    const source=baselineById.get(sourceId);
+    assert.ok(source,'Missing editable source '+sourceId);
+    const edit=draftFromSource(source,'equipment');
+    assert.equal(edit.description.ru,row.descriptionRu,'RU '+row.gameId);
+    assert.equal(edit.description.en,row.descriptionEn,'EN '+row.gameId);
+    assert.ok(edit.description.ru.trim() && edit.description.en.trim());
+    assert.equal(source.option.jp,baselineById.get(sourceId).option.jp,'JP source unchanged');
+  }
+  assert.equal(ids.size,72);
+});
+
+test('active D1 catalog and admin item restore missing RU/EN source descriptions, never replace author text',async()=>{
+  const {env,sqlite}=fixture();
+  const source=verifiedGear.entries.find(row=>row.gameId===14522);
+  const identity={id:source.publishedId,kind:'equipment',
+    category:source.category,index:source.publishedIndex};
+  const edit=draftFromSource(null,'equipment');
+  Object.assign(edit,{id:identity.id,category:identity.category,
+    names:{en:source.en,ru:source.ru,jp:'',tw:''},
+    description:{en:'',ru:'',jp:'',tw:''},effectMode:'replace'});
+  sqlite.prepare('INSERT INTO catalog_allocations (id,kind,category,item_index,created_at) VALUES (?,?,?,?,?)')
+    .run(identity.id,'equipment',identity.category,identity.index,1);
+  const publish=() => sqlite.prepare('UPDATE catalog_head SET version=94,impact_version=94,snapshot_json=? WHERE id=1')
+    .run(JSON.stringify([{identity,edit}]));
+  publish();
+  let publicRow=(await publicData(env)).records.find(row=>row.id===identity.id);
+  assert.equal(publicRow.description.ru,source.descriptionRu);
+  assert.equal(publicRow.description.en,source.descriptionEn);
+  const admin=await detail(env,identity.id);
+  assert.equal(admin.edit.description.ru,source.descriptionRu);
+  assert.equal(admin.edit.description.en,source.descriptionEn);
+  // The D1 head remains immutable: response-only locale repair.
+  const stored=JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head WHERE id=1').get().snapshot_json);
+  assert.equal(stored[0].edit.description.ru,'');
+  edit.description.ru='Ручное описание владельца';
+  edit.description.en='Owner approved English text';
+  publish();
+  publicRow=(await publicData(env)).records.find(row=>row.id===identity.id);
+  assert.equal(publicRow.description.ru,'Ручное описание владельца');
+  assert.equal(publicRow.description.en,'Owner approved English text');
+  const adminEdited=await detail(env,identity.id);
+  assert.equal(adminEdited.edit.description.ru,'Ручное описание владельца');
+  assert.equal(adminEdited.edit.description.en,'Owner approved English text');
+  sqlite.close();
 });

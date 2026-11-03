@@ -1,5 +1,27 @@
 # Changelog
 
+## Modern 4.35 — двуязычные описания расового снаряжения, 2026-11-03
+
+<!-- release-notes:user:ru -->
+- **Русские описания экипировки:** все 32 обычные расовые вещи и 40 предметов Зари показывают названия и описания на русском при выборе RU. В английском интерфейсе у этих же предметов используется оригинальный английский текст из игровых файлов.
+- **Исправлены карточки и админка:** полный текст доступен в поиске, предпросмотре и редакторе. Ранее вручную опубликованные описания не перезаписываются.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **Bilingual racial and Dawn gear:** all 32 ordinary racial and 40 Dawn items now show official Russian descriptions with RU selected, and official English descriptions with EN selected.
+- **Equipment details and admin editor:** search previews and source-backed admin cards now include both languages without replacing any non-empty owner-published descriptions.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- 72 проверенных OS ID дополнены точными `items.json.desc` и `strings.en.json.items[id].d`; при сборке они попадают в Modern и исходные записи D1 (через штатный идемпотентный импорт). Неполный RU/EN реестр отклоняется при сборке/проверке. Без машинного перевода, изменения Legacy 2.00 и игровых формул.
+- Для 41 канонического UUID публичный активный каталог и админ-редактор используют только отсутствующие локализованные поля, сохраняя ручные правки. Архив опубликованных ревизий, черновики, настройки классов и сохранённые билды не меняются. Проверки охватывают все 72 имени/описания, UI RU/EN и D1 source/owner приоритет.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Populate the 72 verified OS identities with exact `items.json.desc` and `strings.en.json.items[id].d`, feed source-backed D1 records through the existing idempotent import, and cover the Modern RU/EN projection. Reject incomplete localized source descriptions; leave archived JP/TW, Legacy 2.00 and formulas untouched.
+- For 41 published canonical UUIDs, fill missing RU/EN fields in current public/admin responses only, preserving non-empty owner edits, historical revisions and drafts. Add all-72 source/preview and D1 regression tests.
+<!-- /admin-notes:en -->
+
 ## Modern 4.34 — единые предметы и хранение экипировки в Cloudflare, 2026-11-03
 
 <!-- release-notes:user:ru -->

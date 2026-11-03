@@ -97,7 +97,9 @@ jobs:
               const rows=await response.json();
               if(response.ok&&rows.ok===true&&rows.schemaVersion===1&&
                  Number.isInteger(rows.expected)&&rows.expected>=100&&
-                 rows.stored===rows.expected&&rows.aliases===41&&rows.complete===true){
+                 rows.stored===rows.expected&&rows.aliases===41&&
+                 rows.localizedExpected===72&&rows.localizedStored===72&&
+                 rows.localizedComplete===true&&rows.complete===true){
                 ready=rows;
                 break;
               }
@@ -106,7 +108,8 @@ jobs:
             if(attempt<20)await new Promise(resolve=>setTimeout(resolve,2000));
           }
           if(!ready)throw new Error('Cloudflare D1 equipment inventory incomplete after propagation: '+last);
-          console.log('D1 source equipment registered: '+ready.stored+', canonical archived aliases: '+ready.aliases);
+          console.log('D1 equipment: '+ready.stored+', canonical archived aliases: '+ready.aliases+
+            ', fully bilingual racial/Dawn sources: '+ready.localizedStored+'/'+ready.localizedExpected);
           NODE
       - name: Verify deployed catalog revision and Astir localization
         run: |

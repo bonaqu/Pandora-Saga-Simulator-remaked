@@ -591,7 +591,7 @@
       return { id: row.gameId, recordId: row.recordId, category: row.category,
         templateIndex: row.templateIndex, newIndex: row.newIndex, race: row.race,
         sex: row.sex, ru: row.ru, en: row.en, descriptionRu: row.descriptionRu,
-        level: row.level, sockets: row.sockets };
+        descriptionEn: row.descriptionEn, level: row.level, sockets: row.sockets };
     });
   var newIds = entries.filter(function (entry) { return Number.isInteger(entry.newIndex); }).concat(regularVariants);
   var verifiedItems = window.PandoraRemakedVerifiedRacialGear?.entries || [];
@@ -664,6 +664,18 @@
       var entry = byPublishedId[record.id];
       if (!entry || record.kind !== 'equipment') return record;
       var changes = {};
+      // Earlier D1 publications contain correct mechanics but some have only
+      // English prose. Restore missing RU/EN text by the exact verified OS ID.
+      // An explicitly edited non-empty language is never replaced.
+      if (entry.descriptionRu || entry.descriptionEn) {
+        var description = Object.assign({}, record.description || {}), supplementedDescription = false;
+        [['ru',entry.descriptionRu],['en',entry.descriptionEn]].forEach(function (pair) {
+          if (!String(description[pair[0]] || '').trim() && pair[1]) {
+            description[pair[0]] = pair[1]; supplementedDescription = true;
+          }
+        });
+        if (supplementedDescription) changes.description = description;
+      }
       // These published Dawn UUIDs have exact counterparts in the archived
       // game. Keep the OLD Japanese/Taiwanese item names, never synthesize new
       // translations from English. Explicit published translations still win.
