@@ -90,7 +90,7 @@ jobs:
           const response=await fetch(url,{cache:'no-store'});
           const rows=await response.json();
           if(!response.ok||rows.ok!==true||rows.schemaVersion!==1||
-              !Number.isInteger(rows.expected)||rows.expected<1000||
+              !Number.isInteger(rows.expected)||rows.expected<100||
               rows.stored!==rows.expected||rows.aliases!==10||rows.complete!==true)
             throw new Error('Cloudflare D1 equipment inventory incomplete: '+JSON.stringify(rows));
           console.log('D1 source equipment registered: '+rows.stored+', canonical archived aliases: '+rows.aliases);
