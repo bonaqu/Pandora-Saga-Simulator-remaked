@@ -4,8 +4,35 @@ import terms from '../../localization/game-terms.ru.json' with { type: 'json' };
 import character from '../../data/generated/character.v1.json' with { type: 'json' };
 import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
 import approved from '../../localization/approved-translations.v1.json' with { type: 'json' };
+import dawnVariants from '../../data/dawn-editable-variants.v1.json' with { type: 'json' };
 
-export const baselineRecords = [...equipment.records, ...souls.records, ...character.records.filter(record => ['class', 'racial'].includes(record.kind)),
+// These female Dawn variants used the same archived index as the male item.
+// Register them as real source identities in the admin, so unpublished records
+// are editable drafts and future catalog publications supersede the Modern
+// read-only projection. Never modify the generated historical equipment file.
+const sourceEquipment = new Map(equipment.records.map(record => [record.legacy_category_id + '.' + record.legacy_item_index, record]));
+export const editableDawnRecords = dawnVariants.entries.map(entry => {
+  const template = sourceEquipment.get(entry.category + '.' + entry.templateIndex);
+  if (!template || !Array.isArray(template.compatibility_flags) || template.compatibility_flags.length !== 36 ||
+      entry.sex !== 'female' || !Number.isInteger(entry.index) || entry.index <= 0 ||
+      !Number.isInteger(entry.race) || entry.race < 0 || entry.race >= 6)
+    throw new Error('Unsupported Dawn equipment source identity: ' + entry.gameId);
+  const id = 'modern.equipment.dawn-os-' + entry.gameId;
+  if (equipment.records.some(record => record.legacy_category_id === entry.category && record.legacy_item_index === entry.index))
+    throw new Error('Dawn identity overlaps archived equipment: ' + id);
+  const compatibility = [...template.compatibility_flags];
+  compatibility[0] = 0; compatibility[1] = 1;
+  for (let race = 0; race < 6; race++) compatibility[race + 2] = Number(race === entry.race);
+  const localized = names => ({ en: names.en, ru: names.ru, jp: '', tw: '' });
+  return { ...template, id, kind: 'equipment',
+    legacy_category_id: entry.category, legacy_item_index: entry.index,
+    legacy_parameter_6: template.legacy_parameter_6,
+    name: localized(entry.names), option: localized(entry.description),
+    special_option: localized({en:'',ru:''}), acquisition: localized({en:'',ru:''}),
+    level_requirement: entry.level, soul_socket_count: entry.sockets,
+    compatibility_flags: compatibility };
+});
+export const baselineRecords = [...equipment.records, ...editableDawnRecords, ...souls.records, ...character.records.filter(record => ['class', 'racial'].includes(record.kind)),
   ...skills.records.map(source => ({ ...source, id: source.id.replace('skill.', 'skill_entry.'), kind: source.is_active ? 'active' : 'passive' }))];
 export const baselineById = new Map(baselineRecords.map(record => [record.id, record]));
 export const categories = equipment.categories;
@@ -21,7 +48,7 @@ export function sourceIdentity(source) {
   if (source.kind === 'class') return { id: source.id, kind: 'class', category: null, index: source.index };
   if (source.kind === 'racial') return { id: source.id, kind: 'racial', category: source.category, index: source.index };
   if (source.kind === 'active' || source.kind === 'passive') return { id: source.id, kind: source.kind, category: source.legacy_category_id, index: source.legacy_entry_index };
-  return source.id.startsWith('equipment.')
+  return source.id.startsWith('equipment.') || source.kind === 'equipment'
     ? { id: source.id, kind: 'equipment', category: source.legacy_category_id, index: source.legacy_item_index }
     : { id: source.id, kind: 'soul', category: null, index: source.legacy_id };
 }
