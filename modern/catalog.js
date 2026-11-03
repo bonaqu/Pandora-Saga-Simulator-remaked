@@ -426,7 +426,15 @@
     snapshot = augmentDawnSnapshot(snapshot || snapshots[revision] || sourceSnapshot());
     validate(snapshot);
     var csv = parsed.payload;
-    if (csv.indexOf(',') === -1) csv = window.Base64.btou(window.RawDeflate.inflate(window.Base64.fromBase64(csv)));
+    if (csv.indexOf(',') === -1) {
+      // Before invoking the retained synchronous inflater, reject strings
+      // that cannot possibly be a Base64-encoded legacy deflate payload.
+      // Arbitrary text could otherwise stall the original decompressor.
+      check(/^[A-Za-z0-9+/]+={0,2}$/.test(csv) &&
+        csv.length <= 20000 && csv.length % 4 !== 1, 'Invalid compressed build code');
+      csv = window.Base64.btou(window.RawDeflate.inflate(window.Base64.fromBase64(csv)));
+      check(typeof csv === 'string' && csv.length <= 20000, 'Invalid compressed build size');
+    }
     var fields = csv.split(',');
     check(fields.length === String(window.Store()).split(',').length && fields.every(function (value) {
       return value.trim() !== '' && Number.isFinite(Number(value));
