@@ -58,6 +58,9 @@ test('all source equipment is persisted in D1 with 41 verified aliases and idemp
   assert.equal(after.expected,manifest.count);
   assert.equal(after.stored,manifest.count);
   assert.equal(after.aliases,41);
+  assert.equal(after.localizedExpected,72);
+  assert.equal(after.localizedStored,72);
+  assert.equal(after.localizedComplete,true);
   assert.equal(after.complete,true);
   const archived=sqlite.prepare('SELECT source_json, canonical_id FROM catalog_equipment_sources WHERE id=?')
     .get('equipment.32.15');
@@ -70,6 +73,8 @@ test('all source equipment is persisted in D1 with 41 verified aliases and idemp
   assert.equal(racialFemale.canonical_id,'modern.equipment.f0bb7e4c-ebc9-4f47-a20a-60bd627d4761');
   const parsed=JSON.parse(archived.source_json);
   assert.equal(parsed.id,'equipment.32.15');
+  assert.equal(parsed.option.ru,verifiedGear.entries.find(row=>row.gameId===14522).descriptionRu);
+  assert.equal(parsed.option.en,verifiedGear.entries.find(row=>row.gameId===14522).descriptionEn);
   assert.equal(parsed.name.jp,baselineById.get('equipment.32.15').name.jp);
   assert.deepEqual(parsed.compatibility_flags,baselineById.get('equipment.32.15').compatibility_flags);
   const admin=await detail(env,'equipment.31.10');
