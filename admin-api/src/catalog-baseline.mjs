@@ -11,7 +11,24 @@ import verifiedGear from '../../data/verified-racial-gear.v1.json' with { type: 
 // Register them as real source identities in the admin, so unpublished records
 // are editable drafts and future catalog publications supersede the Modern
 // read-only projection. Never modify the generated historical equipment file.
-const sourceEquipment = new Map(equipment.records.map(record => [record.legacy_category_id + '.' + record.legacy_item_index, record]));
+// Approved game-ID registry supplies the missing two-language descriptions.
+ // Keep the generated Legacy equipment JSON immutable; enrich only the
+ // derived source records persisted by the D1 inventory seed.
+const verifiedByGameId = new Map(verifiedGear.entries.map(entry => [entry.gameId, entry]));
+if (verifiedByGameId.size !== 72 || verifiedGear.entries.some(entry =>
+    !entry.descriptionRu?.trim() || !entry.descriptionEn?.trim()))
+  throw new Error('Incomplete RU/EN racial and Dawn equipment descriptions');
+const originalBySlot = new Map(verifiedGear.entries.filter(entry =>
+  !Number.isInteger(entry.newIndex)).map(entry =>
+  [entry.category + '.' + entry.templateIndex, entry]));
+const originalEquipmentRecords = equipment.records.map(record => {
+  const entry = originalBySlot.get(record.legacy_category_id + '.' + record.legacy_item_index);
+  return entry ? { ...record, option: {
+    ...record.option, ru: entry.descriptionRu, en: entry.descriptionEn
+  } } : record;
+});
+const sourceEquipment = new Map(originalEquipmentRecords.map(record =>
+  [record.legacy_category_id + '.' + record.legacy_item_index, record]));
 export const editableDawnRecords = dawnVariants.entries.map(entry => {
   const template = sourceEquipment.get(entry.category + '.' + entry.templateIndex);
   if (!template || !Array.isArray(template.compatibility_flags) || template.compatibility_flags.length !== 36 ||
@@ -34,7 +51,9 @@ export const editableDawnRecords = dawnVariants.entries.map(entry => {
   return { ...template, id, kind: 'equipment',
     legacy_category_id: entry.category, legacy_item_index: entry.index,
     legacy_parameter_6: template.legacy_parameter_6,
-    name: displayNames, option: localized(entry.description),
+    name: displayNames,
+    option: localized(verifiedByGameId.get(entry.gameId)?.descriptionEn,
+      verifiedByGameId.get(entry.gameId)?.descriptionRu),
     special_option: localized({en:'',ru:''}), acquisition: localized({en:'',ru:''}),
     level_requirement: entry.level, soul_socket_count: entry.sockets,
     compatibility_flags: compatibility };
@@ -56,13 +75,13 @@ export const editableRacialRecords = verifiedGear.entries.filter(entry =>
   return { ...template, id: entry.recordId, kind: 'equipment',
     legacy_category_id: entry.category, legacy_item_index: entry.index,
     name: { en: entry.en, ru: entry.ru, jp: '', tw: '' },
-    option: { en: template.option?.en || '', ru: entry.descriptionRu || '', jp: '', tw: '' },
+    option: { en: entry.descriptionEn, ru: entry.descriptionRu, jp: '', tw: '' },
     special_option: { en: '', ru: '', jp: '', tw: '' },
     acquisition: { en: '', ru: '', jp: '', tw: '' },
     level_requirement: entry.level, soul_socket_count: entry.sockets,
     compatibility_flags: compatibility };
 });
-export const baselineRecords = [...equipment.records, ...editableDawnRecords, ...editableRacialRecords, ...souls.records, ...character.records.filter(record => ['class', 'racial'].includes(record.kind)),
+export const baselineRecords = [...originalEquipmentRecords, ...editableDawnRecords, ...editableRacialRecords, ...souls.records, ...character.records.filter(record => ['class', 'racial'].includes(record.kind)),
   ...skills.records.map(source => ({ ...source, id: source.id.replace('skill.', 'skill_entry.'), kind: source.is_active ? 'active' : 'passive' }))];
 export const baselineById = new Map(baselineRecords.map(record => [record.id, record]));
 export const categories = equipment.categories;
