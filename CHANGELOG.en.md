@@ -8,6 +8,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 - **Actionable comparison errors:** when a saved build cannot be compared, show whether A or B failed and distinguish unavailable game data, invalid saved data and calculation failures. Saved builds are not deleted.
 - **Older builds covered:** test two level-50 characters of different races, including older serialization formats.
+- **Invalid codes are handled safely:** malformed old compressed build codes now fail validation before the legacy unpacker runs.
 
 ### Development and technical changes
 
