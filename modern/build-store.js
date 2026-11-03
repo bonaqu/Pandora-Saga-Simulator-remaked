@@ -320,8 +320,8 @@
 
     var current = collection.builds[index];
     var next = cloneBuild(current);
-    if (Array.isArray(patch.migrationReport)) next.migrationReport = structuredClone(patch.migrationReport);
     patch = patch && typeof patch === 'object' ? patch : {};
+    if (Array.isArray(patch.migrationReport)) next.migrationReport = structuredClone(patch.migrationReport);
     if (Object.prototype.hasOwnProperty.call(patch, 'name')) {
       var normalized = normalizeName(patch.name);
       next.name = normalized || current.name;
@@ -352,7 +352,8 @@
       name: duplicateName(source.name, collection.builds),
       createdAt: now,
       updatedAt: now,
-      payload: source.payload
+      payload: source.payload,
+      migrationReport: Array.isArray(source.migrationReport) ? structuredClone(source.migrationReport) : []
     };
     collection.builds.push(copy);
     var written = writeBuildCollection(collection.builds);
