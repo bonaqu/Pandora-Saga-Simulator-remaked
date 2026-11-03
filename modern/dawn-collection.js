@@ -582,7 +582,18 @@
     "icon": "I_015572_00"
   }
 ];
-  var newIds = entries.filter(function (entry) { return Number.isInteger(entry.newIndex); });
+  // The regular racial outfits share the same archived male/female indices
+  // in five places. Current OS confirms identical base stats and effects for
+  // each pair; add distinct Modern selections without touching the museum.
+  var regularVariants = (window.PandoraRemakedVerifiedRacialGear?.entries || [])
+    .filter(function (row) { return row.set === 'racial' && Number.isInteger(row.newIndex); })
+    .map(function (row) {
+      return { id: row.gameId, recordId: row.recordId, category: row.category,
+        templateIndex: row.templateIndex, newIndex: row.newIndex, race: row.race,
+        sex: row.sex, ru: row.ru, en: row.en, descriptionRu: row.descriptionRu,
+        level: row.level, sockets: row.sockets };
+    });
+  var newIds = entries.filter(function (entry) { return Number.isInteger(entry.newIndex); }).concat(regularVariants);
   var byPublishedId = Object.create(null);
   entries.forEach(function (entry) { if (entry.publishedId) byPublishedId[entry.publishedId] = entry; });
   function compatible(entry, base) {
@@ -597,13 +608,13 @@
   function addNew(entry, original) {
     var source = original?.[0]?.[entry.category]?.[entry.templateIndex];
     if (!source || typeof source[7] !== 'string') throw new Error('Missing Dawn calculator template ' + entry.id);
-    var id = 'modern.equipment.dawn-os-' + entry.id;
+    var id = entry.recordId || 'modern.equipment.dawn-os-' + entry.id;
     var code = source[7];
     return {
       id: id, kind: 'equipment', category: entry.category, index: entry.newIndex,
       engineId: entry.category * 10000 + entry.newIndex, engineKey: 'Modern:' + id,
       names: localized(entry.en, entry.ru),
-      description: localized(entry.descriptionEn, entry.descriptionRu),
+      description: localized(entry.descriptionEn || original?.[1]?.[entry.category]?.[entry.templateIndex]?.[1] || '', entry.descriptionRu),
       notes: localized('', ''), acquisition: localized('', ''), modifiers: localized('', ''),
       level: entry.level, sockets: entry.sockets, disabled: false,
       calculationCode: code, compatibility: compatible(entry, source.slice(8, 44)),
@@ -631,7 +642,7 @@
       return Object.assign({}, record, { compatibility: flags });
     });
     newIds.forEach(function (entry) {
-      var id = 'modern.equipment.dawn-os-' + entry.id;
+      var id = entry.recordId || 'modern.equipment.dawn-os-' + entry.id;
       if (rows.some(function (row) { return row.id === id; })) return;
       if (rows.some(function (row) {
         return row.kind === 'equipment' && row.category === entry.category && row.index === entry.newIndex;
