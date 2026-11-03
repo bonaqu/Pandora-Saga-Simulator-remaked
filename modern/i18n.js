@@ -309,10 +309,50 @@
     return interpolate(typeof value === 'string' ? value : key, values);
   }
 
+  // UI-only sex markers for equipment whose source restricts male/female wear.
+  // The character does not need a separate gender selector: keep both variants
+  // available, preserve stable equipment IDs and never rewrite D1/Legacy names.
+  function equipmentGenderLabel(key, value) {
+    if (currentLocale !== 'ru' && currentLocale !== 'en') return value;
+    var match = /^equipment\.(\d+)\.(\d+)$/.exec(key);
+    if (!match || Number(match[2]) === 0) return value;
+    var category = Number(match[1]), index = Number(match[2]);
+    var dawn = window.PandoraRemakedDawnCollection;
+    // The archived Dawn elf/body/gloves/boots rows shared male and female
+    // IDs. Modern gives the verified female items their own indices.
+    var dawnEntry = dawn?.entries?.find(function (item) {
+      return item.category === category && (item.newIndex === index ||
+        item.newIndex === undefined && item.templateIndex === index);
+    });
+    if (dawnEntry?.sex === 'both') return value;
+    var sex = dawnEntry?.sex;
+    if (!sex) {
+      var record = namespace.catalog?.item('equipment', category * 10000 + index);
+      var flags = record?.compatibility || window.EquipData?.[0]?.[category]?.[index]?.slice(8, 10);
+      if (flags?.[0] === 1 && flags?.[1] === 0) sex = 'male';
+      else if (flags?.[0] === 0 && flags?.[1] === 1) sex = 'female';
+    }
+    if (sex !== 'male' && sex !== 'female') return value;
+    var name = String(value == null ? '' : value).trim();
+    if (!name) {
+      // Names without workbook translations still need the visible marker.
+      var language = Number(window.Flag?.[0] ?? 1);
+      name = String(window.EquipData?.[language]?.[category]?.[index]?.[0] || '').trim();
+    }
+    if (!name) return value;
+    // Retain race names in historical "(Male Elf)" / "(Female Human)"
+    // translations, but replace the long gender wording with one short suffix.
+    name = name.replace(/\s*\(\s*(?:male|female)\s+([^()]+?)\s*\)\s*$/i, ' ($1)');
+    name = name.replace(/\s*\(\s*(?:male|female|man|woman|m|w|f|м|ж|мужской|женский|мужчина|женщина)\s*\)\s*$/i, '');
+    return name.trimEnd() + ' (' + (currentLocale === 'ru'
+      ? sex === 'male' ? 'м' : 'ж'
+      : sex === 'male' ? 'm' : 'w') + ')';
+  }
+
   function translateGameTerm(key, fallback) {
     var unified = unifiedOverrides.game[currentLocale]?.[key];
-    if (unified) return unified;
-    if (currentLocale === 'ru' && Object.prototype.hasOwnProperty.call(publishedResultLabels, key)) return publishedResultLabels[key];
+    if (unified) return equipmentGenderLabel(key, unified);
+    if (currentLocale === 'ru' && Object.prototype.hasOwnProperty.call(publishedResultLabels, key)) return equipmentGenderLabel(key, publishedResultLabels[key]);
     // The current published game catalog still contains five older, long
     // resistance names. They are not new user edits: the verified editor/D1
     // publications deliberately superseded these exact historical labels.
@@ -324,7 +364,7 @@
         /^(?:skill_entry\.18\.(?:8|9|10)|skill_entry\.(?:20|21)\.7)$/.test(key))
       return approved;
     var published = namespace.catalog && namespace.catalog.gameLabel(key);
-    if (published) return published;
+    if (published) return equipmentGenderLabel(key, published);
     // JP/TW keep the original game's language for Legacy game terms while the
     // Modern shell uses its sparse JP/TW catalog with English fallback.
     // An English game-name override must not silently replace source languages.
@@ -332,7 +372,7 @@
     var active = currentLocale === 'en' && !useEnglish ? {} : gameCatalogs[currentLocale] || {};
     var value = Object.prototype.hasOwnProperty.call(active, key) ? active[key] : terminology('game', key);
     if (!value && currentLocale === 'ru' && useEnglish) value = (gameCatalogs.en || {})[key] || '';
-    return typeof value === 'string' && value ? value : String(fallback == null ? '' : fallback);
+    return equipmentGenderLabel(key, typeof value === 'string' && value ? value : String(fallback == null ? '' : fallback));
   }
 
   function storedValues(node) {
