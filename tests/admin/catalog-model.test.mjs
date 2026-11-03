@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { draftFromSource, validateDraft, compileRecord, showApprovedTranslations, EFFECTS } from '../../admin-api/src/catalog-model.mjs';
-import { baselineById, sourceIdentity } from '../../admin-api/src/catalog-baseline.mjs';
+import { baselineById, sourceIdentity, editableDawnRecords } from '../../admin-api/src/catalog-baseline.mjs';
 
 const source = {
   id: 'equipment.0.1', legacy_id: 1, legacy_category_id: 0, legacy_item_index: 1,
@@ -13,6 +13,37 @@ const source = {
 };
 const identity = { id: source.id, kind: 'equipment', category: 0, index: 1 };
 const draft = () => draftFromSource(source, 'equipment');
+
+test('all five real Dawn female identities are editable without losing source mechanics or shared-template separation', () => {
+  assert.equal(editableDawnRecords.length, 5);
+  assert.deepEqual(editableDawnRecords.map(row => row.id).sort(), [
+    'modern.equipment.dawn-os-12532', 'modern.equipment.dawn-os-14512',
+    'modern.equipment.dawn-os-14532', 'modern.equipment.dawn-os-15512',
+    'modern.equipment.dawn-os-15532'
+  ]);
+  for (const source of editableDawnRecords) {
+    const identity = sourceIdentity(source);
+    assert.deepEqual(identity, { id: source.id, kind: 'equipment',
+      category: source.legacy_category_id, index: source.legacy_item_index });
+    assert.equal(baselineById.get(source.id), source);
+    assert.deepEqual(source.compatibility_flags.slice(0, 2), [0, 1]);
+    assert.equal(source.compatibility_flags.slice(2, 8).reduce((a, b) => a + b, 0), 1);
+    assert.match(source.name.ru, /\(ж\)$/);
+    assert.match(source.name.en, /\(w\)$/);
+    const before = JSON.stringify(source), draft = draftFromSource(source, 'equipment');
+    const record = compileRecord(validateDraft(draft, identity), identity, source);
+    assert.equal(record.calculationCode, source.calculation_code);
+    assert.deepEqual(record.compatibility, source.compatibility_flags);
+    assert.equal(record.engineId, identity.category * 10000 + identity.index);
+    assert.equal(record.names.ru, source.name.ru);
+    assert.equal(record.names.en, source.name.en);
+    draft.names.ru = 'Редактируемый вариант (ж)';
+    const updated = compileRecord(validateDraft(draft, identity), identity, source);
+    assert.equal(updated.names.ru, draft.names.ru);
+    assert.equal(updated.calculationCode, record.calculationCode);
+    assert.equal(JSON.stringify(source), before);
+  }
+});
 
 test('range bonuses use explicit applicability and survive compilation without accepting invalid input',()=>{
   const edit=draft();edit.rangeBonus={amount:150,appliesTo:'ranged'};

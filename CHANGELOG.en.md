@@ -2,6 +2,16 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.32 — 2026-11-03
+
+### For users
+
+- **Dawn collection editing:** five distinct variants can now be edited in the administrator catalog using the regular save-and-publish workflow.
+
+### Development and technical changes
+
+- Register the five client-only Dawn variants as separate stable admin catalog source identities without mutating historical generated data or Legacy. Keep the standard catalog validator, draft publication and numeric flags. Published D1 items and explicit race edits take precedence over client fallback. Issue #168 status: `docs/ISSUE_168_STATUS_2026-11-03.md`. No automatic D1 writes.
+
 ## Modern 4.31 — 2026-11-03
 
 ### For users

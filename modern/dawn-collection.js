@@ -621,6 +621,11 @@
     var rows = snapshot.records.map(function (record) {
       var entry = byPublishedId[record.id];
       if (!entry || record.kind !== 'equipment') return record;
+      // Revision 94 had ten Dawn records with unbounded all-race flags.
+      // Normalize only that known legacy placeholder: an administrator's
+      // explicitly edited race selection is always the source of truth.
+      if (!Array.isArray(record.compatibility) ||
+          !record.compatibility.slice(2, 8).every(function (value) { return value === 1; })) return record;
       var flags = compatible(entry, record.compatibility);
       if (flags.every(function (value, i) { return value === record.compatibility[i]; })) return record;
       return Object.assign({}, record, { compatibility: flags });

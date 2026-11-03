@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "source": "Pandora Saga OS items.json and strings.en.json, confirmed 2026-11-03",
+  "entries": [
+    {
+      "gameId": 12532,
+      "category": 31,
+      "index": 180,
+      "templateIndex": 24,
+      "race": 1,
+      "sex": "female",
+      "level": 20,
+      "sockets": 0,
+      "names": {
+        "en": "Dawn Vest (Female Elf)",
+        "ru": "Жилет зари для эльфа (Ж)"
+      },
+      "description": {
+        "en": "Custom-made clothing for female Elves.INT +1, HP +22MP Cost Reduction +7%Charm Resistance +5Mental Status Ailment Resistance +5%",
+        "ru": "Изготовленная на заказ одежда для эльфиек.ИНТ +1, ОЗ +22Снижение расхода ОМ +7%Сопротивляемость чарам +5Сопротивляемость болезням духа +5%"
+      }
+    },
+    {
+      "gameId": 14512,
+      "category": 32,
+      "index": 180,
+      "templateIndex": 14,
+      "race": 0,
+      "sex": "female",
+      "level": 20,
+      "sockets": 1,
+      "names": {
+        "en": "Dawn Armband (Female Human)",
+        "ru": "Рассветный браслет для человека (Ж)"
+      },
+      "description": {
+        "en": "A custom-made armband for women.Attack +4Accuracy +2",
+        "ru": "Изготовленный на заказ женский браслет.Атака +4Точность +2"
+      }
+    },
+    {
+      "gameId": 14532,
+      "category": 32,
+      "index": 181,
+      "templateIndex": 15,
+      "race": 1,
+      "sex": "female",
+      "level": 20,
+      "sockets": 1,
+      "names": {
+        "en": "Dawn Gloves (Female Elf)",
+        "ru": "Рассветные перчатки для эльфа (Ж)"
+      },
+      "description": {
+        "en": "Custom-made gloves for elven women.Attack +2Accuracy +4",
+        "ru": "Изготовленные на заказ перчатки для эльфиек.Атака +2Точность +4"
+      }
+    },
+    {
+      "gameId": 15512,
+      "category": 34,
+      "index": 180,
+      "templateIndex": 14,
+      "race": 0,
+      "sex": "female",
+      "level": 20,
+      "sockets": 1,
+      "names": {
+        "en": "Dawn Boots (Female Human)",
+        "ru": "Рассветные сапоги для человека (Ж)"
+      },
+      "description": {
+        "en": "Custom-made women's boots.HP +20, MP +12Physical Damage Taken -1%",
+        "ru": "Изготовленные на заказ женские сапоги.ОЗ +20, ОМ +12Получаемый физический урон -1%"
+      }
+    },
+    {
+      "gameId": 15532,
+      "category": 34,
+      "index": 181,
+      "templateIndex": 15,
+      "race": 1,
+      "sex": "female",
+      "level": 20,
+      "sockets": 1,
+      "names": {
+        "en": "Dawn Boots (Female Elf)",
+        "ru": "Рассветные сапоги для эльфа (Ж)"
+      },
+      "description": {
+        "en": "Custom-made boots for elf women.HP +18, MP +13Physical Damage Taken -1%",
+        "ru": "Изготовленные на заказ сапоги для эльфиек.ОЗ +18, ОМ +13Получаемый физический урон -1%"
+      }
+    }
+  ]
+}

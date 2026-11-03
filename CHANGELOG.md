@@ -1,5 +1,23 @@
 # Changelog
 
+## Modern 4.32 — редактирование предметов Зари, 2026-11-03
+
+<!-- release-notes:user:ru -->
+- **Редактирование коллекции Зари:** пять отдельных вариантов теперь доступны в каталоге администратора как обычные предметы. Изменения проходят стандартное сохранение и публикацию.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **Dawn collection editing:** five distinct variants can now be edited in the administrator catalog using the regular save-and-publish workflow.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Пять клиентских записей Зари зарегистрированы в серверном каталоге как отдельные стабильные базовые идентичности. Исторический generated source и Legacy не менялись; поля, расчётные коды и ограничения проверяются штатным catalog codec. Client overlay отступает перед опубликованным ID и явной административной расовой правкой. Технический статус #168: `docs/ISSUE_168_STATUS_2026-11-03.md`. Никаких автоматических записей в D1.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Register the five client-only Dawn variants as separate stable admin catalog source identities without mutating historical generated data or Legacy. Keep the standard catalog validator, draft publication and numeric flags. Published D1 items and explicit race edits take precedence over client fallback. Issue #168 status: `docs/ISSUE_168_STATUS_2026-11-03.md`. No automatic D1 writes.
+<!-- /admin-notes:en -->
+
 ## Modern 4.31 — короткие метки пола экипировки, 2026-11-03
 
 <!-- release-notes:user:ru -->
