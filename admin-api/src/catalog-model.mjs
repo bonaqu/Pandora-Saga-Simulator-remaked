@@ -140,7 +140,7 @@ function skillProfiles(input) {
   return profiles;
 }
 const texts = source => Object.fromEntries(LANGUAGES.map(language => [language, source?.[language] || '']));
-const verifiedEquipmentNames = new Map(verifiedGear.entries.map(row => [row.recordId, row.ru]));
+const verifiedEquipmentNames = new Map(verifiedGear.entries.map(row => [row.recordId, row]));
 function approvedTexts(source, id) {
   const result = texts(source);
   if (!id) return result;
@@ -152,7 +152,9 @@ function approvedTexts(source, id) {
   }
   // Source-verified OS Russian labels fill empty historical workbooks; they
   // never overwrite curated Russian text, published D1 or archival JP/TW.
-  if (!result.ru && verifiedEquipmentNames.has(id)) result.ru = verifiedEquipmentNames.get(id);
+  const verified = verifiedEquipmentNames.get(id);
+  if (verified && !approved.game.en?.[id]) result.en = verified.en;
+  if (verified && !result.ru) result.ru = verified.ru;
   return result;
 }
 function sourceNameId(source,kind) {
