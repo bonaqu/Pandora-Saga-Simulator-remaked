@@ -232,8 +232,9 @@ test('loading a named build survives an unrelated repaint of the saved list whil
   await expect.poll(()=>page.evaluate(()=>window.namedLoadStarted)).toBe(true);
   const originalRow=await page.locator('[data-remaked-build-row]').first().evaluate(el=>{el.dataset.wasRendered='before';return el.dataset.buildId;});
   await page.evaluate(()=>{
-    // A catalog head refresh repaints buttons without touching the saved ID
-    // or the character. It must not cancel a user-initiated load.
+    // Changing locale repaints the build manager synchronously; the saved
+    // identity and currently active character are otherwise untouched.
+    PandoraRemaked.i18n.setLocale('ru');
     window.dispatchEvent(new CustomEvent('pandora-remaked:cataloghead',{
       detail:{revision:951,impactRevision:951,previousRevision:0,previousImpactRevision:0}
     }));
