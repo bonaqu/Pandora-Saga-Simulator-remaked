@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.40 — 2026-11-04
+
+### For users
+
+- **Faster Equipment and Soul lists:** search no longer computes every hidden item detail card while typing. Detailed stat previews are calculated only when the player opens one.
+- **Selection behavior preserved:** complete lists, level ordering, name/type filters, mouse hover, keyboard navigation and touch disclosures work as before.
+
+### Development and technical changes
+
+- Defer `adapter.readItemDetails()` from eager per-result rendering to first disclosure of that result; retain a cached card only within its own list render, refreshing it on any filter/catalog redraw.
+- Remove unused category state and replace repeated per-category full-array scans with one-pass category occupancy tracking.
+- Add browser regressions for complete list rendering without mass preview projections, one-time hydration, search updates and Soul preview without active character mutation. Legacy formulas and saved builds are untouched.
+
 ## Modern 4.39 — 2026-11-04
 
 ### For users
