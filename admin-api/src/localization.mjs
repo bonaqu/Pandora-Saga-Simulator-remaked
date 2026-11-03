@@ -10,7 +10,7 @@ import { jsonResponse } from './auth.mjs';
 
 const LOCALES = ['ru','en','jp','tw'];
 const verifiedEquipmentNames = new Map(verifiedGear.entries.map(row =>
-  ['equipment.' + row.category + '.' + row.index, row.ru]));
+  ['equipment.' + row.category + '.' + row.index, row]));
 const fail = (message,status=400) => {throw new CatalogError(message,status);};
 const registry = new Map();
 // Distinguish a real localized baseline from an English fallback. Never label
@@ -25,8 +25,11 @@ function migratedBaseline(scope,id) {
   const values=Object.fromEntries(LOCALES.map(locale=>[locale,approved[scope][locale]?.[id]]));
   // The verified game file supplies names for the two complete racial sets.
   // Never alter frozen JP/TW originals or override D1-published author edits.
-  if (scope === 'game' && !values.ru && verifiedEquipmentNames.has(id))
-    values.ru = verifiedEquipmentNames.get(id);
+  if (scope === 'game' && verifiedEquipmentNames.has(id)) {
+    const source = verifiedEquipmentNames.get(id);
+    if (!values.ru) values.ru = source.ru;
+    if (!values.en) values.en = source.en;
+  }
   const approvedCorrection=curated.ru[scope]?.[id]||'';
   // This historical mixed RU/EN help was already corrected in Modern. Make
   // the approved baseline identical in Admin; D1 remains authoritative.
