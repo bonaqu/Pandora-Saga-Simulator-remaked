@@ -48,7 +48,7 @@ test('Breast Plate descriptions keep effect lines in both localized detail cards
     const id = data.records.find(record => record.names.ru === 'Латный нагрудник').engineId;
     return { text: PandoraRemaked.adapter.readItemDetails('equipment', id, 2).descriptions.join('\n'), native: EquipData[1][Math.floor(id / 10000)][id % 10000][1] };
   }, snapshot(86));
-  expect(description.text).toContain('урон.\nПРВ +1\nСопротивляемость оглушению +8%');
+  expect(description.text).toContain('урон.\n\nПРВ +1\nСопротивляемость оглушению +8%');
   expect(description.native).toContain('<br />');
   await page.locator('[data-remaked-equipment-picker="SelEquip_3_0"]').click();
   const row = page.locator(`[data-remaked-picker-panel] [data-remaked-search-row][data-value="${plate.engineId}"]`);
