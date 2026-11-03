@@ -662,7 +662,9 @@ async function list(request, env) {
     const draft = draftMap.get(identity.id);
     const source = sourceFor(identity);
     const edit = draft?.is_dirty || (!edits.has(identity.id) && (!source || identity.templateId) && draft) ? JSON.parse(draft.payload_json) : edits.get(identity.id) || draftFromSource(source, kind);
-    const displayEdit = showApprovedTranslations(edit, await persistedSource(env, source), kind);
+    // One paginated admin list must not make ~1,100 individual D1 queries.
+    // Source names are the validated mirror; opening a card reads its D1 row.
+    const displayEdit = showApprovedTranslations(edit, source, kind);
     const engineId=kind==='equipment'?identity.category*10000+identity.index:kind==='soul'?identity.index:null;
     if (q && !Object.values(displayEdit.names).some(name => name.toLowerCase().includes(q)) && !identity.id.includes(q) && !(engineId!==null&&String(engineId).includes(q))) continue;
     results.push({ id: identity.id, ...(engineId!==null?{engineId}:{}), names: displayEdit.names, category: identity.category, ...(identity.templateId ? { templateId: identity.templateId } : {}), level: edit.level, sockets: edit.sockets, progression: edit.progression, disabled: edit.disabled, draftVersion: draft?.is_dirty ? draft.version : 0, published: edits.has(identity.id), custom: identity.id.startsWith('modern.') });
