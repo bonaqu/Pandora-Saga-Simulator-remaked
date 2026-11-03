@@ -128,7 +128,7 @@ test('only one visible identity per Dawn item: ten archived slots alias their ex
   expect(output.legacy).toHaveLength(10);
   expect(new Set(output.legacy.map(x=>x.legacy)).size).toBe(10);
   for(const row of output.legacy){
-    expect(row.chosen,row.id).toMatch(/^modern\\.equipment\\./);
+    expect(row.chosen,row.id).toMatch(/^modern\.equipment\./);
     expect(row.absent).toBeNull();
     expect(row.disabled).toBeNull();
     expect(row.edited).toBeNull();
