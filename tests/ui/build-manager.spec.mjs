@@ -368,7 +368,8 @@ test('two legacy level-50 racial builds compare AND load back into the character
     const source=await ns.catalog.fetchSnapshot(0);
     ns.catalog.applySnapshot({...source,revision:2,impactRevision:2,records:[]});
     ns.builds.flushAutosave();
-    return {a,b,original:ns.adapter.serialize(),legacy:localStorage.getItem('file')};
+    return {a,b,original:ns.adapter.serialize(),legacy:localStorage.getItem('file'),
+      published:{...source,revision:2,impactRevision:2,records:[]}};
   });
   expect(seed.a.level).toBe(50);expect(seed.b.level).toBe(50);
   expect(seed.a.race).not.toBe(seed.b.race);
@@ -391,6 +392,10 @@ test('two legacy level-50 racial builds compare AND load back into the character
   }
   await page.keyboard.press('Escape');
   const active=await page.evaluate(()=>PandoraRemaked.adapter.serialize());
+  // Keep the synthetic catalog publication available across a full browser
+  // reload; the production revision with the same number may be different.
+  await page.route('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog**',
+    route=>route.fulfill({json:seed.published}));
   await page.reload();
   await expect.poll(()=>page.evaluate(()=>PandoraRemaked.adapter.serialize())).toBe(active);
 });
