@@ -95,6 +95,26 @@ test('named builds normalize names, preserve timestamps, duplicate and delete wi
   expect(listed.builds.some((entry) => entry.id === duplicate.build.id)).toBe(true);
 });
 
+test('migration metadata survives duplication, and an omitted patch never throws or loses data', async ({ page }) => {
+  const payload = await page.evaluate(() => window.PandoraRemaked.adapter.serialize());
+  const result = await page.evaluate((current) => {
+    const store = window.PandoraRemaked.buildStore;
+    const saved = store.saveBuild('Dawn build', current);
+    const report = [{ type: 'removed', kind: 'equipment', id: 310024, reason: 'outdated' }];
+    const updated = store.updateBuild(saved.build.id, { migrationReport: report });
+    const omitted = store.updateBuild(saved.build.id);
+    const duplicated = store.duplicateBuild(saved.build.id);
+    return { saved, updated, omitted, duplicated, restored: store.getBuild(duplicated.build.id) };
+  }, payload);
+  expect(result.saved.ok).toBe(true);
+  expect(result.updated.ok).toBe(true);
+  expect(result.omitted.ok).toBe(true);
+  expect(result.duplicated.ok).toBe(true);
+  expect(result.duplicated.build.migrationReport).toEqual(result.updated.build.migrationReport);
+  expect(result.restored.migrationReport).toEqual(result.updated.build.migrationReport);
+  expect(result.restored.payload).toBe(payload);
+});
+
 test('malformed and unsupported autosave records return errors without throwing or mutating calculator state', async ({ page }) => {
   const baseline = await page.evaluate(() => window.PandoraRemaked.adapter.serialize());
 
