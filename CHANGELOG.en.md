@@ -7,7 +7,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 ### For users
 
 - **No duplicate equipment choices:** ten verified Dawn items previously shown both as an archived entry and a published entry now appear once, including male Elf Dawn Gloves.
-- **Cloudflare equipment registry:** every source-backed equipment record is persisted in Cloudflare and remains editable in the protected admin catalog. Existing publications and saved builds are preserved.
+- **Editable equipment catalog:** all equipment source records remain editable in the protected administrator catalog. Existing publications and saved builds are preserved.
 
 ### Development and technical changes
 
