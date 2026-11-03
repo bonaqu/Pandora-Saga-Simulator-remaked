@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.36 — 2026-11-03
+
+### For users
+
+- **In-game description layout:** item flavor text is followed by a blank line, then one distinct effect per line. Concatenations such as “HP +22MP Cost Reduction +7%” are separated in RU and EN item previews.
+- **Admin and website consistency:** source-backed item descriptions have readable paragraphs in both locales; the editor applies the same formatting on save, without changing stats, names, or Legacy gameplay.
+
+### Development and technical changes
+
+- Share one conservative RU/EN formatter across Worker model, D1 equipment-source imports, the admin editor and generated browser code. Source inventory re-import is idempotent; Legacy, calculations, and historical catalog revisions remain unchanged.
+- Normalize current published item responses and editor fields without rewriting archived `catalog_head`; subsequent saved drafts contain formatted text. Test 72 verified racial/Dawn pieces, the full retained OS description corpus, and all 1130 D1 source records for numeric/text preservation and idempotence.
+
 ## Modern 4.35 — 2026-11-03
 
 ### For users

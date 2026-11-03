@@ -6,6 +6,7 @@ import skills from '../../data/generated/skills.v1.json' with { type: 'json' };
 import approved from '../../localization/approved-translations.v1.json' with { type: 'json' };
 import dawnVariants from '../../data/dawn-editable-variants.v1.json' with { type: 'json' };
 import verifiedGear from '../../data/verified-racial-gear.v1.json' with { type: 'json' };
+import { formatItemDescriptionMap } from './item-description-format.mjs';
 
 // These female Dawn variants used the same archived index as the male item.
 // Register them as real source identities in the admin, so unpublished records
@@ -23,9 +24,11 @@ const originalBySlot = new Map(verifiedGear.entries.filter(entry =>
   [entry.category + '.' + entry.templateIndex, entry]));
 const originalEquipmentRecords = equipment.records.map(record => {
   const entry = originalBySlot.get(record.legacy_category_id + '.' + record.legacy_item_index);
-  return entry ? { ...record, option: {
-    ...record.option, ru: entry.descriptionRu, en: entry.descriptionEn
-  } } : record;
+  const option = entry ? { ...record.option,
+    ru: entry.descriptionRu, en: entry.descriptionEn } : record.option;
+  // All source-backed items, not just the 72 reviewed outfits, are normalized
+  // before the idempotent Cloudflare D1 source import. Legacy files remain raw.
+  return { ...record, option: formatItemDescriptionMap(option) };
 });
 const sourceEquipment = new Map(originalEquipmentRecords.map(record =>
   [record.legacy_category_id + '.' + record.legacy_item_index, record]));
@@ -52,10 +55,10 @@ export const editableDawnRecords = dawnVariants.entries.map(entry => {
     legacy_category_id: entry.category, legacy_item_index: entry.index,
     legacy_parameter_6: template.legacy_parameter_6,
     name: displayNames,
-    option: localized({
+    option: formatItemDescriptionMap(localized({
       en: verifiedByGameId.get(entry.gameId)?.descriptionEn,
       ru: verifiedByGameId.get(entry.gameId)?.descriptionRu
-    }),
+    })),
     special_option: localized({en:'',ru:''}), acquisition: localized({en:'',ru:''}),
     level_requirement: entry.level, soul_socket_count: entry.sockets,
     compatibility_flags: compatibility };
@@ -77,13 +80,15 @@ export const editableRacialRecords = verifiedGear.entries.filter(entry =>
   return { ...template, id: entry.recordId, kind: 'equipment',
     legacy_category_id: entry.category, legacy_item_index: entry.index,
     name: { en: entry.en, ru: entry.ru, jp: '', tw: '' },
-    option: { en: entry.descriptionEn, ru: entry.descriptionRu, jp: '', tw: '' },
+    option: formatItemDescriptionMap({ en: entry.descriptionEn, ru: entry.descriptionRu, jp: '', tw: '' }),
     special_option: { en: '', ru: '', jp: '', tw: '' },
     acquisition: { en: '', ru: '', jp: '', tw: '' },
     level_requirement: entry.level, soul_socket_count: entry.sockets,
     compatibility_flags: compatibility };
 });
-export const baselineRecords = [...originalEquipmentRecords, ...editableDawnRecords, ...editableRacialRecords, ...souls.records, ...character.records.filter(record => ['class', 'racial'].includes(record.kind)),
+export const baselineRecords = [...originalEquipmentRecords, ...editableDawnRecords, ...editableRacialRecords,
+  ...souls.records.map(record => ({ ...record, option:formatItemDescriptionMap(record.option) })),
+  ...character.records.filter(record => ['class', 'racial'].includes(record.kind)),
   ...skills.records.map(source => ({ ...source, id: source.id.replace('skill.', 'skill_entry.'), kind: source.is_active ? 'active' : 'passive' }))];
 export const baselineById = new Map(baselineRecords.map(record => [record.id, record]));
 export const categories = equipment.categories;

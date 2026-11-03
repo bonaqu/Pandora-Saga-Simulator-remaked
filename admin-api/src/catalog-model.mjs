@@ -1,6 +1,7 @@
 import nativePassives from '../../data/native-passive-hooks.v1.json' with { type: 'json' };
 import approved from '../../localization/approved-translations.v1.json' with { type: 'json' };
 import verifiedGear from '../../data/verified-racial-gear.v1.json' with { type: 'json' };
+import { formatItemDescriptionMap } from './item-description-format.mjs';
 import character from '../../data/generated/character.v1.json' with { type: 'json' };
 export const NATIVE_PASSIVES = nativePassives.definitions;
 // This is a validated data codec, not a game calculator. IDs and unit suffixes
@@ -187,6 +188,8 @@ export function showApprovedTranslations(edit, source, kind) {
       if (!shown[field][locale] && baseline[field][locale])
         shown[field][locale] = baseline[field][locale];
   }
+  if (kind === 'equipment' || kind === 'soul')
+    shown.description = formatItemDescriptionMap(shown.description);
   return shown;
 }
 
@@ -294,7 +297,7 @@ export function draftFromSource(source, kind) {
   }
   return {
     id: source?.id || '', kind, category: kind === 'equipment' ? source?.legacy_category_id ?? 0 : null,
-    names: approvedTexts(itemTexts(source?.name), source?.id), description: texts(source?.option), notes: texts(source?.special_option),
+    names: approvedTexts(itemTexts(source?.name), source?.id), description: formatItemDescriptionMap(texts(source?.option)), notes: texts(source?.special_option),
     acquisition: texts(source?.acquisition), modifiers: texts(source?.modifier),
     level: source ? Number(source.level_requirement ?? 1) : 1, sockets: Number(source?.soul_socket_count ?? 0),
     races: kind === 'equipment' && source ? source.compatibility_flags.slice(2, 8) : Array(6).fill(1),
@@ -381,6 +384,9 @@ export function validateDraft(input, identity) {
   const result = { id: input.id, kind: input.kind, category: input.category };
   for (const field of ['names', 'modifiers']) result[field] = textMap(input[field], 160, field);
   for (const field of ['description', 'notes', 'acquisition']) result[field] = textMap(input[field], 4000, field);
+  // Persist normalized RU/EN paragraphs with every new or edited item draft.
+  // JP/TW and numeric mechanics remain unchanged.
+  result.description = formatItemDescriptionMap(result.description);
   check(result.names.en.length > 0, 'English name is required');
   result.level = integer(input.level, 0, 1000, 'Required level');
   result.sockets = integer(input.sockets, 0, 3, 'Soul sockets');
