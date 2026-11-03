@@ -271,13 +271,14 @@
 
     var valid = [];
     var invalidCount = 0;
-    var seenIds = new Set();
+    // Legacy shadows window.Set with the game's combat routine. A plain
+    // null-prototype key set is safe for arbitrary user/imported build IDs.
+    var seenIds = Object.create(null);
     parsed.value.builds.forEach(function (build) {
-      // A broken imported/local collection can repeat IDs. Otherwise both
-      // selectors resolve the first record and may silently compare the wrong
-      // build. Keep the first valid record and warn about the duplicate.
-      if (validateBuildRecord(build) && !seenIds.has(build.id)) {
-        seenIds.add(build.id);
+      // A damaged collection can repeat IDs. Otherwise two distinct labels
+      // may resolve the same saved payload. Keep only the first valid ID.
+      if (validateBuildRecord(build) && !Object.hasOwn(seenIds, build.id)) {
+        seenIds[build.id] = true;
         valid.push(cloneBuild(build));
       } else invalidCount += 1;
     });
