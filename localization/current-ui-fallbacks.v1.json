@@ -45,7 +45,7 @@
       "catalog.rangeScope.any": "any attack",
       "catalog.rangeScope.melee": "melee",
       "catalog.rangeScope.ranged": "ranged",
-      "compare.cachedCatalog": "キャッシュ済みのゲームデータを使用しています。サーバー上の最新版は確認できませんでした。"
+      "compare.cachedCatalog": "Using cached game data; the latest server revision could not be checked."
     },
     "tw": {
       "adminShell.catalogBranchLimits": "Skill branch limits",
@@ -68,7 +68,7 @@
       "catalog.rangeScope.any": "any attack",
       "catalog.rangeScope.melee": "melee",
       "catalog.rangeScope.ranged": "ranged",
-      "compare.cachedCatalog": "正在使用快取的遊戲資料；無法確認伺服器上的最新版本。"
+      "compare.cachedCatalog": "Using cached game data; the latest server revision could not be checked."
     }
   }
 }
