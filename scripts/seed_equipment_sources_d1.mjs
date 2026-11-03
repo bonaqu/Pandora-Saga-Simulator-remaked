@@ -25,7 +25,7 @@ export function equipmentSourceRows() {
     'equipment.' + row.category + '.' + row.templateIndex, row.recordId
   ]));
   if (oldToCanonical.size !== 10) throw Error('Duplicate archived Dawn aliases');
-  const originals = baselineRecords.filter(row => row.kind === 'equipment');
+  const originals = baselineRecords.filter(row => row.id.startsWith('equipment.') || row.kind === 'equipment');
   if (originals.length < 100) throw Error('Incomplete source equipment registry');
   const ids = new Set(), slots = new Set();
   const rows = originals.map(source => {
