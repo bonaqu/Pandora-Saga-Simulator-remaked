@@ -594,8 +594,16 @@
         level: row.level, sockets: row.sockets };
     });
   var newIds = entries.filter(function (entry) { return Number.isInteger(entry.newIndex); }).concat(regularVariants);
+  var verifiedItems = window.PandoraRemakedVerifiedRacialGear?.entries || [];
   var byPublishedId = Object.create(null);
   entries.forEach(function (entry) { if (entry.publishedId) byPublishedId[entry.publishedId] = entry; });
+  // 31 regular race-outfit variants also already exist in production D1. The
+  // simulator previously added those same server identities through Legacy,
+  // including five synthetic female rows, producing multiple visible copies.
+  verifiedItems.forEach(function (entry) {
+    if (entry.publishedId && !byPublishedId[entry.publishedId])
+      byPublishedId[entry.publishedId] = entry;
+  });
   function compatible(entry, base) {
     if (!Array.isArray(base) || base.length !== 36) throw new Error('Invalid Dawn compatibility source: ' + entry.id);
     var result = base.slice();
@@ -612,6 +620,7 @@
     var code = source[7];
     return {
       id: id, kind: 'equipment', category: entry.category, index: entry.newIndex,
+      _pandoraClientProjected: true, // Never confuse this client fallback with an owner-published D1 row.
       engineId: entry.category * 10000 + entry.newIndex, engineKey: 'Modern:' + id,
       names: localized(entry.en, entry.ru),
       description: localized(entry.descriptionEn || original?.[1]?.[entry.category]?.[entry.templateIndex]?.[1] || '', entry.descriptionRu),
@@ -621,6 +630,28 @@
       parameter6: typeof source[6] === 'number' || typeof source[6] === 'string' ? source[6] : '',
       soulParameters: ['', ''], trailing: typeof source[44] === 'string' ? source[44] : ''
     };
+  }
+  // A current OS item may be present twice: its original Legacy slot and a
+  // previously published D1 UUID. Keep the D1 publication as the canonical
+  // editable identity; retain the old slot only for loading historical builds.
+  // Identity is established by the verified OS item ID, never by fuzzy name or
+  // equal numerical effects (different items can share stats).
+  function canonicalForLegacy(category, index, snapshot) {
+    if (!snapshot || snapshot.revision === 0 || !Array.isArray(snapshot.records)) return null;
+    var entry = verifiedItems.find(function (candidate) {
+      return candidate.publishedId && candidate.category === Number(category) &&
+        (candidate.newIndex === undefined ? candidate.templateIndex : candidate.newIndex) === Number(index);
+    });
+    if (!entry) return null;
+    // Never silently retire a separately admin-published legacy item.
+    if (snapshot.records.some(function (row) {
+      return !row._pandoraClientProjected && row.id === (entry.newIndex !== undefined
+        ? entry.recordId : 'equipment.' + category + '.' + index);
+    })) return null;
+    return snapshot.records.find(function (row) {
+      return row.id === entry.publishedId && row.kind === 'equipment' &&
+        row.category === entry.category && row.index === entry.publishedIndex && !row.disabled;
+    }) || null;
   }
   function augment(snapshot, source) {
     if (!snapshot || !Array.isArray(snapshot.records) || snapshot.revision === 0) return snapshot;
@@ -636,7 +667,7 @@
       // These published Dawn UUIDs have exact counterparts in the archived
       // game. Keep the OLD Japanese/Taiwanese item names, never synthesize new
       // translations from English. Explicit published translations still win.
-      if (record.names && source) {
+      if (record.names && source && entry.newIndex === undefined) {
         var names = Object.assign({}, record.names), supplemented = false;
         [['jp', 0], ['tw', 2]].forEach(function (pair) {
           var old = source[pair[1]]?.[entry.category]?.[entry.templateIndex]?.[0];
@@ -669,6 +700,7 @@
   }
   window.PandoraRemakedDawnCollection = Object.freeze({
     entries: Object.freeze(entries), augment: augment, compatible: compatible,
+    canonicalForLegacy: canonicalForLegacy,
     source: 'https://pandorasaga-os.com/gamedata/items.json'
   });
 })();

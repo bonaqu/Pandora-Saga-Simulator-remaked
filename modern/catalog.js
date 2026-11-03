@@ -956,7 +956,12 @@
   }
   namespace.catalog = { applySnapshot, validateSnapshot: validate, refreshAvailability, adoptionPlan, migratePayload, prepareCurrentPayload,
     isAlias: function (kind, id) {
-      return kind === 'equipment' && Number(id) === 350003 && retiredGoldenSource(snapshots[revision] || sourceSnapshot());
+      if (kind !== 'equipment') return false;
+      var value = Number(id), snapshot = snapshots[revision] || sourceSnapshot();
+      if (value === 350003 && retiredGoldenSource(snapshot)) return true;
+      if (!Number.isSafeInteger(value) || value <= 0) return false;
+      return Boolean(window.PandoraRemakedDawnCollection?.canonicalForLegacy(
+        Math.floor(value / 10000), value % 10000, snapshot));
     },
     variantSkills: function () {
       if (!variantRecords.length) return [];

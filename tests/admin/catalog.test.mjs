@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import { createHash } from 'node:crypto';
-import { adminCatalog, publicCatalog, publicCatalogHead } from '../../admin-api/src/catalog.mjs';
+import { adminCatalog, publicCatalog, publicCatalogHead, publicEquipmentInventory } from '../../admin-api/src/catalog.mjs';
+import { equipmentSourceRows, equipmentSourceStatements, sourceManifest } from '../../scripts/seed_equipment_sources_d1.mjs';
 import { draftFromSource, validateDraft } from '../../admin-api/src/catalog-model.mjs';
 import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs';
 import { currentActiveProfileDrafts } from '../../admin-api/src/current-active-profiles.mjs';
@@ -36,6 +37,100 @@ const call = async (env, path, input) => {
 };
 const publicData = async (env, revision) => (await publicCatalog(request('/api/catalog' + (revision === undefined ? '' : '?revision=' + revision)), env)).json();
 const detail = (env, id = 'equipment.0.1') => call(env, 'item?id=' + id);
+
+test('all source equipment is persisted in D1 with 41 verified aliases and idempotent seeds', async () => {
+  const { env, sqlite }=fixture();
+  sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/0017_equipment_source_inventory.sql',import.meta.url),'utf8'));
+  const before=await (await publicEquipmentInventory(env)).json();
+  assert.equal(before.complete,false);
+  const manifest=sourceManifest(),rows=equipmentSourceRows();
+  assert.ok(manifest.count>=1100);
+  assert.equal(manifest.aliases,41);
+  assert.equal(rows.length,manifest.count);
+  assert.equal(new Set(rows.map(row=>row.id)).size,rows.length);
+  assert.equal(new Set(rows.map(row=>row.category+'.'+row.index)).size,rows.length);
+  const sql=equipmentSourceStatements(rows,60,1234);
+  assert.ok(sql.length>10);
+  for(const statement of sql)sqlite.exec(statement);
+  for(const statement of sql)sqlite.exec(statement); // No accidental duplicates on re-deploy.
+  const after=await (await publicEquipmentInventory(env)).json();
+  assert.equal(after.expected,manifest.count);
+  assert.equal(after.stored,manifest.count);
+  assert.equal(after.aliases,41);
+  assert.equal(after.complete,true);
+  const archived=sqlite.prepare('SELECT source_json, canonical_id FROM catalog_equipment_sources WHERE id=?')
+    .get('equipment.32.15');
+  assert.equal(archived.canonical_id,'modern.equipment.fb711826-a631-4423-af72-803ac0e6a516');
+  const racialMale=sqlite.prepare('SELECT canonical_id FROM catalog_equipment_sources WHERE id=?')
+    .get('equipment.31.8');
+  assert.equal(racialMale.canonical_id,'modern.equipment.7f16da63-c482-4353-a436-eb1be613c2cd');
+  const racialFemale=sqlite.prepare('SELECT canonical_id FROM catalog_equipment_sources WHERE id=?')
+    .get('modern.equipment.racial-os-12531');
+  assert.equal(racialFemale.canonical_id,'modern.equipment.f0bb7e4c-ebc9-4f47-a20a-60bd627d4761');
+  const parsed=JSON.parse(archived.source_json);
+  assert.equal(parsed.id,'equipment.32.15');
+  assert.equal(parsed.name.jp,baselineById.get('equipment.32.15').name.jp);
+  assert.deepEqual(parsed.compatibility_flags,baselineById.get('equipment.32.15').compatibility_flags);
+  const admin=await detail(env,'equipment.31.10');
+  assert.equal(admin.ok,true);
+  assert.equal(admin.edit.names.ru,'Корсет для мирины');
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM catalog_head').get().n,1);
+  assert.equal(sqlite.prepare('SELECT version FROM catalog_head WHERE id=1').get().version,0);
+  sqlite.close();
+});
+
+test('only the existing published UUID is listed when its Legacy Dawn row is an alias', async () => {
+  const {env,sqlite}=fixture();
+  const id='modern.equipment.fb711826-a631-4423-af72-803ac0e6a516';
+  const edit=draftFromSource(baselineById.get('equipment.32.15'),'equipment');
+  edit.id=id;edit.category=32;edit.names.en='Dawn Gloves (Male Elf)';
+  edit.names.ru='Рассветные перчатки для эльфа (м)';
+  const identity={id,kind:'equipment',category:32,index:110};
+  sqlite.prepare('INSERT INTO catalog_allocations (id,kind,category,item_index,created_at) VALUES (?,?,?,?,?)')
+    .run(id,'equipment',32,110,1);
+  sqlite.prepare('UPDATE catalog_head SET version=?,impact_version=?,snapshot_json=? WHERE id=1')
+    .run(94,94,JSON.stringify([{identity,edit}]));
+  const legacy=await call(env,'catalog?kind=equipment&q=equipment.32.15');
+  assert.equal(legacy.count,0,'A published original should not create a second editable choice');
+  const canonical=await call(env,'catalog?kind=equipment&q='+encodeURIComponent(id));
+  assert.equal(canonical.count,1);
+  assert.equal(canonical.items[0].id,id);
+  const historical=await detail(env,'equipment.32.15');
+  assert.equal(historical.ok,true,'Retired original still exists for safe historical build access');
+  sqlite.close();
+});
+
+test('admin exposes one published D1 entry, not old male and provisional female counterparts', async () => {
+  const {env,sqlite}=fixture();
+  const published=[
+    {id:'modern.equipment.7f16da63-c482-4353-a436-eb1be613c2cd',index:109,
+      source:'equipment.31.8',ru:'Жилет для эльфа (М)'},
+    {id:'modern.equipment.f0bb7e4c-ebc9-4f47-a20a-60bd627d4761',index:110,
+      source:'modern.equipment.racial-os-12531',ru:'Жилет для эльфа (Ж)'}
+  ];
+  const entries=published.map(item=>{
+    const source=baselineById.get(item.source);
+    const edit=draftFromSource(source,'equipment');
+    edit.id=item.id;
+    edit.names.ru=item.ru;
+    sqlite.prepare('INSERT INTO catalog_allocations (id,kind,category,item_index,created_at) VALUES (?,?,?,?,?)')
+      .run(item.id,'equipment',31,item.index,1);
+    return {identity:{id:item.id,kind:'equipment',category:31,index:item.index},edit};
+  });
+  sqlite.prepare('UPDATE catalog_head SET version=?,impact_version=?,snapshot_json=? WHERE id=1')
+    .run(94,94,JSON.stringify(entries));
+  for(const alias of ['equipment.31.8','modern.equipment.racial-os-12531']){
+    const list=await call(env,'catalog?kind=equipment&q='+encodeURIComponent(alias));
+    assert.equal(list.items.some(row => row.id === alias),false,'duplicate alias leaked: '+alias);
+    assert.equal((await detail(env,alias)).ok,true,'old saved build source stays accessible');
+  }
+  for(const item of published){
+    const list=await call(env,'catalog?kind=equipment&q='+encodeURIComponent(item.id));
+    assert.equal(list.count,1,'canonical D1 record missing');
+    assert.equal(list.items[0].id,item.id);
+  }
+  sqlite.close();
+});
 
 test('impact migration conservatively upgrades an existing nonzero catalog history', () => {
   const sqlite = new DatabaseSync(':memory:');

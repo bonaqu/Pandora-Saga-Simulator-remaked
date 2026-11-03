@@ -1,5 +1,5 @@
 import { authorize, jsonResponse, login, logout } from './auth.mjs';
-import { adminCatalog, publicCatalog, publicCatalogHead } from './catalog.mjs';
+import { adminCatalog, publicCatalog, publicCatalogHead, publicEquipmentInventory } from './catalog.mjs';
 import { CatalogError } from './catalog-model.mjs';
 import { publicResultLabels, adminResultLabels } from './result-labels.mjs';
 import { publicUiTranslations, adminUiTranslations } from './ui-translations.mjs';
@@ -33,7 +33,7 @@ async function route(request, env) {
   if (request.method === 'OPTIONS') {
     const sharePath=url.pathname==='/api/share'||/^\/api\/share\/[A-Za-z0-9_-]{12}$/.test(url.pathname);
     if (request.headers.get('Origin') !== env.PUBLIC_ORIGIN || !(sharePath ||
-      ['/api/catalog', '/api/catalog/head', '/api/result-labels', '/api/ui-translations', '/api/localization', '/api/auth/login'].includes(url.pathname))) return jsonResponse({ ok: false }, 403);
+      ['/api/catalog', '/api/catalog/head', '/api/catalog/equipment-inventory', '/api/result-labels', '/api/ui-translations', '/api/localization', '/api/auth/login'].includes(url.pathname))) return jsonResponse({ ok: false }, 403);
     const method = request.headers.get('Access-Control-Request-Method');
     if (!['GET', 'POST'].includes(method)) return jsonResponse({ ok: false }, 403);
     const requestedHeaders = (request.headers.get('Access-Control-Request-Headers') || '').split(',').map(header => header.trim().toLowerCase()).filter(Boolean);
@@ -56,6 +56,7 @@ async function route(request, env) {
   if (url.pathname === '/api/auth/logout') return logout(request, env);
   if (url.pathname === '/api/catalog/head' && request.method === 'GET') return publicCatalogHead(env);
   if (url.pathname === '/api/catalog' && request.method === 'GET') return publicCatalog(request, env);
+  if (url.pathname === '/api/catalog/equipment-inventory' && request.method === 'GET') return publicEquipmentInventory(env);
   if (url.pathname === '/api/result-labels' && request.method === 'GET') return publicResultLabels(env);
   if (url.pathname === '/api/ui-translations' && request.method === 'GET') return publicUiTranslations(env);
   if (url.pathname === '/api/localization' && request.method === 'GET') return publicLocalization(env);

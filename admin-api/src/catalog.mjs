@@ -3,6 +3,7 @@ import { compareCatalogEdits } from './catalog-diff.mjs';
 import { astirIds, planAstirCleanup, applyAstirFields, restorablesForCleanup } from './astir-cleanup.mjs';
 import { CatalogError, draftFromSource, validateDraft, compileRecord, showApprovedTranslations, EFFECTS, EQUIPMENT_CATEGORIES, NATIVE_PASSIVES } from './catalog-model.mjs';
 import { baselineById, baselineRecords, categories, skillCategories, compatibilityLabels, sourceFingerprint, characterSourceFingerprint, sourceIdentity, firstNewIndex } from './catalog-baseline.mjs';
+import verifiedGear from '../../data/verified-racial-gear.v1.json' with { type: 'json' };
 import { jsonResponse } from './auth.mjs';
 
 const MAX_SNAPSHOT_BYTES = 900000;
@@ -11,6 +12,53 @@ const fail = (message, status = 400) => { throw new CatalogError(message, status
 const normalizeIdentity = row => ({ id: row.id, kind: row.kind, category: row.kind === 'soul' ? null : row.category, index: row.item_index });
 const normalizeSkillIdentity = row => ({ ...normalizeIdentity(row), templateId: row.template_id });
 const sourceFor = identity => baselineById.get(identity.templateId || identity.id);
+// Archived source slots and the five provisional Modern female IDs were
+// duplicated by 41 *existing* D1 publications. Hide their catalog-list
+// aliases only while the canonical D1 item is published, so an owner's
+// explicit draft/override remains accessible and older build IDs survive.
+const retiredEquipmentSourceIds = new Map(verifiedGear.entries.filter(row =>
+  row.publishedId).map(row => [
+    row.recordId.startsWith('modern.equipment.') && !row.recordId.includes('-os-')
+      ? 'equipment.'+row.category+'.'+row.templateIndex : row.recordId,
+    row.publishedId
+  ]));
+if(retiredEquipmentSourceIds.size!==41) throw Error('Invalid canonical racial/Dawn identity registry');
+
+// Equipment baselines are now persisted as individual Cloudflare D1 records.
+// The generated source bundle remains a safety/validation authority for old
+// revisions and local tests. A mismatched or incomplete import must NEVER be
+// used to alter a calculator formula.
+async function persistedSource(env, source) {
+  if(!source || !(source.id.startsWith('equipment.') || source.kind==='equipment'))return source;
+  let record;
+  try{
+    record=await env.DB.prepare('SELECT source_json FROM catalog_equipment_sources WHERE id=?')
+      .bind(source.id).first();
+  }catch(error){
+    if(/no such table: catalog_equipment_sources/i.test(String(error.message||error)))
+      return source; // Pre-migration synthetic test database only.
+    throw error;
+  }
+  if(!record)return source; // Rolling deployment: static verified fallback.
+  let stored;
+  try{stored=JSON.parse(record.source_json);}catch{throw new Error('Corrupt persisted equipment baseline');}
+  if(JSON.stringify(stored)!==JSON.stringify(source))
+    return source; // Reject stale/replaced D1 baselines; never change formulas.
+  return stored;
+}
+export async function publicEquipmentInventory(env) {
+  const expected=baselineRecords.filter(source=>source.id.startsWith('equipment.')||source.kind==='equipment').length;
+  let status;
+  try {
+    status=await env.DB.prepare('SELECT COUNT(*) AS stored, COUNT(canonical_id) AS aliases FROM catalog_equipment_sources').first();
+  } catch(error) {
+    if(!/no such table: catalog_equipment_sources/i.test(String(error.message||error)))throw error;
+    status={stored:0,aliases:0};
+  }
+  const stored=Number(status?.stored||0),aliases=Number(status?.aliases||0);
+  return jsonResponse({ok:true,schemaVersion:1,expected,stored,aliases,complete:stored===expected&&aliases===41});
+}
+
 // Read-only annotations of the retained js/calc.js branches, NOT formulas or
 // editable bonuses. Absence means the engine does not model that game mechanic.
 const racialReference = {
@@ -150,7 +198,7 @@ export async function publicCatalog(request, env) {
 
 async function detail(env, id) {
   const identity = await identityFor(env, id);
-  const source = sourceFor(identity);
+  const source = await persistedSource(env, sourceFor(identity));
   const [snapshot, draft] = await Promise.all([head(env), draftRow(env, id)]);
   const published = snapshot.entries.find(entry => entry.identity.id === id);
   const edit = draft?.is_dirty || (!published && (!source || identity.templateId) && draft) ? JSON.parse(draft.payload_json) : published?.edit || draftFromSource(source, identity.kind);
@@ -606,12 +654,21 @@ async function list(request, env) {
   ]);
   const edits = new Map(snapshot.entries.map(entry => [entry.identity.id, entry.edit]));
   const draftMap = new Map(drafts.results.map(row => [row.id, row]));
-  const identities = baselineRecords.filter(source => sourceIdentity(source).kind === kind).map(sourceIdentity).concat(allocations.results.map(skillKind ? normalizeSkillIdentity : normalizeIdentity));
+  // A historical Dawn record already represented by a published D1 UUID is
+  // not another item. Keep dirty archived drafts discoverable until reviewed,
+  // but otherwise expose only its canonical published item in the admin list.
+  const identities = baselineRecords.filter(source => sourceIdentity(source).kind === kind)
+    .map(sourceIdentity).filter(identity => !(
+      kind==='equipment' && retiredEquipmentSourceIds.has(identity.id) &&
+      edits.has(retiredEquipmentSourceIds.get(identity.id)) && !draftMap.get(identity.id)?.is_dirty
+    )).concat(allocations.results.map(skillKind ? normalizeSkillIdentity : normalizeIdentity));
   const results = [];
   for (const identity of identities) {
     const draft = draftMap.get(identity.id);
     const source = sourceFor(identity);
     const edit = draft?.is_dirty || (!edits.has(identity.id) && (!source || identity.templateId) && draft) ? JSON.parse(draft.payload_json) : edits.get(identity.id) || draftFromSource(source, kind);
+    // One paginated admin list must not make ~1,100 individual D1 queries.
+    // Source names are the validated mirror; opening a card reads its D1 row.
     const displayEdit = showApprovedTranslations(edit, source, kind);
     const engineId=kind==='equipment'?identity.category*10000+identity.index:kind==='soul'?identity.index:null;
     if (q && !Object.values(displayEdit.names).some(name => name.toLowerCase().includes(q)) && !identity.id.includes(q) && !(engineId!==null&&String(engineId).includes(q))) continue;

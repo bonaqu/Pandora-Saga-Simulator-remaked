@@ -1,5 +1,29 @@
 # Changelog
 
+## Modern 4.34 — единые предметы и хранение экипировки в Cloudflare, 2026-11-03
+
+<!-- release-notes:user:ru -->
+- **Убраны дубли предметов:** 41 ранее продублированный предмет обычных расовых комплектов и Зари теперь показываются в экипировке и поиске по одной карточке. В частности, «Рассветные перчатки для эльфа (м)» больше не повторяются под старым и новым названием.
+- **Редактирование снаряжения:** исходные карточки всех предметов доступны в защищённой админке; ранее опубликованные правки сохраняются.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **No duplicate equipment choices:** 41 verified ordinary racial and Dawn items previously shown both as an archived or provisional entry and a current entry now appear once, including male Elf Dawn Gloves.
+- **Editable equipment catalog:** all equipment source records remain editable in the protected administrator catalog. Existing publications and saved builds are preserved.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Дедупликация исключительно по 41 подтверждённому серверному ID обычных расовых комплектов и Зари, не по совпадению статов или похожему имени. Видимый канон — опубликованный UUID из D1; старый Legacy или промежуточный Modern ID продолжает существовать для исторических билдов и помечен как алиас в таблице источников (всего 41 связь). Если в будущем старую запись отдельно опубликуют или каноническую отключат, автоматическое скрытие не применяется.
+- Миграция D1 0017 и идемпотентная процедура импорта всех исходных предметов перед Worker deployment; отдельная строка на предмет, проверка неизменности источника, SHA‑256 и признак канонического алиаса. Опубликованные редакции `catalog_head`/черновики не перезаписываются. Защищённая карточка админки читает D1-источник с проверкой целостности; открытая выдача не требует тысяч D1 запросов. Финальный deploy проверяет полноту через endpoint количества.
+- Исключение для рассветной вуали мирины: опубликованный UUID содержит укороченный технический код относительно Legacy, поэтому изменения формул не производились при визуальном устранении дубля. Требует отдельной верификации механики без домыслов.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Deduplicate by exactly 41 verified current-game racial/Dawn IDs, never by equal stats or approximate names. The published D1 UUID is the visible canonical item; the historical Legacy or provisional Modern ID is preserved for old builds and stored as one of 41 source aliases. Explicit editing of the original or disabling the published item prevents automatic concealment.
+- Add D1 migration 0017 and idempotent predeploy source import with per-item JSON, SHA‑256 and canonical alias links. Do not modify catalog_head publications, D1 drafts or user accounts. An admin detail card reads its verified D1 source; the paginated catalog does not perform N+1 D1 lookups. Production deploy checks inventory completeness.
+- One existing discrepancy remains: the published Myrine Dawn Veil code omits two Legacy code tokens; this release does not silently change equipment formulas. Review separately against actual game data.
+<!-- /admin-notes:en -->
+
 ## Modern 4.33 — расовые комплекты и названия из игры, 2026-11-03
 
 <!-- release-notes:user:ru -->

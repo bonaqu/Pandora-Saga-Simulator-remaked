@@ -329,7 +329,7 @@
     // despite their OS gender-specific identities. The verified ID registry
     // resolves these separately without adding a character gender selector.
     var verified = window.PandoraRemakedVerifiedRacialGear?.entries?.find(function (row) {
-      return row.category === category && row.index === index;
+      return row.category === category && (row.index === index || row.publishedIndex === index);
     });
     var sex = verified?.sex || dawnEntry?.sex;
     if (!sex) {
@@ -371,11 +371,13 @@
       return approved;
     var verified = /^equipment\.(\d+)\.(\d+)$/.exec(key);
     var verifiedRow = verified && window.PandoraRemakedVerifiedRacialGear?.entries?.find(function (row) {
-      return row.category === Number(verified[1]) && row.index === Number(verified[2]);
+      return row.category === Number(verified[1]) &&
+        (row.index === Number(verified[2]) || row.publishedIndex === Number(verified[2]));
     });
-    var original = verifiedRow?.recordId?.startsWith('equipment.');
+    var original = verifiedRow?.recordId?.startsWith('equipment.') &&
+      verifiedRow.index === Number(verified[2]);
     var catalogItem = verifiedRow && namespace.catalog?.item('equipment',
-      verifiedRow.category * 10000 + verifiedRow.index);
+      Number(verified[1]) * 10000 + Number(verified[2]));
     // Old JP/TW item names are authoritative archival game text, including
     // when a later catalog entry has no JP/TW publication. Do not turn their
     // absence in D1 into an English replacement of actual Legacy labels.

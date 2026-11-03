@@ -103,6 +103,38 @@ test('published Dawn variants reuse only historical JP/TW text, never newly fabr
   }
 });
 
+test('only one visible identity per Dawn item: ten archived slots alias their exact published D1 records',async({page})=>{
+  await page.goto('/');
+  const output=await page.evaluate(()=>{
+    const dawn=window.PandoraRemakedDawnCollection;
+    const targets=dawn.entries.filter(row=>row.publishedId);
+    const records=targets.map(row=>({
+      id:row.publishedId,kind:'equipment',category:row.category,
+      index:100+row.templateIndex,disabled:false,
+      compatibility:Array(36).fill(1),names:{en:row.en,ru:row.ru,jp:'',tw:''}
+    }));
+    const snapshot={revision:94,records};
+    const legacy=targets.map(row=>({
+      id:row.id,legacy:row.category*10000+row.templateIndex,
+      chosen:dawn.canonicalForLegacy(row.category,row.templateIndex,snapshot)?.id,
+      absent:dawn.canonicalForLegacy(row.category,row.templateIndex,{revision:90,records:[]}),
+      disabled:dawn.canonicalForLegacy(row.category,row.templateIndex,{revision:95,records:records.map(record=>
+        record.id===row.publishedId?{...record,disabled:true}:record)}),
+      edited:dawn.canonicalForLegacy(row.category,row.templateIndex,{revision:95,records:[
+        ...records,{id:'equipment.'+row.category+'.'+row.templateIndex,kind:'equipment'}]})
+    }));
+    return {legacy};
+  });
+  expect(output.legacy).toHaveLength(10);
+  expect(new Set(output.legacy.map(x=>x.legacy)).size).toBe(10);
+  for(const row of output.legacy){
+    expect(row.chosen,row.id).toMatch(/^modern\.equipment\./);
+    expect(row.absent).toBeNull();
+    expect(row.disabled).toBeNull();
+    expect(row.edited).toBeNull();
+  }
+});
+
 test('Dawn reserved IDs fail closed when the live catalog allocates the same equipment index', async ({ page }) => {
   await page.goto('/');
   const message = await page.evaluate(() => {
@@ -120,6 +152,43 @@ test('Dawn reserved IDs fail closed when the live catalog allocates the same equ
     return '';
   });
   expect(message).toMatch(/reserved Dawn equipment index/i);
+});
+
+test('all 41 verified original or provisional race-kit identities resolve to one D1 item', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(() => {
+    const gear = window.PandoraRemakedVerifiedRacialGear.entries.filter(row => row.publishedId);
+    const dawn = window.PandoraRemakedDawnCollection;
+    const records = gear.map(row => ({
+      id: row.publishedId, category: row.category, index: row.publishedIndex,
+      kind: 'equipment', names: {en:row.en,ru:row.ru,jp:'',tw:''},
+      compatibility: Array(36).fill(1)
+    }));
+    const raw = {revision:94,records};
+    const unmodified = JSON.stringify(raw);
+    const augmented = dawn.augment(raw,window.EquipData);
+    return {
+      number:gear.length,
+      sourceUntouched:JSON.stringify(raw)===unmodified,
+      cases:gear.map(row=>{
+        const aliasIndex=row.newIndex===undefined?row.templateIndex:row.newIndex;
+        const resolved=dawn.canonicalForLegacy(row.category,aliasIndex,augmented);
+        const withOwnerPublication={revision:95,records:augmented.records.concat([{
+          id: row.newIndex===undefined?'equipment.'+row.category+'.'+aliasIndex:row.recordId,
+          category:row.category,index:aliasIndex,kind:'equipment',disabled:false
+        }])};
+        const kept=dawn.canonicalForLegacy(row.category,aliasIndex,withOwnerPublication);
+        return {gameId:row.gameId,expected:row.publishedId,chosen:resolved?.id||null,
+          explicitPublicationWins:kept===null};
+      })
+    };
+  });
+  expect(result.number).toBe(41);
+  expect(result.sourceUntouched).toBe(true);
+  for(const row of result.cases){
+    expect(row.chosen,'Canonical item missing for official OS '+row.gameId).toBe(row.expected);
+    expect(row.explicitPublicationWins,'Manually published counterpart must remain available '+row.gameId).toBe(true);
+  }
 });
 
 test('D1-edited Dawn names and explicit races beat historical client placeholders', async ({ page }) => {

@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.34 — 2026-11-03
+
+### For users
+
+- **No duplicate equipment choices:** 41 verified ordinary racial and Dawn items previously shown both as an archived or provisional entry and a current entry now appear once, including male Elf Dawn Gloves.
+- **Editable equipment catalog:** all equipment source records remain editable in the protected administrator catalog. Existing publications and saved builds are preserved.
+
+### Development and technical changes
+
+- Deduplicate by exactly 41 verified current-game racial/Dawn IDs, never by equal stats or approximate names. The published D1 UUID is the visible canonical item; the historical Legacy or provisional Modern ID is preserved for old builds and stored as one of 41 source aliases. Explicit editing of the original or disabling the published item prevents automatic concealment.
+- Add D1 migration 0017 and idempotent predeploy source import with per-item JSON, SHA‑256 and canonical alias links. Do not modify catalog_head publications, D1 drafts or user accounts. An admin detail card reads its verified D1 source; the paginated catalog does not perform N+1 D1 lookups. Production deploy checks inventory completeness.
+- One existing discrepancy remains: the published Myrine Dawn Veil code omits two Legacy code tokens; this release does not silently change equipment formulas. Review separately against actual game data.
+
 ## Modern 4.33 — 2026-11-03
 
 ### For users
