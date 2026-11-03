@@ -48,6 +48,7 @@ REQUIRED_MODERN = (
     "modern/site-tooltips.js",
     "modern/adapter.js",
     "modern/catalog.js",
+    "modern/dawn-collection.js",
     "modern/catalog-text.js",
     "modern/identity-aliases.js",
     "modern/enhancement-effects.js",
@@ -127,6 +128,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/identity-aliases.js"></script>
 <script src="./modern/current-vitals-data.js"></script>
 <script src="./modern/current-vitals.js"></script>
+<script src="./modern/dawn-collection.js"></script>
 <script src="./modern/catalog.js"></script>
 <script src="./modern/enhancement-effects.js"></script>
 <script src="./modern/admin-entry.js"></script>
