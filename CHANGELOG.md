@@ -4,12 +4,12 @@
 
 <!-- release-notes:user:ru -->
 - **Описание предмета как в игре:** сначала обычный текст, затем пустая строка и с новой строки каждый отдельный бонус. Слипшиеся «ОЗ +22Снижение расхода ОМ +7%» и аналогичные RU/EN сочетания больше не появляются в карточках экипировки.
-- **Единый формат для админки и Cloudflare:** русские и английские исходные описания всех предметов хранятся с переносами в D1; при ручном сохранении новых или старых предметов редактор использует те же правила. Числа, эффекты, имена и Legacy не изменяются.
+- **Единый формат для админки и Cloudflare:** русские и английские исходные описания всех предметов хранятся с переносами в облачной базе; при ручном сохранении новых или старых предметов редактор использует те же правила. Числа, эффекты, имена и Legacy не изменяются.
 <!-- /release-notes:user:ru -->
 
 <!-- release-notes:user:en -->
 - **In-game description layout:** item flavor text is followed by a blank line, then one distinct effect per line. Concatenations such as “HP +22MP Cost Reduction +7%” are separated in RU and EN item previews.
-- **Admin and Cloudflare D1 consistency:** source-backed item descriptions have readable paragraphs in both locales; the editor applies the same formatting on save, without changing stats, names, or Legacy gameplay.
+- **Admin and Cloudflare consistency:** source-backed item descriptions have readable paragraphs in both locales; the editor applies the same formatting on save, without changing stats, names, or Legacy gameplay.
 <!-- /release-notes:user:en -->
 
 <!-- admin-notes:ru -->
