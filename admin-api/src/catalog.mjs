@@ -12,12 +12,17 @@ const fail = (message, status = 400) => { throw new CatalogError(message, status
 const normalizeIdentity = row => ({ id: row.id, kind: row.kind, category: row.kind === 'soul' ? null : row.category, index: row.item_index });
 const normalizeSkillIdentity = row => ({ ...normalizeIdentity(row), templateId: row.template_id });
 const sourceFor = identity => baselineById.get(identity.templateId || identity.id);
-const retiredDawnSourceIds = new Map(verifiedGear.entries.filter(row =>
-  row.set==='dawn' && row.recordId.startsWith('modern.equipment.') &&
-  row.newIndex===undefined).map(row=>[
-    'equipment.'+row.category+'.'+row.templateIndex,row.recordId
+// Archived source slots and the five provisional Modern female IDs were
+// duplicated by 41 *existing* D1 publications. Hide their catalog-list
+// aliases only while the canonical D1 item is published, so an owner's
+// explicit draft/override remains accessible and older build IDs survive.
+const retiredEquipmentSourceIds = new Map(verifiedGear.entries.filter(row =>
+  row.publishedId).map(row => [
+    row.recordId.startsWith('modern.equipment.') && !row.recordId.includes('-os-')
+      ? 'equipment.'+row.category+'.'+row.templateIndex : row.recordId,
+    row.publishedId
   ]));
-if(retiredDawnSourceIds.size!==10) throw Error('Invalid canonical Dawn identity registry');
+if(retiredEquipmentSourceIds.size!==41) throw Error('Invalid canonical racial/Dawn identity registry');
 
 // Equipment baselines are now persisted as individual Cloudflare D1 records.
 // The generated source bundle remains a safety/validation authority for old
@@ -51,7 +56,7 @@ export async function publicEquipmentInventory(env) {
     status={stored:0,aliases:0};
   }
   const stored=Number(status?.stored||0),aliases=Number(status?.aliases||0);
-  return jsonResponse({ok:true,schemaVersion:1,expected,stored,aliases,complete:stored===expected&&aliases===10});
+  return jsonResponse({ok:true,schemaVersion:1,expected,stored,aliases,complete:stored===expected&&aliases===41});
 }
 
 // Read-only annotations of the retained js/calc.js branches, NOT formulas or
@@ -654,8 +659,8 @@ async function list(request, env) {
   // but otherwise expose only its canonical published item in the admin list.
   const identities = baselineRecords.filter(source => sourceIdentity(source).kind === kind)
     .map(sourceIdentity).filter(identity => !(
-      kind==='equipment' && retiredDawnSourceIds.has(identity.id) &&
-      edits.has(retiredDawnSourceIds.get(identity.id)) && !draftMap.get(identity.id)?.is_dirty
+      kind==='equipment' && retiredEquipmentSourceIds.has(identity.id) &&
+      edits.has(retiredEquipmentSourceIds.get(identity.id)) && !draftMap.get(identity.id)?.is_dirty
     )).concat(allocations.results.map(skillKind ? normalizeSkillIdentity : normalizeIdentity));
   const results = [];
   for (const identity of identities) {
