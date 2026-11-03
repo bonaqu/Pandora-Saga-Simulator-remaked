@@ -181,3 +181,77 @@ test('equipment hover card uses in-game inspired dark legible sections while pre
   await page.keyboard.press('Escape');
   expect(await page.evaluate(()=>JSON.stringify([EquipData,SoulData,Store()]))).toBe(before);
 });
+
+test('large equipment results avoid eagerly calculating off-screen item previews', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(() => {
+    const adapter = PandoraRemaked.adapter;
+    window.originalPreviewReader = adapter.readItemDetails;
+    window.previewReadCount = 0;
+    adapter.readItemDetails = function () {
+      window.previewReadCount += 1;
+      return window.originalPreviewReader.apply(this, arguments);
+    };
+  });
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
+  const results = page.locator('[data-remaked-picker-panel] [data-remaked-search-result]');
+  const total = await results.count();
+  expect(total).toBeGreaterThan(30);
+  const originalCalls = await page.evaluate(() => window.previewReadCount);
+  // Opening and rendering a full list must not calculate every hidden card.
+  expect(originalCalls).toBeLessThan(5);
+  const first = page.locator('[data-remaked-picker-panel] [data-remaked-search-row]').filter({
+    has: page.locator('details')
+  }).first();
+  await first.locator('summary').click();
+  await expect(first.locator('.remaked-item-title')).toBeVisible();
+  const afterOpen = await page.evaluate(() => window.previewReadCount);
+  expect(afterOpen).toBe(originalCalls + 1);
+
+  await first.locator('details').evaluate(node => { node.open = false; });
+  await expect(first.locator('details')).not.toHaveAttribute('open', '');
+  await first.locator('details').evaluate(node => { node.open = true; });
+  await expect(first.locator('.remaked-item-title')).toBeVisible();
+  expect(await page.evaluate(() => window.previewReadCount)).toBe(afterOpen);
+
+  await page.locator('[data-remaked-picker-panel] [data-remaked-search-query]').fill('nonexistent-unique-item-12345');
+  await expect(results).toHaveCount(0);
+  expect(await page.evaluate(() => window.previewReadCount)).toBe(afterOpen);
+  await page.locator('[data-remaked-picker-panel] [data-remaked-search-query]').fill('');
+  await expect(results).toHaveCount(total);
+  // Refreshing the list still must not eagerly recalculate hidden details.
+  expect(await page.evaluate(() => window.previewReadCount)).toBe(afterOpen);
+});
+
+test('Soul search uses lazy previews without altering socket selection or original build', async ({ page }) => {
+  await page.goto('/');
+  const picked = await page.evaluate(() => {
+    const targets = PandoraRemaked.adapter.listSoulTargets();
+    return targets.length ? targets[0] : null;
+  });
+  if (!picked) {
+    // Empty Soul sockets are covered in search-builds.spec.mjs; this test
+    // observes a compatible socket only where the native engine exposes it.
+    return;
+  }
+  const current = await page.evaluate(() => PandoraRemaked.adapter.serialize());
+  await page.evaluate(() => {
+    const adapter = PandoraRemaked.adapter;
+    const original = adapter.readItemDetails;
+    window.soulPreviewCalls = 0;
+    adapter.readItemDetails = function (kind) {
+      if (kind === 'soul') window.soulPreviewCalls += 1;
+      return original.apply(this, arguments);
+    };
+  });
+  await page.evaluate(target => PandoraRemaked.search.openSoulSearch(target), picked);
+  const rows = page.locator('[data-remaked-search-row]').filter({ has: page.locator('details') });
+  await expect(rows.first()).toBeVisible();
+  expect(await page.evaluate(() => window.soulPreviewCalls)).toBe(0);
+  const first = rows.first();
+  await first.locator('summary').click();
+  await expect(first.locator('.remaked-item-title')).toBeVisible();
+  expect(await page.evaluate(() => window.soulPreviewCalls)).toBe(1);
+  await page.locator('.remaked-search-close').click();
+  expect(await page.evaluate(() => PandoraRemaked.adapter.serialize())).toBe(current);
+});
