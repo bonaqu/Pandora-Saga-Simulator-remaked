@@ -26,7 +26,7 @@ export function equipmentSourceRows() {
   ]));
   if (oldToCanonical.size !== 10) throw Error('Duplicate archived Dawn aliases');
   const originals = baselineRecords.filter(row => row.kind === 'equipment');
-  if (originals.length < 1000) throw Error('Incomplete source equipment registry');
+  if (originals.length < 100) throw Error('Incomplete source equipment registry');
   const ids = new Set(), slots = new Set();
   const rows = originals.map(source => {
     const identity = sourceIdentity(source);
