@@ -612,7 +612,12 @@
     };
   }
   function augment(snapshot, source) {
-    if (!snapshot || !Array.isArray(snapshot.records)) return snapshot;
+    if (!snapshot || !Array.isArray(snapshot.records) || snapshot.revision === 0) return snapshot;
+    // Do not rebase an older catalog onto a newer Dawn identity set. All ten
+    // published items must exist before overlaying the five verified gaps.
+    if (!entries.filter(function (entry) { return entry.publishedId; }).every(function (entry) {
+      return snapshot.records.some(function (row) { return row.id === entry.publishedId; });
+    })) return snapshot;
     var rows = snapshot.records.map(function (record) {
       var entry = byPublishedId[record.id];
       if (!entry || record.kind !== 'equipment') return record;
