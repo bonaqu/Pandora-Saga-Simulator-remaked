@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.38 — 2026-11-03
+
+### For users
+
+- **Actionable comparison errors:** when a saved build cannot be compared, show whether A or B failed and distinguish unavailable game data, invalid saved data and calculation failures. Saved builds are not deleted.
+- **Older builds covered:** test two level-50 characters of different races, including older serialization formats.
+- **Invalid old codes:** malformed compressed build strings are rejected before the legacy decompressor can stall.
+
+### Development and technical changes
+
+- Distinguish each A/B preparation and calculation phase, retaining a bounded read-only local diagnostic without exposing build payloads. Preserve active character and local storage.
+- Add browser cases for two older level-50 builds across races, corrupt A/B payloads, catalog/network exceptions, native calculation errors and RU/EN messages.
+
 ## Modern 4.37 — 2026-11-03
 
 ### For users
