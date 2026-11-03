@@ -5,6 +5,7 @@ import { CatalogError, draftFromSource, validateDraft, compileRecord, showApprov
 import { baselineById, baselineRecords, categories, skillCategories, compatibilityLabels, sourceFingerprint, characterSourceFingerprint, sourceIdentity, firstNewIndex } from './catalog-baseline.mjs';
 import verifiedGear from '../../data/verified-racial-gear.v1.json' with { type: 'json' };
 import { jsonResponse } from './auth.mjs';
+import { formatItemDescription, formatItemDescriptionMap } from './item-description-format.mjs';
 
 const MAX_SNAPSHOT_BYTES = 900000;
 const encoder = new TextEncoder();
@@ -29,17 +30,19 @@ if(retiredEquipmentSourceIds.size!==41) throw Error('Invalid canonical racial/Da
 const publishedRacialDescriptions = new Map(verifiedGear.entries.filter(row =>
   row.publishedId).map(row => [row.publishedId, row]));
 function withVerifiedDescriptions(record, identity) {
-  const entry = publishedRacialDescriptions.get(identity?.id);
-  if (!entry || identity.kind !== 'equipment' ||
-      identity.category !== entry.category || identity.index !== entry.publishedIndex)
-    return record;
+  if (!record || !['equipment','soul'].includes(identity?.kind)) return record;
+  const entry = publishedRacialDescriptions.get(identity.id);
   const original = record.description || {}, description = {...original};
-  for (const [locale, source] of [['ru',entry.descriptionRu],['en',entry.descriptionEn]]) {
-    if (!String(description[locale] || '').trim() && typeof source === 'string' && source.trim())
-      description[locale] = source;
+  if (entry && identity.kind === 'equipment' &&
+      identity.category === entry.category && identity.index === entry.publishedIndex) {
+    for (const [locale, source] of [['ru',entry.descriptionRu],['en',entry.descriptionEn]]) {
+      if (!String(description[locale] || '').trim() && typeof source === 'string' && source.trim())
+        description[locale] = source;
+    }
   }
-  return description.ru === original.ru && description.en === original.en
-    ? record : {...record,description};
+  const formatted = formatItemDescriptionMap(description);
+  return formatted.ru === original.ru && formatted.en === original.en
+    ? record : {...record,description:formatted};
 }
 
 // Equipment baselines are now persisted as individual Cloudflare D1 records.
@@ -89,8 +92,8 @@ export async function publicEquipmentInventory(env) {
     for(const row of rows.results||[]){
       let source;try{source=JSON.parse(row.source_json)}catch{continue}
       const entry=localeSources.get(row.id);
-      if(entry && source?.option?.ru===entry.descriptionRu &&
-         source?.option?.en===entry.descriptionEn)localized++;
+      if(entry && source?.option?.ru===formatItemDescription(entry.descriptionRu,'ru') &&
+         source?.option?.en===formatItemDescription(entry.descriptionEn,'en'))localized++;
     }
   }
   return jsonResponse({ok:true,schemaVersion:1,expected,stored,aliases,
@@ -232,7 +235,9 @@ export async function publicCatalog(request, env) {
       snapshot = { version: revision, impactVersion: row.impact_version, entries: JSON.parse(row.snapshot_json) };
     }
   }
-  return jsonResponse({ ok: true, schemaVersion: 1, sourceFingerprint, characterSourceFingerprint, revision: snapshot.version, impactRevision: snapshot.impactVersion, records: snapshot.entries.map(entry => requested === null ? withVerifiedDescriptions(compileEntry(entry), entry.identity) : compileEntry(entry)) });
+  return jsonResponse({ ok: true, schemaVersion: 1, sourceFingerprint, characterSourceFingerprint, revision: snapshot.version, impactRevision: snapshot.impactVersion, records: snapshot.entries.map(entry => requested === null
+    ? withVerifiedDescriptions(compileEntry(entry), entry.identity)
+    : { ...compileEntry(entry), description: entry.edit?.description || {} }) });
 }
 
 async function detail(env, id) {
