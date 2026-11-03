@@ -668,15 +668,16 @@
 
       var name = document.createElement('div');
       name.className = 'remaked-build-row-name';
+      var nameLabel = document.createElement('span');
+      nameLabel.textContent = build.name;
+      nameLabel.title = build.name;
+      name.appendChild(nameLabel);
       if (build.migrationReport?.length) {
         var report = document.createElement('details');
         var caption = document.createElement('summary'); caption.textContent = t('builds.migration.title');
         report.appendChild(caption);
         var text = document.createElement('p'); text.textContent = migrationText(build.migrationReport); report.appendChild(text);
         name.appendChild(report);
-      } else {
-        name.textContent = build.name;
-        name.title = build.name;
       }
       row.appendChild(name);
 
