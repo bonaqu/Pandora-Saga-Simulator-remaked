@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from scripts.build_pages import build_pages, _materialize_modern_astir_rules, _materialize_modern_astir_registry, _materialize_modern_guild_resistance, _materialize_release_metadata, _read_latest_release, _read_ui_version
+from scripts.build_pages import build_pages, _materialize_modern_astir_rules, _materialize_modern_astir_registry, _materialize_modern_guild_resistance, _materialize_modern_weapon_type_fixes, _materialize_release_metadata, _read_latest_release, _read_ui_version
 from scripts.localization_catalog import load_migrated_catalogs as load_editable_catalogs
 from scripts.localization_catalog import load_migrated_catalogs
 from scripts.sync_localized_changelogs import render as render_changelog
@@ -283,6 +283,30 @@ class BuildPagesTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 _materialize_modern_guild_resistance(root, output)
 
+
+    def test_modern_weapon_categories_use_alternatives_without_changing_archive(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary) / "repo"
+            source = pathlib.Path(__file__).resolve().parents[1] / "js/calc.js"
+            (root / "js").mkdir(parents=True)
+            shutil.copy2(source, root / "js/calc.js")
+            output = root / "_site"
+            (output / "js").mkdir(parents=True)
+            shutil.copy2(source, output / "js/calc.js")
+            original = source.read_bytes()
+            _materialize_modern_weapon_type_fixes(root, output)
+            modern = (output / "js/calc.js").read_text(encoding="utf-8")
+            self.assertIn("(tmp[6] == 0 || tmp[6] == 2 || tmp[6] == 4 || tmp[6] == 6 || tmp[6] == 10 || tmp[6] == 12)", modern)
+            self.assertIn("(tmp[6] == 1 || tmp[6] == 3 || tmp[6] == 5 || tmp[6] == 7 || tmp[6] == 8 || tmp[6] == 9 || tmp[6] == 11 || tmp[6] == 13)", modern)
+            self.assertIn("(tmp[6] == 3 || tmp[6] == 5)", modern)
+            self.assertNotIn("tmp[6] == 0 && tmp[6] == 2", modern)
+            self.assertNotIn("tmp[6] == 1 && tmp[6] == 3", modern)
+            self.assertNotIn("tmp[6] == 3 && tmp[6] == 5", modern)
+            self.assertEqual(source.read_bytes(), original)
+            self.assertEqual((root / "js/calc.js").read_bytes(), original)
+            (root / "js/calc.js").write_text("corrupted source", encoding="utf-8")
+            with self.assertRaises(ValueError):
+                _materialize_modern_weapon_type_fixes(root, output)
 
     def test_astir_set_bonuses_absent_only_from_modern_bundle(self):
         with tempfile.TemporaryDirectory() as temporary:
