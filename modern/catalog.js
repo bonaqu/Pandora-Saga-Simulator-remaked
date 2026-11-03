@@ -598,8 +598,27 @@
 
   async function prepareCurrentPayload(payload) {
     var parsed = unpackPayload(payload), target = Math.max(revision, headRevision);
+    var usingCachedCatalog = false;
     if (location.origin === 'https://bonaqu.github.io') {
-      var current = await fetchSnapshot(null, { networkOnly: true }); target = current.revision;
+      try {
+        var current = await fetchSnapshot(null, { networkOnly: true });
+        target = current.revision;
+      } catch (networkError) {
+        // Loading/comparing existing builds must also work without the Worker.
+        // Use the last validated cached head or an already cached revision,
+        // but never silently downgrade a saved build to older game data.
+        usingCachedCatalog = true;
+        try {
+          target = (await fetchSnapshot(null)).revision;
+        } catch {
+          target = Math.max(revision, parsed.revision);
+          await fetchSnapshot(target);
+        }
+        if (target < parsed.revision) {
+          target = parsed.revision;
+          await fetchSnapshot(target);
+        }
+      }
     } else {
       target = Math.max(target, parsed.revision);
       await fetchSnapshot(target);
@@ -608,7 +627,9 @@
     if (parsed.revision !== target && !snapshots[parsed.revision]) {
       try { await fetchSnapshot(parsed.revision); } catch { /* No historical calculation fallback. */ }
     }
-    return migratePayload(payload, target === 0 ? sourceSnapshot() : snapshots[target]);
+    var migrated = migratePayload(payload, target === 0 ? sourceSnapshot() : snapshots[target]);
+    migrated.usingCachedCatalog = usingCachedCatalog;
+    return migrated;
   }
 
   function refreshAvailability() {
