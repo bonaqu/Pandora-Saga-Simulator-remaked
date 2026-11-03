@@ -91,7 +91,7 @@ jobs:
           const rows=await response.json();
           if(!response.ok||rows.ok!==true||rows.schemaVersion!==1||
               !Number.isInteger(rows.expected)||rows.expected<100||
-              rows.stored!==rows.expected||rows.aliases!==10||rows.complete!==true)
+              rows.stored!==rows.expected||rows.aliases!==41||rows.complete!==true)
             throw new Error('Cloudflare D1 equipment inventory incomplete: '+JSON.stringify(rows));
           console.log('D1 source equipment registered: '+rows.stored+', canonical archived aliases: '+rows.aliases);
           NODE
