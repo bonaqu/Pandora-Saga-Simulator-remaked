@@ -1,5 +1,27 @@
 # Changelog
 
+## Modern 4.38 — диагностика ошибок сравнения сохранённых билдов, 2026-11-03
+
+<!-- release-notes:user:ru -->
+- **Понятная ошибка сравнения:** если один из билдов не загружается, указывается, какой именно (A или B), и причина различается: данные игры, некорректное сохранение или ошибка расчёта. Билды при этом не удаляются.
+- **Проверка старых сохранений:** расширены тесты сравнения двух персонажей 50-го уровня разных рас, включая сохранения раннего формата.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **Actionable comparison errors:** when a saved build cannot be compared, show whether A or B failed and distinguish unavailable game data, invalid saved data and calculation failures. Saved builds are not deleted.
+- **Older builds covered:** test two level-50 characters of different races, including older serialization formats.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Стадии подготовки и вычисления A/B теперь различимы; последняя локальная диагностика доступна без раскрытия сохранённого кода билда. Существующие проверки неизменности активного персонажа и localStorage сохранены.
+- Добавлены браузерные регрессии старых билдов 50-го уровня, некорректных кодов A/B, ошибок каталога и расчёта, русской и английской диагностики.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Distinguish each A/B preparation and calculation phase, retaining a bounded read-only local diagnostic without exposing build payloads. Preserve active character and local storage.
+- Add browser cases for two older level-50 builds across races, corrupt A/B payloads, catalog/network exceptions, native calculation errors and RU/EN messages.
+<!-- /admin-notes:en -->
+
 ## Modern 4.37 — надёжность сохранённых билдов и сравнения, 2026-11-03
 
 <!-- release-notes:user:ru -->
