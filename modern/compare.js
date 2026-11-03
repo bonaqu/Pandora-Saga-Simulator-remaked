@@ -236,10 +236,16 @@
       metaB.textContent = metadataText(buildB, projectionB);
       renderTable(projectionA, projectionB);
       setComparisonVisible(true);
-      setStatus(migratedA?.usingCachedCatalog
-        ? t('compare.cachedCatalog', null, 'Using cached game data; the latest server revision could not be checked.')
-        : t('compare.deltaHelp', null, 'Δ shows Build B minus Build A. Direction is informational only.'),
-      migratedA?.usingCachedCatalog ? 'warning' : 'ready');
+      // Salvage two valid records from a damaged collection for read-only
+      // comparison, but never present it as a fully healthy saved library.
+      var storageState = validBuilds();
+      var damaged = storageState.error?.code === 'corrupt-entries';
+      setStatus(damaged
+        ? t('builds.damagedIgnored', null, 'Some damaged saved builds were ignored.')
+        : migratedA?.usingCachedCatalog
+          ? t('compare.cachedCatalog', null, 'Using cached game data; the latest server revision could not be checked.')
+          : t('compare.deltaHelp', null, 'Δ shows Build B minus Build A. Direction is informational only.'),
+      damaged || migratedA?.usingCachedCatalog ? 'warning' : 'ready');
     } catch (error) {
       if (request !== evaluationRequest || overlay?.hidden) return;
       setComparisonVisible(false);
@@ -257,11 +263,25 @@
     populateSelect(selectA, builds, previousA);
     populateSelect(selectB, builds, previousB);
 
+    // SecurityError, malformed collection, unsupported engine/schema, etc.
+    // cannot be diagnosed as "no builds": those records may still exist.
+    if (!listed.ok && listed.error?.code !== 'corrupt-entries') {
+      emptyState.hidden = false;
+      emptyState.textContent = t('builds.storageUnavailable',
+        {code:listed.error?.code || 'unavailable'}, 'Saved builds are unavailable.');
+      setComparisonVisible(false);
+      setStatus(t('builds.storageReadFailed', null, 'Saved build storage could not be read.'), 'error');
+      return;
+    }
+
     if (builds.length < 2) {
       emptyState.hidden = false;
       emptyState.textContent = t('compare.needTwoEmpty', null, 'Save at least two named builds before comparing them.');
       setComparisonVisible(false);
-      setStatus(t('compare.needTwoStatus', null, 'Compare Builds needs at least two saved builds.'), 'ready');
+      setStatus(listed.error?.code === 'corrupt-entries'
+        ? t('builds.damagedIgnored', null, 'Some damaged saved builds were ignored.')
+        : t('compare.needTwoStatus', null, 'Compare Builds needs at least two saved builds.'),
+        listed.error?.code === 'corrupt-entries' ? 'warning' : 'ready');
       return;
     }
 
@@ -455,8 +475,16 @@
     identicalFields: identicalFields
   };
 
-  window.addEventListener('pandora-remaked:localechange', function () {
+  function refreshOpenComparison() {
     if (overlay && !overlay.hidden) refreshChoices();
+  }
+
+  window.addEventListener('pandora-remaked:localechange', refreshOpenComparison);
+  // The same-tab custom event is dispatched only after a successful named
+  // build write. Other tabs use the browser's native storage event.
+  window.addEventListener('pandora-remaked:buildschange', refreshOpenComparison);
+  window.addEventListener('storage', function (event) {
+    if (event.key === null || event.key === store?.BUILDS_KEY) refreshOpenComparison();
   });
 
   if (document.readyState === 'loading') {

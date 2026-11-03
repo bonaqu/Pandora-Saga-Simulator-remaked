@@ -227,3 +227,56 @@ test('every Modern build-store operation leaves legacy localStorage.file untouch
 
   expect(await page.evaluate(() => localStorage.getItem('file'))).toBe('LEGACY-SENTINEL');
 });
+
+test('duplicate build IDs are quarantined without deleting valid siblings or legacy data',async({page})=>{
+  await openModern(page);
+  const result=await page.evaluate(()=>{
+    const store=PandoraRemaked.buildStore,payload=PandoraRemaked.adapter.serialize();
+    localStorage.setItem('file','LEGACY-DO-NOT-TOUCH');
+    const a=store.saveBuild('Original A',payload);
+    const b=store.saveBuild('Original B',payload);
+    if(!a.ok||!b.ok)throw Error('Fixture save failed');
+    const saved=JSON.parse(localStorage.getItem(store.BUILDS_KEY));
+    saved.builds.splice(1,0,{...saved.builds[0],name:'Duplicate A ID'});
+    const original=JSON.stringify(saved);localStorage.setItem(store.BUILDS_KEY,original);
+    const listed=store.listBuilds();
+    const rejectedMutation=store.saveBuild('Do not silently fix',payload);
+    return {listed,rejectedMutation,stored:localStorage.getItem(store.BUILDS_KEY),
+      original,legacy:localStorage.getItem('file'),ids:[a.build.id,b.build.id]};
+  });
+  expect(result.listed.ok).toBe(false);
+  expect(result.listed.error).toMatchObject({code:'corrupt-entries',invalidCount:1});
+  expect(result.listed.builds.map(build=>build.id)).toEqual(result.ids);
+  expect(result.listed.builds.map(build=>build.name)).toEqual(['Original A','Original B']);
+  expect(result.rejectedMutation).toMatchObject({ok:false,error:{code:'corrupt-entries'}});
+  expect(result.stored).toBe(result.original);
+  expect(result.legacy).toBe('LEGACY-DO-NOT-TOUCH');
+});
+
+test('successful build writes notify comparison once, failed quota writes never announce changes',async({page})=>{
+  await openModern(page);
+  const events=await page.evaluate(()=>{
+    const store=PandoraRemaked.buildStore,payload=PandoraRemaked.adapter.serialize();
+    let notifications=0;
+    window.addEventListener('pandora-remaked:buildschange',()=>notifications++);
+    const first=store.saveBuild('Event A',payload);
+    if(!first.ok)throw Error('Fixture save failed');
+    const twin=store.duplicateBuild(first.build.id);
+    const renamed=store.updateBuild(first.build.id,{name:'Event A renamed'});
+    const deleted=store.deleteBuild(twin.build.id);
+    const beforeFailure=notifications,previous=localStorage.getItem(store.BUILDS_KEY);
+    const native=Storage.prototype.setItem;
+    Storage.prototype.setItem=function(key,value){
+      if(key===store.BUILDS_KEY)throw new DOMException('Quota reached','QuotaExceededError');
+      return native.call(this,key,value);
+    };
+    let failed;
+    try {failed=store.saveBuild('Should fail',payload);}
+    finally {Storage.prototype.setItem=native;}
+    return {first:first.ok,twin:twin.ok,renamed:renamed.ok,deleted:deleted.ok,
+      beforeFailure,afterFailure:notifications,failed,previous,after:localStorage.getItem(store.BUILDS_KEY)};
+  });
+  expect(events).toMatchObject({first:true,twin:true,renamed:true,deleted:true,
+    beforeFailure:4,afterFailure:4,failed:{ok:false,error:{code:'quota-exceeded'}}});
+  expect(events.after).toBe(events.previous);
+});
