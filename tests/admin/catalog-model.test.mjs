@@ -28,8 +28,8 @@ test('all five real Dawn female identities are editable without losing source me
     assert.equal(baselineById.get(source.id), source);
     assert.deepEqual(source.compatibility_flags.slice(0, 2), [0, 1]);
     assert.equal(source.compatibility_flags.slice(2, 8).reduce((a, b) => a + b, 0), 1);
-    assert.match(source.name.ru, /\\(ж\\)$/);
-    assert.match(source.name.en, /\\(w\\)$/);
+    assert.match(source.name.ru, /\(ж\)$/);
+    assert.match(source.name.en, /\(w\)$/);
     const before = JSON.stringify(source), draft = draftFromSource(source, 'equipment');
     const record = compileRecord(validateDraft(draft, identity), identity, source);
     assert.equal(record.calculationCode, source.calculation_code);
