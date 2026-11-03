@@ -1,8 +1,9 @@
 (function () {
   'use strict';
   var namespace = window.PandoraRemaked = window.PandoraRemaked || {};
-  // Presentation-only formatting of compact in-game descriptions. No numeric
-  // code, canonical item name or source data is rewritten or persisted.
+  // Presentation-only fallback for unedited archival source strings. Formatted
+  // RU/EN descriptions now also live in Cloudflare D1; the browser shares
+  // the canonical editor formatter without changing numeric game mechanics.
   var labels = '(?:ПРВ|СИЛ|ВЫН|ЛВК|ИНТ|ДУХ|СД|ОЗ|ОМ|STR|STA|AGI|DEX|INT|SPI|HP|MP|LP|PRV|ATK|DEF|Сопротивляемость[^+\\-\\n]{0,60}|Шанс критической атаки|Эффективность лечащих заклинаний|Уклонение от критической атаки|(?:Stun|Knockdown|Fire|Ice|Lightning|Poison|Charm|Light|Dark|Magic) Resistance|(?:Physical|Magic) Attack|(?:Attack|Movement|Casting) Speed)';
   var boundary = new RegExp('([^\\s,;:\\n])(?=' + labels + '\\s*[+\\-]\\d)', 'g');
   var sections = /([^\s\n])(?=(?:За каждую\s+единицу|За каждые\s+\d+|При улучшении на\s*\+?\d+|Per every\s+\d+|For every\s+\d+|When enhanced|Скорость атаки\s*[+\-]\d|Скорость применения умений\s*[+\-]\d|Атака в спину\s*[+\-]\d|Точность\s*[+\-]\d|Сила атаки\s*[+\-]\d|Магическая атака\s*[+\-]\d|Время перезарядки умений\s*[+\-]\d|Получаемый физический урон\s*[+\-]\d|Получаемый магический урон\s*[+\-]\d))/g;
@@ -17,7 +18,12 @@
   var englishAdjacentStats = /([0-9%])(?=(?:Skill Cooldown|Attack Speed|Healing Spell Effectiveness|Skill Failure Resistance|Knockdown Resistance|Stun Resistance|Sleep Resistance)\s*[+\-]\d)/g;
   var englishSentenceStarts = /([.!?])(?=(?:A|An|The|This|Those|These|It)\s+[A-Za-z])/g;
   function lines(value) {
-    return String(value || '')
+    var raw = String(value || '');
+    var locale = /[А-ЯЁа-яё]/.test(raw) ? 'ru' : 'en';
+    // This is the same formatter as the D1 inventory/editor. It is generated
+    // from the Worker module at build time, so browser and admin cannot drift.
+    var canonical = namespace.itemDescriptionFormat?.formatItemDescription(raw, locale) || raw;
+    return canonical
       .replace(/\r\n?/g, '\n')
       .replace(/<br\s*\/?\s*>/gi, '\n')
       .replace(sentences, '$1\n')
