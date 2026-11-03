@@ -121,7 +121,10 @@ test('admin lists separate Dawn female equipment and edits its item name without
   await expect(title).toHaveValue('Жилет зари для эльфа (ж)');
   await title.fill('Жилет рассвета для эльфа (ж)');
   await page.getByRole('button', { name: 'Сохранить черновик', exact: true }).click();
-  await expect(page.locator('.catalog-editor')).toContainText('Черновик сохранён');
+  // The save notification belongs to the global admin status, not inside
+  // the editor form. Assert the real D1 write and the loaded draft marker.
+  await expect.poll(() => sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id = ?').get(id)?.payload_json || '').not.toBe('');
+  await expect(page.locator('.catalog-editor')).toContainText('ЧЕРНОВИК 1');
   const saved = JSON.parse(sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id = ?').get(id).payload_json);
   expect(saved.names.ru).toBe('Жилет рассвета для эльфа (ж)');
   page.on('dialog', dialog => dialog.accept());
