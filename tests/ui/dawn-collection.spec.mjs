@@ -123,7 +123,7 @@ test('D1-edited Dawn names and explicit races beat historical client placeholder
       female: augmented.records.find(row => row.id === 'modern.equipment.dawn-os-' + female.id)
     };
   });
-  expect(result.count).toBe(result.sourceCount + 4);
+  expect(result.count).toBe(result.sourceCount + 9); // four Dawn + five regular racial variants
   expect(result.edited.names.ru).toBe('Название, которое изменил администратор');
   expect(result.edited.compatibility.slice(2, 8)).toEqual([0, 0, 0, 0, 0, 1]);
   expect(result.female.names.ru).toBe('Ручное название (ж)');
