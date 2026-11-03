@@ -666,7 +666,18 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             self.assertEqual(parsed_locales["tw"], editable.ui_traditional_chinese)
             game_terms = (output / "modern" / "game-terms.js").read_text(encoding="utf-8")
             parsed_game = json.loads(game_terms.split(" = ", 1)[1].removesuffix(";\n"))
-            self.assertEqual(parsed_game["ru"], game_russian)
+            expected_ru = dict(game_russian)
+            expected_en = dict(editable.game_english)
+            verified = json.loads((root / "data" / "verified-racial-gear.v1.json").read_text(encoding="utf-8"))
+            for row in verified["entries"]:
+                term = f"equipment.{row['category']}.{row['index']}"
+                if not expected_ru.get(term):
+                    expected_ru[term] = row["ru"]
+                if not expected_en.get(term):
+                    expected_en[term] = row["en"]
+            self.assertEqual(parsed_game["ru"], expected_ru)
+            self.assertEqual(parsed_game["en"], expected_en)
+            self.assertTrue((output / "modern/verified-racial-gear.js").exists())
             self.assertFalse((output / "localization" / "translations.xlsx").exists())
 
     def test_recovers_archived_codecs_only_in_published_runtime(self):
