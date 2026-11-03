@@ -7,7 +7,7 @@ import { adminCatalog, publicCatalog, publicCatalogHead } from '../../admin-api/
 import { draftFromSource, validateDraft } from '../../admin-api/src/catalog-model.mjs';
 import { currentRacialDrafts } from '../../admin-api/src/current-racial-data.mjs';
 import { currentActiveProfileDrafts } from '../../admin-api/src/current-active-profiles.mjs';
-import { baselineById, sourceIdentity, editableDawnRecords } from '../../admin-api/src/catalog-baseline.mjs';
+import { baselineById, sourceIdentity, editableDawnRecords, editableRacialRecords } from '../../admin-api/src/catalog-baseline.mjs';
 import { previewReviewedPumpkinSoul } from '../../scripts/lib/reviewed-soul-preview.mjs';
 
 const origin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
@@ -349,8 +349,8 @@ test('racial and passive current references explain retained mechanics, not fabr
 
 test('baseline is complete, searchable, read-only and never appears as a fabricated published override', async () => {
   const { env } = fixture();
-  const meta = await call(env, 'meta'); assert.equal(meta.sourceCount, 1561 + editableDawnRecords.length);
-  const equipment = await call(env, 'catalog?kind=equipment'); assert.equal(equipment.count, 1120 + editableDawnRecords.length); assert.equal(equipment.items.length, 40);
+  const meta = await call(env, 'meta'); assert.equal(meta.sourceCount, 1561 + editableDawnRecords.length + editableRacialRecords.length);
+  const equipment = await call(env, 'catalog?kind=equipment'); assert.equal(equipment.count, 1120 + editableDawnRecords.length + editableRacialRecords.length); assert.equal(equipment.items.length, 40);
   const souls = await call(env, 'catalog?kind=soul'); assert.equal(souls.count, 184);
   const classes = await call(env, 'catalog?kind=class'); assert.equal(classes.count, 28);
   const racial = await call(env, 'catalog?kind=racial'); assert.equal(racial.count, 18);
