@@ -1,5 +1,23 @@
 # Changelog
 
+## Modern 4.31 — короткие метки пола экипировки, 2026-11-03
+
+<!-- release-notes:user:ru -->
+- **Короткие метки пола на экипировке:** вещи с ограничением по полу теперь отмечены «(м)» или «(ж)» прямо в названиях. Это касается коллекции Зари и других таких предметов. Отдельный выбор пола персонажа не нужен.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **Compact gender markers on equipment:** male- and female-specific items now show “(m)” or “(w)” in their names, including the Dawn collection and other restricted gear. No character gender selector is required.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Метки пола вычисляются только для отображения из оригинальных флагов экипировки и проверенной карты вариантов Зари. Преобразование сводит «(М)/(Ж)» и английские длинные обозначения к компактным суффиксам, не изменяя значения селектов, ID предметов, сохранённые билды, D1 или Legacy.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Display-only gender markers read equipment compatibility flags and verified Dawn variant IDs. Normalize existing RU markers and long English “Male Elf” / “Female Human” names without modifying select values, item IDs, saved builds, D1 or Legacy.
+<!-- /admin-notes:en -->
+
 ## Modern 4.30 — исправления билдов и экипировка Зари, 2026-11-03
 
 <!-- release-notes:user:ru -->
