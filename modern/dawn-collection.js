@@ -594,8 +594,16 @@
         level: row.level, sockets: row.sockets };
     });
   var newIds = entries.filter(function (entry) { return Number.isInteger(entry.newIndex); }).concat(regularVariants);
+  var verifiedItems = window.PandoraRemakedVerifiedRacialGear?.entries || [];
   var byPublishedId = Object.create(null);
   entries.forEach(function (entry) { if (entry.publishedId) byPublishedId[entry.publishedId] = entry; });
+  // 31 regular race-outfit variants also already exist in production D1. The
+  // simulator previously added those same server identities through Legacy,
+  // including five synthetic female rows, producing multiple visible copies.
+  verifiedItems.forEach(function (entry) {
+    if (entry.publishedId && !byPublishedId[entry.publishedId])
+      byPublishedId[entry.publishedId] = entry;
+  });
   function compatible(entry, base) {
     if (!Array.isArray(base) || base.length !== 36) throw new Error('Invalid Dawn compatibility source: ' + entry.id);
     var result = base.slice();
@@ -629,17 +637,19 @@
   // equal numerical effects (different items can share stats).
   function canonicalForLegacy(category, index, snapshot) {
     if (!snapshot || snapshot.revision === 0 || !Array.isArray(snapshot.records)) return null;
-    var entry = entries.find(function (candidate) {
+    var entry = verifiedItems.find(function (candidate) {
       return candidate.publishedId && candidate.category === Number(category) &&
-        candidate.templateIndex === Number(index);
+        (candidate.newIndex === undefined ? candidate.templateIndex : candidate.newIndex) === Number(index);
     });
     if (!entry) return null;
     // Never silently retire a separately admin-published legacy item.
     if (snapshot.records.some(function (row) {
-      return row.id === 'equipment.' + category + '.' + index;
+      return row.id === (entry.newIndex !== undefined
+        ? entry.recordId : 'equipment.' + category + '.' + index);
     })) return null;
     return snapshot.records.find(function (row) {
-      return row.id === entry.publishedId && row.kind === 'equipment' && !row.disabled;
+      return row.id === entry.publishedId && row.kind === 'equipment' &&
+        row.category === entry.category && row.index === entry.publishedIndex && !row.disabled;
     }) || null;
   }
   function augment(snapshot, source) {
@@ -656,7 +666,7 @@
       // These published Dawn UUIDs have exact counterparts in the archived
       // game. Keep the OLD Japanese/Taiwanese item names, never synthesize new
       // translations from English. Explicit published translations still win.
-      if (record.names && source) {
+      if (record.names && source && entry.newIndex === undefined) {
         var names = Object.assign({}, record.names), supplemented = false;
         [['jp', 0], ['tw', 2]].forEach(function (pair) {
           var old = source[pair[1]]?.[entry.category]?.[entry.templateIndex]?.[0];
