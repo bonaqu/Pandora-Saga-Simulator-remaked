@@ -2,6 +2,20 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.30 — 2026-11-03
+
+### For users
+
+- **Fixed several weapon attack conditions:** racial bonuses now match alternative weapon categories rather than requiring a weapon to belong to all incompatible categories at once.
+- **More reliable saved builds and comparison:** validated cached game data works when the catalog server is unreachable, stale comparisons no longer overwrite new choices, and save names and migration reports remain visible.
+- **Dawn collection:** connected 40 verified equipment variants from the current game catalog. Five previously merged female variants have separate Modern records; original effects and race restrictions are preserved. The archived Legacy calculator is unchanged.
+
+### Development and technical changes
+
+- Fix three impossible `tmp[6]` category conjunctions only in generated Modern `calc.js`; the archived Legacy source stays byte-identical. Add regression coverage.
+- Cross-check 40 Dawn source IDs against live RU/EN Pandora Saga OS on 2026-11-03 and catalog revision 94. Model five previously merged female variants under distinct client IDs, reusing corresponding historical calculation codes. Correct race flags for ten published server items in the client projection only; keep D1 and past revisions unchanged.
+- Use pinned cached revisions when Worker is unreachable; prevent stale asynchronous compare results; guard absent build patches and preserve migration reports upon duplication. Character gender is not stored, so automated gender compatibility remains out of scope.
+
 ## Modern 4.29 — 2026-10-29
 
 ### For users
