@@ -385,7 +385,8 @@
     // hydrated only when someone opens a disclosure, not for every result.
     // This avoids hundreds of synchronous calculator projections during
     // searching and typing in large equipment/Soul lists.
-    if (kind === 'equipment' && Number(value) % 10000 === 0) return row;
+    if ((kind === 'equipment' && Number(value) % 10000 === 0) ||
+        (kind === 'soul' && Number(value) === 0)) return row;
     var details = element('details', 'remaked-item-preview');
     var summary = element('summary');
     if (i18n && typeof i18n.bindAttribute === 'function') i18n.bindAttribute(summary, 'aria-label', 'search.details');
