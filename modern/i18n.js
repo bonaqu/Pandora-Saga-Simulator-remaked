@@ -256,7 +256,25 @@
         'skill_detail.20.7.3': "Повышает сопротивление яду и тьме, но снижает сопротивление очарованию.",
         'skill_detail.21.7.3': "Повышает сопротивление очарованию, но снижает сопротивление яду и тьме."
       })
-    })
+    }),
+    en: Object.freeze({ ui: Object.freeze({
+      'compare.errorCatalog': 'Game data needed for {build} could not be loaded. Retry with an internet connection.',
+      'compare.errorInvalid': 'Saved data for {build} could not be read. Try loading it in Builds; keep a copy of its code.',
+      'compare.errorCalculation': 'Unable to calculate {build}. The saved build has not been overwritten.',
+      'compare.errorPrepare': 'Unable to prepare {build}. The saved build has not been overwritten.'
+    }) }),
+    jp: Object.freeze({ ui: Object.freeze({
+      'compare.errorCatalog': '{build} に必要なゲームデータを読み込めません。接続を確認して再試行してください。',
+      'compare.errorInvalid': '{build} の保存データを読み込めません。ビルド一覧からの読み込みを確認し、コードの控えを残してください。',
+      'compare.errorCalculation': '{build} を計算できません。保存データは上書きされていません。',
+      'compare.errorPrepare': '{build} を準備できません。保存データは上書きされていません。'
+    }) }),
+    tw: Object.freeze({ ui: Object.freeze({
+      'compare.errorCatalog': '無法載入 {build} 所需的遊戲資料。請確認網路連線並重試。',
+      'compare.errorInvalid': '無法讀取 {build} 的存檔。請從配裝管理嘗試載入並備份其代碼。',
+      'compare.errorCalculation': '無法計算 {build}。原始存檔未被覆寫。',
+      'compare.errorPrepare': '無法準備 {build}。原始存檔未被覆寫。'
+    }) })
   });
   var supported = Object.keys(catalogs).filter(function (locale) {
     return catalogs[locale] && typeof catalogs[locale] === 'object';
