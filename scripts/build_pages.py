@@ -48,6 +48,7 @@ REQUIRED_MODERN = (
     "modern/site-tooltips.js",
     "modern/adapter.js",
     "modern/catalog.js",
+    "modern/dawn-collection.js",
     "modern/catalog-text.js",
     "modern/identity-aliases.js",
     "modern/enhancement-effects.js",
@@ -127,6 +128,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/identity-aliases.js"></script>
 <script src="./modern/current-vitals-data.js"></script>
 <script src="./modern/current-vitals.js"></script>
+<script src="./modern/dawn-collection.js"></script>
 <script src="./modern/catalog.js"></script>
 <script src="./modern/enhancement-effects.js"></script>
 <script src="./modern/admin-entry.js"></script>
@@ -277,6 +279,38 @@ def _materialize_modern_guild_resistance(root: pathlib.Path, output: pathlib.Pat
             raise ValueError("cannot safely locate the guild resistance anchor in the Legacy calculator")
         original = original.replace(anchor, anchor + "\n        " + addition, 1)
     (output / "js" / "calc.js").write_text(original, encoding="utf-8")
+
+
+def _materialize_modern_weapon_type_fixes(root: pathlib.Path, output: pathlib.Path) -> None:
+    """Fix impossible weapon-kind conjunctions in Modern without rewriting Legacy 2.00.
+
+    A single tmp[6] cannot simultaneously equal several different weapon
+    categories. Keep the original weapon groupings and the race/class guards.
+    The untouched archival /legacy/ bundle remains a valid reference.
+    """
+    source = (root / "js" / "calc.js").read_text(encoding="utf-8-sig")
+    modern_path = output / "js" / "calc.js"
+    patched = modern_path.read_text(encoding="utf-8-sig")
+    groups = (
+        (0, 2, 4, 6, 10, 12),
+        (1, 3, 5, 7, 8, 9, 11, 13),
+        (3, 5),
+    )
+    for values in groups:
+        old = " && ".join(f"tmp[6] == {value}" for value in values)
+        # Parentheses are necessary: the surrounding job/race predicates
+        # are ANDed, whereas weapon categories are alternatives.
+        new = "(" + " || ".join(f"tmp[6] == {value}" for value in values) + ")"
+        if values == (3, 5):
+            # The shorter sequence also occurs *inside* the longer
+            # Gladiator group's conjunction. Anchor the Dwarf racial clause
+            # so we never turn a substring of another condition into a match.
+            prefix = "Status['Job'][0] == 2 && Status['Job'][1] == 1 && "
+            old, new = prefix + old, prefix + new
+        if source.count(old) != 1 or patched.count(old) != 1:
+            raise ValueError(f"Cannot safely patch Modern weapon categories: {values}")
+        patched = patched.replace(old, new, 1)
+    modern_path.write_text(patched, encoding="utf-8")
 
 
 def _materialize_modern_astir_rules(root: pathlib.Path, output: pathlib.Path) -> None:
@@ -691,6 +725,7 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
 
     _copy_runtime(root, output)
     _materialize_modern_guild_resistance(root, output)
+    _materialize_modern_weapon_type_fixes(root, output)
     _materialize_modern_astir_rules(root, output)
     _materialize_modern_assets(root, output)
     _materialize_current_class_vitals(root, output)

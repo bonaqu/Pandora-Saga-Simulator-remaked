@@ -1,5 +1,31 @@
 # Changelog
 
+## Modern 4.30 — исправления билдов и экипировка Зари, 2026-11-03
+
+<!-- release-notes:user:ru -->
+- **Исправлена атака с некоторыми типами оружия:** условия расовых бонусов теперь проверяют альтернативные категории оружия, а не невозможное совпадение всех категорий одновременно.
+- **Улучшены сохранение и сравнение билдов:** при недоступном сервере каталога используются ранее проверенные локальные данные, устаревшие результаты сравнения не перезаписывают новый выбор, а имена сохранений и отчёты переноса не теряются.
+- **Коллекция Зари:** подключены 40 подтверждённых вариантов экипировки из актуального игрового каталога. Пять женских вариантов получили отдельные записи в Modern; сохранены исторические эффекты и указаны правильные расы. Архивный Legacy не изменён.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **Fixed several weapon attack conditions:** racial bonuses now match alternative weapon categories rather than requiring a weapon to belong to all incompatible categories at once.
+- **More reliable saved builds and comparison:** validated cached game data works when the catalog server is unreachable, stale comparisons no longer overwrite new choices, and save names and migration reports remain visible.
+- **Dawn collection:** connected 40 verified equipment variants from the current game catalog. Five previously merged female variants have separate Modern records; original effects and race restrictions are preserved. The archived Legacy calculator is unchanged.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Исправление трёх невозможных проверок `tmp[6]` применяется исключительно при генерации Modern `calc.js`; историческая версия сохраняет прежний SHA. Добавлены проверки регрессии.
+- Аудит 40 ID коллекции Зари по живым RU/EN данным Pandora Saga OS от 2026-11-03 и опубликованному каталогу 94; отдельные клиентские записи для 12532, 14512, 14532, 15512, 15532 с расчётами исторических аналогов. Десять опубликованных серверных записей получают корректные расовые флаги в клиентской проекции без изменения D1. Старые ревизии остаются неизменными.
+- Для билдов реализовано безопасное чтение сохранённой ревизии при недоступном Worker, проверка актуальности асинхронного сравнения, защита пустого патча и сохранение отчёта при копировании. Пол персонажа в сохранении не моделируется; автоматическая проверка пола остаётся ограничением.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Fix three impossible `tmp[6]` category conjunctions only in generated Modern `calc.js`; the archived Legacy source stays byte-identical. Add regression coverage.
+- Cross-check 40 Dawn source IDs against live RU/EN Pandora Saga OS on 2026-11-03 and catalog revision 94. Model five previously merged female variants under distinct client IDs, reusing corresponding historical calculation codes. Correct race flags for ten published server items in the client projection only; keep D1 and past revisions unchanged.
+- Use pinned cached revisions when Worker is unreachable; prevent stale asynchronous compare results; guard absent build patches and preserve migration reports upon duplication. Character gender is not stored, so automated gender compatibility remains out of scope.
+<!-- /admin-notes:en -->
+
 ## Modern 4.29 — огненное оружие, 2026-10-29
 
 <!-- release-notes:user:ru -->

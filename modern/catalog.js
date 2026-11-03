@@ -41,6 +41,10 @@
     baselineClassCaps = window.Skill.P.map(function (row) { return row.slice(); });
     baselineSkills = cloneSkills(window.Skill.slice(0, 3));
   }
+  function augmentDawnSnapshot(snapshot) {
+    var dawn = window.PandoraRemakedDawnCollection;
+    return dawn && snapshot ? dawn.augment(snapshot, baselineEquipment || window.EquipData) : snapshot;
+  }
   function sourceRow(record) {
     return record.kind === 'equipment' ? baselineEquipment[0][record.category][record.index] : baselineSouls[0][record.index];
   }
@@ -419,7 +423,7 @@
   // Historical snapshots are read only as descriptions for the change report.
   function migratePayload(payload, snapshot) {
     var parsed = unpackPayload(payload);
-    snapshot = snapshot || snapshots[revision] || sourceSnapshot();
+    snapshot = augmentDawnSnapshot(snapshot || snapshots[revision] || sourceSnapshot());
     validate(snapshot);
     var csv = parsed.payload;
     if (csv.indexOf(',') === -1) csv = window.Base64.btou(window.RawDeflate.inflate(window.Base64.fromBase64(csv)));
@@ -598,8 +602,27 @@
 
   async function prepareCurrentPayload(payload) {
     var parsed = unpackPayload(payload), target = Math.max(revision, headRevision);
+    var usingCachedCatalog = false;
     if (location.origin === 'https://bonaqu.github.io') {
-      var current = await fetchSnapshot(null, { networkOnly: true }); target = current.revision;
+      try {
+        var current = await fetchSnapshot(null, { networkOnly: true });
+        target = current.revision;
+      } catch (networkError) {
+        // Loading/comparing existing builds must also work without the Worker.
+        // Use the last validated cached head or an already cached revision,
+        // but never silently downgrade a saved build to older game data.
+        usingCachedCatalog = true;
+        try {
+          target = (await fetchSnapshot(null)).revision;
+        } catch {
+          target = Math.max(revision, parsed.revision);
+          await fetchSnapshot(target);
+        }
+        if (target < parsed.revision) {
+          target = parsed.revision;
+          await fetchSnapshot(target);
+        }
+      }
     } else {
       target = Math.max(target, parsed.revision);
       await fetchSnapshot(target);
@@ -608,7 +631,9 @@
     if (parsed.revision !== target && !snapshots[parsed.revision]) {
       try { await fetchSnapshot(parsed.revision); } catch { /* No historical calculation fallback. */ }
     }
-    return migratePayload(payload, target === 0 ? sourceSnapshot() : snapshots[target]);
+    var migrated = migratePayload(payload, target === 0 ? sourceSnapshot() : snapshots[target]);
+    migrated.usingCachedCatalog = usingCachedCatalog;
+    return migrated;
   }
 
   function refreshAvailability() {
@@ -623,6 +648,7 @@
     });
   }
   function applySnapshot(snapshot, options) {
+    snapshot = augmentDawnSnapshot(snapshot);
     validate(snapshot); snapshot = structuredClone(snapshot); options = options || {};
     var equipment = cloneEquipment(baselineEquipment), souls = cloneSouls(baselineSouls), terms = Object.create(null);
     var classMods = baselineClassMods.map(function (row) { return row.slice(); });
@@ -875,7 +901,7 @@
     try {
       var response = await fetch(PUBLIC_API + (requested === null ? '' : '?revision=' + requested), { credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(4000) });
       check(response.ok, 'Catalog revision unavailable');
-      var snapshot = await response.json(); validate(snapshot);
+      var snapshot = augmentDawnSnapshot(await response.json()); validate(snapshot);
       check(requested === null || snapshot.revision === requested, 'Catalog revision mismatch');
       snapshots[snapshot.revision] = snapshot;
       if (requested === null) announceHead(snapshot.revision, snapshot.impactRevision);
@@ -889,6 +915,7 @@
       if (target === null) target = (await cached(-1))?.head;
       var offline = target === 0 ? sourceSnapshot() : target !== undefined ? await cached(target) : null;
       if (offline) {
+        offline = augmentDawnSnapshot(offline);
         validate(offline);
         check(requested === null || offline.revision === requested, 'Cached catalog revision mismatch');
         snapshots[offline.revision] = offline;

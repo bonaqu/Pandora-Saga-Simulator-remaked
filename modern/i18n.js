@@ -18,6 +18,7 @@
     ru: Object.freeze({
       ui: Object.freeze({
         'skills.adeptness': 'Изучено (ОЧ)',
+        'compare.cachedCatalog': 'Используются сохранённые игровые данные: актуальность каталога на сервере не удалось проверить.',
         'calculator.weaponRangeWithBonuses': 'Учтены базовая дальность оружия и настроенные бонусы (игровые единицы). Остальные эффекты могут быть не проверены.',
         'adminShell.catalogEffectOneHundredFiftySeven': 'Сопротивление безумию',
         'adminShell.catalogEffectOneHundredSixtyOne': 'Сопротивление болезни',

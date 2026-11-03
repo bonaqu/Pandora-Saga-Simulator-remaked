@@ -18,6 +18,7 @@
   var opener = null;
   var previousBodyOverflow = '';
   var initialized = false;
+  var evaluationRequest = 0;
   var differencesOnly = null, identicalState = null;
 
   function identicalFields(a, b) {
@@ -196,6 +197,7 @@
   }
 
   async function evaluateSelection() {
+    var request = ++evaluationRequest;
     if (!selectA || !selectB) return;
     var idA = selectA.value;
     var idB = selectB.value;
@@ -227,21 +229,26 @@
         payloadA = migratedA.payload;
         payloadB = namespace.catalog.migratePayload(payloadB, current).payload;
       }
-      if (selectA.value !== idA || selectB.value !== idB) return;
+      if (request !== evaluationRequest || overlay?.hidden || selectA.value !== idA || selectB.value !== idB) return;
       var projectionA = adapter.evaluateBuild(payloadA);
       var projectionB = adapter.evaluateBuild(payloadB);
       metaA.textContent = metadataText(buildA, projectionA);
       metaB.textContent = metadataText(buildB, projectionB);
       renderTable(projectionA, projectionB);
       setComparisonVisible(true);
-      setStatus(t('compare.deltaHelp', null, 'Δ shows Build B minus Build A. Direction is informational only.'), 'ready');
+      setStatus(migratedA?.usingCachedCatalog
+        ? t('compare.cachedCatalog', null, 'Using cached game data; the latest server revision could not be checked.')
+        : t('compare.deltaHelp', null, 'Δ shows Build B minus Build A. Direction is informational only.'),
+      migratedA?.usingCachedCatalog ? 'warning' : 'ready');
     } catch (error) {
+      if (request !== evaluationRequest || overlay?.hidden) return;
       setComparisonVisible(false);
       setStatus(t('compare.evaluateFailed', null, 'One of the saved builds could not be evaluated.'), 'error');
     }
   }
 
   function refreshChoices() {
+    ++evaluationRequest; // Retire any calculation based on an older selection/list.
     if (!selectA || !selectB) return;
     var previousA = selectA.value;
     var previousB = selectB.value;
@@ -268,6 +275,7 @@
   }
 
   function close() {
+    ++evaluationRequest; // A late network response must not repaint the closed dialog.
     if (!overlay || overlay.hidden) return;
     overlay.close();
     overlay.hidden = true;

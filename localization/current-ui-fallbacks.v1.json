@@ -21,7 +21,8 @@
       "catalog.originalRange": "исходная",
       "catalog.rangeScope.any": "любая атака",
       "catalog.rangeScope.melee": "ближний бой",
-      "catalog.rangeScope.ranged": "дальний бой"
+      "catalog.rangeScope.ranged": "дальний бой",
+      "compare.cachedCatalog": "Используются сохранённые игровые данные: актуальность каталога на сервере не удалось проверить."
     },
     "jp": {
       "adminShell.catalogBranchLimits": "Skill branch limits",
@@ -43,7 +44,8 @@
       "catalog.originalRange": "original",
       "catalog.rangeScope.any": "any attack",
       "catalog.rangeScope.melee": "melee",
-      "catalog.rangeScope.ranged": "ranged"
+      "catalog.rangeScope.ranged": "ranged",
+      "compare.cachedCatalog": "Using cached game data; the latest server revision could not be checked."
     },
     "tw": {
       "adminShell.catalogBranchLimits": "Skill branch limits",
@@ -65,7 +67,8 @@
       "catalog.originalRange": "original",
       "catalog.rangeScope.any": "any attack",
       "catalog.rangeScope.melee": "melee",
-      "catalog.rangeScope.ranged": "ranged"
+      "catalog.rangeScope.ranged": "ranged",
+      "compare.cachedCatalog": "Using cached game data; the latest server revision could not be checked."
     }
   }
 }
