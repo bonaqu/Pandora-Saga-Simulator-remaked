@@ -19,6 +19,10 @@
       ui: Object.freeze({
         'skills.adeptness': 'Изучено (ОЧ)',
         'compare.cachedCatalog': 'Используются сохранённые игровые данные: актуальность каталога на сервере не удалось проверить.',
+        'compare.errorCatalog': 'Не удалось загрузить игровые данные для {build}. Проверьте подключение к сети и повторите попытку.',
+        'compare.errorInvalid': 'Не удалось прочитать сохранение {build}. Попробуйте загрузить его в «Билдах» и сохраните копию кода.',
+        'compare.errorCalculation': 'Не удалось рассчитать {build}. Само сохранение не перезаписано.',
+        'compare.errorPrepare': 'Не удалось подготовить {build}. Само сохранение не перезаписано.',
         'calculator.weaponRangeWithBonuses': 'Учтены базовая дальность оружия и настроенные бонусы (игровые единицы). Остальные эффекты могут быть не проверены.',
         'adminShell.catalogEffectOneHundredFiftySeven': 'Сопротивление безумию',
         'adminShell.catalogEffectOneHundredSixtyOne': 'Сопротивление болезни',
