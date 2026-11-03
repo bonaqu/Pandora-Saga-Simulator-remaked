@@ -24,10 +24,16 @@ export const editableDawnRecords = dawnVariants.entries.map(entry => {
   compatibility[0] = 0; compatibility[1] = 1;
   for (let race = 0; race < 6; race++) compatibility[race + 2] = Number(race === entry.race);
   const localized = names => ({ en: names.en, ru: names.ru, jp: '', tw: '' });
+  // Compact suffixes are part of the editable item name, not an additional
+  // gender hint. Only the synthetic source defaults are normalized; manually
+  // published text is never overwritten by this reference fixture.
+  const displayNames = localized(entry.names);
+  displayNames.ru = displayNames.ru.replace(/\\s*\\(Ж\\)\\s*$/i, ' (ж)');
+  displayNames.en = displayNames.en.replace(/\\s*\\(Female\\s+([^()]+)\\)\\s*$/i, ' ($1) (w)');
   return { ...template, id, kind: 'equipment',
     legacy_category_id: entry.category, legacy_item_index: entry.index,
     legacy_parameter_6: template.legacy_parameter_6,
-    name: localized(entry.names), option: localized(entry.description),
+    name: displayNames, option: localized(entry.description),
     special_option: localized({en:'',ru:''}), acquisition: localized({en:'',ru:''}),
     level_requirement: entry.level, soul_socket_count: entry.sockets,
     compatibility_flags: compatibility };
