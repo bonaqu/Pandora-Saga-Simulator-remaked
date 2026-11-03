@@ -1,5 +1,23 @@
 # Changelog
 
+## Modern 4.33 — расовые комплекты и названия из игры, 2026-11-03
+
+<!-- release-notes:user:ru -->
+- **Расовые комплекты и вещи Зари:** восстановлены русские названия 32 обычных расовых вещей и всех 40 предметов Зари по игровым данным. Теперь мужские и женские варианты человека и эльфа отображаются как отдельные вещи, с короткой буквой пола только в названии.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **Racial outfits and Dawn gear:** verified Russian names for 32 ordinary racial outfit items and all 40 Dawn items are available. Separate male and female human/elf variants appear as distinct items, with a short gender suffix in the item name only.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Подтверждённый реестр 72 конкретных ID из Pandora Saga OS (32 обычных + 40 Зари) подключён к публичным RU/EN fallback и серверному редактору. Пять отдельно выделенных женских обычных вариантов имеют собственные редактируемые ID, известные расчётные шаблоны, расовые и половые флаги. Пользовательские правки опубликованного D1 имеют приоритет. Архивные JP/TW переводы игрового каталога не переводятся заново и не меняются; новые вещи получают английский fallback. Задокументировано различие базовой технической дальности оружия и эффектов-модификаторов. Legacy 2.00 и формулы сохранены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Add an OS-verified 72-ID registry (32 ordinary racial pieces and 40 Dawn variants) to public RU/EN fallbacks and the source-backed admin editor. Five newly separated female ordinary outfits get stable editable IDs, verified matching source calculations and compatibility flags; D1 owner publications remain authoritative. Preserve archived JP/TW game names unchanged; use English fallback for new game items, without fabricated translations. Base weapon range from official technical data remains authoritative; effective range modifiers are separate. Legacy 2.00 and formulas are unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 4.32 — редактирование предметов Зари, 2026-11-03
 
 <!-- release-notes:user:ru -->
