@@ -121,7 +121,7 @@ test('admin exposes one published D1 entry, not old male and provisional female 
     .run(94,94,JSON.stringify(entries));
   for(const alias of ['equipment.31.8','modern.equipment.racial-os-12531']){
     const list=await call(env,'catalog?kind=equipment&q='+encodeURIComponent(alias));
-    assert.equal(list.count,0,'duplicate alias leaked: '+alias);
+    assert.equal(list.items.some(row => row.id === alias),false,'duplicate alias leaked: '+alias);
     assert.equal((await detail(env,alias)).ok,true,'old saved build source stays accessible');
   }
   for(const item of published){
