@@ -138,6 +138,36 @@ test('admin lists separate Dawn female equipment and edits its item name without
   sqlite.close();
 });
 
+test('source-backed regular female racial gear has a unique editable ID and RU name in admin',async({page})=>{
+  const {sqlite,errors}=await openConsole(page);
+  const id='modern.equipment.racial-os-12531';
+  await page.getByRole('combobox',{name:'Каталог',exact:true}).selectOption('equipment');
+  await page.getByRole('searchbox',{name:'Поиск в каталоге'}).fill(id);
+  await expect(page.locator('.catalog-entry')).toHaveCount(1);
+  await page.locator('.catalog-entry').first().click();
+  const title=page.locator('[data-field="names"][data-language="ru"]');
+  await expect(title).toHaveValue('Жилет для эльфа (ж)');
+  await expect(page.locator('[data-field="names"][data-language="jp"]')).toHaveValue('');
+  await expect(page.locator('[data-field="names"][data-language="tw"]')).toHaveValue('');
+  await title.fill('Исправленный жилет для эльфа (ж)');
+  await page.getByRole('button',{name:'Сохранить черновик',exact:true}).click();
+  await expect.poll(()=>sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id=?').get(id)?.payload_json||'').not.toBe('');
+  const saved=JSON.parse(sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id=?').get(id).payload_json);
+  expect(saved.names.ru).toBe('Исправленный жилет для эльфа (ж)');
+  expect(saved.names.jp).toBe('');
+  expect(saved.names.tw).toBe('');
+  page.on('dialog',dialog=>dialog.accept());
+  await page.getByRole('button',{name:'Опубликовать',exact:true}).click();
+  await expect.poll(()=>sqlite.prepare('SELECT version FROM catalog_head WHERE id=1').get().version).toBe(1);
+  const published=JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head WHERE id=1').get().snapshot_json);
+  const row=published.find(entry=>entry.identity.id===id);
+  expect(row.edit.names.ru).toBe(saved.names.ru);
+  expect(row.edit.names.jp).toBe('');
+  expect(row.edit.names.tw).toBe('');
+  expect(errors).toEqual([]);
+  sqlite.close();
+});
+
 test('admin edits a racial range bonus and previews the resulting value',async({page})=>{
   const {sqlite,errors}=await openConsole(page,currentRacialDrafts());
   await page.getByRole('combobox',{name:'Каталог',exact:true}).selectOption('racial');
