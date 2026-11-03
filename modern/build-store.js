@@ -206,7 +206,12 @@
       builds: builds.map(cloneBuild)
     });
     if (!serialized.ok) return serialized;
-    return storageSet(BUILDS_KEY, serialized.value);
+    var written = storageSet(BUILDS_KEY, serialized.value);
+    // Same-tab storage events do not fire by browser design. Keep an already
+    // open comparison synchronized with successful save/rename/delete/migrate,
+    // never notifying when a quota/security failure left the data unchanged.
+    if (written.ok) window.dispatchEvent(new Event('pandora-remaked:buildschange'));
+    return written;
   }
 
   function readAutosave() {
@@ -266,9 +271,15 @@
 
     var valid = [];
     var invalidCount = 0;
+    var seenIds = new Set();
     parsed.value.builds.forEach(function (build) {
-      if (validateBuildRecord(build)) valid.push(cloneBuild(build));
-      else invalidCount += 1;
+      // A broken imported/local collection can repeat IDs. Otherwise both
+      // selectors resolve the first record and may silently compare the wrong
+      // build. Keep the first valid record and warn about the duplicate.
+      if (validateBuildRecord(build) && !seenIds.has(build.id)) {
+        seenIds.add(build.id);
+        valid.push(cloneBuild(build));
+      } else invalidCount += 1;
     });
 
     if (invalidCount) {
