@@ -369,6 +369,23 @@
     if (currentLocale === 'ru' && approved &&
         /^(?:skill_entry\.18\.(?:8|9|10)|skill_entry\.(?:20|21)\.7)$/.test(key))
       return approved;
+    var verified = /^equipment\\.(\\d+)\\.(\\d+)$/.exec(key);
+    var verifiedRow = verified && window.PandoraRemakedVerifiedRacialGear?.entries?.find(function (row) {
+      return row.category === Number(verified[1]) && row.index === Number(verified[2]);
+    });
+    var original = verifiedRow?.recordId?.startsWith('equipment.');
+    var catalogItem = verifiedRow && namespace.catalog?.item('equipment',
+      verifiedRow.category * 10000 + verifiedRow.index);
+    // Old JP/TW item names are authoritative archival game text, including
+    // when a later catalog entry has no JP/TW publication. Do not turn their
+    // absence in D1 into an English replacement of actual Legacy labels.
+    if ((currentLocale === 'jp' || currentLocale === 'tw') && original &&
+        !catalogItem?.names?.[currentLocale]) return '';
+    // A published catalog item may have no RU text because it predates the
+    // current OS name audit. Use the checked RU baseline in that case only;
+    // do NOT override an explicitly published Russian name.
+    if (currentLocale === 'ru' && verifiedRow && catalogItem &&
+        !catalogItem.names?.ru) return equipmentGenderLabel(key, verifiedRow.ru);
     var published = namespace.catalog && namespace.catalog.gameLabel(key);
     if (published) return equipmentGenderLabel(key, published);
     // JP/TW keep the original game's language for Legacy game terms while the
