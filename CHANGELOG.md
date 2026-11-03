@@ -5,11 +5,13 @@
 <!-- release-notes:user:ru -->
 - **Понятная ошибка сравнения:** если один из билдов не загружается, указывается, какой именно (A или B), и причина различается: данные игры, некорректное сохранение или ошибка расчёта. Билды при этом не удаляются.
 - **Проверка старых сохранений:** расширены тесты сравнения двух персонажей 50-го уровня разных рас, включая сохранения раннего формата.
+- **Безопасная обработка ошибочных кодов:** повреждённый старый код теперь отклоняется до распаковки, без риска зависнуть при попытке прочитать произвольный текст.
 <!-- /release-notes:user:ru -->
 
 <!-- release-notes:user:en -->
 - **Actionable comparison errors:** when a saved build cannot be compared, show whether A or B failed and distinguish unavailable game data, invalid saved data and calculation failures. Saved builds are not deleted.
 - **Older builds covered:** test two level-50 characters of different races, including older serialization formats.
+- **Invalid old codes:** malformed compressed build strings are rejected before the legacy decompressor can stall.
 <!-- /release-notes:user:en -->
 
 <!-- admin-notes:ru -->
