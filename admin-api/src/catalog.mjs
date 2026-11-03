@@ -23,6 +23,24 @@ const retiredEquipmentSourceIds = new Map(verifiedGear.entries.filter(row =>
     row.publishedId
   ]));
 if(retiredEquipmentSourceIds.size!==41) throw Error('Invalid canonical racial/Dawn identity registry');
+// The 41 already-published UUIDs predate the complete OS RU/EN description
+// import. Fill ONLY absent localized fields in response projections; owner
+// text, drafts, immutable catalog revisions and gameplay remain untouched.
+const publishedRacialDescriptions = new Map(verifiedGear.entries.filter(row =>
+  row.publishedId).map(row => [row.publishedId, row]));
+function withVerifiedDescriptions(record, identity) {
+  const entry = publishedRacialDescriptions.get(identity?.id);
+  if (!entry || identity.kind !== 'equipment' ||
+      identity.category !== entry.category || identity.index !== entry.publishedIndex)
+    return record;
+  const original = record.description || {}, description = {...original};
+  for (const [locale, source] of [['ru',entry.descriptionRu],['en',entry.descriptionEn]]) {
+    if (!String(description[locale] || '').trim() && typeof source === 'string' && source.trim())
+      description[locale] = source;
+  }
+  return description.ru === original.ru && description.en === original.en
+    ? record : {...record,description};
+}
 
 // Equipment baselines are now persisted as individual Cloudflare D1 records.
 // The generated source bundle remains a safety/validation authority for old
@@ -193,7 +211,7 @@ export async function publicCatalog(request, env) {
       snapshot = { version: revision, impactVersion: row.impact_version, entries: JSON.parse(row.snapshot_json) };
     }
   }
-  return jsonResponse({ ok: true, schemaVersion: 1, sourceFingerprint, characterSourceFingerprint, revision: snapshot.version, impactRevision: snapshot.impactVersion, records: snapshot.entries.map(compileEntry) });
+  return jsonResponse({ ok: true, schemaVersion: 1, sourceFingerprint, characterSourceFingerprint, revision: snapshot.version, impactRevision: snapshot.impactVersion, records: snapshot.entries.map(entry => withVerifiedDescriptions(compileEntry(entry), entry.identity)) });
 }
 
 async function detail(env, id) {
@@ -202,9 +220,10 @@ async function detail(env, id) {
   const [snapshot, draft] = await Promise.all([head(env), draftRow(env, id)]);
   const published = snapshot.entries.find(entry => entry.identity.id === id);
   const edit = draft?.is_dirty || (!published && (!source || identity.templateId) && draft) ? JSON.parse(draft.payload_json) : published?.edit || draftFromSource(source, identity.kind);
-  const displayEdit = showApprovedTranslations(edit, source, identity.kind);
+  const displayEdit = withVerifiedDescriptions(
+    showApprovedTranslations(edit, source, identity.kind), identity);
   displayEdit.id = id; displayEdit.category = identity.category;
-  const currentRecord = published ? compileEntry(published) : source && !identity.templateId ? compileRecord(draftFromSource(source, identity.kind), identity, source) : null;
+  const currentRecord = published ? withVerifiedDescriptions(compileEntry(published), identity) : source && !identity.templateId ? compileRecord(draftFromSource(source, identity.kind), identity, source) : null;
   let draftDiff = null;
   if (draft?.is_dirty) {
     try { draftDiff = draftComparison(snapshot, identity, validateDraft(JSON.parse(draft.payload_json), identity)); }
