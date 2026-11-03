@@ -443,6 +443,7 @@ All notable player-facing changes to **Pandora Saga Simulator Remaked** are reco
             (modern / "admin-entry.js").write_text("// hidden entry", encoding="utf-8")
             (modern / "admin-entry.css").write_text("/* terminal */", encoding="utf-8")
             (modern / "build-store.js").write_text("// build store", encoding="utf-8")
+            (modern / "dawn-collection.js").write_text("// Dawn collection", encoding="utf-8")
             (modern / "search.js").write_text("// search", encoding="utf-8")
             (modern / "equipment-picker.js").write_text("// equipment picker", encoding="utf-8")
             (modern / "app-shell.js").write_text("// shell", encoding="utf-8")
