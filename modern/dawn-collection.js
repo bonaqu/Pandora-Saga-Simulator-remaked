@@ -622,6 +622,26 @@
       soulParameters: ['', ''], trailing: typeof source[44] === 'string' ? source[44] : ''
     };
   }
+  // A current OS item may be present twice: its original Legacy slot and a
+  // previously published D1 UUID. Keep the D1 publication as the canonical
+  // editable identity; retain the old slot only for loading historical builds.
+  // Identity is established by the verified OS item ID, never by fuzzy name or
+  // equal numerical effects (different items can share stats).
+  function canonicalForLegacy(category, index, snapshot) {
+    if (!snapshot || snapshot.revision === 0 || !Array.isArray(snapshot.records)) return null;
+    var entry = entries.find(function (candidate) {
+      return candidate.publishedId && candidate.category === Number(category) &&
+        candidate.templateIndex === Number(index);
+    });
+    if (!entry) return null;
+    // Never silently retire a separately admin-published legacy item.
+    if (snapshot.records.some(function (row) {
+      return row.id === 'equipment.' + category + '.' + index;
+    })) return null;
+    return snapshot.records.find(function (row) {
+      return row.id === entry.publishedId && row.kind === 'equipment' && !row.disabled;
+    }) || null;
+  }
   function augment(snapshot, source) {
     if (!snapshot || !Array.isArray(snapshot.records) || snapshot.revision === 0) return snapshot;
     // Do not rebase an older catalog onto a newer Dawn identity set. All ten
@@ -669,6 +689,7 @@
   }
   window.PandoraRemakedDawnCollection = Object.freeze({
     entries: Object.freeze(entries), augment: augment, compatible: compatible,
+    canonicalForLegacy: canonicalForLegacy,
     source: 'https://pandorasaga-os.com/gamedata/items.json'
   });
 })();
