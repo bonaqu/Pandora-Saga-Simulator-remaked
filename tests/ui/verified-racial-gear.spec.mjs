@@ -140,3 +140,26 @@ test('41 published D1 racial and Dawn aliases fill only absent descriptions and 
     expect(row.actualEn,String(row.id)+' EN').toBe(row.expectedEn);
   }
 });
+
+test('Modern RU/EN item previews separate lore paragraph and each stat line, like the game',async({page})=>{
+  await page.goto('/');
+  const result=await page.evaluate(()=>{
+    const format=window.PandoraRemaked.itemDescriptionFormat?.formatItemDescription;
+    const presentation=window.PandoraRemaked.catalogText?.lines;
+    const source=window.PandoraRemakedVerifiedRacialGear?.entries?.find(row=>row.gameId===12532);
+    return {loaded:typeof format==='function',source:!!source,
+      ru:format&&presentation?presentation(source.descriptionRu):'',
+      en:format&&presentation?presentation(source.descriptionEn):'',
+      directRu:format?format(source.descriptionRu,'ru'):'',
+      directEn:format?format(source.descriptionEn,'en'):''
+    };
+  });
+  expect(result.loaded).toBe(true);
+  expect(result.source).toBe(true);
+  const ru='Изготовленная на заказ одежда для эльфиек.\n\nИНТ +1, ОЗ +22\nСнижение расхода ОМ +7%\nСопротивляемость чарам +5\nСопротивляемость болезням духа +5%';
+  const en='Custom-made clothing for female Elves.\n\nINT +1, HP +22\nMP Cost Reduction +7%\nCharm Resistance +5\nMental Status Ailment Resistance +5%';
+  expect(result.directRu).toBe(ru);
+  expect(result.directEn).toBe(en);
+  expect(result.ru).toBe(ru);
+  expect(result.en).toBe(en);
+});
