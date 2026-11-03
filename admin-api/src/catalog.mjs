@@ -211,7 +211,7 @@ export async function publicCatalog(request, env) {
       snapshot = { version: revision, impactVersion: row.impact_version, entries: JSON.parse(row.snapshot_json) };
     }
   }
-  return jsonResponse({ ok: true, schemaVersion: 1, sourceFingerprint, characterSourceFingerprint, revision: snapshot.version, impactRevision: snapshot.impactVersion, records: snapshot.entries.map(entry => withVerifiedDescriptions(compileEntry(entry), entry.identity)) });
+  return jsonResponse({ ok: true, schemaVersion: 1, sourceFingerprint, characterSourceFingerprint, revision: snapshot.version, impactRevision: snapshot.impactVersion, records: snapshot.entries.map(entry => requested === null ? withVerifiedDescriptions(compileEntry(entry), entry.identity) : compileEntry(entry)) });
 }
 
 async function detail(env, id) {
