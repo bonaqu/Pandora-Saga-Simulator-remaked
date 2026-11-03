@@ -74,7 +74,28 @@ export async function publicEquipmentInventory(env) {
     status={stored:0,aliases:0};
   }
   const stored=Number(status?.stored||0),aliases=Number(status?.aliases||0);
-  return jsonResponse({ok:true,schemaVersion:1,expected,stored,aliases,complete:stored===expected&&aliases===41});
+  // Count complete RU/EN descriptions from actual D1 rows, not from the
+  // bundled registry or a successful import's unverified process exit code.
+  const localeSources = new Map(verifiedGear.entries.map(entry => [
+    Number.isInteger(entry.newIndex) ? entry.recordId :
+      'equipment.'+entry.category+'.'+entry.templateIndex,entry
+  ]));
+  if(localeSources.size!==72)throw Error('Incomplete verified equipment locales');
+  let localized=0;
+  if(stored>=localeSources.size){
+    const ids=[...localeSources.keys()];
+    const rows=await env.DB.prepare('SELECT id,source_json FROM catalog_equipment_sources WHERE id IN ('+
+      ids.map(()=>'?').join(',')+')').bind(...ids).all();
+    for(const row of rows.results||[]){
+      let source;try{source=JSON.parse(row.source_json)}catch{continue}
+      const entry=localeSources.get(row.id);
+      if(entry && source?.option?.ru===entry.descriptionRu &&
+         source?.option?.en===entry.descriptionEn)localized++;
+    }
+  }
+  return jsonResponse({ok:true,schemaVersion:1,expected,stored,aliases,
+    localizedExpected:72,localizedStored:localized,localizedComplete:localized===72,
+    complete:stored===expected&&aliases===41&&localized===72});
 }
 
 // Read-only annotations of the retained js/calc.js branches, NOT formulas or
