@@ -7,7 +7,7 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 ### For users
 
 - **In-game description layout:** item flavor text is followed by a blank line, then one distinct effect per line. Concatenations such as “HP +22MP Cost Reduction +7%” are separated in RU and EN item previews.
-- **Admin and Cloudflare consistency:** source-backed item descriptions have readable paragraphs in both locales; the editor applies the same formatting on save, without changing stats, names, or Legacy gameplay.
+- **Admin and website consistency:** source-backed item descriptions have readable paragraphs in both locales; the editor applies the same formatting on save, without changing stats, names, or Legacy gameplay.
 
 ### Development and technical changes
 
