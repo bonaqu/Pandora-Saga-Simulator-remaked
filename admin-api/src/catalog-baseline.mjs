@@ -28,8 +28,8 @@ export const editableDawnRecords = dawnVariants.entries.map(entry => {
   // gender hint. Only the synthetic source defaults are normalized; manually
   // published text is never overwritten by this reference fixture.
   const displayNames = localized(entry.names);
-  displayNames.ru = displayNames.ru.replace(/\\s*\\(Ж\\)\\s*$/i, ' (ж)');
-  displayNames.en = displayNames.en.replace(/\\s*\\(Female\\s+([^()]+)\\)\\s*$/i, ' ($1) (w)');
+  displayNames.ru = displayNames.ru.replace(/\s*\(Ж\)\s*$/i, ' (ж)');
+  displayNames.en = displayNames.en.replace(/\s*\(Female\s+([^()]+)\)\s*$/i, ' ($1) (w)');
   return { ...template, id, kind: 'equipment',
     legacy_category_id: entry.category, legacy_item_index: entry.index,
     legacy_parameter_6: template.legacy_parameter_6,
