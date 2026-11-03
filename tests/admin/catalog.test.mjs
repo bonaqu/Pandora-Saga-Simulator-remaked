@@ -11,6 +11,7 @@ import { currentActiveProfileDrafts } from '../../admin-api/src/current-active-p
 import { baselineById, sourceIdentity, editableDawnRecords, editableRacialRecords } from '../../admin-api/src/catalog-baseline.mjs';
 import { previewReviewedPumpkinSoul } from '../../scripts/lib/reviewed-soul-preview.mjs';
 import verifiedGear from '../../data/verified-racial-gear.v1.json' with { type: 'json' };
+import { formatItemDescription } from '../../admin-api/src/item-description-format.mjs';
 
 const origin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
 function fixture() {
@@ -73,8 +74,8 @@ test('all source equipment is persisted in D1 with 41 verified aliases and idemp
   assert.equal(racialFemale.canonical_id,'modern.equipment.f0bb7e4c-ebc9-4f47-a20a-60bd627d4761');
   const parsed=JSON.parse(archived.source_json);
   assert.equal(parsed.id,'equipment.32.15');
-  assert.equal(parsed.option.ru,verifiedGear.entries.find(row=>row.gameId===14522).descriptionRu);
-  assert.equal(parsed.option.en,verifiedGear.entries.find(row=>row.gameId===14522).descriptionEn);
+  assert.equal(parsed.option.ru,formatItemDescription(verifiedGear.entries.find(row=>row.gameId===14522).descriptionRu,'ru'));
+  assert.equal(parsed.option.en,formatItemDescription(verifiedGear.entries.find(row=>row.gameId===14522).descriptionEn,'en'));
   assert.equal(parsed.name.jp,baselineById.get('equipment.32.15').name.jp);
   assert.deepEqual(parsed.compatibility_flags,baselineById.get('equipment.32.15').compatibility_flags);
   const admin=await detail(env,'equipment.31.10');
@@ -1171,8 +1172,8 @@ test('all 72 source-verified racial and Dawn records expose both descriptions in
     const source=baselineById.get(sourceId);
     assert.ok(source,'Missing editable source '+sourceId);
     const edit=draftFromSource(source,'equipment');
-    assert.equal(edit.description.ru,row.descriptionRu,'RU '+row.gameId);
-    assert.equal(edit.description.en,row.descriptionEn,'EN '+row.gameId);
+    assert.equal(edit.description.ru,formatItemDescription(row.descriptionRu,'ru'),'RU '+row.gameId);
+    assert.equal(edit.description.en,formatItemDescription(row.descriptionEn,'en'),'EN '+row.gameId);
     assert.ok(edit.description.ru.trim() && edit.description.en.trim());
     assert.equal(source.option.jp,baselineById.get(sourceId).option.jp,'JP source unchanged');
   }
@@ -1194,11 +1195,11 @@ test('active D1 catalog and admin item restore missing RU/EN source descriptions
     .run(JSON.stringify([{identity,edit}]));
   publish();
   let publicRow=(await publicData(env)).records.find(row=>row.id===identity.id);
-  assert.equal(publicRow.description.ru,source.descriptionRu);
-  assert.equal(publicRow.description.en,source.descriptionEn);
+  assert.equal(publicRow.description.ru,formatItemDescription(source.descriptionRu,'ru'));
+  assert.equal(publicRow.description.en,formatItemDescription(source.descriptionEn,'en'));
   const admin=await detail(env,identity.id);
-  assert.equal(admin.edit.description.ru,source.descriptionRu);
-  assert.equal(admin.edit.description.en,source.descriptionEn);
+  assert.equal(admin.edit.description.ru,formatItemDescription(source.descriptionRu,'ru'));
+  assert.equal(admin.edit.description.en,formatItemDescription(source.descriptionEn,'en'));
   // The D1 head remains immutable: response-only locale repair.
   const stored=JSON.parse(sqlite.prepare('SELECT snapshot_json FROM catalog_head WHERE id=1').get().snapshot_json);
   assert.equal(stored[0].edit.description.ru,'');
