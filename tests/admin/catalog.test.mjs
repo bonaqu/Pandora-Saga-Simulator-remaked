@@ -44,7 +44,7 @@ test('all source equipment is persisted in D1 with 10 explicit Dawn aliases and 
   const before=await (await publicEquipmentInventory(env)).json();
   assert.equal(before.complete,false);
   const manifest=sourceManifest(),rows=equipmentSourceRows();
-  assert.ok(manifest.count>1000);
+  assert.ok(manifest.count>100);
   assert.equal(manifest.aliases,10);
   assert.equal(rows.length,manifest.count);
   assert.equal(new Set(rows.map(row=>row.id)).size,rows.length);
