@@ -32,7 +32,7 @@ function auditCatalog({ equipment, souls, skills, allSkills, gearToAudit, auditC
     try { CalcSet('Equip'); Flag[2] = 3; CalcSet('ALL'); Flag[2] = 4; CalcSet('ALL'); }
     catch (error) { errors.push({ id, message: error.message }); }
     finally { Flag[2] = 0; }
-    results.push({ id, race: Status.Job[0], job: Status.Job[2], equipment: JSON.stringify(Status.Equip),
+    results.push({ id, race: Status.Job[0], racial: Status.Job[1], job: Status.Job[2], equipment: JSON.stringify(Status.Equip),
       values: Array.from(document.querySelectorAll('[id^="Status_"]')).map(node => [node.id, node.textContent.trim().replace(/\s+/g, ' ')]),
       attributes: ['STA', 'STR', 'AGI', 'DEX', 'SPR', 'INT'].map(key => Status[key].slice()),
       // Captured in BOTH independent runtimes: the current-game vital checker
@@ -223,6 +223,24 @@ for (const block of blocks) test('catalog differential: ' + block.name, async ({
       const actual=Number(row[1].replace(/,/g,''));
       expect(actual,observed.id+' independently recomputed '+kind).toBe(currentServerVital(observed,kind));
       row[1]=museum[1]; // only normalize source-verified class-vital differences
+    }
+    // The museum's Human Fighting Spirit condition was impossible: a weapon
+    // kind cannot equal 0, 2, 4, 6, 10 and 12 simultaneously. Modern fixes
+    // that AND chain to alternatives, adding exactly 10 attack for Human
+    // racial skill 0 with these weapon types (while leaving the museum intact).
+    // Compare the *actual* bonus before normalizing this one intentional delta.
+    const hasWeapon = weaponId % 10000 !== 0;
+    const humanFightingSpirit = hasWeapon && observed.race === 0 &&
+      observed.racial === 0 && [0, 2, 4, 6, 10, 12].includes(Math.floor(weaponId / 10000));
+    if (humanFightingSpirit) {
+      const stat = 'Status_18';
+      const now = normalized.values.find(pair => pair[0] === stat);
+      const before = source.values.find(pair => pair[0] === stat);
+      expect(now, observed.id + ' fixed human attack stat').toBeDefined();
+      expect(before, observed.id + ' historic human attack stat').toBeDefined();
+      const attack = pair => Number(pair[1].replace(/,/g, ''));
+      expect(attack(now) - attack(before), observed.id + ' verified Human Fighting Spirit').toBe(10);
+      now[1] = before[1];
     }
     // LP/MP natural recovery is defined by the retained engine as
     // floor(LP/35)+floor(VIT/3), floor(MP/25)+floor(SPR/3).
