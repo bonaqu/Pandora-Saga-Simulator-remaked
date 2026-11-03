@@ -19,6 +19,7 @@
   var previousBodyOverflow = '';
   var initialized = false;
   var evaluationRequest = 0;
+  var lastFailure = null;
   var differencesOnly = null, identicalState = null;
 
   function identicalFields(a, b) {
@@ -196,8 +197,35 @@
     filterRows();
   }
 
+  // Only report a verified failing stage and a recognized error category.
+  // Neither the build payload nor the error stack is shown in the interface.
+  function failureKind(phase, error) {
+    var message = String(error?.message || '');
+    if (/catalog|revision|snapshot|failed to fetch|network|timeout|offline/i.test(message)) return 'catalog';
+    if (/invalid|corrupt|unsupported|malformed|incompatible|build fields|build code|character|context/i.test(message))
+      return 'invalid';
+    return phase === 'calculate' ? 'calculation' : 'prepare';
+  }
+
+  function reportFailure(phase, side, build, error) {
+    var kind = failureKind(phase, error);
+    var shortName = String(build?.name || '').slice(0, 60);
+    var buildLabel = t(side === 'A' ? 'compare.buildA' : 'compare.buildB', null, 'Build '+side);
+    var name = buildLabel + (shortName ? ' «' + shortName + '»' : '');
+    var key = {catalog:'compare.errorCatalog',invalid:'compare.errorInvalid',
+      calculation:'compare.errorCalculation',prepare:'compare.errorPrepare'}[kind];
+    lastFailure = { side:side, phase:phase, kind:kind, name:shortName,
+      message:String(error?.message || error || 'Unknown error').slice(0, 300) };
+    // Developers can inspect the exact underlying exception without exposing
+    // saved build codes or stack traces in the player-facing dialog.
+    console.warn('Pandora Saga: build comparison failed', lastFailure);
+    setComparisonVisible(false);
+    setStatus(t(key,{build:name},'Cannot process '+name+'. The saved build was kept.'), 'error');
+  }
+
   async function evaluateSelection() {
     var request = ++evaluationRequest;
+    lastFailure = null;
     if (!selectA || !selectB) return;
     var idA = selectA.value;
     var idB = selectB.value;
@@ -220,17 +248,23 @@
       return;
     }
 
+    var phase = 'prepare', side = 'A';
     try {
       var payloadA = buildA.payload, payloadB = buildB.payload;
       if (namespace.catalog) {
         var migratedA = await namespace.catalog.prepareCurrentPayload(payloadA);
         var current = await namespace.catalog.fetchSnapshot(namespace.catalog.unpackPayload(migratedA.payload).revision);
+        side = 'B';
+        // Historical metadata is optional. Inability to fetch it must not
+        // prevent migration to an already verified current catalog revision.
         try { await namespace.catalog.fetchSnapshot(namespace.catalog.unpackPayload(payloadB).revision); } catch { /* Optional identity metadata. */ }
         payloadA = migratedA.payload;
         payloadB = namespace.catalog.migratePayload(payloadB, current).payload;
       }
       if (request !== evaluationRequest || overlay?.hidden || selectA.value !== idA || selectB.value !== idB) return;
+      phase = 'calculate'; side = 'A';
       var projectionA = adapter.evaluateBuild(payloadA);
+      side = 'B';
       var projectionB = adapter.evaluateBuild(payloadB);
       metaA.textContent = metadataText(buildA, projectionA);
       metaB.textContent = metadataText(buildB, projectionB);
@@ -247,9 +281,8 @@
           : t('compare.deltaHelp', null, 'Δ shows Build B minus Build A. Direction is informational only.'),
       damaged || migratedA?.usingCachedCatalog ? 'warning' : 'ready');
     } catch (error) {
-      if (request !== evaluationRequest || overlay?.hidden) return;
-      setComparisonVisible(false);
-      setStatus(t('compare.evaluateFailed', null, 'One of the saved builds could not be evaluated.'), 'error');
+      if (request !== evaluationRequest || overlay?.hidden || selectA.value !== idA || selectB.value !== idB) return;
+      reportFailure(phase, side, side === 'A' ? buildA : buildB, error);
     }
   }
 
@@ -472,7 +505,10 @@
     close: close,
     refresh: refreshChoices,
     computeDelta: computeDelta,
-    identicalFields: identicalFields
+    identicalFields: identicalFields,
+    // Read-only support diagnostics: no raw payloads, personal game data, or
+    // stack traces are stored here. Cleared before each new comparison.
+    lastFailure: function () { return lastFailure ? { ...lastFailure } : null; }
   };
 
   function refreshOpenComparison() {
