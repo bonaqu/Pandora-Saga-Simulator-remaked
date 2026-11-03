@@ -8,7 +8,7 @@
 <!-- /release-notes:user:ru -->
 
 <!-- release-notes:user:en -->
-- **No duplicate equipment choices:** 41 verified ordinary racial and Dawn items previously shown both as an archived or provisional entry and a published D1 entry now appear once, including male Elf Dawn Gloves.
+- **No duplicate equipment choices:** 41 verified ordinary racial and Dawn items previously shown both as an archived or provisional entry and a current entry now appear once, including male Elf Dawn Gloves.
 - **Editable equipment catalog:** all equipment source records remain editable in the protected administrator catalog. Existing publications and saved builds are preserved.
 <!-- /release-notes:user:en -->
 
