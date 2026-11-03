@@ -2,6 +2,20 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.39 — 2026-11-04
+
+### For users
+
+- **Saved build loading restored:** harmless refreshes of the list no longer cancel an in-progress load. Loading a saved character and comparing two builds are handled independently.
+- **Safer recovery:** the prior character is the recovery target if loading fails, and existing named builds are not overwritten when autosave cannot be saved.
+- **Clearer failure messages:** distinguish catalog, browser storage, invalid code and character-application problems.
+
+### Development and technical changes
+
+- Replace stale-button DOM connectivity checks with stable saved-ID/payload intent validation; closing the manager, deleting the build and genuinely newer edits still cancel asynchronous loads.
+- Recovery transactions now journal the preceding character. Remove journal after a verified rollback; persist the loaded character before rewriting a migrated named save. Never rewrite source builds if autosave fails.
+- Add browser regression coverage for pending-load list refresh, calculator rollback, storage quota, autosave rejection and compare → load two older level-50 racial characters → reload.
+
 ## Modern 4.38 — 2026-11-03
 
 ### For users
