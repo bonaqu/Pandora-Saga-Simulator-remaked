@@ -1,5 +1,31 @@
 # Changelog
 
+## Modern 4.39 — исправления загрузки сохранённых билдов, 2026-11-04
+
+<!-- release-notes:user:ru -->
+- **Исправлена загрузка сохранённых билдов:** загрузка не отменяется из-за обновления списка предметов или повторного отображения списка билдов. Сравнение и открытие сохранения работают независимо друг от друга.
+- **Безопасное восстановление:** при ошибке загрузки симулятор сохраняет прежнего персонажа и не перезаписывает исходный билд. Если автосохранение недоступно, об этом выводится предупреждение.
+- **Понятная диагностика:** ошибки загрузки билда теперь различают проблемы игровых данных, хранилища браузера, некорректного кода и применения к персонажу.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **Saved build loading restored:** harmless refreshes of the list no longer cancel an in-progress load. Loading a saved character and comparing two builds are handled independently.
+- **Safer recovery:** the prior character is the recovery target if loading fails, and existing named builds are not overwritten when autosave cannot be saved.
+- **Clearer failure messages:** distinguish catalog, browser storage, invalid code and character-application problems.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Исправлена проверка pending load: повторная отрисовка кнопки при обновлении каталога не является причиной отмены. Закрытие окна, удаление или изменение сохранения по-прежнему отменяют запрос.
+- Журнал восстановления теперь хранит состояние **до** загрузки. При успешном откате журнал удаляется. Загруженный персонаж автосохраняется до записи обновлённой именованной копии; при ошибке автосохранения оригинальный билд остаётся без изменений.
+- Добавлены UI-тесты перерисовки списка во время задержанного запроса, отката после исключения калькулятора, отказа хранилища и повторного сохранения, а также интеграционный сценарий сравнить → загрузить два старых билда 50-го уровня → перезагрузить страницу.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Replace stale-button DOM connectivity checks with stable saved-ID/payload intent validation; closing the manager, deleting the build and genuinely newer edits still cancel asynchronous loads.
+- Recovery transactions now journal the preceding character. Remove journal after a verified rollback; persist the loaded character before rewriting a migrated named save. Never rewrite source builds if autosave fails.
+- Add browser regression coverage for pending-load list refresh, calculator rollback, storage quota, autosave rejection and compare → load two older level-50 racial characters → reload.
+<!-- /admin-notes:en -->
+
 ## Modern 4.38 — диагностика ошибок сравнения сохранённых билдов, 2026-11-03
 
 <!-- release-notes:user:ru -->

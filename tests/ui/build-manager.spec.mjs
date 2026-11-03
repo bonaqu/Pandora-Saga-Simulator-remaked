@@ -202,3 +202,201 @@ test('Build Manager remains within a 390px viewport', async ({ page }) => {
   }));
   expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.clientWidth + 1);
 });
+
+test('loading a named build survives an unrelated repaint of the saved list while game data is pending',async({page})=>{
+  await openModern(page);
+  const seeded=await page.evaluate(()=>{
+    const ns=PandoraRemaked,active=ns.adapter.serialize();
+    const race=document.getElementById('SelRace');
+    race.selectedIndex=(race.selectedIndex+1)%race.options.length;
+    race.dispatchEvent(new Event('change',{bubbles:true}));
+    const target=ns.adapter.serialize();
+    ns.adapter.load(active);
+    const saved=ns.buildStore.saveBuild('Old race after list refresh',target);
+    if(!saved.ok)throw Error(JSON.stringify(saved.error));
+    return {active,target,id:saved.build.id};
+  });
+  await page.locator('[data-remaked-builds-open]').click();
+  await page.evaluate(()=>{
+    const catalog=PandoraRemaked.catalog;
+    const original=catalog.prepareCurrentPayload;
+    window.resolveNamedLoad=null;
+    window.namedLoadStarted=false;
+    let once=true;
+    catalog.prepareCurrentPayload=async function(payload){
+      if(once){once=false;window.namedLoadStarted=true;await new Promise(resolve=>{window.resolveNamedLoad=resolve;});}
+      return original.apply(this,arguments);
+    };
+  });
+  await page.locator('[data-remaked-build-load]').click();
+  await expect.poll(()=>page.evaluate(()=>window.namedLoadStarted)).toBe(true);
+  const originalRow=await page.locator('[data-remaked-build-row]').first().evaluate(el=>{el.dataset.wasRendered='before';return el.dataset.buildId;});
+  await page.evaluate(()=>{
+    // Changing locale repaints the build manager synchronously; the saved
+    // identity and currently active character are otherwise untouched.
+    PandoraRemaked.i18n.setLocale('ru');
+    window.dispatchEvent(new CustomEvent('pandora-remaked:cataloghead',{
+      detail:{revision:951,impactRevision:951,previousRevision:0,previousImpactRevision:0}
+    }));
+  });
+  await expect(page.locator('[data-remaked-build-row]').first()).not.toHaveAttribute('data-was-rendered','before');
+  await page.evaluate(()=>window.resolveNamedLoad());
+  await expect.poll(()=>page.evaluate(()=>PandoraRemaked.adapter.serialize())).toBe(seeded.target);
+  await expect(page.locator('[data-remaked-build-manager-status]')).toContainText('Old race after list refresh');
+  expect(await page.evaluate(()=>PandoraRemaked.builds.lastLoadFailure())).toBeNull();
+  expect(await page.evaluate(()=>localStorage.getItem(PandoraRemaked.buildStore.RECOVERY_KEY))).toBeNull();
+  expect(originalRow).toBe(seeded.id);
+  expect(await page.evaluate(()=>localStorage.getItem('file'))).toBe('legacy-sentinel');
+});
+
+test('failed named build application keeps previous character in its recovery journal then removes it after safe rollback',async({page})=>{
+  await openModern(page);
+  const seed=await page.evaluate(()=>{
+    const ns=PandoraRemaked,active=ns.adapter.serialize(),race=document.getElementById('SelRace');
+    race.selectedIndex=(race.selectedIndex+1)%race.options.length;
+    race.dispatchEvent(new Event('change',{bubbles:true}));
+    const target=ns.adapter.serialize();
+    ns.adapter.load(active);
+    const saved=ns.buildStore.saveBuild('Broken on apply',target);
+    if(!saved.ok)throw Error('Cannot save test build');
+    const backup=localStorage.getItem(ns.buildStore.BUILDS_KEY);
+    const autosave=localStorage.getItem(ns.buildStore.AUTOSAVE_KEY);
+    return {active,target,backup,autosave};
+  });
+  await page.evaluate(()=>{
+    const adapter=PandoraRemaked.adapter,original=adapter.load;
+    window.recoveryDuringFailedLoad=null;let first=true;
+    adapter.load=function(payload){
+      if(first){first=false;
+        window.recoveryDuringFailedLoad=JSON.parse(localStorage.getItem(PandoraRemaked.buildStore.RECOVERY_KEY));
+        throw new Error('Synthetic active load failure');
+      }
+      return original.call(this,payload);
+    };
+  });
+  await page.locator('[data-remaked-builds-open]').click();
+  await page.locator('[data-remaked-build-load]').click();
+  await expect(page.locator('[data-remaked-build-manager-status]')).toHaveAttribute('data-state','error');
+  await expect(page.locator('[data-remaked-build-manager-status]')).toContainText('Broken on apply');
+  const after=await page.evaluate(()=>({
+    active:PandoraRemaked.adapter.serialize(),
+    recover:window.recoveryDuringFailedLoad,
+    journal:localStorage.getItem(PandoraRemaked.buildStore.RECOVERY_KEY),
+    named:localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY),
+    autosave:localStorage.getItem(PandoraRemaked.buildStore.AUTOSAVE_KEY),
+    error:PandoraRemaked.builds.lastLoadFailure()
+  }));
+  expect(after.recover.payload).toBe(seed.active);
+  expect(after.journal).toBeNull();
+  expect(after.active).toBe(seed.active);
+  expect(after.named).toBe(seed.backup);
+  expect(after.autosave).toBe(seed.autosave);
+  expect(after.error).toMatchObject({kind:'apply',phase:'apply',name:'Broken on apply'});
+});
+
+test('quota failure creating named-build recovery journal reports storage error without changing saved data',async({page})=>{
+  await openModern(page);
+  const seed=await page.evaluate(()=>{
+    const ns=PandoraRemaked,active=ns.adapter.serialize(),race=document.getElementById('SelRace');
+    race.selectedIndex=(race.selectedIndex+1)%race.options.length;
+    race.dispatchEvent(new Event('change',{bubbles:true}));
+    const target=ns.adapter.serialize();ns.adapter.load(active);
+    const saved=ns.buildStore.saveBuild('Quota test',target);
+    if(!saved.ok)throw Error('Cannot seed build');
+    const named=localStorage.getItem(ns.buildStore.BUILDS_KEY);
+    ns.buildStore.beginRecovery=function(){return {ok:false,error:{code:'quota-exceeded',message:'Browser storage quota was exceeded.'}};};
+    return {active,named};
+  });
+  await page.locator('[data-remaked-builds-open]').click();
+  await page.locator('[data-remaked-build-load]').click();
+  await expect(page.locator('[data-remaked-build-manager-status]')).toHaveAttribute('data-state','error');
+  await expect(page.locator('[data-remaked-build-manager-status]')).toContainText(/storage|quota|full|unavailable/i);
+  expect(await page.evaluate(()=>PandoraRemaked.builds.lastLoadFailure())).toMatchObject({phase:'recovery',kind:'storage',code:'quota-exceeded'});
+  expect(await page.evaluate(()=>PandoraRemaked.adapter.serialize())).toBe(seed.active);
+  expect(await page.evaluate(()=>localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY))).toBe(seed.named);
+});
+
+test('autosave rejection after a migrated load preserves old named code and recovery of previous character',async({page})=>{
+  await openModern(page);
+  const seed=await page.evaluate(async()=>{
+    const ns=PandoraRemaked,active=ns.adapter.serialize(),race=document.getElementById('SelRace');
+    race.selectedIndex=(race.selectedIndex+1)%race.options.length;
+    race.dispatchEvent(new Event('change',{bubbles:true}));
+    const target=ns.adapter.serialize(),csv=ns.catalog.unpackPayload(target).payload;
+    ns.adapter.load(active);
+    const saved=ns.buildStore.saveBuild('Migrate without quota',csv);
+    if(!saved.ok)throw Error('Cannot save old build');
+    const source=await ns.catalog.fetchSnapshot(0);
+    ns.catalog.applySnapshot({...source,revision:2,impactRevision:2,records:[]});
+    ns.builds.flushAutosave();
+    const before=ns.adapter.serialize(),autosave=localStorage.getItem(ns.buildStore.AUTOSAVE_KEY);
+    const original=ns.buildStore.writeAutosave;
+    ns.buildStore.writeAutosave=function(){return {ok:false,error:{code:'quota-exceeded',message:'Quota exceeded'}};};
+    return {before,csv,autosave,named:localStorage.getItem(ns.buildStore.BUILDS_KEY)};
+  });
+  await page.locator('[data-remaked-builds-open]').click();
+  await page.locator('[data-remaked-build-load]').click();
+  await expect(page.locator('[data-remaked-build-manager-status]')).toContainText(/autosave|saved|unavailable/i);
+  await expect.poll(()=>page.evaluate(()=>PandoraRemaked.catalog.unpackPayload(PandoraRemaked.adapter.serialize()).payload)).toBe(seed.csv);
+  const state=await page.evaluate(()=>({
+    autosave:localStorage.getItem(PandoraRemaked.buildStore.AUTOSAVE_KEY),
+    named:localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY),
+    journal:JSON.parse(localStorage.getItem(PandoraRemaked.buildStore.RECOVERY_KEY)),
+    error:PandoraRemaked.builds.lastLoadFailure()
+  }));
+  expect(state.named).toBe(seed.named);
+  expect(state.autosave).toBe(seed.autosave);
+  expect(state.journal.payload).toBe(seed.before);
+  expect(state.error).toBeNull();
+});
+
+test('two legacy level-50 racial builds compare AND load back into the character after current catalog migration',async({page})=>{
+  await openModern(page);
+  const seed=await page.evaluate(async()=>{
+    const ns=PandoraRemaked,active=ns.adapter.serialize(),store=ns.buildStore;
+    function make(index,name){
+      ns.adapter.load(active);
+      const race=document.getElementById('SelRace');
+      race.selectedIndex=index;race.dispatchEvent(new Event('change',{bubbles:true}));
+      StatusMove('Lev',49);CalcSet('Lev');
+      const csv=ns.catalog.unpackPayload(ns.adapter.serialize()).payload;
+      const saved=store.saveBuild(name,csv);
+      if(!saved.ok)throw Error(JSON.stringify(saved.error));
+      return {id:saved.build.id,name,level:Status.Lev[0],race:Status.Job[0],csv};
+    }
+    const a=make(3,'Всад Энкиду 50'),b=make(1,'Всад Эльф 50');
+    ns.adapter.load(active);
+    const source=await ns.catalog.fetchSnapshot(0);
+    ns.catalog.applySnapshot({...source,revision:2,impactRevision:2,records:[]});
+    ns.builds.flushAutosave();
+    return {a,b,original:ns.adapter.serialize(),legacy:localStorage.getItem('file'),
+      published:{...source,revision:2,impactRevision:2,records:[]}};
+  });
+  expect(seed.a.level).toBe(50);expect(seed.b.level).toBe(50);
+  expect(seed.a.race).not.toBe(seed.b.race);
+  await page.locator('[data-remaked-compare-open]').click();
+  await page.locator('[data-remaked-compare-a]').selectOption(seed.a.id);
+  await page.locator('[data-remaked-compare-b]').selectOption(seed.b.id);
+  await expect(page.locator('[data-remaked-compare-table]')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await page.locator('[data-remaked-builds-open]').click();
+  for(const build of [seed.a,seed.b]){
+    const row=page.locator('[data-remaked-build-row]').filter({hasText:build.name});
+    await row.locator('[data-remaked-build-load]').click();
+    await expect.poll(()=>page.evaluate(()=>Status.Lev[0])).toBe(50);
+    await expect.poll(()=>page.evaluate(()=>PandoraRemaked.catalog.unpackPayload(PandoraRemaked.adapter.serialize()).payload)).toBe(build.csv);
+    await expect.poll(()=>page.evaluate(id=>PandoraRemaked.buildStore.getBuild(id)?.payload.startsWith('PS3:2:'),build.id)).toBe(true);
+    await expect(page.locator('[data-remaked-build-manager-status]')).toHaveAttribute('data-state','success');
+    expect(await page.evaluate(()=>localStorage.getItem(PandoraRemaked.buildStore.RECOVERY_KEY))).toBeNull();
+    expect(await page.evaluate(()=>PandoraRemaked.builds.lastLoadFailure())).toBeNull();
+    expect(await page.evaluate(()=>localStorage.getItem('file'))).toBe(seed.legacy);
+  }
+  await page.keyboard.press('Escape');
+  const active=await page.evaluate(()=>PandoraRemaked.adapter.serialize());
+  // Keep the synthetic catalog publication available across a full browser
+  // reload; the production revision with the same number may be different.
+  await page.route('https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev/api/catalog**',
+    route=>route.fulfill({json:seed.published}));
+  await page.reload();
+  await expect.poll(()=>page.evaluate(()=>PandoraRemaked.adapter.serialize())).toBe(active);
+});
