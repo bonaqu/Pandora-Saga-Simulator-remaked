@@ -5,13 +5,13 @@
 <!-- release-notes:user:ru -->
 - **Исправлена атака с некоторыми типами оружия:** условия расовых бонусов теперь проверяют альтернативные категории оружия, а не невозможное совпадение всех категорий одновременно.
 - **Улучшены сохранение и сравнение билдов:** при недоступном сервере каталога используются ранее проверенные локальные данные, устаревшие результаты сравнения не перезаписывают новый выбор, а имена сохранений и отчёты переноса не теряются.
-- **Коллекция Зари:** подключены 40 подтверждённых видов экипировки из Pandora Saga OS. Пять женских вариантов получили отдельные записи в Modern; сохранены исторические эффекты и указаны правильные расы. Архивный Legacy не изменён.
+- **Коллекция Зари:** подключены 40 подтверждённых вариантов экипировки из актуального игрового каталога. Пять женских вариантов получили отдельные записи в Modern; сохранены исторические эффекты и указаны правильные расы. Архивный Legacy не изменён.
 <!-- /release-notes:user:ru -->
 
 <!-- release-notes:user:en -->
 - **Fixed several weapon attack conditions:** racial bonuses now match alternative weapon categories rather than requiring a weapon to belong to all incompatible categories at once.
 - **More reliable saved builds and comparison:** validated cached game data works when the catalog server is unreachable, stale comparisons no longer overwrite new choices, and save names and migration reports remain visible.
-- **Dawn collection:** connected 40 verified Pandora Saga OS equipment variants. Five previously merged female variants have separate Modern records; original effects and race restrictions are preserved. The archived Legacy calculator is unchanged.
+- **Dawn collection:** connected 40 verified equipment variants from the current game catalog. Five previously merged female variants have separate Modern records; original effects and race restrictions are preserved. The archived Legacy calculator is unchanged.
 <!-- /release-notes:user:en -->
 
 <!-- admin-notes:ru -->
