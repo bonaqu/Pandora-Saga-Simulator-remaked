@@ -75,6 +75,34 @@ test('Dawn expansion enforces race/sex and keeps archived calculations unchanged
   }
 });
 
+test('published Dawn variants reuse only historical JP/TW text, never newly fabricated translations', async ({ page }) => {
+  await page.goto('/');
+  const output = await page.evaluate(() => {
+    const dawn = window.PandoraRemakedDawnCollection;
+    const published = dawn.entries.filter(row => row.publishedId);
+    const records = published.map(row => ({
+      id: row.publishedId, kind: 'equipment', category: row.category,
+      names: {en:row.en, ru:row.ru, jp:'', tw:''},
+      compatibility: Array(36).fill(1)
+    }));
+    const copy = JSON.stringify(records);
+    const result = dawn.augment({revision:94,records},window.EquipData);
+    return { count:published.length, beforeIntact:copy===JSON.stringify(records),
+      values:published.map(row => {
+        const item = result.records.find(entry => entry.id === row.publishedId);
+        return { id:row.id, jp:item.names.jp, tw:item.names.tw,
+          expectedJp:window.EquipData[0][row.category][row.templateIndex][0],
+          expectedTw:window.EquipData[2][row.category][row.templateIndex][0] };
+      }) };
+  });
+  expect(output.count).toBe(10);
+  expect(output.beforeIntact).toBe(true);
+  for(const row of output.values){
+    expect(row.jp,row.id+' archival JP').toBe(row.expectedJp);
+    expect(row.tw,row.id+' archival TW').toBe(row.expectedTw);
+  }
+});
+
 test('Dawn reserved IDs fail closed when the live catalog allocates the same equipment index', async ({ page }) => {
   await page.goto('/');
   const message = await page.evaluate(() => {
