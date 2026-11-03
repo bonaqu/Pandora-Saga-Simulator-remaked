@@ -196,3 +196,189 @@ test('Compare Builds remains usable at 390px without body-level horizontal overf
   await expect(page.locator('[data-remaked-compare-b]')).toBeVisible();
   await expect(page.locator('[data-remaked-compare-table]')).toBeVisible();
 });
+
+test('blocked browser storage reports an actual read error and recovers without losing builds',async({page})=>{
+  const builds=await seedBuilds(page);
+  await page.evaluate(()=>{
+    window.restoreNamedStorageGet=Storage.prototype.getItem;
+    Storage.prototype.getItem=function(key){
+      if(key===PandoraRemaked.buildStore.BUILDS_KEY)throw new DOMException('blocked','SecurityError');
+      return window.restoreNamedStorageGet.call(this,key);
+    };
+  });
+  await page.locator('[data-remaked-compare-open]').click();
+  await expect(page.locator('[data-remaked-compare-empty]')).toContainText(/unavailable.*storage-unavailable/i);
+  await expect(page.locator('[data-remaked-compare-status]')).toContainText(/could not be read/i);
+  await expect(page.locator('[data-remaked-compare-status]')).toHaveAttribute('data-state','error');
+  await expect(page.locator('[data-remaked-compare-table]')).toBeHidden();
+  await page.evaluate(()=>{Storage.prototype.getItem=window.restoreNamedStorageGet;});
+  await page.locator('[data-remaked-compare-refresh]').click();
+  await choosePair(page,builds);
+  await expect(page.locator('[data-remaked-compare-table]')).toBeVisible();
+  expect(await page.evaluate(()=>PandoraRemaked.buildStore.listBuilds().builds.length)).toBe(2);
+  expect(await page.evaluate(()=>PandoraRemaked.adapter.serialize())).toBe(builds.active);
+});
+
+test('duplicate persisted build IDs are ignored with a warning but the other two can still compare',async({page})=>{
+  const builds=await seedBuilds(page);
+  const original=await page.evaluate(()=>{
+    const key=PandoraRemaked.buildStore.BUILDS_KEY;
+    const record=JSON.parse(localStorage.getItem(key));
+    record.builds.push({...record.builds[0],name:'Malicious duplicate ID'});
+    localStorage.setItem(key,JSON.stringify(record));
+    return localStorage.getItem(key);
+  });
+  await page.locator('[data-remaked-compare-open]').click();
+  await expect(page.locator('[data-remaked-compare-a] option')).toHaveCount(3);
+  const listed=await page.evaluate(()=>PandoraRemaked.buildStore.listBuilds());
+  expect(listed.ok).toBe(false);
+  expect(listed.error).toMatchObject({code:'corrupt-entries',invalidCount:1});
+  expect(listed.builds.map(x=>x.id)).toEqual([builds.a.id,builds.b.id]);
+  await choosePair(page,builds);
+  await expect(page.locator('[data-remaked-compare-table]')).toBeVisible();
+  await expect(page.locator('[data-remaked-compare-status]')).toHaveAttribute('data-state','warning');
+  await expect(page.locator('[data-remaked-compare-status]')).toContainText(/damaged/i);
+  expect(await page.evaluate(()=>localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY))).toBe(original);
+  expect(await page.evaluate(()=>PandoraRemaked.adapter.serialize())).toBe(builds.active);
+});
+
+test('comparing B vs A reverses deltas and value columns without touching the active character',async({page})=>{
+  const builds=await seedBuilds(page);
+  await page.locator('[data-remaked-compare-open]').click();
+  await choosePair(page,builds);
+  await expect(page.locator('[data-remaked-compare-meta-a]')).toContainText(builds.a.name);
+  const read=()=>page.evaluate(()=>({
+    rows:Array.from(document.querySelectorAll('[data-remaked-compare-row]')).map(row=>({
+      key:row.dataset.statKey,
+      a:row.querySelector('[data-remaked-value-a]').textContent,
+      b:row.querySelector('[data-remaked-value-b]').textContent,
+      delta:row.querySelector('[data-remaked-delta]').textContent,
+      direction:row.querySelector('[data-remaked-delta]').dataset.direction
+    })),
+    active:PandoraRemaked.adapter.serialize(),
+    stored:localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY)
+  }));
+  const before=await read();
+  await page.locator('[data-remaked-compare-a]').selectOption(builds.b.id);
+  await page.locator('[data-remaked-compare-b]').selectOption(builds.a.id);
+  await expect(page.locator('[data-remaked-compare-meta-a]')).toContainText(builds.b.name);
+  await expect(page.locator('[data-remaked-compare-meta-b]')).toContainText(builds.a.name);
+  const after=await read();
+  expect(before.rows.length).toBeGreaterThan(5);
+  expect(after.rows.length).toBe(before.rows.length);
+  for(const [index,row] of before.rows.entries()){
+    const reverse=after.rows[index];
+    expect(reverse.key).toBe(row.key);
+    expect(reverse.a).toBe(row.b);
+    expect(reverse.b).toBe(row.a);
+    const flipped={up:'down',down:'up',flat:'flat',unavailable:'unavailable'};
+    expect(reverse.direction).toBe(flipped[row.direction]);
+    if(row.direction==='flat')expect(reverse.delta).toBe(row.delta);
+    if(row.direction==='unavailable')expect(reverse.delta).toBe('—');
+  }
+  expect(after.active).toBe(before.active);
+  expect(after.stored).toBe(before.stored);
+});
+
+test('deleted, duplicated and renamed builds update an open comparison without manual Refresh',async({page})=>{
+  const builds=await seedBuilds(page);
+  await page.locator('[data-remaked-compare-open]').click();
+  await choosePair(page,builds);
+  await expect(page.locator('[data-remaked-compare-table]')).toBeVisible();
+
+  const removed=await page.evaluate(id=>PandoraRemaked.buildStore.deleteBuild(id),builds.b.id);
+  expect(removed.ok).toBe(true);
+  await expect(page.locator('[data-remaked-compare-table]')).toBeHidden();
+  await expect(page.locator('[data-remaked-compare-status]')).toContainText(/no longer available|at least two/i);
+  await expect(page.locator('[data-remaked-compare-b] option')).toHaveCount(2);
+
+  const twin=await page.evaluate(id=>PandoraRemaked.buildStore.duplicateBuild(id),builds.a.id);
+  expect(twin.ok).toBe(true);
+  await expect(page.locator('[data-remaked-compare-b] option')).toHaveCount(3);
+  await page.locator('[data-remaked-compare-b]').selectOption(twin.build.id);
+  await expect(page.locator('[data-remaked-compare-table]')).toBeVisible();
+
+  const renamed=await page.evaluate(id=>PandoraRemaked.buildStore.updateBuild(id,{name:'Renamed during comparison'}),builds.a.id);
+  expect(renamed.ok).toBe(true);
+  await expect(page.locator('[data-remaked-compare-a] option:checked')).toHaveText('Renamed during comparison');
+  await expect(page.locator('[data-remaked-compare-meta-a]')).toContainText('Renamed during comparison');
+  expect(await page.evaluate(()=>PandoraRemaked.adapter.serialize())).toBe(builds.active);
+});
+
+test('invalid build payload fails closed, then a repaired build compares without reopening',async({page})=>{
+  const builds=await seedBuilds(page);
+  const edited=await page.evaluate(id=>PandoraRemaked.buildStore.updateBuild(id,{payload:'invalid-code'}),builds.b.id);
+  expect(edited.ok).toBe(true);
+  await page.locator('[data-remaked-compare-open]').click();
+  await choosePair(page,builds);
+  await expect(page.locator('[data-remaked-compare-status]')).toHaveAttribute('data-state','error');
+  await expect(page.locator('[data-remaked-compare-table]')).toBeHidden();
+  expect(await page.evaluate(()=>PandoraRemaked.adapter.serialize())).toBe(builds.active);
+  const restored=await page.evaluate(({id,payload})=>PandoraRemaked.buildStore.updateBuild(id,{payload}),{id:builds.b.id,payload:builds.b.payload});
+  expect(restored.ok).toBe(true);
+  await expect(page.locator('[data-remaked-compare-table]')).toBeVisible();
+  await expect(page.locator('[data-remaked-compare-meta-b]')).toContainText(builds.b.name);
+  expect(await page.evaluate(()=>PandoraRemaked.adapter.serialize())).toBe(builds.active);
+});
+
+test('an obsolete asynchronous comparison cannot replace a newer selected pair',async({page})=>{
+  const builds=await seedBuilds(page);
+  const twin=await page.evaluate(id=>PandoraRemaked.buildStore.duplicateBuild(id),builds.a.id);
+  expect(twin.ok).toBe(true);
+  await page.evaluate(payload=>{
+    const catalog=PandoraRemaked.catalog,original=catalog.prepareCurrentPayload;
+    window.deferCompareStarted=false;
+    window.releaseOldComparison=null;
+    let once=true;
+    catalog.prepareCurrentPayload=async function(candidate){
+      if(once && candidate===payload){
+        once=false;
+        await new Promise(resolve=>{window.releaseOldComparison=resolve;window.deferCompareStarted=true;});
+      }
+      return original.apply(this,arguments);
+    };
+  },builds.a.payload);
+  await page.locator('[data-remaked-compare-open]').click();
+  await choosePair(page,builds);
+  await expect.poll(()=>page.evaluate(()=>window.deferCompareStarted)).toBe(true);
+  await page.locator('[data-remaked-compare-a]').selectOption(builds.b.id);
+  await page.locator('[data-remaked-compare-b]').selectOption(twin.build.id);
+  await expect(page.locator('[data-remaked-compare-meta-a]')).toContainText(builds.b.name);
+  await expect(page.locator('[data-remaked-compare-meta-b]')).toContainText(twin.build.name);
+  await page.evaluate(()=>window.releaseOldComparison());
+  await expect(page.locator('[data-remaked-compare-meta-a]')).toContainText(builds.b.name);
+  await expect(page.locator('[data-remaked-compare-meta-b]')).toContainText(twin.build.name);
+  expect(await page.evaluate(()=>PandoraRemaked.adapter.serialize())).toBe(builds.active);
+});
+
+test('RU/EN switching preserves selected builds and numeric comparison, including after reload',async({page})=>{
+  const builds=await seedBuilds(page);
+  await page.locator('[data-remaked-compare-open]').click();
+  await choosePair(page,builds);
+  await expect(page.locator('[data-remaked-compare-table]')).toBeVisible();
+  const original=await page.evaluate(()=>({
+    pair:[document.querySelector('[data-remaked-compare-a]').value,document.querySelector('[data-remaked-compare-b]').value],
+    state:PandoraRemaked.adapter.serialize(),
+    saved:localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY)
+  }));
+  await page.evaluate(()=>PandoraRemaked.i18n.setLocale('ru'));
+  await expect(page.locator('[data-remaked-compare-table]')).toBeVisible();
+  await expect(page.locator('[data-remaked-compare-a]')).toHaveValue(builds.a.id);
+  await expect(page.locator('[data-remaked-compare-b]')).toHaveValue(builds.b.id);
+  await page.evaluate(()=>PandoraRemaked.i18n.setLocale('en'));
+  await expect(page.locator('[data-remaked-compare-table]')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('[data-remaked-compare]')).toBeHidden();
+  await page.reload();
+  await expect(page.locator('[data-remaked-shell]')).toBeVisible();
+  await page.locator('[data-remaked-compare-open]').click();
+  await choosePair(page,builds);
+  await expect(page.locator('[data-remaked-compare-table]')).toBeVisible();
+  const after=await page.evaluate(()=>({
+    state:PandoraRemaked.adapter.serialize(),
+    saved:localStorage.getItem(PandoraRemaked.buildStore.BUILDS_KEY)
+  }));
+  expect(after.saved).toBe(original.saved);
+  expect(original.pair).toEqual([builds.a.id,builds.b.id]);
+  expect(after.state).toBe(original.state);
+});
