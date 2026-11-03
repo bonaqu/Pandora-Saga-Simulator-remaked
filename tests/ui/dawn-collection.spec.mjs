@@ -93,3 +93,39 @@ test('Dawn reserved IDs fail closed when the live catalog allocates the same equ
   });
   expect(message).toMatch(/reserved Dawn equipment index/i);
 });
+
+test('D1-edited Dawn names and explicit races beat historical client placeholders', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(() => {
+    const dawn = window.PandoraRemakedDawnCollection;
+    const flagged = dawn.entries.filter(row => row.publishedId);
+    const modified = flagged[0];
+    const female = dawn.entries.find(row => row.newIndex === 180 && row.category === 31);
+    const data = flagged.map(row => ({
+      id: row.publishedId, kind: 'equipment', category: row.category,
+      compatibility: Array(36).fill(1), names: { en: row.en, ru: row.ru }
+    }));
+    const edited = data.find(row => row.id === modified.publishedId);
+    edited.names.ru = 'Название, которое изменил администратор';
+    edited.compatibility.splice(2, 6, 0, 0, 0, 0, 0, 1);
+    data.push({
+      id: 'modern.equipment.dawn-os-' + female.id, kind: 'equipment',
+      category: female.category, index: female.newIndex,
+      compatibility: [0, 1, 0, 1, 0, 0, 0, 0, ...Array(28).fill(1)],
+      names: { en: 'Owner-approved Dawn Vest (Elf) (w)', ru: 'Ручное название (ж)' },
+      calculationCode: '1=777'
+    });
+    const augmented = dawn.augment({ revision: 95, records: data }, window.EquipData);
+    return {
+      count: augmented.records.length,
+      sourceCount: data.length,
+      edited: augmented.records.find(row => row.id === modified.publishedId),
+      female: augmented.records.find(row => row.id === 'modern.equipment.dawn-os-' + female.id)
+    };
+  });
+  expect(result.count).toBe(result.sourceCount + 4);
+  expect(result.edited.names.ru).toBe('Название, которое изменил администратор');
+  expect(result.edited.compatibility.slice(2, 8)).toEqual([0, 0, 0, 0, 0, 1]);
+  expect(result.female.names.ru).toBe('Ручное название (ж)');
+  expect(result.female.calculationCode).toBe('1=777');
+});
