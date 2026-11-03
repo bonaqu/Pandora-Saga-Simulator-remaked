@@ -348,3 +348,49 @@ test('autosave rejection after a migrated load preserves old named code and reco
   expect(state.journal.payload).toBe(seed.before);
   expect(state.error).toBeNull();
 });
+
+test('two legacy level-50 racial builds compare AND load back into the character after current catalog migration',async({page})=>{
+  await openModern(page);
+  const seed=await page.evaluate(async()=>{
+    const ns=PandoraRemaked,active=ns.adapter.serialize(),store=ns.buildStore;
+    function make(index,name){
+      ns.adapter.load(active);
+      const race=document.getElementById('SelRace');
+      race.selectedIndex=index;race.dispatchEvent(new Event('change',{bubbles:true}));
+      StatusMove('Lev',49);CalcSet('Lev');
+      const csv=ns.catalog.unpackPayload(ns.adapter.serialize()).payload;
+      const saved=store.saveBuild(name,csv);
+      if(!saved.ok)throw Error(JSON.stringify(saved.error));
+      return {id:saved.build.id,name,level:Status.Lev[0],race:Status.Job[0],csv};
+    }
+    const a=make(3,'Всад Энкиду 50'),b=make(1,'Всад Эльф 50');
+    ns.adapter.load(active);
+    const source=await ns.catalog.fetchSnapshot(0);
+    ns.catalog.applySnapshot({...source,revision:2,impactRevision:2,records:[]});
+    ns.builds.flushAutosave();
+    return {a,b,original:ns.adapter.serialize(),legacy:localStorage.getItem('file')};
+  });
+  expect(seed.a.level).toBe(50);expect(seed.b.level).toBe(50);
+  expect(seed.a.race).not.toBe(seed.b.race);
+  await page.locator('[data-remaked-compare-open]').click();
+  await page.locator('[data-remaked-compare-a]').selectOption(seed.a.id);
+  await page.locator('[data-remaked-compare-b]').selectOption(seed.b.id);
+  await expect(page.locator('[data-remaked-compare-table]')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await page.locator('[data-remaked-builds-open]').click();
+  for(const build of [seed.a,seed.b]){
+    const row=page.locator('[data-remaked-build-row]').filter({hasText:build.name});
+    await row.locator('[data-remaked-build-load]').click();
+    await expect.poll(()=>page.evaluate(()=>Status.Lev[0])).toBe(50);
+    await expect.poll(()=>page.evaluate(()=>PandoraRemaked.catalog.unpackPayload(PandoraRemaked.adapter.serialize()).payload)).toBe(build.csv);
+    await expect.poll(()=>page.evaluate(id=>PandoraRemaked.buildStore.getBuild(id)?.payload.startsWith('PS3:2:'),build.id)).toBe(true);
+    await expect(page.locator('[data-remaked-build-manager-status]')).toHaveAttribute('data-state','success');
+    expect(await page.evaluate(()=>localStorage.getItem(PandoraRemaked.buildStore.RECOVERY_KEY))).toBeNull();
+    expect(await page.evaluate(()=>PandoraRemaked.builds.lastLoadFailure())).toBeNull();
+    expect(await page.evaluate(()=>localStorage.getItem('file'))).toBe(seed.legacy);
+  }
+  await page.keyboard.press('Escape');
+  const active=await page.evaluate(()=>PandoraRemaked.adapter.serialize());
+  await page.reload();
+  await expect.poll(()=>page.evaluate(()=>PandoraRemaked.adapter.serialize())).toBe(active);
+});
