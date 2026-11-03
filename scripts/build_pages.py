@@ -121,6 +121,7 @@ BODY_INJECTION = f'''<!-- REMAKED:BODY -->
 <script src="./modern/locales.js"></script>
 <script src="./modern/game-terms.js"></script>
 <script src="./modern/verified-racial-gear.js"></script>
+<script src="./modern/item-description-format.js"></script>
 <script src="./modern/i18n.js"></script>
 <script src="./modern/astian-rules.js"></script>
 <script src="./modern/adapter.js"></script>
@@ -444,6 +445,24 @@ def _materialize_current_class_vitals(root: pathlib.Path, output: pathlib.Path) 
 def _materialize_modern_assets(root: pathlib.Path, output: pathlib.Path) -> None:
     modern_output = output / "modern"
     shutil.copytree(root / "modern", modern_output)
+
+    # Keep the browser presentation and D1/admin formatter byte-for-byte
+    # equivalent. Generate a tiny non-module browser wrapper from the same
+    # pure source used by the Worker; never maintain a second regex list.
+    formatter = (root / "admin-api/src/item-description-format.mjs").read_text(encoding="utf-8")
+    for symbol in ("formatItemDescription", "formatItemDescriptionMap"):
+        declaration = "export function " + symbol + "("
+        if formatter.count(declaration) != 1:
+            raise ValueError("Invalid shared item-description formatter: " + symbol)
+        formatter = formatter.replace(declaration, "function " + symbol + "(")
+    (modern_output / "item-description-format.js").write_text(
+        "(function () {\n'use strict';\n" + formatter
+        + "\nvar ns = window.PandoraRemaked = window.PandoraRemaked || {};\n"
+        + "ns.itemDescriptionFormat = Object.freeze({"
+        + "formatItemDescription:formatItemDescription,"
+        + "formatItemDescriptionMap:formatItemDescriptionMap});\n})();\n",
+        encoding="utf-8"
+    )
 
     encoded = "".join(
         part.read_text(encoding="ascii").strip()
