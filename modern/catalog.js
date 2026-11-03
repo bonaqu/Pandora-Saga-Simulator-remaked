@@ -675,7 +675,12 @@
         if (record.potentialCaps) classCaps[record.index].splice(1, 20, ...record.potentialCaps); return; }
       for (var language = 0; language < 3; language++) {
         var code = languages[language], original = sourceRow(record), key = original?.[0] || record.engineKey;
-        var name = language === 0 ? key : escaped(record.names[code] || record.names.en);
+        // Original game JP/TW strings remain untouched. Server-only Modern
+        // items have no officially translated JP/TW item names: use EN rather
+        // than exposing an internal Modern:<id> placeholder.
+        var name = language === 0
+          ? original && !original._pandoraPlaceholder ? key : escaped(record.names.jp || record.names.en || record.engineKey)
+          : escaped(record.names[code] || record.names.en);
         var row = record.kind === 'equipment'
           ? [name, escaped(namespace.catalogText.lines(record.description[code] || record.description.en)).replace(/\n/g, '<br />'), escaped(namespace.catalogText.lines(record.notes[code] || record.notes.en)).replace(/\n/g, '<br />'), escaped(namespace.catalogText.lines(record.acquisition[code] || record.acquisition.en)).replace(/\n/g, '<br />'), record.level, record.sockets, record.parameter6, record.calculationCode, ...record.compatibility, record.trailing]
           : [name, escaped(record.modifiers[code] || record.modifiers.en || record.names.en), escaped(namespace.catalogText.lines(record.description[code] || record.description.en)).replace(/\n/g, '<br />'), escaped(namespace.catalogText.lines(record.notes[code] || record.notes.en)).replace(/\n/g, '<br />'), escaped(namespace.catalogText.lines(record.acquisition[code] || record.acquisition.en)).replace(/\n/g, '<br />'), ...record.soulParameters, record.calculationCode, ...record.compatibility, record.trailing];
