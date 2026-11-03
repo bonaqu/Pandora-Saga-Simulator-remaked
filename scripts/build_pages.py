@@ -301,6 +301,12 @@ def _materialize_modern_weapon_type_fixes(root: pathlib.Path, output: pathlib.Pa
         # Parentheses are necessary: the surrounding job/race predicates
         # are ANDed, whereas weapon categories are alternatives.
         new = "(" + " || ".join(f"tmp[6] == {value}" for value in values) + ")"
+        if values == (3, 5):
+            # The shorter sequence also occurs *inside* the longer
+            # Gladiator group's conjunction. Anchor the Dwarf racial clause
+            # so we never turn a substring of another condition into a match.
+            prefix = "Status['Job'][0] == 2 && Status['Job'][1] == 1 && "
+            old, new = prefix + old, prefix + new
         if source.count(old) != 1 or patched.count(old) != 1:
             raise ValueError(f"Cannot safely patch Modern weapon categories: {values}")
         patched = patched.replace(old, new, 1)
