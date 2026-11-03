@@ -620,6 +620,7 @@
     var code = source[7];
     return {
       id: id, kind: 'equipment', category: entry.category, index: entry.newIndex,
+      _pandoraClientProjected: true, // Never confuse this client fallback with an owner-published D1 row.
       engineId: entry.category * 10000 + entry.newIndex, engineKey: 'Modern:' + id,
       names: localized(entry.en, entry.ru),
       description: localized(entry.descriptionEn || original?.[1]?.[entry.category]?.[entry.templateIndex]?.[1] || '', entry.descriptionRu),
@@ -644,7 +645,7 @@
     if (!entry) return null;
     // Never silently retire a separately admin-published legacy item.
     if (snapshot.records.some(function (row) {
-      return row.id === (entry.newIndex !== undefined
+      return !row._pandoraClientProjected && row.id === (entry.newIndex !== undefined
         ? entry.recordId : 'equipment.' + category + '.' + index);
     })) return null;
     return snapshot.records.find(function (row) {
