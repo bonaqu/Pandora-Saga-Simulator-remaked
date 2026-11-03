@@ -515,7 +515,7 @@ def _materialize_locales(
     )
 
 
-def _materialize_verified_racial_gear(root: pathlib.Path, output: pathlib.Path) -> dict[str, str]:
+def _materialize_verified_racial_gear(root: pathlib.Path, output: pathlib.Path) -> dict[str, dict[str, str]]:
     # The active OS has native Russian names even where archived JP/TW stops.
     # These verified labels are presentation fallbacks, never D1 publications.
     registry = json.loads((root / "data/verified-racial-gear.v1.json").read_text(encoding="utf-8"))
@@ -530,7 +530,7 @@ def _materialize_verified_racial_gear(root: pathlib.Path, output: pathlib.Path) 
             raise ValueError("Duplicate, empty or invalid racial-equipment record: " + str(record_id))
         ids.add(record_id)
         slots.add(identity)
-        translations[identity] = row["ru"]
+        translations[identity] = {"ru": row["ru"], "en": row["en"]}
     (output / "modern/verified-racial-gear.js").write_text(
         "window.PandoraRemakedVerifiedRacialGear = Object.freeze(" +
         json.dumps(registry, ensure_ascii=False, separators=(",", ":")) +
@@ -766,10 +766,13 @@ def build_pages(root: pathlib.Path, output: pathlib.Path) -> None:
     )
     verified_names = _materialize_verified_racial_gear(root, output)
     game_ru = dict(translations.game_russian)
-    for term, name in verified_names.items():
+    game_en = dict(translations.game_english)
+    for term, names in verified_names.items():
         if not game_ru.get(term):
-            game_ru[term] = name
-    _materialize_game_terms(output, game_ru, translations.game_english)
+            game_ru[term] = names["ru"]
+        if not game_en.get(term):
+            game_en[term] = names["en"]
+    _materialize_game_terms(output, game_ru, game_en)
     _materialize_guild_descriptions(root, output)
     _materialize_generated_data(root, output)
     materialize_native_passives(root, output)
