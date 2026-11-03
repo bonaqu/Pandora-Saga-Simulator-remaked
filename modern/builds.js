@@ -752,8 +752,8 @@
         setManagerStatus(
           !detached ? t('builds.urlWarning', null, 'Old shared link could not be cleared. Export a new link before reloading.')
             : !saved.ok ? t('builds.loadedNoAutosave', null, 'Build loaded, but autosave is unavailable.')
-            : result.rewriteFailed ? t('builds.loadError.rewrite', {name:currentBuild.name},
-                'Build loaded and autosaved, but its named copy could not be updated.')
+            : result.rewriteFailed ? t('builds.migrationSaveFailed', null,
+                'Current build updated. Saved builds could not be written; original data kept.')
             : loadedMessage,
           saved.ok && detached && !result.rewriteFailed ? 'success' : 'warning'
         );
