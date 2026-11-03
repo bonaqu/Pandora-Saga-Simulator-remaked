@@ -5,7 +5,13 @@
     "english": "https://pandorasaga-os.com/gamedata/strings.en.json",
     "verifiedOn": "2026-11-03",
     "policy": "Legacy JP/TW remain immutable. New game items show English as JP/TW fallback. The official RU/EN names override only missing local names; published owner edits take priority.",
-    "reconciliation": "Current publicly published D1 revision 94, read-only on 2026-11-03. Only 41 unambiguous source-game-ID identities are mapped; published item remains canonical and editable, archived/synthetic counterparts remain aliases for saved builds."
+    "reconciliation": "Current publicly published D1 revision 94, read-only on 2026-11-03. Only 41 unambiguous source-game-ID identities are mapped; published item remains canonical and editable, archived/synthetic counterparts remain aliases for saved builds.",
+    "descriptionSources": {
+      "ru": "https://pandorasaga-os.com/gamedata/items.json",
+      "en": "https://pandorasaga-os.com/gamedata/strings.en.json",
+      "gameId": "Exact numeric game item identity; no fuzzy translations",
+      "snapshotProvenance": "Pandora Saga Build Studio archived OS JSON (2026-10-30), cross-checked against retained verified 2026-11-03 Dawn samples"
+    }
   },
   "entries": [
     {
@@ -22,7 +28,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.5c4dedd9-24ca-488a-a247-a2387cc9cd90",
-      "publishedIndex": 107
+      "publishedIndex": 107,
+      "descriptionRu": "Изготовленная на заказ мужская одежда для людей.ЛВК +1, ОЗ +15Точность +5",
+      "descriptionEn": "Custom-made men's clothing for Humans.DEX +1, HP +15Accuracy +5"
     },
     {
       "set": "racial",
@@ -38,7 +46,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.3aefc261-0023-4299-a1d1-206d6904326c",
-      "publishedIndex": 108
+      "publishedIndex": 108,
+      "descriptionRu": "Изготовленная на заказ женская одежда для людей.ЛВК +1, ОЗ +15Точность +5",
+      "descriptionEn": "Custom-made women's clothing for Humans.DEX +1, HP +15Accuracy +5"
     },
     {
       "set": "racial",
@@ -54,7 +64,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.7f16da63-c482-4353-a436-eb1be613c2cd",
-      "publishedIndex": 109
+      "publishedIndex": 109,
+      "descriptionRu": "Изготовленная на заказ одежда для эльфов.ИНТ +1, ОЗ +22Снижение расхода ОМ +7%",
+      "descriptionEn": "Custom-made clothing for Elves.INT +1, HP +22MP Cost Reduction +7%"
     },
     {
       "set": "racial",
@@ -72,7 +84,8 @@
       "newIndex": 181,
       "descriptionRu": "Изготовленная на заказ одежда для эльфиек.ИНТ +1, ОЗ +22Снижение расхода ОМ +7%",
       "publishedId": "modern.equipment.f0bb7e4c-ebc9-4f47-a20a-60bd627d4761",
-      "publishedIndex": 110
+      "publishedIndex": 110,
+      "descriptionEn": "Custom-made clothing for female Elves.INT +1, HP +22MP Cost Reduction +7%"
     },
     {
       "set": "racial",
@@ -88,7 +101,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.17612fe3-6c2a-4cd0-ad4d-98b9b6124060",
-      "publishedIndex": 111
+      "publishedIndex": 111,
+      "descriptionRu": "Одежда, изготовленная специально для цвергов.СИЛ +1, ОЗ +12Атака +4",
+      "descriptionEn": "Clothing made specially for Dwarves.STR +1, HP +12Attack +4"
     },
     {
       "set": "racial",
@@ -104,7 +119,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.3c8a0ad6-d3c9-41ef-a24b-ab03d52c0e81",
-      "publishedIndex": 113
+      "publishedIndex": 113,
+      "descriptionRu": "Изготовленный на заказ корсет для мирин.ПРВ +1, ОЗ +16Шанс критической атаки +2%",
+      "descriptionEn": "Custom-made corset for Myrines.AGI +1, HP +16Critical Hit Chance +2%"
     },
     {
       "set": "racial",
@@ -118,7 +135,9 @@
       "ru": "Жилет для энкиду",
       "en": "Vest (Enkidu)",
       "level": 5,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленный на заказ жилет для энкиду.ВЫН +1, ОЗ +11Получаемый физический урон -5%",
+      "descriptionEn": "Custom-made vest for Enkidu.STA +1, HP +11Physical Damage Taken -5%"
     },
     {
       "set": "racial",
@@ -134,7 +153,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.26a8d531-a072-4859-afc3-351aea8d0b27",
-      "publishedIndex": 116
+      "publishedIndex": 116,
+      "descriptionRu": "Изготовленная на заказ куртка для кроллей.СД +1, ОЗ +25Сопротивляемость магии +5",
+      "descriptionEn": "Custom-made tunic for Lapins.SPI +1, HP +25Magic Resistance +5"
     },
     {
       "set": "racial",
@@ -150,7 +171,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.a2bb6539-cae6-4ca3-af04-f5cc37a84655",
-      "publishedIndex": 100
+      "publishedIndex": 100,
+      "descriptionRu": "Изготовленные на заказ штаны для мужчин.ОМ +8Уклонение +2",
+      "descriptionEn": "Custom-made pants for men.MP +8Evasion +2"
     },
     {
       "set": "racial",
@@ -166,7 +189,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.67a23ae1-4d65-4003-a877-925aa6b290a1",
-      "publishedIndex": 101
+      "publishedIndex": 101,
+      "descriptionRu": "Изготовленные на заказ шорты для женщин.ОМ +8Уклонение +2",
+      "descriptionEn": "Custom-made shorts for women.MP +8Evasion +2"
     },
     {
       "set": "racial",
@@ -182,7 +207,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.8e76e26b-fbf8-4d62-a791-4938ffeb08ec",
-      "publishedIndex": 102
+      "publishedIndex": 102,
+      "descriptionRu": "Изготовленные на заказ штаны для эльфов.ПРВ +1, ОМ +4.",
+      "descriptionEn": "Custom-made pants for elves.AGI +1, MP +4."
     },
     {
       "set": "racial",
@@ -198,7 +225,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.8bc5af37-31ec-42ee-a489-01bf11a5f3fa",
-      "publishedIndex": 103
+      "publishedIndex": 103,
+      "descriptionRu": "Изготовленная на заказ юбка для эльфиек.ПРВ +1, ОМ +4.",
+      "descriptionEn": "A custom-made skirt for elven women.AGI +1, MP +4."
     },
     {
       "set": "racial",
@@ -214,7 +243,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.418c1dc1-1301-41f8-a238-14d69f626c9d",
-      "publishedIndex": 104
+      "publishedIndex": 104,
+      "descriptionRu": "Изготовленные на заказ штаны для цвергов.ОМ +12Получаемый физический урон -2%",
+      "descriptionEn": "Custom-made pants for dwarves.MP +12Physical Damage Taken -2%"
     },
     {
       "set": "racial",
@@ -230,7 +261,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.f00cc50a-d80a-4f5e-ae22-dc10b152dd8b",
-      "publishedIndex": 105
+      "publishedIndex": 105,
+      "descriptionRu": "Изготовленные на заказ чулки для мирин.ОМ +10Снижение расхода ОМ +5%",
+      "descriptionEn": "Custom-made hosiery for Mailyn.MP +10MP Cost Reduction +5%"
     },
     {
       "set": "racial",
@@ -246,7 +279,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.460605b9-9069-4b21-af16-1d56d0323dae",
-      "publishedIndex": 107
+      "publishedIndex": 107,
+      "descriptionRu": "Изготовленная на заказ набедренная повязка для энкиду.СД +1, ОМ +16.",
+      "descriptionEn": "A custom-made kilt for the Enkidu.SPI +1, MP +16."
     },
     {
       "set": "racial",
@@ -262,7 +297,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.9e8ee1b7-7e38-4620-aca7-e0e530c1ed61",
-      "publishedIndex": 109
+      "publishedIndex": 109,
+      "descriptionRu": "Изготовленные на заказ штаны для кроллей.ИНТ +1, ОМ +3.",
+      "descriptionEn": "Custom-made leggings for the Lapin.INT +1, MP +3."
     },
     {
       "set": "racial",
@@ -278,7 +315,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.8216087b-7633-4cf1-a429-cfc25e5f492d",
-      "publishedIndex": 107
+      "publishedIndex": 107,
+      "descriptionRu": "Изготовленный на заказ мужской браслет.Атака +4Точность +1",
+      "descriptionEn": "A custom-made men's armband.Attack +4Accuracy +1"
     },
     {
       "set": "racial",
@@ -296,7 +335,8 @@
       "newIndex": 182,
       "descriptionRu": "Изготовленный на заказ женский браслет.Атака +4Точность +1",
       "publishedId": "modern.equipment.212bdcde-2fd3-493a-a439-e41513dd6185",
-      "publishedIndex": 108
+      "publishedIndex": 108,
+      "descriptionEn": "A custom-made women's armband.Attack +4Accuracy +1"
     },
     {
       "set": "racial",
@@ -312,7 +352,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.df1a3b1c-6779-4a44-a09e-2537c436b3c7",
-      "publishedIndex": 109
+      "publishedIndex": 109,
+      "descriptionRu": "Изготовленные на заказ перчатки для эльфов.СИЛ +1Точность +2",
+      "descriptionEn": "Custom-made gloves for elves.STR +1Accuracy +2"
     },
     {
       "set": "racial",
@@ -330,7 +372,8 @@
       "newIndex": 183,
       "descriptionRu": "Изготовленные на заказ перчатки для эльфиек.СИЛ +1Точность +2",
       "publishedId": "modern.equipment.438d9d04-2174-4b5a-abd3-87ca20f644b6",
-      "publishedIndex": 111
+      "publishedIndex": 111,
+      "descriptionEn": "Custom-made gloves for elven women.STR +1Accuracy +2"
     },
     {
       "set": "racial",
@@ -346,7 +389,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.b7946c32-5b0f-4e35-a528-5ea2406c168b",
-      "publishedIndex": 112
+      "publishedIndex": 112,
+      "descriptionRu": "Изготовленные на заказ рукавицы для цвергов.Точность +3Шанс критической атаки +1%",
+      "descriptionEn": "Custom-made gloves for dwarves.Accuracy +3Critical Hit Chance +1%"
     },
     {
       "set": "racial",
@@ -362,7 +407,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.246a361c-f593-41ab-a515-8cff5fe99160",
-      "publishedIndex": 113
+      "publishedIndex": 113,
+      "descriptionRu": "Изготовленные на заказ перчатки для мирин.Атака +2Шанс критической атаки +2%",
+      "descriptionEn": "Custom-made gloves for the Mailyn.Attack +2Critical Hit Chance +2%"
     },
     {
       "set": "racial",
@@ -378,7 +425,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.02c67dc2-c617-49a3-ae4a-35552dda8838",
-      "publishedIndex": 114
+      "publishedIndex": 114,
+      "descriptionRu": "Изготовленные на заказ рукавицы для энкиду.Точность +2Шанс критической атаки +2%",
+      "descriptionEn": "Custom-made gloves for the Enkidu.Accuracy +2Critical Hit Chance +2%"
     },
     {
       "set": "racial",
@@ -394,7 +443,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.e0d5e232-2fb0-4768-af17-812bb2f20a96",
-      "publishedIndex": 116
+      "publishedIndex": 116,
+      "descriptionRu": "Изготовленные на заказ перчатки для кроллей.Атака +3Точность +2",
+      "descriptionEn": "Custom-made gloves for the Lapin.Attack +3Accuracy +2"
     },
     {
       "set": "racial",
@@ -410,7 +461,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.cb586c08-2a3f-4497-ac73-fe7771577df8",
-      "publishedIndex": 108
+      "publishedIndex": 108,
+      "descriptionRu": "Изготовленные на заказ мужские сапоги.ОЗ +10, ОМ +10Получаемый физический урон -1%",
+      "descriptionEn": "Custom-made men's boots.HP +10, MP +10Physical Damage Taken -1%"
     },
     {
       "set": "racial",
@@ -428,7 +481,8 @@
       "newIndex": 182,
       "descriptionRu": "Изготовленные на заказ женские сапоги.ОЗ +10, ОМ +10Получаемый физический урон -1%",
       "publishedId": "modern.equipment.d2d827f4-2f16-44da-a56b-90ecb9abe009",
-      "publishedIndex": 109
+      "publishedIndex": 109,
+      "descriptionEn": "Custom-made women's boots.HP +10, MP +10Physical Damage Taken -1%"
     },
     {
       "set": "racial",
@@ -444,7 +498,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.86c9b12f-d68b-4d38-a9ab-a02a1c25696f",
-      "publishedIndex": 110
+      "publishedIndex": 110,
+      "descriptionRu": "Изготовленные на заказ сапоги для эльфов.ОЗ +12, ОМ +8Получаемый физический урон -1%",
+      "descriptionEn": "Custom-made boots for male elves.HP +12, MP +8Physical Damage Taken -1%"
     },
     {
       "set": "racial",
@@ -462,7 +518,8 @@
       "newIndex": 183,
       "descriptionRu": "Изготовленные на заказ сапоги для эльфиек.ОЗ +12, ОМ +8Получаемый физический урон -1%",
       "publishedId": "modern.equipment.dc9cb94a-7d20-4253-a3c3-e2b837a10c9a",
-      "publishedIndex": 112
+      "publishedIndex": 112,
+      "descriptionEn": "Custom-made boots for female elves.HP +12, MP +8Physical Damage Taken -1%"
     },
     {
       "set": "racial",
@@ -478,7 +535,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.70190436-7e6f-4106-ac22-028cde6498d3",
-      "publishedIndex": 113
+      "publishedIndex": 113,
+      "descriptionRu": "Изготовленные на заказ башмаки для цвергов. ОЗ +6, ОМ +14Уклонение +3",
+      "descriptionEn": "Custom-made boots for dwarves.HP +6, MP +14Evasion +3"
     },
     {
       "set": "racial",
@@ -494,7 +553,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.f812202b-dde3-48e5-a925-672ca1d67dac",
-      "publishedIndex": 114
+      "publishedIndex": 114,
+      "descriptionRu": "Изготовленные на заказ сапоги для мирин.ОЗ +7, ОМ +13Уклонение +3",
+      "descriptionEn": "Custom-made boots for Myrine.HP +7, MP +13Evasion +3"
     },
     {
       "set": "racial",
@@ -510,7 +571,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.b152ea48-5be3-45ac-a387-59c6293be04c",
-      "publishedIndex": 115
+      "publishedIndex": 115,
+      "descriptionRu": "Изготовленные на заказ башмаки для энкиду.ОЗ +5, ОМ +15Получаемый физический урон -1%",
+      "descriptionEn": "Custom-made boots for Enkidu.HP +5, MP +15Physical Damage Taken -1%"
     },
     {
       "set": "racial",
@@ -526,7 +589,9 @@
       "level": 5,
       "sockets": 0,
       "publishedId": "modern.equipment.30b1a4cc-e465-45f4-a793-d23a70087e40",
-      "publishedIndex": 117
+      "publishedIndex": 117,
+      "descriptionRu": "Изготовленные на заказ башмачки для кроллей.ОЗ +14, ОМ +6Уклонение +3",
+      "descriptionEn": "Custom-made boots for Lapin.HP +14, MP +6Evasion +3"
     },
     {
       "set": "dawn",
@@ -540,7 +605,9 @@
       "ru": "Рассветная шапка для человека (м)",
       "en": "Dawn Agal (Human) (m)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленная на заказ мужская шапка. СИЛ +1, ИНТ +1Сопротивляемость магии +2",
+      "descriptionEn": "A custom-made cap for men. STR +1, INT +1Magic Resistance +2"
     },
     {
       "set": "dawn",
@@ -554,7 +621,9 @@
       "ru": "Рассветная шапка для человека (ж)",
       "en": "Dawn Turban (Human) (w)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленная на заказ женская шапка.СИЛ +1, ИНТ +1Сопротивляемость магии +2",
+      "descriptionEn": "A custom-made cap for women.STR +1, INT +1Magic Resistance +2"
     },
     {
       "set": "dawn",
@@ -568,7 +637,9 @@
       "ru": "Рассветный венец для эльфа (м)",
       "en": "Dawn Circlet (Elf) (m)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленный на заказ венец для эльфов.СИЛ +1, СД +1Шанс критической атаки +2%",
+      "descriptionEn": "A custom-made circlet for male Elves.STR +1, SPI +1Critical Hit Chance +2%"
     },
     {
       "set": "dawn",
@@ -582,7 +653,9 @@
       "ru": "Рассветный венец для эльфа (ж)",
       "en": "Dawn Headdress (Elf) (w)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленный на заказ венец для эльфиек.СИЛ +1, СД +1Шанс критической атаки +2%",
+      "descriptionEn": "A custom-made headdress for female Elves.STR +1, SPI +1Critical Hit Chance +2%"
     },
     {
       "set": "dawn",
@@ -596,7 +669,9 @@
       "ru": "Рассветный шлем для цверга",
       "en": "Dawn Helmet (Dwarf)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Шляпа патриарха.Носить ее может только цверг.ВЫН +1Время перезарядки умений -5%Дальность атаки +50",
+      "descriptionEn": "A patriarch's hat.Only a Dwarf can wear it.STA +1Skill Cooldown -5%Attack Range +50"
     },
     {
       "set": "dawn",
@@ -612,7 +687,9 @@
       "level": 20,
       "sockets": 0,
       "publishedId": "modern.equipment.549efeeb-e073-4356-a8dc-83bf60fce92e",
-      "publishedIndex": 115
+      "publishedIndex": 115,
+      "descriptionRu": "Изготовленная на заказ вуаль для мирин.ЛВК +1, ПРВ +1Шанс уклониться от физической атаки +3%",
+      "descriptionEn": "A custom-made veil for the Myrine.DEX +1, AGI +1Physical Attack Evasion Chance +3%"
     },
     {
       "set": "dawn",
@@ -626,7 +703,9 @@
       "ru": "Рассветная маска для энкиду",
       "en": "Dawn Mask (Enkidu)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленная на заказ маска для энкиду.ВЫН +1Сопротивляемость оглушению +10%Сопротивляемость падению +10%",
+      "descriptionEn": "A custom-made mask for the Enkidu.STA +1Stun Resistance +10%Knockdown Resistance +10%"
     },
     {
       "set": "dawn",
@@ -640,7 +719,9 @@
       "ru": "Рассветная шапочка для кролля",
       "en": "Dawn Hat (Lapin)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленная на заказ шапочка для кроллей.СД +1, ИНТ +1, ОМ +3%",
+      "descriptionEn": "A custom-made cap for the Lapin.SPI +1, INT +1, MP +3%"
     },
     {
       "set": "dawn",
@@ -654,7 +735,9 @@
       "ru": "Рассветная туника для человека (м)",
       "en": "Dawn Tunic (Human) (m)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленная на заказ мужская одежда для людей.ЛВК +2, ОЗ +30Точность +8Шанс критической атаки +2%",
+      "descriptionEn": "Custom-made men's clothing for Humans.DEX +2, HP +30Accuracy +8Critical Hit Chance +2%"
     },
     {
       "set": "dawn",
@@ -668,7 +751,9 @@
       "ru": "Жилет зари для человека (ж)",
       "en": "Dawn Vest (Human) (w)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленная на заказ женская одежда для людей.ЛВК +2, ОЗ +30Точность +8Шанс критической атаки +2%",
+      "descriptionEn": "Custom-made women's clothing for Humans.DEX +2, HP +30Accuracy +8Critical Hit Chance +2%"
     },
     {
       "set": "dawn",
@@ -682,7 +767,9 @@
       "ru": "Жилет зари для эльфа (м)",
       "en": "Dawn Vest (Elf) (m)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленная на заказ одежда для эльфов.ИНТ +1, ОЗ +22Снижение расхода ОМ +7%Сопротивляемость чарам +5Сопротивляемость болезням духа +5%",
+      "descriptionEn": "Custom-made clothing for Elves.INT +1, HP +22MP Cost Reduction +7%Charm Resistance +5Mental Status Ailment Resistance +5%"
     },
     {
       "set": "dawn",
@@ -698,7 +785,8 @@
       "level": 20,
       "sockets": 0,
       "newIndex": 180,
-      "descriptionRu": "Изготовленная на заказ одежда для эльфиек.ИНТ +1, ОЗ +22Снижение расхода ОМ +7%Сопротивляемость чарам +5Сопротивляемость болезням духа +5%"
+      "descriptionRu": "Изготовленная на заказ одежда для эльфиек.ИНТ +1, ОЗ +22Снижение расхода ОМ +7%Сопротивляемость чарам +5Сопротивляемость болезням духа +5%",
+      "descriptionEn": "Custom-made clothing for female Elves.INT +1, HP +22MP Cost Reduction +7%Charm Resistance +5Mental Status Ailment Resistance +5%"
     },
     {
       "set": "dawn",
@@ -714,7 +802,9 @@
       "level": 20,
       "sockets": 0,
       "publishedId": "modern.equipment.44bcf90e-3b59-4ed4-af36-1c9000b4b916",
-      "publishedIndex": 112
+      "publishedIndex": 112,
+      "descriptionRu": "Одежда, изготовленная специально для цвергов.СИЛ +1, ОЗ +12Атака +8Сопротивляемость ожогам +15%",
+      "descriptionEn": "Clothing made specially for Dwarves.STR +1, HP +12Attack +8Burn Resistance +15%"
     },
     {
       "set": "dawn",
@@ -730,7 +820,9 @@
       "level": 20,
       "sockets": 0,
       "publishedId": "modern.equipment.2673a73e-fe80-4806-a32b-53991feb566c",
-      "publishedIndex": 114
+      "publishedIndex": 114,
+      "descriptionRu": "Изготовленный на заказ корсет для мирин.ПРВ +2, ОЗ +28Шанс критической атаки +3%Сопротивляемость тьме +5",
+      "descriptionEn": "Custom-made corset for Myrines.AGI +2, HP +28Critical Hit Chance +3%Dark Resistance +5"
     },
     {
       "set": "dawn",
@@ -746,7 +838,9 @@
       "level": 20,
       "sockets": 0,
       "publishedId": "modern.equipment.75f00438-3adc-4ed8-aa18-e95aeff1dfc8",
-      "publishedIndex": 115
+      "publishedIndex": 115,
+      "descriptionRu": "Изготовленный на заказ жилет для энкиду.ВЫН +2, ОЗ +50Получаемый физический урон -5%Сопротивляемость падению +15%",
+      "descriptionEn": "Custom-made vest for Enkidu.STA +2, HP +50Physical Damage Taken -5%Knockdown Resistance +15%"
     },
     {
       "set": "dawn",
@@ -760,7 +854,9 @@
       "ru": "Куртка зари для кролля",
       "en": "Dawn Tunic (Lapin)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленная на заказ куртка для кроллей.СД +2, ОЗ +25, ОМ +8Сопротивляемость немоте +15%",
+      "descriptionEn": "Custom-made tunic for Lapins.SPI +2, HP +25, MP +8Silence Resistance +15%"
     },
     {
       "set": "dawn",
@@ -774,7 +870,9 @@
       "ru": "Рассветные штаны для человека (м)",
       "en": "Dawn Trousers (Human) (m)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленные на заказ штаны для мужчин.ОЗ +25, ОМ +9Уклонение +4Сопротивляемость болезни +5%",
+      "descriptionEn": "Custom-made pants for men.HP +25, MP +9Evasion +4Disease Resistance +5%"
     },
     {
       "set": "dawn",
@@ -788,7 +886,9 @@
       "ru": "Рассветные штаны для человека (ж)",
       "en": "Dawn Pants (Human) (w)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленные на заказ шорты для женщин.ОЗ +25, ОМ +9Уклонение +4Сопротивляемость болезни +5%",
+      "descriptionEn": "Custom-made shorts for women.HP +25, MP +9Evasion +4Disease Resistance +5%"
     },
     {
       "set": "dawn",
@@ -802,7 +902,9 @@
       "ru": "Рассветные штаны для эльфа (м)",
       "en": "Dawn Trousers (Elf) (m)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленные на заказ штаны для эльфов.ПРВ +1, ОЗ +13, ОМ +10Уклонение +2",
+      "descriptionEn": "Custom-made pants for elves.AGI +1, HP +13, MP +10Evasion +2"
     },
     {
       "set": "dawn",
@@ -816,7 +918,9 @@
       "ru": "Юбка для эльфийки (ж)",
       "en": "Dawn Skirt (Elf) (w)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленная на заказ юбка для эльфиек.ПРВ +1, ОЗ +13, ОМ +10Уклонение +2",
+      "descriptionEn": "A custom-made skirt for elven women.AGI +1, HP +13, MP +10, Evasion +2."
     },
     {
       "set": "dawn",
@@ -830,7 +934,9 @@
       "ru": "Рассветные штаны для цверга",
       "en": "Dawn Leggings (Dwarf)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленные на заказ штаны для цвергов.ОЗ +22, ОМ +13Получаемый физический урон -3%Сопротивляемость немоте +5%",
+      "descriptionEn": "Custom-made pants for dwarves.HP +22, MP +13Physical Damage Taken -3%Silence Resistance +5%"
     },
     {
       "set": "dawn",
@@ -846,7 +952,9 @@
       "level": 20,
       "sockets": 0,
       "publishedId": "modern.equipment.486dbc10-ca5b-4647-a41a-4734c44ed33b",
-      "publishedIndex": 106
+      "publishedIndex": 106,
+      "descriptionRu": "Изготовленные на заказ чулки для мирин.ОМ +17Снижение расхода ОМ +6%Сопротивляемость ожогам +5%",
+      "descriptionEn": "Custom-made hosiery for the Myrine.MP +17MP Cost Reduction +6%Burn Resistance +5%"
     },
     {
       "set": "dawn",
@@ -862,7 +970,9 @@
       "level": 20,
       "sockets": 0,
       "publishedId": "modern.equipment.c235d398-2281-41d1-a072-c9cca7668cb0",
-      "publishedIndex": 108
+      "publishedIndex": 108,
+      "descriptionRu": "Изготовленная на заказ набедренная повязка для энкиду.СД +1, ОМ +18Сопротивляемость слабости +5%",
+      "descriptionEn": "A custom-made kilt for the Enkidu.SPI +1, MP +18Weakness Resistance +5%"
     },
     {
       "set": "dawn",
@@ -876,7 +986,9 @@
       "ru": "Рассветные штаны для кролля",
       "en": "Dawn Leggings (Lapin)",
       "level": 20,
-      "sockets": 0
+      "sockets": 0,
+      "descriptionRu": "Изготовленные на заказ штаны для кроллей.ИНТ +1, ОМ +9Сопротивляемость безумию +5%",
+      "descriptionEn": "Custom-made leggings for the Lapin.INT +1, MP +9Madness Resistance +5%"
     },
     {
       "set": "dawn",
@@ -890,7 +1002,9 @@
       "ru": "Рассветный браслет для человека (м)",
       "en": "Dawn Armband (Human) (m)",
       "level": 20,
-      "sockets": 1
+      "sockets": 1,
+      "descriptionRu": "Изготовленный на заказ мужской браслет.Атака +4Точность +2",
+      "descriptionEn": "A custom-made armband for men.Attack +4Accuracy +2"
     },
     {
       "set": "dawn",
@@ -906,7 +1020,8 @@
       "level": 20,
       "sockets": 1,
       "newIndex": 180,
-      "descriptionRu": "Изготовленный на заказ женский браслет.Атака +4Точность +2"
+      "descriptionRu": "Изготовленный на заказ женский браслет.Атака +4Точность +2",
+      "descriptionEn": "A custom-made armband for women.Attack +4Accuracy +2"
     },
     {
       "set": "dawn",
@@ -922,7 +1037,9 @@
       "level": 20,
       "sockets": 1,
       "publishedId": "modern.equipment.fb711826-a631-4423-af72-803ac0e6a516",
-      "publishedIndex": 110
+      "publishedIndex": 110,
+      "descriptionRu": "Изготовленные на заказ перчатки для эльфов.Атака +2Точность +4",
+      "descriptionEn": "Custom-made gloves for elves.Attack +2Accuracy +4"
     },
     {
       "set": "dawn",
@@ -938,7 +1055,8 @@
       "level": 20,
       "sockets": 1,
       "newIndex": 181,
-      "descriptionRu": "Изготовленные на заказ перчатки для эльфиек.Атака +2Точность +4"
+      "descriptionRu": "Изготовленные на заказ перчатки для эльфиек.Атака +2Точность +4",
+      "descriptionEn": "Custom-made gloves for elven women.Attack +2Accuracy +4"
     },
     {
       "set": "dawn",
@@ -952,7 +1070,9 @@
       "ru": "Рассветные рукавицы для цверга",
       "en": "Dawn Gloves (Dwarf)",
       "level": 20,
-      "sockets": 1
+      "sockets": 1,
+      "descriptionRu": "Изготовленные на заказ рукавицы для цвергов.Точность +5Шанс критической атаки +1%",
+      "descriptionEn": "Custom-made gloves for dwarves.Accuracy +5Critical Hit Chance +1%"
     },
     {
       "set": "dawn",
@@ -966,7 +1086,9 @@
       "ru": "Рассветные перчатки для мирины",
       "en": "Dawn Gloves (Myrine)",
       "level": 20,
-      "sockets": 1
+      "sockets": 1,
+      "descriptionRu": "Изготовленные на заказ перчатки для мирин.Атака +3Шанс критической атаки +2%",
+      "descriptionEn": "Custom-made gloves for Mailyn.Attack +3Critical Hit Chance +2%"
     },
     {
       "set": "dawn",
@@ -982,7 +1104,9 @@
       "level": 20,
       "sockets": 1,
       "publishedId": "modern.equipment.d6f750c7-b049-4f42-ae14-897d3c7ba041",
-      "publishedIndex": 115
+      "publishedIndex": 115,
+      "descriptionRu": "Изготовленные на заказ рукавицы для энкиду.Точность +3Шанс критической атаки +2%",
+      "descriptionEn": "Custom-made gloves for Enkidu.Accuracy +3Critical Hit Chance +2%"
     },
     {
       "set": "dawn",
@@ -996,7 +1120,9 @@
       "ru": "Рассветные перчатки для кролля",
       "en": "Dawn Gloves (Lapin)",
       "level": 20,
-      "sockets": 1
+      "sockets": 1,
+      "descriptionRu": "Изготовленные на заказ перчатки для кроллей.Атака +3Точность +3",
+      "descriptionEn": "Custom-made gloves for Lapin.Attack +3Accuracy +3"
     },
     {
       "set": "dawn",
@@ -1010,7 +1136,9 @@
       "ru": "Рассветные сапоги для человека (м)",
       "en": "Dawn Boots (Human) (m)",
       "level": 20,
-      "sockets": 1
+      "sockets": 1,
+      "descriptionRu": "Изготовленные на заказ мужские сапоги.ОЗ +20, ОМ +12Получаемый физический урон -1%",
+      "descriptionEn": "Custom-made boots for men.HP +20, MP +12Physical Damage Taken -1%"
     },
     {
       "set": "dawn",
@@ -1026,7 +1154,8 @@
       "level": 20,
       "sockets": 1,
       "newIndex": 180,
-      "descriptionRu": "Изготовленные на заказ женские сапоги.ОЗ +20, ОМ +12Получаемый физический урон -1%"
+      "descriptionRu": "Изготовленные на заказ женские сапоги.ОЗ +20, ОМ +12Получаемый физический урон -1%",
+      "descriptionEn": "Custom-made women's boots.HP +20, MP +12Physical Damage Taken -1%"
     },
     {
       "set": "dawn",
@@ -1042,7 +1171,9 @@
       "level": 20,
       "sockets": 1,
       "publishedId": "modern.equipment.e465ca33-722f-4fb9-a735-774bee698a32",
-      "publishedIndex": 111
+      "publishedIndex": 111,
+      "descriptionRu": "Изготовленные на заказ сапоги для эльфов.ОЗ +18, ОМ +13Получаемый физический урон -1%",
+      "descriptionEn": "Custom-made boots for elves.HP +18, MP +13Physical Damage Taken -1%"
     },
     {
       "set": "dawn",
@@ -1058,7 +1189,8 @@
       "level": 20,
       "sockets": 1,
       "newIndex": 181,
-      "descriptionRu": "Изготовленные на заказ сапоги для эльфиек.ОЗ +18, ОМ +13Получаемый физический урон -1%"
+      "descriptionRu": "Изготовленные на заказ сапоги для эльфиек.ОЗ +18, ОМ +13Получаемый физический урон -1%",
+      "descriptionEn": "Custom-made boots for elf women.HP +18, MP +13Physical Damage Taken -1%"
     },
     {
       "set": "dawn",
@@ -1072,7 +1204,9 @@
       "ru": "Рассветные башмаки для цверга",
       "en": "Dawn Boots (Dwarf)",
       "level": 20,
-      "sockets": 1
+      "sockets": 1,
+      "descriptionRu": "Изготовленные на заказ башмаки для цвергов.ОЗ +6, ОМ +21Уклонение +5",
+      "descriptionEn": "Custom-made shoes for dwarves.HP +6, MP +21Evasion +5"
     },
     {
       "set": "dawn",
@@ -1086,7 +1220,9 @@
       "ru": "Рассветные сапоги для мирины",
       "en": "Dawn Boots (Myrine)",
       "level": 20,
-      "sockets": 1
+      "sockets": 1,
+      "descriptionRu": "Изготовленные на заказ сапоги для мирин.ОЗ +21, ОМ +13Уклонение +3",
+      "descriptionEn": "Custom-made boots for the Myrine.HP +21, MP +13Evasion +3"
     },
     {
       "set": "dawn",
@@ -1102,7 +1238,9 @@
       "level": 20,
       "sockets": 1,
       "publishedId": "modern.equipment.9bfb82fe-1d1c-4ecc-a454-be6a46f86056",
-      "publishedIndex": 116
+      "publishedIndex": 116,
+      "descriptionRu": "Изготовленные на заказ башмаки для энкиду.ОЗ +8, ОМ +26Получаемый физический урон -1%",
+      "descriptionEn": "Custom-made shoes for the Enkidu.HP +8, MP +26Physical Damage Taken -1%"
     },
     {
       "set": "dawn",
@@ -1116,7 +1254,9 @@
       "ru": "Рассветные башмачки для кролля",
       "en": "Dawn Boots (Lapin)",
       "level": 20,
-      "sockets": 1
+      "sockets": 1,
+      "descriptionRu": "Изготовленные на заказ башмачки для кроллей.ОЗ +24, ОМ +6Уклонение +4",
+      "descriptionEn": "Custom-made shoes for the Lapin.HP +24, MP +6Evasion +4"
     }
   ]
 }
