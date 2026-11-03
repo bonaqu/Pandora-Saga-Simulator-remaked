@@ -6,14 +6,14 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ### For users
 
-- **Duplicate gear removed:** ten verified Dawn items now appear once in the equipment search rather than under both archived and published identities.
-- **Cloudflare D1 equipment inventory:** all source-backed equipment rows are stored individually and editable through the administrator catalog.
+- **No duplicate equipment choices:** ten verified Dawn items previously shown both as an archived entry and a published entry now appear once, including male Elf Dawn Gloves.
+- **Cloudflare equipment registry:** every source-backed equipment record is persisted in Cloudflare and remains editable in the protected admin catalog. Existing publications and saved builds are preserved.
 
 ### Development and technical changes
 
-- Use ten verified OS identities, not fuzzy item names or identical stat values, for exact canonical deduplication. Retain historical IDs for old builds.
-- Add additive Cloudflare D1 migration, idempotent baseline import and production completeness check, preserving existing publications and drafts.
-- An existing source/UUID formula discrepancy for the Myrine Dawn Veil is documented for independent investigation and is not silently altered.
+- Deduplicate by exactly ten verified current-game Dawn IDs, never by equal stats or approximate names. The published D1 UUID is the visible canonical item; the historical Legacy ID is preserved for old builds and stored as an alias. Explicit editing of the original or disabling the published item prevents automatic concealment.
+- Add D1 migration 0017 and idempotent predeploy source import with per-item JSON, SHA‑256 and canonical alias links. Do not modify catalog_head publications, D1 drafts or user accounts. An admin detail card reads its verified D1 source; the paginated catalog does not perform N+1 D1 lookups. Production deploy checks inventory completeness.
+- One existing discrepancy remains: the published Myrine Dawn Veil code omits two Legacy code tokens; this release does not silently change equipment formulas. Review separately against actual game data.
 
 ## Modern 4.33 — 2026-11-03
 
