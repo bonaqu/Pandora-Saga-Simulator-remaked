@@ -2,6 +2,18 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.35 — 2026-11-03
+
+### For users
+
+- **Bilingual racial and Dawn gear:** all 32 ordinary racial and 40 Dawn items now show official Russian descriptions with RU selected, and official English descriptions with EN selected.
+- **Equipment details and admin editor:** search previews and source-backed admin cards now include both languages without replacing any non-empty owner-published descriptions.
+
+### Development and technical changes
+
+- Populate the 72 verified OS identities with exact `items.json.desc` and `strings.en.json.items[id].d`, feed source-backed D1 records through the existing idempotent import, and cover the Modern RU/EN projection. Reject incomplete localized source descriptions; leave archived JP/TW, Legacy 2.00 and formulas untouched.
+- For 41 published canonical UUIDs, fill missing RU/EN fields in current public/admin responses only, preserving non-empty owner edits, historical revisions and drafts. Add all-72 source/preview and D1 regression tests.
+
 ## Modern 4.34 — 2026-11-03
 
 ### For users
