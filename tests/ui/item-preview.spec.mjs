@@ -35,6 +35,29 @@ test('RU equipment previews use published D1 terminology for class, category and
   expect(result.after).toBe(result.before);
 });
 
+test('open Equipment picker invalidates cached previews when a D1 translation arrives', async ({ page }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
+  const panel = page.locator('[data-remaked-picker-panel]');
+  const row = panel.locator('[data-remaked-search-row]').filter({ has: page.locator('details') }).first();
+  await expect(row).toHaveCount(1);
+  await row.locator('summary').click();
+  await expect(row.locator('.remaked-item-title')).toBeVisible();
+  const changed = await page.evaluate(() => {
+    const old = document.querySelector('[data-remaked-picker-panel] [data-remaked-search-row]');
+    const data = {
+      ui: { ru: { 'search.itemStatDefense': 'Защита из D1' }, en: {}, jp: {}, tw: {} },
+      game: { ru: { 'job.0': 'Воин из D1' }, en: {}, jp: {}, tw: {} }
+    };
+    if (!PandoraRemaked.i18n.applyUnifiedLocalization({ ok: true, schemaVersion: 1, overrides: data }))
+      throw new Error('Published camelCase UI keys must be accepted');
+    return old !== document.querySelector('[data-remaked-picker-panel] [data-remaked-search-row]');
+  });
+  expect(changed).toBe(true);
+  expect(await page.evaluate(() => Store())).toBe(before);
+});
+
 test('slot rings match source counts and equipped upgrades do not leak into another candidate', async ({ page }) => {
   await page.goto('/');
   const fixtures = await page.evaluate(() => {
