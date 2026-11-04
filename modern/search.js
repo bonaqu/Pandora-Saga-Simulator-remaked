@@ -59,14 +59,20 @@
     return Number.isInteger(legacyId) && legacyId >= 0 ? 'soul.' + String(legacyId) : '';
   }
 
-  function filterEquipment(options, filters) {
+  function filterEquipment(options, filters, searchIndex) {
     var query = normalizeQuery(filters && filters.query);
     var minLevel = parseOptionalLevel(filters && filters.minLevel);
     var maxLevel = parseOptionalLevel(filters && filters.maxLevel);
     return (options || []).filter(function (option) {
-      var localized = gameName(equipmentTermId(option.value), option.name);
-      var searchable = normalizeQuery(option.name + ' ' + localized);
-      if (query && searchable.indexOf(query) === -1) return false;
+      if (query) {
+        var searchable = searchIndex && searchIndex.get(option);
+        if (searchable == null) {
+          var localized = gameName(equipmentTermId(option.value), option.name);
+          searchable = normalizeQuery(option.name + ' ' + localized);
+          if (searchIndex) searchIndex.set(option, searchable);
+        }
+        if (searchable.indexOf(query) === -1) return false;
+      }
       if (minLevel != null || maxLevel != null) {
         if (option.level == null) return false;
         if (minLevel != null && option.level < minLevel) return false;
@@ -313,6 +319,33 @@
     container.replaceChildren(empty);
   }
 
+  // Rows and disclosure handlers belong to the current catalog snapshot.
+  // Reuse them during typing and only touch nodes whose position changed.
+  // A locale, target or catalog refresh discards the caller's row cache.
+  function renderCachedRows(container, entries, cache, createRow) {
+    var visible = entries.map(function (entry) {
+      var row = cache.get(entry);
+      if (!row) {
+        row = createRow(entry);
+        cache.set(entry, row);
+      }
+      return row;
+    });
+    var cursor = container.firstChild;
+    visible.forEach(function (row) {
+      if (row === cursor) cursor = cursor.nextSibling;
+      else container.insertBefore(row, cursor);
+    });
+    while (cursor) {
+      var next = cursor.nextSibling;
+      container.removeChild(cursor);
+      cursor = next;
+    }
+    if (active) active.cancelPreviews = visible.map(function (row) {
+      return row._remakedCancelPreview;
+    }).filter(Boolean);
+  }
+
   function equipmentCategory(option) {
     var source = String(option && option.name || '');
     var match = source.match(/^\+-----\s*(.+?)\s*$/);
@@ -357,19 +390,33 @@
     if (!select) return '';
     var previous = select.value;
     var all = t('search.allTypes', null, 'All types');
-    var fragment = document.createDocumentFragment();
-    var any = document.createElement('option');
-    any.value = '';
-    any.textContent = all;
-    fragment.appendChild(any);
-    categories.forEach(function (category) {
-      var option = document.createElement('option');
-      option.value = category;
-      option.textContent = category;
-      fragment.appendChild(option);
-    });
-    select.replaceChildren(fragment);
-    if (categories.indexOf(previous) !== -1) select.value = previous;
+    // Rebuilding a select on each input event loses native state and causes
+    // needless DOM changes even when the type options did not change.
+    var options = select.options;
+    var changed = options.length !== categories.length + 1 || !options.length || options[0].textContent !== all;
+    if (!changed) {
+      for (var index = 0; index < categories.length; index += 1) {
+        if (options[index + 1].value !== categories[index] || options[index + 1].textContent !== categories[index]) {
+          changed = true;
+          break;
+        }
+      }
+    }
+    if (changed) {
+      var fragment = document.createDocumentFragment();
+      var any = document.createElement('option');
+      any.value = '';
+      any.textContent = all;
+      fragment.appendChild(any);
+      categories.forEach(function (category) {
+        var option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        fragment.appendChild(option);
+      });
+      select.replaceChildren(fragment);
+      if (categories.indexOf(previous) !== -1) select.value = previous;
+    }
     select.hidden = categories.length < 2;
     var controls = select.closest('.remaked-picker-controls');
     if (controls) controls.classList.toggle('remaked-picker-controls-single', select.hidden);
@@ -475,7 +522,7 @@
       description.style.left = Math.max(12, Math.min(left, innerWidth - width - 12)) + 'px';
       description.style.top = Math.max(12, Math.min(rect.top, innerHeight - description.getBoundingClientRect().height - 12)) + 'px';
     }
-    if (active) active.cancelPreviews.push(function (keepInline, keepKeyboardRequest, resumeHover) {
+    row._remakedCancelPreview = function (keepInline, keepKeyboardRequest, resumeHover) {
       cancelHover();
       if (resumeHover && hoveringButton) scheduleHoverPreview(Math.max(16, active.hoverPausedUntil - Date.now() + 16));
       if (!keepKeyboardRequest) cancelFocusPreview();
@@ -490,7 +537,7 @@
       // overlay. Keep it while reading/scrolling or tapping its summary closed.
       if (keepInline && !floating && pinned) return;
       details.open = false; pinned = false;
-    });
+    };
     if (floating) description.setAttribute('popover', 'manual');
     details.addEventListener('toggle', function () {
       if (details.open) populateDescription();
@@ -600,33 +647,51 @@
       query.focus();
     }
 
-    function render() {
+    var cachedSource = null;
+    var rowCache = new Map();
+    function render(reuseSource) {
       cancelPreviews();
       active.cancelPreviews = [];
       var current = document.getElementById(selectId);
       if (!current || current.style.display === 'none') { closePanel(); return; }
-      var options = kind === 'equipment' ? adapter.listEquipmentOptions(slot) : adapter.listSoulOptions({ slotIndex: slot, socketIndex: fieldIndex });
-      var equipmentEntries = kind === 'equipment' ? pickerEquipmentEntries(options) : null;
-      var entries = kind === 'equipment'
-        ? equipmentEntries.entries
-        : options.map(function (option) { return { option: option, category: '' }; });
-      var selectedType = kind === 'equipment' ? syncPickerTypeFilter(typeFilter, equipmentEntries.categories) : '';
+      if (!reuseSource || !cachedSource) {
+        var options = kind === 'equipment' ? adapter.listEquipmentOptions(slot) : adapter.listSoulOptions({ slotIndex: slot, socketIndex: fieldIndex });
+        var equipmentEntries = kind === 'equipment' ? pickerEquipmentEntries(options) : null;
+        cachedSource = kind === 'equipment'
+          ? equipmentEntries
+          : { entries: options.map(function (option) { return { option: option, category: '' }; }), categories: [] };
+        rowCache.clear();
+      }
+      var entries = cachedSource.entries;
+      var selectedType = kind === 'equipment' ? syncPickerTypeFilter(typeFilter, cachedSource.categories) : '';
       var needle = normalizeQuery(query.value);
       var filtered = entries.filter(function (entry) {
         var option = entry.option;
         if (selectedType && entry.category !== selectedType) return false;
         if (entry.isCategory) return !needle;
-        var id = kind === 'equipment' ? equipmentTermId(option.value) : soulTermId(option.value);
-        return !needle || normalizeQuery(option.name + ' ' + gameName(id, option.name)).indexOf(needle) !== -1;
+        if (!needle) return true;
+        if (entry.searchText == null) {
+          var id = kind === 'equipment' ? equipmentTermId(option.value) : soulTermId(option.value);
+          entry.searchText = normalizeQuery(option.name + ' ' + gameName(id, option.name));
+        }
+        return entry.searchText.indexOf(needle) !== -1;
       });
-      var shownItems = filtered.filter(function (entry) { return !entry.isCategory; }).length;
-      var totalItems = entries.filter(function (entry) { return !entry.isCategory; }).length;
+      var shownItems = filtered.reduce(function (count, entry) { return count + (entry.isCategory ? 0 : 1); }, 0);
+      var totalItems = entries.length - (entries[0] && entries[0].isCategory ? 1 : 0);
       summary.textContent = kind === 'equipment'
         ? t('search.equipmentSummary', { shown: shownItems, total: totalItems }, shownItems + ' of ' + totalItems + ' compatible items')
         : t('search.soulSummary', { total: shownItems }, shownItems + ' compatible Souls');
 
-      var fragment = document.createDocumentFragment();
-      filtered.forEach(function (entry) {
+      if (!filtered.length) {
+        active.cancelPreviews = [];
+        renderEmpty(
+          results,
+          t(kind === 'equipment' ? 'search.noEquipmentMatches' : 'search.noSoulMatches', null, 'No matches'),
+          resetPickerFilters
+        );
+        return;
+      }
+      renderCachedRows(results, filtered, rowCache, function (entry) {
         var option = entry.option;
         var id = kind === 'equipment' ? equipmentTermId(option.value) : soulTermId(option.value);
         var name = entry.isCategory ? entry.category : gameName(id, option.name);
@@ -642,16 +707,8 @@
           row.classList.add('remaked-picker-group');
           row.dataset.remakedPickerGroup = entry.category;
         }
-        fragment.appendChild(row);
+        return row;
       });
-      results.replaceChildren(fragment);
-      if (!filtered.length) {
-        renderEmpty(
-          results,
-          t(kind === 'equipment' ? 'search.noEquipmentMatches' : 'search.noSoulMatches', null, 'No matches'),
-          resetPickerFilters
-        );
-      }
     }
     // Native buttons + disclosures, not a fake listbox containing interactive
     // children. Tab traverses actions; arrows provide an additional shortcut.
@@ -664,10 +721,10 @@
       else index = Math.max(0, Math.min(buttons.length - 1, index + (event.key === 'ArrowDown' ? 1 : -1)));
       event.preventDefault(); buttons[index]?.focus();
     });
-    active.render = render;
-    query.addEventListener('input', render);
-    if (typeFilter) typeFilter.addEventListener('change', render);
-    render();
+    active.render = function () { render(false); };
+    query.addEventListener('input', function () { render(true); });
+    if (typeFilter) typeFilter.addEventListener('change', function () { render(true); });
+    render(false);
     // Touch users first want to pick an item, not open a software keyboard.
     // Search remains directly tappable; keyboard users retain immediate focus.
     if (keyboardInput || window.matchMedia('(pointer: fine)').matches) query.focus({ preventScroll: true });
@@ -735,28 +792,37 @@
     results.dataset.remakedSearchResults = '';
     body.appendChild(results);
 
-    function render() {
+    var cachedOptions = null;
+    var cachedTarget = null;
+    var searchIndex = new Map();
+    var rowCache = new Map();
+    function render(reuseSource) {
       var target = Number(targetsControl.value);
-      cancelPreviews(); active.cancelPreviews = [];
-      var options = adapter.listEquipmentOptions(target);
-      var filtered = filterEquipment(options, {
+      cancelPreviews();
+      active.cancelPreviews = [];
+      if (!reuseSource || cachedTarget !== target || !cachedOptions) {
+        cachedOptions = adapter.listEquipmentOptions(target);
+        cachedTarget = target;
+        searchIndex.clear();
+        rowCache.clear();
+      }
+      var filtered = filterEquipment(cachedOptions, {
         query: query.value,
         minLevel: minLevel.value,
         maxLevel: maxLevel.value
-      });
-      summary.textContent = t('search.equipmentSummary', { shown: filtered.length, total: options.length }, filtered.length + ' of ' + options.length + ' compatible items');
+      }, searchIndex);
+      summary.textContent = t('search.equipmentSummary', { shown: filtered.length, total: cachedOptions.length }, filtered.length + ' of ' + cachedOptions.length + ' compatible items');
       if (!filtered.length) {
         renderEmpty(results, t('search.noEquipmentMatches', null, 'No matching equipment'), function () {
           query.value = '';
           minLevel.value = '';
           maxLevel.value = '';
-          render();
+          render(true);
           query.focus();
         });
         return;
       }
-      var fragment = document.createDocumentFragment();
-      filtered.forEach(function (option) {
+      renderCachedRows(results, filtered, rowCache, function (option) {
         var detail = option.level == null
           ? t('search.currentSlotOption', null, 'Current slot option')
           : t('search.level', { level: option.level }, 'Lv ' + option.level);
@@ -767,16 +833,15 @@
         button.addEventListener('click', function () {
           if (adapter.selectEquipment(target, option.value)) closePanel();
         });
-        fragment.appendChild(resultRow(button, 'equipment', option.value, target));
+        return resultRow(button, 'equipment', option.value, target);
       });
-      results.replaceChildren(fragment);
     }
 
-    active.render = render;
-    targetsControl.addEventListener('change', render);
-    query.addEventListener('input', render);
-    minLevel.addEventListener('input', render);
-    maxLevel.addEventListener('input', render);
+    active.render = function () { render(false); };
+    targetsControl.addEventListener('change', function () { render(false); });
+    query.addEventListener('input', function () { render(true); });
+    minLevel.addEventListener('input', function () { render(true); });
+    maxLevel.addEventListener('input', function () { render(true); });
     reset.addEventListener('click', function () {
       query.value = '';
       minLevel.value = '';
@@ -825,31 +890,51 @@
     results.dataset.remakedSearchResults = '';
     body.appendChild(results);
 
-    function render() {
+    var cachedOptions = null;
+    var cachedTarget = null;
+    var searchIndex = new Map();
+    var rowCache = new Map();
+    function render(reuseSource) {
       var currentTargets = adapter.listSoulTargets();
-      cancelPreviews(); active.cancelPreviews = [];
+      cancelPreviews();
+      active.cancelPreviews = [];
       var selected = findSoulTarget(currentTargets, targetsControl.value);
       if (!selected) {
+        cachedOptions = null;
+        cachedTarget = null;
+        searchIndex.clear();
+        rowCache.clear();
         renderEmpty(results, t('search.noSoulSockets', null, 'No available Soul sockets'));
         summary.textContent = t('search.soulSummary', { total: 0 }, '0 compatible Souls');
         return;
       }
+      var key = soulKey(selected);
+      if (!reuseSource || cachedTarget !== key || !cachedOptions) {
+        cachedOptions = adapter.listSoulOptions(selected);
+        cachedTarget = key;
+        searchIndex.clear();
+        rowCache.clear();
+      }
       var needle = normalizeQuery(query.value);
-      var options = adapter.listSoulOptions(selected).filter(function (option) {
-        var localized = gameName(soulTermId(option.value), option.name);
-        return !needle || normalizeQuery(option.name + ' ' + localized).indexOf(needle) !== -1;
+      var options = cachedOptions.filter(function (option) {
+        if (!needle) return true;
+        var searchable = searchIndex.get(option);
+        if (searchable == null) {
+          searchable = normalizeQuery(option.name + ' ' + gameName(soulTermId(option.value), option.name));
+          searchIndex.set(option, searchable);
+        }
+        return searchable.indexOf(needle) !== -1;
       });
       summary.textContent = t('search.soulSummary', { total: options.length }, options.length + ' compatible Souls');
       if (!options.length) {
         renderEmpty(results, t('search.noSoulMatches', null, 'No matching Souls'), function () {
           query.value = '';
-          render();
+          render(true);
           query.focus();
         });
         return;
       }
-      var fragment = document.createDocumentFragment();
-      options.forEach(function (option) {
+      renderCachedRows(results, options, rowCache, function (option) {
         var displayed = Object.assign({}, option, {
           name: gameName(soulTermId(option.value), option.name)
         });
@@ -857,15 +942,14 @@
         button.addEventListener('click', function () {
           if (adapter.selectSoul(selected, option.value)) closePanel();
         });
-        fragment.appendChild(resultRow(button, 'soul', option.value));
+        return resultRow(button, 'soul', option.value);
       });
-      results.replaceChildren(fragment);
     }
 
-    active.render = render;
-    targetsControl.addEventListener('change', render);
-    query.addEventListener('input', render);
-    render();
+    active.render = function () { render(false); };
+    targetsControl.addEventListener('change', function () { render(false); });
+    query.addEventListener('input', function () { render(true); });
+    render(false);
     window.setTimeout(function () { query.focus(); }, 0);
     return shell.panel;
   }
