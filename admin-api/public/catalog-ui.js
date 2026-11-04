@@ -82,6 +82,7 @@
     // Read current, versioned catalog API fields; never write between locales.
     return names[locale]||names.en||names.ru||names.jp||names.tw||'';
   }
+  function classLabel(entry) { return entry ? catalogRecordLocale(entry.names) || entry.label : ''; }
   function catalogRecordText(node,names) {
     node.dataset.catalogRecordLocale='true';
     catalogRecordValues.set(node,names);
@@ -343,7 +344,7 @@
   }
   function checkboxField(label, value, field, parent) {
     var wrap = node('label', undefined, 'flag-label'), input = node('input'); input.type = 'checkbox'; input.checked = value; input.dataset.field = field;
-    input.addEventListener('change', changing); wrap.append(input, formCaption(label)); parent.appendChild(wrap); return input;
+    input.addEventListener('change', changing); wrap.append(input, label && typeof label === 'object' ? catalogRecordText(node('span'),label) : formCaption(label)); parent.appendChild(wrap); return input;
   }
   function multilingual(label, field, values, parent, multiline) {
     var section = node('fieldset', undefined, 'translation-fields'); var legend = node('legend'); legend.appendChild(formCaption(label)); section.appendChild(legend);
@@ -497,8 +498,13 @@
       var learning = record.learningRequirements;
       if (learning) {
         values.appendChild(catalogLive(node('li'),'catalogPreviewLearningLevel','Минимальный уровень: {level}',{level:learning.minimumLevel}));
-        var classes = learning.classIds.map(function (id) { return meta.compatibilityLabels.job.find(function (row) { return 'job.' + row.index === id; })?.label || id; });
-        values.appendChild(catalogLiveComputed(node('li'),'catalogPreviewLearningClasses','Классы: {classes}',function(){return {classes:classes.length ? classes.join(', ') + catalogTranslate(learning.classScope==='descendants'?'catalogPreviewDescendants':'catalogPreviewOnlySelected',learning.classScope==='descendants'?' и их последующие профессии':' — только отмеченные') : catalogTranslate('catalogPreviewAnyClass','любой')};}));
+        values.appendChild(catalogLiveComputed(node('li'),'catalogPreviewLearningClasses','Классы: {classes}',function(){
+          var classes = learning.classIds.map(function (id) {
+            var entry = meta.compatibilityLabels.job.find(function (row) { return 'job.' + row.index === id; });
+            return classLabel(entry) || id;
+          });
+          return {classes:classes.length ? classes.join(', ') + catalogTranslate(learning.classScope==='descendants'?'catalogPreviewDescendants':'catalogPreviewOnlySelected',learning.classScope==='descendants'?' и их последующие профессии':' — только отмеченные') : catalogTranslate('catalogPreviewAnyClass','любой')};
+        }));
         learning.branches.forEach(function (gate) { values.appendChild(catalogLive(node('li'),'catalogPreviewLearningBranch','Ветка: {branch} ≥ {points}',{branch:meta.skillCategories.find(function (row) { return row.id === gate.branchId; })?.name.en || gate.branchId,points:gate.minimumPoints})); });
         if (!learning.branches.length) values.appendChild(catalogStatic(node('li'),'catalogPreviewNoBranchRequirements','Требований к очкам веток нет.'));
       } else values.appendChild(catalogLive(node('li'),'catalogPreviewNativePrerequisites','Исходные условия изучения: {text}',{text:current.nativeSkill?.prerequisites.en || record.prerequisiteCode}));
@@ -548,7 +554,7 @@
     }
   }
   function learningSummary(required) {
-    var classes = required.classIds.map(function (id) { var index = Number(id.slice(4)); return meta.compatibilityLabels.job.find(function (row) { return row.index === index; })?.label || id; });
+    var classes = required.classIds.map(function (id) { var index = Number(id.slice(4)); return classLabel(meta.compatibilityLabels.job.find(function (row) { return row.index === index; })) || id; });
     var parts = ['Классы: ' + (classes.length ? classes.join(' / ') + (required.classScope === 'descendants' ? ' и последующие профессии' : ' (только отмеченные)') : 'любые'), 'уровень ≥ ' + required.minimumLevel];
     required.branches.forEach(function (gate) { parts.push((meta.skillCategories.find(function (row) { return row.id === gate.branchId; })?.name.en || gate.branchId) + ' ≥ ' + gate.minimumPoints); });
     return parts.join(' · ');
@@ -720,7 +726,9 @@
     var group = node('fieldset', undefined, 'compatibility-fields'); group.appendChild(node('legend', label));
     labels.forEach(function (entry) {
       var wrap = node('label', undefined, 'flag-label'); var input = node('input'); input.type = 'checkbox'; input.checked = Boolean(values[entry.index]); input.dataset.flag = field; input.dataset.index = entry.index;
-      input.addEventListener('change', changing); wrap.append(input, document.createTextNode(entry.label)); group.appendChild(wrap);
+      input.addEventListener('change', changing); wrap.append(input, entry.names ? catalogRecordText(node('span'), entry.names) :
+        entry.key ? catalogStatic(node('span'), entry.key, entry.label) : document.createTextNode(entry.label));
+      group.appendChild(wrap);
     }); parent.appendChild(group);
   }
   function effectRow(effect, parent) {
@@ -871,7 +879,7 @@
     var classOptions = node('div', undefined, 'compatibility-fields'); choices.appendChild(classOptions);
     meta.compatibilityLabels.job.forEach(function (entry) {
       var id = 'job.' + entry.index;
-      var checkbox = checkboxField(entry.label, required.classIds.indexOf(id) !== -1, 'learningClass', classOptions);
+      var checkbox = checkboxField(entry.names || entry.label, required.classIds.indexOf(id) !== -1, 'learningClass', classOptions);
       checkbox.dataset.learningClass = id;
     }); custom.appendChild(choices);
     custom.appendChild(catalogStatic(node('p',undefined,'help-text'),'catalogLearningBranchesHelp','Все указанные ниже ветки нужны одновременно. Числа — очки ветки, включая бонусы снаряжения. Доступные очки определяют наличие навыка в списке; вложенные — изучен ли он.'));
@@ -1305,7 +1313,9 @@
       }
     }
     if (edit.kind === 'equipment') { compatibility('Разрешённые расы', 'races', edit.races, meta.compatibilityLabels.race, editor); compatibility('Разрешённые классы', 'classes', edit.classes, meta.compatibilityLabels.job, editor); }
-    else compatibility('Куда вставляется Soul', 'slots', edit.slots, ['Weapon', 'Shield', 'Head', 'Torso', 'Arms', 'Legs', 'Boots', 'Cloak'].map(function (label, index) { return { label, index }; }), editor);
+    else compatibility('Куда вставляется Soul', 'slots', edit.slots, ['Weapon', 'Shield', 'Head', 'Torso', 'Arms', 'Legs', 'Boots', 'Cloak'].map(function (label, index) {
+      return { label, index, key: 'catalogSoulSlot' + label };
+    }), editor);
     var actions = node('div', undefined, 'editor-actions');
     actions.append(button('Сохранить черновик', saveDraft), button('Опубликовать', publish), button('Создать вариант', function () { if (!canLeave()) return; var copy = structuredClone(current.edit); copy.id = ''; copy.effectMode = 'replace'; current = { edit: copy, draftVersion: 0, catalogRevision, hasDraft: false }; dirty = true; renderEditor(); report('Новый вариант получит отдельный ID. Перед сохранением явно задайте его числовые эффекты.'); }, 'secondary'));
     editor.appendChild(actions); finishEditor();
