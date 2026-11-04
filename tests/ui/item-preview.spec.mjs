@@ -1,5 +1,63 @@
 import { test, expect } from '@playwright/test';
 
+test('RU equipment previews use published D1 terminology for class, category and DEF without changing builds', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(() => {
+    const adapter = PandoraRemaked.adapter, i18n = PandoraRemaked.i18n;
+    const before = Store();
+    const chosen = EquipData[0][32].findIndex((row, index) =>
+      index > 0 && row && /(?:^|_)49=/.test(String(row[7])) && Boolean(row[16]));
+    if (chosen < 1) throw new Error('No defensive gloves compatible with Warrior in source');
+    const value = 320000 + chosen;
+    i18n.setLocale('ru');
+    const offline = adapter.readItemDetails('equipment', value, 4);
+    // Source arrays are not edited. The public localization shape is identical
+    // to /api/localization, but with distinct values to catch stale Legacy text.
+    const overrides = { ui: { ru: { 'search.itemStatDefense': 'Защита Д1' }, en: {}, jp: {}, tw: {} },
+      game: { ru: { 'equipment_category.32': 'Перчатки Д1', 'job.0': 'Воин Д1' }, en: {}, jp: {}, tw: {} } };
+    if (!i18n.applyUnifiedLocalization({ ok: true, schemaVersion: 1, overrides }))
+      throw new Error('Unified translation rejected');
+    i18n.setLocale('ru');
+    const russian = adapter.readItemDetails('equipment', value, 4);
+    i18n.setLocale('en');
+    const english = adapter.readItemDetails('equipment', value, 4);
+    return { offline, russian, english, before, after: Store() };
+  });
+  expect(result.offline.category).toBe('Перчатки');
+  expect(result.offline.classes).toContain('Воин');
+  expect(result.offline.baseStats).toContainEqual(expect.objectContaining({ label: 'Защита' }));
+  expect(result.russian.category).toBe('Перчатки Д1');
+  expect(result.russian.classes).toContain('Воин Д1');
+  expect(result.russian.baseStats).toContainEqual(expect.objectContaining({ label: 'Защита Д1' }));
+  expect(result.english.category).not.toBe('Перчатки Д1');
+  expect(result.english.classes).not.toContain('Воин Д1');
+  expect(result.english.baseStats).toContainEqual(expect.objectContaining({ label: 'Defense' }));
+  expect(result.after).toBe(result.before);
+});
+
+test('open Equipment picker invalidates cached previews when a D1 translation arrives', async ({ page }) => {
+  await page.goto('/');
+  const before = await page.evaluate(() => Store());
+  await page.locator('[data-remaked-equipment-picker="SelEquip_0_0"]').click();
+  const panel = page.locator('[data-remaked-picker-panel]');
+  const row = panel.locator('[data-remaked-search-row]').filter({ has: page.locator('details') }).first();
+  await expect(row).toHaveCount(1);
+  await row.locator('summary').click();
+  await expect(row.locator('.remaked-item-title')).toBeVisible();
+  const changed = await page.evaluate(() => {
+    const old = document.querySelector('[data-remaked-picker-panel] [data-remaked-search-row]');
+    const data = {
+      ui: { ru: { 'search.itemStatDefense': 'Защита из D1' }, en: {}, jp: {}, tw: {} },
+      game: { ru: { 'job.0': 'Воин из D1' }, en: {}, jp: {}, tw: {} }
+    };
+    if (!PandoraRemaked.i18n.applyUnifiedLocalization({ ok: true, schemaVersion: 1, overrides: data }))
+      throw new Error('Published camelCase UI keys must be accepted');
+    return old !== document.querySelector('[data-remaked-picker-panel] [data-remaked-search-row]');
+  });
+  expect(changed).toBe(true);
+  expect(await page.evaluate(() => Store())).toBe(before);
+});
+
 test('slot rings match source counts and equipped upgrades do not leak into another candidate', async ({ page }) => {
   await page.goto('/');
   const fixtures = await page.evaluate(() => {

@@ -370,7 +370,8 @@ test('selected names survive redraw, race changes and build load; blank cells re
   });
   await expect(page.locator('#StatusRace')).toHaveText('Эльф');
   await expect(page.locator('#StatusRSkill')).toHaveText('Лесной навык');
-  await expect(page.locator('#StatusJob')).toHaveText('Warrior');
+  // Every class now has an approved RU display fallback from production D1.
+  await expect(page.locator('#StatusJob')).toHaveText('Воин');
   await page.evaluate(build => PandoraRemaked.adapter.load(build), payload);
   await expect(page.locator('#StatusRace')).toHaveText('Человек');
   await expect(page.locator('#SelRace')).toHaveValue('0');

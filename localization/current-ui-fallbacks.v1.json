@@ -22,7 +22,17 @@
       "catalog.rangeScope.any": "любая атака",
       "catalog.rangeScope.melee": "ближний бой",
       "catalog.rangeScope.ranged": "дальний бой",
-      "compare.cachedCatalog": "Используются сохранённые игровые данные: актуальность каталога на сервере не удалось проверить."
+      "compare.cachedCatalog": "Используются сохранённые игровые данные: актуальность каталога на сервере не удалось проверить.",
+      "search.itemStatAttack": "Атака",
+      "search.itemStatDefense": "Защита",
+      "adminShell.catalogSoulSlotWeapon": "Оружие",
+      "adminShell.catalogSoulSlotShield": "Щит",
+      "adminShell.catalogSoulSlotHead": "Шлем",
+      "adminShell.catalogSoulSlotTorso": "Броня",
+      "adminShell.catalogSoulSlotArms": "Перчатки",
+      "adminShell.catalogSoulSlotLegs": "Штаны",
+      "adminShell.catalogSoulSlotBoots": "Обувь",
+      "adminShell.catalogSoulSlotCloak": "Плащ"
     },
     "jp": {
       "adminShell.catalogBranchLimits": "Skill branch limits",
@@ -45,7 +55,17 @@
       "catalog.rangeScope.any": "any attack",
       "catalog.rangeScope.melee": "melee",
       "catalog.rangeScope.ranged": "ranged",
-      "compare.cachedCatalog": "Using cached game data; the latest server revision could not be checked."
+      "compare.cachedCatalog": "Using cached game data; the latest server revision could not be checked.",
+      "search.itemStatAttack": "Attack",
+      "search.itemStatDefense": "Defense",
+      "adminShell.catalogSoulSlotWeapon": "Weapon",
+      "adminShell.catalogSoulSlotShield": "Shield",
+      "adminShell.catalogSoulSlotHead": "Head",
+      "adminShell.catalogSoulSlotTorso": "Torso",
+      "adminShell.catalogSoulSlotArms": "Arms",
+      "adminShell.catalogSoulSlotLegs": "Legs",
+      "adminShell.catalogSoulSlotBoots": "Boots",
+      "adminShell.catalogSoulSlotCloak": "Cloak"
     },
     "tw": {
       "adminShell.catalogBranchLimits": "Skill branch limits",
@@ -68,7 +88,17 @@
       "catalog.rangeScope.any": "any attack",
       "catalog.rangeScope.melee": "melee",
       "catalog.rangeScope.ranged": "ranged",
-      "compare.cachedCatalog": "Using cached game data; the latest server revision could not be checked."
+      "compare.cachedCatalog": "Using cached game data; the latest server revision could not be checked.",
+      "search.itemStatAttack": "Attack",
+      "search.itemStatDefense": "Defense",
+      "adminShell.catalogSoulSlotWeapon": "Weapon",
+      "adminShell.catalogSoulSlotShield": "Shield",
+      "adminShell.catalogSoulSlotHead": "Head",
+      "adminShell.catalogSoulSlotTorso": "Torso",
+      "adminShell.catalogSoulSlotArms": "Arms",
+      "adminShell.catalogSoulSlotLegs": "Legs",
+      "adminShell.catalogSoulSlotBoots": "Boots",
+      "adminShell.catalogSoulSlotCloak": "Cloak"
     }
   }
 }

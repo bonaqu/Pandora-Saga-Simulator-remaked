@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.42 — 2026-11-04
+
+### For users
+
+- **Localized Equipment previews:** item types, compatible classes and base Attack/Defense captions now follow the selected display language.
+- **Consistent editor:** class compatibility and Soul socket labels follow the selected admin language without changing existing character data or calculations.
+
+### Development and technical changes
+
+- Route Equipment tooltip class and category labels through D1-aware game terms, and base attack/defense captions through editable UI translation keys.
+- Expose published D1 class names in admin compatibility metadata while preserving numeric class identities; localize Soul socket labels through admin UI keys.
+- Additive D1 migration 0018 seeds only missing approved RU values for 25 equipment types and 10 UI captions; manual publications, reset tombstones, drafts and other languages remain untouched. Legacy formulas and saved builds are unchanged.
+
 ## Modern 4.41 — 2026-11-04
 
 ### For users

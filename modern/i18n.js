@@ -17,6 +17,8 @@
   var FALLBACK_TERMINOLOGY = Object.freeze({
     ru: Object.freeze({
       ui: Object.freeze({
+        'search.itemStatAttack': 'Атака',
+        'search.itemStatDefense': 'Защита',
         'skills.adeptness': 'Изучено (ОЧ)',
         'compare.cachedCatalog': 'Используются сохранённые игровые данные: актуальность каталога на сервере не удалось проверить.',
         'compare.errorCatalog': 'Не удалось загрузить игровые данные для {build}. Проверьте подключение к сети и повторите попытку.',
@@ -53,6 +55,37 @@
         'updates.technicalSummary': 'Выполнены внутренние технические улучшения.'
       }),
       game: Object.freeze({
+        // Read-only fallback for the 28 RU job labels verified in the
+        // published D1 game catalog on 2026-11-04. Author edits still take
+        // precedence via unifiedOverrides.game before reaching this branch.
+        'job.0': 'Воин',
+        'job.1': 'Гладиатор',
+        'job.2': 'Джаггернаут',
+        'job.3': 'Всадник',
+        'job.4': 'Рыцарь',
+        'job.5': 'Полководец',
+        'job.6': 'Паладин',
+        'job.7': 'Следопыт',
+        'job.8': 'Лучник',
+        'job.9': 'Стрелок',
+        'job.10': 'Охотник',
+        'job.11': 'Разведчик',
+        'job.12': 'Убийца',
+        'job.13': 'Загонщик',
+        'job.14': 'Адепт',
+        'job.15': 'Священник',
+        'job.16': 'Клирик',
+        'job.17': 'Жрец',
+        'job.18': 'Подвижник',
+        'job.19': 'Монах',
+        'job.20': 'Чудотворец',
+        'job.21': 'Маг',
+        'job.22': 'Волшебник',
+        'job.23': 'Колдун',
+        'job.24': 'Заклинатель',
+        'job.25': 'Чернокнижник',
+        'job.26': 'Бард',
+        'job.27': 'Мятежник',
         'calculator.text.3': 'Учитывать умения',
         'calculator.text.5': 'Учитывать мастерство',
         'calculator.text.6': 'Учитывать эфф. зелий',
@@ -576,7 +609,11 @@
       var rows=payload.overrides[scope]?.[locale];
       if (!rows || Array.isArray(rows) || typeof rows !== 'object') return false;
       for (var [key,text] of Object.entries(rows)) {
-        if (!/^[a-z][a-z0-9._-]{0,120}$/.test(key) ||
+        // Registered UI keys use camelCase (e.g. updates.latestForUsers);
+        // rejecting capitals discards the ENTIRE D1 localization response,
+        // including otherwise valid RU game-class translations. Keep game
+        // identity keys strict and allow safe camelCase only for UI labels.
+        if (!(scope === 'ui' ? /^[a-z][A-Za-z0-9._-]{0,120}$/ : /^[a-z][a-z0-9._-]{0,120}$/).test(key) ||
             typeof text !== 'string' || text.length > 4000 ||
             /[\x00-\x09\x0b-\x1f\x7f<>]/.test(text)) return false;
         next[scope][locale][key]=text;

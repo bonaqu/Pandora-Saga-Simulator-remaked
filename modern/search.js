@@ -971,9 +971,13 @@
     close: closePanel
   };
 
-  window.addEventListener('pandora-remaked:localechange', function () {
+  function refreshActiveTranslation() {
+    // When a D1 localization response arrives after a picker was opened,
+    // invalidate already hydrated row previews and source-language labels.
     if (active && typeof active.render === 'function') active.render();
-  });
+  }
+  window.addEventListener('pandora-remaked:localechange', refreshActiveTranslation);
+  window.addEventListener('pandora-remaked:translationchange', refreshActiveTranslation);
   window.addEventListener('resize', function () {
     cancelPreviews();
   });

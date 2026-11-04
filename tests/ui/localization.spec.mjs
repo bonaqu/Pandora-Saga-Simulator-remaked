@@ -67,7 +67,7 @@ test('unknown locale is rejected to English without breaking storage', async ({ 
   await expect(page.locator('[data-remaked-header]')).toContainText('Project');
 });
 
-test('RU covers Modern surfaces and approved race names while unapproved classes and build bytes stay unchanged', async ({ page }) => {
+test('RU covers Modern surfaces and approved race/class names while build bytes stay unchanged', async ({ page }) => {
   const raceBefore = await page.locator('[data-remaked-summary-race]').textContent();
   const classBefore = await page.locator('#StatusJob').textContent();
   const payloadBefore = await page.evaluate(() => Store());
@@ -88,7 +88,8 @@ test('RU covers Modern surfaces and approved race names while unapproved classes
   await expect(page.locator('[data-remaked-mobile-summary]')).toHaveAttribute('aria-label', await russianText(page, 'mobile.summary'));
   expect(raceBefore).toBe('Human');
   await expect(page.locator('[data-remaked-summary-race]')).toHaveText('Человек');
-  await expect(page.locator('#StatusJob')).toHaveText(classBefore);
+  expect(classBefore).toBe('Warrior');
+  await expect(page.locator('#StatusJob')).toHaveText('Воин');
   expect(await page.evaluate(() => Store())).toBe(payloadBefore);
 
   const tooltip = await page.evaluate(() => window.PandoraRemaked.tooltips.get('lp'));

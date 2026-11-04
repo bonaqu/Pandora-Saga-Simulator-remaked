@@ -404,12 +404,19 @@
     // are deliberately not evaluated or reconstructed here.
     String(canonical[7] || '').split('_').forEach(function (code) {
       var match = code.match(/^(18)=W(\d+(?:\.\d+)?)$/) || code.match(/^(49)=(\d+(?:\.\d+)?)$/);
-      if (match) baseStats.push({ label: text(window.Name.Option[Number(match[1])][3 + language]), value: match[2] });
+      if (match) {
+        var originalLabel = text(window.Name.Option[Number(match[1])][3 + language]);
+        var statKey = match[1] === '18' ? 'search.itemStatAttack' : 'search.itemStatDefense';
+        baseStats.push({ label: namespace.i18n?.t?.(statKey) || originalLabel, value: match[2] });
+      }
     });
     var classes = [];
     if (kind === 'equipment') window.Name.Job.forEach(function (job, jobIndex) {
       // Flags follow the preserved ListCreate('Equip') layout (offset 16).
-      if (canonical[16 + jobIndex]) classes.push(text(job[2 + language]));
+      if (canonical[16 + jobIndex]) {
+        var originalJob = text(job[2 + language]);
+        classes.push(namespace.i18n?.game?.('job.' + jobIndex, originalJob) || originalJob);
+      }
     });
     var catalogRecord = namespace.catalog?.item(kind, value);
     // Derived from the same Astir registry used by the D1 editor and build.
@@ -480,7 +487,9 @@
     return { name: displayName, level: kind === 'equipment' ? canonical[4] : null,
       sockets: kind === 'equipment' ? canonical[5] : null,
       souls: souls, baseStats: baseStats, classes: classes,
-      category: kind === 'equipment' ? text(window.EquipData[language][category][0][0]).replace(/^\+?-+\s*/, '') : '',
+      category: kind === 'equipment' ? (namespace.i18n?.game?.('equipment_category.' + category,
+        text(window.EquipData[language][category][0][0]).replace(/^\+?-+\s*/, '')) ||
+        text(window.EquipData[language][category][0][0]).replace(/^\+?-+\s*/, '')) : '',
       equipped: equipped,
       equippedName: equipped ? text(window.EquipOption.apply(null, current)).replace(text(record[0]), function () { return displayName; }) : '',
       gem: equipped && Number(current[3]) > 0 ? text(window.Name.Gem[0][current[1]][language]) + ' · ' + text(window.Name.Gem[1][current[2]][language]) : '',
