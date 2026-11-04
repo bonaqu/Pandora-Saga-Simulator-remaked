@@ -567,7 +567,7 @@ async function publishReviewedCatalogBatch(request,env,now) {
   if(!Array.isArray(input.items)||!input.items.length||input.items.length>MAX_BATCH_DRAFTS)fail('Invalid reviewed batch size');
   const snapshot=await head(env);
   if(snapshot.version!==expected)fail('Catalog changed since review',409);
-  const chosen=[],ids=new Set();
+  const chosen=[],ids=new Set(),termsToProtect=new Set();
   for(const item of input.items){
     if(!item||typeof item!=='object'||Array.isArray(item)||Object.keys(item).sort().join(',')!=='edit,expectedCurrentHash,id'||
        typeof item.id!=='string'||ids.has(item.id)||typeof item.expectedCurrentHash!=='string'||!/^[a-f0-9]{64}$/.test(item.expectedCurrentHash))
@@ -580,13 +580,20 @@ async function publishReviewedCatalogBatch(request,env,now) {
     const currentHash=createHash('sha256').update(JSON.stringify(current)).digest('hex');
     if(currentHash!==item.expectedCurrentHash)fail('Reviewed skill changed since preview',409);
     const edit=validateDraft(item.edit,identity);compileRecord(edit,identity,source);requireRealChanges(snapshot,identity,edit);
+    // The English name is independent of a skill's prerequisite and description
+    // translations. Narrow this guard only when every other validated field is
+    // byte-identical; all other edits keep the full conservative protection.
+    const nameOnly=(identity.kind==='active'||identity.kind==='passive') &&
+      edit.names.en!==current.names.en &&
+      JSON.stringify({...edit,names:{...edit.names,en:current.names.en}})===JSON.stringify(current);
+    for(const term of nameOnly?[identity.id]:protectedTermsFor([identity])) termsToProtect.add(term);
     chosen.push({identity,edit});
   }
   const entries=snapshot.entries.filter(entry=>!ids.has(entry.identity.id));
   for(const entry of chosen)entries.push(entry);
   const note='Publish '+chosen.length+' selected catalog drafts [translations-clean] [reviewed-direct] [review-hash:'+requestHash+']'+
     (input.operationId?' [batch:'+input.operationId+']':'');
-  const result=await commitSnapshot(env,expected,entries,now,note,null,[...ids],protectedTermsFor(chosen.map(row=>row.identity)));
+  const result=await commitSnapshot(env,expected,entries,now,note,null,[...ids],[...termsToProtect]);
   return jsonResponse({...await result.json(),count:chosen.length,publishedIds:[...ids],translationsGuarded:true,reviewedDirect:true,reviewedHash:requestHash,
     ...(input.operationId?{operationId:input.operationId}:{})});
 }
