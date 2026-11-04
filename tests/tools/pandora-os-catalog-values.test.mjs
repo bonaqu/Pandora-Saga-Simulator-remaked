@@ -10,6 +10,8 @@ test('only known line-break markup is classified as formatting rather than a dat
   assert.equal(sameIgnoringPresentation('Sword.STR +1', 'Sword.<br>STR +2'), false);
   assert.equal(sameIgnoringPresentation('Sword', '<b>Sword</b> '), true);
   assert.equal(sameIgnoringPresentation('Sword', '<i>Sword</i>'), false);
+  assert.equal(sameIgnoringPresentation('Sword.\n\nSTR +1', 'Sword.<br><br>STR +1'), true);
+  assert.equal(sameIgnoringPresentation('Sword.\r\nSTR +1', 'Sword.<br>STR +2'), false);
 });
 
 test('calculation token parsing preserves unfamiliar mechanics and distinguishes weapon/flat/percent', () => {

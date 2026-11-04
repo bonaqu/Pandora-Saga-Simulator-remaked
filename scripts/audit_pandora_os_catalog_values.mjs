@@ -20,7 +20,7 @@ const classOrder = ['WARRIOR','GLADIATOR','JUGGERNAUT','DRAGOON','KNIGHT','GENER
 // Classify only known presentation-only markup and outer whitespace; do not
 // erase internal spaces, text, other markup, or differences in translations.
 export function sameIgnoringPresentation(actual, expected) {
-  const strip = value => String(value).replace(/<br\s*\/?>|<\/?b>/gi, '').trim();
+  const strip = value => String(value).replace(/<br\s*\/?>|<\/?b>|\r\n|\r|\n/gi, '').trim();
   return strip(actual) === strip(expected);
 }
 
