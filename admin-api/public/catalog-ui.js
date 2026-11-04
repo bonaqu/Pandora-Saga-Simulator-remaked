@@ -344,7 +344,9 @@
   }
   function checkboxField(label, value, field, parent) {
     var wrap = node('label', undefined, 'flag-label'), input = node('input'); input.type = 'checkbox'; input.checked = value; input.dataset.field = field;
-    input.addEventListener('change', changing); wrap.append(input, label && typeof label === 'object' ? catalogRecordText(node('span'),label) : formCaption(label)); parent.appendChild(wrap); return input;
+    input.addEventListener('change', changing); if (label && typeof label === 'object') wrap.append(input, catalogRecordText(node('span'),label));
+    else wrap.append(input, formCaption(label));
+    parent.appendChild(wrap); return input;
   }
   function multilingual(label, field, values, parent, multiline) {
     var section = node('fieldset', undefined, 'translation-fields'); var legend = node('legend'); legend.appendChild(formCaption(label)); section.appendChild(legend);
