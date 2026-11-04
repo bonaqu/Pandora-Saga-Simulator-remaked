@@ -67,3 +67,11 @@ test('weapon identity review finds same category, level and attack even when soc
   assert.equal(invalidRange.draftPreview.baseRange,undefined);
   assert.ok(invalidRange.warnings.some(text=>text.includes('base range')));
 });
+
+
+test('percentage accuracy remains distinct from flat accuracy and rejects conditional source effects',()=>{
+  assert.deepEqual(convertedCurrentEffects({effects:[{func:'EP_TOHIT_SCALE',a:10,b:null,dir:'TARGET'},
+    {func:'EP_TOHIT_CONST',a:3,b:null,dir:'TARGET'}]},false),{complete:true,effects:[
+      {stat:62,unit:'flat',value:3},{stat:62,unit:'percent',value:10}]});
+  assert.equal(convertedCurrentEffects({effects:[{func:'EP_TOHIT_SCALE',a:10,min:7}]},false).complete,false);
+});
