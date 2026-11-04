@@ -8,7 +8,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 MIGRATIONS = ROOT / "admin-api/migrations"
 SQL = (MIGRATIONS / "0018_item_preview_ru_labels.sql").read_text(encoding="utf-8")
 APPROVED = json.loads((ROOT / "localization/approved-translations.v1.json").read_text(encoding="utf-8"))
-CURATED = json.loads((ROOT / "localization/curated-runtime-defaults.ru.v1.json").read_text(encoding="utf-8"))
+FALLBACK = json.loads((ROOT / "localization/current-ui-fallbacks.v1.json").read_text(encoding="utf-8"))
 ENGLISH = json.loads((ROOT / "localization/ui.en.json").read_text(encoding="utf-8"))
 SLOTS = ["Weapon", "Shield", "Head", "Torso", "Arms", "Legs", "Boots", "Cloak"]
 UI_KEYS = ["search.itemStatAttack", "search.itemStatDefense"] + [
@@ -20,7 +20,7 @@ CATEGORY = {
 }
 EXPECTED = {
     **{("game", key): value for key, value in CATEGORY.items()},
-    **{("ui", key): CURATED["ru"]["ui"][key] for key in UI_KEYS},
+    **{("ui", key): FALLBACK["ui"]["ru"][key] for key in UI_KEYS},
 }
 
 
@@ -37,7 +37,7 @@ class ItemPreviewD1Tests(unittest.TestCase):
         self.assertEqual(len(UI_KEYS), 10)
         self.assertEqual(len(EXPECTED), 35)
         self.assertEqual(CATEGORY["equipment_category.32"], "Перчатки")
-        self.assertEqual(CURATED["ru"]["ui"]["search.itemStatDefense"], "Защита")
+        self.assertEqual(FALLBACK["ui"]["ru"]["search.itemStatDefense"], "Защита")
         for key in UI_KEYS:
             self.assertIn(key, ENGLISH)
         self.assertNotIn("'job.0'", SQL)  # Original owner-published class names are retained.
