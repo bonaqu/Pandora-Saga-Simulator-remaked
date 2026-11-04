@@ -1,5 +1,29 @@
 # Changelog
 
+## Modern 4.42 — русские подписи в карточках снаряжения и админке, 2026-11-04
+
+<!-- release-notes:user:ru -->
+- **Русские характеристики в подсказках экипировки:** тип вещи (например, «Перчатки»), разрешённые классы и базовые «Атака»/«Защита» больше не берутся из английских массивов Legacy — используются локализации Modern/D1.
+- **Согласованная админка:** названия классов в настройках совместимости и слоты душ отображаются на выбранном языке. Классы и характеристики по-прежнему редактируются без изменения игровых ID.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **Localized Equipment previews:** item types, compatible classes and base Attack/Defense captions now use Modern/D1 translations instead of English-only Legacy display arrays.
+- **Consistent editor:** class compatibility and Soul socket labels follow the selected admin language without changing item IDs or stat calculations.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Чтение карточек направлено через `i18n.game('job.*')`, `i18n.game('equipment_category.*')` и новые редактируемые UI-ключи характеристик. Обновления D1 и переключение локали по-прежнему пересоздают просмотренные карточки.
+- Метаданные админки получают опубликованные D1-названия 28 классов, сохраняя индексы и совместимость; слоты Soul используют редактируемые текстовые ключи. RU/EN/JP/TW не подменяют исходные массивы.
+- Миграция 0018 добавляет только отсутствующие утверждённые RU-значения для 25 категорий экипировки и 10 подписей интерфейса. Существующие публикации, сбросы, черновики и другие языки защищены. Игровые формулы и сохранения не меняются.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Route Equipment tooltip class and category labels through D1-aware game terms, and base attack/defense captions through editable UI translation keys.
+- Expose published D1 class names in admin compatibility metadata while preserving numeric class identities; localize Soul socket labels through admin UI keys.
+- Additive D1 migration 0018 seeds only missing approved RU values for 25 equipment types and 10 UI captions; manual publications, reset tombstones, drafts and other languages remain untouched. Legacy formulas and saved builds are unchanged.
+<!-- /admin-notes:en -->
+
 ## Modern 4.41 — быстрый поиск без перерисовки списка, 2026-11-04
 
 <!-- release-notes:user:ru -->
