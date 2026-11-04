@@ -8,6 +8,7 @@ import { baselineRecords } from '../admin-api/src/catalog-baseline.mjs';
 import { stableCustomId } from './materialize_pandora_os_identity_reconcile.mjs';
 import { serverCategory } from './materialize_pandora_os_live_sync_hardening.mjs';
 import reviews from '../data/current-source-identity-reviews.v1.json' with { type: 'json' };
+import verifiedGear from '../data/verified-racial-gear.v1.json' with { type: 'json' };
 
 const normalize = value => String(value || '').normalize('NFKC').trim().toLocaleLowerCase('en').replace(/\s+/g, ' ');
 // A name-only hint, never a verified identity: common English Soul word order
@@ -15,10 +16,10 @@ const normalize = value => String(value || '').normalize('NFKC').trim().toLocale
 const soulSubject = value => normalize(value).replace(/['’]s\b/g, '').replace(/[^a-z0-9]+/g, ' ')
   .split(' ').filter(word => word && !['soul','souls','of','the'].includes(word)).join(' ');
 const asList = value => Array.isArray(value) ? value : Object.values(value || {});
-const categoryOfBaseline = row => row.id.startsWith('equipment.') ? row.legacy_category_id : null;
-const sourceKind = row => row.id.startsWith('equipment.') ? 'equipment' : row.id.startsWith('soul.') ? 'soul' : null;
+const categoryOfBaseline = row => sourceKind(row) === 'equipment' ? row.legacy_category_id : null;
+const sourceKind = row => row.kind === 'equipment' || row.id.startsWith('equipment.') ? 'equipment' : row.id.startsWith('soul.') ? 'soul' : null;
 
-export function auditIdentities({ items, souls, english, mapping, catalog, baseline = baselineRecords, olderItems = {}, olderSouls = {}, identityReviews = [] }) {
+export function auditIdentities({ items, souls, english, mapping, catalog, baseline = baselineRecords, olderItems = {}, olderSouls = {}, identityReviews = [], verifiedGearEntries = [] }) {
   if (!catalog?.ok || !Number.isSafeInteger(catalog.revision) || !Array.isArray(catalog.records)) throw new Error('Invalid public catalog snapshot');
   if (!Array.isArray(mapping?.equipment) || !Array.isArray(mapping?.souls)) throw new Error('Invalid identity map');
   if (!Array.isArray(identityReviews)) throw new Error('Invalid identity reviews');
@@ -50,6 +51,16 @@ export function auditIdentities({ items, souls, english, mapping, catalog, basel
     publicIds.add(row.id);
     effective.set(row.id, { id: row.id, kind: row.kind, category: row.category, names: row.names || {}, disabled: Boolean(row.disabled), source: 'published' });
   }
+  const gearById = new Map(), gearIds = new Set();
+  for (const entry of verifiedGearEntries) {
+    if (!Number.isSafeInteger(entry.gameId) || gearById.has(entry.gameId) || !entry.recordId || !Number.isInteger(entry.category))
+      throw new Error('Invalid or duplicate verified equipment identity');
+    for (const value of new Set([entry.recordId, entry.publishedId].filter(Boolean))) {
+      if (gearIds.has(value)) throw new Error('Duplicate verified equipment project identity: ' + value);
+      gearIds.add(value);
+    }
+    gearById.set(entry.gameId, entry);
+  }
   const result = { revision: catalog.revision, matched: [], missing: [], ambiguous: [], duplicateCandidates: [], excluded: [], catalogOnly: [] };
   const known = new Set();
   for (const [kind, source, old] of [['equipment', items, olderItems], ['soul', souls, olderSouls]]) {
@@ -74,6 +85,25 @@ export function auditIdentities({ items, souls, english, mapping, catalog, basel
       if (kind === 'equipment' && String(row.kind || '').startsWith('DECO_')) { result.excluded.push({ ...entry, reason: 'decorative overlay; existing project policy' }); continue; }
       if (kind === 'equipment' && (!row.slot || row.slot === 'arrow' || category === null)) { result.excluded.push({ ...entry, reason: 'unsupported slot or category; needs separate evaluation' }); continue; }
       const targets = byServer.get(id) || [], custom = stableCustomId(kind, id);
+      // The registry is the reviewed mapping used by Modern. A published record
+      // is canonical; its archived/synthetic record is a saved-build alias.
+      const gear = kind === 'equipment' ? gearById.get(id) : null;
+      if (gear) {
+        const canonical = gear.publishedId || gear.recordId;
+        const aliases = [...new Set([gear.recordId, gear.publishedId].filter(Boolean))];
+        const current = effective.get(canonical);
+        const unexpected = [...new Set([...targets, custom])].filter(value => effective.has(value) && !aliases.includes(value));
+        const invalid = aliases.filter(value => effective.has(value) && (effective.get(value).kind !== kind || effective.get(value).category !== category));
+        if (gear.category !== category || !current || invalid.length || unexpected.length || targets.some(value => !aliases.includes(value))) {
+          result.ambiguous.push({ ...entry, registryId: canonical, mappedTargets: targets, unexpectedIds: unexpected, mismatchedIds: invalid, reason: 'verified registry requires review' });
+          aliases.filter(value => effective.has(value)).forEach(value => known.add(value));
+          unexpected.forEach(value => known.add(value));
+          continue;
+        }
+        aliases.filter(value => effective.has(value)).forEach(value => known.add(value));
+        result.matched.push({ ...entry, projectId: canonical, aliases: aliases.filter(value => value !== canonical && effective.has(value)), evidence: 'verified-racial-gear-registry', catalogSource: current.source, disabled: Boolean(current.disabled) });
+        continue;
+      }
       const ids = [...new Set([...targets, custom])].filter(candidate => effective.has(candidate));
       const reverseCollision = targets.some(target => (byProject.get(target) || []).length > 1);
       const mismatched = ids.filter(candidate => { const current = effective.get(candidate); return current.kind !== kind || current.category !== category; });
@@ -117,7 +147,7 @@ async function main() {
   const [items, souls, english, catalog] = await Promise.all(urls.map(readPublic));
   const read = name => JSON.parse(fs.readFileSync(path.join(root, 'admin-api/data', name), 'utf8'));
   const result = auditIdentities({ items: items.data, souls: souls.data, english: english.data, catalog: catalog.data,
-    mapping: read('pandora-os-live-map-20261007-v3.json'), olderItems: read('pandora-os-live-items-20261007.json'), olderSouls: read('pandora-os-live-souls-20261007.json'), identityReviews: reviews.reviews });
+    mapping: read('pandora-os-live-map-20261007-v3.json'), olderItems: read('pandora-os-live-items-20261007.json'), olderSouls: read('pandora-os-live-souls-20261007.json'), identityReviews: reviews.reviews, verifiedGearEntries: verifiedGear.entries });
   result.checkedAt = new Date().toISOString();
   result.sources = [items, souls, english, catalog].map(({ url, sha256 }) => ({ url, sha256 }));
   result.note = 'GET-only; same-name candidates are not confirmed duplicates. No D1 drafts or editor history are visible to this public audit.';
