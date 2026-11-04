@@ -17,6 +17,8 @@
   var FALLBACK_TERMINOLOGY = Object.freeze({
     ru: Object.freeze({
       ui: Object.freeze({
+        'search.itemStatAttack': 'Атака',
+        'search.itemStatDefense': 'Защита',
         'skills.adeptness': 'Изучено (ОЧ)',
         'compare.cachedCatalog': 'Используются сохранённые игровые данные: актуальность каталога на сервере не удалось проверить.',
         'compare.errorCatalog': 'Не удалось загрузить игровые данные для {build}. Проверьте подключение к сети и повторите попытку.',
