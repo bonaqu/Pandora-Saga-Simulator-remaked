@@ -76,28 +76,36 @@ async function measureResults(page, mode, selectId) {
     await frame();
     await frame();
 
-    const samples = [];
     const frames = 96;
     const maxScroll = Math.max(0, results.scrollHeight - results.clientHeight);
-    results.scrollTop = 0;
-    await frame();
-    await frame();
-    let previous = performance.now();
-    for (let index = 0; index < frames; index += 1) {
+    async function frameSamples(scroll) {
+      const samples = [];
+      results.scrollTop = 0;
       await frame();
-      const now = performance.now();
-      if (index >= 6) samples.push(round(now - previous));
-      previous = now;
-      results.scrollTop = maxScroll * (index + 1) / frames;
+      await frame();
+      let previous = performance.now();
+      for (let index = 0; index < frames; index += 1) {
+        await frame();
+        const now = performance.now();
+        if (index >= 6) samples.push(round(now - previous));
+        previous = now;
+        if (scroll) results.scrollTop = maxScroll * (index + 1) / frames;
+      }
+      await frame();
+      return samples;
     }
-    await frame();
-    const endRows = results.querySelectorAll('[data-remaked-search-row]').length;
+    // CI rAF can be 30–80 ms even with no scrolling when the runner is busy.
+    // Control phases bound what can legitimately be attributed to list work.
+    const idleBeforeMs = await frameSamples(false);
+    const samples = await frameSamples(true);
     const scrollBottom = results.scrollTop;
+    const idleAfterMs = await frameSamples(false);
+    const endRows = results.querySelectorAll('[data-remaked-search-row]').length;
     search.close({ restoreFocus: false });
     return {
       mode, selectId, coldOpenMs: coldMs, warmOpenMs: opens,
       fullRows, rowCount, nodeCount, listHeight, scrollDistance, common, seenCounts,
-      filterMs: measurements, scrollFrameMs: samples, scrollBottom: round(scrollBottom),
+      filterMs: measurements, scrollFrameMs: samples, idleBeforeMs, idleAfterMs, scrollBottom: round(scrollBottom),
       endRows, maxScroll: round(maxScroll)
     };
   }, { mode, selectId });
@@ -165,8 +173,12 @@ test('profile real Chromium search lists and scroll cadence for virtualization d
     inputClearP95Ms: percentile(data.filterMs.restore.slice(1), 0.95),
     inputNoMatchMedianMs: percentile(data.filterMs.empty, 0.5),
     inputUnchangedMedianMs: percentile(data.filterMs.same, 0.5),
+    idleBeforeMedianMs: percentile(data.idleBeforeMs, 0.5),
+    idleBeforeP95Ms: percentile(data.idleBeforeMs, 0.95),
     scrollFrameMedianMs: percentile(data.scrollFrameMs, 0.5),
     scrollFrameP95Ms: percentile(data.scrollFrameMs, 0.95),
+    idleAfterMedianMs: percentile(data.idleAfterMs, 0.5),
+    idleAfterP95Ms: percentile(data.idleAfterMs, 0.95),
     slowScrollFramesOver33ms: data.scrollFrameMs.filter(ms => ms > 33.4).length,
     scrollFramesMeasured: data.scrollFrameMs.length
   });
