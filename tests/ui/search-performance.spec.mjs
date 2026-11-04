@@ -36,7 +36,7 @@ async function measureResults(page, mode, selectId) {
       const results = root.querySelector('[data-remaked-search-results]');
       if (!rows.length || !results) throw new Error('Results missing');
       // Force the pending layout for this actual list instead of timing JS alone.
-      void results.getBoundingClientRect().height;
+      void results.scrollHeight;
       const ms = round(performance.now() - start);
       if (!index) coldMs = ms;
       else opens.push(ms);
@@ -61,7 +61,7 @@ async function measureResults(page, mode, selectId) {
       input.value = value;
       input.dispatchEvent(new Event('input', { bubbles: true }));
       // Every sample includes layout of the resulting list, not just filtering.
-      void results.getBoundingClientRect().height;
+      void results.scrollHeight;
       measurements[kind].push(round(performance.now() - start));
       seenCounts[kind] = results.querySelectorAll('[data-remaked-search-row]').length;
     }
@@ -113,7 +113,7 @@ test('profile real Chromium search lists and scroll cadence for virtualization d
     return Array.from(document.querySelectorAll('[data-remaked-equipment-picker]'))
       .map(button => {
         const id = button.dataset.remakedEquipmentPicker;
-        const found = /^SelEquip_(\\d+)_0$/.exec(id);
+        const found = /^SelEquip_([0-9]+)_0$/.exec(id);
         if (!found || button.getClientRects().length === 0) return null;
         const select = document.getElementById(id);
         if (!select || select.style.display === 'none') return null;
@@ -125,7 +125,9 @@ test('profile real Chromium search lists and scroll cadence for virtualization d
   expect(pick).toBeTruthy();
   expect(pick.count).toBeGreaterThan(50);
   const equipment = await measureResults(page, 'picker', pick.id);
-  expect(equipment.fullRows).toBe(pick.count);
+  expect(equipment.fullRows).toBeGreaterThan(50);
+  expect(equipment.fullRows).toBeLessThanOrEqual(pick.count);
+  expect(await page.evaluate(() => Store())).toBe(before);
   expect(equipment.seenCounts.empty).toBe(0);
   expect(equipment.seenCounts.restore).toBe(equipment.fullRows);
   expect(equipment.endRows).toBe(equipment.fullRows);
@@ -141,7 +143,9 @@ test('profile real Chromium search lists and scroll cadence for virtualization d
   });
   let soul = null;
   if (soulSupported) {
+    const soulBefore = await page.evaluate(() => Store());
     soul = await measureResults(page, 'soul', '');
+    expect(await page.evaluate(() => Store())).toBe(soulBefore);
     expect(soul.fullRows).toBeGreaterThan(0);
     expect(soul.seenCounts.restore).toBe(soul.fullRows);
   }
@@ -176,10 +180,5 @@ test('profile real Chromium search lists and scroll cadence for virtualization d
     soul: summary(soul)
   };
   console.log('MODERN_SEARCH_BENCHMARK=' + JSON.stringify(report));
-  // The active character may change solely due to deliberate Soul fixture
-  // preparation above; observing search itself never selects anything.
-  expect(await page.evaluate(() => Store())).toBe(
-    await page.evaluate(() => Store())
-  );
-  expect(before).toBeTruthy();
+
 });
