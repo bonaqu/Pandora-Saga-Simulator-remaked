@@ -59,9 +59,9 @@ class ItemPreviewD1Tests(unittest.TestCase):
 
     def test_preserves_manual_published_text_tombstones_drafts_and_other_languages(self):
         conn = database()
-        conn.execute("INSERT INTO localization_overrides VALUES ('game','equipment_category.32','ru','Свои перчатки',9,12)")
-        conn.execute("INSERT INTO localization_overrides VALUES ('game','equipment_category.30','ru','',5,12)")
-        conn.execute("INSERT INTO localization_overrides VALUES ('ui','search.itemStatAttack','en','Owner attack',3,12)")
+        conn.execute("INSERT INTO localization_overrides (scope,term_id,locale,text,version,updated_at) VALUES ('game','equipment_category.32','ru','Свои перчатки',9,12)")
+        conn.execute("INSERT INTO localization_overrides (scope,term_id,locale,text,version,updated_at) VALUES ('game','equipment_category.30','ru','',5,12)")
+        conn.execute("INSERT INTO localization_overrides (scope,term_id,locale,text,version,updated_at) VALUES ('ui','search.itemStatAttack','en','Owner attack',3,12)")
         conn.execute("INSERT INTO localization_drafts "
                      "(scope,term_id,locale,text,version,source_version,source_text,updated_at) "
                      "VALUES ('ui','search.itemStatDefense','ru','Мой черновик',1,0,'Defense',12)")
