@@ -2,6 +2,19 @@
 
 Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel displays user entries only.
 
+## Modern 4.41 — 2026-11-04
+
+### For users
+
+- **Smoother Equipment and Soul search:** unchanged result rows stay in place while typing instead of being rebuilt. Previously viewed item details can be reused when filters are cleared.
+- **Familiar controls preserved:** selection, previews, sorting, type filters, keyboard navigation and touch disclosure retain their behavior.
+
+### Development and technical changes
+
+- Reconcile row DOM nodes across three search surfaces using a per-source snapshot cache, reusing buttons and event handlers. Cache normalized search strings and avoid unnecessary type-select option reconstruction.
+- Rebuild source snapshots on target, locale or catalog refresh; preserve previously opened details only across local filtering.
+- Regression cases verify stable nodes, bounded element creation, focus retention and unchanged character payload. No changes to game formulas, D1 or saved-build formats.
+
 ## Modern 4.40 — 2026-11-04
 
 ### For users
