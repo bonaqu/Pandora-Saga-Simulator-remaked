@@ -726,15 +726,21 @@ async function list(request, env) {
 // game terminology to the editor in all four languages. Never mutate the
 // source catalog or write translations from an editor metadata request.
 async function adminCompatibilityLabels(env) {
-  const [published, snapshot] = await Promise.all([
-    env.DB.prepare("SELECT term_id, locale, text FROM localization_overrides WHERE scope='game' AND term_id LIKE 'job.%'").all(),
-    head(env)
-  ]);
+  // Older synthetic test databases can predate the additive localization
+  // migration; their meta endpoint still exposes original English names.
+  // Any other SQL/database failure remains fatal, never silently ignored.
+  const publishedPromise = env.DB.prepare("SELECT term_id, locale, text FROM localization_overrides WHERE scope='game' AND term_id LIKE 'job.%'").all()
+    .catch(error => {
+      if (/no such table: localization_overrides/i.test(String(error.message || error)))
+        return { results: [] };
+      throw error;
+    });
+  const [published, snapshot] = await Promise.all([publishedPromise, head(env)]);
   const catalogClasses = new Map(snapshot.entries.filter(entry => entry.identity?.kind === 'class')
     .map(entry => [entry.identity.id, entry.edit?.names || {}]));
   const byTerm = new Map();
   for (const row of published.results || []) {
-    if (!/^job\\.(?:[0-9]|1[0-9]|2[0-7])$/.test(row.term_id) ||
+    if (!/^job\.(?:[0-9]|1[0-9]|2[0-7])$/.test(row.term_id) ||
         !['ru', 'en', 'jp', 'tw'].includes(row.locale) || !String(row.text || '').trim()) continue;
     if (!byTerm.has(row.term_id)) byTerm.set(row.term_id, {});
     byTerm.get(row.term_id)[row.locale] = row.text;
