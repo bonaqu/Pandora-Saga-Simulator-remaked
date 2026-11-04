@@ -9,6 +9,8 @@ test('RU equipment previews use published D1 terminology for class, category and
       index > 0 && row && /(?:^|_)49=/.test(String(row[7])) && Boolean(row[16]));
     if (chosen < 1) throw new Error('No defensive gloves compatible with Warrior in source');
     const value = 320000 + chosen;
+    i18n.setLocale('ru');
+    const offline = adapter.readItemDetails('equipment', value, 4);
     // Source arrays are not edited. The public localization shape is identical
     // to /api/localization, but with distinct values to catch stale Legacy text.
     const overrides = { ui: { ru: { 'search.itemStatDefense': 'Защита Д1' }, en: {}, jp: {}, tw: {} },
@@ -19,8 +21,11 @@ test('RU equipment previews use published D1 terminology for class, category and
     const russian = adapter.readItemDetails('equipment', value, 4);
     i18n.setLocale('en');
     const english = adapter.readItemDetails('equipment', value, 4);
-    return { russian, english, before, after: Store() };
+    return { offline, russian, english, before, after: Store() };
   });
+  expect(result.offline.category).toBe('Перчатки');
+  expect(result.offline.classes).toContain('Воин');
+  expect(result.offline.baseStats).toContainEqual(expect.objectContaining({ label: 'Защита' }));
   expect(result.russian.category).toBe('Перчатки Д1');
   expect(result.russian.classes).toContain('Воин Д1');
   expect(result.russian.baseStats).toContainEqual(expect.objectContaining({ label: 'Защита Д1' }));
