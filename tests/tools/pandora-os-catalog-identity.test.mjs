@@ -76,3 +76,24 @@ test('all reviewed fire weapon links preserve one historical identity and both c
     assert.equal(record.engineKey,original.name.jp);assert.equal(record.names.jp,original.name.jp);
   }
 });
+
+test('verified current gear uses published canonical identity and preserves saved-build alias', () => {
+  const item = {id: 12501, kind: 'TORSO', slot: 'body', name: 'Tunic'};
+  item.kind = 'ARMOR';
+  const args = { items: [item], souls: [], english: {}, mapping: {equipment: [], souls: []},
+    catalog: {ok: true, revision: 94, records: [{id: 'modern.equipment.published', kind: 'equipment', category: 31}]},
+    baseline: [{id: 'equipment.31.6', kind: 'equipment', legacy_category_id: 31, name: {en: 'Tunic'}}],
+    verifiedGearEntries: [{gameId: 12501, category: 31, recordId: 'equipment.31.6', publishedId: 'modern.equipment.published'}] };
+  const result = auditIdentities(args);
+  assert.deepEqual(result.matched.map(row => [row.projectId, row.aliases, row.evidence]),
+    [['modern.equipment.published', ['equipment.31.6'], 'verified-racial-gear-registry']]);
+  assert.equal(result.catalogOnly.length, 0);
+  const missingPublication = auditIdentities({...args, catalog: {ok:true, revision:94, records:[]}});
+  assert.equal(missingPublication.ambiguous.length, 1);
+  assert.equal(missingPublication.missing.length, 0);
+  const conflict = auditIdentities({...args, mapping: {equipment:[{serverId:12501,projectId:'equipment.31.other'}],souls:[]}});
+  assert.equal(conflict.ambiguous.length, 1);
+  const wrongCategory = auditIdentities({...args, verifiedGearEntries: [{...args.verifiedGearEntries[0], category: 32}]});
+  assert.equal(wrongCategory.ambiguous.length, 1);
+  assert.throws(() => auditIdentities({...args, verifiedGearEntries: [...args.verifiedGearEntries, {...args.verifiedGearEntries[0], gameId: 12502}]}), /Duplicate verified equipment project identity/);
+});

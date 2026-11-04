@@ -3,8 +3,9 @@
 import { convertedEffects, EFFECT_MAP } from '../materialize_pandora_os_live_sync_hardening.mjs';
 
 export const CURRENT_EFFECT_MAP = Object.freeze({ ...EFFECT_MAP,
-  EP_IMMUNE_RAVING: [157, 'flat'], EP_IMMUNE_DISEASE: [161, 'flat'], EP_AURADAMAGE_CONST: [33, 'flat'] });
-const additions = new Set(['EP_IMMUNE_RAVING','EP_IMMUNE_DISEASE','EP_AURADAMAGE_CONST']);
+  EP_IMMUNE_RAVING: [157, 'flat'], EP_IMMUNE_DISEASE: [161, 'flat'], EP_AURADAMAGE_CONST: [33, 'flat'],
+  EP_TOHIT_SCALE: [62, 'percent'] });
+const additions = new Set(['EP_IMMUNE_RAVING','EP_IMMUNE_DISEASE','EP_AURADAMAGE_CONST','EP_TOHIT_SCALE']);
 
 export function convertedCurrentEffects(server, includeArmorClass) {
   const rows=Array.isArray(server?.effects)?server.effects:[];
