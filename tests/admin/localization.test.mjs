@@ -79,6 +79,24 @@ test('versioned translation writes and resets do not affect old D1 rows',async()
   const search=await (await adminLocalization(get('/api/admin/localization?scope=game&locale=ru&q=Пылающая'),env)).json();
   assert.ok(search.items.some(x=>x.id===id));
 });
+test('published catalog skill names and independent D1 translations keep their precedence',async()=>{
+  const id='skill_entry.0.10',prereq='skill_detail.0.10.1';
+  const catalogSnapshot=[{identity:{id,kind:'active',category:0,index:10},edit:{
+    names:{en:'Shieldbearer',ru:'Бастион',jp:'ディフェンダー',tw:'防禦集中'},description:{}}}];
+  const env=fixture({catalogSnapshot});
+  await adminLocalization(post({scope:'game',id:prereq,locale:'ru',value:'Требуется щит',expectedVersion:0}),env);
+  let published=await (await publicLocalization(env)).json();
+  assert.equal(published.overrides.game.en[id],'Shieldbearer');
+  assert.equal(published.overrides.game.ru[id],'Бастион');
+  assert.equal(published.overrides.game.ru[prereq],'Требуется щит');
+  const listed=await (await adminLocalization(get('/api/admin/localization?scope=game&locale=en&q='+id),env)).json();
+  assert.equal(listed.items.find(row=>row.id===id).effective,'Shieldbearer');
+  await adminLocalization(post({scope:'game',id,locale:'en',value:'Custom name',expectedVersion:0}),env);
+  published=await (await publicLocalization(env)).json();
+  assert.equal(published.overrides.game.en[id],'Custom name');
+  assert.equal(published.overrides.game.ru[prereq],'Требуется щит');
+});
+
 test('long multiline descriptions are safe; HTML and bad translation placeholders fail',async()=>{
   const env=fixture();
   const good={scope:'game',id:'skill_detail.7.5.3',locale:'ru',value:'Первая строка\nВторая строка',expectedVersion:0};

@@ -893,6 +893,42 @@ test('reviewed active batch refuses stale edits and concurrent private drafts or
   assert.equal(sqlite.prepare('SELECT version FROM catalog_head').get().version,0);sqlite.close();
 });
 
+test('reviewed skill English-only rename preserves unrelated translations and rejects name conflicts',async()=>{
+  for(const collision of ['unrelated','name','additional-change']) {
+    const {env,sqlite,input,id}=reviewedActiveFixture();
+    const before=JSON.parse(sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id=?').get(id).payload_json);
+    const edit=structuredClone(before);edit.names.en='Updated English name';
+    if(collision==='additional-change')edit.description.en='Changed description';
+    input.items[0].edit=edit;
+    const term=collision==='name'?id:'skill_detail.5.3.1';
+    sqlite.prepare('INSERT INTO localization_overrides VALUES(?,?)').run('game',term);
+    if(collision==='unrelated') {
+      const result=await call(env,'publish-reviewed-catalog-batch',input);
+      assert.equal(result.catalogRevision,1);assert.equal(result.impactRevision,0);
+      assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM localization_overrides WHERE term_id=?').get(term).n,1);
+      assert.equal((await publicData(env)).records.find(row=>row.id===id).names.en,'Updated English name');
+    } else {
+      await assert.rejects(()=>call(env,'publish-reviewed-catalog-batch',input),error=>error.status===409);
+      assert.equal(sqlite.prepare('SELECT version FROM catalog_head').get().version,0);
+    }
+    sqlite.close();
+  }
+});
+
+test('English-only rename rejects a concurrent translation of the skill name',async()=>{
+  const {env,sqlite,input,id}=reviewedActiveFixture(),batch=env.DB.batch;
+  const before=JSON.parse(sqlite.prepare('SELECT payload_json FROM catalog_drafts WHERE id=?').get(id).payload_json);
+  input.items[0].edit=structuredClone(before);input.items[0].edit.names.en='Updated English name';
+  env.DB.batch=async statements=>{
+    sqlite.prepare('INSERT INTO localization_drafts VALUES(?,?)').run('game',id);
+    return batch.call(env.DB,statements);
+  };
+  await assert.rejects(()=>call(env,'publish-reviewed-catalog-batch',input),error=>error.status===409);
+  assert.equal(sqlite.prepare('SELECT version FROM catalog_head').get().version,0);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM localization_drafts WHERE term_id=?').get(id).n,1);
+  sqlite.close();
+});
+
 test('a stale reviewed item rejects the complete batch before any snapshot changes',async()=>{
   const {env,sqlite,input}=reviewedActiveFixture(),id='skill_entry.5.8';
   const edit=currentActiveProfileDrafts().find(row=>row.id===id);

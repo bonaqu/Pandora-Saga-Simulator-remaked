@@ -182,3 +182,7 @@ valid equipment during restoration.
 `data/modern-astir-rules.json`. Сборщик генерирует `modern/astian-rules.js` из того же реестра.
 Для применения изменения к реальным опубликованным D1-записям требуется **явное действие
 авторизованного администратора**: деплой исходного кода сам по себе ничего не удаляет.
+
+## Reviewed skill name publications
+
+For an existing active or passive skill, a reviewed batch which changes **only** `names.en` checks the skill-name translation key atomically with the catalog head and private draft. Existing independent prerequisite and description translations remain in D1 and do not block that name-only change. A conflicting name translation or draft still rejects the entire batch. Any other changed field, including another language, restores the full conservative translation guard. Catalog text never supersedes an independently published D1 translation; history and build-impact revision remain independent.
