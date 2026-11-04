@@ -1,5 +1,29 @@
 # Changelog
 
+## Modern 4.41 — быстрый поиск без перерисовки списка, 2026-11-04
+
+<!-- release-notes:user:ru -->
+- **Плавнее поиск снаряжения и душ:** при вводе текста неизменившиеся результаты больше не пересоздаются. Уже открытая карточка предмета остаётся подготовленной, даже если на время убрать её фильтром.
+- **Сохраняется удобное управление:** выбор предметов, подсказки, сортировка, фильтр типа, работа с клавиатуры и на телефоне остаются прежними.
+<!-- /release-notes:user:ru -->
+
+<!-- release-notes:user:en -->
+- **Smoother Equipment and Soul search:** unchanged result rows stay in place while typing instead of being rebuilt. Previously viewed item details can be reused when filters are cleared.
+- **Familiar controls preserved:** selection, previews, sorting, type filters, keyboard navigation and touch disclosure retain their behavior.
+<!-- /release-notes:user:en -->
+
+<!-- admin-notes:ru -->
+- Общая сверка DOM-строк для трёх поисковых списков переиспользует кнопки и обработчики по ссылкам на предметы в рамках текущего снимка. Поиск и фильтр типа используют локальный индекс, сокращая повторную сортировку, создание DOM и нормализацию названий.
+- Смена цели, локали или актуализация каталога пересоздаёт снимок и карточки для исключения устаревших данных. Очистка и повторное открытие фильтра не запускают повторный расчёт уже просмотренной карточки.
+- Добавлены регрессии повторного использования строк, числа новых DOM-элементов при повторном поиске, сохранения фокуса и неизменности персонажа. Игровая математика, D1 и формат билдов не изменены.
+<!-- /admin-notes:ru -->
+
+<!-- admin-notes:en -->
+- Reconcile row DOM nodes across three search surfaces using a per-source snapshot cache, reusing buttons and event handlers. Cache normalized search strings and avoid unnecessary type-select option reconstruction.
+- Rebuild source snapshots on target, locale or catalog refresh; preserve previously opened details only across local filtering.
+- Regression cases verify stable nodes, bounded element creation, focus retention and unchanged character payload. No changes to game formulas, D1 or saved-build formats.
+<!-- /admin-notes:en -->
+
 ## Modern 4.40 — ускорение поиска снаряжения, 2026-11-04
 
 <!-- release-notes:user:ru -->
