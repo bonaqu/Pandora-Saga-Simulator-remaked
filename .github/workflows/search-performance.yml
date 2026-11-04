@@ -1,0 +1,46 @@
+name: Modern Search Performance
+
+on:
+  pull_request:
+    branches:
+      - bonaqu_projects
+    paths:
+      - 'tests/ui/search-performance.spec.mjs'
+      - '.github/workflows/search-performance.yml'
+      - 'modern/search.js'
+      - 'modern/search.css'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: search-perf-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chromium_benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Use Node 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install chromium --with-deps --only-shell
+
+      - name: Measure search and scroll on actual Chromium
+        run: npx playwright test tests/ui/search-performance.spec.mjs --project=chromium --reporter=line
+
+      - name: Environment caveat
+        if: always()
+        run: echo "GitHub Actions runner measurements are not player-device benchmarks."
