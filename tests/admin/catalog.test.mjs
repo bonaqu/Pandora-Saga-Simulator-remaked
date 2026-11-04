@@ -16,7 +16,7 @@ import { formatItemDescription } from '../../admin-api/src/item-description-form
 const origin = 'https://pandora-saga-simulator-remaked-admin-api.bonaqu.workers.dev';
 function fixture() {
   const sqlite = new DatabaseSync(':memory:');
-  for (const name of ['0002_catalog.sql', '0003_skill_variants.sql', '0004_catalog_impact_revision.sql']) sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
+  for (const name of ['0002_catalog.sql', '0003_skill_variants.sql', '0004_catalog_impact_revision.sql', '0007_unified_localization.sql', '0008_localization_workflow.sql']) sqlite.exec(fs.readFileSync(new URL('../../admin-api/migrations/' + name, import.meta.url), 'utf8'));
   const DB = { prepare(sql) {
     let params = [];
     return {
@@ -39,6 +39,29 @@ const call = async (env, path, input) => {
 };
 const publicData = async (env, revision) => (await publicCatalog(request('/api/catalog' + (revision === undefined ? '' : '?revision=' + revision)), env)).json();
 const detail = (env, id = 'equipment.0.1') => call(env, 'item?id=' + id);
+
+test('admin compatibility metadata exposes D1 class names by stable index', async () => {
+  const { env, sqlite } = fixture();
+  const before = await call(env, 'meta');
+  assert.equal(before.ok, true);
+  const warrior = before.compatibilityLabels.job[0];
+  assert.equal(warrior.index, 0);
+  assert.equal(warrior.label, 'Warrior');
+  assert.equal(warrior.names.en, 'Warrior');
+  sqlite.prepare(
+    'INSERT INTO localization_overrides (scope,term_id,locale,text,version,updated_at) VALUES (?,?,?,?,?,?)'
+  ).run('game','job.0','ru','Воин',4,1234);
+  sqlite.prepare(
+    'INSERT INTO localization_overrides (scope,term_id,locale,text,version,updated_at) VALUES (?,?,?,?,?,?)'
+  ).run('game','job.17','ru','Жрец',3,1234);
+  const after = await call(env, 'meta');
+  assert.equal(after.compatibilityLabels.job[0].names.ru, 'Воин');
+  assert.equal(after.compatibilityLabels.job[17].names.ru, 'Жрец');
+  assert.equal(after.compatibilityLabels.job[0].names.en, 'Warrior');
+  assert.equal(after.compatibilityLabels.job[17].index, 17);
+  assert.equal(sqlite.prepare("SELECT text FROM localization_overrides WHERE term_id='job.0'").get().text,'Воин');
+  sqlite.close();
+});
 
 test('all source equipment is persisted in D1 with 41 verified aliases and idempotent seeds', async () => {
   const { env, sqlite }=fixture();
