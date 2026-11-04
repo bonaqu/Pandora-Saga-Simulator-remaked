@@ -722,9 +722,35 @@ async function list(request, env) {
   return jsonResponse({ ok: true, catalogRevision: snapshot.version, count: results.length, page, pageSize: 40, items: results.slice(page * 40, (page + 1) * 40) });
 }
 
+// Preserve stable numeric compatibility IDs while exposing the current D1
+// game terminology to the editor in all four languages. Never mutate the
+// source catalog or write translations from an editor metadata request.
+async function adminCompatibilityLabels(env) {
+  const [published, snapshot] = await Promise.all([
+    env.DB.prepare("SELECT term_id, locale, text FROM localization_overrides WHERE scope='game' AND term_id LIKE 'job.%'").all(),
+    head(env)
+  ]);
+  const catalogClasses = new Map(snapshot.entries.filter(entry => entry.identity?.kind === 'class')
+    .map(entry => [entry.identity.id, entry.edit?.names || {}]));
+  const byTerm = new Map();
+  for (const row of published.results || []) {
+    if (!/^job\\.(?:[0-9]|1[0-9]|2[0-7])$/.test(row.term_id) ||
+        !['ru', 'en', 'jp', 'tw'].includes(row.locale) || !String(row.text || '').trim()) continue;
+    if (!byTerm.has(row.term_id)) byTerm.set(row.term_id, {});
+    byTerm.get(row.term_id)[row.locale] = row.text;
+  }
+  return {
+    ...compatibilityLabels,
+    job: compatibilityLabels.job.map(entry => {
+      const id = 'job.' + entry.index;
+      return { ...entry, names: { en: entry.label, ...catalogClasses.get(id), ...byTerm.get(id) } };
+    })
+  };
+}
+
 export async function adminCatalog(request, env, now = Math.floor(Date.now() / 1000)) {
   const path = new URL(request.url).pathname;
-  if (path === '/api/admin/meta' && request.method === 'GET') return jsonResponse({ ok: true, effects: EFFECTS, categories: categories.filter(category => EQUIPMENT_CATEGORIES.includes(category.legacy_id)), skillCategories, compatibilityLabels, sourceFingerprint, characterSourceFingerprint, sourceCount: baselineRecords.length });
+  if (path === '/api/admin/meta' && request.method === 'GET') return jsonResponse({ ok: true, effects: EFFECTS, categories: categories.filter(category => EQUIPMENT_CATEGORIES.includes(category.legacy_id)), skillCategories, compatibilityLabels: await adminCompatibilityLabels(env), sourceFingerprint, characterSourceFingerprint, sourceCount: baselineRecords.length });
   if (path === '/api/admin/catalog' && request.method === 'GET') return list(request, env);
   if (path === '/api/admin/drafts' && request.method === 'GET') return listDrafts(env);
   if (path === '/api/admin/item' && request.method === 'GET') return jsonResponse(await detail(env, new URL(request.url).searchParams.get('id') || ''));
