@@ -10,6 +10,7 @@ import { auditIdentities } from './audit_pandora_os_catalog_identity.mjs';
 import { serverPatch } from './materialize_pandora_os_live_sync_hardening.mjs';
 import { convertedCurrentEffects, CURRENT_EFFECT_MAP } from './lib/current-effect-conversion.mjs';
 import reviews from '../data/current-source-identity-reviews.v1.json' with { type: 'json' };
+import verifiedGear from '../data/verified-racial-gear.v1.json' with { type: 'json' };
 
 const classOrder = ['WARRIOR','GLADIATOR','JUGGERNAUT','DRAGOON','KNIGHT','GENERAL','PALADIN',
   'SCOUT','ARCHER','SNIPER','PREDATOR','AGENT','ASSASSIN','DISTURBANCE',
@@ -58,9 +59,9 @@ function missingMechanics(server) {
   }).map(effect => ({ ...effect }));
 }
 
-export function auditCatalogValues({ items, souls, english, itemForth = {}, mapping, catalog, baseline = baselineById, identities, identityReviews = [] }) {
+export function auditCatalogValues({ items, souls, english, itemForth = {}, mapping, catalog, baseline = baselineById, identities, identityReviews = [], verifiedGearEntries = [] }) {
   if (!catalog?.ok || !Array.isArray(catalog.records) || !Number.isSafeInteger(catalog.revision)) throw new Error('Invalid public catalog');
-  const relation = identities || auditIdentities({ items, souls, english, mapping, catalog, baseline: [...baseline.values()], identityReviews });
+  const relation = identities || auditIdentities({ items, souls, english, mapping, catalog, baseline: [...baseline.values()], identityReviews, verifiedGearEntries });
   if (relation.revision !== catalog.revision) throw new Error('Identity report revision does not match catalog');
   const records = new Map(catalog.records.map(record => [record.id, record]));
   const result = { revision: catalog.revision, examined: [], unresolved: [], skipped: [] };
@@ -129,6 +130,7 @@ function main() {
   if (args.length !== 4 || args[0] !== '--input' || args[2] !== '--output') throw new Error('Usage: node scripts/audit_pandora_os_catalog_values.mjs --input BUNDLE.json --output NEW_REPORT.json');
   const bundle = JSON.parse(fs.readFileSync(args[1], 'utf8'));
   if (bundle.identityReviews === undefined) bundle.identityReviews = reviews.reviews;
+  if (bundle.verifiedGearEntries === undefined) bundle.verifiedGearEntries = verifiedGear.entries;
   const result = auditCatalogValues(bundle);
   fs.writeFileSync(args[3], JSON.stringify(result, null, 2) + '\n', { flag: 'wx' });
   console.log(JSON.stringify({ revision: result.revision, counts: result.counts, output: args[3] }));
