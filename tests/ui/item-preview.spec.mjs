@@ -1,5 +1,35 @@
 import { test, expect } from '@playwright/test';
 
+test('RU equipment previews use published D1 terminology for class, category and DEF without changing builds', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(() => {
+    const adapter = PandoraRemaked.adapter, i18n = PandoraRemaked.i18n;
+    const before = Store();
+    const chosen = EquipData[0][32].findIndex((row, index) =>
+      index > 0 && row && /(?:^|_)49=/.test(String(row[7])) && Boolean(row[16]));
+    if (chosen < 1) throw new Error('No defensive gloves compatible with Warrior in source');
+    const value = 320000 + chosen;
+    // Source arrays are not edited. The public localization shape is identical
+    // to /api/localization, but with distinct values to catch stale Legacy text.
+    const overrides = { ui: { ru: { 'search.itemStatDefense': 'Защита Д1' }, en: {}, jp: {}, tw: {} },
+      game: { ru: { 'equipment_category.32': 'Перчатки Д1', 'job.0': 'Воин Д1' }, en: {}, jp: {}, tw: {} } };
+    if (!i18n.applyUnifiedLocalization({ ok: true, schemaVersion: 1, overrides }))
+      throw new Error('Unified translation rejected');
+    i18n.setLocale('ru');
+    const russian = adapter.readItemDetails('equipment', value, 4);
+    i18n.setLocale('en');
+    const english = adapter.readItemDetails('equipment', value, 4);
+    return { russian, english, before, after: Store() };
+  });
+  expect(result.russian.category).toBe('Перчатки Д1');
+  expect(result.russian.classes).toContain('Воин Д1');
+  expect(result.russian.baseStats).toContainEqual(expect.objectContaining({ label: 'Защита Д1' }));
+  expect(result.english.category).not.toBe('Перчатки Д1');
+  expect(result.english.classes).not.toContain('Воин Д1');
+  expect(result.english.baseStats).toContainEqual(expect.objectContaining({ label: 'Defense' }));
+  expect(result.after).toBe(result.before);
+});
+
 test('slot rings match source counts and equipped upgrades do not leak into another candidate', async ({ page }) => {
   await page.goto('/');
   const fixtures = await page.evaluate(() => {
