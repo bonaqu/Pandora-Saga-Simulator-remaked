@@ -78,3 +78,20 @@ test('Priest earring audit includes the existing runtime supplement exactly once
   row=auditCatalogValues({items,souls,english,mapping:v3,catalog,identities}).examined[0];
   assert.deepEqual(row.differences.find(diff=>diff.field==='effect.33:flat'),{field:'effect.33:flat',actual:3,expected:2});
 });
+
+
+test('Bullseye Cap audit counts the existing Modern accuracy supplement',()=>{
+  const {items,souls,english,v3}=loadInputs();
+  const id='modern.equipment.efa0f19b-c754-49ef-a1d7-b1104c71c0f9';
+  const identity={id,kind:'equipment',category:30,index:111},edit=draftFromSource(null,'equipment');
+  Object.assign(edit,{id,category:30,names:{en:'Bullseye Cap',ru:'Берет охотника',jp:'',tw:''},
+    effects:[{stat:3,unit:'flat',value:1},{stat:49,unit:'flat',value:7}]});
+  const record=compileRecord(validateDraft(edit,identity),identity,null),catalog={ok:true,revision:92,records:[record]};
+  const identities={revision:92,matched:[{kind:'equipment',serverId:11202,projectId:id}]};
+  let row=auditCatalogValues({items,souls,english,mapping:v3,catalog,identities}).examined[0];
+  assert.equal(row.differences.some(diff=>diff.field==='effect.62:percent'),false);
+  edit.effects.push({stat:62,unit:'percent',value:10});
+  catalog.records[0]=compileRecord(validateDraft(edit,identity),identity,null);
+  row=auditCatalogValues({items,souls,english,mapping:v3,catalog,identities}).examined[0];
+  assert.deepEqual(row.differences.find(diff=>diff.field==='effect.62:percent'),{field:'effect.62:percent',actual:20,expected:10});
+});

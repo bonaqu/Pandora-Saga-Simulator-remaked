@@ -95,6 +95,10 @@ export function auditCatalogValues({ items, souls, english, itemForth = {}, mapp
     // exactly once; an explicitly published replacement disables that hook.
     if (record.id === 'modern.equipment.ac383fab-00a9-45ff-a09a-b2192c47ef5d' && record.engineId === 400061 && record.nativeBasePolicy !== 'replace-priest-earring-aura')
       parsed.effects.set('33:flat', (parsed.effects.get('33:flat') || 0) + 2);
+    // Bullseye Cap's percentage accuracy is also injected by the Modern base
+    // supplement; an explicit catalog modifier would stack with this hook.
+    if (record.id === 'modern.equipment.efa0f19b-c754-49ef-a1d7-b1104c71c0f9' && record.engineId === 300111)
+      parsed.effects.set('62:percent', (parsed.effects.get('62:percent') || 0) + 10);
     if (patch.baseAttack !== undefined) compare('weaponAttack', parsed.weapon, patch.baseAttack);
     const converted = convertedCurrentEffects(server, kind === 'equipment');
     for (const effect of converted.effects) {
