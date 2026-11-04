@@ -3,13 +3,13 @@
 ## Modern 4.42 — русские подписи в карточках снаряжения и админке, 2026-11-04
 
 <!-- release-notes:user:ru -->
-- **Русские характеристики в подсказках экипировки:** тип вещи (например, «Перчатки»), разрешённые классы и базовые «Атака»/«Защита» больше не берутся из английских массивов Legacy — используются локализации Modern/D1.
-- **Согласованная админка:** названия классов в настройках совместимости и слоты душ отображаются на выбранном языке. Классы и характеристики по-прежнему редактируются без изменения игровых ID.
+- **Русские характеристики в подсказках экипировки:** тип вещи (например, «Перчатки»), разрешённые классы и базовые «Атака»/«Защита» теперь показываются на русском языке благодаря общим переводам сайта.
+- **Согласованная админка:** названия классов в настройках совместимости и слоты душ отображаются на выбранном языке. Игровые характеристики и сохранённые персонажи не меняются.
 <!-- /release-notes:user:ru -->
 
 <!-- release-notes:user:en -->
-- **Localized Equipment previews:** item types, compatible classes and base Attack/Defense captions now use Modern/D1 translations instead of English-only Legacy display arrays.
-- **Consistent editor:** class compatibility and Soul socket labels follow the selected admin language without changing item IDs or stat calculations.
+- **Localized Equipment previews:** item types, compatible classes and base Attack/Defense captions now follow the selected display language.
+- **Consistent editor:** class compatibility and Soul socket labels follow the selected admin language without changing existing character data or calculations.
 <!-- /release-notes:user:en -->
 
 <!-- admin-notes:ru -->
