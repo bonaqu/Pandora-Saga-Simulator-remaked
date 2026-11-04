@@ -609,7 +609,11 @@
       var rows=payload.overrides[scope]?.[locale];
       if (!rows || Array.isArray(rows) || typeof rows !== 'object') return false;
       for (var [key,text] of Object.entries(rows)) {
-        if (!/^[a-z][a-z0-9._-]{0,120}$/.test(key) ||
+        // Registered UI keys use camelCase (e.g. updates.latestForUsers);
+        // rejecting capitals discards the ENTIRE D1 localization response,
+        // including otherwise valid RU game-class translations. Keep game
+        // identity keys strict and allow safe camelCase only for UI labels.
+        if (!(scope === 'ui' ? /^[a-z][A-Za-z0-9._-]{0,120}$/ : /^[a-z][a-z0-9._-]{0,120}$/).test(key) ||
             typeof text !== 'string' || text.length > 4000 ||
             /[\x00-\x09\x0b-\x1f\x7f<>]/.test(text)) return false;
         next[scope][locale][key]=text;
