@@ -2,6 +2,16 @@
   "schemaVersion": 1,
   "ru": {
     "ui": {
+      "search.itemStatAttack": "Атака",
+      "search.itemStatDefense": "Защита",
+      "adminShell.catalogSoulSlotWeapon": "Оружие",
+      "adminShell.catalogSoulSlotShield": "Щит",
+      "adminShell.catalogSoulSlotHead": "Шлем",
+      "adminShell.catalogSoulSlotTorso": "Броня",
+      "adminShell.catalogSoulSlotArms": "Перчатки",
+      "adminShell.catalogSoulSlotLegs": "Штаны",
+      "adminShell.catalogSoulSlotBoots": "Обувь",
+      "adminShell.catalogSoulSlotCloak": "Плащ",
       "calculator.weaponRangeWithBonuses": "Учтены базовая дальность оружия и настроенные бонусы (игровые единицы). Остальные эффекты могут быть не проверены.",
       "skills.adeptness": "Изучено (ОЧ)",
       "skills.potential": "Потенциал.",
