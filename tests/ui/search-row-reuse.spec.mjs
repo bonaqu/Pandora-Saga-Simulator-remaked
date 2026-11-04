@@ -88,7 +88,7 @@ test('Soul search retains rows across typing without changing the character', as
   });
   const before = await page.evaluate(() => Store());
   const panel = page.locator('[data-remaked-search-panel][data-search-kind="soul"]');
-  const row = panel.locator('[data-remaked-search-row]').filter({ has: panel.locator('details') }).first();
+  const row = panel.locator('[data-remaked-search-row]').filter({ has: page.locator('details') }).first();
   await expect(row).toHaveCount(1);
   const value = await row.getAttribute('data-value');
   await page.evaluate(value => {
