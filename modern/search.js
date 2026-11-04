@@ -332,14 +332,22 @@
       return row;
     });
     var cursor = container.firstChild;
-    visible.forEach(function (row) {
-      if (row === cursor) cursor = cursor.nextSibling;
-      else container.insertBefore(row, cursor);
-    });
-    while (cursor) {
-      var next = cursor.nextSibling;
-      container.removeChild(cursor);
-      cursor = next;
+    if (!cursor || (cursor.classList && cursor.classList.contains('remaked-search-empty'))) {
+      // Initial hundreds of rows go into one fragment, avoiding per-row
+      // updates to the live list. The same fast path restores an empty search.
+      var fragment = document.createDocumentFragment();
+      visible.forEach(function (row) { fragment.appendChild(row); });
+      container.replaceChildren(fragment);
+    } else {
+      visible.forEach(function (row) {
+        if (row === cursor) cursor = cursor.nextSibling;
+        else container.insertBefore(row, cursor);
+      });
+      while (cursor) {
+        var next = cursor.nextSibling;
+        container.removeChild(cursor);
+        cursor = next;
+      }
     }
     if (active) active.cancelPreviews = visible.map(function (row) {
       return row._remakedCancelPreview;
