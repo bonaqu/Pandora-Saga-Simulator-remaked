@@ -6,8 +6,8 @@ Canonical source: [CHANGELOG.md](CHANGELOG.md). The site's What's New panel disp
 
 ### For users
 
-- **Localized Equipment previews:** item types, compatible classes and base Attack/Defense captions now use Modern/D1 translations instead of English-only Legacy display arrays.
-- **Consistent editor:** class compatibility and Soul socket labels follow the selected admin language without changing item IDs or stat calculations.
+- **Localized Equipment previews:** item types, compatible classes and base Attack/Defense captions now follow the selected display language.
+- **Consistent editor:** class compatibility and Soul socket labels follow the selected admin language without changing existing character data or calculations.
 
 ### Development and technical changes
 
